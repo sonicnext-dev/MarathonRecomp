@@ -145,13 +145,11 @@ jobs:
           Move-Item -Path ".\out\build\${{ env.CMAKE_PRESET }}\MarathonRecomp\dxil.dll" -Destination ".\release\dxil.dll"
           Move-Item -Path ".\out\build\${{ env.CMAKE_PRESET }}\MarathonRecomp\MarathonRecomp.exe" -Destination ".\release\MarathonRecomp.exe"
 
-          Compress-Archive -Path .\release\* -DestinationPath .\MarathonRecomp-Windows.zip
-
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: MarathonRecomp-Windows-${{ env.CMAKE_PRESET }}
-          path: .\MarathonRecomp-Windows.zip
+          path: .\release
 
       - name: Upload PDB
         uses: actions/upload-artifact@v4
