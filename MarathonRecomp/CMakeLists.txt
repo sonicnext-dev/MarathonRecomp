@@ -224,6 +224,7 @@ set(MARATHON_RECOMP_CXX_SOURCES
     "exports.cpp"
     "main.cpp"
     "misc_impl.cpp"
+    "preload_executable.cpp"
     "sdl_listener.cpp"
     "stdafx.cpp"
     "version.cpp"
