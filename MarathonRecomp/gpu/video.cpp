@@ -370,6 +370,7 @@ static constexpr RenderFormat BACKBUFFER_FORMAT = RenderFormat::B8G8R8A8_UNORM;
 static std::unique_ptr<RenderCommandSemaphore> g_acquireSemaphores[NUM_FRAMES];
 static std::unique_ptr<RenderCommandSemaphore> g_renderSemaphores[NUM_FRAMES];
 static uint32_t g_backBufferIndex;
+static std::unique_ptr<GuestSurface> g_backBufferHolder;
 static GuestSurface* g_backBuffer;
 
 static std::unique_ptr<RenderTexture> g_intermediaryBackBufferTexture;
@@ -2138,7 +2139,10 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver)
     desc.renderTargetCount = 1;
     g_gammaCorrectionPipeline = g_device->createGraphicsPipeline(desc);
 
-    g_backBuffer = g_userHeap.AllocPhysical<GuestSurface>(ResourceType::RenderTarget);
+    // NOTE: We initially allocate this on host memory to make the installer work, even if the 4 GB memory allocation fails.
+    g_backBufferHolder = std::make_unique<GuestSurface>(ResourceType::RenderTarget);
+
+    g_backBuffer = g_backBufferHolder.get();
     g_backBuffer->width = 1280;
     g_backBuffer->height = 720;
     g_backBuffer->format = BACKBUFFER_FORMAT;
@@ -2201,6 +2205,17 @@ static uint32_t CreateDevice(uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4,
     //     g_xdbfTextureCache[achievement.ID] =
     //         LoadTexture((uint8_t *)achievement.pImageBuffer, achievement.ImageBufferSize).release();
     // }
+
+    // Move backbuffer to guest memory.
+    assert(!g_memory.IsInMemoryRange(g_backBuffer) && g_backBufferHolder != nullptr);
+    g_backBuffer = g_userHeap.AllocPhysical<GuestSurface>(std::move(*g_backBufferHolder));
+
+    // Check for stale reference. BeginCommandList() gets called before CreateDevice() which is where the assignment happens.
+    if (g_renderTarget == g_backBufferHolder.get()) g_renderTarget = g_backBuffer;
+    if (g_depthStencil == g_backBufferHolder.get()) g_depthStencil = g_backBuffer;
+
+    // Free the host backbuffer.
+    g_backBufferHolder = nullptr;
 
     auto device = g_userHeap.AllocPhysical<GuestDevice>();
     memset(device, 0, sizeof(*device));
