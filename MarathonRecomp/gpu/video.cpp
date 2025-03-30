@@ -783,10 +783,12 @@ static void DestructTempResources()
 }
 
 static std::thread::id g_presentThreadId = std::this_thread::get_id();
+static std::atomic<bool> g_readyForCommands;
 
 // PPC_FUNC_IMPL(__imp__sub_824ECA00);
 // PPC_FUNC(sub_824ECA00)
 // {
+//     g_readyForCommands.wait(false);
 //     g_presentThreadId = std::this_thread::get_id();
 //     __imp__sub_824ECA00(ctx, base);
 // }
@@ -1788,6 +1790,9 @@ static void BeginCommandList()
     commandList->setGraphicsDescriptorSet(g_textureDescriptorSet.get(), 1);
     commandList->setGraphicsDescriptorSet(g_textureDescriptorSet.get(), 2);
     commandList->setGraphicsDescriptorSet(g_samplerDescriptorSet.get(), 3);
+
+    g_readyForCommands = true;
+    g_readyForCommands.notify_one();
 }
 
 template<typename T>
@@ -2957,6 +2962,8 @@ static std::atomic<bool> g_executedCommandList;
 
 void Video::Present() 
 {
+    g_readyForCommands = false;
+
     RenderCommand cmd;
     cmd.type = RenderCommandType::ExecutePendingStretchRectCommands;
     g_renderQueue.enqueue(cmd);
