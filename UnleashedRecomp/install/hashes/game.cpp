@@ -6,6 +6,8 @@ extern const uint64_t GameHashes[];
 extern const std::pair<const char *, uint32_t> GameFiles[];
 extern const size_t GameFilesSize;
 
+// TODO: Update hashes
+
 const uint64_t GameHashes[] = {
     9217621634848118158ULL,
     15317665572267126848ULL,
