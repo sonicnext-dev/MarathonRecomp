@@ -62,9 +62,7 @@ void HostStartup()
 void KiSystemStartup()
 {
     const auto gameContent = XamMakeContent(XCONTENTTYPE_RESERVED, "Game");
-    // const auto updateContent = XamMakeContent(XCONTENTTYPE_RESERVED, "Update");
     XamRegisterContent(gameContent, GAME_INSTALL_DIRECTORY "/game");
-    // XamRegisterContent(updateContent, GAME_INSTALL_DIRECTORY "/update");
 
     const auto saveFilePath = GetSaveFilePath(true);
     bool saveFileExists = std::filesystem::exists(saveFilePath);
@@ -90,21 +88,9 @@ void KiSystemStartup()
 
     // Mount game
     XamContentCreateEx(0, "game", &gameContent, OPEN_EXISTING, nullptr, nullptr, 0, 0, nullptr);
-    // XamContentCreateEx(0, "update", &updateContent, OPEN_EXISTING, nullptr, nullptr, 0, 0, nullptr);
 
     // OS mounts game data to D:
     XamContentCreateEx(0, "D", &gameContent, OPEN_EXISTING, nullptr, nullptr, 0, 0, nullptr);
-
-    std::error_code ec;
-    for (auto& file : std::filesystem::directory_iterator(GAME_INSTALL_DIRECTORY "/dlc", ec))
-    {
-        if (file.is_directory())
-        {
-            std::u8string fileNameU8 = file.path().filename().u8string();
-            std::u8string filePathU8 = file.path().u8string();
-            XamRegisterContent(XamMakeContent(XCONTENTTYPE_DLC, (const char*)(fileNameU8.c_str())), (const char*)(filePathU8.c_str()));
-        }
-    }
 
     XAudioInitializeSystem();
 }
