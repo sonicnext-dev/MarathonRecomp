@@ -184,13 +184,11 @@ int main(int argc, char *argv[])
     os::logger::Init();
 
     bool forceInstaller = false;
-    bool forceDLCInstaller = false;
     const char *sdlVideoDriver = nullptr;
 
     for (uint32_t i = 1; i < argc; i++)
     {
         forceInstaller = forceInstaller || (strcmp(argv[i], "--install") == 0);
-        forceDLCInstaller = forceDLCInstaller || (strcmp(argv[i], "--install-dlc") == 0);
 
         if (strcmp(argv[i], "--sdl-video-driver") == 0)
         {
@@ -235,20 +233,20 @@ int main(int argc, char *argv[])
 
     std::filesystem::path modulePath;
     bool isGameInstalled = Installer::checkGameInstall(GAME_INSTALL_DIRECTORY, modulePath);
-    bool runInstallerWizard = false;//forceInstaller || forceDLCInstaller || !isGameInstalled;
-    // if (runInstallerWizard)
-    // {
-    //     if (!Video::CreateHostDevice(sdlVideoDriver))
-    //     {
-    //         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, GameWindow::GetTitle(), Localise("Video_BackendError").c_str(), GameWindow::s_pWindow);
-    //         std::_Exit(1);
-    //     }
+    bool runInstallerWizard = forceInstaller || !isGameInstalled;
+    if (runInstallerWizard)
+    {
+        if (!Video::CreateHostDevice(sdlVideoDriver))
+        {
+            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, GameWindow::GetTitle(), Localise("Video_BackendError").c_str(), GameWindow::s_pWindow);
+            std::_Exit(1);
+        }
 
-    //     if (!InstallerWizard::Run(GAME_INSTALL_DIRECTORY, isGameInstalled && forceDLCInstaller))
-    //     {
-    //         std::_Exit(0);
-    //     }
-    // }
+        if (!InstallerWizard::Run(GAME_INSTALL_DIRECTORY))
+        {
+            std::_Exit(0);
+        }
+    }
 
     // ModLoader::Init();
 
