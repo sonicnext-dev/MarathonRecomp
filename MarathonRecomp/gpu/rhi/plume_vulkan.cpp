@@ -281,14 +281,14 @@ namespace plume {
 
     static VkImageViewType toImageViewType(RenderTextureViewDimension dimension, uint16_t arraySize) {
         switch (dimension) {
-            case RenderTextureViewDimension::TEXTURE_1D:
+        case RenderTextureViewDimension::TEXTURE_1D:
             return arraySize > 1 ? VK_IMAGE_VIEW_TYPE_1D_ARRAY : VK_IMAGE_VIEW_TYPE_1D;
-            case RenderTextureViewDimension::TEXTURE_2D:
+        case RenderTextureViewDimension::TEXTURE_2D:
             return arraySize > 1 ? VK_IMAGE_VIEW_TYPE_2D_ARRAY : VK_IMAGE_VIEW_TYPE_2D;
         case RenderTextureViewDimension::TEXTURE_3D:
             return VK_IMAGE_VIEW_TYPE_3D;
-            case RenderTextureViewDimension::TEXTURE_CUBE:
-            return arraySize > 1 ? VK_IMAGE_VIEW_TYPE_CUBE_ARRAY : VK_IMAGE_VIEW_TYPE_CUBE;
+        case RenderTextureViewDimension::TEXTURE_CUBE:
+            return arraySize > 6 ? VK_IMAGE_VIEW_TYPE_CUBE_ARRAY : VK_IMAGE_VIEW_TYPE_CUBE;
         default:
             assert(false && "Unknown resource dimension.");
             return VK_IMAGE_VIEW_TYPE_MAX_ENUM;
