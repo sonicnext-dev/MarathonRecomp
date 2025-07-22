@@ -483,9 +483,11 @@ namespace plume {
         case RenderPrimitiveTopology::TRIANGLE_LIST:
             return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;     
         case RenderPrimitiveTopology::TRIANGLE_STRIP:
-            return D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;     
+            return D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+#   ifdef D3D12_AGILITY_SDK_ENABLED
         case RenderPrimitiveTopology::TRIANGLE_FAN:
             return D3D_PRIMITIVE_TOPOLOGY_TRIANGLEFAN;
+#   endif
         default:
             assert(false && "Unknown primitive topology.");
             return D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
@@ -624,9 +626,10 @@ namespace plume {
         switch (location.type) {
         case RenderTextureCopyType::SUBRESOURCE: {
             const D3D12Texture *interfaceTexture = static_cast<const D3D12Texture *>(location.texture);
+            uint32_t mipLevels = interfaceTexture->desc.mipLevels;
             loc.pResource = (interfaceTexture != nullptr) ? interfaceTexture->d3d : nullptr;
             loc.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
-            loc.SubresourceIndex = location.subresource.index;
+            loc.SubresourceIndex = location.subresource.mipLevel + location.subresource.arrayIndex * mipLevels;
             break;
         }
         case RenderTextureCopyType::PLACED_FOOTPRINT: {
@@ -1052,26 +1055,60 @@ namespace plume {
                 const bool isMSAA = (interfaceTextureView->texture->desc.multisampling.sampleCount > RenderSampleCount::COUNT_1);
                 switch (interfaceTextureView->dimension) {
                 case RenderTextureViewDimension::TEXTURE_1D:
-                    srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE1D;
-                    srvDesc.Texture1D.MipLevels = interfaceTextureView->mipLevels;
+                    if (interfaceTextureView->arraySize > 1) {
+                        srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE1DARRAY;
+                        srvDesc.Texture1DArray.MipLevels = interfaceTextureView->mipLevels;
+                        srvDesc.Texture1DArray.MostDetailedMip = interfaceTextureView->mipSlice;
+                        srvDesc.Texture1DArray.FirstArraySlice = interfaceTextureView->arrayIndex;
+                        srvDesc.Texture1DArray.ArraySize = interfaceTextureView->arraySize;
+                    } else {
+                        srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE1D;
+                        srvDesc.Texture1D.MipLevels = interfaceTextureView->mipLevels;
+                        srvDesc.Texture1D.MostDetailedMip = interfaceTextureView->mipSlice;
+                    }
                     break;
                 case RenderTextureViewDimension::TEXTURE_2D:
                     if (isMSAA) {
-                        srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DMS;
+                        if (interfaceTextureView->arraySize > 1) {
+                            srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DMSARRAY;
+                            srvDesc.Texture2DMSArray.FirstArraySlice = interfaceTextureView->arrayIndex;
+                            srvDesc.Texture2DMSArray.ArraySize = interfaceTextureView->arraySize;
+                        } else {
+                            srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DMS;
+                        }
                     }
                     else {
-                        srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-                        srvDesc.Texture2D.MipLevels = interfaceTextureView->mipLevels;
+                        if (interfaceTextureView->arraySize > 1) {
+                            srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
+                            srvDesc.Texture2DArray.MipLevels = interfaceTextureView->mipLevels;
+                            srvDesc.Texture2DArray.MostDetailedMip = interfaceTextureView->mipSlice;
+                            srvDesc.Texture2DArray.FirstArraySlice = interfaceTextureView->arrayIndex;
+                            srvDesc.Texture2DArray.ArraySize = interfaceTextureView->arraySize;
+                        } else {
+                            srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+                            srvDesc.Texture2D.MipLevels = interfaceTextureView->mipLevels;
+                            srvDesc.Texture2D.MostDetailedMip = interfaceTextureView->mipSlice;
+                        }
                     }
 
                     break;
                 case RenderTextureViewDimension::TEXTURE_3D:
                     srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE3D;
                     srvDesc.Texture3D.MipLevels = interfaceTextureView->mipLevels;
+                    srvDesc.Texture3D.MostDetailedMip = interfaceTextureView->mipSlice;
                     break;
                 case RenderTextureViewDimension::TEXTURE_CUBE:
-                    srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
-                    srvDesc.TextureCube.MipLevels = interfaceTextureView->mipLevels;
+                    if (interfaceTextureView->arraySize > 6) {
+                        srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBEARRAY;
+                        srvDesc.TextureCubeArray.MipLevels = interfaceTextureView->mipLevels;
+                        srvDesc.TextureCubeArray.MostDetailedMip = interfaceTextureView->mipSlice;
+                        srvDesc.TextureCubeArray.First2DArrayFace = interfaceTextureView->arrayIndex;
+                        srvDesc.TextureCubeArray.NumCubes = interfaceTextureView->arraySize / 6;
+                    } else {
+                        srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
+                        srvDesc.TextureCube.MipLevels = interfaceTextureView->mipLevels;
+                        srvDesc.TextureCube.MostDetailedMip = interfaceTextureView->mipSlice;
+                    }
                     break;
                 default:
                     assert(false && "Unknown texture dimension.");
@@ -1101,12 +1138,26 @@ namespace plume {
 
                 switch (interfaceTextureView->dimension) {
                 case RenderTextureViewDimension::TEXTURE_1D:
-                    uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE1D;
-                    uavDesc.Texture1D.MipSlice = interfaceTextureView->mipSlice;
+                    if (interfaceTextureView->arraySize > 1) {
+                        uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE1DARRAY;
+                        uavDesc.Texture1DArray.MipSlice = interfaceTextureView->mipSlice;
+                        uavDesc.Texture1DArray.FirstArraySlice = interfaceTextureView->arrayIndex;
+                        uavDesc.Texture1DArray.ArraySize = interfaceTextureView->arraySize;
+                    } else {
+                        uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE1D;
+                        uavDesc.Texture1D.MipSlice = interfaceTextureView->mipSlice;
+                    }
                     break;
                 case RenderTextureViewDimension::TEXTURE_2D:
-                    uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
-                    uavDesc.Texture2D.MipSlice = interfaceTextureView->mipSlice;
+                    if (interfaceTextureView->arraySize > 1) {
+                        uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2DARRAY;
+                        uavDesc.Texture2DArray.MipSlice = interfaceTextureView->mipSlice;
+                        uavDesc.Texture2DArray.FirstArraySlice = interfaceTextureView->arrayIndex;
+                        uavDesc.Texture2DArray.ArraySize = interfaceTextureView->arraySize;
+                    } else {
+                        uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+                        uavDesc.Texture2D.MipSlice = interfaceTextureView->mipSlice;
+                    }
                     break;
                 case RenderTextureViewDimension::TEXTURE_3D:
                     uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE3D;
@@ -1267,8 +1318,6 @@ namespace plume {
 
     D3D12SwapChain::~D3D12SwapChain() {
         for (uint32_t i = 0; i < textureCount; i++) {
-            textures[i].releaseTargetHeap();
-
             if (textures[i].d3d != nullptr) {
                 textures[i].d3d->Release();
                 textures[i].d3d = nullptr;
@@ -1302,7 +1351,6 @@ namespace plume {
         }
 
         for (uint32_t i = 0; i < textureCount; i++) {
-            textures[i].releaseTargetHeap();
             textures[i].d3d->Release();
             textures[i].d3d = nullptr;
         }
@@ -1356,7 +1404,6 @@ namespace plume {
             textures[i].desc.height = height;
             textures[i].resourceStates = D3D12_RESOURCE_STATE_PRESENT;
             textures[i].layout = RenderTextureLayout::PRESENT;
-            textures[i].createRenderTargetHeap();
         }
     }
 
@@ -1395,10 +1442,10 @@ namespace plume {
         
         if (desc.colorAttachmentsCount > 0) {
             for (uint32_t i = 0; i < desc.colorAttachmentsCount; i++) {
-                const D3D12Texture *interfaceTexture = static_cast<const D3D12Texture *>(desc.colorAttachments[i]);
+                const D3D12TextureView *interfaceTextureView = desc.colorAttachmentViews ? static_cast<const D3D12TextureView *>(desc.colorAttachmentViews[i]) : nullptr;
+                const D3D12Texture *interfaceTexture = interfaceTextureView ? interfaceTextureView->texture : static_cast<const D3D12Texture *>(desc.colorAttachments[i]);
                 assert((interfaceTexture->desc.flags & RenderTextureFlag::RENDER_TARGET) && "Color attachment must be a render target.");
-                colorTargets.emplace_back(interfaceTexture);
-                colorHandles.emplace_back(device->colorTargetHeapAllocator->getCPUHandleAt(interfaceTexture->targetAllocatorOffset));
+                createRenderTargetHeap(interfaceTexture, interfaceTextureView);
 
                 if (i == 0) {
                     width = interfaceTexture->desc.width;
@@ -1407,18 +1454,11 @@ namespace plume {
             }
         }
 
-        if (desc.depthAttachment != nullptr) {
-            const D3D12Texture *interfaceTexture = static_cast<const D3D12Texture *>(desc.depthAttachment);
+        if (desc.depthAttachment != nullptr || desc.depthAttachmentView != nullptr) {
+            const D3D12TextureView *interfaceTextureView = static_cast<const D3D12TextureView *>(desc.depthAttachmentView);
+            const D3D12Texture *interfaceTexture = interfaceTextureView ? interfaceTextureView->texture : static_cast<const D3D12Texture *>(desc.depthAttachment);
             assert((interfaceTexture->desc.flags & RenderTextureFlag::DEPTH_TARGET) && "Depth attachment must be a depth target.");
-            depthTarget = interfaceTexture;
-
-            // The read-only handle is on the second slot on the DSV heap.
-            if (desc.depthAttachmentReadOnly) {
-                depthHandle = device->depthTargetHeapAllocator->getCPUHandleAt(interfaceTexture->targetAllocatorOffset + 1);
-            }
-            else {
-                depthHandle = device->depthTargetHeapAllocator->getCPUHandleAt(interfaceTexture->targetAllocatorOffset);
-            }
+            createDepthStencilHeap(interfaceTexture, interfaceTextureView, desc.depthAttachmentReadOnly);
 
             if (desc.colorAttachmentsCount == 0) {
                 width = interfaceTexture->desc.width;
@@ -1427,7 +1467,9 @@ namespace plume {
         }
     }
 
-    D3D12Framebuffer::~D3D12Framebuffer() { }
+    D3D12Framebuffer::~D3D12Framebuffer() {
+        releaseTargetHeap();
+    }
 
     uint32_t D3D12Framebuffer::getWidth() const {
         return width;
@@ -1435,6 +1477,237 @@ namespace plume {
 
     uint32_t D3D12Framebuffer::getHeight() const {
         return height;
+    }
+
+    void D3D12Framebuffer::createRenderTargetHeap(const D3D12Texture* texture, const D3D12TextureView* textureView) {
+        const uint32_t targetAllocatorOffset = device->colorTargetHeapAllocator->allocate(1);
+        if (targetAllocatorOffset == D3D12DescriptorHeapAllocator::INVALID_OFFSET) {
+            fprintf(stderr, "Allocator was unable to find free space for the set.");
+            return;
+        }
+
+        D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+        rtvDesc.Format = toDXGI(textureView ? textureView->desc.format : texture->desc.format);
+
+        const bool isMSAA = (texture->desc.multisampling.sampleCount > RenderSampleCount::COUNT_1);
+        if (textureView) {
+            switch (textureView->desc.dimension) {
+            case RenderTextureViewDimension::TEXTURE_1D:
+                if (texture->desc.arraySize > 1) {
+                    rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE1DARRAY;
+                    rtvDesc.Texture1D.MipSlice = textureView->desc.mipSlice;
+                    rtvDesc.Texture1DArray.FirstArraySlice = textureView->desc.arrayIndex;
+                    rtvDesc.Texture1DArray.ArraySize = textureView->desc.arraySize;
+                } else {
+                    rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE1D;
+                    rtvDesc.Texture1D.MipSlice = textureView->desc.mipSlice;
+                }
+                break;
+            case RenderTextureViewDimension::TEXTURE_2D:
+                if (texture->desc.arraySize > 1) {
+                    if (isMSAA) {
+                        rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DMSARRAY;
+                        rtvDesc.Texture2DMSArray.FirstArraySlice = textureView->desc.arrayIndex;
+                        rtvDesc.Texture2DMSArray.ArraySize = textureView->desc.arraySize;
+                    }
+                    else {
+                        rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DARRAY;
+                        rtvDesc.Texture2DArray.MipSlice = textureView->desc.mipSlice;
+                        rtvDesc.Texture2DArray.FirstArraySlice = textureView->desc.arrayIndex;
+                        rtvDesc.Texture2DArray.ArraySize = textureView->desc.arraySize;
+                    }
+                } else {
+                    if (isMSAA) {
+                        rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DMS;
+                    }
+                    else {
+                        rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+                        rtvDesc.Texture2D.MipSlice = textureView->desc.mipSlice;
+                    }
+                }
+
+                break;
+            case RenderTextureViewDimension::TEXTURE_3D:
+                rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE3D;
+                rtvDesc.Texture3D.MipSlice = textureView->desc.mipSlice;
+                rtvDesc.Texture3D.FirstWSlice = 0;
+                rtvDesc.Texture3D.WSize = 1;
+                break;
+            default:
+                assert(false && "Unsupported texture dimension for render target.");
+                break;
+            }
+        } else {
+            switch (texture->desc.dimension) {
+            case RenderTextureDimension::TEXTURE_1D:
+                if (texture->desc.arraySize > 1) {
+                    rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE1DARRAY;
+                    rtvDesc.Texture1DArray.MipSlice = 0;
+                    rtvDesc.Texture1DArray.FirstArraySlice = 0;
+                    rtvDesc.Texture1DArray.ArraySize = texture->desc.arraySize;
+                } else {
+                    rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE1D;
+                    rtvDesc.Texture1D.MipSlice = 0;
+                }
+                break;
+            case RenderTextureDimension::TEXTURE_2D:
+                if (texture->desc.arraySize > 1) {
+                    if (isMSAA) {
+                        rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DMSARRAY;
+                        rtvDesc.Texture2DMSArray.FirstArraySlice = 0;
+                        rtvDesc.Texture2DMSArray.ArraySize = texture->desc.arraySize;
+                    }
+                    else {
+                        rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DARRAY;
+                        rtvDesc.Texture2DArray.MipSlice = 0;
+                        rtvDesc.Texture2DArray.FirstArraySlice = 0;
+                        rtvDesc.Texture2DArray.ArraySize = texture->desc.arraySize;
+                    }
+                } else {
+                    if (isMSAA) {
+                        rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DMS;
+                    }
+                    else {
+                        rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+                        rtvDesc.Texture2D.MipSlice = 0;
+                    }
+                }
+
+                break;
+            case RenderTextureDimension::TEXTURE_3D:
+                rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE3D;
+                rtvDesc.Texture3D.MipSlice = 0;
+                rtvDesc.Texture3D.FirstWSlice = 0;
+                rtvDesc.Texture3D.WSize = 1;
+                break;
+            default:
+                assert(false && "Unsupported texture dimension for render target.");
+                break;
+            }
+        }
+
+        const D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = device->colorTargetHeapAllocator->getCPUHandleAt(targetAllocatorOffset);
+        device->d3d->CreateRenderTargetView(texture->d3d, &rtvDesc, cpuHandle);
+
+        colorTargets.emplace_back(texture);
+        colorHandles.emplace_back(cpuHandle);
+        colorTargetAllocatorOffsets.emplace_back(targetAllocatorOffset);
+    }
+
+    void D3D12Framebuffer::createDepthStencilHeap(const D3D12Texture* texture, const D3D12TextureView* textureView, const bool readOnly) {
+        const uint32_t targetAllocatorOffset = device->depthTargetHeapAllocator->allocate(2);
+        if (targetAllocatorOffset == D3D12DescriptorHeapAllocator::INVALID_OFFSET) {
+            fprintf(stderr, "Allocator was unable to find free space for the set.");
+            return;
+        }
+
+        D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+        dsvDesc.Format = toDXGI(textureView ? textureView->desc.format : texture->desc.format);
+
+        const bool isMSAA = (texture->desc.multisampling.sampleCount > RenderSampleCount::COUNT_1);
+        if (textureView) {
+            switch (textureView->desc.dimension) {
+            case RenderTextureViewDimension::TEXTURE_1D:
+                if (texture->desc.arraySize > 1) {
+                    dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE1DARRAY;
+                    dsvDesc.Texture1D.MipSlice = textureView->desc.mipSlice;
+                    dsvDesc.Texture1DArray.FirstArraySlice = textureView->desc.arrayIndex;
+                    dsvDesc.Texture1DArray.ArraySize = textureView->desc.arraySize;
+                } else {
+                    dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE1D;
+                    dsvDesc.Texture1D.MipSlice = textureView->desc.mipSlice;
+                }
+                break;
+            case RenderTextureViewDimension::TEXTURE_2D:
+                if (texture->desc.arraySize > 1) {
+                    if (isMSAA) {
+                        dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DMSARRAY;
+                        dsvDesc.Texture2DMSArray.FirstArraySlice = textureView->desc.arrayIndex;
+                        dsvDesc.Texture2DMSArray.ArraySize = textureView->desc.arraySize;
+                    }
+                    else {
+                        dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DARRAY;
+                        dsvDesc.Texture2DArray.MipSlice = textureView->desc.mipSlice;
+                        dsvDesc.Texture2DArray.FirstArraySlice = textureView->desc.arrayIndex;
+                        dsvDesc.Texture2DArray.ArraySize = textureView->desc.arraySize;
+                    }
+                } else {
+                    if (isMSAA) {
+                        dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DMS;
+                    }
+                    else {
+                        dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+                        dsvDesc.Texture2D.MipSlice = textureView->desc.mipSlice;
+                    }
+                }
+
+                break;
+            default:
+                assert(false && "Unsupported texture dimension for render target.");
+                break;
+            }
+        } else {
+            switch (texture->desc.dimension) {
+            case RenderTextureDimension::TEXTURE_1D:
+                if (texture->desc.arraySize > 1) {
+                    dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE1DARRAY;
+                    dsvDesc.Texture1DArray.MipSlice = 0;
+                    dsvDesc.Texture1DArray.FirstArraySlice = 0;
+                    dsvDesc.Texture1DArray.ArraySize = texture->desc.arraySize;
+                } else {
+                    dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE1D;
+                    dsvDesc.Texture1D.MipSlice = 0;
+                }
+                break;
+            case RenderTextureDimension::TEXTURE_2D:
+                if (texture->desc.arraySize > 1) {
+                    if (isMSAA) {
+                        dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DMSARRAY;
+                        dsvDesc.Texture2DMSArray.FirstArraySlice = 0;
+                        dsvDesc.Texture2DMSArray.ArraySize = texture->desc.arraySize;
+                    }
+                    else {
+                        dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DARRAY;
+                        dsvDesc.Texture2DArray.MipSlice = 0;
+                        dsvDesc.Texture2DArray.FirstArraySlice = 0;
+                        dsvDesc.Texture2DArray.ArraySize = texture->desc.arraySize;
+                    }
+                } else {
+                    if (isMSAA) {
+                        dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DMS;
+                    }
+                    else {
+                        dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+                        dsvDesc.Texture2D.MipSlice = 0;
+                    }
+                }
+
+                break;
+            default:
+                assert(false && "Unsupported texture dimension for render target.");
+                break;
+            }
+        }
+
+        if (readOnly) {
+            dsvDesc.Flags = D3D12_DSV_FLAG_READ_ONLY_DEPTH;
+        }
+
+        const D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = device->depthTargetHeapAllocator->getCPUHandleAt(targetAllocatorOffset);
+        device->d3d->CreateDepthStencilView(texture->d3d, &dsvDesc, cpuHandle);
+
+        depthTarget = texture;
+        depthHandle = cpuHandle;
+        depthTargetAllocatorOffset = targetAllocatorOffset;
+    }
+
+    void D3D12Framebuffer::releaseTargetHeap() {
+        for (const uint32_t targetAllocatorOffset : colorTargetAllocatorOffsets) {
+            device->colorTargetHeapAllocator->free(targetAllocatorOffset, 1);
+        }
+        if (depthTargetAllocatorOffset) {
+            device->depthTargetHeapAllocator->free(depthTargetAllocatorOffset, 1);
+        }
     }
 
     // D3D12QueryPool
@@ -1485,14 +1758,13 @@ namespace plume {
 
     // D3D12CommandList
 
-    D3D12CommandList::D3D12CommandList(D3D12Device *device, RenderCommandListType type) {
-        assert(device != nullptr);
+    D3D12CommandList::D3D12CommandList(D3D12CommandQueue *queue) {
+        assert(queue != nullptr);
 
-        this->device = device;
-        this->type = type;
+        this->queue = queue;
 
         D3D12_COMMAND_LIST_TYPE commandListType;
-        switch (type) {
+        switch (queue->type) {
         case RenderCommandListType::DIRECT:
             commandListType = D3D12_COMMAND_LIST_TYPE_DIRECT;
             break;
@@ -1507,13 +1779,13 @@ namespace plume {
             return;
         }
 
-        HRESULT res = device->d3d->CreateCommandAllocator(commandListType, IID_PPV_ARGS(&commandAllocator));
+        HRESULT res = queue->device->d3d->CreateCommandAllocator(commandListType, IID_PPV_ARGS(&commandAllocator));
         if (FAILED(res)) {
             fprintf(stderr, "CreateCommandAllocator failed with error code 0x%lX.\n", res);
             return;
         }
 
-        res = device->d3d->CreateCommandList(0, commandListType, commandAllocator, nullptr, IID_PPV_ARGS(&d3d));
+        res = queue->device->d3d->CreateCommandList(0, commandListType, commandAllocator, nullptr, IID_PPV_ARGS(&d3d));
         if (FAILED(res)) {
             fprintf(stderr, "CreateCommandList failed with error code 0x%lX.\n", res);
             return;
@@ -1878,8 +2150,12 @@ namespace plume {
     }
 
     void D3D12CommandList::setDepthBias(float depthBias, float depthBiasClamp, float slopeScaledDepthBias) {
-        assert(device->capabilities.dynamicDepthBias && "Dynamic depth bias is unsupported on this device.");
+#   ifdef D3D12_AGILITY_SDK_ENABLED
+        assert(queue->device->capabilities.dynamicDepthBias && "Dynamic depth bias is unsupported on this device.");
         d3d->RSSetDepthBias(depthBias, depthBiasClamp, slopeScaledDepthBias);
+#   else
+        assert(false && "Dynamic depth bias is unsupported without the Agility SDK.");
+#   endif
     }
 
     void D3D12CommandList::clearColor(uint32_t attachmentIndex, RenderColor colorValue, const RenderRect *clearRects, uint32_t clearRectsCount) {
@@ -2065,7 +2341,7 @@ namespace plume {
 
     void D3D12CommandList::checkDescriptorHeaps() {
         if (!descriptorHeapsSet) {
-            ID3D12DescriptorHeap *descriptorHeaps[] = { device->viewHeapAllocator->heap, device->samplerHeapAllocator->heap };
+            ID3D12DescriptorHeap *descriptorHeaps[] = { queue->device->viewHeapAllocator->heap, queue->device->samplerHeapAllocator->heap };
             d3d->SetDescriptorHeaps(std::size(descriptorHeaps), descriptorHeaps);
             descriptorHeapsSet = true;
         }
@@ -2134,8 +2410,8 @@ namespace plume {
         checkDescriptorHeaps();
 
         D3D12DescriptorSet *interfaceDescriptorSet = static_cast<D3D12DescriptorSet *>(descriptorSet);
-        setRootDescriptorTable(device->viewHeapAllocator.get(), interfaceDescriptorSet->viewAllocation, activePipelineLayout->setViewRootIndices[setIndex], setCompute);
-        setRootDescriptorTable(device->samplerHeapAllocator.get(), interfaceDescriptorSet->samplerAllocation, activePipelineLayout->setSamplerRootIndices[setIndex], setCompute);
+        setRootDescriptorTable(queue->device->viewHeapAllocator.get(), interfaceDescriptorSet->viewAllocation, activePipelineLayout->setViewRootIndices[setIndex], setCompute);
+        setRootDescriptorTable(queue->device->samplerHeapAllocator.get(), interfaceDescriptorSet->samplerAllocation, activePipelineLayout->setSamplerRootIndices[setIndex], setCompute);
     }
 
     void D3D12CommandList::setRootDescriptorTable(D3D12DescriptorHeapAllocator *heapAllocator, D3D12DescriptorSet::HeapAllocation &heapAllocation, uint32_t rootIndex, bool setCompute) {
@@ -2280,11 +2556,18 @@ namespace plume {
         }
     }
 
+    std::unique_ptr<RenderCommandList> D3D12CommandQueue::createCommandList() {
+        return std::make_unique<D3D12CommandList>(this);
+    }
+
     std::unique_ptr<RenderSwapChain> D3D12CommandQueue::createSwapChain(RenderWindow renderWindow, uint32_t bufferCount, RenderFormat format, uint32_t maxFrameLatency) {
         return std::make_unique<D3D12SwapChain>(this, renderWindow, bufferCount, format, maxFrameLatency);
     }
 
     void D3D12CommandQueue::executeCommandLists(const RenderCommandList **commandLists, uint32_t commandListCount, RenderCommandSemaphore **waitSemaphores, uint32_t waitSemaphoreCount, RenderCommandSemaphore **signalSemaphores, uint32_t signalSemaphoreCount, RenderCommandFence *signalFence) {
+        assert(commandLists != nullptr);
+        assert(commandListCount > 0);
+
         for (uint32_t i = 0; i < waitSemaphoreCount; i++) {
             D3D12CommandSemaphore *interfaceSemaphore = static_cast<D3D12CommandSemaphore *>(waitSemaphores[i]);
             d3d->Wait(interfaceSemaphore->d3d, interfaceSemaphore->semaphoreValue);
@@ -2428,12 +2711,17 @@ namespace plume {
 
     D3D12TextureView::D3D12TextureView(D3D12Texture *texture, const RenderTextureViewDesc &desc) {
         assert(texture != nullptr);
+        assert(desc.mipSlice < texture->desc.mipLevels);
+        assert(desc.arrayIndex < texture->desc.arraySize);
 
         this->texture = texture;
+        this->desc = desc;
         this->format = toDXGI(desc.format);
         this->dimension = desc.dimension;
-        this->mipLevels = desc.mipLevels;
+        this->mipLevels = std::min(desc.mipLevels, texture->desc.mipLevels - desc.mipSlice);
         this->mipSlice = desc.mipSlice;
+        this->arraySize = std::min(desc.arraySize, texture->desc.arraySize - desc.arrayIndex);
+        this->arrayIndex = desc.arrayIndex;
         this->shader4ComponentMapping = toD3D12(desc.componentMapping);
         
         // D3D12 and Vulkan disagree on whether D32 is usable as a texture view format. We just make D3D12 use R32 instead.
@@ -2484,18 +2772,9 @@ namespace plume {
             fprintf(stderr, "CreateResource failed with error code 0x%lX.\n", res);
             return;
         }
-
-        if (renderTarget) {
-            createRenderTargetHeap();
-        }
-        else if (depthTarget) {
-            createDepthStencilHeap();
-        }
     }
 
     D3D12Texture::~D3D12Texture() {
-        releaseTargetHeap();
-
         if (allocation != nullptr) {
             d3d->Release();
             allocation->Release();
@@ -2508,106 +2787,6 @@ namespace plume {
 
     void D3D12Texture::setName(const std::string &name) {
         setObjectName(d3d, name);
-    }
-
-    void D3D12Texture::createRenderTargetHeap() {
-        targetAllocatorOffset = device->colorTargetHeapAllocator->allocate(1);
-        if (targetAllocatorOffset == D3D12DescriptorHeapAllocator::INVALID_OFFSET) {
-            fprintf(stderr, "Allocator was unable to find free space for the set.");
-            return;
-        }
-
-        targetEntryCount = 1;
-        targetHeapDepth = false;
-
-        D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
-        rtvDesc.Format = toDXGI(desc.format);
-
-        const bool isMSAA = (desc.multisampling.sampleCount > RenderSampleCount::COUNT_1);
-        switch (desc.dimension) {
-        case RenderTextureDimension::TEXTURE_1D:
-            rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE1D;
-            rtvDesc.Texture1D.MipSlice = 0;
-            break;
-        case RenderTextureDimension::TEXTURE_2D:
-            if (isMSAA) {
-                rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DMS;
-            }
-            else {
-                rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
-                rtvDesc.Texture2D.MipSlice = 0;
-                rtvDesc.Texture2D.PlaneSlice = 0;
-            }
-
-            break;
-        case RenderTextureDimension::TEXTURE_3D:
-            rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE3D;
-            rtvDesc.Texture3D.MipSlice = 0;
-            rtvDesc.Texture3D.FirstWSlice = 0;
-            rtvDesc.Texture3D.WSize = 1;
-            break;
-        default:
-            assert(false && "Unsupported texture dimension for render target.");
-            break;
-        }
-
-        const D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = device->colorTargetHeapAllocator->getCPUHandleAt(targetAllocatorOffset);
-        device->d3d->CreateRenderTargetView(d3d, &rtvDesc, cpuHandle);
-    }
-
-    void D3D12Texture::createDepthStencilHeap() {
-        targetAllocatorOffset = device->depthTargetHeapAllocator->allocate(2);
-        if (targetAllocatorOffset == D3D12DescriptorHeapAllocator::INVALID_OFFSET) {
-            fprintf(stderr, "Allocator was unable to find free space for the set.");
-            return;
-        }
-
-        targetEntryCount = 2;
-        targetHeapDepth = true;
-
-        D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-        dsvDesc.Format = toDXGI(desc.format);
-
-        const bool isMSAA = (desc.multisampling.sampleCount > RenderSampleCount::COUNT_1);
-        switch (desc.dimension) {
-        case RenderTextureDimension::TEXTURE_1D:
-            dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE1D;
-            dsvDesc.Texture1D.MipSlice = 0;
-            break;
-        case RenderTextureDimension::TEXTURE_2D:
-            if (isMSAA) {
-                dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DMS;
-            }
-            else {
-                dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-                dsvDesc.Texture2D.MipSlice = 0;
-            }
-
-            break;
-        default:
-            assert(false && "Unsupported texture dimension for depth target.");
-            break;
-        }
-
-        const D3D12_CPU_DESCRIPTOR_HANDLE writeHandle = device->depthTargetHeapAllocator->getCPUHandleAt(targetAllocatorOffset);
-        const D3D12_CPU_DESCRIPTOR_HANDLE readOnlyHandle = device->depthTargetHeapAllocator->getCPUHandleAt(targetAllocatorOffset + 1);
-        device->d3d->CreateDepthStencilView(d3d, &dsvDesc, writeHandle);
-
-        dsvDesc.Flags = D3D12_DSV_FLAG_READ_ONLY_DEPTH;
-        device->d3d->CreateDepthStencilView(d3d, &dsvDesc, readOnlyHandle);
-    }
-
-    void D3D12Texture::releaseTargetHeap() {
-        if (targetEntryCount > 0) {
-            if (targetHeapDepth) {
-                device->depthTargetHeapAllocator->free(targetAllocatorOffset, targetEntryCount);
-            }
-            else {
-                device->colorTargetHeapAllocator->free(targetAllocatorOffset, targetEntryCount);
-            }
-
-            targetEntryCount = 0;
-        }
     }
 
     // D3D12AccelerationStructure
@@ -2672,11 +2851,12 @@ namespace plume {
         assert(format != RenderShaderFormat::UNKNOWN);
         assert(format == RenderShaderFormat::DXIL);
 
-        this->data = data;
-        this->size = size;
         this->device = device;
         this->format = format;
         this->entryPointName = (entryPointName != nullptr) ? std::string(entryPointName) : std::string();
+
+        const uint8_t *dataBytes = reinterpret_cast<const uint8_t *>(data);
+        this->d3d = std::vector(dataBytes, dataBytes + size);
     }
 
     D3D12Shader::~D3D12Shader() { }
@@ -2743,13 +2923,15 @@ namespace plume {
 
     D3D12ComputePipeline::D3D12ComputePipeline(D3D12Device *device, const RenderComputePipelineDesc &desc) : D3D12Pipeline(device, Type::Compute) {
         assert(desc.pipelineLayout != nullptr);
+        assert(desc.computeShader != nullptr);
+        assert((desc.threadGroupSizeX > 0) && (desc.threadGroupSizeY > 0) && (desc.threadGroupSizeZ > 0));
 
         const D3D12PipelineLayout *rootSignature = static_cast<const D3D12PipelineLayout *>(desc.pipelineLayout);
         const D3D12Shader *computeShader = static_cast<const D3D12Shader *>(desc.computeShader);
         D3D12_COMPUTE_PIPELINE_STATE_DESC psoDesc = {};
         psoDesc.pRootSignature = rootSignature->rootSignature;
-        psoDesc.CS.pShaderBytecode = computeShader->data;
-        psoDesc.CS.BytecodeLength = computeShader->size;
+        psoDesc.CS.pShaderBytecode = computeShader->d3d.data();
+        psoDesc.CS.BytecodeLength = computeShader->d3d.size();
         device->d3d->CreateComputePipelineState(&psoDesc, IID_PPV_ARGS(&d3d));
     }
 
@@ -2781,12 +2963,12 @@ namespace plume {
         const D3D12Shader *pixelShader = static_cast<const D3D12Shader *>(desc.pixelShader);
         D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
         psoDesc.pRootSignature = pipelineLayout->rootSignature;
-        psoDesc.VS.pShaderBytecode = (vertexShader != nullptr) ? vertexShader->data : nullptr;
-        psoDesc.VS.BytecodeLength = (vertexShader != nullptr) ? vertexShader->size : 0;
-        psoDesc.GS.pShaderBytecode = (geometryShader != nullptr) ? geometryShader->data : nullptr;
-        psoDesc.GS.BytecodeLength = (geometryShader != nullptr) ? geometryShader->size : 0;
-        psoDesc.PS.pShaderBytecode = (pixelShader != nullptr) ? pixelShader->data : nullptr;
-        psoDesc.PS.BytecodeLength = (pixelShader != nullptr) ? pixelShader->size : 0;
+        psoDesc.VS.pShaderBytecode = (vertexShader != nullptr) ? vertexShader->d3d.data() : nullptr;
+        psoDesc.VS.BytecodeLength = (vertexShader != nullptr) ? vertexShader->d3d.size() : 0;
+        psoDesc.GS.pShaderBytecode = (geometryShader != nullptr) ? geometryShader->d3d.data() : nullptr;
+        psoDesc.GS.BytecodeLength = (geometryShader != nullptr) ? geometryShader->d3d.size() : 0;
+        psoDesc.PS.pShaderBytecode = (pixelShader != nullptr) ? pixelShader->d3d.data() : nullptr;
+        psoDesc.PS.BytecodeLength = (pixelShader != nullptr) ? pixelShader->d3d.size() : 0;
         psoDesc.SampleMask = UINT_MAX;
         psoDesc.SampleDesc.Count = desc.multisampling.sampleCount;
         if (desc.primitiveTopology == RenderPrimitiveTopology::LINE_STRIP || desc.primitiveTopology == RenderPrimitiveTopology::TRIANGLE_STRIP) {
@@ -2796,10 +2978,15 @@ namespace plume {
         psoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
         psoDesc.RasterizerState.DepthClipEnable = desc.depthClipEnabled;
         psoDesc.RasterizerState.DepthBias = desc.depthBias;
+        psoDesc.RasterizerState.DepthBiasClamp = desc.depthBiasClamp;
         psoDesc.RasterizerState.SlopeScaledDepthBias = desc.slopeScaledDepthBias;
 
         if (desc.dynamicDepthBiasEnabled) {
+#       ifdef D3D12_AGILITY_SDK_ENABLED
             psoDesc.Flags |= D3D12_PIPELINE_STATE_FLAG_DYNAMIC_DEPTH_BIAS;
+#       else
+            assert(false && "Dynamic depth bias is unsupported without the Agility SDK.");
+#       endif
         }
 
         switch (desc.cullMode) {
@@ -2940,8 +3127,8 @@ namespace plume {
             assert(libraryShader != nullptr);
 
             D3D12_DXIL_LIBRARY_DESC &libraryDesc = libraryDescs[i];
-            libraryDesc.DXILLibrary.pShaderBytecode = libraryShader->data;
-            libraryDesc.DXILLibrary.BytecodeLength = libraryShader->size;
+            libraryDesc.DXILLibrary.pShaderBytecode = libraryShader->d3d.data();
+            libraryDesc.DXILLibrary.BytecodeLength = libraryShader->d3d.size();
             libraryDesc.pExports = &exportDescs[exportsIndexStart];
             libraryDesc.NumExports = exportsIndex - exportsIndexStart;
 
@@ -3383,8 +3570,11 @@ namespace plume {
                 rtStateUpdateSupportOption = d3d12Options5.RaytracingTier >= D3D12_RAYTRACING_TIER_1_1;
             }
 
-            // Check if triangle fan is supported.
             bool triangleFanSupportOption = false;
+            bool dynamicDepthBiasOption = false;
+
+#       ifdef D3D12_AGILITY_SDK_ENABLED
+            // Check if triangle fan is supported.
             D3D12_FEATURE_DATA_D3D12_OPTIONS15 d3d12Options15 = {};
             res = deviceOption->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS15, &d3d12Options15, sizeof(d3d12Options15));
             if (SUCCEEDED(res)) {
@@ -3392,12 +3582,12 @@ namespace plume {
             }
 
             // Check if dynamic depth bias is supported.
-            bool dynamicDepthBiasOption = false;
             D3D12_FEATURE_DATA_D3D12_OPTIONS16 d3d12Options16 = {};
             res = deviceOption->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS16, &d3d12Options16, sizeof(d3d12Options16));
             if (SUCCEEDED(res)) {
                 dynamicDepthBiasOption = d3d12Options16.DynamicDepthBiasSupported;
             }
+#       endif
 
             // Check if the architecture has UMA.
             bool uma = false;
@@ -3425,10 +3615,11 @@ namespace plume {
                 adapter = adapterOption;
                 d3d = deviceOption;
                 shaderModel = dataShaderModel.HighestShaderModel;
-                capabilities.geometryShader = true;
                 capabilities.raytracing = rtSupportOption;
                 capabilities.raytracingStateUpdate = rtStateUpdateSupportOption;
                 capabilities.sampleLocations = samplePositionsOption;
+                // Resolve modes require sample positions support.
+                capabilities.resolveModes = samplePositionsOption;
                 capabilities.triangleFan = triangleFanSupportOption;
                 capabilities.dynamicDepthBias = dynamicDepthBiasOption;
                 capabilities.uma = uma;
@@ -3520,7 +3711,10 @@ namespace plume {
         // Fill capabilities.
         capabilities.descriptorIndexing = true;
         capabilities.scalarBlockLayout = true;
+        capabilities.bufferDeviceAddress = true;
         capabilities.presentWait = true;
+        capabilities.queryPools = true;
+        capabilities.maxTextureSize = 16384;
         capabilities.preferHDR = description.dedicatedVideoMemory > (512 * 1024 * 1024);
 
         // Create descriptor heaps allocator.
@@ -3543,10 +3737,6 @@ namespace plume {
         rtDummyGlobalPipelineLayout.reset();
         rtDummyLocalPipelineLayout.reset();
         release();
-    }
-
-    std::unique_ptr<RenderCommandList> D3D12Device::createCommandList(RenderCommandListType type) {
-        return std::make_unique<D3D12CommandList>(this, type);
     }
 
     std::unique_ptr<RenderDescriptorSet> D3D12Device::createDescriptorSet(const RenderDescriptorSetDesc &desc) {
@@ -3799,10 +3989,6 @@ namespace plume {
         return countsSupported;
     }
 
-    void D3D12Device::waitIdle() const {
-        assert(false && "Use fences to replicate wait idle behavior on D3D12.");
-    }
-
     void D3D12Device::release() {
         if (d3d != nullptr) {
             d3d->Release();
@@ -3817,6 +4003,16 @@ namespace plume {
 
     bool D3D12Device::isValid() const {
         return d3d != nullptr;
+    }
+
+    bool D3D12Device::beginCapture() {
+        assert(false && "Captures are not currently implemented in D3D12.");
+        return false;
+    }
+
+    bool D3D12Device::endCapture() {
+        assert(false && "Captures are not currently implemented in D3D12.");
+        return false;
     }
 
     // D3D12Interface

@@ -14,14 +14,13 @@
 #include <cmath>
 #include <climits>
 #include <unordered_map>
-#include <iostream>
 
 #if DLSS_ENABLED
 #   include "render/plume_dlss.h"
 #endif
 
 #ifndef NDEBUG
-// #   define VULKAN_VALIDATION_LAYER_ENABLED
+#   define VULKAN_VALIDATION_LAYER_ENABLED
 //#   define VULKAN_OBJECT_NAMES_ENABLED
 #endif
 
@@ -46,9 +45,6 @@ namespace plume {
 
     static const std::unordered_set<std::string> RequiredInstanceExtensions = {
         VK_KHR_SURFACE_EXTENSION_NAME,
-#   ifdef VULKAN_OBJECT_NAMES_ENABLED
-        VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
-#   endif
 #   if defined(_WIN64)
         VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
 #   elif defined(__ANDROID__)
@@ -66,13 +62,16 @@ namespace plume {
         VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME,
 #   endif
     };
-
+    
     static const std::unordered_set<std::string> RequiredDeviceExtensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME,
         VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME,
         VK_EXT_ROBUSTNESS_2_EXTENSION_NAME,
         VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME,
         VK_KHR_SAMPLER_MIRROR_CLAMP_TO_EDGE_EXTENSION_NAME,
+#   ifdef VULKAN_OBJECT_NAMES_ENABLED
+        VK_EXT_DEBUG_UTILS_EXTENSION_NAME
+#   endif
     };
     
     static const std::unordered_set<std::string> OptionalDeviceExtensions = {
@@ -582,13 +581,14 @@ namespace plume {
             flags |= VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT;
             flags |= VK_PIPELINE_STAGE_VERTEX_INPUT_BIT;
             flags |= VK_PIPELINE_STAGE_VERTEX_SHADER_BIT;
-            if (geometrySupported) {
-                flags |= VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT;
-            }
             flags |= VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
             flags |= VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
             flags |= VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
             flags |= VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+
+            if (geometrySupported) {
+                flags |= VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT;
+            }
         }
 
         if (stages & RenderBarrierStage::COMPUTE) {
@@ -730,16 +730,16 @@ namespace plume {
         }
     }
 
-    static void setObjectName(VkDevice device, VkObjectType objectType, uint64_t object, const std::string &name) {
+    static void setObjectName(VkDevice device, VkDebugReportObjectTypeEXT objectType, uint64_t object, const std::string &name) {
 #   ifdef VULKAN_OBJECT_NAMES_ENABLED
-        VkDebugUtilsObjectNameInfoEXT nameInfo = {};
-        nameInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT;
+        VkDebugMarkerObjectNameInfoEXT nameInfo = {};
+        nameInfo.sType = VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT;
         nameInfo.objectType = objectType;
-        nameInfo.objectHandle = object;
+        nameInfo.object = object;
         nameInfo.pObjectName = name.c_str();
-        VkResult res = vkSetDebugUtilsObjectNameEXT(device, &nameInfo);
+        VkResult res = vkDebugMarkerSetObjectNameEXT(device, &nameInfo);
         if (res != VK_SUCCESS) {
-            fprintf(stderr, "vkSetDebugUtilsObjectNameEXT failed with error code 0x%X.\n", res);
+            fprintf(stderr, "vkDebugMarkerSetObjectNameEXT failed with error code 0x%X.\n", res);
             return;
         }
 #   endif
@@ -874,7 +874,7 @@ namespace plume {
     }
 
     void VulkanBuffer::setName(const std::string &name) {
-        setObjectName(device->vk, VK_OBJECT_TYPE_IMAGE, uint64_t(vk), name);
+        setObjectName(device->vk, VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, uint64_t(vk), name);
     }
 
     uint64_t VulkanBuffer::getDeviceAddress() const {
@@ -1012,28 +1012,33 @@ namespace plume {
     }
 
     void VulkanTexture::setName(const std::string &name) {
-        setObjectName(device->vk, VK_OBJECT_TYPE_IMAGE, uint64_t(vk), name);
+        setObjectName(device->vk, VK_DEBUG_REPORT_OBJECT_TYPE_IMAGE_EXT, uint64_t(vk), name);
     }
-    
+
     void VulkanTexture::fillSubresourceRange() {
         imageSubresourceRange.aspectMask = (desc.flags & RenderTextureFlag::DEPTH_TARGET) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
         imageSubresourceRange.baseMipLevel = 0;
         imageSubresourceRange.levelCount = desc.mipLevels;
         imageSubresourceRange.baseArrayLayer = 0;
-        imageSubresourceRange.layerCount = 1;
+        imageSubresourceRange.layerCount = desc.arraySize;
     }
 
     // VulkanTextureView
 
     VulkanTextureView::VulkanTextureView(VulkanTexture *texture, const RenderTextureViewDesc &desc) {
         assert(texture != nullptr);
+        assert(desc.mipSlice < texture->desc.mipLevels);
+        assert(desc.arrayIndex < texture->desc.arraySize);
 
         this->texture = texture;
+        this->desc = desc;
+
+        const uint32_t layerCount = std::min(desc.arraySize, texture->desc.arraySize - desc.arrayIndex);
 
         VkImageViewCreateInfo viewInfo = {};
         viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
         viewInfo.image = texture->vk;
-        viewInfo.viewType = toImageViewType(desc.dimension, texture->desc.arraySize);
+        viewInfo.viewType = toImageViewType(desc.dimension, layerCount);
         viewInfo.format = toVk(desc.format);
         viewInfo.components.r = toVk(desc.componentMapping.r);
         viewInfo.components.g = toVk(desc.componentMapping.g);
@@ -1041,9 +1046,9 @@ namespace plume {
         viewInfo.components.a = toVk(desc.componentMapping.a);
         viewInfo.subresourceRange.aspectMask = (texture->desc.flags & RenderTextureFlag::DEPTH_TARGET) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
         viewInfo.subresourceRange.baseMipLevel = desc.mipSlice;
-        viewInfo.subresourceRange.levelCount = desc.mipLevels;
-        viewInfo.subresourceRange.baseArrayLayer = 0;
-        viewInfo.subresourceRange.layerCount = texture->desc.arraySize;
+        viewInfo.subresourceRange.levelCount = std::min(desc.mipLevels, texture->desc.mipLevels - desc.mipSlice);
+        viewInfo.subresourceRange.baseArrayLayer = desc.arrayIndex;
+        viewInfo.subresourceRange.layerCount = layerCount;
 
         VkResult res = vkCreateImageView(texture->device->vk, &viewInfo, nullptr, &vk);
         if (res != VK_SUCCESS) {
@@ -1256,10 +1261,6 @@ namespace plume {
         }
     }
 
-    void VulkanShader::setName(const std::string &name) {
-        setObjectName(device->vk, VK_OBJECT_TYPE_SHADER_MODULE, uint64_t(vk), name);
-    }
-
     // VulkanSampler
 
     VulkanSampler::VulkanSampler(VulkanDevice *device, const RenderSamplerDesc &desc) {
@@ -1315,6 +1316,7 @@ namespace plume {
     VulkanComputePipeline::VulkanComputePipeline(VulkanDevice *device, const RenderComputePipelineDesc &desc) : VulkanPipeline(device, Type::Compute) {
         assert(desc.computeShader != nullptr);
         assert(desc.pipelineLayout != nullptr);
+        assert((desc.threadGroupSizeX > 0) && (desc.threadGroupSizeY > 0) && (desc.threadGroupSizeZ > 0));
 
         std::vector<VkSpecializationMapEntry> specEntries(desc.specConstantsCount);
         std::vector<uint32_t> specData(desc.specConstantsCount);
@@ -1349,7 +1351,7 @@ namespace plume {
     }
 
     void VulkanComputePipeline::setName(const std::string& name) const {
-        setObjectName(device->vk, VK_OBJECT_TYPE_PIPELINE, uint64_t(vk), name);
+        setObjectName(device->vk, VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT, uint64_t(vk), name);
     }
 
     RenderPipelineProgram VulkanComputePipeline::getProgram(const std::string &name) const {
@@ -1464,9 +1466,10 @@ namespace plume {
         if (desc.dynamicDepthBiasEnabled) {
             rasterization.depthBiasEnable = true;
         }
-        else if (desc.depthBias != 0 || desc.slopeScaledDepthBias != 0.0f) {
+        else if ((desc.depthBias != 0) || (desc.depthBiasClamp != 0.0f) || (desc.slopeScaledDepthBias != 0.0f)) {
             rasterization.depthBiasEnable = true;
             rasterization.depthBiasConstantFactor = float(desc.depthBias);
+            rasterization.depthBiasClamp = desc.depthBiasClamp;
             rasterization.depthBiasSlopeFactor = desc.slopeScaledDepthBias;
         }
 
@@ -1596,7 +1599,7 @@ namespace plume {
     }
 
     void VulkanGraphicsPipeline::setName(const std::string& name) const {
-        setObjectName(device->vk, VK_OBJECT_TYPE_PIPELINE, uint64_t(vk), name);
+        setObjectName(device->vk, VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT, uint64_t(vk), name);
     }
 
     RenderPipelineProgram VulkanGraphicsPipeline::getProgram(const std::string &name) const {
@@ -1800,7 +1803,7 @@ namespace plume {
     }
 
     void VulkanRaytracingPipeline::setName(const std::string& name) const {
-        setObjectName(device->vk, VK_OBJECT_TYPE_PIPELINE, uint64_t(vk), name);
+        setObjectName(device->vk, VK_DEBUG_REPORT_OBJECT_TYPE_PIPELINE_EXT, uint64_t(vk), name);
     }
 
     RenderPipelineProgram VulkanRaytracingPipeline::getProgram(const std::string &name) const {
@@ -2062,6 +2065,9 @@ namespace plume {
 #   elif defined(__APPLE__)
         assert(renderWindow.window != 0);
         assert(renderWindow.view != 0);
+        // Creates a wrapper around the window for storing and fetching sizes.
+        this->windowWrapper = std::make_unique<CocoaWindow>(renderWindow.window);
+        
         VkMetalSurfaceCreateInfoEXT surfaceCreateInfo = {};
         surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
         surfaceCreateInfo.pLayer = renderWindow.view;
@@ -2211,7 +2217,6 @@ namespace plume {
             res = vkQueuePresentKHR(commandQueue->queue->vk, &presentInfo);
         }
 
-        // Handle the error silently.
 #if defined(__APPLE__)
         // Under MoltenVK, VK_SUBOPTIMAL_KHR does not result in a valid state for rendering. We intentionally
         // only check for this error during present to avoid having to synchronize manually against the semaphore
@@ -2389,7 +2394,10 @@ namespace plume {
         dstWidth = attributes.width;
         dstHeight = attributes.height;
 #   elif defined(__APPLE__)
-        SDL_GetWindowSizeInPixels(renderWindow.window, (int *)(&dstWidth), (int *)(&dstHeight));
+        CocoaWindowAttributes attributes;
+        windowWrapper->getWindowAttributes(&attributes);
+        dstWidth = attributes.width;
+        dstHeight = attributes.height;
 #   endif
     }
 
@@ -2435,10 +2443,22 @@ namespace plume {
         std::vector<VkImageView> imageViews;
         VkAttachmentReference depthReference = {};
         for (uint32_t i = 0; i < desc.colorAttachmentsCount; i++) {
-            const VulkanTexture *colorAttachment = static_cast<const VulkanTexture *>(desc.colorAttachments[i]);
+            const VulkanTexture *colorAttachment;
+            VkImageView colorAttachmentImageView;
+            RenderFormat colorAttachmentFormat;
+            if (desc.colorAttachmentViews && desc.colorAttachmentViews[i]) {
+                const VulkanTextureView* colorAttachmentView = static_cast<const VulkanTextureView *>(desc.colorAttachmentViews[i]);
+                colorAttachment = colorAttachmentView->texture;
+                colorAttachmentImageView = colorAttachmentView->vk;
+                colorAttachmentFormat = colorAttachmentView->desc.format;
+            } else {
+                colorAttachment = static_cast<const VulkanTexture *>(desc.colorAttachments[i]);
+                colorAttachmentImageView = colorAttachment->imageView;
+                colorAttachmentFormat = colorAttachment->desc.format;
+            }
             assert((colorAttachment->desc.flags & RenderTextureFlag::RENDER_TARGET) && "Color attachment must be a render target.");
             colorAttachments.emplace_back(colorAttachment);
-            imageViews.emplace_back(colorAttachment->imageView);
+            imageViews.emplace_back(colorAttachmentImageView);
 
             if (i == 0) {
                 width = uint32_t(colorAttachment->desc.width);
@@ -2451,7 +2471,7 @@ namespace plume {
             colorReferences.emplace_back(reference);
 
             VkAttachmentDescription attachment = {};
-            attachment.format = toVk(colorAttachment->desc.format);
+            attachment.format = toVk(colorAttachmentFormat);
             attachment.samples = VkSampleCountFlagBits(colorAttachment->desc.multisampling.sampleCount);
             attachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
             attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -2462,10 +2482,21 @@ namespace plume {
             attachments.emplace_back(attachment);
         }
 
-        if (desc.depthAttachment != nullptr) {
-            depthAttachment = static_cast<const VulkanTexture *>(desc.depthAttachment);
+        if (desc.depthAttachment != nullptr || desc.depthAttachmentView != nullptr) {
+            VkImageView depthAttachmentImageView;
+            RenderFormat depthAttachmentFormat;
+            if (desc.depthAttachmentView != nullptr) {
+                const VulkanTextureView* depthAttachmentView = static_cast<const VulkanTextureView *>(desc.depthAttachmentView);
+                depthAttachment = depthAttachmentView->texture;
+                depthAttachmentImageView = depthAttachmentView->vk;
+                depthAttachmentFormat = depthAttachmentView->desc.format;
+            } else {
+                depthAttachment = static_cast<const VulkanTexture *>(desc.depthAttachment);
+                depthAttachmentImageView = depthAttachment->imageView;
+                depthAttachmentFormat = depthAttachment->desc.format;
+            }
             assert((depthAttachment->desc.flags & RenderTextureFlag::DEPTH_TARGET) && "Depth attachment must be a depth target.");
-            imageViews.emplace_back(depthAttachment->imageView);
+            imageViews.emplace_back(depthAttachmentImageView);
 
             if (desc.colorAttachmentsCount == 0) {
                 width = uint32_t(depthAttachment->desc.width);
@@ -2479,7 +2510,7 @@ namespace plume {
             // We prefer to just ignore this potential hazard on older Vulkan versions as it just seems to be an edge case for some hardware.
             const bool preferNoneForReadOnly = desc.depthAttachmentReadOnly && device->loadStoreOpNoneSupported;
             VkAttachmentDescription attachment = {};
-            attachment.format = toVk(depthAttachment->desc.format);
+            attachment.format = toVk(depthAttachmentFormat);
             attachment.samples = VkSampleCountFlagBits(depthAttachment->desc.multisampling.sampleCount);
             attachment.loadOp = preferNoneForReadOnly ? VK_ATTACHMENT_LOAD_OP_NONE_EXT : VK_ATTACHMENT_LOAD_OP_LOAD;
             attachment.storeOp = preferNoneForReadOnly ? VK_ATTACHMENT_STORE_OP_NONE_EXT : VK_ATTACHMENT_STORE_OP_STORE;
@@ -2634,19 +2665,17 @@ namespace plume {
 
     // VulkanCommandList
 
-    VulkanCommandList::VulkanCommandList(VulkanDevice *device, RenderCommandListType type) {
-        assert(device != nullptr);
-        assert(type != RenderCommandListType::UNKNOWN);
+    VulkanCommandList::VulkanCommandList(VulkanCommandQueue *queue) {
+        assert(queue != nullptr);
 
-        this->device = device;
-        this->type = type;
+        this->queue = queue;
 
         VkCommandPoolCreateInfo poolInfo = {};
         poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
         poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-        poolInfo.queueFamilyIndex = device->queueFamilyIndices[toFamilyIndex(type)];
+        poolInfo.queueFamilyIndex = queue->device->queueFamilyIndices[toFamilyIndex(queue->type)];
 
-        VkResult res = vkCreateCommandPool(device->vk, &poolInfo, nullptr, &commandPool);
+        VkResult res = vkCreateCommandPool(queue->device->vk, &poolInfo, nullptr, &commandPool);
         if (res != VK_SUCCESS) {
             fprintf(stderr, "vkCreateCommandPool failed with error code 0x%X.\n", res);
             return;
@@ -2658,7 +2687,7 @@ namespace plume {
         allocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         allocateInfo.commandBufferCount = 1;
 
-        res = vkAllocateCommandBuffers(device->vk, &allocateInfo, &vk);
+        res = vkAllocateCommandBuffers(queue->device->vk, &allocateInfo, &vk);
         if (res != VK_SUCCESS) {
             fprintf(stderr, "vkAllocateCommandBuffers failed with error code 0x%X.\n", res);
             return;
@@ -2667,11 +2696,11 @@ namespace plume {
 
     VulkanCommandList::~VulkanCommandList() {
         if (vk != VK_NULL_HANDLE) {
-            vkFreeCommandBuffers(device->vk, commandPool, 1, &vk);
+            vkFreeCommandBuffers(queue->device->vk, commandPool, 1, &vk);
         }
 
         if (commandPool != VK_NULL_HANDLE) {
-            vkDestroyCommandPool(device->vk, commandPool, nullptr);
+            vkDestroyCommandPool(queue->device->vk, commandPool, nullptr);
         }
     }
 
@@ -2713,8 +2742,8 @@ namespace plume {
 
         endActiveRenderPass();
 
-        const bool geometryEnabled = device->capabilities.geometryShader;
-        const bool rtEnabled = device->capabilities.raytracing;
+        const bool geometryEnabled = queue->device->capabilities.geometryShader;
+        const bool rtEnabled = queue->device->capabilities.raytracing;
         VkPipelineStageFlags srcStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
         VkPipelineStageFlags dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT | toStageFlags(stages, geometryEnabled, rtEnabled);
         thread_local std::vector<VkBufferMemoryBarrier> bufferMemoryBarriers;
@@ -2780,7 +2809,7 @@ namespace plume {
         tableAddressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
         tableAddressInfo.buffer = interfaceBuffer->vk;
 
-        const VkDeviceAddress tableAddress = vkGetBufferDeviceAddress(device->vk, &tableAddressInfo) + shaderBindingTable.offset;
+        const VkDeviceAddress tableAddress = vkGetBufferDeviceAddress(queue->device->vk, &tableAddressInfo) + shaderBindingTable.offset;
         const RenderShaderBindingGroupInfo &rayGen = shaderBindingGroupsInfo.rayGen;
         const RenderShaderBindingGroupInfo &miss = shaderBindingGroupsInfo.miss;
         const RenderShaderBindingGroupInfo &hitGroup = shaderBindingGroupsInfo.hitGroup;
@@ -2921,9 +2950,10 @@ namespace plume {
             offsetVector.clear();
             for (uint32_t i = 0; i < viewCount; i++) {
                 const VulkanBuffer *interfaceBuffer = static_cast<const VulkanBuffer *>(views[i].buffer.ref);
-                if (interfaceBuffer == nullptr && !device->nullDescriptorSupported) {
-                    interfaceBuffer = static_cast<const VulkanBuffer *>(device->nullBuffer.get());
+                if ((interfaceBuffer == nullptr) && !queue->device->nullDescriptorSupported) {
+                    interfaceBuffer = static_cast<const VulkanBuffer *>(queue->device->nullBuffer.get());
                 }
+
                 bufferVector.emplace_back((interfaceBuffer != nullptr) ? interfaceBuffer->vk : VK_NULL_HANDLE);
                 offsetVector.emplace_back(views[i].buffer.offset);
             }
@@ -3090,9 +3120,9 @@ namespace plume {
             imageCopy.bufferRowLength = ((srcLocation.placedFootprint.rowWidth + blockWidth - 1) / blockWidth) * blockWidth;
             imageCopy.bufferImageHeight = ((srcLocation.placedFootprint.height + blockWidth - 1) / blockWidth) * blockWidth;
             imageCopy.imageSubresource.aspectMask = (dstTexture->desc.flags & RenderTextureFlag::DEPTH_TARGET) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
-            imageCopy.imageSubresource.baseArrayLayer = dstLocation.subresource.index / dstTexture->desc.mipLevels;
+            imageCopy.imageSubresource.baseArrayLayer = dstLocation.subresource.arrayIndex;
             imageCopy.imageSubresource.layerCount = 1;
-            imageCopy.imageSubresource.mipLevel = dstLocation.subresource.index % dstTexture->desc.mipLevels;
+            imageCopy.imageSubresource.mipLevel = dstLocation.subresource.mipLevel;
             imageCopy.imageOffset.x = dstX;
             imageCopy.imageOffset.y = dstY;
             imageCopy.imageOffset.z = dstZ;
@@ -3104,13 +3134,13 @@ namespace plume {
         else {
             VkImageCopy imageCopy = {};
             imageCopy.srcSubresource.aspectMask = (srcTexture->desc.flags & RenderTextureFlag::DEPTH_TARGET) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
-            imageCopy.srcSubresource.baseArrayLayer = 0;
+            imageCopy.srcSubresource.baseArrayLayer = srcLocation.subresource.arrayIndex;
             imageCopy.srcSubresource.layerCount = 1;
-            imageCopy.srcSubresource.mipLevel = srcLocation.subresource.index;
+            imageCopy.srcSubresource.mipLevel = srcLocation.subresource.mipLevel;
             imageCopy.dstSubresource.aspectMask = (dstTexture->desc.flags & RenderTextureFlag::DEPTH_TARGET) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
-            imageCopy.dstSubresource.baseArrayLayer = 0;
+            imageCopy.dstSubresource.baseArrayLayer = dstLocation.subresource.arrayIndex;
             imageCopy.dstSubresource.layerCount = 1;
-            imageCopy.dstSubresource.mipLevel = dstLocation.subresource.index;
+            imageCopy.dstSubresource.mipLevel = dstLocation.subresource.mipLevel;
             imageCopy.dstOffset.x = dstX;
             imageCopy.dstOffset.y = dstY;
             imageCopy.dstOffset.z = dstZ;
@@ -3257,7 +3287,7 @@ namespace plume {
         buildGeometryInfo.flags = toRTASBuildFlags(buildInfo.preferFastBuild, buildInfo.preferFastTrace);
         buildGeometryInfo.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
         buildGeometryInfo.dstAccelerationStructure = interfaceAccelerationStructure->vk;
-        buildGeometryInfo.scratchData.deviceAddress = vkGetBufferDeviceAddress(device->vk, &scratchAddressInfo) + scratchBuffer.offset;
+        buildGeometryInfo.scratchData.deviceAddress = vkGetBufferDeviceAddress(queue->device->vk, &scratchAddressInfo) + scratchBuffer.offset;
         buildGeometryInfo.pGeometries = reinterpret_cast<const VkAccelerationStructureGeometryKHR *>(buildInfo.buildData.data());
         buildGeometryInfo.geometryCount = buildInfo.meshCount;
 
@@ -3299,14 +3329,14 @@ namespace plume {
 
         VkAccelerationStructureGeometryInstancesDataKHR &instancesData = topGeometry.geometry.instances;
         instancesData.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR;
-        instancesData.data.deviceAddress = vkGetBufferDeviceAddress(device->vk, &instancesAddressInfo) + instancesBuffer.offset;
+        instancesData.data.deviceAddress = vkGetBufferDeviceAddress(queue->device->vk, &instancesAddressInfo) + instancesBuffer.offset;
 
         VkAccelerationStructureBuildGeometryInfoKHR buildGeometryInfo = {};
         buildGeometryInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
         buildGeometryInfo.type = VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR;
         buildGeometryInfo.mode = VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR;
         buildGeometryInfo.dstAccelerationStructure = interfaceAccelerationStructure->vk;
-        buildGeometryInfo.scratchData.deviceAddress = vkGetBufferDeviceAddress(device->vk, &scratchAddressInfo) + scratchBuffer.offset;
+        buildGeometryInfo.scratchData.deviceAddress = vkGetBufferDeviceAddress(queue->device->vk, &scratchAddressInfo) + scratchBuffer.offset;
         buildGeometryInfo.pGeometries = &topGeometry;
         buildGeometryInfo.geometryCount = 1;
 
@@ -3417,18 +3447,23 @@ namespace plume {
 
     // VulkanCommandQueue
 
-    VulkanCommandQueue::VulkanCommandQueue(VulkanDevice *device, RenderCommandListType commandListType) {
+    VulkanCommandQueue::VulkanCommandQueue(VulkanDevice *device, RenderCommandListType type) {
         assert(device != nullptr);
-        assert(commandListType != RenderCommandListType::UNKNOWN);
+        assert(type != RenderCommandListType::UNKNOWN);
 
         this->device = device;
+        this->type = type;
 
-        familyIndex = device->queueFamilyIndices[toFamilyIndex(commandListType)];
+        familyIndex = device->queueFamilyIndices[toFamilyIndex(type)];
         device->queueFamilies[familyIndex].add(this);
     }
 
     VulkanCommandQueue::~VulkanCommandQueue() {
         device->queueFamilies[familyIndex].remove(this);
+    }
+
+    std::unique_ptr<RenderCommandList> VulkanCommandQueue::createCommandList() {
+        return std::make_unique<VulkanCommandList>(this);
     }
 
     std::unique_ptr<RenderSwapChain> VulkanCommandQueue::createSwapChain(RenderWindow renderWindow, uint32_t bufferCount, RenderFormat format, uint32_t maxFrameLatency) {
@@ -3956,24 +3991,29 @@ namespace plume {
         capabilities.raytracing = rtSupported;
         capabilities.raytracingStateUpdate = false;
         capabilities.sampleLocations = sampleLocationsSupported;
+        capabilities.resolveModes = false;
         capabilities.descriptorIndexing = descriptorIndexing;
         capabilities.scalarBlockLayout = scalarBlockLayout;
+        capabilities.bufferDeviceAddress = bufferDeviceAddress;
         capabilities.presentWait = presentWait;
         capabilities.displayTiming = supportedOptionalExtensions.find(VK_GOOGLE_DISPLAY_TIMING_EXTENSION_NAME) != supportedOptionalExtensions.end();
+        capabilities.maxTextureSize = physicalDeviceProperties.limits.maxImageDimension2D;
         capabilities.preferHDR = memoryHeapSize > (512 * 1024 * 1024);
-#if defined(__APPLE__)
-                // MoltenVK supports triangle fans but does so via compute shaders to translate to lists, since it has to
-                // support all cases including indirect draw. This results in renderpass restarts that can harm performance,
-                // so force disable native triangle fan support and rely on the game to emulate fans if needed.
-                capabilities.triangleFan = false;
-        #else
-                capabilities.triangleFan = true;
-        #endif
-
         capabilities.dynamicDepthBias = true;
+        capabilities.queryPools = true;
+
+#   if defined(__APPLE__)
+        // MoltenVK supports triangle fans but does so via compute shaders to translate to lists, since it has to
+        // support all cases including indirect draw. This results in renderpass restarts that can harm performance,
+        // so force disable native triangle fan support and rely on the game to emulate fans if needed.
+        capabilities.triangleFan = false;
+#   else
+        capabilities.triangleFan = true;
+#   endif
 
         // Fill Vulkan-only capabilities.
         loadStoreOpNoneSupported = supportedOptionalExtensions.find(VK_EXT_LOAD_STORE_OP_NONE_EXTENSION_NAME) != supportedOptionalExtensions.end();
+        nullDescriptorSupported = nullDescriptor;
 
         if (!nullDescriptorSupported) {
             nullBuffer = createBuffer(RenderBufferDesc::DefaultBuffer(16, RenderBufferFlag::VERTEX));
@@ -3982,10 +4022,6 @@ namespace plume {
 
     VulkanDevice::~VulkanDevice() {
         release();
-    }
-
-    std::unique_ptr<RenderCommandList> VulkanDevice::createCommandList(RenderCommandListType type) {
-        return std::make_unique<VulkanCommandList>(this, type);
     }
 
     std::unique_ptr<RenderDescriptorSet> VulkanDevice::createDescriptorSet(const RenderDescriptorSetDesc &desc) {
@@ -4258,10 +4294,6 @@ namespace plume {
         }
     }
 
-    void VulkanDevice::waitIdle() const {
-        vkDeviceWaitIdle(vk);
-    }
-
     void VulkanDevice::release() {
         if (allocator != VK_NULL_HANDLE) {
             vmaDestroyAllocator(allocator);
@@ -4276,6 +4308,16 @@ namespace plume {
 
     bool VulkanDevice::isValid() const {
         return vk != nullptr;
+    }
+
+    bool VulkanDevice::beginCapture() {
+        assert(false && "Captures are not currently implemented in Vulkan.");
+        return false;
+    }
+
+    bool VulkanDevice::endCapture() {
+        assert(false && "Captures are not currently implemented in Vulkan.");
+        return false;
     }
 
     // VulkanInterface

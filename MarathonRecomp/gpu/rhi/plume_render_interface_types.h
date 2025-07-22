@@ -25,6 +25,8 @@
 #undef LockMask
 #undef ControlMask
 #undef Success
+#undef Always
+
 #elif defined(__APPLE__)
 #include <SDL.h>
 #endif
@@ -52,11 +54,11 @@ namespace plume {
     };
 #elif defined(__APPLE__)
     struct RenderWindow {
-        SDL_Window* window;
+        void* window;
         void* view;
 
         bool operator==(const struct RenderWindow& rhs) const {
-            return window == rhs.window;
+            return window == rhs.window && view == rhs.view;
         }
         bool operator!=(const struct RenderWindow& rhs) const { return !(*this == rhs); }
     };
@@ -71,6 +73,7 @@ namespace plume {
     struct RenderSampler;
     struct RenderShader;
     struct RenderTexture;
+    struct RenderTextureView;
     struct RenderQueryPool;
 
     // Enums.
@@ -79,9 +82,10 @@ namespace plume {
         UNKNOWN = 0x0,
         AMD = 0x1002,
         NVIDIA = 0x10DE,
-        INTEL = 0x8086
+        INTEL = 0x8086,
+        APPLE = 0x106B,
     };
-
+    
     enum class RenderFormat {
         UNKNOWN,
         R32G32B32A32_TYPELESS,
@@ -156,7 +160,8 @@ namespace plume {
         BC6H_SF16,
         BC7_TYPELESS,
         BC7_UNORM,
-        BC7_UNORM_SRGB
+        BC7_UNORM_SRGB,
+        MAX
     };
 
     enum class RenderTextureDimension {
@@ -364,7 +369,8 @@ namespace plume {
     enum class RenderShaderFormat {
         UNKNOWN,
         DXIL,
-        SPIRV
+        SPIRV,
+        METAL
     };
 
     enum class RenderRaytracingPipelineLibrarySymbolType {
@@ -725,6 +731,14 @@ namespace plume {
         // Valid range is [-8, 7].
         int8_t x = 0;
         int8_t y = 0;
+
+        bool operator==(const RenderMultisamplingLocation& other) const {
+            return x == other.x && y == other.y;
+        }
+
+        bool operator!=(const RenderMultisamplingLocation& other) const {
+            return !(*this == other);
+        }
     };
 
     struct RenderMultisampling {
@@ -885,9 +899,9 @@ namespace plume {
         RenderTextureDimension dimension = RenderTextureDimension::UNKNOWN;
         uint32_t width = 0;
         uint32_t height = 0;
-        uint16_t depth = 0;
-        uint16_t mipLevels = 0;
-        uint16_t arraySize = 0;
+        uint32_t depth = 0;
+        uint32_t mipLevels = 0;
+        uint32_t arraySize = 0;
         RenderMultisampling multisampling;
         RenderFormat format = RenderFormat::UNKNOWN;
         RenderTextureArrangement textureArrangement = RenderTextureArrangement::UNKNOWN;
@@ -897,7 +911,7 @@ namespace plume {
 
         RenderTextureDesc() = default;
 
-        static RenderTextureDesc Texture(RenderTextureDimension dimension, uint32_t width, uint32_t height, uint16_t depth, uint16_t mipLevels, uint16_t arraySize, RenderFormat format, RenderTextureFlags flags = RenderTextureFlag::NONE) {
+        static RenderTextureDesc Texture(RenderTextureDimension dimension, uint32_t width, uint32_t height, uint32_t depth, uint32_t mipLevels, uint32_t arraySize, RenderFormat format, RenderTextureFlags flags = RenderTextureFlag::NONE) {
             RenderTextureDesc desc;
             desc.dimension = dimension;
             desc.width = width;
@@ -910,15 +924,15 @@ namespace plume {
             return desc;
         }
 
-        static RenderTextureDesc Texture1D(uint32_t width, uint16_t mipLevels, RenderFormat format, RenderTextureFlags flags = RenderTextureFlag::NONE) {
+        static RenderTextureDesc Texture1D(uint32_t width, uint32_t mipLevels, RenderFormat format, RenderTextureFlags flags = RenderTextureFlag::NONE) {
             return Texture(RenderTextureDimension::TEXTURE_1D, width, 1, 1, mipLevels, 1, format, flags);
         }
 
-        static RenderTextureDesc Texture2D(uint32_t width, uint32_t height, uint16_t mipLevels, RenderFormat format, RenderTextureFlags flags = RenderTextureFlag::NONE) {
+        static RenderTextureDesc Texture2D(uint32_t width, uint32_t height, uint32_t mipLevels, RenderFormat format, RenderTextureFlags flags = RenderTextureFlag::NONE) {
             return Texture(RenderTextureDimension::TEXTURE_2D, width, height, 1, mipLevels, 1, format, flags);
         }
 
-        static RenderTextureDesc Texture3D(uint32_t width, uint32_t height, uint32_t depth, uint16_t mipLevels, RenderFormat format, RenderTextureFlags flags = RenderTextureFlag::NONE) {
+        static RenderTextureDesc Texture3D(uint32_t width, uint32_t height, uint32_t depth, uint32_t mipLevels, RenderFormat format, RenderTextureFlags flags = RenderTextureFlag::NONE) {
             return Texture(RenderTextureDimension::TEXTURE_3D, width, height, depth, mipLevels, 1, format, flags);
         }
 
@@ -980,41 +994,39 @@ namespace plume {
     struct RenderTextureViewDesc {
         RenderFormat format = RenderFormat::UNKNOWN;
         RenderTextureViewDimension dimension = RenderTextureViewDimension::UNKNOWN;
-        uint32_t mipLevels = 0;
+        uint32_t mipLevels = UINT32_MAX;
         uint32_t mipSlice = 0;
+        uint32_t arraySize = UINT32_MAX;
+        uint32_t arrayIndex = 0;
         RenderComponentMapping componentMapping;
 
         RenderTextureViewDesc() = default;
 
-        static RenderTextureViewDesc Texture1D(RenderFormat format, uint32_t mipLevels = 1) {
+        static RenderTextureViewDesc Texture1D(RenderFormat format) {
             RenderTextureViewDesc viewDesc;
             viewDesc.format = format;
             viewDesc.dimension = RenderTextureViewDimension::TEXTURE_1D;
-            viewDesc.mipLevels = mipLevels;
             return viewDesc;
         }
 
-        static RenderTextureViewDesc Texture2D(RenderFormat format, uint32_t mipLevels = 1) {
+        static RenderTextureViewDesc Texture2D(RenderFormat format) {
             RenderTextureViewDesc viewDesc;
             viewDesc.format = format;
             viewDesc.dimension = RenderTextureViewDimension::TEXTURE_2D;
-            viewDesc.mipLevels = mipLevels;
             return viewDesc;
         }
 
-        static RenderTextureViewDesc Texture3D(RenderFormat format, uint32_t mipLevels = 1) {
+        static RenderTextureViewDesc Texture3D(RenderFormat format) {
             RenderTextureViewDesc viewDesc;
             viewDesc.format = format;
             viewDesc.dimension = RenderTextureViewDimension::TEXTURE_3D;
-            viewDesc.mipLevels = mipLevels;
             return viewDesc;
         }      
         
-        static RenderTextureViewDesc TextureCube(RenderFormat format, uint32_t mipLevels = 1) {
+        static RenderTextureViewDesc TextureCube(RenderFormat format) {
             RenderTextureViewDesc viewDesc;
             viewDesc.format = format;
             viewDesc.dimension = RenderTextureViewDimension::TEXTURE_CUBE;
-            viewDesc.mipLevels = mipLevels;
             return viewDesc;
         }
     };
@@ -1055,7 +1067,8 @@ namespace plume {
             } placedFootprint;
 
             struct {
-                uint32_t index;
+                uint32_t mipLevel;
+                uint32_t arrayIndex;
             } subresource;
         };
 
@@ -1072,11 +1085,12 @@ namespace plume {
             return loc;
         }
 
-        static RenderTextureCopyLocation Subresource(const RenderTexture *texture, uint32_t index = 0) {
+        static RenderTextureCopyLocation Subresource(const RenderTexture *texture, uint32_t mipLevel = 0, uint32_t arrayIndex = 0) {
             RenderTextureCopyLocation loc;
             loc.texture = texture;
             loc.type = RenderTextureCopyType::SUBRESOURCE;
-            loc.subresource.index = index;
+            loc.subresource.mipLevel = mipLevel;
+            loc.subresource.arrayIndex = arrayIndex;
             return loc;
         }
     };
@@ -1151,7 +1165,7 @@ namespace plume {
             desc.srcBlend = RenderBlend::SRC_ALPHA;
             desc.dstBlend = RenderBlend::INV_SRC_ALPHA;
             desc.blendOp = RenderBlendOperation::ADD;
-            desc.srcBlendAlpha = RenderBlend::SRC_ALPHA;
+            desc.srcBlendAlpha = RenderBlend::ONE;
             desc.dstBlendAlpha = RenderBlend::INV_SRC_ALPHA;
             desc.blendOpAlpha = RenderBlendOperation::ADD;
             return desc;
@@ -1175,12 +1189,18 @@ namespace plume {
         const RenderShader *computeShader = nullptr;
         const RenderSpecConstant *specConstants = nullptr;
         uint32_t specConstantsCount = 0;
+        uint32_t threadGroupSizeX = 0;
+        uint32_t threadGroupSizeY = 0;
+        uint32_t threadGroupSizeZ = 0;
 
         RenderComputePipelineDesc() = default;
 
-        RenderComputePipelineDesc(const RenderPipelineLayout *pipelineLayout, const RenderShader *computeShader) {
+        RenderComputePipelineDesc(const RenderPipelineLayout *pipelineLayout, const RenderShader *computeShader, uint32_t threadGroupSizeX, uint32_t threadGroupSizeY, uint32_t threadGroupSizeZ) {
             this->pipelineLayout = pipelineLayout;
             this->computeShader = computeShader;
+            this->threadGroupSizeX = threadGroupSizeX;
+            this->threadGroupSizeY = threadGroupSizeY;
+            this->threadGroupSizeZ = threadGroupSizeZ;
         }
     };
 
@@ -1194,6 +1214,7 @@ namespace plume {
         RenderComparisonFunction depthFunction = RenderComparisonFunction::NEVER;
         bool depthClipEnabled = false;
         int32_t depthBias = 0;
+        float depthBiasClamp = 0.0f;
         float slopeScaledDepthBias = 0.0f;
         bool dynamicDepthBiasEnabled = false;
         bool depthEnabled = false;
@@ -1293,9 +1314,9 @@ namespace plume {
         RenderFilter minFilter = RenderFilter::LINEAR;
         RenderFilter magFilter = RenderFilter::LINEAR;
         RenderMipmapMode mipmapMode = RenderMipmapMode::LINEAR;
-        RenderTextureAddressMode addressU = RenderTextureAddressMode::CLAMP;
-        RenderTextureAddressMode addressV = RenderTextureAddressMode::CLAMP;
-        RenderTextureAddressMode addressW = RenderTextureAddressMode::CLAMP;
+        RenderTextureAddressMode addressU = RenderTextureAddressMode::WRAP;
+        RenderTextureAddressMode addressV = RenderTextureAddressMode::WRAP;
+        RenderTextureAddressMode addressW = RenderTextureAddressMode::WRAP;
         float mipLODBias = 0.0f;
         uint32_t maxAnisotropy = 16;
         bool anisotropyEnabled = false;
@@ -1641,8 +1662,10 @@ namespace plume {
 
     struct RenderFramebufferDesc {
         const RenderTexture **colorAttachments = nullptr;
+        const RenderTextureView **colorAttachmentViews = nullptr;
         uint32_t colorAttachmentsCount = 0;
         const RenderTexture *depthAttachment = nullptr;
+        const RenderTextureView *depthAttachmentView = nullptr;
         bool depthAttachmentReadOnly = false;
 
         RenderFramebufferDesc() = default;
@@ -1795,13 +1818,22 @@ namespace plume {
         // MSAA.
         bool sampleLocations = false;
 
+        // Resolve Modes.
+        bool resolveModes = false;
+
         // Bindless resources.
         bool descriptorIndexing = false;
         bool scalarBlockLayout = false;
 
+        // Buffers.
+        bool bufferDeviceAddress = false;
+
         // Present.
         bool presentWait = false;
         bool displayTiming = false;
+
+        // Framebuffers.
+        uint64_t maxTextureSize = 0;
 
         // HDR.
         bool preferHDR = false;
@@ -1812,6 +1844,9 @@ namespace plume {
 
         // UMA.
         bool uma = false;
+
+        // Query Pools.
+        bool queryPools = false;
     };
 
     struct RenderInterfaceCapabilities {

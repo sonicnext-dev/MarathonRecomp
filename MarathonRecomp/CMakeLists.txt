@@ -1,7 +1,7 @@
 project("MarathonRecomp")
 
 if (WIN32)
-    option(MARATHON_RECOMP_D3D12 "Add D3D12 support for rendering" OFF)
+    option(MARATHON_RECOMP_D3D12 "Add D3D12 support for rendering" ON)
 endif()
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -122,6 +122,12 @@ set(MARATHON_RECOMP_GPU_CXX_SOURCES
 if (MARATHON_RECOMP_D3D12)
     list(APPEND MARATHON_RECOMP_GPU_CXX_SOURCES
         "gpu/rhi/plume_d3d12.cpp"
+    )
+endif()
+
+if (APPLE)
+    list(APPEND MARATHON_RECOMP_GPU_CXX_SOURCES
+        "gpu/rhi/plume_apple.mm"
     )
 endif()
 
@@ -381,31 +387,28 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
     target_compile_definitions(MarathonRecomp PRIVATE SDL_VULKAN_ENABLED)
 endif()
 
-#find_package(directx-dxc REQUIRED)
 find_package(CURL REQUIRED)
 
-#if (MARATHON_RECOMP_D3D12)
-#    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/D3D12)
-#    add_custom_command(TARGET MarathonRecomp POST_BUILD
-#        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_PROPERTY:Microsoft::DirectX12-Core,IMPORTED_LOCATION_RELEASE> ${CMAKE_CURRENT_BINARY_DIR}/D3D12
-#        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_PROPERTY:Microsoft::DirectX12-Layers,IMPORTED_LOCATION_DEBUG> ${CMAKE_CURRENT_BINARY_DIR}/D3D12
-#       COMMAND_EXPAND_LISTS
-#    )
-#    
-#    find_file(DIRECTX_DXIL_LIBRARY "dxil.dll")
-#    file(COPY ${DIRECTX_DXIL_LIBRARY} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-#
-#    target_link_libraries(MarathonRecomp PRIVATE
-#        Microsoft::DirectX-Headers 
-#        Microsoft::DirectX-Guids 
-#        Microsoft::DirectX12-Agility
-#        Microsoft::DirectXShaderCompiler
-#        Microsoft::DXIL
-#        dxgi
-#    )
-#endif()
 
-#file(CHMOD ${DIRECTX_DXC_TOOL} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE)
+if (MARATHON_RECOMP_D3D12)
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/D3D12)
+    add_custom_command(TARGET MarathonRecomp POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_PROPERTY:Microsoft::DirectX12-Core,IMPORTED_LOCATION_RELEASE> $<TARGET_FILE_DIR:MarathonRecomp>/D3D12
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_PROPERTY:Microsoft::DirectX12-Layers,IMPORTED_LOCATION_DEBUG> $<TARGET_FILE_DIR:MarathonRecomp>/D3D12
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_PROPERTY:Microsoft::DirectXShaderCompiler,IMPORTED_LOCATION> $<TARGET_FILE_DIR:MarathonRecomp>
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_PROPERTY:Microsoft::DXIL,IMPORTED_LOCATION> $<TARGET_FILE_DIR:MarathonRecomp>
+            COMMAND_EXPAND_LISTS
+    )
+
+    target_link_libraries(MarathonRecomp PRIVATE
+            Microsoft::DirectX-Headers
+            Microsoft::DirectX-Guids
+            Microsoft::DirectX12-Agility
+            Microsoft::DirectXShaderCompiler
+            Microsoft::DXIL
+            dxgi
+    )
+endif()
 
 if (WIN32)
     target_link_libraries(MarathonRecomp PRIVATE

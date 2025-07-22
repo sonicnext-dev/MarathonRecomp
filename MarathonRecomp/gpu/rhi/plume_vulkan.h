@@ -22,6 +22,7 @@
 #define VK_USE_PLATFORM_XLIB_KHR
 #elif defined(__APPLE__)
 #define VK_USE_PLATFORM_METAL_EXT
+#include "plume_apple.h"
 #endif
 
 // For VK_KHR_portability_subset
@@ -101,6 +102,7 @@ namespace plume {
     struct VulkanTextureView : RenderTextureView {
         VkImageView vk = VK_NULL_HANDLE;
         VulkanTexture *texture = nullptr;
+        RenderTextureViewDesc desc;
 
         VulkanTextureView(VulkanTexture *texture, const RenderTextureViewDesc &desc);
         ~VulkanTextureView() override;
@@ -144,7 +146,6 @@ namespace plume {
 
         VulkanShader(VulkanDevice *device, const void *data, uint64_t size, const char *entryPointName, RenderShaderFormat format);
         ~VulkanShader() override;
-        void setName(const std::string &name) override;
     };
 
     struct VulkanSampler : RenderSampler {
@@ -224,6 +225,9 @@ namespace plume {
         VulkanCommandQueue *commandQueue = nullptr;
         VkSurfaceKHR surface = VK_NULL_HANDLE;
         RenderWindow renderWindow = {};
+#if defined(__APPLE__)
+        std::unique_ptr<CocoaWindow> windowWrapper;
+#endif
         uint32_t textureCount = 0;
         uint64_t presentCount = 0;
         RenderFormat format = RenderFormat::UNKNOWN;
@@ -292,15 +296,14 @@ namespace plume {
     struct VulkanCommandList : RenderCommandList {
         VkCommandBuffer vk = VK_NULL_HANDLE;
         VkCommandPool commandPool = VK_NULL_HANDLE;
-        VulkanDevice *device = nullptr;
-        RenderCommandListType type = RenderCommandListType::UNKNOWN;
+        VulkanCommandQueue *queue = nullptr;
         const VulkanFramebuffer *targetFramebuffer = nullptr;
         const VulkanPipelineLayout *activeComputePipelineLayout = nullptr;
         const VulkanPipelineLayout *activeGraphicsPipelineLayout = nullptr;
         const VulkanPipelineLayout *activeRaytracingPipelineLayout = nullptr;
         VkRenderPass activeRenderPass = VK_NULL_HANDLE;
 
-        VulkanCommandList(VulkanDevice *device, RenderCommandListType type);
+        VulkanCommandList(VulkanCommandQueue *queue);
         ~VulkanCommandList() override;
         void begin() override;
         void end() override;
@@ -366,9 +369,11 @@ namespace plume {
         uint32_t familyIndex = 0;
         uint32_t queueIndex = 0;
         std::unordered_set<VulkanSwapChain *> swapChains;
+        RenderCommandListType type = RenderCommandListType::UNKNOWN;
 
-        VulkanCommandQueue(VulkanDevice *device, RenderCommandListType commandListType);
+        VulkanCommandQueue(VulkanDevice *device, RenderCommandListType type);
         ~VulkanCommandQueue() override;
+        std::unique_ptr<RenderCommandList> createCommandList() override;
         std::unique_ptr<RenderSwapChain> createSwapChain(RenderWindow renderWindow, uint32_t bufferCount, RenderFormat format, uint32_t maxFrameLatency) override;
         void executeCommandLists(const RenderCommandList **commandLists, uint32_t commandListCount, RenderCommandSemaphore **waitSemaphores, uint32_t waitSemaphoreCount, RenderCommandSemaphore **signalSemaphores, uint32_t signalSemaphoreCount, RenderCommandFence *signalFence) override;
         void waitForCommandFence(RenderCommandFence *fence) override;
@@ -409,13 +414,12 @@ namespace plume {
         RenderDeviceDescription description;
         VkPhysicalDeviceRayTracingPipelinePropertiesKHR rtPipelineProperties = {};
         VkPhysicalDeviceSampleLocationsPropertiesEXT sampleLocationProperties = {};
-        std::unique_ptr<RenderBuffer> nullBuffer = nullptr;
+        std::unique_ptr<RenderBuffer> nullBuffer;
         bool loadStoreOpNoneSupported = false;
         bool nullDescriptorSupported = false;
 
         VulkanDevice(VulkanInterface *renderInterface, const std::string &preferredDeviceName);
         ~VulkanDevice() override;
-        std::unique_ptr<RenderCommandList> createCommandList(RenderCommandListType type) override;
         std::unique_ptr<RenderDescriptorSet> createDescriptorSet(const RenderDescriptorSetDesc &desc) override;
         std::unique_ptr<RenderShader> createShader(const void *data, uint64_t size, const char *entryPointName, RenderShaderFormat format) override;
         std::unique_ptr<RenderSampler> createSampler(const RenderSamplerDesc &desc) override;
@@ -438,9 +442,10 @@ namespace plume {
         const RenderDeviceCapabilities &getCapabilities() const override;
         const RenderDeviceDescription &getDescription() const override;
         RenderSampleCounts getSampleCountsSupported(RenderFormat format) const override;
-        void waitIdle() const override;
         void release();
         bool isValid() const;
+        bool beginCapture() override;
+        bool endCapture() override;
     };
 
     struct VulkanInterface : RenderInterface {
