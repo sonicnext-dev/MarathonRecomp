@@ -4266,7 +4266,7 @@ struct LocalRenderCommandQueue
 
 static void FlushRenderStateForMainThread(GuestDevice* device, LocalRenderCommandQueue& queue)
 {
-    constexpr size_t BOOL_MASK = 0x100000000000000ull;
+    constexpr size_t BOOL_MASK = 0x2ull;
     if ((device->dirtyFlags[3].get() & BOOL_MASK) != 0)
     {
         auto& cmd = queue.enqueue();
