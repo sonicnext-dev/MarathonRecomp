@@ -136,6 +136,10 @@ namespace plume {
             return DXGI_FORMAT_R32_TYPELESS;
         case RenderFormat::D32_FLOAT:
             return DXGI_FORMAT_D32_FLOAT;
+        case RenderFormat::D32_FLOAT_S8_UINT:
+            // In order to be able to create both depth-stencil and shader resource views,
+            // we must use R32G8X24_TYPELESS as the base type and specialize later.
+            return DXGI_FORMAT_R32G8X24_TYPELESS;
         case RenderFormat::R32_FLOAT:
             return DXGI_FORMAT_R32_FLOAT;
         case RenderFormat::R32_UINT:
@@ -222,6 +226,29 @@ namespace plume {
             assert(false && "Unknown format.");
             return DXGI_FORMAT_FORCE_UINT;
         }
+    }
+
+    static DXGI_FORMAT toDXGITextureView(RenderFormat format) {
+        const DXGI_FORMAT dxgiFormat = toDXGI(format);
+        if (dxgiFormat == DXGI_FORMAT_D32_FLOAT) {
+            // D3D12 and Vulkan disagree on whether D32 is usable as a texture view format.
+            // We just make D3D12 use R32 instead.
+            return DXGI_FORMAT_R32_FLOAT;
+        }
+        if (dxgiFormat == DXGI_FORMAT_R32G8X24_TYPELESS) {
+            // Specialize into depth view of depth-stencil texture.
+            return DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS;
+        }
+        return dxgiFormat;
+    }
+
+    static DXGI_FORMAT toDXGIDepthStencilView(RenderFormat format) {
+        const DXGI_FORMAT dxgiFormat = toDXGI(format);
+        if (dxgiFormat == DXGI_FORMAT_R32G8X24_TYPELESS) {
+            // Specialize into full depth-stencil view.
+            return DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+        }
+        return dxgiFormat;
     }
 
     static D3D12_BLEND toD3D12(RenderBlend blend) {
@@ -469,6 +496,30 @@ namespace plume {
         default:
             assert(false && "Unknown comparison function.");
             return D3D12_COMPARISON_FUNC_NEVER;
+        }
+    }
+
+    static D3D12_STENCIL_OP toD3D12(RenderStencilOp function) {
+        switch (function) {
+        case RenderStencilOp::KEEP:
+            return D3D12_STENCIL_OP_KEEP;
+        case RenderStencilOp::ZERO:
+            return D3D12_STENCIL_OP_ZERO;
+        case RenderStencilOp::REPLACE:
+            return D3D12_STENCIL_OP_REPLACE;
+        case RenderStencilOp::INCREMENT_AND_CLAMP:
+            return D3D12_STENCIL_OP_INCR_SAT;
+        case RenderStencilOp::DECREMENT_AND_CLAMP:
+            return D3D12_STENCIL_OP_DECR_SAT;
+        case RenderStencilOp::INVERT:
+            return D3D12_STENCIL_OP_INVERT;
+        case RenderStencilOp::INCREMENT_AND_WRAP:
+            return D3D12_STENCIL_OP_INCR;
+        case RenderStencilOp::DECREMENT_AND_WRAP:
+            return D3D12_STENCIL_OP_DECR;
+        default:
+            assert(false && "Unknown stencil operation.");
+            return D3D12_STENCIL_OP_KEEP;
         }
     }
 
@@ -1664,12 +1715,14 @@ namespace plume {
     
     void D3D12CommandList::drawInstanced(uint32_t vertexCountPerInstance, uint32_t instanceCount, uint32_t startVertexLocation, uint32_t startInstanceLocation) {
         checkTopology();
+        checkStencilRef();
         checkFramebufferSamplePositions();
         d3d->DrawInstanced(vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
     }
 
     void D3D12CommandList::drawIndexedInstanced(uint32_t indexCountPerInstance, uint32_t instanceCount, uint32_t startIndexLocation, int32_t baseVertexLocation, uint32_t startInstanceLocation) {
         checkTopology();
+        checkStencilRef();
         checkFramebufferSamplePositions();
         d3d->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
     }
@@ -1900,7 +1953,7 @@ namespace plume {
         d3d->ClearRenderTargetView(targetFramebuffer->colorHandles[attachmentIndex], colorValue.rgba, clearRectsCount, (clearRectsCount > 0) ? rectVector.data() : nullptr);
     }
 
-    void D3D12CommandList::clearDepth(bool clearDepth, float depthValue, const RenderRect *clearRects, uint32_t clearRectsCount) {
+    void D3D12CommandList::clearDepthStencil(bool clearDepth, bool clearStencil, float depthValue, uint32_t stencilValue, const RenderRect *clearRects, uint32_t clearRectsCount) {
         assert(targetFramebuffer != nullptr);
         assert(targetFramebuffer->depthHandle.ptr != 0);
         assert((clearRectsCount == 0) || (clearRects != nullptr));
@@ -1916,8 +1969,13 @@ namespace plume {
         }
 
         D3D12_CLEAR_FLAGS clearFlags = {};
-        clearFlags |= clearDepth ? D3D12_CLEAR_FLAG_DEPTH : D3D12_CLEAR_FLAGS(0);
-        d3d->ClearDepthStencilView(targetFramebuffer->depthHandle, clearFlags, depthValue, 0, clearRectsCount, (clearRectsCount > 0) ? rectVector.data() : nullptr);
+        if (clearDepth) {
+            clearFlags |= D3D12_CLEAR_FLAG_DEPTH;
+        }
+        if (clearStencil) {
+            clearFlags |= D3D12_CLEAR_FLAG_STENCIL;
+        }
+        d3d->ClearDepthStencilView(targetFramebuffer->depthHandle, clearFlags, depthValue, stencilValue, clearRectsCount, (clearRectsCount > 0) ? rectVector.data() : nullptr);
     }
 
     void D3D12CommandList::copyBufferRegion(RenderBufferReference dstBuffer, RenderBufferReference srcBuffer, uint64_t size) {
@@ -2083,6 +2141,17 @@ namespace plume {
         if (activeTopology != graphicsPipeline->topology) {
             d3d->IASetPrimitiveTopology(graphicsPipeline->topology);
             activeTopology = graphicsPipeline->topology;
+        }
+    }
+
+    void D3D12CommandList::checkStencilRef() {
+        assert(activeGraphicsPipeline != nullptr);
+        assert(activeGraphicsPipeline->type == D3D12Pipeline::Type::Graphics);
+
+        const D3D12GraphicsPipeline *graphicsPipeline = static_cast<const D3D12GraphicsPipeline *>(activeGraphicsPipeline);
+        if (activeStencilRef != graphicsPipeline->stencilRef) {
+            d3d->OMSetStencilRef(graphicsPipeline->stencilRef);
+            activeStencilRef = graphicsPipeline->stencilRef;
         }
     }
     
@@ -2430,16 +2499,11 @@ namespace plume {
         assert(texture != nullptr);
 
         this->texture = texture;
-        this->format = toDXGI(desc.format);
+        this->format = toDXGITextureView(desc.format);
         this->dimension = desc.dimension;
         this->mipLevels = desc.mipLevels;
         this->mipSlice = desc.mipSlice;
         this->shader4ComponentMapping = toD3D12(desc.componentMapping);
-        
-        // D3D12 and Vulkan disagree on whether D32 is usable as a texture view format. We just make D3D12 use R32 instead.
-        if (format == DXGI_FORMAT_D32_FLOAT) {
-            format = DXGI_FORMAT_R32_FLOAT;
-        }
     }
 
     D3D12TextureView::~D3D12TextureView() { }
@@ -2566,7 +2630,7 @@ namespace plume {
         targetHeapDepth = true;
 
         D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
-        dsvDesc.Format = toDXGI(desc.format);
+        dsvDesc.Format = toDXGIDepthStencilView(desc.format);
 
         const bool isMSAA = (desc.multisampling.sampleCount > RenderSampleCount::COUNT_1);
         switch (desc.dimension) {
@@ -2820,6 +2884,17 @@ namespace plume {
         psoDesc.DepthStencilState.DepthEnable = desc.depthEnabled;
         psoDesc.DepthStencilState.DepthWriteMask = desc.depthWriteEnabled ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO;
         psoDesc.DepthStencilState.DepthFunc = toD3D12(desc.depthFunction);
+        psoDesc.DepthStencilState.StencilEnable = desc.stencilEnabled;
+        psoDesc.DepthStencilState.StencilReadMask = desc.stencilReadMask;
+        psoDesc.DepthStencilState.StencilWriteMask = desc.stencilWriteMask;
+        psoDesc.DepthStencilState.FrontFace.StencilFailOp = toD3D12(desc.stencilFrontFace.failOp);
+        psoDesc.DepthStencilState.FrontFace.StencilDepthFailOp = toD3D12(desc.stencilFrontFace.depthFailOp);
+        psoDesc.DepthStencilState.FrontFace.StencilPassOp = toD3D12(desc.stencilFrontFace.passOp);
+        psoDesc.DepthStencilState.FrontFace.StencilFunc = toD3D12(desc.stencilFrontFace.compareFunction);
+        psoDesc.DepthStencilState.BackFace.StencilFailOp = toD3D12(desc.stencilBackFace.failOp);
+        psoDesc.DepthStencilState.BackFace.StencilDepthFailOp = toD3D12(desc.stencilBackFace.depthFailOp);
+        psoDesc.DepthStencilState.BackFace.StencilPassOp = toD3D12(desc.stencilBackFace.passOp);
+        psoDesc.DepthStencilState.BackFace.StencilFunc = toD3D12(desc.stencilBackFace.compareFunction);
         psoDesc.NumRenderTargets = desc.renderTargetCount;
         psoDesc.BlendState.AlphaToCoverageEnable = desc.alphaToCoverageEnabled;
 
@@ -2840,7 +2915,7 @@ namespace plume {
             targetDesc.RenderTargetWriteMask = renderDesc.renderTargetWriteMask;
         }
 
-        psoDesc.DSVFormat = toDXGI(desc.depthTargetFormat);
+        psoDesc.DSVFormat = toDXGIDepthStencilView(desc.depthTargetFormat);
 
         std::vector<D3D12_INPUT_ELEMENT_DESC> inputElements;
         for (uint32_t i = 0; i < desc.inputElementsCount; i++) {

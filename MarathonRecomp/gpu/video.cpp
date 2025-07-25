@@ -128,10 +128,23 @@ struct PipelineState
     bool instancing = false;
     bool zEnable = true;
     bool zWriteEnable = true;
+    bool stencilEnable = false;
+    bool stencilTwoSided = false;
     RenderBlend srcBlend = RenderBlend::ONE;
     RenderBlend destBlend = RenderBlend::ZERO;
     RenderCullMode cullMode = RenderCullMode::NONE;
     RenderComparisonFunction zFunc = RenderComparisonFunction::LESS;
+    RenderComparisonFunction stencilFunc = RenderComparisonFunction::ALWAYS;
+    RenderStencilOp stencilFail = RenderStencilOp::KEEP;
+    RenderStencilOp stencilZFail = RenderStencilOp::KEEP;
+    RenderStencilOp stencilPass = RenderStencilOp::KEEP;
+    RenderComparisonFunction stencilFuncCCW = RenderComparisonFunction::ALWAYS;
+    RenderStencilOp stencilFailCCW = RenderStencilOp::KEEP;
+    RenderStencilOp stencilZFailCCW = RenderStencilOp::KEEP;
+    RenderStencilOp stencilPassCCW = RenderStencilOp::KEEP;
+    uint32_t stencilMask = 0xFFFFFFFF;
+    uint32_t stencilWriteMask = 0xFFFFFFFF;
+    uint32_t stencilRef = 0;
     bool alphaBlendEnable = false;
     RenderBlendOperation blendOp = RenderBlendOperation::ADD;
     float slopeScaledDepthBias = 0.0f;
@@ -889,6 +902,7 @@ struct RenderCommand
             uint32_t flags;
             float color[4];
             float z;
+            uint32_t stencil;
         } clear;
 
         struct 
@@ -1091,6 +1105,58 @@ static RenderBlendOperation ConvertBlendOp(uint32_t blendOp)
     }
 }
 
+static RenderComparisonFunction ConvertCompareFunc(uint32_t compareFunc)
+{
+    switch (compareFunc)
+    {
+    case D3DCMP_NEVER:
+        return RenderComparisonFunction::NEVER;
+    case D3DCMP_LESS:
+        return RenderComparisonFunction::LESS;
+    case D3DCMP_EQUAL:
+        return RenderComparisonFunction::EQUAL;
+    case D3DCMP_LESSEQUAL:
+        return RenderComparisonFunction::LESS_EQUAL;
+    case D3DCMP_GREATER:
+        return RenderComparisonFunction::GREATER;
+    case D3DCMP_NOTEQUAL:
+        return RenderComparisonFunction::NOT_EQUAL;
+    case D3DCMP_GREATEREQUAL:
+        return RenderComparisonFunction::GREATER_EQUAL;
+    case D3DCMP_ALWAYS:
+        return RenderComparisonFunction::ALWAYS;
+    default:
+        assert(false && "Unknown comparison function");
+        return RenderComparisonFunction::NEVER;
+    }
+}
+
+static RenderStencilOp ConvertStencilOp(uint32_t stencilOp)
+{
+    switch (stencilOp)
+    {
+    case D3DSTENCILOP_KEEP:
+        return RenderStencilOp::KEEP;
+    case D3DSTENCILOP_ZERO:
+        return RenderStencilOp::ZERO;
+    case D3DSTENCILOP_REPLACE:
+        return RenderStencilOp::REPLACE;
+    case D3DSTENCILOP_INCRSAT:
+        return RenderStencilOp::INCREMENT_AND_CLAMP;
+    case D3DSTENCILOP_DECRSAT:
+        return RenderStencilOp::DECREMENT_AND_CLAMP;
+    case D3DSTENCILOP_INVERT:
+        return RenderStencilOp::INVERT;
+    case D3DSTENCILOP_INCR:
+        return RenderStencilOp::INCREMENT_AND_WRAP;
+    case D3DSTENCILOP_DECR:
+        return RenderStencilOp::DECREMENT_AND_WRAP;
+    default:
+        assert(false && "Unknown stencil op");
+        return RenderStencilOp::KEEP;
+    }
+}
+
 static void ProcSetRenderState(const RenderCommand& cmd)
 {
     uint32_t value = cmd.setRenderState.value;
@@ -1106,6 +1172,17 @@ static void ProcSetRenderState(const RenderCommand& cmd)
     case D3DRS_ZWRITEENABLE:
     {
         SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.zWriteEnable, value != 0);
+        break;
+    }
+    case D3DRS_STENCILENABLE:
+    {
+        SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.stencilEnable, value != 0);
+        g_dirtyStates.renderTargetAndDepthStencil |= g_dirtyStates.pipelineState;
+        break;
+    }
+    case D3DRS_TWOSIDEDSTENCILMODE:
+    {
+        SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.stencilTwoSided, value != 0);
         break;
     }
     case D3DRS_ALPHATESTENABLE:
@@ -1149,41 +1226,62 @@ static void ProcSetRenderState(const RenderCommand& cmd)
     }
     case D3DRS_ZFUNC:
     {
-        RenderComparisonFunction comparisonFunc;
-
-        switch (value)
-        {
-        case D3DCMP_NEVER:
-            comparisonFunc = RenderComparisonFunction::NEVER;
-            break;
-        case D3DCMP_LESS:
-            comparisonFunc = RenderComparisonFunction::LESS;
-            break;
-        case D3DCMP_EQUAL:
-            comparisonFunc = RenderComparisonFunction::EQUAL;
-            break;
-        case D3DCMP_LESSEQUAL:
-            comparisonFunc = RenderComparisonFunction::LESS_EQUAL;
-            break;
-        case D3DCMP_GREATER:
-            comparisonFunc = RenderComparisonFunction::GREATER;
-            break;
-        case D3DCMP_NOTEQUAL:
-            comparisonFunc = RenderComparisonFunction::NOT_EQUAL;
-            break;
-        case D3DCMP_GREATEREQUAL:
-            comparisonFunc = RenderComparisonFunction::GREATER_EQUAL;
-            break;
-        case D3DCMP_ALWAYS:
-            comparisonFunc = RenderComparisonFunction::ALWAYS;
-            break;
-        default:
-            assert(false && "Unknown comparison function");
-            comparisonFunc = RenderComparisonFunction::NEVER;
-            break;
-        }
-
-        SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.zFunc, comparisonFunc);
+        SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.zFunc, ConvertCompareFunc(value));
+        break;
+    }
+    case D3DRS_STENCILFUNC:
+    {
+        SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.stencilFunc, ConvertCompareFunc(value));
+        break;
+    }
+    case D3DRS_STENCILFAIL:
+    {
+        SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.stencilFail, ConvertStencilOp(value));
+        break;
+    }
+    case D3DRS_STENCILZFAIL:
+    {
+        SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.stencilZFail, ConvertStencilOp(value));
+        break;
+    }
+    case D3DRS_STENCILPASS:
+    {
+        SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.stencilPass, ConvertStencilOp(value));
+        break;
+    }
+    case D3DRS_CCW_STENCILFUNC:
+    {
+        SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.stencilFuncCCW, ConvertCompareFunc(value));
+        break;
+    }
+    case D3DRS_CCW_STENCILFAIL:
+    {
+        SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.stencilFailCCW, ConvertStencilOp(value));
+        break;
+    }
+    case D3DRS_CCW_STENCILZFAIL:
+    {
+        SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.stencilZFailCCW, ConvertStencilOp(value));
+        break;
+    }
+    case D3DRS_CCW_STENCILPASS:
+    {
+        SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.stencilPassCCW, ConvertStencilOp(value));
+        break;
+    }
+    case D3DRS_STENCILREF:
+    {
+        SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.stencilRef, value);
+        break;
+    }
+    case D3DRS_STENCILMASK:
+    {
+        SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.stencilMask, value);
+        break;
+    }
+    case D3DRS_STENCILWRITEMASK:
+    {
+        SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.stencilWriteMask, value);
         break;
     }
     case D3DRS_ALPHAREF:
@@ -1266,7 +1364,20 @@ static const std::pair<GuestRenderState, PPCFunc*> g_setRenderStateFunctions[] =
     { D3DRS_SRCBLENDALPHA, HostToGuestFunction<SetRenderState<D3DRS_SRCBLENDALPHA>> },
     { D3DRS_DESTBLENDALPHA, HostToGuestFunction<SetRenderState<D3DRS_DESTBLENDALPHA>> },
     { D3DRS_BLENDOPALPHA, HostToGuestFunction<SetRenderState<D3DRS_BLENDOPALPHA>> },
-    { D3DRS_COLORWRITEENABLE, HostToGuestFunction<SetRenderState<D3DRS_COLORWRITEENABLE>> }
+    { D3DRS_COLORWRITEENABLE, HostToGuestFunction<SetRenderState<D3DRS_COLORWRITEENABLE>> },
+    { D3DRS_STENCILENABLE, HostToGuestFunction<SetRenderState<D3DRS_STENCILENABLE>> },
+    { D3DRS_TWOSIDEDSTENCILMODE, HostToGuestFunction<SetRenderState<D3DRS_TWOSIDEDSTENCILMODE>> },
+    { D3DRS_STENCILFAIL, HostToGuestFunction<SetRenderState<D3DRS_STENCILFAIL>> },
+    { D3DRS_STENCILZFAIL, HostToGuestFunction<SetRenderState<D3DRS_STENCILZFAIL>> },
+    { D3DRS_STENCILPASS, HostToGuestFunction<SetRenderState<D3DRS_STENCILPASS>> },
+    { D3DRS_STENCILFUNC, HostToGuestFunction<SetRenderState<D3DRS_STENCILFUNC>> },
+    { D3DRS_STENCILREF, HostToGuestFunction<SetRenderState<D3DRS_STENCILREF>> },
+    { D3DRS_STENCILMASK, HostToGuestFunction<SetRenderState<D3DRS_STENCILMASK>> },
+    { D3DRS_STENCILWRITEMASK, HostToGuestFunction<SetRenderState<D3DRS_STENCILWRITEMASK>> },
+    { D3DRS_CCW_STENCILFAIL, HostToGuestFunction<SetRenderState<D3DRS_CCW_STENCILFAIL>> },
+    { D3DRS_CCW_STENCILZFAIL, HostToGuestFunction<SetRenderState<D3DRS_CCW_STENCILZFAIL>> },
+    { D3DRS_CCW_STENCILPASS, HostToGuestFunction<SetRenderState<D3DRS_CCW_STENCILPASS>> },
+    { D3DRS_CCW_STENCILFUNC, HostToGuestFunction<SetRenderState<D3DRS_CCW_STENCILFUNC>> }
 };
 
 static std::unique_ptr<RenderShader> g_copyShader;
@@ -1899,7 +2010,7 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver)
     desc.depthFunction = RenderComparisonFunction::ALWAYS;
     desc.depthEnabled = true;
     desc.depthWriteEnabled = true;
-    desc.depthTargetFormat = RenderFormat::D32_FLOAT;
+    desc.depthTargetFormat = RenderFormat::D32_FLOAT_S8_UINT;
     g_copyDepthPipeline = g_device->createGraphicsPipeline(desc);
 
     g_resolveMsaaColorShaders[0] = CREATE_SHADER(resolve_msaa_color_2x);
@@ -1929,7 +2040,7 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver)
         desc.depthFunction = RenderComparisonFunction::ALWAYS;
         desc.depthEnabled = true;
         desc.depthWriteEnabled = true;
-        desc.depthTargetFormat = RenderFormat::D32_FLOAT;
+        desc.depthTargetFormat = RenderFormat::D32_FLOAT_S8_UINT;
         g_resolveMsaaDepthPipelines[i] = g_device->createGraphicsPipeline(desc);
     }
 
@@ -2993,7 +3104,7 @@ static RenderFormat ConvertFormat(uint32_t format)
         return RenderFormat::R32_FLOAT;
     case D3DFMT_D24FS8:
     case D3DFMT_D24S8:
-        return RenderFormat::D32_FLOAT;
+        return RenderFormat::D32_FLOAT_S8_UINT;
     case D3DFMT_G16R16F:
     case D3DFMT_G16R16F_2:
         return RenderFormat::R16G16_FLOAT;
@@ -3050,7 +3161,7 @@ static GuestTexture* CreateTexture(uint32_t width, uint32_t height, uint32_t dep
         desc.arraySize = 1;
     }
 
-    if (desc.format == RenderFormat::D32_FLOAT)
+    if (RenderFormatIsDepth(desc.format))
         desc.flags = RenderTextureFlag::DEPTH_TARGET;
     else if (usage != 0)
         desc.flags = RenderTextureFlag::RENDER_TARGET;
@@ -3158,9 +3269,9 @@ static GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t for
             desc.multisampling.sampleCount = multiSample == 1 ? RenderSampleCount::COUNT_2 : RenderSampleCount::COUNT_4;
         }
         desc.format = ConvertFormat(format);
-        desc.flags = desc.format == RenderFormat::D32_FLOAT ? RenderTextureFlag::DEPTH_TARGET : RenderTextureFlag::RENDER_TARGET;
+        desc.flags = RenderFormatIsDepth(desc.format) ? RenderTextureFlag::DEPTH_TARGET : RenderTextureFlag::RENDER_TARGET;
 
-        surface = g_userHeap.AllocPhysical<GuestSurface>(desc.format == RenderFormat::D32_FLOAT ? 
+        surface = g_userHeap.AllocPhysical<GuestSurface>(RenderFormatIsDepth(desc.format) ?
             ResourceType::DepthStencil : ResourceType::RenderTarget);
 
         surface->textureHolder = g_device->createTexture(desc);
@@ -3357,18 +3468,18 @@ static bool PopulateBarriersForStretchRect(GuestSurface* renderTarget, GuestSurf
                 // Hardware depth resolve is only supported on D3D12 when programmable sample positions are available.
                 bool hardwareDepthResolveAvailable = g_hardwareDepthResolve && !g_vulkan && g_capabilities.sampleLocations;
 
-                if (surface->format != RenderFormat::D32_FLOAT || hardwareDepthResolveAvailable)
+                if (!RenderFormatIsDepth(surface->format) || hardwareDepthResolveAvailable)
                 {
                     srcLayout = RenderTextureLayout::RESOLVE_SOURCE;
                     dstLayout = RenderTextureLayout::RESOLVE_DEST;
                     shaderResolve = false;
                 }
             }
-            
+
             if (shaderResolve)
             {
                 srcLayout = RenderTextureLayout::SHADER_READ;
-                dstLayout = (surface->format == RenderFormat::D32_FLOAT ? RenderTextureLayout::DEPTH_WRITE : RenderTextureLayout::COLOR_WRITE);
+                dstLayout = (RenderFormatIsDepth(surface->format) ? RenderTextureLayout::DEPTH_WRITE : RenderTextureLayout::COLOR_WRITE);
             }
 
             AddBarrier(surface, srcLayout);
@@ -3392,6 +3503,7 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
         if (surface != nullptr && !surface->destinationTextures.empty())
         {
             const bool multiSampling = surface->sampleCount != RenderSampleCount::COUNT_1;
+            const bool isDepthStencil = RenderFormatIsDepth(surface->format);
 
             for (const auto texture : surface->destinationTextures)
             {
@@ -3401,9 +3513,9 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
                 {
                     bool hardwareDepthResolveAvailable = g_hardwareDepthResolve && !g_vulkan && g_capabilities.sampleLocations;
 
-                    if (surface->format != RenderFormat::D32_FLOAT || hardwareDepthResolveAvailable)
+                    if (!isDepthStencil || hardwareDepthResolveAvailable)
                     {
-                        if (surface->format == RenderFormat::D32_FLOAT)
+                        if (isDepthStencil)
                             commandList->resolveTextureRegion(texture->texture, 0, 0, surface->texture, nullptr, RenderResolveMode::MIN);
                         else
                             commandList->resolveTexture(texture->texture, surface->texture);
@@ -3436,7 +3548,7 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
                             break;
                         }
 
-                        if (texture->format == RenderFormat::D32_FLOAT)
+                        if (isDepthStencil)
                         {
                             pipeline = g_resolveMsaaDepthPipelines[pipelineIndex].get();
                         }
@@ -3460,7 +3572,7 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
                     }
                     else
                     {
-                        if (texture->format == RenderFormat::D32_FLOAT)
+                        if (isDepthStencil)
                         {
                             pipeline = g_copyDepthPipeline.get();
                         }
@@ -3485,7 +3597,7 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
 
                     if (texture->framebuffer == nullptr)
                     {
-                        if (texture->format == RenderFormat::D32_FLOAT)
+                        if (isDepthStencil)
                         {
                             RenderFramebufferDesc desc;
                             desc.depthAttachment = texture->texture;
@@ -3546,7 +3658,7 @@ static void ProcExecutePendingStretchRectCommands(const RenderCommand& cmd)
     for (const auto surface : g_pendingSurfaceCopies)
     {
         // Depth stencil textures in this game are guaranteed to be transient.
-        if (surface->format != RenderFormat::D32_FLOAT)
+        if (!RenderFormatIsDepth(surface->format))
             foundAny |= PopulateBarriersForStretchRect(surface, nullptr);
     }
 
@@ -3556,7 +3668,7 @@ static void ProcExecutePendingStretchRectCommands(const RenderCommand& cmd)
 
         for (const auto surface : g_pendingSurfaceCopies)
         {
-            if (surface->format != RenderFormat::D32_FLOAT)
+            if (!RenderFormatIsDepth(surface->format))
                 ExecutePendingStretchRectCommands(surface, nullptr);
 
             for (const auto texture : surface->destinationTextures)
@@ -3638,7 +3750,7 @@ static void SetFramebuffer(GuestSurface* renderTarget, GuestSurface* depthStenci
     }
 }
 
-static void Clear(GuestDevice* device, uint32_t flags, uint32_t, be<float>* color, double z) 
+static void Clear(GuestDevice* device, uint32_t flags, uint32_t, be<float>* color, double z, uint32_t stencil)
 {
     RenderCommand cmd;
     cmd.type = RenderCommandType::Clear;
@@ -3648,6 +3760,7 @@ static void Clear(GuestDevice* device, uint32_t flags, uint32_t, be<float>* colo
     cmd.clear.color[2] = color[2];
     cmd.clear.color[3] = color[3];
     cmd.clear.z = float(z);
+    cmd.clear.stencil = stencil;
     g_renderQueue.enqueue(cmd);
 }
 
@@ -3684,13 +3797,15 @@ static void ProcClear(const RenderCommand& cmd)
         commandList->clearColor(0, RenderColor(args.color[0], args.color[1], args.color[2], args.color[3]));
     }
 
-    if (g_depthStencil != nullptr && (args.flags & D3DCLEAR_ZBUFFER) != 0)
+    const bool clearDepth = (args.flags & D3DCLEAR_ZBUFFER) != 0;
+    const bool clearStencil = (args.flags & D3DCLEAR_STENCIL) != 0;
+    if (g_depthStencil != nullptr && (clearDepth || clearStencil))
     {
         if (!canClearInOnePass) {
             SetFramebuffer(nullptr, g_depthStencil, true);
         }
 
-        commandList->clearDepth(true, args.z);
+        commandList->clearDepthStencil(clearDepth, clearStencil, args.z, args.stencil);
     }
 }
 
@@ -3988,13 +4103,37 @@ static RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specCons
 
 static void SanitizePipelineState(PipelineState& pipelineState)
 {
+    if (!pipelineState.zEnable && !pipelineState.stencilEnable)
+    {
+        pipelineState.depthStencilFormat = RenderFormat::UNKNOWN;
+    }
+
     if (!pipelineState.zEnable)
     {
         pipelineState.zWriteEnable = false;
         pipelineState.zFunc = RenderComparisonFunction::LESS;
         pipelineState.slopeScaledDepthBias = 0.0f;
         pipelineState.depthBias = 0;
-        pipelineState.depthStencilFormat = RenderFormat::UNKNOWN;
+    }
+
+    if (!pipelineState.stencilEnable)
+    {
+        pipelineState.stencilTwoSided = false;
+        pipelineState.stencilFunc = RenderComparisonFunction::ALWAYS;
+        pipelineState.stencilFail = RenderStencilOp::KEEP;
+        pipelineState.stencilZFail = RenderStencilOp::KEEP;
+        pipelineState.stencilPass = RenderStencilOp::KEEP;
+        pipelineState.stencilMask = 0xFFFFFFFF;
+        pipelineState.stencilWriteMask = 0xFFFFFFFF;
+        pipelineState.stencilRef = 0;
+    }
+
+    if (!pipelineState.stencilTwoSided)
+    {
+        pipelineState.stencilFuncCCW = pipelineState.stencilFunc;
+        pipelineState.stencilFailCCW = pipelineState.stencilFail;
+        pipelineState.stencilZFailCCW = pipelineState.stencilZFail;
+        pipelineState.stencilPassCCW = pipelineState.stencilPass;
     }
 
     if (pipelineState.slopeScaledDepthBias == 0.0f)
@@ -4046,6 +4185,22 @@ static std::unique_ptr<RenderPipeline> CreateGraphicsPipeline(const PipelineStat
     desc.depthEnabled = pipelineState.zEnable;
     desc.depthWriteEnabled = pipelineState.zWriteEnable;
     desc.depthBias = pipelineState.depthBias;
+    desc.stencilEnabled = pipelineState.stencilEnable;
+    desc.stencilReadMask = pipelineState.stencilMask;
+    desc.stencilWriteMask = pipelineState.stencilWriteMask;
+    desc.stencilReference = pipelineState.stencilRef;
+    desc.stencilFrontFace.compareFunction = pipelineState.stencilFunc;
+    desc.stencilFrontFace.failOp = pipelineState.stencilFail;
+    desc.stencilFrontFace.depthFailOp = pipelineState.stencilZFail;
+    desc.stencilFrontFace.passOp = pipelineState.stencilPass;
+    if (pipelineState.stencilTwoSided) {
+        desc.stencilBackFace.compareFunction = pipelineState.stencilFuncCCW;
+        desc.stencilBackFace.failOp = pipelineState.stencilFailCCW;
+        desc.stencilBackFace.depthFailOp = pipelineState.stencilZFailCCW;
+        desc.stencilBackFace.passOp = pipelineState.stencilPassCCW;
+    } else {
+        desc.stencilBackFace = desc.stencilFrontFace;
+    }
     desc.slopeScaledDepthBias = pipelineState.slopeScaledDepthBias;
     desc.dynamicDepthBiasEnabled = g_capabilities.dynamicDepthBias;
     desc.depthClipEnabled = true;
@@ -4435,13 +4590,13 @@ static constexpr float COMMON_SLOPE_SCALED_DEPTH_BIAS_VALUE = 1.0f;
 static void FlushRenderStateForRenderThread()
 {
     auto renderTarget = g_pipelineState.colorWriteEnable ? g_renderTarget : nullptr;
-    auto depthStencil = g_pipelineState.zEnable ? g_depthStencil : nullptr;
+    auto depthStencil = g_pipelineState.zEnable || g_pipelineState.stencilEnable ? g_depthStencil : nullptr;
 
     bool foundAny = PopulateBarriersForStretchRect(renderTarget, depthStencil);
 
     for (const auto surface : g_pendingMsaaResolves)
     {
-        bool isDepthStencil = (surface->format == RenderFormat::D32_FLOAT);
+        bool isDepthStencil = RenderFormatIsDepth(surface->format);
         foundAny |= PopulateBarriersForStretchRect(isDepthStencil ? nullptr : surface, isDepthStencil ? surface : nullptr);
     }
 
@@ -4452,7 +4607,7 @@ static void FlushRenderStateForRenderThread()
 
         for (const auto surface : g_pendingMsaaResolves)
         {
-            bool isDepthStencil = (surface->format == RenderFormat::D32_FLOAT);
+            bool isDepthStencil = RenderFormatIsDepth(surface->format);
             ExecutePendingStretchRectCommands(isDepthStencil ? nullptr : surface, isDepthStencil ? surface : nullptr);
         }
     }
@@ -6724,7 +6879,7 @@ static void CompileMeshPipeline(const Mesh& mesh, CompilationArgs& args)
             }
 
             pipelineState.renderTargetFormat = RenderFormat::R16G16B16A16_FLOAT;
-            pipelineState.depthStencilFormat = RenderFormat::D32_FLOAT;
+            pipelineState.depthStencilFormat = RenderFormat::D32_FLOAT_S8_UINT;
             pipelineState.sampleCount = Config::AntiAliasing != EAntiAliasing::None ? int32_t(Config::AntiAliasing.Value) : 1;
 
             if (pipelineState.vertexDeclaration->hasR11G11B10Normal)
@@ -6948,7 +7103,7 @@ static void CompileParticleMaterialPipeline(const Hedgehog::Sparkle::CParticleMa
     pipelineState.destBlendAlpha = RenderBlend::INV_SRC_ALPHA;
     pipelineState.primitiveTopology = RenderPrimitiveTopology::TRIANGLE_STRIP;
     pipelineState.vertexStrides[0] = isMeshShader ? 104 : 28;
-    pipelineState.depthStencilFormat = RenderFormat::D32_FLOAT;
+    pipelineState.depthStencilFormat = RenderFormat::D32_FLOAT_S8_UINT;
     pipelineState.specConstants = SPEC_CONSTANT_REVERSE_Z;
 
     if (pipelineState.vertexDeclaration->hasR11G11B10Normal)
@@ -7349,7 +7504,7 @@ static void PipelineTaskConsumerThread()
                     // Compile both MSAA and non MSAA variants to work with reflection maps. The render formats are an assumption but it should hold true.
                     if (Config::AntiAliasing != EAntiAliasing::None &&
                         pipelineState.renderTargetFormat == RenderFormat::R16G16B16A16_FLOAT && 
-                        pipelineState.depthStencilFormat == RenderFormat::D32_FLOAT)
+                        pipelineState.depthStencilFormat == RenderFormat::D32_FLOAT_S8_UINT)
                     {
                         auto msaaPipelineState = pipelineState;
                         msaaPipelineState.sampleCount = int32_t(Config::AntiAliasing.Value);
@@ -7414,7 +7569,7 @@ static void PipelineTaskConsumerThread()
                 for (auto& [hash, pipelineState] : asyncPipelines)
                 {
                     bool alphaTest = (pipelineState.specConstants & (SPEC_CONSTANT_ALPHA_TEST | SPEC_CONSTANT_ALPHA_TO_COVERAGE)) != 0;
-                    bool msaa = pipelineState.sampleCount != 1 || (pipelineState.renderTargetFormat == RenderFormat::R16G16B16A16_FLOAT && pipelineState.depthStencilFormat == RenderFormat::D32_FLOAT);
+                    bool msaa = pipelineState.sampleCount != 1 || (pipelineState.renderTargetFormat == RenderFormat::R16G16B16A16_FLOAT && pipelineState.depthStencilFormat == RenderFormat::D32_FLOAT_S8_UINT);
 
                     pipelineState.sampleCount = 1;
                     pipelineState.enableAlphaToCoverage = false;
@@ -7963,6 +8118,19 @@ GUEST_FUNCTION_HOOK(sub_82541750, SetRenderState<D3DRS_SRCBLENDALPHA>);
 GUEST_FUNCTION_HOOK(sub_825417C0, SetRenderState<D3DRS_DESTBLENDALPHA>);
 GUEST_FUNCTION_HOOK(sub_825416E0, SetRenderState<D3DRS_BLENDOPALPHA>);
 GUEST_FUNCTION_HOOK(sub_82542050, SetRenderState<D3DRS_COLORWRITEENABLE>);
+GUEST_FUNCTION_HOOK(sub_82541B30, SetRenderState<D3DRS_STENCILENABLE>);
+GUEST_FUNCTION_HOOK(sub_82541B78, SetRenderState<D3DRS_TWOSIDEDSTENCILMODE>);
+GUEST_FUNCTION_HOOK(sub_82541BE8, SetRenderState<D3DRS_STENCILFAIL>);
+GUEST_FUNCTION_HOOK(sub_82541C28, SetRenderState<D3DRS_STENCILZFAIL>);
+GUEST_FUNCTION_HOOK(sub_82541C68, SetRenderState<D3DRS_STENCILPASS>);
+GUEST_FUNCTION_HOOK(sub_82541BB8, SetRenderState<D3DRS_STENCILFUNC>);
+GUEST_FUNCTION_HOOK(sub_82541D78, SetRenderState<D3DRS_STENCILREF>);
+GUEST_FUNCTION_HOOK(sub_82541D98, SetRenderState<D3DRS_STENCILMASK>);
+GUEST_FUNCTION_HOOK(sub_82541DB8, SetRenderState<D3DRS_STENCILWRITEMASK>);
+GUEST_FUNCTION_HOOK(sub_82541CC8, SetRenderState<D3DRS_CCW_STENCILFAIL>);
+GUEST_FUNCTION_HOOK(sub_82541D08, SetRenderState<D3DRS_CCW_STENCILZFAIL>);
+GUEST_FUNCTION_HOOK(sub_82541D48, SetRenderState<D3DRS_CCW_STENCILPASS>);
+GUEST_FUNCTION_HOOK(sub_82541C98, SetRenderState<D3DRS_CCW_STENCILFUNC>);
 
 int GetType(GuestResource* resource) {
     if (resource->type == ResourceType::Texture) return 3;
@@ -8052,7 +8220,7 @@ int D3DDevice_BeginTiling(GuestDevice* device, uint32_t flags, uint32_t count, R
     // for (uint32_t i = 0; i < count; i++) {
     //     printf("pTileRects: %d %d %d %d\n", pTileRects[i].x1.get(), pTileRects[i].y1.get(), pTileRects[i].x2.get(), pTileRects[i].y2.get());
     // }
-    Clear(device, 0x3F, 0, pClearColor, clearZ);
+    Clear(device, 0x3F, 0, pClearColor, clearZ, clearStencil);
     return 0;
 }
 

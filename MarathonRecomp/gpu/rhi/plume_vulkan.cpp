@@ -163,6 +163,8 @@ namespace plume {
             return VK_FORMAT_R32_SFLOAT;
         case RenderFormat::D32_FLOAT:
             return VK_FORMAT_D32_SFLOAT;
+        case RenderFormat::D32_FLOAT_S8_UINT:
+            return VK_FORMAT_D32_SFLOAT_S8_UINT;
         case RenderFormat::R32_FLOAT:
             return VK_FORMAT_R32_SFLOAT;
         case RenderFormat::R32_UINT:
@@ -474,6 +476,30 @@ namespace plume {
         default:
             assert(false && "Unknown comparison function.");
             return VK_COMPARE_OP_MAX_ENUM;
+        }
+    }
+
+    static VkStencilOp toVk(RenderStencilOp operation) {
+        switch (operation) {
+        case RenderStencilOp::KEEP:
+            return VK_STENCIL_OP_KEEP;
+        case RenderStencilOp::ZERO:
+            return VK_STENCIL_OP_ZERO;
+        case RenderStencilOp::REPLACE:
+            return VK_STENCIL_OP_REPLACE;
+        case RenderStencilOp::INCREMENT_AND_CLAMP:
+            return VK_STENCIL_OP_INCREMENT_AND_CLAMP;
+        case RenderStencilOp::DECREMENT_AND_CLAMP:
+            return VK_STENCIL_OP_DECREMENT_AND_CLAMP;
+        case RenderStencilOp::INVERT:
+            return VK_STENCIL_OP_INVERT;
+        case RenderStencilOp::INCREMENT_AND_WRAP:
+            return VK_STENCIL_OP_INCREMENT_AND_WRAP;
+        case RenderStencilOp::DECREMENT_AND_WRAP:
+            return VK_STENCIL_OP_DECREMENT_AND_WRAP;
+        default:
+            assert(false && "Unknown stencil operation.");
+            return VK_STENCIL_OP_MAX_ENUM;
         }
     }
 
@@ -1536,6 +1562,21 @@ namespace plume {
         depthStencil.depthBoundsTestEnable = VK_FALSE;
         depthStencil.minDepthBounds = 0.0f;
         depthStencil.maxDepthBounds = 1.0f;
+        depthStencil.stencilTestEnable = desc.stencilEnabled;
+        depthStencil.front.passOp = toVk(desc.stencilFrontFace.passOp);
+        depthStencil.front.failOp = toVk(desc.stencilFrontFace.failOp);
+        depthStencil.front.depthFailOp = toVk(desc.stencilFrontFace.depthFailOp);
+        depthStencil.front.compareOp = toVk(desc.stencilFrontFace.compareFunction);
+        depthStencil.front.compareMask = desc.stencilReadMask;
+        depthStencil.front.writeMask = desc.stencilWriteMask;
+        depthStencil.front.reference = desc.stencilReference;
+        depthStencil.back.passOp = toVk(desc.stencilBackFace.passOp);
+        depthStencil.back.failOp = toVk(desc.stencilBackFace.failOp);
+        depthStencil.back.depthFailOp = toVk(desc.stencilBackFace.depthFailOp);
+        depthStencil.back.compareOp = toVk(desc.stencilBackFace.compareFunction);
+        depthStencil.back.compareMask = desc.stencilReadMask;
+        depthStencil.back.writeMask = desc.stencilWriteMask;
+        depthStencil.back.reference = desc.stencilReference;
 
         thread_local std::vector<VkDynamicState> dynamicStates;
         dynamicStates.clear();
@@ -1584,7 +1625,7 @@ namespace plume {
             return;
         }
     }
-    
+
     VulkanGraphicsPipeline::~VulkanGraphicsPipeline() {
         if (vk != VK_NULL_HANDLE) {
             vkDestroyPipeline(device->vk, vk, nullptr);
@@ -2753,7 +2794,14 @@ namespace plume {
             imageMemoryBarrier.newLayout = toImageLayout(textureBarrier.layout);
             imageMemoryBarrier.subresourceRange.levelCount = interfaceTexture->desc.mipLevels;
             imageMemoryBarrier.subresourceRange.layerCount = interfaceTexture->desc.arraySize;
-            imageMemoryBarrier.subresourceRange.aspectMask = (interfaceTexture->desc.flags & RenderTextureFlag::DEPTH_TARGET) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
+            if (interfaceTexture->desc.flags & RenderTextureFlag::DEPTH_TARGET) {
+                imageMemoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+                if (RenderFormatIsStencil(interfaceTexture->desc.format)) {
+                    imageMemoryBarrier.subresourceRange.aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
+                }
+            } else {
+                imageMemoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            }
             imageMemoryBarriers.emplace_back(imageMemoryBarrier);
             srcStageMask |= toStageFlags(interfaceTexture->barrierStages, geometryEnabled, rtEnabled);
             interfaceTexture->textureLayout = textureBarrier.layout;
@@ -3036,7 +3084,7 @@ namespace plume {
         vkCmdClearAttachments(vk, 1, &attachment, uint32_t(rectVector.size()), rectVector.data());
     }
 
-    void VulkanCommandList::clearDepth(bool clearDepth, float depthValue, const RenderRect *clearRects, uint32_t clearRectsCount) {
+    void VulkanCommandList::clearDepthStencil(bool clearDepth, bool clearStencil, float depthValue, uint32_t stencilValue, const RenderRect *clearRects, uint32_t clearRectsCount) {
         assert(targetFramebuffer != nullptr);
         assert((clearRectsCount == 0) || (clearRects != nullptr));
 
@@ -3047,9 +3095,13 @@ namespace plume {
 
         VkClearAttachment attachment = {};
         attachment.clearValue.depthStencil.depth = depthValue;
+        attachment.clearValue.depthStencil.stencil = stencilValue;
 
         if (clearDepth) {
-            attachment.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+            attachment.aspectMask |= VK_IMAGE_ASPECT_DEPTH_BIT;
+        }
+        if (clearStencil) {
+            attachment.aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
         }
 
         vkCmdClearAttachments(vk, 1, &attachment, uint32_t(rectVector.size()), rectVector.data());
@@ -4247,10 +4299,9 @@ namespace plume {
     const RenderDeviceDescription &VulkanDevice::getDescription() const {
         return description;
     }
-    
+
     RenderSampleCounts VulkanDevice::getSampleCountsSupported(RenderFormat format) const {
-        const bool isDepthFormat = (format == RenderFormat::D16_UNORM) || (format == RenderFormat::D32_FLOAT);
-        if (isDepthFormat) {
+        if (RenderFormatIsDepth(format)) {
             return RenderSampleCounts(physicalDeviceProperties.limits.framebufferDepthSampleCounts);
         }
         else {

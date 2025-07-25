@@ -116,6 +116,7 @@ namespace plume {
         R16G16_SINT,
         R32_TYPELESS,
         D32_FLOAT,
+        D32_FLOAT_S8_UINT,
         R32_FLOAT,
         R32_UINT,
         R32_SINT,
@@ -224,6 +225,18 @@ namespace plume {
         NOT_EQUAL,
         GREATER_EQUAL,
         ALWAYS
+    };
+
+    enum class RenderStencilOp {
+        UNKNOWN,
+        KEEP,
+        ZERO,
+        REPLACE,
+        INCREMENT_AND_CLAMP,
+        DECREMENT_AND_CLAMP,
+        INVERT,
+        INCREMENT_AND_WRAP,
+        DECREMENT_AND_WRAP
     };
 
     enum class RenderInputSlotClassification {
@@ -523,6 +536,7 @@ namespace plume {
         case RenderFormat::R32G32_FLOAT:
         case RenderFormat::R32G32_UINT:
         case RenderFormat::R32G32_SINT:
+        case RenderFormat::D32_FLOAT_S8_UINT: // Has 24 unused bits
             return 8;
         case RenderFormat::R8G8B8A8_TYPELESS:
         case RenderFormat::R8G8B8A8_UNORM:
@@ -621,6 +635,7 @@ namespace plume {
         case RenderFormat::R16G16_SINT:
         case RenderFormat::R32_TYPELESS:
         case RenderFormat::D32_FLOAT:
+        case RenderFormat::D32_FLOAT_S8_UINT:
         case RenderFormat::R32_FLOAT:
         case RenderFormat::R32_UINT:
         case RenderFormat::R32_SINT:
@@ -669,6 +684,21 @@ namespace plume {
             return 1;
         }
     };
+
+    constexpr bool RenderFormatIsDepth(RenderFormat format) {
+        switch (format) {
+        case RenderFormat::D16_UNORM:
+        case RenderFormat::D32_FLOAT:
+        case RenderFormat::D32_FLOAT_S8_UINT:
+            return true;
+        default:
+            return false;
+        }
+    }
+
+    constexpr bool RenderFormatIsStencil(RenderFormat format) {
+        return format == RenderFormat::D32_FLOAT_S8_UINT;
+    }
 
     // Concrete structs.
 
@@ -1158,6 +1188,13 @@ namespace plume {
         }
     };
 
+    struct RenderStencilFaceDesc {
+        RenderStencilOp passOp = RenderStencilOp::KEEP;
+        RenderStencilOp failOp = RenderStencilOp::KEEP;
+        RenderStencilOp depthFailOp = RenderStencilOp::KEEP;
+        RenderComparisonFunction compareFunction = RenderComparisonFunction::ALWAYS;
+    };
+
     struct RenderSpecConstant {
         uint32_t index = 0;
         uint32_t value = 0;
@@ -1198,6 +1235,12 @@ namespace plume {
         bool dynamicDepthBiasEnabled = false;
         bool depthEnabled = false;
         bool depthWriteEnabled = false;
+        bool stencilEnabled = false;
+        uint32_t stencilReadMask = 0xFFFFFFFF;
+        uint32_t stencilWriteMask = 0xFFFFFFFF;
+        uint32_t stencilReference = 0;
+        RenderStencilFaceDesc stencilFrontFace;
+        RenderStencilFaceDesc stencilBackFace;
         RenderMultisampling multisampling;
         bool alphaToCoverageEnabled = false;
         RenderPrimitiveTopology primitiveTopology = RenderPrimitiveTopology::TRIANGLE_LIST;

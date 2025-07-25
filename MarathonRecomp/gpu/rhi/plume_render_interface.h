@@ -138,7 +138,7 @@ namespace plume {
         virtual void setFramebuffer(const RenderFramebuffer *framebuffer) = 0;
         virtual void setDepthBias(float depthBias, float depthBiasClamp, float slopeScaledDepthBias) = 0;
         virtual void clearColor(uint32_t attachmentIndex = 0, RenderColor colorValue = RenderColor(), const RenderRect *clearRects = nullptr, uint32_t clearRectsCount = 0) = 0;
-        virtual void clearDepth(bool clearDepth = true, float depthValue = 1.0f, const RenderRect *clearRects = nullptr, uint32_t clearRectsCount = 0) = 0;
+        virtual void clearDepthStencil(bool clearDepth = true, bool clearStencil = true, float depthValue = 1.0f, uint32_t stencilValue = 0, const RenderRect *clearRects = nullptr, uint32_t clearRectsCount = 0) = 0;
         virtual void copyBufferRegion(RenderBufferReference dstBuffer, RenderBufferReference srcBuffer, uint64_t size) = 0;
         virtual void copyTextureRegion(const RenderTextureCopyLocation &dstLocation, const RenderTextureCopyLocation &srcLocation, uint32_t dstX = 0, uint32_t dstY = 0, uint32_t dstZ = 0, const RenderBox *srcBox = nullptr) = 0;
         virtual void copyBuffer(const RenderBuffer *dstBuffer, const RenderBuffer *srcBuffer) = 0;
@@ -190,6 +190,10 @@ namespace plume {
 
         inline void setScissors(const RenderRect &scissorRect) {
             setScissors(&scissorRect, 1);
+        }
+
+        inline void clearDepth(bool clearDepth = true, float depthValue = 1.0f, const RenderRect *clearRects = nullptr, uint32_t clearRectsCount = 0) {
+            clearDepthStencil(clearDepth, false, depthValue, 0, clearRects, clearRectsCount);
         }
     };
 
