@@ -20,7 +20,7 @@ cbuffer SharedConstants : register(b2, space4)
 
 #endif
 
-void main(
+void shaderMain(
 	[[vk::location(0)]] in float4 iPosition0 : POSITION0,
 	[[vk::location(8)]] in float4 iColor0 : COLOR0,
 	[[vk::location(4)]] in float4 iTexCoord0 : TEXCOORD0,

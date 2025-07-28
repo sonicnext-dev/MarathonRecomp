@@ -20,7 +20,7 @@ cbuffer SharedConstants : register(b2, space4)
 
 #endif
 
-float4 main(in float4 position : SV_Position) : SV_Target
+float4 shaderMain(in float4 position : SV_Position) : SV_Target
 {
     Texture2D<float4> texture = g_Texture2DDescriptorHeap[g_TextureDescriptorIndex];
     

@@ -16,7 +16,7 @@ cbuffer SharedConstants : register(b2, space4)
 
 #endif
 
-float4 main(
+float4 shaderMain(
 	in float4 iPosition : SV_Position,
 	in float4 iTexCoord0 : TEXCOORD0,
 	in float4 iTexCoord1 : TEXCOORD1) : SV_Target

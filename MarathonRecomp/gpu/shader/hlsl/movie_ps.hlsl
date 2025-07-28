@@ -1,6 +1,6 @@
 #include "movie_common.hlsli"
 
-PixelShaderOutput main(in Interpolators In)
+PixelShaderOutput shaderMain(in Interpolators In)
 {
     Texture2D<float4> Tex0 = g_Texture2DDescriptorHeap[Tex0_ResourceDescriptorIndex];
     Texture2D<float4> Tex1 = g_Texture2DDescriptorHeap[Tex1_ResourceDescriptorIndex];

@@ -1449,7 +1449,7 @@ static std::unique_ptr<GuestShader> g_enhancedMotionBlurShader;
     g_device->createShader( \
         (g_backend == Backend::VULKAN) ? g_##NAME##_spirv : g_##NAME##_dxil, \
         (g_backend == Backend::VULKAN) ? sizeof(g_##NAME##_spirv) : sizeof(g_##NAME##_dxil), \
-        "main", \
+        "shaderMain", \
         (g_backend == Backend::VULKAN) ? RenderShaderFormat::SPIRV : RenderShaderFormat::DXIL)
 
 #elif defined(MARATHON_RECOMP_METAL)
@@ -1458,13 +1458,13 @@ static std::unique_ptr<GuestShader> g_enhancedMotionBlurShader;
     g_device->createShader( \
         (g_backend == Backend::VULKAN) ? g_##NAME##_spirv : g_##NAME##_air, \
         (g_backend == Backend::VULKAN) ? sizeof(g_##NAME##_spirv) : sizeof(g_##NAME##_air), \
-        (g_backend == Backend::VULKAN) ? "main" : "shaderMain", \
+        "shaderMain", \
         (g_backend == Backend::VULKAN) ? RenderShaderFormat::SPIRV : RenderShaderFormat::METAL)
 
 #else
 
 #define CREATE_SHADER(NAME) \
-    g_device->createShader(g_##NAME##_spirv, sizeof(g_##NAME##_spirv), "main", RenderShaderFormat::SPIRV)
+    g_device->createShader(g_##NAME##_spirv, sizeof(g_##NAME##_spirv), "shaderMain", RenderShaderFormat::SPIRV)
 
 #endif
 
@@ -4039,7 +4039,7 @@ static RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specCons
                 bool result = smolv::Decode(compressedSpirvData, guestShader->shaderCacheEntry->spirvSize, decoded.data(), decoded.size());
                 assert(result);
 
-                guestShader->shader = g_device->createShader(decoded.data(), decoded.size(), "main", RenderShaderFormat::SPIRV);
+                guestShader->shader = g_device->createShader(decoded.data(), decoded.size(), "shaderMain", RenderShaderFormat::SPIRV);
 #ifdef _DEBUG
                 guestShader->shader->setName(fmt::format("{}:{:x}", guestShader->shaderCacheEntry->filename, guestShader->shaderCacheEntry->hash));
 #endif
@@ -4048,7 +4048,7 @@ static RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specCons
             case Backend::D3D12:
             {
                 guestShader->shader = g_device->createShader(g_shaderCache.get() + guestShader->shaderCacheEntry->dxilOffset, 
-                    guestShader->shaderCacheEntry->dxilSize, "main", RenderShaderFormat::DXIL);
+                    guestShader->shaderCacheEntry->dxilSize, "shaderMain", RenderShaderFormat::DXIL);
             }
             case Backend::METAL:
             {
