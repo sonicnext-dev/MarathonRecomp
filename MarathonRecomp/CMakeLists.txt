@@ -374,7 +374,7 @@ if (MARATHON_RECOMP_METAL)
     target_compile_definitions(MarathonRecomp PRIVATE MARATHON_RECOMP_METAL)
 endif()
 
-if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+if (SDL_VULKAN_ENABLED)
     target_compile_definitions(MarathonRecomp PRIVATE SDL_VULKAN_ENABLED)
 endif()
 
