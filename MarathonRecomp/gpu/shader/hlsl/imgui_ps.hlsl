@@ -11,15 +11,15 @@ float4 SamplePoint(int2 position)
 }
 
 float4 SampleLinear(float2 uvTexspace)
-{
+{    
     int2 integerPart = floor(uvTexspace);
     float2 fracPart = frac(uvTexspace);
-
+    
     float4 topLeft = SamplePoint(integerPart + float2(0, 0));
     float4 topRight = SamplePoint(integerPart + float2(1, 0));
     float4 bottomLeft = SamplePoint(integerPart + float2(0, 1));
     float4 bottomRight = SamplePoint(integerPart + float2(1, 1));
-
+    
     float4 top = lerp(topLeft, topRight, fracPart.x);
     float4 bottom = lerp(bottomLeft, bottomRight, fracPart.x);
 

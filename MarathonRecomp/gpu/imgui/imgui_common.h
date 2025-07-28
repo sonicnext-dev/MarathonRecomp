@@ -10,7 +10,7 @@
 #define IMGUI_SHADER_MODIFIER_RECTANGLE_BEVEL          7
 #define IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT         8
 
-#ifdef __cplusplus
+#if defined(__cplusplus) && !defined(__air__)
 
 enum class ImGuiCallback : int32_t
 {

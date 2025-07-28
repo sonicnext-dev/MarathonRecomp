@@ -42,54 +42,80 @@
 #include "../../tools/XenosRecomp/XenosRecomp/shader_common.h"
 
 #ifdef MARATHON_RECOMP_D3D12
-#include "shader/blend_color_alpha_ps.hlsl.dxil.h"
-#include "shader/copy_vs.hlsl.dxil.h"
-#include "shader/copy_color_ps.hlsl.dxil.h"
-#include "shader/copy_depth_ps.hlsl.dxil.h"
-#include "shader/csd_filter_ps.hlsl.dxil.h"
-#include "shader/csd_no_tex_vs.hlsl.dxil.h"
-#include "shader/csd_vs.hlsl.dxil.h"
-#include "shader/enhanced_motion_blur_ps.hlsl.dxil.h"
-#include "shader/gamma_correction_ps.hlsl.dxil.h"
-#include "shader/gaussian_blur_3x3.hlsl.dxil.h"
-#include "shader/gaussian_blur_5x5.hlsl.dxil.h"
-#include "shader/gaussian_blur_7x7.hlsl.dxil.h"
-#include "shader/gaussian_blur_9x9.hlsl.dxil.h"
-#include "shader/imgui_ps.hlsl.dxil.h"
-#include "shader/imgui_vs.hlsl.dxil.h"
-#include "shader/movie_ps.hlsl.dxil.h"
-#include "shader/movie_vs.hlsl.dxil.h"
-#include "shader/resolve_msaa_color_2x.hlsl.dxil.h"
-#include "shader/resolve_msaa_color_4x.hlsl.dxil.h"
-#include "shader/resolve_msaa_color_8x.hlsl.dxil.h"
-#include "shader/resolve_msaa_depth_2x.hlsl.dxil.h"
-#include "shader/resolve_msaa_depth_4x.hlsl.dxil.h"
-#include "shader/resolve_msaa_depth_8x.hlsl.dxil.h"
+#include "shader/hlsl/blend_color_alpha_ps.hlsl.dxil.h"
+#include "shader/hlsl/copy_vs.hlsl.dxil.h"
+#include "shader/hlsl/copy_color_ps.hlsl.dxil.h"
+#include "shader/hlsl/copy_depth_ps.hlsl.dxil.h"
+#include "shader/hlsl/csd_filter_ps.hlsl.dxil.h"
+#include "shader/hlsl/csd_no_tex_vs.hlsl.dxil.h"
+#include "shader/hlsl/csd_vs.hlsl.dxil.h"
+#include "shader/hlsl/enhanced_motion_blur_ps.hlsl.dxil.h"
+#include "shader/hlsl/gamma_correction_ps.hlsl.dxil.h"
+#include "shader/hlsl/gaussian_blur_3x3.hlsl.dxil.h"
+#include "shader/hlsl/gaussian_blur_5x5.hlsl.dxil.h"
+#include "shader/hlsl/gaussian_blur_7x7.hlsl.dxil.h"
+#include "shader/hlsl/gaussian_blur_9x9.hlsl.dxil.h"
+#include "shader/hlsl/imgui_ps.hlsl.dxil.h"
+#include "shader/hlsl/imgui_vs.hlsl.dxil.h"
+#include "shader/hlsl/movie_ps.hlsl.dxil.h"
+#include "shader/hlsl/movie_vs.hlsl.dxil.h"
+#include "shader/hlsl/resolve_msaa_color_2x.hlsl.dxil.h"
+#include "shader/hlsl/resolve_msaa_color_4x.hlsl.dxil.h"
+#include "shader/hlsl/resolve_msaa_color_8x.hlsl.dxil.h"
+#include "shader/hlsl/resolve_msaa_depth_2x.hlsl.dxil.h"
+#include "shader/hlsl/resolve_msaa_depth_4x.hlsl.dxil.h"
+#include "shader/hlsl/resolve_msaa_depth_8x.hlsl.dxil.h"
 #endif
 
-#include "shader/blend_color_alpha_ps.hlsl.spirv.h"
-#include "shader/copy_vs.hlsl.spirv.h"
-#include "shader/copy_color_ps.hlsl.spirv.h"
-#include "shader/copy_depth_ps.hlsl.spirv.h"
-#include "shader/csd_filter_ps.hlsl.spirv.h"
-#include "shader/csd_no_tex_vs.hlsl.spirv.h"
-#include "shader/csd_vs.hlsl.spirv.h"
-#include "shader/enhanced_motion_blur_ps.hlsl.spirv.h"
-#include "shader/gamma_correction_ps.hlsl.spirv.h"
-#include "shader/gaussian_blur_3x3.hlsl.spirv.h"
-#include "shader/gaussian_blur_5x5.hlsl.spirv.h"
-#include "shader/gaussian_blur_7x7.hlsl.spirv.h"
-#include "shader/gaussian_blur_9x9.hlsl.spirv.h"
-#include "shader/imgui_ps.hlsl.spirv.h"
-#include "shader/imgui_vs.hlsl.spirv.h"
-#include "shader/movie_ps.hlsl.spirv.h"
-#include "shader/movie_vs.hlsl.spirv.h"
-#include "shader/resolve_msaa_color_2x.hlsl.spirv.h"
-#include "shader/resolve_msaa_color_4x.hlsl.spirv.h"
-#include "shader/resolve_msaa_color_8x.hlsl.spirv.h"
-#include "shader/resolve_msaa_depth_2x.hlsl.spirv.h"
-#include "shader/resolve_msaa_depth_4x.hlsl.spirv.h"
-#include "shader/resolve_msaa_depth_8x.hlsl.spirv.h"
+#ifdef MARATHON_RECOMP_METAL
+#include "shader/msl/blend_color_alpha_ps.metal.metallib.h"
+#include "shader/msl/copy_vs.metal.metallib.h"
+#include "shader/msl/copy_color_ps.metal.metallib.h"
+#include "shader/msl/copy_depth_ps.metal.metallib.h"
+#include "shader/msl/csd_filter_ps.metal.metallib.h"
+#include "shader/msl/csd_no_tex_vs.metal.metallib.h"
+#include "shader/msl/csd_vs.metal.metallib.h"
+#include "shader/msl/enhanced_motion_blur_ps.metal.metallib.h"
+#include "shader/msl/gamma_correction_ps.metal.metallib.h"
+#include "shader/msl/gaussian_blur_3x3.metal.metallib.h"
+#include "shader/msl/gaussian_blur_5x5.metal.metallib.h"
+#include "shader/msl/gaussian_blur_7x7.metal.metallib.h"
+#include "shader/msl/gaussian_blur_9x9.metal.metallib.h"
+#include "shader/msl/imgui_ps.metal.metallib.h"
+#include "shader/msl/imgui_vs.metal.metallib.h"
+#include "shader/msl/movie_ps.metal.metallib.h"
+#include "shader/msl/movie_vs.metal.metallib.h"
+#include "shader/msl/resolve_msaa_color_2x.metal.metallib.h"
+#include "shader/msl/resolve_msaa_color_4x.metal.metallib.h"
+#include "shader/msl/resolve_msaa_color_8x.metal.metallib.h"
+#include "shader/msl/resolve_msaa_depth_2x.metal.metallib.h"
+#include "shader/msl/resolve_msaa_depth_4x.metal.metallib.h"
+#include "shader/msl/resolve_msaa_depth_8x.metal.metallib.h"
+#endif
+
+#include "shader/hlsl/blend_color_alpha_ps.hlsl.spirv.h"
+#include "shader/hlsl/copy_vs.hlsl.spirv.h"
+#include "shader/hlsl/copy_color_ps.hlsl.spirv.h"
+#include "shader/hlsl/copy_depth_ps.hlsl.spirv.h"
+#include "shader/hlsl/csd_filter_ps.hlsl.spirv.h"
+#include "shader/hlsl/csd_no_tex_vs.hlsl.spirv.h"
+#include "shader/hlsl/csd_vs.hlsl.spirv.h"
+#include "shader/hlsl/enhanced_motion_blur_ps.hlsl.spirv.h"
+#include "shader/hlsl/gamma_correction_ps.hlsl.spirv.h"
+#include "shader/hlsl/gaussian_blur_3x3.hlsl.spirv.h"
+#include "shader/hlsl/gaussian_blur_5x5.hlsl.spirv.h"
+#include "shader/hlsl/gaussian_blur_7x7.hlsl.spirv.h"
+#include "shader/hlsl/gaussian_blur_9x9.hlsl.spirv.h"
+#include "shader/hlsl/imgui_ps.hlsl.spirv.h"
+#include "shader/hlsl/imgui_vs.hlsl.spirv.h"
+#include "shader/hlsl/movie_ps.hlsl.spirv.h"
+#include "shader/hlsl/movie_vs.hlsl.spirv.h"
+#include "shader/hlsl/resolve_msaa_color_2x.hlsl.spirv.h"
+#include "shader/hlsl/resolve_msaa_color_4x.hlsl.spirv.h"
+#include "shader/hlsl/resolve_msaa_color_8x.hlsl.spirv.h"
+#include "shader/hlsl/resolve_msaa_depth_2x.hlsl.spirv.h"
+#include "shader/hlsl/resolve_msaa_depth_4x.hlsl.spirv.h"
+#include "shader/hlsl/resolve_msaa_depth_8x.hlsl.spirv.h"
 
 #ifdef _WIN32
 extern "C"
@@ -103,6 +129,9 @@ namespace plume
 {
 #ifdef MARATHON_RECOMP_D3D12
     extern std::unique_ptr<RenderInterface> CreateD3D12Interface();
+#endif
+#ifdef MARATHON_RECOMP_METAL
+extern std::unique_ptr<RenderInterface> CreateMetalInterface();
 #endif
 #ifdef SDL_VULKAN_ENABLED
     extern std::unique_ptr<RenderInterface> CreateVulkanInterface(RenderWindow sdlWindow);
@@ -303,16 +332,13 @@ static Profiler g_swapChainAcquireProfiler;
 static bool g_profilerVisible;
 static bool g_profilerWasToggled;
 
-#ifdef MARATHON_RECOMP_D3D12
-static bool g_vulkan = false;
+#if !defined(MARATHON_RECOMP_D3D12) && !defined(MARATHON_RECOMP_METAL)
+static constexpr Backend g_backend = Backend::VULKAN;
 #else
-static constexpr bool g_vulkan = true;
+static Backend g_backend;
 #endif
 
 static bool g_triangleStripWorkaround = false;
-
-static bool g_hardwareResolve = true;
-static bool g_hardwareDepthResolve = true;
 
 static std::unique_ptr<RenderInterface> g_interface;
 static std::unique_ptr<RenderDevice> g_device;
@@ -795,18 +821,26 @@ static std::unique_ptr<uint8_t[]> g_buttonBcDiff;
 
 static void LoadEmbeddedResources()
 {
-    if (g_vulkan)
+    switch (g_backend)
     {
+    case Backend::VULKAN:
         g_shaderCache = std::make_unique<uint8_t[]>(g_spirvCacheDecompressedSize);
         ZSTD_decompress(g_shaderCache.get(), g_spirvCacheDecompressedSize, g_compressedSpirvCache, g_spirvCacheCompressedSize);
-    }
-#ifdef MARATHON_RECOMP_D3D12
-    else
-    {
+        break;
+#if defined(MARATHON_RECOMP_D3D12)
+    case Backend::D3D12:
         g_shaderCache = std::make_unique<uint8_t[]>(g_dxilCacheDecompressedSize);
         ZSTD_decompress(g_shaderCache.get(), g_dxilCacheDecompressedSize, g_compressedDxilCache, g_dxilCacheCompressedSize);
-    }
+        break;
+#elif defined(MARATHON_RECOMP_METAL)
+    case Backend::METAL:
+        g_shaderCache = std::make_unique<uint8_t[]>(g_airCacheDecompressedSize);
+        ZSTD_decompress(g_shaderCache.get(), g_airCacheDecompressedSize, g_compressedAirCache, g_airCacheCompressedSize);
+        break;
 #endif
+    default:
+        assert(false);
+    }
 
     g_buttonBcDiff = decompressZstd(g_button_bc_diff, g_button_bc_diff_uncompressed_size);
 }
@@ -1409,14 +1443,23 @@ static GuestShader* g_csdShader;
 
 static std::unique_ptr<GuestShader> g_enhancedMotionBlurShader;
 
-#ifdef MARATHON_RECOMP_D3D12
+#if defined(MARATHON_RECOMP_D3D12)
 
 #define CREATE_SHADER(NAME) \
     g_device->createShader( \
-        g_vulkan ? g_##NAME##_spirv : g_##NAME##_dxil, \
-        g_vulkan ? sizeof(g_##NAME##_spirv) : sizeof(g_##NAME##_dxil), \
+        (g_backend == Backend::VULKAN) ? g_##NAME##_spirv : g_##NAME##_dxil, \
+        (g_backend == Backend::VULKAN) ? sizeof(g_##NAME##_spirv) : sizeof(g_##NAME##_dxil), \
         "main", \
-        g_vulkan ? RenderShaderFormat::SPIRV : RenderShaderFormat::DXIL)
+        (g_backend == Backend::VULKAN) ? RenderShaderFormat::SPIRV : RenderShaderFormat::DXIL)
+
+#elif defined(MARATHON_RECOMP_METAL)
+
+#define CREATE_SHADER(NAME) \
+    g_device->createShader( \
+        (g_backend == Backend::VULKAN) ? g_##NAME##_spirv : g_##NAME##_air, \
+        (g_backend == Backend::VULKAN) ? sizeof(g_##NAME##_spirv) : sizeof(g_##NAME##_air), \
+        (g_backend == Backend::VULKAN) ? "main" : "shaderMain", \
+        (g_backend == Backend::VULKAN) ? RenderShaderFormat::SPIRV : RenderShaderFormat::METAL)
 
 #else
 
@@ -1783,8 +1826,10 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver)
 
     GameWindow::Init(sdlVideoDriver);
 
-#ifdef MARATHON_RECOMP_D3D12
-    g_vulkan = DetectWine() || Config::GraphicsAPI == EGraphicsAPI::Vulkan;
+#if defined(MARATHON_RECOMP_D3D12)
+    g_backend = (DetectWine() || Config::GraphicsAPI == EGraphicsAPI::Vulkan) ? Backend::VULKAN : Backend::D3D12;
+#elif defined(MARATHON_RECOMP_METAL)
+    g_backend = Config::GraphicsAPI == EGraphicsAPI::Vulkan ? Backend::VULKAN : Backend::METAL;
 #endif
 
     // Attempt to create the possible backends using a vector of function pointers. Whichever succeeds first will be the chosen API.
@@ -1792,8 +1837,11 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver)
     std::vector<RenderInterfaceFunction *> interfaceFunctions;
 
 #ifdef MARATHON_RECOMP_D3D12
-    interfaceFunctions.push_back(g_vulkan ? CreateVulkanInterfaceWrapper : CreateD3D12Interface);
-    interfaceFunctions.push_back(g_vulkan ? CreateD3D12Interface : CreateVulkanInterfaceWrapper);
+    interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateVulkanInterfaceWrapper : CreateD3D12Interface);
+    interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateD3D12Interface : CreateVulkanInterfaceWrapper);
+#elif defined(MARATHON_RECOMP_METAL)
+    interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateVulkanInterfaceWrapper : CreateMetalInterface);
+    interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateMetalInterface : CreateVulkanInterfaceWrapper);
 #else
     interfaceFunctions.push_back(CreateVulkanInterfaceWrapper);
 #endif
@@ -1808,7 +1856,7 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver)
             {
                 const RenderDeviceDescription &deviceDescription = g_device->getDescription();
                 
-#ifdef MARATHON_RECOMP_D3D12
+#if defined(MARATHON_RECOMP_D3D12)
                 if (interfaceFunction == CreateD3D12Interface)
                 {
                     if (deviceDescription.vendor == RenderDeviceVendor::AMD)
@@ -1830,7 +1878,9 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver)
                     g_hardwareDepthResolve = (deviceDescription.vendor != RenderDeviceVendor::INTEL);
                 }
 
-                g_vulkan = (interfaceFunction == CreateVulkanInterfaceWrapper);
+                g_backend = (interfaceFunction == CreateVulkanInterfaceWrapper) ? Backend::VULKAN : Backend::D3D12;
+#elif defined(MARATHON_RECOMP_METAL)
+                g_backend = (interfaceFunction == CreateVulkanInterfaceWrapper) ? Backend::VULKAN : Backend::METAL;
 #endif
                 // Enable triangle strip workaround if we are on AMD, as there is a bug where
                 // restart indices cause triangles to be culled incorrectly. Converting them to degenerate triangles fixes it.
@@ -1882,15 +1932,18 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver)
     switch (Config::TripleBuffering)
     {
     case ETripleBuffering::Auto:
-        if (g_vulkan)
-        {
+        switch (g_backend) {
+        case Backend::VULKAN:
             // Defaulting to 3 is fine if presentWait as supported, as the maximum frame latency allowed is only 1.
             bufferCount = g_device->getCapabilities().presentWait ? 3 : 2;
-        }
-        else
-        {
+            break;
+        case Backend::D3D12:
             // Defaulting to 3 is fine on D3D12 thanks to flip discard model.
             bufferCount = 3;
+            break;
+        case Backend::METAL:
+            bufferCount = 2;
+            break;
         }
 
         break;
@@ -1987,7 +2040,7 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver)
 
     pipelineLayoutBuilder.addDescriptorSet(descriptorSetBuilder);
 
-    if (g_vulkan)
+    if (g_backend != Backend::D3D12)
     {
         pipelineLayoutBuilder.addPushConstant(0, 4, 24, RenderShaderStageFlag::VERTEX | RenderShaderStageFlag::PIXEL);
     }
@@ -2480,12 +2533,25 @@ static void DrawProfiler()
         ImGui::Text("Present Wait: %s", g_capabilities.presentWait ? "Supported" : "Unsupported");
         ImGui::Text("Triangle Fan: %s", g_capabilities.triangleFan ? "Supported" : "Unsupported");
         ImGui::Text("Dynamic Depth Bias: %s", g_capabilities.dynamicDepthBias ? "Supported" : "Unsupported");
+        ImGui::Text("Hardware Resolve Modes: %s", g_capabilities.resolveModes ? "Supported" : "Unsupported");
         ImGui::Text("Triangle Strip Workaround: %s", g_triangleStripWorkaround ? "Enabled" : "Disabled");
-        ImGui::Text("Hardware Resolve: %s", g_hardwareResolve ? "Enabled" : "Disabled");
-        ImGui::Text("Hardware Depth Resolve: %s", g_hardwareDepthResolve ? "Enabled" : "Disabled");
         ImGui::NewLine();
 
-        ImGui::Text("API: %s", g_vulkan ? "Vulkan" : "D3D12");
+        std::string backend;
+
+        switch (g_backend) {
+        case Backend::VULKAN:
+            backend = "Vulkan";
+            break;
+        case Backend::D3D12:
+            backend = "D3D12";
+            break;
+        case Backend::METAL:
+            backend = "Metal";
+            break;
+        }
+
+        ImGui::Text("API: %s", backend.c_str());
         ImGui::Text("Device: %s", g_device->getDescription().name.c_str());
         ImGui::Text("Device Type: %s", DeviceTypeName(g_device->getDescription().type));
         ImGui::Text("VRAM: %.2f MiB", (double)(g_device->getDescription().dedicatedVideoMemory) / (1024.0 * 1024.0));
@@ -2906,7 +2972,7 @@ static void SetRootDescriptor(const UploadAllocation& allocation, size_t index)
 {
     auto& commandList = g_commandLists[g_frame];
 
-    if (g_vulkan)
+    if (g_backend != Backend::D3D12)
         commandList->setGraphicsPushConstants(0, &allocation.deviceAddress, 8 * index, 8);
     else
         commandList->setGraphicsRootDescriptor(allocation.buffer->at(allocation.offset), index);
@@ -3369,9 +3435,9 @@ static void ProcStretchRect(const RenderCommand& cmd)
         if (g_textures[i] == args.texture)
         {
             // TODO: Render depth directly to slice and avoid copy
-            // Set the original texture for MSAA and depth textures as they always get resolved.
+            // Set the original texture for MSAA and surface-to-array textures as they always get resolved.
             if (surface->sampleCount != RenderSampleCount::COUNT_1 ||
-                surface->format == RenderFormat::D32_FLOAT_S8_UINT)
+                args.texture->type == ResourceType::ArrayTexture)
             {
                 SetTextureInRenderThread(i, args.texture);
                 g_pendingResolves.emplace(surface);
@@ -3468,12 +3534,9 @@ static bool PopulateBarriersForStretchRect(GuestSurface* renderTarget, GuestSurf
             RenderTextureLayout dstLayout;
             bool shaderResolve = true;
 
-            if (multiSampling && g_hardwareResolve)
+            if (multiSampling)
             {
-                // Hardware depth resolve is only supported on D3D12 when programmable sample positions are available.
-                bool hardwareDepthResolveAvailable = g_hardwareDepthResolve && !g_vulkan && g_capabilities.sampleLocations;
-
-                if (!RenderFormatIsDepth(surface->format) || hardwareDepthResolveAvailable)
+                if (!RenderFormatIsDepth(surface->format) || g_capabilities.resolveModes)
                 {
                     srcLayout = RenderTextureLayout::RESOLVE_SOURCE;
                     dstLayout = RenderTextureLayout::RESOLVE_DEST;
@@ -3514,11 +3577,9 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
             {
                 bool shaderResolve = true;
 
-                if (multiSampling && g_hardwareResolve)
+                if (multiSampling)
                 {
-                    bool hardwareDepthResolveAvailable = g_hardwareDepthResolve && !g_vulkan && g_capabilities.sampleLocations;
-
-                    if (!isDepthStencil || hardwareDepthResolveAvailable)
+                    if (!isDepthStencil || g_capabilities.resolveModes)
                     {
                         if (isDepthStencil)
                             commandList->resolveTextureRegion(texture->texture, 0, 0, surface->texture, nullptr, RenderResolveMode::MIN);
@@ -3643,7 +3704,7 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
                     g_dirtyStates.pipelineState = true;
                     g_dirtyStates.scissorRect = true;
 
-                    if (g_vulkan)
+                    if (g_backend != Backend::D3D12)
                     {
                         g_dirtyStates.vertexShaderConstants = true; // The push constant call invalidates vertex shader constants.
                         g_dirtyStates.depthBias = true; // Static depth bias in copy pipeline invalidates dynamic depth bias.
@@ -3917,9 +3978,9 @@ static void ProcSetTexture(const RenderCommand& cmd)
     if (args.texture != nullptr && args.texture->sourceSurface != nullptr)
     {
         // TODO: Render depth directly to slice and avoid copy
-        // MSAA and depth surfaces need to be resolved and cannot be used directly.
+        // MSAA surfaces or surface-to-array need to be resolved and cannot be used directly.
         if (args.texture->sourceSurface->sampleCount != RenderSampleCount::COUNT_1 ||
-            args.texture->format == RenderFormat::D32_FLOAT_S8_UINT)
+            args.texture->type == ResourceType::ArrayTexture)
         {
             g_pendingResolves.emplace(args.texture->sourceSurface);
         }
@@ -3959,7 +4020,7 @@ static void ProcSetScissorRect(const RenderCommand& cmd)
 
 static RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specConstants)
 {
-    if (g_vulkan ||
+    if (g_backend != Backend::D3D12 ||
         guestShader->shaderCacheEntry == nullptr || 
         guestShader->shaderCacheEntry->specConstantsMask == 0)
     {
@@ -3969,7 +4030,8 @@ static RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specCons
         {
             assert(guestShader->shaderCacheEntry != nullptr);
 
-            if (g_vulkan)
+            switch (g_backend) {
+            case Backend::VULKAN:
             {
                 auto compressedSpirvData = g_shaderCache.get() + guestShader->shaderCacheEntry->spirvOffset;
 
@@ -3978,14 +4040,22 @@ static RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specCons
                 assert(result);
 
                 guestShader->shader = g_device->createShader(decoded.data(), decoded.size(), "main", RenderShaderFormat::SPIRV);
-                #ifdef _DEBUG
+#ifdef _DEBUG
                 guestShader->shader->setName(fmt::format("{}:{:x}", guestShader->shaderCacheEntry->filename, guestShader->shaderCacheEntry->hash));
-                #endif
+#endif
+                break;
             }
-            else
+            case Backend::D3D12:
             {
                 guestShader->shader = g_device->createShader(g_shaderCache.get() + guestShader->shaderCacheEntry->dxilOffset, 
                     guestShader->shaderCacheEntry->dxilSize, "main", RenderShaderFormat::DXIL);
+            }
+            case Backend::METAL:
+            {
+                guestShader->shader = g_device->createShader(g_shaderCache.get() + guestShader->shaderCacheEntry->airOffset,
+                guestShader->shaderCacheEntry->airSize, "shaderMain", RenderShaderFormat::METAL);
+                break;
+            }
             }
         }
 
@@ -4090,7 +4160,7 @@ static RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specCons
         const wchar_t* libraryNames[] = { specConstantsLibName, shaderLibName };
 
         ComPtr<IDxcOperationResult> result;
-        HRESULT hr = s_dxcLinker->Link(L"main", guestShader->type == ResourceType::VertexShader ? L"vs_6_0" : L"ps_6_0",
+        HRESULT hr = s_dxcLinker->Link(L"shaderMain", guestShader->type == ResourceType::VertexShader ? L"vs_6_0" : L"ps_6_0",
             libraryNames, std::size(libraryNames), nullptr, 0, result.GetAddressOf());
 
         assert(SUCCEEDED(hr) && result != nullptr);
@@ -4105,7 +4175,7 @@ static RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specCons
             auto& linkedShader = guestShader->linkedShaders[specConstants];
             if (linkedShader == nullptr)
             {
-                linkedShader = g_device->createShader(blob->GetBufferPointer(), blob->GetBufferSize(), "main", RenderShaderFormat::DXIL);
+                linkedShader = g_device->createShader(blob->GetBufferPointer(), blob->GetBufferSize(), "shaderMain", RenderShaderFormat::DXIL);
                 guestShader->shaderBlobs.push_back(std::move(blob));
             }
 
@@ -4643,7 +4713,7 @@ static void FlushRenderStateForRenderThread()
 
     // D3D12 resets depth bias values to the pipeline values, even if they are dynamic.
     // We can reduce unnecessary calls by making common depth bias values part of the pipeline.
-    if (g_capabilities.dynamicDepthBias && !g_vulkan)
+    if (g_capabilities.dynamicDepthBias && g_backend == Backend::D3D12)
     {
         bool useDepthBias = (g_depthBias != 0) || (g_slopeScaledDepthBias != 0.0f);
 
@@ -4659,7 +4729,7 @@ static void FlushRenderStateForRenderThread()
         commandList->setPipeline(CreateGraphicsPipelineInRenderThread(g_pipelineState));
 
         // D3D12 resets the depth bias values. Check if they need to be set again.
-        if (g_capabilities.dynamicDepthBias && !g_vulkan)
+        if (g_capabilities.dynamicDepthBias && g_backend == Backend::D3D12)
             g_dirtyStates.depthBias = (g_depthBias != g_pipelineState.depthBias) || (g_slopeScaledDepthBias != g_pipelineState.slopeScaledDepthBias);
     }
 
@@ -4693,7 +4763,7 @@ static void FlushRenderStateForRenderThread()
             g_inputSlots + g_dirtyStates.vertexStreamFirst);
     }
 
-    if (g_dirtyStates.indices && (!g_vulkan || g_indexBufferView.buffer.ref != nullptr))
+    if (g_dirtyStates.indices && (g_backend == Backend::D3D12 || g_indexBufferView.buffer.ref != nullptr))
         commandList->setIndexBuffer(&g_indexBufferView);
 
     g_dirtyStates = DirtyStates(false);
@@ -6741,7 +6811,7 @@ struct Mesh
 //    //     if (g_capabilities.dynamicDepthBias)
 //    //     {
 //    //         // Put common depth bias values for reducing unnecessary calls.
-//    //         if (!g_vulkan)
+//    //         if (g_backend == Backend::D3D12)
 //    //         {
 //    //             pipelineState.depthBias = COMMON_DEPTH_BIAS_VALUE;
 //    //             pipelineState.slopeScaledDepthBias = COMMON_SLOPE_SCALED_DEPTH_BIAS_VALUE;
@@ -7503,7 +7573,7 @@ static bool CheckMadeAll(const T& modelData)
 //                        pipelineState.primitiveTopology = RenderPrimitiveTopology::TRIANGLE_LIST;
 //
 //                    // Zero out depth bias for Vulkan, we only store common values for D3D12.
-//                    if (g_capabilities.dynamicDepthBias && g_vulkan)
+//                    if (g_capabilities.dynamicDepthBias && g_backend != Backend::D3D12)
 //                    {
 //                        pipelineState.depthBias = 0;
 //                        pipelineState.slopeScaledDepthBias = 0.0f;

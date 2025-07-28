@@ -70,6 +70,9 @@ enum class EGraphicsAPI : uint32_t
 #ifdef MARATHON_RECOMP_D3D12
     D3D12,
 #endif
+#ifdef MARATHON_RECOMP_METAL
+    Metal,
+#endif
     Vulkan
 };
 

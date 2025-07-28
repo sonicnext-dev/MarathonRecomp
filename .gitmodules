@@ -57,4 +57,4 @@
 	url = https://github.com/KhronosGroup/SPIRV-Cross.git
 [submodule "thirdparty/plume"]
 	path = thirdparty/plume
-	url = https://github.com/squidbus/plume
+	url = https://github.com/renderbag/plume
