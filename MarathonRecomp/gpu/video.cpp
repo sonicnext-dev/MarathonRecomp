@@ -1872,10 +1872,6 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver)
                             continue;
                         }
                     }
-
-                    // Hardware resolve seems to be completely bugged on Intel D3D12 drivers.
-                    g_hardwareResolve = (deviceDescription.vendor != RenderDeviceVendor::INTEL);
-                    g_hardwareDepthResolve = (deviceDescription.vendor != RenderDeviceVendor::INTEL);
                 }
 
                 g_backend = (interfaceFunction == CreateVulkanInterfaceWrapper) ? Backend::VULKAN : Backend::D3D12;
