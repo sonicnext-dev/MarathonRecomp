@@ -3640,7 +3640,7 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
                         }
                         else
                         {
-                            auto& copyColorPipeline = g_copyColorPipelines[surface->format];
+                            auto& copyColorPipeline = g_copyColorPipelines[texture->format];
                             if (copyColorPipeline == nullptr)
                             {
                                 RenderGraphicsPipelineDesc desc;
