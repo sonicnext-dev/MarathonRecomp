@@ -44,6 +44,11 @@ if (MARATHON_RECOMP_ARCHITECTURE STREQUAL "x86_64" OR MARATHON_RECOMP_ARCHITECTU
     )
 endif()
 
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    # Normally only defined by Visual Studio, added for consistency
+    add_compile_definitions(_DEBUG)
+endif()
+
 add_subdirectory(${MARATHON_RECOMP_THIRDPARTY_ROOT})
 add_subdirectory(${MARATHON_RECOMP_TOOLS_ROOT})
 

@@ -4036,23 +4036,25 @@ static RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specCons
                 assert(result);
 
                 guestShader->shader = g_device->createShader(decoded.data(), decoded.size(), "shaderMain", RenderShaderFormat::SPIRV);
-#ifdef _DEBUG
-                guestShader->shader->setName(fmt::format("{}:{:x}", guestShader->shaderCacheEntry->filename, guestShader->shaderCacheEntry->hash));
-#endif
                 break;
             }
             case Backend::D3D12:
             {
                 guestShader->shader = g_device->createShader(g_shaderCache.get() + guestShader->shaderCacheEntry->dxilOffset, 
                     guestShader->shaderCacheEntry->dxilSize, "shaderMain", RenderShaderFormat::DXIL);
+                break;
             }
             case Backend::METAL:
             {
                 guestShader->shader = g_device->createShader(g_shaderCache.get() + guestShader->shaderCacheEntry->airOffset,
-                guestShader->shaderCacheEntry->airSize, "shaderMain", RenderShaderFormat::METAL);
+                    guestShader->shaderCacheEntry->airSize, "shaderMain", RenderShaderFormat::METAL);
                 break;
             }
             }
+
+#ifdef _DEBUG
+            guestShader->shader->setName(fmt::format("{}:{:x}", guestShader->shaderCacheEntry->filename, guestShader->shaderCacheEntry->hash));
+#endif
         }
 
         return guestShader->shader.get();
@@ -4176,6 +4178,10 @@ static RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specCons
             }
 
             shader = linkedShader.get();
+
+#ifdef _DEBUG
+            guestShader->shader->setName(fmt::format("{}:{:x}", guestShader->shaderCacheEntry->filename, guestShader->shaderCacheEntry->hash));
+#endif
         }        
     }
 #endif
