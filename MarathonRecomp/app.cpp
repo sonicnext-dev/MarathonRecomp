@@ -1,18 +1,15 @@
 #include "app.h"
-#include "kernel/memory.h"
-// #include <api/SWA.h>
 #include <gpu/video.h>
-#include <cstdio>
 #include <install/installer.h>
 #include <kernel/function.h>
 #include <os/process.h>
 #include <os/logger.h>
-#include <patches/audio_patches.h>
-#include <patches/inspire_patches.h>
 #include <ui/game_window.h>
 #include <user/config.h>
 #include <user/paths.h>
 #include <user/registry.h>
+
+static std::thread::id g_mainThreadId = std::this_thread::get_id();
 
 void App::Restart(std::vector<std::string> restartArgs)
 {
@@ -31,217 +28,37 @@ void App::Exit()
     std::_Exit(0);
 }
 
-// PPC_FUNC_IMPL(__imp__sub_828B2BF8);
-// PPC_FUNC(sub_828B2BF8)
-// {
-//     LOGN_WARNING("sub_828B2BF8 call");
-
-//     __imp__sub_828B2BF8(ctx, base);
-// }
-
-PPC_FUNC_IMPL(__imp__sub_824A7598);
-PPC_FUNC(sub_824A7598)
+// Sonicteam::AppMarathon::AppMarathon
+PPC_FUNC_IMPL(__imp__sub_8262A568);
+PPC_FUNC(sub_8262A568)
 {
-    // LOGN_WARNING("sub_824A7598 RUN INTRO");
-
-    __imp__sub_824A7598(ctx, base);
-}
-
-
-// // SWA::CApplication::CApplication
-// PPC_FUNC_IMPL(__imp__sub_824EB490);
-// PPC_FUNC(sub_824EB490)
-PPC_FUNC_IMPL(__imp__sub_825B2160);
-PPC_FUNC(sub_825B2160)
-{
-    LOGN_WARNING("Init app");
     App::s_isInit = true;
     App::s_isMissingDLC = true;
     App::s_language = Config::Language;
 
-    // SWA::SGlobals::Init();
     Registry::Save();
 
-    __imp__sub_825B2160(ctx, base);
-}
+    struct RenderConfig
+    {
+        be<uint32_t> Width;
+        be<uint32_t> Height;
+    };
 
-// PPC_FUNC_IMPL(__imp__sub_828FEB90);
-// PPC_FUNC(sub_828FEB90)
-// {
-//     LOGN_WARNING("prerender present");
-//     // __builtin_trap();
-//     printf("%x %x %x %x\n", ctx.r4.u32, ctx.r5.u32, ctx.r6.u32, ctx.r7.u32);
+    auto cfg = reinterpret_cast<RenderConfig*>(g_memory.Translate(ctx.r4.u32));
+    cfg->Width = Video::s_viewportWidth;
+    cfg->Height = Video::s_viewportHeight;
 
-//     __imp__sub_828FEB90(ctx, base);
-// }
-
-uint32_t read_be32(uint8_t* mem, uint32_t addr) {
-    return (mem[addr] << 24) | (mem[addr + 1] << 16) |
-           (mem[addr + 2] << 8) | mem[addr + 3];
-}
-
-PPC_FUNC_IMPL(__imp__sub_82582648);
-PPC_FUNC(sub_82582648)
-{
-    // __builtin_trap();
-    auto _r5 = (uint8_t*)g_memory.Translate(ctx.r5.u32);
-
-    uint32_t data_ptr = read_be32(_r5, 4);      // Pointer to char data
-    uint32_t size = read_be32(_r5, 0 + 0x14);      // Length of string
-    uint32_t capacity = read_be32(_r5, 0 + 0x18);  // Capacity
-
-    // printf("Pointer: 0x%08x, Size: %u, Capacity: %u\n", data_ptr, size, capacity);
-
-    // // Read the string data from the emulated memory
-    if (data_ptr && size > 0) {
-        printf("Loading file from arc: ");
-        for (uint32_t i = 0; i < size; i++) {
-            printf("%c", base[data_ptr + i]);
-        }
-        printf("\n");
-    }
-
-    __imp__sub_82582648(ctx, base);
-}
-
-PPC_FUNC_IMPL(__imp__sub_825867A8);
-PPC_FUNC(sub_825867A8)
-{
-    auto _r3 = (char*)g_memory.Translate(ctx.r4.u32);
-    printf("CreateThread by name: %s\n", _r3);
-
-    __imp__sub_825867A8(ctx, base);
-}
-
-// PPC_FUNC_IMPL(__imp__sub_825B1A28);
-// PPC_FUNC(sub_825B1A28)
-// {
-//     LOGN_WARNING("SWAP");
-//     // __builtin_trap();
-//     // printf("%x \n", ctx.r3.u32);
-
-//     __imp__sub_825B1A28(ctx, base);
-// }
-
-
-PPC_FUNC_IMPL(__imp__sub_82744840);
-PPC_FUNC(sub_82744840)
-{
-    LOGN_WARNING("RenderFrame");
-
-    __imp__sub_82744840(ctx, base);
-}
-
-// PPC_FUNC_IMPL(__imp__sub_82558CD0);
-// PPC_FUNC(sub_82558CD0)
-// {
-//     LOGN_WARNING("D3DDevice_Present");
-
-//     __builtin_trap();
-
-//     __imp__sub_82558CD0(ctx, base);
-// }
-
-// PPC_FUNC_IMPL(__imp__sub_82538B48);
-// PPC_FUNC(sub_82538B48)
-// {
-//     // LOGN_WARNING("NtWaitForSingleObjectEx timeout converter");
-//     // printf("timeout in ms %d\n", ctx.r4.u32);
-//     if (ctx.r4.u32 == 0x1) {
-//         // __builtin_trap();
-//         std::this_thread::sleep_for(std::chrono::milliseconds(1));
-//         ctx.r4.u32 = -1;
-//     }
-
-//     __imp__sub_82538B48(ctx, base);
-// }
-
-struct DXSettings {
-    be<uint32_t> m_Width;
-    be<uint32_t> m_Height;
-};
-
-PPC_FUNC_IMPL(__imp__sub_8262A568);
-PPC_FUNC(sub_8262A568)
-{
-    auto dxSettings = reinterpret_cast<DXSettings*>(g_memory.Translate(ctx.r4.u32));
-    dxSettings->m_Width = Video::s_viewportWidth;
-    dxSettings->m_Height = Video::s_viewportHeight;
-
-    printf("Game changed settings - Width: %d, Height: %d\n", dxSettings->m_Width.get(), dxSettings->m_Height.get());
-    printf("Runtime settings: Width: %d, Height: %d\n", Video::s_viewportWidth, Video::s_viewportHeight);
+    LOGFN_UTILITY("Changed resolution: {}x{}", cfg->Width.get(), cfg->Height.get());
 
     __imp__sub_8262A568(ctx, base);
 }
 
-// PPC_FUNC_IMPL(__imp__sub_825B1A28);
-// PPC_FUNC(sub_825B1A28)
-// {
-//     LOGN_WARNING("MaybePresent");
-//     std::thread::id tid = std::this_thread::get_id();
-//     // size_t hash_val = std::hash<std::thread::id>{}(tid);
-//     printf("present thread id: %x\n", XXH32(&tid, sizeof(tid), 0));
-//     __builtin_trap();
-
-//     __imp__sub_825B1A28(ctx, base);
-// }
-
-// PPC_FUNC_IMPL(__imp__sub_825E7AD8);
-// PPC_FUNC(sub_825E7AD8)
-// {
-//     LOGN_WARNING("Sonicteam::Heap::HeapAllocCustom");
-//     // printf("%x \n", ctx.r3.u32);
-
-//     __imp__sub_825E7AD8(ctx, base);
-// }
-
-// PPC_FUNC_IMPL(__imp__sub_825E6F70);
-// PPC_FUNC(sub_825E6F70)
-// {
-//     LOGN_WARNING("Sonicteam::SpanverseMemory::AllocMemory");
-//     printf("size: %x\n", ctx.r3.u32);
-//     auto initialized = *reinterpret_cast<be<int>*>(g_memory.Translate(0x82D3BAA8));
-//     printf("%x %x\n", initialized, &initialized);
-
-//     __imp__sub_825E6F70(ctx, base);
-// }
-// 82186158
-
-PPC_FUNC_IMPL(__imp__sub_825E7918);
-PPC_FUNC(sub_825E7918)
-{
-    // for some reason, this function checks that r4 is not zero, but it's always zero
-    ctx.r4.u32 = 1;
-    LOGN_WARNING("spanverse allocex");
-
-    __imp__sub_825E7918(ctx, base);
-}
-
-PPC_FUNC_IMPL(__imp__sub_825E7958);
-PPC_FUNC(sub_825E7958)
-{
-    ctx.r4.u32 = 1;
-    LOGN_WARNING("spanverse freeex");
-
-    __imp__sub_825E7958(ctx, base);
-}
-
-PPC_FUNC_IMPL(__imp__sub_825822D0);
-PPC_FUNC(sub_825822D0)
-{
-    LOGN_WARNING("sub_825822D0");
-
-    __imp__sub_825822D0(ctx, base);
-}
-
-static std::thread::id g_mainThreadId = std::this_thread::get_id();
-
-// // SWA::CApplication::Update
+// Sonicteam::DocMarathonState::Update
 PPC_FUNC_IMPL(__imp__sub_825EA610);
 PPC_FUNC(sub_825EA610)
 {
     __imp__sub_825EA610(ctx, base);
-    // LOGN_WARNING("::Update");
+
     Video::WaitOnSwapChain();
 
     // Correct small delta time errors.
@@ -254,8 +71,6 @@ PPC_FUNC(sub_825EA610)
     }
 
     App::s_deltaTime = ctx.f1.f64;
-
-    // printf("s_deltaTime = %f\n", ctx.f1.f64);
     App::s_time += App::s_deltaTime;
 
     // This function can also be called by the loading thread,
@@ -268,86 +83,88 @@ PPC_FUNC(sub_825EA610)
         SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
         GameWindow::Update();
     }
-
-//     AudioPatches::Update(App::s_deltaTime);
-//     InspirePatches::Update();
-
-//     // Apply subtitles option.
-//     if (auto pApplicationDocument = SWA::CApplicationDocument::GetInstance())
-//         pApplicationDocument->m_InspireSubtitles = Config::Subtitles;
-
-//     if (Config::EnableEventCollisionDebugView)
-//         *SWA::SGlobals::ms_IsTriggerRender = true;
-
-//     if (Config::EnableGIMipLevelDebugView)
-//         *SWA::SGlobals::ms_VisualizeLoadedLevel = true;
-
-//     if (Config::EnableObjectCollisionDebugView)
-//         *SWA::SGlobals::ms_IsObjectCollisionRender = true;
-
-//     if (Config::EnableStageCollisionDebugView)
-//         *SWA::SGlobals::ms_IsCollisionRender = true;
-
-    // __imp__sub_825EA610(ctx, base);
 }
 
-void DisableMSAA(PPCRegister& val)
+PPC_FUNC_IMPL(__imp__sub_82582648);
+PPC_FUNC(sub_82582648)
 {
-    val.u32 = 0;
+    struct File
+    {
+    public:
+        MARATHON_INSERT_PADDING(4);
+        xpointer<const char> pFilePath;
+        MARATHON_INSERT_PADDING(0x0C);
+        be<uint32_t> Length;
+        be<uint32_t> Capacity;
+    };
+
+    auto pFile = reinterpret_cast<File*>(base + ctx.r5.u32);
+
+    if (pFile->pFilePath && pFile->Length > 0)
+        LOGFN_UTILITY("Loading file: {}", pFile->pFilePath.get());
+
+    __imp__sub_82582648(ctx, base);
 }
 
-void DisableStartWait()
+#if _DEBUG
+// Sonicteam::SoX::Thread
+PPC_FUNC_IMPL(__imp__sub_825867A8);
+PPC_FUNC(sub_825867A8)
 {
-    // printf("DisableStartWait\n");
-}
+    auto pThreadName = (const char*)g_memory.Translate(ctx.r4.u32);
 
-void IgnoreXAudioLockPlsFixAndDeleteThisMidasm(PPCRegister& val)
+    os::logger::Log(fmt::format("Created thread: {}", pThreadName), os::logger::ELogType::Utility, "Sonicteam::SoX::Thread");
+
+    __imp__sub_825867A8(ctx, base);
+}
+#endif
+
+PPC_FUNC_IMPL(__imp__sub_82744840);
+PPC_FUNC(sub_82744840)
 {
+    LOG_UTILITY("RenderFrame");
+
+    __imp__sub_82744840(ctx, base);
 }
 
-PPC_FUNC_IMPL(__imp__sub_82511540);
-PPC_FUNC(sub_82511540)
+// Sonicteam::SpanverseHeap::Alloc
+PPC_FUNC_IMPL(__imp__sub_825E7918);
+PPC_FUNC(sub_825E7918)
 {
-    // printf("DisableStartWait2\n");
-    ctx.r11.u32 = 1;
+#if _DEBUG
+    os::logger::Log(fmt::format("Allocated {} bytes", ctx.r3.u32), os::logger::ELogType::Utility, "Sonicteam::SpanverseHeap");
+#endif
+
+    // This function checks if R4 is non-zero
+    // to allow an allocation, but it's always
+    // passed in as zero.
+    ctx.r4.u32 = 1;
+
+    __imp__sub_825E7918(ctx, base);
 }
 
-void EnableTitleButtons(PPCRegister& val)
+// Sonicteam::SpanverseHeap::Free
+PPC_FUNC_IMPL(__imp__sub_825E7958);
+PPC_FUNC(sub_825E7958)
 {
-    val.u32 = 3;
+#if _DEBUG
+    os::logger::Log(fmt::format("Freed {:08X}", ctx.r3.u32), os::logger::ELogType::Utility, "Sonicteam::SpanverseHeap");
+#endif
+
+    // This function checks if R4 is non-zero
+    // to allow a free, but it's always
+    // passed in as zero.
+    ctx.r4.u32 = 1;
+
+    __imp__sub_825E7958(ctx, base);
 }
 
-void EnableTitleButtons2(PPCRegister& val)
+#if _DEBUG
+PPC_FUNC_IMPL(__imp__sub_825822D0);
+PPC_FUNC(sub_825822D0)
 {
-    val.u32 = 5;
+    LOG_UTILITY("!!!");
+
+    __imp__sub_825822D0(ctx, base);
 }
-
-void TitleMenuDefaultSelection(PPCRegister& r4, PPCRegister& r31)
-{
-    auto saveFilePath = GetSaveFilePath(false);
-
-    if (std::filesystem::exists(saveFilePath)) {
-        r4.s64 = 5;
-
-        auto pSelectedIndex = (be<uint32_t>*)g_memory.Translate(r31.u32 + 0x7C);
-        *pSelectedIndex = 1;
-    }
-}
-
-void DebugZlibMidAsmHook(PPCRegister& id)
-{
-    // printf("DebugZlibMidAsmHook: %x\n", id.u64);
-}
-
-void DebugZlibMidAsm2Hook(PPCRegister& id)
-{
-    if (id.u64 == 10) {
-        printf("DebugZlibMidAsm2Hook: %d\n", id.u64);
-    }
-}
-
-void DebugIndirectCall(PPCRegister& id)
-{
-    printf("DebugIndirectCall: %x\n", id.u64);
-}
-
+#endif

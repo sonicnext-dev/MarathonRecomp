@@ -1,3 +1,4 @@
+#include "aspect_ratio_patches.h"
 #include <user/config.h>
 #include <api/Marathon.h>
 #include <app.h>
@@ -5,10 +6,6 @@
 #include <ui/black_bar.h>
 #include <gpu/video.h>
 #include <xxHashMap.h>
-
-#include "aspect_ratio_patches.h"
-#include "camera_patches.h"
-#include "inspire_patches.h"
 
 // These are here for now to not recompile basically all of the project.
 namespace Chao::CSD
@@ -934,12 +931,6 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
     }
 
     if ((modifier.flags & SKIP) != 0)
-    {
-        return;
-    }
-
-    // That goddamn boss gauge doesn't disappear in the cutscene where Dark Gaia and Chip hug each other
-    if ((modifier.flags & SKIP_INSPIRE) != 0 && !InspirePatches::s_sceneName.empty() && *reinterpret_cast<be<float>*>(base + ctx.r4.u32) >= 1280.0f)
     {
         return;
     }

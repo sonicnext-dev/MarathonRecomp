@@ -137,19 +137,9 @@ set(MARATHON_RECOMP_HID_CXX_SOURCES
 set(MARATHON_RECOMP_PATCHES_CXX_SOURCES
     "patches/aspect_ratio_patches.cpp"
     "patches/audio_patches.cpp"
-    "patches/camera_patches.cpp"
-    "patches/CGameModeStageTitle_patches.cpp"
-    "patches/CHudPause_patches.cpp"
-    "patches/CTitleStateIntro_patches.cpp"
-    "patches/CTitleStateMenu_patches.cpp"
-    "patches/fps_patches.cpp"
     "patches/frontend_listener.cpp"
-    "patches/input_patches.cpp"
-    "patches/inspire_patches.cpp"
     "patches/misc_patches.cpp"
-    "patches/object_patches.cpp"
-    "patches/player_patches.cpp"
-    "patches/resident_patches.cpp"
+    "patches/TitleTask_patches.cpp"
     "patches/video_patches.cpp"
 )
 

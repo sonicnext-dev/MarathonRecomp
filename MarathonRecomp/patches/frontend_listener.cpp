@@ -21,9 +21,7 @@ public:
             if (event->key.keysym.sym != SDLK_F8 || m_isF8KeyDown)
                 break;
 
-//            *SWA::SGlobals::ms_IsRenderHud = !*SWA::SGlobals::ms_IsRenderHud;
-//
-//            LOGFN("HUD {}", *SWA::SGlobals::ms_IsRenderHud ? "ON" : "OFF");
+            // TODO
 
             m_isF8KeyDown = true;
 

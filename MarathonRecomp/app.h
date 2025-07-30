@@ -1,5 +1,6 @@
 #pragma once
 
+#include <api/Marathon.h>
 #include <user/config.h>
 
 class App
@@ -12,7 +13,6 @@ public:
     static inline bool s_isSaveDataCorrupt;
 
     static inline EPlayerCharacter s_playerCharacter;
-
     static inline ELanguage s_language;
 
     static inline double s_deltaTime;

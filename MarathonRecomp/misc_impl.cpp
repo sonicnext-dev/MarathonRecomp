@@ -47,16 +47,16 @@ int memcpy_s(void* dest, size_t dest_size, const void* src, size_t count) {
 #endif
 
 GUEST_FUNCTION_HOOK(sub_826DF680, memcpy);
-// // GUEST_FUNCTION_HOOK(sub_831CCB98, memcpy);
-// // GUEST_FUNCTION_HOOK(sub_831CEAE0, memcpy);
-// // GUEST_FUNCTION_HOOK(sub_831CEE04, memcpy);
-// // GUEST_FUNCTION_HOOK(sub_831CF2D0, memcpy);
-// // GUEST_FUNCTION_HOOK(sub_831CF660, memcpy);
+// GUEST_FUNCTION_HOOK(sub_831CCB98, memcpy);
+// GUEST_FUNCTION_HOOK(sub_831CEAE0, memcpy);
+// GUEST_FUNCTION_HOOK(sub_831CEE04, memcpy);
+// GUEST_FUNCTION_HOOK(sub_831CF2D0, memcpy);
+// GUEST_FUNCTION_HOOK(sub_831CF660, memcpy);
 // GUEST_FUNCTION_HOOK(sub_826DFAA0, memcpy);
 GUEST_FUNCTION_HOOK(sub_826DE940, memmove);
 GUEST_FUNCTION_HOOK(sub_826DFD40, memset);
 GUEST_FUNCTION_HOOK(sub_826DEA00, memcpy_s);
-// // GUEST_FUNCTION_HOOK(sub_831CCAA0, memset);
+// GUEST_FUNCTION_HOOK(sub_831CCAA0, memset);
 
 #ifdef _WIN32
 GUEST_FUNCTION_HOOK(sub_82537770, OutputDebugStringA);

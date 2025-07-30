@@ -89,61 +89,42 @@ invalid_instructions = [
     { data = 0x00000000, size = 4 }, # Padding
     { data = 0x826E3E60, size = 8 }, # C++ Frame Handler
     { data = 0x82AEA1CC, size = 8 } # C Specific Frame Handler
-    #{ data = 0x00485645, size = 44 } # End of .text
+    # { data = 0x00485645, size = 44 } # End of .text
 ]
 
 [[midasm_hook]]
-name = "DisableMSAA"
-address = 0x82607B94
-registers = ["r28"]
-after_instruction = true
+name = "SetMSAALevel"
+address = 0x82607CD4
+registers = ["r4"]
 
 [[midasm_hook]]
-name = "DisableMSAA"
-address = 0x82607BB8
-registers = ["r28"]
-after_instruction = true
-
-[[midasm_hook]]
-name = "DisableStartWait"
-address = 0x82512748
-jump_address = 0x8251274C
-
-[[midasm_hook]]
-name = "EnableTitleButtons"
+name = "RestoreTitleButtons"
 address = 0x82512810
 registers = ["r4"]
 after_instruction = true
 
 [[midasm_hook]]
-name = "EnableTitleButtons2"
+name = "RestoreTitleButtons2"
 address = 0x82512874
 registers = ["r11"]
 after_instruction = true
 
 [[midasm_hook]]
-name = "TitleMenuDefaultSelection"
-address = 0x82512B04
-registers = ["r4", "r31"]
-after_instruction = true
+name = "DisableTitleTaskStartWait"
+address = 0x82512748
+jump_address_on_true = 0x8251274C
 
-#[[midasm_hook]]
-#name = "IgnoreXAudioLockPlsFixAndDeleteThisMidasm"
-#address = 0x8255AAE8
-#registers = ["r11"]
-#jump_address = 0x8255AB24
+[[midasm_hook]]
+name = "SetDefaultTitleTaskSelection"
+address = 0x82512B10
+registers = ["r3", "r4"]
 
-#[[midasm_hook]]
-#name = "DebugZlibMidAsmHook"
-#address = 0x826DC30C
-#registers = ["r12"]
+[[midasm_hook]]
+name = "RenderCsdCastNodeMidAsmHook"
+address = 0x828C8FBC
+registers = ["r10", "r24"]
 
-#[[midasm_hook]]
-#name = "DebugZlibMidAsm2Hook"
-#address = 0x826DC310
-#registers = ["r10"]
-
-#[[midasm_hook]]
-#name = "DebugIndirectCall"
-#address = 0x8273C440
-#registers = ["r3"]
+[[midasm_hook]]
+name = "RenderCsdCastMidAsmHook"
+address = 0x828C8FFC
+registers = ["r4"]
