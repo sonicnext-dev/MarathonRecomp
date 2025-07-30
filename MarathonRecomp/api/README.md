@@ -5,24 +5,15 @@
 ### Naming Conventions
 
 - Use `camelCase` for local variables, `SNAKE_CASE` for preprocessor macros, and `PascalCase` for everything else. Marathon-specific types that don't exist in the game should use `snake_case` for better differentiation.
-- Class names should be prefixed with `C`, e.g., `CSonicContext`.
-- Struct names should be prefixed with `S`, e.g., `SUpdateInfo`.
 - Class members should be prefixed with `m_`, e.g., `m_Time`. Do not use this prefix for struct members.
-- Enum names should be prefixed with `E`, e.g., `ELightType`.
-- Enum members should start with `e`, followed by the enum name and an underscore, e.g., `eLightType_Point`.
-- For enum members indicating the count of elements, prefix with `n`, followed by the name, e.g., `nLightType`.
 - Pointers should be prefixed with `p`, e.g., `pSonicContext`.
 - Shared pointers should be prefixed with `sp`, e.g., `spDatabase`.
 - References should be prefixed with `r`, e.g., `rMessage`.
-- Input function arguments should be prefixed with `in_`, e.g., `in_Name`.
-- Output function arguments should be prefixed with `out_`, e.g., `out_Value`.
-- Static class members should be prefixed with `ms_`, e.g., `ms_Instance`.
 - Static members outside a class should be prefixed with `g_`, e.g., `g_AllocationTracker`.
 - Marathon-specific preprocessor macros should start with `MARATHON_`, e.g., `MARATHON_INSERT_PADDING`.
-- Hedgehog namespace-specific preprocessor macros should start with `HH_` along with the library's shorthand, e.g., `HH_FND_MSG_MAKE_TYPE`.
 - Function pointers should be prefixed with `fp`, e.g., `fpCGameObjectConstructor`.
 
-Combine prefixes as necessary, e.g., `m_sp` for a shared pointer as a class member or `in_r` for a const reference as a function argument.
+Combine prefixes as necessary, e.g., `m_sp` for a shared pointer as a class member.
 
 ### Coding Style
 

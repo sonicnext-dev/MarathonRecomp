@@ -51,6 +51,8 @@ PPC_FUNC(sub_8262A568)
     LOGFN_UTILITY("Changed resolution: {}x{}", cfg->Width.get(), cfg->Height.get());
 
     __imp__sub_8262A568(ctx, base);
+
+    App::s_pApp = (Sonicteam::AppMarathon*)g_memory.Translate(ctx.r3.u32);
 }
 
 // Sonicteam::DocMarathonState::Update
@@ -83,6 +85,9 @@ PPC_FUNC(sub_825EA610)
         SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
         GameWindow::Update();
     }
+
+    // Allow variable FPS when config is not 60 FPS.
+    App::s_pApp->m_pDoc->m_VFrame = Config::FPS != 60;
 }
 
 PPC_FUNC_IMPL(__imp__sub_82582648);
