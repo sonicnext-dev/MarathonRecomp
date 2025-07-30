@@ -9,6 +9,6 @@ namespace Sonicteam::SoX::Engine
     class Task : public Component, public MessageReceiver
     {
     public:
-        MARATHON_INSERT_PADDING(0x4C);
+        MARATHON_INSERT_PADDING(0x28);
     };
 }

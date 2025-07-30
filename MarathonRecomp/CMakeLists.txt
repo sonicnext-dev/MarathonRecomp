@@ -137,6 +137,7 @@ set(MARATHON_RECOMP_HID_CXX_SOURCES
 set(MARATHON_RECOMP_PATCHES_CXX_SOURCES
     "patches/aspect_ratio_patches.cpp"
     "patches/audio_patches.cpp"
+    "patches/camera_patches.cpp"
     "patches/frontend_listener.cpp"
     "patches/misc_patches.cpp"
     "patches/TitleTask_patches.cpp"

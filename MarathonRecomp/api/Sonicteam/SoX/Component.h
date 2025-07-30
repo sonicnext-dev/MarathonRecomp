@@ -8,6 +8,6 @@ namespace Sonicteam::SoX
     class Component : public Object
     {
     public:
-        MARATHON_INSERT_PADDING(0x20);
+        MARATHON_INSERT_PADDING(0x1C);
     };
 }

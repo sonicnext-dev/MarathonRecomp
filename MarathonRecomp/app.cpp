@@ -112,7 +112,7 @@ PPC_FUNC(sub_82582648)
 }
 
 #if _DEBUG
-// Sonicteam::SoX::Thread
+// Sonicteam::SoX::Thread::Thread
 PPC_FUNC_IMPL(__imp__sub_825867A8);
 PPC_FUNC(sub_825867A8)
 {

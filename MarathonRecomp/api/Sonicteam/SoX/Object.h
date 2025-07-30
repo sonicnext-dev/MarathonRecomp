@@ -2,5 +2,9 @@
 
 namespace Sonicteam::SoX
 {
-    class Object {};
+    class Object
+    {
+    public:
+        xpointer<void> m_pVftable;
+    };
 }

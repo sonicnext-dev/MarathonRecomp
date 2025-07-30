@@ -2,5 +2,9 @@
 
 namespace Sonicteam::SoX
 {
-    class MessageReceiver {};
+    class MessageReceiver
+    {
+    public:
+        xpointer<void> m_pVftable;
+    };
 }

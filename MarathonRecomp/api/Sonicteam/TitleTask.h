@@ -5,10 +5,10 @@
 
 namespace Sonicteam
 {
-    class TitleTask : public Sonicteam::SoX::Engine::Task
+    class TitleTask : public SoX::Engine::Task
     {
     public:
-        MARATHON_INSERT_PADDING(0x10);
+        MARATHON_INSERT_PADDING(0x30);
         be<uint32_t> m_SelectedIndex;
     };
 }

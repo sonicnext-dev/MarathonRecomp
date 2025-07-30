@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <utility>
+#include <Marathon.inl>
 
 namespace boost
 {

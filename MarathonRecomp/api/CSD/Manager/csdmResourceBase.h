@@ -15,7 +15,7 @@ namespace Chao::CSD
         };
 
         xpointer<Vftable> m_pVftable;
-        RCPtr<uint8_t> m_rcResourceHolder;
+        MARATHON_INSERT_PADDING(4);
         xpointer<T> m_pResource;
 
         ~CResourceBase();
