@@ -5207,10 +5207,6 @@ static GuestVertexDeclaration* CreateVertexDeclarationWithoutAddRef(GuestVertexE
                 }
 
                 break;
-            case D3DDECLUSAGE_POSITION:
-                if (vertexElement->usageIndex == 1)
-                    vertexDeclaration->indexVertexStream = vertexElement->stream;
-                break;
 
             case D3DDECLUSAGE_TEXCOORD:
                 switch (vertexElement->type)
