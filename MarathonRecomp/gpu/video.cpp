@@ -5114,12 +5114,6 @@ static GuestVertexDeclaration* CreateVertexDeclarationWithoutAddRef(GuestVertexE
         vertexElement = vertexElements;
         while (vertexElement->stream != 0xFF && vertexElement->type != D3DDECLTYPE_UNUSED)
         {
-            if (vertexElement->usage == D3DDECLUSAGE_POSITION && vertexElement->usageIndex == 2)
-            {
-                ++vertexElement;
-                continue;
-            }
-
             auto& inputElement = inputElements.emplace_back();
             
             inputElement.semanticName = ConvertDeclUsage(vertexElement->usage);
