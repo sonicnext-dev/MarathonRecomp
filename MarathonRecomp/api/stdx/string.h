@@ -3,17 +3,15 @@
 #include <kernel/heap.h>
 #include <kernel/function.h>
 
-namespace stdx {
-
+namespace stdx
+{
     class string
     {
     private:
         union _Bxty
         {
-            _Bxty() 
-            {
+            _Bxty() {}
 
-            }
             char _buffer[0x10];
             xpointer<const char> _str;
         };
@@ -25,7 +23,7 @@ namespace stdx {
 
         bool is_short() const
         {
-            return (uint32_t)_Mysize <= 0x10;
+            return _Mysize <= 0x10;
         }
 
     public:
@@ -36,12 +34,12 @@ namespace stdx {
 
         size_t size() const
         {
-            return (uint32_t)_Mysize;
+            return _Mysize;
         }
 
         size_t capacity() const
         {
-            return (uint32_t)_Myres;
+            return _Myres;
         }
 
         string()
@@ -51,19 +49,17 @@ namespace stdx {
             _bx._buffer[0] = '\0';
         }
 
-        string(xpointer<const char> str) : string(str.get())
-        {
-
-        }
+        string(xpointer<const char> str) : string(str.get()) {}
 
         string(const char* str)
         {
             _Myres = 0xF;
             _Mysize = 0;
             _bx._buffer[0] = '\0';
-            size_t len = strlen(str);
 
-            if (strlen(str) <= 0xF)
+            auto len = strlen(str);
+
+            if (len <= 0xF)
             {
                 memcpy((void*)&_bx._buffer, str, len + 1);
                 _Mysize = (uint32_t)(len);
@@ -73,7 +69,7 @@ namespace stdx {
                 if (is_short() || capacity() < len + 1)
                 {
                     char* new_buf = g_userHeap.Alloc<char>(len + 1);
-                    memset((void*)(new_buf), 0, len + 1); //zero_memory
+                    memset((void*)(new_buf), 0, len + 1);
                     memcpy((void*)(new_buf), (const void*)(str), len + 1);
                     _bx._str = new_buf;
                     _Myres = len + 1;
@@ -82,19 +78,21 @@ namespace stdx {
                 {
                     memcpy((void*)_bx._str.get(), (void*)str, len + 1);
                 }
+
                 _Mysize = len;
             }
         }
-   
+
         ~string()
         {
-            if (!is_short()) g_userHeap.Free((void*)_bx._str.get());
+            if (!is_short())
+                g_userHeap.Free((void*)_bx._str.get());
+
             _Myres = 0xF;
             _Mysize = 0;
             _bx._buffer[0] = '\0';
         }
 
-    
         bool operator==(const char* str) const
         {
             return strcmp(c_str(), str) == 0;

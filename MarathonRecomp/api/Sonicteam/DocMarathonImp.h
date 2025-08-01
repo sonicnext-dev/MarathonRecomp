@@ -5,7 +5,7 @@
 
 namespace Sonicteam
 {
-    class DocMarathonImp : public Sonicteam::SoX::Engine::Doc
+    class DocMarathonImp : public SoX::Engine::Doc
     {
     public:
         MARATHON_INSERT_PADDING(0x74);
