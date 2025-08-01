@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <stdx/string.h>
 
 namespace Sonicteam::Player
 {
@@ -8,6 +9,6 @@ namespace Sonicteam::Player
     {
     public:
         xpointer<void> m_pVftable;
-        MARATHON_INSERT_PADDING(0x1C);
+        stdx::string m_Name;
     };
 }

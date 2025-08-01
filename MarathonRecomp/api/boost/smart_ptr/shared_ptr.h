@@ -85,12 +85,12 @@ namespace boost
             }
         };
 
-        template< class T > struct sp_dereference
+        template<class T> struct sp_dereference
         {
             typedef T& type;
         };
 
-        template<> struct sp_dereference< void >
+        template<> struct sp_dereference<void>
         {
             typedef void type;
         };

@@ -11,10 +11,10 @@ namespace Sonicteam::Player
         MARATHON_INSERT_PADDING(0x40);
         be<uint32_t> m_PlayerIndex;
         MARATHON_INSERT_PADDING(0x48);
-        xpointer<State::Machine2> m_pStateMachine;
-        MARATHON_INSERT_PADDING(0x1C);
-        xpointer<IGauge> m_pGauge;
-        MARATHON_INSERT_PADDING(0x208);
+        boost::shared_ptr<State::Machine2> m_spStateMachine;
+        MARATHON_INSERT_PADDING(0x18);
+        boost::shared_ptr<IGauge> m_spGauge;
+        MARATHON_INSERT_PADDING(0x204);
 
         template <typename T>
         inline T* GetGauge();
