@@ -1839,7 +1839,7 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
     if (graphicsApiRetry)
     {
         // If we are attempting to create again after a reboot due to a crash, swap the order.
-        g_backend = (g_backend == Backend::VULKAN) ? Backend::D3D12 : Backend::Vulkan;
+        g_backend = (g_backend == Backend::VULKAN) ? Backend::D3D12 : Backend::VULKAN;
 
         // Don't allow redirection to Vulkan if we are retrying after a crash, 
         // so the user can at least boot the game with D3D12 if Vulkan fails to work.
@@ -1906,7 +1906,7 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
 
                             // In case Vulkan fails to initialize, we will try D3D12 again afterwards, 
                             // just to get the game to boot. This only really happens in very old Intel GPU drivers.
-                            if (g_backend != Backend::Vulkan)
+                            if (g_backend != Backend::VULKAN)
                             {
                                 interfaceFunctions.push_back(CreateD3D12Interface);
                                 allowVulkanRedirection = false;
@@ -1955,7 +1955,7 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
     if (graphicsApiRetry)
     {
         // If we managed to create a device after retrying it in a reboot, remember the one we picked.
-        Config::GraphicsAPI = g_backend == Backend::Vulkan ? EGraphicsAPI::Vulkan : EGraphicsAPI::D3D12;
+        Config::GraphicsAPI = g_backend == Backend::VULKAN ? EGraphicsAPI::Vulkan : EGraphicsAPI::D3D12;
     }
 #endif
 
