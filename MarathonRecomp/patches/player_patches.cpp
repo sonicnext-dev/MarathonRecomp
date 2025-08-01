@@ -29,7 +29,7 @@ PPC_FUNC(sub_8221A7D8)
     auto maturityValue = 1.0f;
 
     // Set maturity value if the current state is Sonicteam::Player::State::TailsFlight.
-    if ((uint32_t)pState->m_pVftable.get() == 0x82005404)
+    if (pState->m_pVftable.ptr == 0x82005404)
         maturityValue = (1.0f / pTailsContext->m_FlightLimit) * pState->m_Time;
 
     pGameImp->m_PlayerData[pPlayer->m_PlayerIndex].MaturityValue = maturityValue;
@@ -52,7 +52,7 @@ PPC_FUNC(sub_8220F330)
 
     // If this call is from TailsContext and this plugin is Sonicteam::Player::Score, set up the action gauge.
     // This is typically set up by OpenGauge in Lua, but we can't do this here.
-    if ((uint32_t)pDynamicLink->m_pVftable.get() == 0x8200B7F4 && spPlugin->get()->m_Name == "score")
+    if (pDynamicLink->m_pVftable.ptr == 0x8200B7F4 && spPlugin->get()->m_Name == "score")
     {
         auto pScore = (Sonicteam::Player::Score*)spPlugin->get();
         auto pSonicGauge = GuestToHostFunction<Sonicteam::Player::SonicGauge*>(sub_8223F208, g_userHeap.Alloc(sizeof(Sonicteam::Player::SonicGauge)));

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/Player/State/IContext.h>
 #include <Sonicteam/Player/State/IMachine.h>
 #include <Sonicteam/SoX/AI/StateMachine.h>
 
