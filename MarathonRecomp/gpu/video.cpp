@@ -4183,7 +4183,7 @@ static RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specCons
             shader = linkedShader.get();
 
 #ifdef _DEBUG
-            guestShader->shader->setName(fmt::format("{}:{:x}", guestShader->shaderCacheEntry->filename, guestShader->shaderCacheEntry->hash));
+            shader->setName(fmt::format("{}:{:x}", guestShader->shaderCacheEntry->filename, guestShader->shaderCacheEntry->hash));
 #endif
         }        
     }
@@ -5080,57 +5080,55 @@ static GuestVertexDeclaration* CreateVertexDeclarationWithoutAddRef(GuestVertexE
             uint32_t location;
         };
 
+        // Should match the locations defined in XenosRecomp.
         constexpr Location locations[] =
         {
             { D3DDECLUSAGE_POSITION, 0, 0 },
-            { D3DDECLUSAGE_NORMAL, 0, 1 },
-            { D3DDECLUSAGE_TANGENT, 0, 2 },
-            { D3DDECLUSAGE_POSITION, 2, 14 },
-            { D3DDECLUSAGE_BINORMAL, 0, 3 },
-            { D3DDECLUSAGE_BINORMAL, 1, 10 },
-            { D3DDECLUSAGE_BINORMAL, 2, 11 },
-            { D3DDECLUSAGE_POSITION, 3, 16 },
-            { D3DDECLUSAGE_TEXCOORD, 0, 4 },
-            { D3DDECLUSAGE_TEXCOORD, 1, 5 },
-            { D3DDECLUSAGE_TEXCOORD, 2, 6 },
-            { D3DDECLUSAGE_TEXCOORD, 3, 7 },
-            { D3DDECLUSAGE_COLOR, 0, 8 },
-            { D3DDECLUSAGE_BLENDINDICES, 0, 9 },
-            { D3DDECLUSAGE_BLENDWEIGHT, 0, 10 },
-            { D3DDECLUSAGE_COLOR, 1, 11 },
-            { D3DDECLUSAGE_TEXCOORD, 4, 12 },
-            { D3DDECLUSAGE_TEXCOORD, 5, 13 },
-            { D3DDECLUSAGE_TEXCOORD, 6, 14 },
-            { D3DDECLUSAGE_TEXCOORD, 7, 15 },
-            { D3DDECLUSAGE_POSITION, 1, 15 },
-            { D3DDECLUSAGE_NORMAL, 1, 8 },
-            { D3DDECLUSAGE_NORMAL, 2, 9 },
-            { D3DDECLUSAGE_NORMAL, 3, 10 },
-            { D3DDECLUSAGE_TANGENT, 1, 11 },
-            { D3DDECLUSAGE_TANGENT, 2, 12 },
-            { D3DDECLUSAGE_TANGENT, 3, 13 }
+            { D3DDECLUSAGE_POSITION, 1, 1 },
+            { D3DDECLUSAGE_POSITION, 2, 2 },
+            { D3DDECLUSAGE_POSITION, 3, 3 },
+            { D3DDECLUSAGE_NORMAL, 0, 4 },
+            { D3DDECLUSAGE_NORMAL, 1, 5 },
+            { D3DDECLUSAGE_NORMAL, 2, 6 },
+            { D3DDECLUSAGE_NORMAL, 3, 7 },
+            { D3DDECLUSAGE_TANGENT, 0, 8 },
+            { D3DDECLUSAGE_TANGENT, 1, 9 },
+            { D3DDECLUSAGE_TANGENT, 2, 10 },
+            { D3DDECLUSAGE_TANGENT, 3, 11 },
+            { D3DDECLUSAGE_BINORMAL, 0, 12 },
+            { D3DDECLUSAGE_TEXCOORD, 0, 13 },
+            { D3DDECLUSAGE_TEXCOORD, 1, 14 },
+            { D3DDECLUSAGE_TEXCOORD, 2, 15 },
+            { D3DDECLUSAGE_TEXCOORD, 3, 16 },
+            { D3DDECLUSAGE_COLOR, 0, 17 },
+            { D3DDECLUSAGE_BLENDINDICES, 0, 18 },
+            { D3DDECLUSAGE_BLENDWEIGHT, 0, 19 },
         };
 
         vertexElement = vertexElements;
         while (vertexElement->stream != 0xFF && vertexElement->type != D3DDECLTYPE_UNUSED)
         {
-            auto& inputElement = inputElements.emplace_back();
-            
-            inputElement.semanticName = ConvertDeclUsage(vertexElement->usage);
-            inputElement.semanticIndex = vertexElement->usageIndex;
-            inputElement.location = ~0;
-
+            uint32_t resolvedLocation = ~0;
             for (auto& location : locations)
             {
                 if (location.usage == vertexElement->usage && location.usageIndex == vertexElement->usageIndex)
                 {
-                    inputElement.location = location.location;
+                    resolvedLocation = location.location;
                     break;
                 }
             }
 
-            assert(inputElement.location != ~0);
+            if (resolvedLocation == ~0)
+            {
+                // Bound but not used by any guest shaders.
+                ++vertexElement;
+                continue;
+            }
 
+            auto& inputElement = inputElements.emplace_back();
+            inputElement.semanticName = ConvertDeclUsage(vertexElement->usage);
+            inputElement.semanticIndex = vertexElement->usageIndex;
+            inputElement.location = resolvedLocation;
             inputElement.format = ConvertDeclType(vertexElement->type);
             inputElement.slotIndex = vertexElement->stream;
             inputElement.alignedByteOffset = vertexElement->offset;
@@ -5260,20 +5258,11 @@ static GuestVertexDeclaration* CreateVertexDeclarationWithoutAddRef(GuestVertexE
                 inputElements.emplace_back(ConvertDeclUsage(usage), usageIndex, location, format, 15, 0);
             };
 
-        addInputElement(D3DDECLUSAGE_POSITION, 0);
-        addInputElement(D3DDECLUSAGE_POSITION, 1);
-        addInputElement(D3DDECLUSAGE_POSITION, 2);
-        addInputElement(D3DDECLUSAGE_POSITION, 3);
-        addInputElement(D3DDECLUSAGE_NORMAL, 0);
-        addInputElement(D3DDECLUSAGE_TANGENT, 0);
-        addInputElement(D3DDECLUSAGE_BINORMAL, 0);
-        addInputElement(D3DDECLUSAGE_TEXCOORD, 0);
-        addInputElement(D3DDECLUSAGE_TEXCOORD, 1);
-        addInputElement(D3DDECLUSAGE_TEXCOORD, 2);
-        addInputElement(D3DDECLUSAGE_TEXCOORD, 3);
-        addInputElement(D3DDECLUSAGE_COLOR, 0);
-        addInputElement(D3DDECLUSAGE_BLENDWEIGHT, 0);
-        addInputElement(D3DDECLUSAGE_BLENDINDICES, 0);
+        // Assign any unbound usages to null buffer slot.
+        for (auto& location : locations)
+        {
+            addInputElement(location.usage, location.usageIndex);
+        }
 
         vertexDeclaration->inputElements = std::make_unique<RenderInputElement[]>(inputElements.size());
         std::copy(inputElements.begin(), inputElements.end(), vertexDeclaration->inputElements.get());
