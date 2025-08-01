@@ -46,6 +46,7 @@
 #include "Sonicteam/Player/State/IMachine.h"
 #include "Sonicteam/Player/State/Machine2.h"
 #include "Sonicteam/Player/State/Object2.h"
+#include "Sonicteam/Player/State/SonicContext.h"
 #include "Sonicteam/Player/State/TailsContext.h"
 #include "Sonicteam/SoX/AI/StateMachine.h"
 #include "Sonicteam/SoX/Component.h"
