@@ -10,8 +10,6 @@ namespace Sonicteam::Player::State
     class SonicContext : public CommonContext
     {
     public:
-
-        
         //Sprite
         enum GemsS:uint32_t {
             SGreen = 1,
@@ -33,9 +31,6 @@ namespace Sonicteam::Player::State
             Yellow,
             Super
         };
-
-  
-    
         be<GemsS> m_CurrentGemSprite;
         boost::shared_ptr<Sonicteam::Player::SonicGauge> m_Gauge;
         uint8_t m_HomingLockOn;
@@ -56,5 +51,6 @@ namespace Sonicteam::Player::State
         uint8_t m_24B;
         be<uint32_t> m_HomingFlip;
         be<Gems> m_CurrentGem;
+        MARATHON_INSERT_PADDING(0x58);
     };
 }

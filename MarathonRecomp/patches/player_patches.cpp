@@ -260,14 +260,10 @@ void SonicGaugeRestorationGaugeFlagFix(PPCRegister& r_gauge, PPCRegister& r_cont
     if (!Config::SonicGauge || !r_gauge.u32)
         return;
 
-
     auto pGauge = (Sonicteam::Player::SonicGauge*)g_memory.Translate(r_gauge.u32);
     auto PContext = (Sonicteam::Player::State::SonicContext*)g_memory.Translate(r_context.u32);
     if ((uint32_t)(static_cast<Sonicteam::Player::IPlugIn*>(pGauge)->m_pVftable.get()) != 0x8200D4D8) // != SonicGauge 
         return;
-
-
-
 
     if (PContext->m_Tornado != 0 || PContext->m_CurrentAnimation == 0xCB || PContext->m_CurrentAnimation == 0xCC || PContext->m_CurrentAnimation == 0x46)
     {
@@ -278,32 +274,25 @@ void SonicGaugeRestorationGaugeFlagFix(PPCRegister& r_gauge, PPCRegister& r_cont
         using enum Sonicteam::Player::State::SonicContext::Gems;
 
         if ((PContext->m_Input.get() & 0x10000) != 0) {
-            printf("RT PRESS \n");
             PContext->m_24A = 0;
         }
             
         if ((PContext->m_Input.get() & 0x20000) != 0 && (PContext->m_CurrentGem == Red || PContext->m_CurrentGem == Purple))
         {
             pGauge->m_GroundedFlags = 1; 
-        
-      
             if (PContext->m_24A) 
             {
                 pGauge->m_GroundedFlags = 0;
                 PContext->m_Shrink = 0;
                 PContext->m_SlowTime = 0;
             }
-        
         }
         else if ((PContext->m_PostureFlags.get() & Sonicteam::Player::State::CommonContext::CC_GROUND) != 0 || PContext->m_24A)
         {
             pGauge->m_GroundedFlags = 0;
 
         }
-        printf("pGauge->m_GroundedFlags : %d\n", pGauge->m_GroundedFlags.get());
-
     }
-
 
 }
 //Sonic Gauge Restoration
