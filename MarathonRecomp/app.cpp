@@ -174,8 +174,6 @@ PPC_FUNC(sub_825822D0)
 }
 #endif
 
-
-
 PPC_FUNC_IMPL(__imp__sub_82590C38);
 PPC_FUNC(sub_82590C38)
 {
@@ -187,8 +185,6 @@ PPC_FUNC(sub_82590C38)
     GuestToHostFunction<void>(sub_82590A28,ctx.r3.u32,pFar);
     return;
 }
-
-
 
 //821728D4 (secondary)
 //SceneLODParam::InitializeSceneParam

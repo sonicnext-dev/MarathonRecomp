@@ -5,8 +5,6 @@
 
 namespace Sonicteam
 {
-
-
     class SceneShadowMapParam : public ISceneParam
     {
     public:
@@ -20,6 +18,7 @@ namespace Sonicteam
             be<float> m_CenterOffsetY;
             be<float> m_CenterOffsetZ;
             be<float> m_CenterOffsetW;
+
             ShadowMapParam() 
             {
                 m_BaseSize = 1000.0;
@@ -32,6 +31,5 @@ namespace Sonicteam
                 m_CenterOffsetW = 1.0;
             }
         };
-        public:
     };
 }

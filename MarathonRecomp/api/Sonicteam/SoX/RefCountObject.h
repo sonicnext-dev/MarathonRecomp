@@ -1,5 +1,7 @@
 #pragma once
+
 #include <Marathon.inl>
+
 namespace Sonicteam::SoX
 {
     class RefCountObject
