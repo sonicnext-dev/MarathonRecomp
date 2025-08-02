@@ -235,6 +235,10 @@ PPC_FUNC(sub_8223F360) {
     if (gauge->m_Super.get() == 0.0)
         gauge->m_Super = GuestToHostFunction<float>(sub_821EA350, RefTypeLuaSystem, g_memory.MapVirtual(buffer));
 
+
+    buffer->~string();
+    g_userHeap.Free(buffer);
+
     /* For Testing
     gauge->m_Green = 10;
     gauge->m_Blue = 20;
