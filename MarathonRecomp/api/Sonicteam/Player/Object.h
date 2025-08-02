@@ -43,8 +43,8 @@ namespace Sonicteam::Player
         xpointer<uint32_t> m_SpawnSource; // REF_TYPE(RefCountObject)
         uint8_t m_IsPlayer;
         uint8_t m_IsPosture;
-        uint8_t m_FlagCA;
-        uint8_t m_FlagCB;
+        uint8_t m_IsAI;
+        MARATHON_INSERT_PADDING(1);
         xpointer<uint32_t> m_RootFrame; // REF_TYPE(RefCountObject) 
         xpointer<uint32_t> m_PackageBinary; // REF_TYPE(RefCountObject)
         boost::shared_ptr<uint32_t> m_PlayerModel;
