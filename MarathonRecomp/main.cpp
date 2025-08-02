@@ -12,7 +12,7 @@
 #include <kernel/io/file_system.h>
 #include <file.h>
 #include <vector>
-#include <xex.h>
+#include <image.h>
 #include <apu/audio.h>
 #include <hid/hid.h>
 #include <user/config.h>
@@ -122,54 +122,19 @@ void KiSystemStartup()
 
 uint32_t LdrLoadModule(const std::filesystem::path &path)
 {
-    auto loadResult = LoadFile(path);
+    const auto loadResult = LoadFile(path);
     if (loadResult.empty())
     {
         assert("Failed to load module" && false);
         return 0;
     }
 
-    auto* header = reinterpret_cast<const Xex2Header*>(loadResult.data());
-    auto* security = reinterpret_cast<const Xex2SecurityInfo*>(loadResult.data() + header->securityOffset);
-    const auto* fileFormatInfo = reinterpret_cast<const Xex2OptFileFormatInfo*>(getOptHeaderPtr(loadResult.data(), XEX_HEADER_FILE_FORMAT_INFO));
-    auto entry = *reinterpret_cast<const uint32_t*>(getOptHeaderPtr(loadResult.data(), XEX_HEADER_ENTRY_POINT));
-    ByteSwapInplace(entry);
+    const auto image = Image::ParseImage(loadResult.data(), loadResult.size());
 
-    auto srcData = loadResult.data() + header->headerSize;
-    auto destData = reinterpret_cast<uint8_t*>(g_memory.Translate(security->loadAddress));
-    // printf("compression type: %hx\n", fileFormatInfo->compressionType);
-    if (fileFormatInfo->compressionType == XEX_COMPRESSION_NONE)
-    {
-        printf("compression type none\n");
-        memcpy(destData, srcData, security->imageSize);
-    }
-    else if (fileFormatInfo->compressionType == XEX_COMPRESSION_BASIC)
-    {
-        printf("compression type basic\n");
-        auto* blocks = reinterpret_cast<const Xex2FileBasicCompressionBlock*>(fileFormatInfo + 1);
-        const size_t numBlocks = (fileFormatInfo->infoSize / sizeof(Xex2FileBasicCompressionInfo)) - 1;
+    memcpy(g_memory.Translate(image.base), image.data.get(), image.size);
+    g_xdbfWrapper = XDBFWrapper(static_cast<uint8_t*>(g_memory.Translate(image.resource_offset)), image.resource_size);
 
-        for (size_t i = 0; i < numBlocks; i++)
-        {
-            memcpy(destData, srcData, blocks[i].dataSize);
-
-            srcData += blocks[i].dataSize;
-            destData += blocks[i].dataSize;
-
-            memset(destData, 0, blocks[i].zeroSize);
-            destData += blocks[i].zeroSize;
-        }
-    }
-    else
-    {
-        assert(false && "Unknown compression type.");
-    }
-
-    auto res = reinterpret_cast<const Xex2ResourceInfo*>(getOptHeaderPtr(loadResult.data(), XEX_HEADER_RESOURCE_INFO));
-
-    g_xdbfWrapper = XDBFWrapper((uint8_t*)g_memory.Translate(res->offset.get()), res->sizeOfData);
-
-    return entry;
+    return image.entry_point;
 }
 
 #ifdef __x86_64__
