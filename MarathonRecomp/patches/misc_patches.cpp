@@ -93,3 +93,7 @@ void PostureDisableEdgeGrabLeftover(PPCRegister& posture) {
     auto base = g_memory.base;
     *(volatile uint8_t*)(base + (posture.u32 + 0x3C0)) = 1;
 }
+
+void PedestrianAnimationLOD(PPCRegister& val) {
+    val.u32 = 0;
+}

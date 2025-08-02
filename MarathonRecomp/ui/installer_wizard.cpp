@@ -1212,16 +1212,6 @@ static void DrawNavigationButton()
     {
         if (g_currentPage == WizardPage::SelectDLC)
         {
-            // Check if any of the DLC was not specified.
-            bool dlcIncomplete = false;
-            for (int i = 0; (i < int(DLC::Count)) && !dlcIncomplete; i++)
-            {
-                if (g_dlcSourcePaths[i].empty() && !g_dlcInstalled[i])
-                {
-                    dlcIncomplete = true;
-                }
-            }
-
             bool dlcInstallerMode = g_gameSourcePath.empty();
             std::string sourcesErrorMessage;
             if (!InstallerParseSources(sourcesErrorMessage))
@@ -1236,13 +1226,6 @@ static void DrawNavigationButton()
                 g_currentMessagePrompt = stringStream.str();
                 g_currentMessagePromptConfirmation = false;
                 g_currentPage = dlcInstallerMode ? WizardPage::SelectDLC : WizardPage::SelectGame;
-            }
-            else if (dlcIncomplete && !dlcInstallerMode)
-            {
-                // Not all the DLC was specified, we show a prompt and await a confirmation before starting the installer.
-                g_currentMessagePrompt = Localise("Installer_Message_DLCWarning");
-                g_currentMessagePromptSource = MessagePromptSource::Next;
-                g_currentMessagePromptConfirmation = true;
             }
             else if (skipButton && dlcInstallerMode)
             {
