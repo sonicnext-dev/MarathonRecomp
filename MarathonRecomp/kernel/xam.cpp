@@ -314,7 +314,6 @@ uint32_t XamContentCreateEx(uint32_t dwUserIndex, const char* szRootName, const 
     uint32_t dwContentFlags, be<uint32_t>* pdwDisposition, be<uint32_t>* pdwLicenseMask,
     uint32_t dwFileCacheSize, uint64_t uliContentSize, PXXOVERLAPPED pOverlapped)
 {
-    printf("XamContentCreateEx: %d, %s %d\n", dwUserIndex, szRootName, dwContentFlags);
     const auto& registry = gContentRegistry[pContentData->dwContentType - 1];
     const auto exists = registry.contains(StringHash(pContentData->szFileName));
     const auto mode = dwContentFlags & 0xF;

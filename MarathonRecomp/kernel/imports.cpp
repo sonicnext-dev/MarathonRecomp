@@ -19,7 +19,7 @@
 #include <ntstatus.h>
 #endif
 
-std::vector<uint32_t> g_doNotDestroyHandles{};
+std::unordered_map<uint32_t, uint32_t> g_handleDuplicates{};
 
 struct Event final : KernelObject, HostObject<XKEVENT>
 {
@@ -336,7 +336,6 @@ uint32_t XGetAVPack()
 
 void XamLoaderTerminateTitle()
 {
-    printf("XamLoaderTerminateTitle\n");
     LOG_UTILITY("!!! STUB !!!");
 }
 
@@ -376,7 +375,7 @@ uint32_t NtCreateFile
     uint32_t CreateOptions
 )
 {
-    printf("NtCreateFile\n");
+    LOG_UTILITY("!!! STUB !!!");
     return 0;
 }
 
@@ -387,10 +386,13 @@ uint32_t NtClose(uint32_t handle)
 
     if (IsKernelObject(handle))
     {
-        auto it = std::find(g_doNotDestroyHandles.begin(), g_doNotDestroyHandles.end(), handle);
-        if (it == g_doNotDestroyHandles.end()) {
+        // If the handle was duplicated, just decrement the duplication count. Otherwise, delete the object.
+        const auto& it = g_handleDuplicates.find(handle);
+        if (it == g_handleDuplicates.end() || it->second == 0)
             DestroyKernelObject(handle);
-        }
+        else if (--it->second == 0)
+            g_handleDuplicates.erase(it);
+
         return 0;
     }
     else
@@ -432,6 +434,9 @@ uint32_t XamLoaderSetLaunchData()
 
 uint32_t NtWaitForSingleObjectEx(uint32_t Handle, uint32_t WaitMode, uint32_t Alertable, be<int64_t>* Timeout)
 {
+    if (Handle == GUEST_INVALID_HANDLE_VALUE)
+        return 0xFFFFFFFF;
+
     uint32_t timeout = GuestTimeoutToMilliseconds(Timeout);
     // assert(timeout == 0 || timeout == INFINITE);
 
@@ -555,11 +560,29 @@ void __C_specific_handler_x()
     LOG_UTILITY("!!! STUB !!!");
 }
 
-void RtlNtStatusToDosError(int Status)
+uint32_t RtlNtStatusToDosError(uint32_t Status)
 {
-    LOG_UTILITY("!!! STUB !!!");
-    printf("RtlNtStatusToDosError: %x\n", Status);
-    // __builtin_trap();
+    // See https://github.com/wine-mirror/wine/blob/master/dlls/ntdll/error.c#L47-L64
+    if (Status == 0 || (Status & 0x20000000) != 0)
+        return Status;
+
+    if ((Status & 0xF0000000) == 0xD0000000)
+        Status &= ~0x10000000;
+
+    const uint32_t hi = (Status >> 16) & 0xFFFF;
+    if (hi == 0x8007 || hi == 0xC001 || hi == 0xC007)
+        return Status & 0xFFFF;
+
+    switch (Status)
+    {
+    case STATUS_NOT_IMPLEMENTED:
+        return ERROR_CALL_NOT_IMPLEMENTED;
+    case STATUS_SEMAPHORE_LIMIT_EXCEEDED:
+        return ERROR_TOO_MANY_POSTS;
+    default:
+        LOGF_WARNING("Unimplemented NtStatus translation: {:#08x}", Status);
+        return Status;
+    }
 }
 
 void XexGetProcedureAddress()
@@ -642,20 +665,28 @@ void NtReadFile()
     LOG_UTILITY("!!! STUB !!!");
 }
 
-int NtDuplicateObject(uint32_t sourceHandle, be<uint32_t>* targetHandle, uint32_t options)
+uint32_t NtDuplicateObject(uint32_t SourceHandle, be<uint32_t>* TargetHandle, uint32_t Options)
 {
-    auto obj = GetKernelObject(sourceHandle);
-    // HACK: Duplicating handle doesn't supported now, so we just these handles to array to ignore of closing these handles
-    printf("NtDuplicateObject: %x %x %d, obj: %x\n", sourceHandle, targetHandle, options, obj);
-    auto it = std::find(g_doNotDestroyHandles.begin(), g_doNotDestroyHandles.end(), sourceHandle);
-    if (it == g_doNotDestroyHandles.end()) {
-        g_doNotDestroyHandles.push_back(sourceHandle);
+    if (SourceHandle == GUEST_INVALID_HANDLE_VALUE)
+        return 0xFFFFFFFF;
+
+    if (IsKernelObject(SourceHandle))
+    {
+        // Increment handle duplicate count.
+        const auto& it = g_handleDuplicates.find(SourceHandle);
+        if (it != g_handleDuplicates.end())
+            ++it->second;
+        else
+            g_handleDuplicates[SourceHandle] = 1;
+
+        *TargetHandle = SourceHandle;
+        return 0;
     }
-    if (!obj) return -1;
-    uint32_t newHandle = 0;
-    newHandle = sourceHandle;
-    *targetHandle = newHandle;
-    return 0;
+    else
+    {
+        assert(false && "Unrecognized kernel object.");
+        return 0xFFFFFFFF;
+    }
 }
 
 void NtAllocateVirtualMemory()
@@ -758,13 +789,11 @@ void RtlEnterCriticalSection(XRTL_CRITICAL_SECTION* cs)
 
 void RtlImageXexHeaderField()
 {
-    printf("RtlImageXexHeaderField\n");
     LOG_UTILITY("!!! STUB !!!");
 }
 
 void HalReturnToFirmware()
 {
-    printf("HalReturnToFirmware\n");
     LOG_UTILITY("!!! STUB !!!");
 }
 
@@ -909,7 +938,7 @@ void sprintf_x()
 
 int32_t ExRegisterTitleTerminateNotification(uint32_t* reg, uint32_t create)
 {
-    printf("ExRegisterTitleTerminateNotification: %x %d\n", reg, create);
+    LOG_UTILITY("!!! STUB !!!");
     return 0;
 }
 
@@ -1111,7 +1140,6 @@ uint32_t KeTlsGetValue(uint32_t dwTlsIndex)
 
 uint32_t KeTlsSetValue(uint32_t dwTlsIndex, uint32_t lpTlsValue)
 {
-    printf("KeTlsSetValue\n");
     KeTlsGetValueRef(dwTlsIndex) = lpTlsValue;
     return TRUE;
 }
