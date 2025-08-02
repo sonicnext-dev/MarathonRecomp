@@ -3,6 +3,7 @@
 #include <os/logger.h>
 #include <user/config.h>
 #include <app.h>
+#include <stdx/vector.h>
 
 // Sonicteam::Player::State::TailsContext::Update
 PPC_FUNC_IMPL(__imp__sub_8221A7D8);
@@ -113,9 +114,10 @@ PPC_FUNC(sub_82217FC0) {
     auto gem_id = (Sonicteam::Player::State::SonicContext::Gems)(ctx.r4.u32);
 
     switch (gem_id) {
+        case Yellow:
+            if (context->m_ThunderGuard) break;
         case Blue:
         case Green:
-        case Yellow:
         case Sky:
         case White:
         case Super: 
@@ -264,12 +266,18 @@ void SonicGaugeRestorationGaugeFlagFix(PPCRegister& r_gauge, PPCRegister& r_cont
     if (!Config::SonicGauge || !r_gauge.u32)
         return;
 
+
+
     auto pGauge = (Sonicteam::Player::SonicGauge*)g_memory.Translate(r_gauge.u32);
     auto PContext = (Sonicteam::Player::State::SonicContext*)g_memory.Translate(r_context.u32);
     if ((uint32_t)(static_cast<Sonicteam::Player::IPlugIn*>(pGauge)->m_pVftable.get()) != 0x8200D4D8) // != SonicGauge 
         return;
 
-    if (PContext->m_Tornado != 0 || PContext->m_CurrentAnimation == 0xCB || PContext->m_CurrentAnimation == 0xCC || PContext->m_CurrentAnimation == 0x46)
+    auto weapons = PContext->m_pScore->m_pPlayer->GetPlugin<Sonicteam::Player::Weapon::SonicWeapons>("sonic_weapons");
+    
+
+
+    if (PContext->m_Tornado != 0 || PContext->m_CurrentAnimation == 0xCB || PContext->m_CurrentAnimation == 0xCC || PContext->m_CurrentAnimation == 0x46 || PContext->m_CurrentAnimation == 0xCE ||  weapons->m_GunDrive.Entity != 0)
     {
         pGauge->m_GroundedFlags = 1; // Lock game
     }
