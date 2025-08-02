@@ -16,13 +16,14 @@ namespace Sonicteam::Player::Weapon
     template <typename Type>
     struct LinkSoxNode
     {
-        xpointer<LinkSoxNode<Type>> m_prev;
-        xpointer<LinkSoxNode<Type>> m_next;
-        Type* m_this;
+        xpointer<LinkSoxNode<Type>> m_Prev;
+        xpointer<LinkSoxNode<Type>> m_Next;
+        Type* m_This;
     };
 
     template <typename Type>
-    struct EntityContainer {
+    struct EntityContainer
+    {
         xpointer<Type> Entity;
         LinkSoxNode<Type> m_Link;
     };

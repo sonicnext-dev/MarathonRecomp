@@ -42,7 +42,6 @@ PPC_FUNC(sub_8221A7D8)
     __imp__sub_8221A7D8(ctx, base);
 }
 
-
 // Sonicteam::Player::State::*Context IDynamicLink::Init
 PPC_FUNC_IMPL(__imp__sub_8220F330);
 PPC_FUNC(sub_8220F330)
@@ -84,7 +83,6 @@ PPC_FUNC(sub_8220F330)
 /////////////   Sonic Gauge Restoration ////////////////
 ////////////////////////////////////////////////////////
 
-
 const Sonicteam::Player::State::SonicContext::GemsS gemConversionTable[] = {
     Sonicteam::Player::State::SonicContext::GemsS::SBlue,   
     Sonicteam::Player::State::SonicContext::GemsS::SRed,    
@@ -113,7 +111,8 @@ PPC_FUNC(sub_82217FC0) {
     using enum Sonicteam::Player::State::SonicContext::Gems;
     auto gem_id = (Sonicteam::Player::State::SonicContext::Gems)(ctx.r4.u32);
 
-    switch (gem_id) {
+    switch (gem_id) 
+    {
         case Yellow:
             if (context->m_ThunderGuard) break;
         case Blue:
@@ -123,7 +122,8 @@ PPC_FUNC(sub_82217FC0) {
         case Super: 
         {
             size_t index = gemConversionTable[gem_id - 1] - 1;
-            if (gauge->m_Value >= (&gauge->m_Green)[index].get()) {
+            if (gauge->m_Value >= (&gauge->m_Green)[index].get()) 
+            {
                 ctx.r3.u64 = 1;
                 return;
             }
@@ -159,7 +159,8 @@ PPC_FUNC(sub_82218068) {
     auto gem_id = (Sonicteam::Player::State::SonicContext::Gems)(ctx.r4.u32);
     double delta = ctx.f1.f64;
 
-    switch (gem_id) {
+    switch (gem_id) 
+    {
     case Blue:
         case Green:
         case Yellow:
@@ -257,7 +258,8 @@ PPC_FUNC(sub_8223F360) {
 void SonicGaugeRestorationGaugeGemSpriteResetFix(PPCRegister& r_GameImp) {
 
     Sonicteam::GameImp* pGameImp = (Sonicteam::GameImp*)g_memory.Translate(r_GameImp.u32);
-    for (int i = 0; i < 4; i++) pGameImp->m_PlayerData[i].GemIndex = 0;
+    for (int i = 0; i < 4; i++)
+        pGameImp->m_PlayerData[i].GemIndex = 0;
 }
 
 
@@ -266,17 +268,12 @@ void SonicGaugeRestorationGaugeFlagFix(PPCRegister& r_gauge, PPCRegister& r_cont
     if (!Config::SonicGauge || !r_gauge.u32)
         return;
 
-
-
     auto pGauge = (Sonicteam::Player::SonicGauge*)g_memory.Translate(r_gauge.u32);
     auto PContext = (Sonicteam::Player::State::SonicContext*)g_memory.Translate(r_context.u32);
     if ((uint32_t)(static_cast<Sonicteam::Player::IPlugIn*>(pGauge)->m_pVftable.get()) != 0x8200D4D8) // != SonicGauge 
         return;
 
     auto weapons = PContext->m_pScore->m_pPlayer->GetPlugin<Sonicteam::Player::Weapon::SonicWeapons>("sonic_weapons");
-    
-
-
     if (PContext->m_Tornado != 0 || PContext->m_CurrentAnimation == 0xCB || PContext->m_CurrentAnimation == 0xCC || PContext->m_CurrentAnimation == 0x46 || PContext->m_CurrentAnimation == 0xCE ||  weapons->m_GunDrive.Entity != 0)
     {
         pGauge->m_GroundedFlags = 1; // Lock game
@@ -284,11 +281,10 @@ void SonicGaugeRestorationGaugeFlagFix(PPCRegister& r_gauge, PPCRegister& r_cont
     else
     {
         using enum Sonicteam::Player::State::SonicContext::Gems;
-
         if ((PContext->m_Input.get() & 0x10000) != 0) {
             PContext->m_24A = 0;
         }
-            
+
         if ((PContext->m_Input.get() & 0x20000) != 0 && (PContext->m_CurrentGem == Red || PContext->m_CurrentGem == Purple))
         {
             pGauge->m_GroundedFlags = 1; 

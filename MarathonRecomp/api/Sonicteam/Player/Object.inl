@@ -12,11 +12,11 @@ namespace Sonicteam::Player
     {
         for (stdx::vector<boost::shared_ptr<Sonicteam::Player::IPlugIn>>::iterator it = m_PlayerPlugins.begin(); it != m_PlayerPlugins.end(); it = it + 1)
         {
-            if (it->get()->m_Name == v_name) {
+            if (it->get()->m_Name == v_name) 
+			{
                 return static_cast<T*>(it->get());
             }
         }
-
         return nullptr;
     }
 }

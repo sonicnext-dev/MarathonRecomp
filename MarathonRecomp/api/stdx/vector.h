@@ -263,7 +263,6 @@ namespace stdx
             }
         }
 
-    
         void clear()
         {
             _DestroyRange(_First, _Last);
@@ -342,7 +341,6 @@ namespace stdx
         }
     };
 
-    // Non-member functions
     template<typename T>
     void swap(vector<T>& lhs, vector<T>& rhs) noexcept
     {

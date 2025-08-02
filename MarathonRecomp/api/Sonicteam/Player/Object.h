@@ -8,18 +8,22 @@
 namespace Sonicteam::Player
 {
     //xbox vector
-    struct  _vector {
-        union {
-            struct {
+    struct  _vector
+    {
+        union
+        {
+            struct
+            {
                 be<float> x, y, z, w;
             };
+
             be<float> _f[4];
         };
-        _vector(float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 0.0f)
-            : x(x), y(y), z(z), w(w)
+        _vector(float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 0.0f): x(x), y(y), z(z), w(w)
         {
         }
     };
+
     typedef _vector XMVECTOR;
 
     #pragma pack(push, 1)

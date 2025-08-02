@@ -11,7 +11,8 @@ namespace Sonicteam::Player::State
     {
     public:
         //Sprite
-        enum GemsS:uint32_t {
+        enum GemsS:uint32_t
+        {
             SGreen = 1,
             SRed,
             SBlue,
@@ -21,7 +22,9 @@ namespace Sonicteam::Player::State
             SPurple,
             SSuper
         };
-        enum Gems:uint32_t {
+
+        enum Gems:uint32_t
+        {
             Blue = 1,
             Red,
             Green,
@@ -31,6 +34,7 @@ namespace Sonicteam::Player::State
             Yellow,
             Super
         };
+
         be<GemsS> m_CurrentGemSprite;
         boost::shared_ptr<Sonicteam::Player::SonicGauge> m_Gauge;
         uint8_t m_HomingLockOn;

@@ -15,7 +15,8 @@ namespace Sonicteam::Player::State
     public:
 
         //(Gordon Ramsay)
-        enum PostureEnum:uint32_t{
+        enum PostureEnum:uint32_t
+        {
             CC_GROUND = 0x1,				// detects Ground 
             CC_WALLBRUSHING = 0x8,		    // detects brushing against a wall
             CC_HEADONWALL = 0x10,			// detects head-on wall collision (will always be enabled w/ 2^3)
