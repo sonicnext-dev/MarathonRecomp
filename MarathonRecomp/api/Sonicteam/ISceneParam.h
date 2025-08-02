@@ -6,11 +6,13 @@
 namespace Sonicteam
 {
     template <typename Type>
-    struct LinkSoxNode {
+    struct LinkSoxNode
+    {
         xpointer<LinkSoxNode<Type>> m_Prev;
         xpointer<LinkSoxNode<Type>> m_Next;
         xpointer<Type> m_This;
     };
+
     class ISceneParam : public SoX::RefCountObject
     {
     public:

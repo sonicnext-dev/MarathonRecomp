@@ -10,7 +10,8 @@ namespace Sonicteam
     class SceneShadowMapParam : public ISceneParam
     {
     public:
-        struct ShadowMapParam {
+        struct ShadowMapParam 
+        {
             be<float> m_BaseSize;
             be<float> m_Float1;
             be<float> m_Float2;
@@ -19,7 +20,8 @@ namespace Sonicteam
             be<float> m_CenterOffsetY;
             be<float> m_CenterOffsetZ;
             be<float> m_CenterOffsetW;
-            ShadowMapParam() {
+            ShadowMapParam() 
+            {
                 m_BaseSize = 1000.0;
                 m_Float1 = 10.0;
                 m_Float2 = 160000.0; //Far Distance???

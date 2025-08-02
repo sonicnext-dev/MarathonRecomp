@@ -177,7 +177,8 @@ PPC_FUNC(sub_825822D0)
 
 
 PPC_FUNC_IMPL(__imp__sub_82590C38);
-PPC_FUNC(sub_82590C38) {
+PPC_FUNC(sub_82590C38)
+{
     auto pCamera = (Sonicteam::SoX::Scenery::CameraImp*)(base + ctx.r3.u32);
     float pFar = ctx.f1.f64;
     pCamera->m_Far = pFar;
@@ -197,7 +198,8 @@ PPC_FUNC(sub_825F3FE0)
     auto pSceneLOD = (Sonicteam::SceneLODParam*)(base + ctx.r3.u32);
     __imp__sub_825F3FE0(ctx, base);
     auto& lMain = pSceneLOD->m_LODParam[Sonicteam::SceneLODParam::Main];
-    for (int i = 0; i < 19; i++) {
+    for (int i = 0; i < 19; i++) 
+    {
         pSceneLOD->m_LODParam[i].m_IsSet = 1;
         pSceneLOD->m_LODParam[i].m_FarDistance = 12800000;
         pSceneLOD->m_LODParam[i].m_ClipDistance = 12800000;
