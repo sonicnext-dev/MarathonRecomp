@@ -357,23 +357,17 @@ if (MARATHON_RECOMP_FLATPAK)
     )
 endif()
 
-if (MARATHON_RECOMP_D3D12)
-    find_package(directx-headers CONFIG REQUIRED)
-    find_package(directx12-agility CONFIG REQUIRED)
-    target_compile_definitions(MarathonRecomp PRIVATE MARATHON_RECOMP_D3D12)
-endif()
+find_package(CURL REQUIRED)
 
 if (MARATHON_RECOMP_METAL)
     target_compile_definitions(MarathonRecomp PRIVATE MARATHON_RECOMP_METAL)
 endif()
 
-if (SDL_VULKAN_ENABLED)
-    target_compile_definitions(MarathonRecomp PRIVATE SDL_VULKAN_ENABLED)
-endif()
-
-find_package(CURL REQUIRED)
-
 if (MARATHON_RECOMP_D3D12)
+    find_package(directx-headers CONFIG REQUIRED)
+    find_package(directx12-agility CONFIG REQUIRED)
+    target_compile_definitions(MarathonRecomp PRIVATE MARATHON_RECOMP_D3D12)
+
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/D3D12)
     add_custom_command(TARGET MarathonRecomp POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_PROPERTY:Microsoft::DirectX12-Core,IMPORTED_LOCATION_RELEASE> $<TARGET_FILE_DIR:MarathonRecomp>/D3D12
@@ -384,9 +378,6 @@ if (MARATHON_RECOMP_D3D12)
     )
 
     target_link_libraries(MarathonRecomp PRIVATE
-            Microsoft::DirectX-Headers
-            Microsoft::DirectX-Guids
-            Microsoft::DirectX12-Agility
             Microsoft::DirectXShaderCompiler
             Microsoft::DXIL
             dxgi
