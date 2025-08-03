@@ -575,9 +575,9 @@ uint32_t RtlNtStatusToDosError(uint32_t Status)
 
     switch (Status)
     {
-    case STATUS_NOT_IMPLEMENTED:
+    case uint32_t(STATUS_NOT_IMPLEMENTED):
         return ERROR_CALL_NOT_IMPLEMENTED;
-    case STATUS_SEMAPHORE_LIMIT_EXCEEDED:
+    case uint32_t(STATUS_SEMAPHORE_LIMIT_EXCEEDED):
         return ERROR_TOO_MANY_POSTS;
     default:
         LOGF_WARNING("Unimplemented NtStatus translation: {:#08x}", Status);

@@ -2,6 +2,7 @@
 #include "heap.h"
 #include "memory.h"
 #include "function.h"
+#include "xdm.h"
 
 constexpr size_t RESERVED_BEGIN = 0x7FEA0000;
 constexpr size_t RESERVED_END = 0xA0000000;
