@@ -4,6 +4,7 @@
 #include <kernel/function.h>
 #include <os/process.h>
 #include <os/logger.h>
+#include <patches/player_patches.h>
 #include <ui/game_window.h>
 #include <user/config.h>
 #include <user/paths.h>
@@ -86,6 +87,8 @@ PPC_FUNC(sub_825EA610)
 
     // Allow variable FPS when config is not 60 FPS.
     App::s_pApp->m_pDoc->m_VFrame = Config::FPS != 60;
+
+    PlayerPatches::Update();
 
     __imp__sub_825EA610(ctx, base);
 }

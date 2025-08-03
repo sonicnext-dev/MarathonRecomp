@@ -1,3 +1,4 @@
+#include "player_patches.h"
 #include <api/Marathon.h>
 #include <cpu/guest_stack_var.h>
 #include <os/logger.h>
@@ -69,4 +70,16 @@ PPC_FUNC(sub_8220F330)
     }
 
     __imp__sub_8220F330(ctx, base);
+}
+
+void PlayerPatches::Update()
+{
+    if (Config::AlwaysHave99Lives)
+    {
+        if (auto pGameMode = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>())
+        {
+            for (int i = 0; i < 4; i++)
+                pGameMode->m_pGameImp->m_PlayerData[i].LifeCount = 99;
+        }
+    }
 }
