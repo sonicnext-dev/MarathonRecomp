@@ -157,7 +157,7 @@ int Window_OnSDLEvent(void*, SDL_Event* event)
 void GameWindow::Init(const char* sdlVideoDriver)
 {
 #ifdef __linux__
-    SDL_SetHint("SDL_APP_ID", "io.github.sonicnext_dev.unleashedrecomp");
+    SDL_SetHint("SDL_APP_ID", "io.github.sonicnext_dev.marathonrecomp");
 #endif
 
     if (SDL_VideoInit(sdlVideoDriver) != 0 && sdlVideoDriver)
