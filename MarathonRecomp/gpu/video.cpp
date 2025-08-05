@@ -533,7 +533,7 @@ struct UploadAllocator
         auto& buffer = buffers[index];
         if (buffer.buffer == nullptr)
         {
-            buffer.buffer = g_device->createBuffer(RenderBufferDesc::UploadBuffer(UploadBuffer::SIZE, RenderBufferFlag::CONSTANT | RenderBufferFlag::VERTEX | RenderBufferFlag::INDEX));
+            buffer.buffer = g_device->createBuffer(RenderBufferDesc::UploadBuffer(UploadBuffer::SIZE, RenderBufferFlag::CONSTANT | RenderBufferFlag::VERTEX | RenderBufferFlag::INDEX | RenderBufferFlag::DEVICE_ADDRESSABLE));
             buffer.memory = reinterpret_cast<uint8_t*>(buffer.buffer->map());
             buffer.deviceAddress = buffer.buffer->getDeviceAddress();
         }
