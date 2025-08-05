@@ -5,9 +5,11 @@
 #include <stdx/vector.h>
 #include <Sonicteam/Player/IPlugIn.h>
 
+
 namespace Sonicteam::Player
 {
     //xbox vector
+    //pull/74  SoX::Math::Vector4, replace _vector,XMVECTOR to SoX::Math::Vector4  - 
     struct  _vector
     {
         union
@@ -30,8 +32,8 @@ namespace Sonicteam::Player
     class __declspec(align(1)) Object : public Actor
     {
         struct ObjectPlayerUpgrade {
-            unsigned int global_flag;
-            unsigned int equip_flag;
+            uint32_t global_flag;
+            uint32_t equip_flag;
         };
 
     public:
@@ -74,10 +76,8 @@ namespace Sonicteam::Player
 		template <typename T = Sonicteam::Player::IPlugIn>
 		inline T* GetPlugin(const char* v_name);
 
-
     };
     #pragma pack(pop) 
- 
 }
 
 #include <Sonicteam/Player/Object.inl>

@@ -12,9 +12,9 @@ namespace stdx
     {
     private:
         be<uint32_t> _Myproxy;
-        xpointer<T> _First;
-        xpointer<T> _Last;
-        xpointer<T> _End;
+        xpointer<T> _MyFirst;
+        xpointer<T> _MyLast;
+        xpointer<T> _MyEnd;
 
         void _ConstructRange(T* first, T* last, const T& value)
         {
@@ -41,8 +41,8 @@ namespace stdx
             {
                 for (size_t i = 0; i < oldSize; ++i)
                 {
-                    new (newBlock + i) T(std::move(_First[i]));
-                    _First[i].~T();
+                    new (newBlock + i) T(std::move(_MyFirst[i]));
+                    _MyFirst[i].~T();
                 }
             }
             catch (...)
@@ -52,20 +52,20 @@ namespace stdx
                 throw;
             }
 
-            if (_First)
+            if (_MyFirst)
             {
-                _DestroyRange(_First, _Last);
-                g_userHeap.Free(_First.get());
+                _DestroyRange(_MyFirst, _MyLast);
+                g_userHeap.Free(_MyFirst.get());
             }
 
-            _First = xpointer<T>(newBlock);
-            _Last = xpointer<T>(newBlock + oldSize);
-            _End = xpointer<T>(newBlock + newCapacity);
+            _MyFirst = xpointer<T>(newBlock);
+            _MyLast = xpointer<T>(newBlock + oldSize);
+            _MyEnd = xpointer<T>(newBlock + newCapacity);
         }
 
         void _GrowIfNeeded()
         {
-            if (_Last.get() == _End.get())
+            if (_MyLast.get() == _MyEnd.get())
             {
                 _Reallocate(size() ? size() * 2 : 1);
             }
@@ -78,62 +78,62 @@ namespace stdx
 
 
         vector() noexcept
-            : _First(nullptr)
-            , _Last(nullptr)
-            , _End(nullptr)
+            : _MyFirst(nullptr)
+            , _MyLast(nullptr)
+            , _MyEnd(nullptr)
         {
         }
 
         explicit vector(size_t count)
-            : _First(static_cast<T*>(g_userHeap.Alloc(sizeof(T)* count)))
-            , _Last(_First.get() + count)
-            , _End(_Last)
+            : _MyFirst(static_cast<T*>(g_userHeap.Alloc(sizeof(T)* count)))
+            , _MyLast(_MyFirst.get() + count)
+            , _MyEnd(_MyLast)
         {
-            _ConstructRange(_First, _Last, T());
+            _ConstructRange(_MyFirst, _MyLast, T());
         }
 
         vector(size_t count, const T& value)
-            : _First(static_cast<T*>(g_userHeap.Alloc(sizeof(T)* count)))
-            , _Last(_First.get() + count)
-            , _End(_Last)
+            : _MyFirst(static_cast<T*>(g_userHeap.Alloc(sizeof(T)* count)))
+            , _MyLast(_MyFirst.get() + count)
+            , _MyEnd(_MyLast)
         {
-            _ConstructRange(_First, _Last, value);
+            _ConstructRange(_MyFirst, _MyLast, value);
         }
 
         vector(const vector& other)
-            : _First(static_cast<T*>(g_userHeap.Alloc(sizeof(T) * other.size())))
-            , _Last(_First.get() + other.size())
-            , _End(_Last)
+            : _MyFirst(static_cast<T*>(g_userHeap.Alloc(sizeof(T) * other.size())))
+            , _MyLast(_MyFirst.get() + other.size())
+            , _MyEnd(_MyLast)
         {
             try
             {
                 for (size_t i = 0; i < other.size(); ++i)
                 {
-                    new (_First.get() + i) T(other._First[i]);
+                    new (_MyFirst.get() + i) T(other._MyFirst[i]);
                 }
             }
             catch (...)
             {
-                _DestroyRange(_First, _Last);
-                g_userHeap.Free(_First.get());
+                _DestroyRange(_MyFirst, _MyLast);
+                g_userHeap.Free(_MyFirst.get());
                 throw;
             }
         }
 
         vector(vector&& other) noexcept
-            : _First(other._First)
-            , _Last(other._Last)
-            , _End(other._End)
+            : _MyFirst(other._MyFirst)
+            , _MyLast(other._MyLast)
+            , _MyEnd(other._MyEnd)
         {
-            other._First = other._Last = other._End = nullptr;
+            other._MyFirst = other._MyLast = other._MyEnd = nullptr;
         }
 
         ~vector()
         {
-            _DestroyRange(_First, _Last);
-            if (_First)
+            _DestroyRange(_MyFirst, _MyLast);
+            if (_MyFirst)
             {
-                g_userHeap.Free(_First.get());
+                g_userHeap.Free(_MyFirst.get());
             }
         }
 
@@ -151,17 +151,17 @@ namespace stdx
         {
             if (this != &other)
             {
-                _DestroyRange(_First, _Last);
-                if (_First)
+                _DestroyRange(_MyFirst, _MyLast);
+                if (_MyFirst)
                 {
-                    g_userHeap.Free(_First.get());
+                    g_userHeap.Free(_MyFirst.get());
                 }
 
-                _First = other._First;
-                _Last = other._Last;
-                _End = other._End;
+                _MyFirst = other._MyFirst;
+                _MyLast = other._MyLast;
+                _MyEnd = other._MyEnd;
 
-                other._First = other._Last = other._End = nullptr;
+                other._MyFirst = other._MyLast = other._MyEnd = nullptr;
             }
             return *this;
         }
@@ -169,82 +169,84 @@ namespace stdx
         
         T& operator[](size_t pos)
         {
-            return _First.get()[pos];
+            return _MyFirst.get()[pos];
         }
         const T& operator[](size_t pos) const 
         { 
-            return _First.get()[pos];
+            return _MyFirst.get()[pos];
         }
 
         T& at(size_t pos)
         {
             if (pos >= size()) throw std::out_of_range("vector index out of range");
-            return _First.get()[pos];
+            return _MyFirst.get()[pos];
         }
 
         const T& at(size_t pos) const
         {
             if (pos >= size()) throw std::out_of_range("vector index out of range");
-            return _First.get()[pos];
+            return _MyFirst.get()[pos];
         }
 
         T& front() {
-            return *_First;
+            return *_MyFirst;
         }
         const T& front() const {
-            return *_First;
+            return *_MyFirst;
         }
         T& back() {
-            return *(_Last.get() - 1); 
+            return *(_MyLast.get() - 1); 
         }
         const T& back() const 
         {
-            return *(_Last.get() - 1); 
+            return *(_MyLast.get() - 1); 
         }
         T* data() 
         {
-            return _First;
+            return _MyFirst;
         }
         const T* data() const {
-            return _First;
+            return _MyFirst;
         }
 
         // Iterators
         iterator begin() {
-            return _First;
+            return _MyFirst;
         }
         const_iterator begin() const 
         { 
-            return _First;
+            return _MyFirst;
         }
         const_iterator cbegin() const
         { 
-            return _First;
+            return _MyFirst;
         }
         iterator end() 
         {
-            return _Last;
+            return _MyLast;
         }
         const_iterator end() const 
         { 
-            return _Last;
+            return _MyLast;
         }
         const_iterator cend() const 
         {
-            return _Last;
+            return _MyLast;
         }
 
         // Capacity
         bool empty() const 
         { 
-            return _First.get() == _Last.get();
+            return _MyFirst.get() == _MyLast.get();
         }
         size_t size() const
         { 
-            return _Last.get() - _First.get();
+            return _MyLast.get() - _MyFirst.get();
         }
-        size_t capacity() const {
-            return _End.get() - _First.get();
+
+        size_t capacity() const
+        {
+            return _MyEnd.get() - _MyFirst.get();
         }
 
         void reserve(size_t newCapacity)
@@ -265,52 +267,52 @@ namespace stdx
 
         void clear()
         {
-            _DestroyRange(_First, _Last);
-            _Last = _First;
+            _DestroyRange(_MyFirst, _MyLast);
+            _MyLast = _MyFirst;
         }
 
         void push_back(const T& value)
         {
             _GrowIfNeeded();
-            new (_Last.get()) T(value);
-            _Last = xpointer<T>(_Last.get() + 1);
+            new (_MyLast.get()) T(value);
+            _MyLast = xpointer<T>(_MyLast.get() + 1);
         }
 
         void push_back(T&& value)
         {
             _GrowIfNeeded();
-            new (_Last.get()) T(std::move(value));
-            _Last = xpointer<T>(_Last.get() + 1);
+            new (_MyLast.get()) T(std::move(value));
+            _MyLast = xpointer<T>(_MyLast.get() + 1);
         }
 
         template<typename... Args>
         void emplace_back(Args&&... args)
         {
             _GrowIfNeeded();
-            new (_Last.get()) T(std::forward<Args>(args)...);
-            _Last = xpointer<T>(_Last.get() + 1);
+            new (_MyLast.get()) T(std::forward<Args>(args)...);
+            _MyLast = xpointer<T>(_MyLast.get() + 1);
         }
 
         void pop_back()
         {
-            (_Last.get() - 1)->~T();
-            _Last = xpointer<T>(_Last.get() - 1);
+            (_MyLast.get() - 1)->~T();
+            _MyLast = xpointer<T>(_MyLast.get() - 1);
         }
 
         void resize(size_t count)
         {
             if (count < size())
             {
-                _DestroyRange(_First.get() + count, _Last);
-                _Last = xpointer<T>(_First.get() + count);
+                _DestroyRange(_MyFirst.get() + count, _MyLast);
+                _MyLast = xpointer<T>(_MyFirst.get() + count);
             }
             else if (count > size())
             {
                 reserve(count);
-                while (_Last.get() != _First.get() + count)
+                while (_MyLast.get() != _MyFirst.get() + count)
                 {
-                    new (_Last.get()) T();
-                    _Last = xpointer<T>(_Last.get() + 1);
+                    new (_MyLast.get()) T();
+                    _MyLast = xpointer<T>(_MyLast.get() + 1);
                 }
             }
         }
@@ -319,25 +321,25 @@ namespace stdx
         {
             if (count < size())
             {
-                _DestroyRange(_First.get() + count, _Last);
-                _Last = xpointer<T>(_First.get() + count);
+                _DestroyRange(_MyFirst.get() + count, _MyLast);
+                _MyLast = xpointer<T>(_MyFirst.get() + count);
             }
             else if (count > size())
             {
                 reserve(count);
-                while (_Last.get() != _First.get() + count)
+                while (_MyLast.get() != _MyFirst.get() + count)
                 {
-                    new (_Last.get()) T(value);
-                    _Last = xpointer<T>(_Last.get() + 1);
+                    new (_MyLast.get()) T(value);
+                    _MyLast = xpointer<T>(_MyLast.get() + 1);
                 }
             }
         }
 
         void swap(vector& other) noexcept
         {
-            std::swap(_First, other._First);
-            std::swap(_Last, other._Last);
-            std::swap(_End, other._End);
+            std::swap(_MyFirst, other._MyFirst);
+            std::swap(_MyLast, other._MyLast);
+            std::swap(_MyEnd, other._MyEnd);
         }
     };
 
