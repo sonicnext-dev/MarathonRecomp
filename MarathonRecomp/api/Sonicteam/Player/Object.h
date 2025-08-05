@@ -18,7 +18,8 @@ namespace Sonicteam::Player
     #pragma pack(push, 1)
     class __declspec(align(1)) Object : public Actor
     {
-        struct ObjectPlayerUpgrade {
+        struct ObjectPlayerUpgrade 
+        {
             uint32_t global_flag;
             uint32_t equip_flag;
         };
