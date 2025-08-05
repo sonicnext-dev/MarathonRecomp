@@ -2,7 +2,7 @@
 
 #include "Marathon.inl"
 
-namespace SoX::Math
+namespace Sonicteam::SoX::Math
 {
     class Vector2
     {

@@ -111,18 +111,9 @@ PPC_FUNC(sub_8219FAE0)
     {
     public:
         xpointer<const char> PlayerName;
-        be<uint32_t> PlayerIndex;
-        be<uint32_t> PlayerControllerID;
-        be<uint32_t> CameraActorID;
-        be<uint32_t> SetupModuleIndex;
-        be<uint32_t> Unk0x14;
-        be<uint32_t> Unk0x18;
-        be<uint32_t> Unk0x1C;
-        SoX::Math::Vector4 PlayerRotation;
-        SoX::Math::Vector4 PlayerPosition;
-        uint32_t PlayerStartRingsCount;
-        uint32_t PlayerBasedOn;
-        uint8_t PlayerUnkFlag2;
+        MARATHON_INSERT_PADDING(0x2C);
+        Sonicteam::SoX::Math::Vector4 PlayerPosition;
+        MARATHON_INSERT_PADDING(0xC);
     };
 
     auto pSpawnData = reinterpret_cast<OBJPlayerSpawnData*>(base + ctx.r4.u32);
