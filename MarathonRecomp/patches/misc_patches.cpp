@@ -1,4 +1,5 @@
 #include <api/Marathon.h>
+#include <ui/black_bar.h>
 #include <user/config.h>
 #include <user/achievement_manager.h>
 
@@ -92,4 +93,14 @@ void PostureDisableEdgeGrabLeftover(PPCRegister& posture) {
 
     auto base = g_memory.base;
     *(volatile uint8_t*)(base + (posture.u32 + 0x3C0)) = 1;
+}
+
+// Sonicteam::EventEntityTask::Update
+PPC_FUNC_IMPL(__imp__sub_8264AC48);
+PPC_FUNC(sub_8264AC48)
+{
+    if (Config::CutsceneAspectRatio == ECutsceneAspectRatio::Original)
+        BlackBar::g_isPillarbox = true;
+
+    __imp__sub_8264AC48(ctx, base);
 }

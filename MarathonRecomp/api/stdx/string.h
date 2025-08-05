@@ -23,7 +23,7 @@ namespace stdx
 
         bool is_short() const
         {
-            return _Mysize <= 0x10;
+            return _Mysize.get() < 0x10;
         }
 
     public:
@@ -34,12 +34,12 @@ namespace stdx
 
         size_t size() const
         {
-            return _Mysize;
+            return _Mysize.get();
         }
 
         size_t capacity() const
         {
-            return _Myres;
+            return _Myres.get();
         }
 
         string()

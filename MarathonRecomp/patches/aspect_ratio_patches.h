@@ -1,5 +1,7 @@
 #pragma once
 
+#include <xxHashMap.h>
+
 inline constexpr float NARROW_ASPECT_RATIO = 4.0f / 3.0f;
 inline constexpr float WIDE_ASPECT_RATIO = 16.0f / 9.0f;
 inline constexpr float STEAM_DECK_ASPECT_RATIO = 16.0f / 10.0f;
@@ -11,7 +13,240 @@ inline float g_aspectRatioScale;
 inline float g_aspectRatioGameplayScale;
 inline float g_aspectRatioNarrowScale;
 
-struct AspectRatioPatches
+class AspectRatioPatches
 {
+public:
     static void ComputeOffsets();
 };
+
+inline XXH64_hash_t HashStr(const std::string_view& value)
+{
+    return XXH3_64bits(value.data(), value.size());
+}
+
+struct CsdModifier
+{
+    uint32_t Flags{};
+    float CornerMax{};
+    uint32_t CornerIndex{};
+};
+
+enum
+{
+    ALIGN_CENTER = 0 << 0,
+
+    ALIGN_TOP = 1 << 0,
+    ALIGN_LEFT = 1 << 1,
+    ALIGN_BOTTOM = 1 << 2,
+    ALIGN_RIGHT = 1 << 3,
+
+    ALIGN_TOP_LEFT = ALIGN_TOP | ALIGN_LEFT,
+    ALIGN_TOP_RIGHT = ALIGN_TOP | ALIGN_RIGHT,
+    ALIGN_BOTTOM_LEFT = ALIGN_BOTTOM | ALIGN_LEFT,
+    ALIGN_BOTTOM_RIGHT = ALIGN_BOTTOM | ALIGN_RIGHT,
+
+    STRETCH_HORIZONTAL = 1 << 4,
+    STRETCH_VERTICAL = 1 << 5,
+
+    STRETCH = STRETCH_HORIZONTAL | STRETCH_VERTICAL,
+
+    SCALE = 1 << 6,
+
+    EXTEND_LEFT = 1 << 7,
+    EXTEND_RIGHT = 1 << 8,
+
+    STORE_LEFT_CORNER = 1 << 9,
+    STORE_RIGHT_CORNER = 1 << 10,
+
+    SKIP = 1 << 11,
+
+    OFFSET_SCALE_LEFT = 1 << 12,
+    OFFSET_SCALE_RIGHT = 1 << 13,
+
+    REPEAT_LEFT = 1 << 14,
+
+    PILLARBOX = 1 << 15,
+
+    UNSTRETCH_HORIZONTAL = 1 << 16,
+
+    CORNER_EXTRACT = 1 << 17,
+
+    RADARMAP = 1 << 18
+};
+
+inline const xxHashMap<CsdModifier> g_modifiers =
+{
+    // audio
+    // TODO: extend main box right (implement REPEAT_RIGHT).
+    { HashStr("sprite/audio/audio/pod/pod/Cast_1084"), { EXTEND_RIGHT } },
+    { HashStr("sprite/audio/audio/pod/pod/Cast_1088"), { EXTEND_RIGHT } },
+    { HashStr("sprite/audio/audio/genre"), { ALIGN_TOP_LEFT } },
+    { HashStr("sprite/audio/audio/genre_cursor"), { ALIGN_TOP_LEFT } },
+
+    // background
+    { HashStr("sprite/background/background/mainmenu_back"), { STRETCH } },
+
+    // black_out
+    { HashStr("sprite/black_out/black_out"), { STRETCH } },
+
+    // button_window
+    // { HashStr("sprite/button_window/button_window/Scene_0000"), { ALIGN_BOTTOM_RIGHT } },
+
+    // gadget_ber
+    { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar"), { ALIGN_BOTTOM_RIGHT } },
+    { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar_anime"), { ALIGN_BOTTOM_RIGHT } },
+    { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar_ue"), { ALIGN_BOTTOM_RIGHT } },
+    { HashStr("sprite/gadget_ber/gadget_bar/icon_text"), { ALIGN_BOTTOM_RIGHT } },
+
+    // goldmedal
+    // TODO: reimplement this menu entirely to add achievements.
+    { HashStr("sprite/goldmedal/goldmedal/goldmedal"), { ALIGN_RIGHT } },
+    { HashStr("sprite/goldmedal/goldmedal/charaselect_cursor"), { ALIGN_LEFT } },
+    { HashStr("sprite/goldmedal/goldmedal/charaselect_cursor2"), { ALIGN_LEFT } },
+    { HashStr("sprite/goldmedal/goldmedal/total_medal"), { ALIGN_RIGHT } },
+    { HashStr("sprite/goldmedal/goldmedal/sonic"), { ALIGN_LEFT } },
+    { HashStr("sprite/goldmedal/goldmedal/shadow"), { ALIGN_LEFT } },
+    { HashStr("sprite/goldmedal/goldmedal/silver"), { ALIGN_LEFT } },
+    { HashStr("sprite/goldmedal/goldmedal/last"), { ALIGN_LEFT } },
+
+    // cri_logo
+    { HashStr("sprite/logo/cri_logo/Scene_0000/Null_0002/bg"), { STRETCH } },
+    { HashStr("sprite/logo/cri_logo/Scene_0000/Null_0002/criware"), { SCALE } },
+
+    // loading_english
+    // TODO: draw pillarbox.
+    { HashStr("sprite/loading/loading_english/Scene_0000/Loading"), { ALIGN_BOTTOM } },
+    { HashStr("sprite/loading/loading_english/Scene_0000/Loading_02"), { ALIGN_BOTTOM } },
+    { HashStr("sprite/loading/loading_english/Scene_0000/arrow_01"), { ALIGN_BOTTOM } },
+    { HashStr("sprite/loading/loading_english/Scene_0000/arrow_02"), { ALIGN_BOTTOM } },
+    { HashStr("sprite/loading/loading_english/Scene_0000/arrow_03"), { ALIGN_BOTTOM } },
+
+    // main_menu
+    // TODO: use ImGui to stitch together the bottom metal panels (step through CSD for textures).
+    // { HashStr("sprite/main_menu/main_menu_cursor"), { ALIGN_TOP_LEFT | SCALE } },
+    // { HashStr("sprite/main_menu/main_menu_cursor2"), { ALIGN_TOP_LEFT | SCALE } },
+    // { HashStr("sprite/main_menu/main_menu_cursor3"), { ALIGN_TOP_LEFT | SCALE } },
+    // { HashStr("sprite/main_menu/eposodeselect"), { ALIGN_LEFT | SCALE } },
+    // { HashStr("sprite/main_menu/episodeselect_cursor1"), { ALIGN_LEFT | SCALE } },
+    // { HashStr("sprite/main_menu/episodeselect_cursor2"), { ALIGN_LEFT | SCALE } },
+    // { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita3"), { EXTEND_RIGHT } },
+    // { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita5"), { EXTEND_RIGHT } },
+    // { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita8"), { EXTEND_RIGHT } },
+    // { HashStr("sprite/main_menu/mission_plate/mission_plate/mission_plate2"), { EXTEND_RIGHT } },
+    // { HashStr("sprite/main_menu/mission_plate/mission_plate/Cast_1332"), { EXTEND_RIGHT } },
+    // { HashStr("sprite/main_menu/mission_plate/mission_plate/Cast_1336"), { EXTEND_RIGHT } },
+    // { HashStr("sprite/main_menu/stage_cursor"), { ALIGN_TOP_LEFT | SCALE } },
+    // { HashStr("sprite/main_menu/mission_cursor"), { ALIGN_TOP_LEFT | SCALE } },
+    // { HashStr("sprite/main_menu/stage_cursor2"), { ALIGN_TOP_LEFT | SCALE } },
+    // { HashStr("sprite/main_menu/text"), { ALIGN_BOTTOM | STRETCH_HORIZONTAL | SCALE } },
+    // { HashStr("sprite/main_menu/text_cover/Null_0290"), { ALIGN_BOTTOM | STRETCH_HORIZONTAL | SCALE } },
+    // { HashStr("sprite/main_menu/mission_next"), { ALIGN_BOTTOM_LEFT } },
+    // { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0965"), { ALIGN_TOP_LEFT | SCALE } },
+    // { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0964"), { ALIGN_TOP_LEFT | EXTEND_RIGHT | SCALE } },
+    // { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0966"), { ALIGN_TOP_LEFT | SCALE } },
+    // { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0221"), { ALIGN_TOP_LEFT | EXTEND_RIGHT | SCALE } },
+    // { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0222"), { ALIGN_TOP_LEFT | SCALE } },
+    // { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0226"), { ALIGN_BOTTOM_LEFT | STRETCH_HORIZONTAL | SCALE } },
+    // { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0227"), { ALIGN_BOTTOM_RIGHT | STRETCH_HORIZONTAL | SCALE } },
+
+    // maindisplay
+    { HashStr("sprite/maindisplay/power"), { ALIGN_BOTTOM_RIGHT } },
+    { HashStr("sprite/maindisplay/custom_bar_anime"), { ALIGN_BOTTOM_RIGHT } },
+    { HashStr("sprite/maindisplay/power_a"), { ALIGN_BOTTOM_RIGHT } },
+    { HashStr("sprite/maindisplay/power_bar_anime"), { ALIGN_BOTTOM_RIGHT } },
+    { HashStr("sprite/maindisplay/score"), { ALIGN_TOP_LEFT } },
+    { HashStr("sprite/maindisplay/life_ber_anime"), { ALIGN_TOP_LEFT } },
+    { HashStr("sprite/maindisplay/life"), { ALIGN_TOP_LEFT } },
+    { HashStr("sprite/maindisplay/time"), { ALIGN_TOP_LEFT } },
+    { HashStr("sprite/maindisplay/ring"), { ALIGN_TOP_LEFT } },
+    { HashStr("sprite/maindisplay/ring_anime"), { ALIGN_TOP_LEFT } },
+    { HashStr("sprite/maindisplay/bar_ue"), { ALIGN_BOTTOM_RIGHT } },
+    { HashStr("sprite/maindisplay/power_bar_effect"), { ALIGN_BOTTOM_RIGHT } },
+    { HashStr("sprite/maindisplay/ring_000_effect"), { ALIGN_TOP_LEFT } },
+    { HashStr("sprite/maindisplay/boss_gauge"), { ALIGN_TOP_RIGHT } },
+    { HashStr("sprite/maindisplay/boss_gauge_anime"), { ALIGN_TOP_RIGHT } },
+    { HashStr("sprite/maindisplay/item_ber_anime"), { ALIGN_TOP_LEFT } },
+    { HashStr("sprite/maindisplay/item"), { ALIGN_TOP_LEFT } },
+    { HashStr("sprite/maindisplay/custom_gem"), { ALIGN_BOTTOM_RIGHT } },
+    { HashStr("sprite/maindisplay/custom_level"), { ALIGN_BOTTOM_RIGHT } },
+
+    // radarmap_cover
+    { HashStr("sprite/radarmap_cover/radarmap_cover/Scene_0000"), { ALIGN_TOP_RIGHT | RADARMAP } },
+
+    // result_English
+    { HashStr("sprite/result/result_English/title_plate/plate_ue"), { STRETCH } },   // TODO: use REPEAT modes.
+    { HashStr("sprite/result/result_English/title_plate/plate_sita"), { STRETCH } }, // TODO: use REPEAT modes.
+
+    // sonicteam_logo
+    { HashStr("sprite/logo/sonicteam_logo/sonicteam"), { SCALE } },
+
+    // tag_character
+    { HashStr("sprite/tag_character/tag_character/1p_tug/1p_tug/1p_tug1"), { EXTEND_LEFT } },
+    { HashStr("sprite/tag_character/tag_character/2p_tug/2p_tug/2p_tug1"), { EXTEND_RIGHT } },
+
+    // talkwindow
+    { HashStr("sprite/talkwindow/talkwindow/window"), { SCALE } },
+    { HashStr("sprite/talkwindow/talkwindow/nafuda"), { SCALE } },
+    { HashStr("sprite/talkwindow/talkwindow/Scene_0021"), { SCALE } },
+
+    // title_English
+    { HashStr("sprite/title/title_English/Scene_Title/Logo_add"), { SCALE } },
+    { HashStr("sprite/title/title_English/Scene_Title/Logo"), { SCALE } },
+    { HashStr("sprite/title/title_English/Scene_Title/copyright"), { ALIGN_BOTTOM_RIGHT } },
+
+    // towndisplay
+    { HashStr("sprite/towndisplay/ring"), { ALIGN_TOP_LEFT } },
+    { HashStr("sprite/towndisplay/ring_anime"), { ALIGN_TOP_LEFT } },
+
+    // trickpoint_English
+    // TODO: offset score text properly.
+    { HashStr("sprite/trickpoint/trickpoint_English/Scene_0000"), { ALIGN_TOP_RIGHT } },
+    { HashStr("sprite/trickpoint/trickpoint_English/Scene_0001"), { ALIGN_TOP_RIGHT } },
+    { HashStr("sprite/trickpoint/trickpoint_English/score"), { ALIGN_TOP_RIGHT } },
+};
+
+struct TextFontPictureParams
+{
+    uint16_t X{};
+    uint16_t Y{};
+    uint16_t Width{};
+    uint16_t Height{};
+};
+
+inline const xxHashMap<TextFontPictureParams> g_pftParamsXenon =
+{
+    { HashStr("button_a"), { 0, 0, 28, 28 } },
+    { HashStr("button_b"), { 28, 0, 28, 28 } },
+    { HashStr("button_x"), { 56, 0, 28, 28 } },
+    { HashStr("button_y"), { 84, 0, 28, 28 } },
+    { HashStr("button_lb"), { 112, 0, 53, 28 } },
+    { HashStr("button_lt"), { 56, 28, 55, 28 } },
+    { HashStr("button_rb"), { 168, 0, 53, 28 } },
+    { HashStr("button_rt"), { 0, 28, 55, 28 } },
+    { HashStr("button_start"), { 112, 28, 28, 28 } },
+    { HashStr("button_back"), { 140, 28, 28, 28 } }
+};
+
+inline const xxHashMap<TextFontPictureParams> g_pftParamsPS3 =
+{
+    { HashStr("button_a"), { 0, 56, 28, 28 } },
+    { HashStr("button_b"), { 28, 56, 28, 28 } },
+    { HashStr("button_x"), { 56, 56, 28, 28 } },
+    { HashStr("button_y"), { 84, 56, 28, 28 } },
+    { HashStr("button_lb"), { 112, 56, 48, 28 } },
+    { HashStr("button_lt"), { 168, 56, 48, 28 } },
+    { HashStr("button_rb"), { 0, 84, 48, 28 } },
+    { HashStr("button_rt"), { 56, 84, 48, 28 } },
+    { HashStr("button_start"), { 140, 84, 28, 28 } },
+    { HashStr("button_back"), { 112, 84, 28, 28 } }
+};
+
+inline TextFontPictureParams FindFontPictureParams(xxHashMap<TextFontPictureParams> pftParams, std::string_view& name)
+{
+    auto findResult = pftParams.find(HashStr(name));
+
+    if (findResult != pftParams.end())
+        return findResult->second;
+
+    return {};
+}

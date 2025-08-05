@@ -153,3 +153,8 @@ registers = ["r5", "r31"]
 name = "PostureDisableEdgeGrabLeftover"
 address = 0x82200568
 registers = ["r31"]
+
+[[midasm_hook]]
+name = "BeginBlockGetName"
+address = 0x82607850
+registers = ["r3"]

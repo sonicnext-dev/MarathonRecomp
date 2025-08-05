@@ -3,6 +3,12 @@
 #include <cpu/guest_stack_var.h>
 #include <kernel/function.h>
 
+constexpr float RAD2DEGf = 57.2958f;
+constexpr float DEG2RADf = 0.0174533f;
+
+constexpr double RAD2DEG = 57.29578018188477;
+constexpr double DEG2RAD = 0.01745329238474369;
+
 #define MARATHON_CONCAT2(x, y) x##y
 #define MARATHON_CONCAT(x, y) MARATHON_CONCAT2(x, y)
 
@@ -19,3 +25,69 @@
     GuestToHostFunction<returnType>(*(be<uint32_t>*)(g_memory.Translate(*(be<uint32_t>*)(this) + (4 * virtualIndex))), __VA_ARGS__)
 
 struct marathon_null_ctor {};
+
+inline std::vector<std::string_view> ParseTextVariables(const char* pVariables)
+{
+    std::vector<std::string_view> result{};
+
+    if (!pVariables)
+        return result;
+
+    auto start = pVariables;
+    auto ptr = pVariables;
+    auto depth = 0;
+
+    while (*ptr)
+    {
+        if (*ptr == '(')
+        {
+            depth++;
+        }
+        else if (*ptr == ')')
+        {
+            depth--;
+        }
+        else if (*ptr == ',' && !depth)
+        {
+            result.emplace_back(start, ptr - start);
+            start = ptr + 1;
+        }
+
+        ++ptr;
+    }
+
+    if (ptr != start)
+        result.emplace_back(start, ptr - start);
+
+    return result;
+}
+
+inline std::vector<std::pair<std::string_view, std::string_view>> MapTextVariables(const char* pVariables)
+{
+    std::vector<std::pair<std::string_view, std::string_view>> result{};
+
+    if (!pVariables)
+        return result;
+
+    auto variables = ParseTextVariables(pVariables);
+
+    for (auto& variable : variables)
+    {
+        auto open = variable.find('(');
+        auto close = variable.find(')');
+
+        if (open != std::string_view::npos && close != std::string_view::npos && close > open)
+        {
+            auto type = variable.substr(0, open);
+            auto value = variable.substr(open + 1, close - open - 1);
+
+            result.emplace_back(type, value);
+        }
+        else
+        {
+            result.emplace_back(variable, std::string_view{});
+        }
+    }
+
+    return result;
+}

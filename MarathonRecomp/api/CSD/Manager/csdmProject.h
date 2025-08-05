@@ -1,15 +1,20 @@
 #pragma once
 
-#include "Marathon.inl"
-#include "CSD/Manager/csdmBase.h"
-#include "CSD/Manager/csdmResourceBase.h"
+#include <Marathon.inl>
+#include <CSD/Manager/csdmBase.h>
+#include <CSD/Manager/csdmResourceBase.h>
 
 namespace Chao::CSD
 {
-    struct Project;
+    class SceneNode;
     class CProject;
     class CScene;
     class CTexList;
+
+    struct Project
+    {
+        xpointer<SceneNode> pRootNode;
+    };
 
     class CProject : public CResourceBase<Project>, CBase
     {
@@ -28,4 +33,4 @@ namespace Chao::CSD
     };
 }
 
-#include "CSD/Manager/csdmProject.inl"
+#include <CSD/Manager/csdmProject.inl>

@@ -27,7 +27,9 @@ namespace Sonicteam
             MARATHON_INSERT_PADDING(0x10);
         };
 
-        MARATHON_INSERT_PADDING(0xE3C);
+        MARATHON_INSERT_PADDING(0x658);
+        bool m_IsPlayingStage;
+        MARATHON_INSERT_PADDING(0x7E0);
         PlayerData m_PlayerData[4];
     };
 }
