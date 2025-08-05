@@ -58,3 +58,4 @@
 #include "boost/smart_ptr/make_shared_object.h"
 #include "boost/smart_ptr/shared_ptr.h"
 #include "stdx/string.h"
+#include "SoX/Math/Vector.h"
