@@ -118,11 +118,11 @@ PPC_FUNC(sub_8219FAE0)
         be<uint32_t> Unk0x14;
         be<uint32_t> Unk0x18;
         be<uint32_t> Unk0x1C;
-        SoX::Math::CVector4 PlayerRotation;
-        SoX::Math::CVector4 PlayerPosition;
+        SoX::Math::Vector4 PlayerRotation;
+        SoX::Math::Vector4 PlayerPosition;
         uint32_t PlayerStartRingsCount;
-        uint32_t player_based_on;
-        uint8_t player_unk_flag2;
+        uint32_t PlayerBasedOn;
+        uint8_t PlayerUnkFlag2;
     };
 
     auto pSpawnData = reinterpret_cast<OBJPlayerSpawnData*>(base + ctx.r4.u32);

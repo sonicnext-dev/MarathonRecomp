@@ -4,14 +4,14 @@
 
 namespace SoX::Math
 {
-    class CVector2
+    class Vector2
     {
     public:
         be<float> X;
         be<float> Y;
     };
 
-    class CVector
+    class Vector
     {
     public:
         be<float> X;
@@ -20,7 +20,7 @@ namespace SoX::Math
         be<float> W;
     };
 
-    class CVector4
+    class Vector4
     {
     public:
         be<float> X;
