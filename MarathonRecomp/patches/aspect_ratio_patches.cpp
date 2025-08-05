@@ -711,10 +711,16 @@ PPC_FUNC(sub_8262D868)
 
     __imp__sub_8262D868(ctx, base);
 
-    auto& pftParams = hid::g_inputDeviceController == hid::EInputDevice::PlayStation
+    auto isPlayStation = Config::ControllerIcons == EControllerIcons::PlayStation;
+
+    if (Config::ControllerIcons == EControllerIcons::Auto)
+        isPlayStation = hid::g_inputDeviceController == hid::EInputDevice::PlayStation;
+
+    auto& pftParams = isPlayStation
         ? g_pftParamsPS3
         : g_pftParamsXenon;
 
+    // TODO (Hyper): why does this not apply to the B button in Audio Room?
     ReplaceTextVariables(pTextEntity, pftParams);
 }
 
