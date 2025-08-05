@@ -117,6 +117,7 @@ name = "ContextualHUD_LIFE_BER_ANIME_1"
 address = 0x824D8F2C
 registers = ["r5", "r31"]
 
+
 [[midasm_hook]]
 name = "ContextualHUD_RING_1"
 address = 0x824DEB38
@@ -337,3 +338,23 @@ jump_address = 0x8258E308
 name = "NOP"
 address = 0x8258E600
 jump_address = 0x8258E604
+
+[[midasm_hook]]
+name = "SonicGaugeRestorationGaugeFlagFix"
+address = 0x822196EC
+registers = ["r3","r31"]
+
+[[midasm_hook]]
+name = "SonicGaugeRestorationGaugeGemSpriteResetFix"
+address = 0x82185768
+registers = ["r30"]
+
+[[midasm_hook]]
+name = "SonicGaugeRestorationGaugeGemSpriteResetFix"
+address = 0x821855A4
+registers = ["r29"]
+
+[[midasm_hook]]
+name = "SonicGaugeRestorationGaugeGemSpriteResetFix"
+address = 0x82177DFC
+registers = ["r31"]

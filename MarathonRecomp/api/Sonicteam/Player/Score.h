@@ -2,6 +2,7 @@
 
 #include <Marathon.inl>
 
+
 namespace Sonicteam::Player
 {
     class Score : public IScore, public IVariable, public IStepable
