@@ -80,5 +80,8 @@ CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreContextualHUDColours, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, DisableEdgeGrabLeftover, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, TailsGauge, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, SonicGauge, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, MidairControlForMachSpeed, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, MidairControlForSnowboards, false);
+
 
 CONFIG_DEFINE("Update", time_t, LastChecked, 0);

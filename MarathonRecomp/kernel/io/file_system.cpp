@@ -91,7 +91,6 @@ FileHandle* XCreateFileA
     uint32_t dwFlagsAndAttributes
 )
 {
-    printf("XCreateFileA %s\n", lpFileName);
     assert(((dwDesiredAccess & ~(GENERIC_READ | GENERIC_WRITE | FILE_READ_DATA)) == 0) && "Unknown desired access bits.");
     assert(((dwShareMode & ~(FILE_SHARE_READ | FILE_SHARE_WRITE)) == 0) && "Unknown share mode bits.");
     assert(((dwCreationDisposition & ~(CREATE_NEW | CREATE_ALWAYS)) == 0) && "Unknown creation disposition bits.");
@@ -148,7 +147,6 @@ FileHandle* XCreateFileA
 
 static uint32_t XGetFileSizeA(FileHandle* hFile, be<uint32_t>* lpFileSizeHigh)
 {
-    printf("XGetFileSizeA %x\n", hFile);
     std::error_code ec;
     auto fileSize = std::filesystem::file_size(hFile->path, ec);
     if (!ec)
@@ -190,7 +188,6 @@ uint32_t XReadFile
     XOVERLAPPED* lpOverlapped
 )
 {
-    // printf("XReadFile %x %d\n", hFile, nNumberOfBytesToRead);
     uint32_t result = FALSE;
     if (lpOverlapped != nullptr)
     {
@@ -248,11 +245,6 @@ uint32_t XSetFilePointer(FileHandle* hFile, int32_t lDistanceToMove, be<int32_t>
         break;
     }
 
-    // if (!hFile) {
-    printf("XSetFilePointer %x %d %d %d %d\n", hFile, lDistanceToMove, distanceToMoveHigh, dwMoveMethod, streamSeekDir);
-    //     return INVALID_SET_FILE_POINTER;
-    // }
-
     hFile->stream.clear();
     hFile->stream.seekg(streamOffset, streamSeekDir);
     if (hFile->stream.bad())
@@ -263,7 +255,7 @@ uint32_t XSetFilePointer(FileHandle* hFile, int32_t lDistanceToMove, be<int32_t>
     std::streampos streamPos = hFile->stream.tellg();
     if (lpDistanceToMoveHigh != nullptr)
         *lpDistanceToMoveHigh = int32_t(streamPos >> 32U);
-    printf("XSetFilePointer streamPos: %d\n", streamPos);
+
     return uint32_t(streamPos);
 }
 

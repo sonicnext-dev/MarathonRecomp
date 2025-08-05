@@ -76,9 +76,6 @@ PPC_FUNC(sub_8220F330)
     __imp__sub_8220F330(ctx, base);
 }
 
-
-
-
 ////////////////////////////////////////////////////////
 /////////////   Sonic Gauge Restoration ////////////////
 ////////////////////////////////////////////////////////
@@ -254,14 +251,12 @@ PPC_FUNC(sub_8223F360) {
     */
 }
  
-
 void SonicGaugeRestorationGaugeGemSpriteResetFix(PPCRegister& r_GameImp) {
 
     Sonicteam::GameImp* pGameImp = (Sonicteam::GameImp*)g_memory.Translate(r_GameImp.u32);
     for (int i = 0; i < 4; i++)
         pGameImp->m_PlayerData[i].GemIndex = 0;
 }
-
 
 void SonicGaugeRestorationGaugeFlagFix(PPCRegister& r_gauge, PPCRegister& r_context) {
 
@@ -304,3 +299,28 @@ void SonicGaugeRestorationGaugeFlagFix(PPCRegister& r_gauge, PPCRegister& r_cont
 
 }
 //Sonic Gauge Restoration
+
+bool MidairMachSpeedControl1()
+{
+    return Config::MidairControlForMachSpeed;
+}
+
+bool MidairMachSpeedControl2()
+{
+    return Config::MidairControlForMachSpeed;
+}
+
+bool MidairSnowboardControl1()
+{
+    return Config::MidairControlForSnowboards;
+}
+
+bool MidairSnowboardControl2()
+{
+    return Config::MidairControlForSnowboards;
+}
+
+bool MidairSnowboardControl3()
+{
+    return Config::MidairControlForSnowboards;
+}

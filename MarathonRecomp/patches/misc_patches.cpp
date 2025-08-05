@@ -97,3 +97,8 @@ void PostureDisableEdgeGrabLeftover(PPCRegister& posture) {
 void PedestrianAnimationLOD(PPCRegister& val) {
     val.u32 = 0;
 }
+
+bool DisableHints()
+{
+    return !Config::Hints;
+}
