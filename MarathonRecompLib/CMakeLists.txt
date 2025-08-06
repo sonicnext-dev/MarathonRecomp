@@ -33,6 +33,7 @@ add_custom_command(
     DEPENDS 
         "${CMAKE_CURRENT_SOURCE_DIR}/private/default.xex"
         "${CMAKE_CURRENT_SOURCE_DIR}/config/Marathon.toml"
+    USES_TERMINAL
 )
 
 add_custom_command(
@@ -70,6 +71,7 @@ add_custom_command(
         "${CMAKE_CURRENT_SOURCE_DIR}/private/shader"
         ${XENOS_RECOMP_SOURCES}
         ${XENOS_RECOMP_INCLUDE}
+    USES_TERMINAL
 )
 
 add_library(MarathonRecompLib

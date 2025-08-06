@@ -1,0 +1,83 @@
+name: Bug Report
+description: Rport a bug in Marathon Recompiled
+type: "Bug"
+body:
+  - type: checkboxes
+    id: validation
+    attributes:
+      label: Validation
+      options:
+        - label: I have checked the [Issues](https://github.com/sonicnext-dev/MarathonRecomp/issues) page to see if my problem has already been reported
+          required: true
+        - label: I have confirmed that this bug does not occur in the original game running on original Xbox 360 hardware
+          required: true
+  - type: checkboxes
+    id: dlc
+    attributes:
+      label: DLC
+      description: If you have DLC installed, please specify which ones you have.
+      options:
+        - label: Shadow Boss Attack
+        - label: Silver Boss Attack
+        - label: Sonic Boss Attack
+        - label: Team Attack Amigo
+        - label: Mission Pack Shadow Very Hard
+        - label: Mission Pack Silver Very Hard
+        - label: Mission Pack Sonic Very Hard
+  - type: textarea
+    id: mods
+    attributes:
+      label: Mods
+      description: Provide a list of your enabled mods in Mod Manager here. You will not receive support for issues *caused* by mods.
+  - type: textarea
+    id: codes
+    attributes:
+      label: Codes
+      description: Provide a list of your enabled codes in Mod Manager here.
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the Bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Provide steps to reproduce the bug
+      placeholder: |
+        1. Go to '...'
+        2. etc.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: footage
+    attributes:
+      label: Footage
+      description: Attach a screenshot or video of the bug. If possible, please also provide footage of the expected behaviour on original Xbox 360 hardware.
+  - type: textarea
+    id: specifications
+    attributes:
+      label: Specifications
+      description: Fill out the following details
+      value: |
+        - CPU: (e.g. Intel Core [...], AMD Ryzen [...], etc.)
+        - GPU: (e.g. NVIDIA GeForce [...], Radeon HD [...], Intel HD [...], etc.)
+        - GPU Driver: (e.g NVIDIA driver 545.XX, AMD driver 24.X.X, etc.)
+        - OS: (e.g. Windows 10, Windows 11, Linux distro)
+        - Version: (e.g. 1.0.0)
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Provide any other context about the problem here.

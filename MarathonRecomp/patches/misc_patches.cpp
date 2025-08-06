@@ -104,3 +104,12 @@ PPC_FUNC(sub_8264AC48)
 
     __imp__sub_8264AC48(ctx, base);
 }
+
+void PedestrianAnimationLOD(PPCRegister& val) {
+    val.u32 = 0;
+}
+
+bool DisableHints()
+{
+    return !Config::Hints;
+}

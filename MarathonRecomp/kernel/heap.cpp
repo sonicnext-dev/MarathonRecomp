@@ -2,6 +2,7 @@
 #include "heap.h"
 #include "memory.h"
 #include "function.h"
+#include "xdm.h"
 
 constexpr size_t RESERVED_BEGIN = 0x7FEA0000;
 constexpr size_t RESERVED_END = 0xA0000000;
@@ -60,7 +61,6 @@ size_t Heap::Size(void* ptr)
 uint32_t RtlAllocateHeap(uint32_t heapHandle, uint32_t flags, uint32_t size)
 {
     void* ptr = g_userHeap.Alloc(size);
-    // printf("RtlAllocateHeap %x, heapHandle\n", ptr);
     if ((flags & 0x8) != 0)
         memset(ptr, 0, size);
 
@@ -71,7 +71,6 @@ uint32_t RtlAllocateHeap(uint32_t heapHandle, uint32_t flags, uint32_t size)
 uint32_t RtlReAllocateHeap(uint32_t heapHandle, uint32_t flags, uint32_t memoryPointer, uint32_t size)
 {
     void* ptr = g_userHeap.Alloc(size);
-    // printf("RtlReAllocateHeap %x\n", ptr);
     if ((flags & 0x8) != 0)
         memset(ptr, 0, size);
 
@@ -88,7 +87,6 @@ uint32_t RtlReAllocateHeap(uint32_t heapHandle, uint32_t flags, uint32_t memoryP
 
 uint32_t RtlFreeHeap(uint32_t heapHandle, uint32_t flags, uint32_t memoryPointer)
 {
-    // printf("RtlFreeHeap\n");
     if (memoryPointer != NULL)
         g_userHeap.Free(g_memory.Translate(memoryPointer));
 
@@ -97,7 +95,6 @@ uint32_t RtlFreeHeap(uint32_t heapHandle, uint32_t flags, uint32_t memoryPointer
 
 uint32_t RtlSizeHeap(uint32_t heapHandle, uint32_t flags, uint32_t memoryPointer)
 {
-    // printf("RtlSizeHeap\n");
     if (memoryPointer != NULL)
         return (uint32_t)g_userHeap.Size(g_memory.Translate(memoryPointer));
 
@@ -110,7 +107,6 @@ uint32_t XAllocMem(uint32_t size, uint32_t flags)
         g_userHeap.AllocPhysical(size, (1ull << ((flags >> 24) & 0xF))) :
         g_userHeap.Alloc(size);
 
-    // printf("XAllocMem %x (size: %x)\n", ptr, size);
     if ((flags & 0x40000000) != 0)
         memset(ptr, 0, size);
 
@@ -120,40 +116,25 @@ uint32_t XAllocMem(uint32_t size, uint32_t flags)
 
 void XFreeMem(uint32_t baseAddress, uint32_t flags)
 {
-    // printf("XFreeMem %x\n", baseAddress);
     if (baseAddress != NULL)
-    {
         g_userHeap.Free(g_memory.Translate(baseAddress));
-    }
-    else
-    {
-        printf("XFreeMem baseAddress is null %x\n", baseAddress);
-        // __builtin_trap();
-    }
 }
 
 uint32_t XVirtualAlloc(void *lpAddress, unsigned int dwSize, unsigned int flAllocationType, unsigned int flProtect)
 {
-    if (lpAddress != nullptr)
-    {
-        printf("XVirtualAlloc lpAddress is not null %p\n", lpAddress);
-        return 0;
-    }
-    uint32_t addr = g_memory.MapVirtual(g_userHeap.Alloc(dwSize));
-    printf("XVirtualAlloc %x\n", addr);
-    return addr;
+    assert(!lpAddress);
+    return g_memory.MapVirtual(g_userHeap.Alloc(dwSize));
 }
 
 uint32_t XVirtualFree(uint32_t lpAddress, unsigned int dwSize, unsigned int dwFreeType)
 {
-    printf("XVirtualFree %x\n", lpAddress);
     if ((dwFreeType & 0x8000) != 0 && dwSize)
-    {
-        return 0;
-    }
+        return FALSE;
+
     if (lpAddress)
         g_userHeap.Free(g_memory.Translate(lpAddress));
-    return 1;
+
+    return TRUE;
 }
 
 GUEST_FUNCTION_HOOK(sub_82915668, XVirtualAlloc);

@@ -32,7 +32,11 @@ PPC_FUNC(sub_8221A7D8)
     if (pState->m_pVftable.ptr == 0x82005404)
         maturityValue = (1.0f / pTailsContext->m_FlightLimit) * pState->m_Time;
 
-    pGameImp->m_PlayerData[pPlayer->m_PlayerIndex].MaturityValue = maturityValue;
+    for (int i = 0; i < 4; i++)
+    {
+        if (pGameImp->m_PlayerData[i].ActorID == pPlayer->m_ActorID.get())
+            pGameImp->m_PlayerData[i].MaturityValue = maturityValue;
+    }
 
     __imp__sub_8221A7D8(ctx, base);
 }
@@ -69,4 +73,29 @@ PPC_FUNC(sub_8220F330)
     }
 
     __imp__sub_8220F330(ctx, base);
+}
+
+bool MidairMachSpeedControl1()
+{
+    return Config::MidairControlForMachSpeed;
+}
+
+bool MidairMachSpeedControl2()
+{
+    return Config::MidairControlForMachSpeed;
+}
+
+bool MidairSnowboardControl1()
+{
+    return Config::MidairControlForSnowboards;
+}
+
+bool MidairSnowboardControl2()
+{
+    return Config::MidairControlForSnowboards;
+}
+
+bool MidairSnowboardControl3()
+{
+    return Config::MidairControlForSnowboards;
 }

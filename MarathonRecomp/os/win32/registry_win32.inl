@@ -1,6 +1,6 @@
 #include <os/registry.h>
 
-inline const wchar_t* g_registryRoot = L"Software\\UnleashedRecomp";
+inline const wchar_t* g_registryRoot = L"Software\\MarathonRecomp";
 
 inline bool os::registry::Init()
 {
