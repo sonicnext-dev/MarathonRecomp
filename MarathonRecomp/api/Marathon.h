@@ -52,6 +52,7 @@
 #include "Sonicteam/SoX/Engine/Doc.h"
 #include "Sonicteam/SoX/Engine/DocMode.h"
 #include "Sonicteam/SoX/Engine/Task.h"
+#include "Sonicteam/SoX/Math/Vector.h"
 #include "Sonicteam/SoX/MessageReceiver.h"
 #include "Sonicteam/SoX/Object.h"
 #include "Sonicteam/TitleTask.h"

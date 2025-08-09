@@ -102,3 +102,25 @@ bool DisableHints()
 {
     return !Config::Hints;
 }
+
+// Change Y position in Shadow Sonicteam::Player::Object to move it closer to the glider's Y position
+PPC_FUNC_IMPL(__imp__sub_8219FAE0);
+PPC_FUNC(sub_8219FAE0)
+{
+    struct OBJPlayerSpawnData
+    {
+    public:
+        xpointer<const char> PlayerName;
+        MARATHON_INSERT_PADDING(0x2C);
+        Sonicteam::SoX::Math::Vector4 PlayerPosition;
+        MARATHON_INSERT_PADDING(0xC);
+    };
+
+    auto pSpawnData = reinterpret_cast<OBJPlayerSpawnData*>(base + ctx.r4.u32);
+    if (strcmp("shadow_glider.lua", pSpawnData->PlayerName.get()) == 0 && pSpawnData->PlayerPosition.Y.get() == 5626.4f)
+    {
+        pSpawnData->PlayerPosition.Y = 5608;
+    }
+
+    __imp__sub_8219FAE0(ctx, base);
+}
