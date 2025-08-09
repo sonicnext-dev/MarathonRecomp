@@ -218,6 +218,8 @@ struct SharedConstants
     float halfPixelOffsetX{};
     float halfPixelOffsetY{};
     float alphaThreshold{};
+    bool clipPlaneEnabled{};
+    float clipPlane[4]{};
 };
 
 // Depth bias values here are only used when the render device has 
@@ -1386,6 +1388,11 @@ static void ProcSetRenderState(const RenderCommand& cmd)
         g_dirtyStates.renderTargetAndDepthStencil |= g_dirtyStates.pipelineState;
         break;
     }
+    case D3DRS_CLIPPLANEENABLE:
+    {
+        // HACK: Only check for clip pane 0
+        SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlaneEnabled, (value & 1) == 1);
+    }
     }
 }
 
@@ -1420,7 +1427,8 @@ static const std::pair<GuestRenderState, PPCFunc*> g_setRenderStateFunctions[] =
     { D3DRS_CCW_STENCILFAIL, HostToGuestFunction<SetRenderState<D3DRS_CCW_STENCILFAIL>> },
     { D3DRS_CCW_STENCILZFAIL, HostToGuestFunction<SetRenderState<D3DRS_CCW_STENCILZFAIL>> },
     { D3DRS_CCW_STENCILPASS, HostToGuestFunction<SetRenderState<D3DRS_CCW_STENCILPASS>> },
-    { D3DRS_CCW_STENCILFUNC, HostToGuestFunction<SetRenderState<D3DRS_CCW_STENCILFUNC>> }
+    { D3DRS_CCW_STENCILFUNC, HostToGuestFunction<SetRenderState<D3DRS_CCW_STENCILFUNC>> },
+    { D3DRS_CLIPPLANEENABLE, HostToGuestFunction<SetRenderState<D3DRS_CLIPPLANEENABLE>> }
 };
 
 static std::unique_ptr<RenderShader> g_copyShader;
@@ -5564,6 +5572,17 @@ static void ProcSetPixelShader(const RenderCommand& cmd)
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.pixelShader, shader);
 }
 
+static void SetClipPlane(GuestDevice* device, uint32_t index, const be<float>* plane)
+{
+    if (index != 0)
+        return;
+
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[0], plane[0].get());
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[1], plane[1].get());
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[2], plane[2].get());
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[3], plane[3].get());
+}
+
 static std::thread g_renderThread([]
     {
 #ifdef _WIN32
@@ -8209,6 +8228,8 @@ GUEST_FUNCTION_HOOK(sub_82546BD8, SetPixelShader);
 
 GUEST_FUNCTION_HOOK(sub_8253B760, IsSet);
 
+GUEST_FUNCTION_HOOK(sub_82543CF0, SetClipPlane); // replaced
+
 GUEST_FUNCTION_HOOK(sub_82541A78, SetRenderState<D3DRS_ZENABLE>);
 GUEST_FUNCTION_HOOK(sub_82541AC0, SetRenderState<D3DRS_ZWRITEENABLE>);
 GUEST_FUNCTION_HOOK(sub_82541460, SetRenderState<D3DRS_ALPHATESTENABLE>);
@@ -8239,6 +8260,7 @@ GUEST_FUNCTION_HOOK(sub_82541CC8, SetRenderState<D3DRS_CCW_STENCILFAIL>);
 GUEST_FUNCTION_HOOK(sub_82541D08, SetRenderState<D3DRS_CCW_STENCILZFAIL>);
 GUEST_FUNCTION_HOOK(sub_82541D48, SetRenderState<D3DRS_CCW_STENCILPASS>);
 GUEST_FUNCTION_HOOK(sub_82541C98, SetRenderState<D3DRS_CCW_STENCILFUNC>);
+GUEST_FUNCTION_HOOK(sub_82541E38, SetRenderState<D3DRS_CLIPPLANEENABLE>);
 
 int GetType(GuestResource* resource) {
     if (resource->type == ResourceType::Texture) return 3;
