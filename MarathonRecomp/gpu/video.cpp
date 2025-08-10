@@ -217,9 +217,9 @@ struct SharedConstants
     uint32_t swappedBlendWeights{};
     float halfPixelOffsetX{};
     float halfPixelOffsetY{};
-    float alphaThreshold{};
-    bool clipPlaneEnabled{};
     float clipPlane[4]{};
+    bool clipPlaneEnabled{};
+    float alphaThreshold{};
 };
 
 // Depth bias values here are only used when the render device has 
