@@ -1,3 +1,13 @@
+option(MARATHON_RECOMP_OPTIMIZE_TOOLS "Apply compiler optimizations to build tools." ON)
+if (MARATHON_RECOMP_OPTIMIZE_TOOLS)
+    if (WIN32)
+        add_compile_options(/O2)
+    else()
+        add_compile_options(-O3)
+    endif()
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+endif()
+
 add_subdirectory(${MARATHON_RECOMP_TOOLS_ROOT}/bc_diff)
 add_subdirectory(${MARATHON_RECOMP_TOOLS_ROOT}/file_to_c)
 add_subdirectory(${MARATHON_RECOMP_TOOLS_ROOT}/fshasher)
