@@ -39,8 +39,8 @@ CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_RightStickLeft, SDL_SCANCODE_UN
 CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_RightStickRight, SDL_SCANCODE_UNKNOWN);
 
 CONFIG_DEFINE_LOCALISED("Audio", float, MasterVolume, 1.0f);
-CONFIG_DEFINE_LOCALISED("Audio", float, MusicVolume, 1.0f);
-CONFIG_DEFINE_LOCALISED("Audio", float, EffectsVolume, 1.0f);
+CONFIG_DEFINE_LOCALISED("Audio", float, MusicVolume, 0.6f);
+CONFIG_DEFINE_LOCALISED("Audio", float, EffectsVolume, 0.6f);
 CONFIG_DEFINE_ENUM_LOCALISED("Audio", EChannelConfiguration, ChannelConfiguration, EChannelConfiguration::Stereo);
 CONFIG_DEFINE_LOCALISED("Audio", bool, MusicAttenuation, false);
 
