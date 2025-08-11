@@ -4,7 +4,6 @@
 
 namespace Sonicteam::SoX::Audio
 {
-
     class IAudioEngine
     {
     public:

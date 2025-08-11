@@ -56,6 +56,8 @@
 #include "Sonicteam/SoX/Engine/Task.h"
 #include "Sonicteam/SoX/MessageReceiver.h"
 #include "Sonicteam/SoX/Object.h"
+#include "Sonicteam/System/CreateStatic.h"
+#include "Sonicteam/System/Singleton.h"
 #include "Sonicteam/TitleTask.h"
 #include "boost/smart_ptr/make_shared_object.h"
 #include "boost/smart_ptr/shared_ptr.h"
