@@ -194,3 +194,13 @@ jump_address_on_true = 0x822145BC
 name = "DisableHints"
 address = 0x82487AC4
 jump_address_on_true = 0x82487AC8
+
+[[midasm_hook]]
+name = "GetRenderWorldFBO"
+address = 0x8260D6EC
+registers = ["r4"]
+
+[[midasm_hook]]
+name = "FurtherObjectShadows"
+address = 0x8260D7E0
+registers = ["r26"]

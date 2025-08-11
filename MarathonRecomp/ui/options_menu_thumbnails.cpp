@@ -20,8 +20,6 @@
 #include <res/images/options_menu/thumbnails/effects_volume.dds.h>
 #include <res/images/options_menu/thumbnails/fps.dds.h>
 #include <res/images/options_menu/thumbnails/fullscreen.dds.h>
-#include <res/images/options_menu/thumbnails/csm_texture_filtering_bilinear.dds.h>
-#include <res/images/options_menu/thumbnails/csm_texture_filtering_bicubic.dds.h>
 #include <res/images/options_menu/thumbnails/hints.dds.h>
 #include <res/images/options_menu/thumbnails/horizontal_camera.dds.h>
 #include <res/images/options_menu/thumbnails/language.dds.h>
@@ -66,7 +64,6 @@ static VALUE_THUMBNAIL_MAP(EAntiAliasing) g_msaaAntiAliasingThumbnails;
 static VALUE_THUMBNAIL_MAP(bool) g_vsyncThumbnails;
 static VALUE_THUMBNAIL_MAP(bool) g_transparencyAntiAliasingThumbnails;
 static VALUE_THUMBNAIL_MAP(EShadowResolution) g_shadowResolutionThumbnails;
-static VALUE_THUMBNAIL_MAP(ECSMTextureFiltering) g_csmTextureFilteringThumbnails;
 static VALUE_THUMBNAIL_MAP(ECutsceneAspectRatio) g_cutsceneAspectRatioThumbnails;
 static VALUE_THUMBNAIL_MAP(EUIAlignmentMode) g_uiAlignmentThumbnails;
 
@@ -122,9 +119,6 @@ void LoadThumbnails()
     g_shadowResolutionThumbnails[EShadowResolution::x4096] = LOAD_ZSTD_TEXTURE(g_shadow_resolution_x4096);
     g_shadowResolutionThumbnails[EShadowResolution::x8192] = LOAD_ZSTD_TEXTURE(g_shadow_resolution_x8192);
 
-    g_csmTextureFilteringThumbnails[ECSMTextureFiltering::Bilinear] = LOAD_ZSTD_TEXTURE(g_csm_texture_filtering_bilinear);
-    g_csmTextureFilteringThumbnails[ECSMTextureFiltering::Bicubic] = LOAD_ZSTD_TEXTURE(g_csm_texture_filtering_bicubic);
-
     g_cutsceneAspectRatioThumbnails[ECutsceneAspectRatio::Original] = LOAD_ZSTD_TEXTURE(g_movie_scale_fit);
     g_cutsceneAspectRatioThumbnails[ECutsceneAspectRatio::Unlocked] = LOAD_ZSTD_TEXTURE(g_movie_scale_fill);
 
@@ -142,12 +136,6 @@ bool TryGetValueThumbnail(const IConfigDef* cfg, VALUE_THUMBNAIL_MAP(T)* thumbna
         return false;
 
     T value = *(T*)cfg->GetValue();
-
-    if constexpr (std::is_same_v<T, EShadowResolution>)
-    {
-        if (value == EShadowResolution::Original)
-            value = EShadowResolution::x1024;
-    }
 
     auto findResult = thumbnails->find(value);
 
@@ -195,10 +183,6 @@ GuestTexture* GetThumbnail(const IConfigDef* cfg)
         else if (cfg == &Config::ShadowResolution)
         {
             TryGetValueThumbnail<EShadowResolution>(cfg, &g_shadowResolutionThumbnails, &texture);
-        }
-        else if (cfg == &Config::CSMTextureFiltering)
-        {
-            TryGetValueThumbnail<ECSMTextureFiltering>(cfg, &g_csmTextureFilteringThumbnails, &texture);
         }
         else if (cfg == &Config::CutsceneAspectRatio)
         {

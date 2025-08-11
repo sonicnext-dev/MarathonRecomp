@@ -338,7 +338,6 @@ CONFIG_DEFINE_ENUM_TEMPLATE(EAntiAliasing)
 
 CONFIG_DEFINE_ENUM_TEMPLATE(EShadowResolution)
 {
-    { "Original", EShadowResolution::Original },
     { "512",      EShadowResolution::x512 },
     { "1024",     EShadowResolution::x1024 },
     { "2048",     EShadowResolution::x2048 },
@@ -346,10 +345,12 @@ CONFIG_DEFINE_ENUM_TEMPLATE(EShadowResolution)
     { "8192",     EShadowResolution::x8192 },
 };
 
-CONFIG_DEFINE_ENUM_TEMPLATE(ECSMTextureFiltering)
+CONFIG_DEFINE_ENUM_TEMPLATE(EReflectionResolution)
 {
-    { "Bilinear", ECSMTextureFiltering::Bilinear },
-    { "Bicubic",  ECSMTextureFiltering::Bicubic }
+    { "Full",    EReflectionResolution::Full },
+    { "Half",    EReflectionResolution::Half },
+    { "Quarter", EReflectionResolution::Quarter },
+    { "Eighth",  EReflectionResolution::Eighth },
 };
 
 CONFIG_DEFINE_ENUM_TEMPLATE(ECutsceneAspectRatio)

@@ -19,6 +19,13 @@ void App::Restart(std::vector<std::string> restartArgs)
 
 void App::Exit()
 {
+    // TODO (Hyper): remove this once the new options menu is implemented.
+    if (auto pAudioEngine = Sonicteam::AudioEngineXenon::GetInstance())
+    {
+        Config::MusicVolume = pAudioEngine->m_MusicVolume;
+        Config::EffectsVolume = pAudioEngine->m_EffectsVolume;
+    }
+
     Config::Save();
 
 #ifdef _WIN32
@@ -44,11 +51,15 @@ PPC_FUNC(sub_8262A568)
         be<uint32_t> Height;
     };
 
-    auto cfg = reinterpret_cast<RenderConfig*>(g_memory.Translate(ctx.r4.u32));
-    cfg->Width = Video::s_viewportWidth;
-    cfg->Height = Video::s_viewportHeight;
+    auto pRenderConfig = reinterpret_cast<RenderConfig*>(g_memory.Translate(ctx.r4.u32));
+    pRenderConfig->Width = Video::s_viewportWidth;
+    pRenderConfig->Height = Video::s_viewportHeight;
 
-    LOGFN_UTILITY("Changed resolution: {}x{}", cfg->Width.get(), cfg->Height.get());
+    auto pAudioEngine = Sonicteam::AudioEngineXenon::GetInstance();
+    pAudioEngine->m_MusicVolume = Config::MusicVolume * Config::MasterVolume;
+    pAudioEngine->m_EffectsVolume = Config::EffectsVolume * Config::MasterVolume;
+
+    LOGFN_UTILITY("Changed resolution: {}x{}", pRenderConfig->Width.get(), pRenderConfig->Height.get());
 
     __imp__sub_8262A568(ctx, base);
 

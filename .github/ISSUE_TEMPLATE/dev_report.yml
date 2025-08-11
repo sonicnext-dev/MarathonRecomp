@@ -1,0 +1,9 @@
+name: Dev Report
+description: For developer use only!
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+    validations:
+      required: true

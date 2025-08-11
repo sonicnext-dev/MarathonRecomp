@@ -39,8 +39,8 @@ CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_RightStickLeft, SDL_SCANCODE_UN
 CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_RightStickRight, SDL_SCANCODE_UNKNOWN);
 
 CONFIG_DEFINE_LOCALISED("Audio", float, MasterVolume, 1.0f);
-CONFIG_DEFINE_LOCALISED("Audio", float, MusicVolume, 1.0f);
-CONFIG_DEFINE_LOCALISED("Audio", float, EffectsVolume, 1.0f);
+CONFIG_DEFINE_LOCALISED("Audio", float, MusicVolume, 0.6f);
+CONFIG_DEFINE_LOCALISED("Audio", float, EffectsVolume, 0.6f);
 CONFIG_DEFINE_ENUM_LOCALISED("Audio", EChannelConfiguration, ChannelConfiguration, EChannelConfiguration::Stereo);
 CONFIG_DEFINE_LOCALISED("Audio", bool, MusicAttenuation, false);
 
@@ -65,8 +65,9 @@ CONFIG_DEFINE_LOCALISED("Video", float, Brightness, 0.5f);
 CONFIG_DEFINE_ENUM_LOCALISED("Video", EAntiAliasing, AntiAliasing, EAntiAliasing::MSAA4x);
 CONFIG_DEFINE_LOCALISED("Video", bool, TransparencyAntiAliasing, true);
 CONFIG_DEFINE("Video", uint32_t, AnisotropicFiltering, 16);
-CONFIG_DEFINE_ENUM_LOCALISED("Video", EShadowResolution, ShadowResolution, EShadowResolution::x4096);
-CONFIG_DEFINE_ENUM_LOCALISED("Video", ECSMTextureFiltering, CSMTextureFiltering, ECSMTextureFiltering::Bicubic);
+CONFIG_DEFINE_ENUM("Video", EShadowResolution, ShadowResolution, EShadowResolution::x4096);
+// TODO: Localise this enum
+CONFIG_DEFINE_ENUM("Video", EReflectionResolution, ReflectionResolution, EReflectionResolution::Half);
 CONFIG_DEFINE_ENUM_LOCALISED("Video", ECutsceneAspectRatio, CutsceneAspectRatio, ECutsceneAspectRatio::Original);
 CONFIG_DEFINE_ENUM_LOCALISED("Video", EUIAlignmentMode, UIAlignmentMode, EUIAlignmentMode::Edge);
 
