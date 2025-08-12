@@ -18,6 +18,8 @@ bool AudioPatches::CanAttenuate()
     m_isAttenuationSupported = version.Major >= 10 && version.Build >= 17763;
 
     return m_isAttenuationSupported;
+#elif __linux__
+    return true;
 #else
     return false;
 #endif
