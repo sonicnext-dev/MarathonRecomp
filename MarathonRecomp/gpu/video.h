@@ -386,10 +386,12 @@ enum GuestRenderState
 
 enum GuestCullMode
 {
-    D3DCULL_NONE = 0,
-    D3DCULL_CW = 2,
-    D3DCULL_NONE_2 = 4,
-    D3DCULL_CCW = 6
+    D3DCULL_NONE_CCW = 0,
+    D3DCULL_FRONT_CCW = 1,
+    D3DCULL_BACK_CCW = 2,
+    D3DCULL_NONE_CW = 4,
+    D3DCULL_FRONT_CW = 5,
+    D3DCULL_BACK_CW = 6
 };
 
 enum GuestBlendMode
