@@ -724,6 +724,7 @@ static void DestructTempResources()
         {
         case ResourceType::Texture:
         case ResourceType::VolumeTexture:
+        case ResourceType::ArrayTexture:
         {
             const auto texture = reinterpret_cast<GuestTexture*>(resource);
 
@@ -731,10 +732,14 @@ static void DestructTempResources()
                 g_userHeap.Free(texture->mappedMemory);
             }
 
+            g_textureDescriptorSet->setTexture(texture->descriptorIndex, nullptr, {});
             g_textureDescriptorAllocator.free(texture->descriptorIndex);
 
             if (texture->patchedTexture != nullptr)
+            {
+                g_textureDescriptorSet->setTexture(texture->patchedTexture->descriptorIndex, nullptr, {});
                 g_textureDescriptorAllocator.free(texture->patchedTexture->descriptorIndex);
+            }
 
             texture->~GuestTexture();
             break;
@@ -759,7 +764,10 @@ static void DestructTempResources()
             const auto surface = reinterpret_cast<GuestSurface*>(resource);
 
             if (surface->descriptorIndex != NULL)
+            {
+                g_textureDescriptorSet->setTexture(surface->descriptorIndex, nullptr, {});
                 g_textureDescriptorAllocator.free(surface->descriptorIndex);
+            }
 
             surface->~GuestSurface();
             break;
