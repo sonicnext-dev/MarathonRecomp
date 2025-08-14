@@ -19,10 +19,12 @@ namespace Sonicteam
 {
     class DevTitleMode : public SoX::Engine::DocMode
     {
-        struct Mode {
+        struct Mode 
+        {
             xpointer<const char> m_Name;
             MARATHON_INSERT_PADDING(4);
         };
+
     public:
         be<uint32_t> m_Selected;
         MARATHON_INSERT_PADDING(4);
