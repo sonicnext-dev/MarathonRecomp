@@ -71,14 +71,14 @@ X (Square)|A
 Y (Triangle)|W
 D-Pad - Up|Unbound
 D-Pad - Down|Unbound
-D-Pad - Left|Unbound
-D-Pad - Right|Unbound
+D-Pad - Left|Q
+D-Pad - Right|E
 Start|Return
 Back (Select)|Backspace
 Left Trigger (L2)|1
 Right Trigger (R2)|3
-Left Bumper (L1)|Q
-Right Bumper (R1)|E
+Left Bumper (L1)|Unbound
+Right Bumper (R1)|Unbound
 Left Stick - Up|Up Arrow
 Left Stick - Down|Down Arrow
 Left Stick - Left|Left Arrow
