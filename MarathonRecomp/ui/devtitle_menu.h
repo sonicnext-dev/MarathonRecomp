@@ -8,8 +8,6 @@ public:
 
     static bool IsVisible;
 
-
-
     static void Init();
     static void Draw();
 

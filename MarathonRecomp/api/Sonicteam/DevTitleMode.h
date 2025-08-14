@@ -14,6 +14,7 @@ namespace
         xpointer<Sonicteam::PictureTitle> m_PictureTitle;
     };
 }
+
 namespace Sonicteam
 {
     class DevTitleMode : public SoX::Engine::DocMode
