@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/SoX/Physics/World.h>
 
 namespace Sonicteam
 {
@@ -29,5 +30,13 @@ namespace Sonicteam
 
         MARATHON_INSERT_PADDING(0xE3C);
         PlayerData m_PlayerData[4];
+        MARATHON_INSERT_PADDING(0xA4C);
+        xpointer<SoX::Physics::World> m_pPhysicsWorld;
+        xpointer<void> m_pMyCollisionFilter;
+
+        template <typename T>
+        inline T* GetPhysicsWorld();
     };
 }
+
+#include <Sonicteam/GameImp.inl>
