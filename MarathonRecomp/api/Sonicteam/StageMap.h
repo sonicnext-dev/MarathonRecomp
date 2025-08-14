@@ -6,6 +6,7 @@
 
 namespace stdx
 {
+    //Gauge PR :|
     template <typename Type>
     struct vector
     {
@@ -14,28 +15,29 @@ namespace stdx
         xpointer<Type> _MyLast;
         xpointer<Type> _MyEnd;
         
-        Type& operator[](uint32_t index)
+        Type& operator[](size_t pos)
         {
-            return *(Type*)((uint64_t)_MyFirst.get()  + (index * sizeof(Type)));
+            return _MyFirst.get()[pos];
         }
-        size_t size() 
-        {
-            return (_MyLast.ptr.get() - _MyFirst.ptr.get()) / sizeof(Type);
-        }
-    };
 
+        size_t size()
+        {
+            return _MyLast.get() - _MyFirst.get();
+        }
+
+    };
 }
+
 namespace Sonicteam
 {
-    //Already in SonicGaugeCode (full)
-   
+
     class StageMap : public SoX::Component
     {
     public:
 
         stdx::string m_Name;
         stdx::string m_Text;
-        stdx::vector<xpointer<StageMap>> m_sStageMap;
-    
+        stdx::vector<xpointer<StageMap>> m_vpStageMap;
+
     };
 }

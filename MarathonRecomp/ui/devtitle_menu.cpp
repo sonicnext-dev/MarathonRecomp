@@ -37,6 +37,11 @@ struct DevTitleMenuSTable
     } m_state[5];
 };
 
+static ImVec2 GetMousePos()
+{
+    return ImGui::GetIO().MousePos;
+}
+
 static void DrawBackgroundDev()
 {
     auto& res = ImGui::GetIO().DisplaySize;
@@ -117,9 +122,9 @@ static bool Sonic06Button(ImVec2 pos, const char* label, bool& hovered, const Im
     const auto label_size = g_mnewRodinFont->CalcTextSizeA(font_size, FLT_MAX, 0, label);
     const auto size = ImVec2(size_arg.x ? size_arg.x : label_size.x, size_arg.y ? size_arg.y : label_size.y);
     const float skew = size.y * skew_amount;
-
+    
     const ImRect bb(pos, { pos.x + size.x + skew, pos.y + size.y });
-    hovered = bb.Contains(io.MousePos);
+    hovered = bb.Contains(GetMousePos());
     bool pressed = hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left);
 
     // Colors
@@ -184,11 +189,11 @@ static void DrawStageMapSelector()
         (res.y - WINDOW_HEIGHT) * 0.45f
     };
 
-    auto& items = pMode->m_CurrentStageMap->m_sStageMap;
+    auto& items = pMode->m_CurrentStageMap->m_vpStageMap;
     const int itemCount = static_cast<int>(items.size());
     int currentIdx = pMode->m_CurrentStageMapIndex.get();
 
-    // Input handling
+    // Input handling (Mouse)
     auto pMsgRec = reinterpret_cast<uintptr_t>(static_cast<Sonicteam::SoX::MessageReceiver*>(pMode));
 
     if (abs(io.MouseWheel) > ScrollAmount) {
@@ -205,7 +210,7 @@ static void DrawStageMapSelector()
     const int start_idx = std::max(0, currentIdx - VISIBLE_ITEMS / 2);
     const int end_idx = std::min(itemCount, start_idx + VISIBLE_ITEMS);
 
-    // Draw visible items with absolute positioning
+    // Draw visible items
     for (int i = start_idx; i < end_idx; ++i) {
         const auto& item = items[i];
         if (!item) continue;
@@ -230,9 +235,9 @@ static void DrawStageMapSelector()
         }
 
         // Tooltip with stage information
-        if (hovered && item->m_sStageMap.size() > 0) {
+        if (hovered && item->m_vpStageMap.size() > 0) {
             ImDrawList* draw_list = ImGui::GetForegroundDrawList();
-            const ImVec2 mouse_pos = ImGui::GetIO().MousePos;
+            const ImVec2 mouse_pos = GetMousePos();
             const float font_size = ImGui::GetFontSize();
             const float line_spacing = 2.0f;
 
@@ -242,8 +247,8 @@ static void DrawStageMapSelector()
             float total_height = 0.0f;
             std::vector<std::pair<std::string, std::string>> entries;
 
-            for (int j = 0; j < item->m_sStageMap.size(); ++j) {
-                const auto& stage = item->m_sStageMap[j];
+            for (int j = 0; j < item->m_vpStageMap.size(); ++j) {
+                const auto& stage = item->m_vpStageMap[j];
                 if (!stage.ptr.get()) continue;
 
                 std::string nameUtf8 = ConvertShiftJISToUTF8(stage->m_Name.c_str());
@@ -319,7 +324,7 @@ static void DrawStageMapSelector()
     const float dot_radius = 7.5f;
     const ImU32 dot_color = IM_COL32(0, 150, 255, 220);
     const ImU32 outline_color = IM_COL32(255, 255, 255, 180);
-    ImVec2 mouse_pos = io.MousePos;
+    ImVec2 mouse_pos = GetMousePos();
 
     ImGui::GetBackgroundDrawList()->AddCircleFilled(
         mouse_pos, dot_radius, dot_color, 12
@@ -352,11 +357,6 @@ static void DrawDevTitle() {
         GuestToHostFunction<void>(sub_824A0E38, static_cast<uint32_t>(pMsgRec), vMsgRec.get());
     }
 
-    if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) 
-    {
-        guest_stack_var<DevMessage> vMsgRec(0x10002, 0, 0);
-        GuestToHostFunction<void>(sub_824A0E38, static_cast<uint32_t>(pMsgRec), vMsgRec.get());
-    }
     if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) 
     {
         guest_stack_var<DevMessage> vMsgRec(0x10002, 0, 1);
@@ -382,8 +382,6 @@ static void DevTitleAudioCommon(DevMessage* message)
             if (!message->id3)
                 Game_PlaySound("window_close");
             break;
-
-
     }
 }
 
@@ -412,9 +410,7 @@ PPC_FUNC(sub_824A0E38)
         if (pMessage->id2 == 0x5A || pMessage->id3)
         {
             auto pPocture = pTitle->m_PictureTitle;
-
             pTitle->m_PictureTitle->m_State3 = 4;
-
             DevTitleDelay = DevTitleDelayDefault;
         }
         else
@@ -430,6 +426,12 @@ PPC_FUNC(sub_824A0E38)
 PPC_FUNC_IMPL(__imp__sub_82161AB8);
 PPC_FUNC(sub_82161AB8)
 {
+    if (!Config::DevTitle)
+    {
+        __imp__sub_82161AB8(ctx, base);
+        return;
+    }
+
     auto pDoc = (Sonicteam::DocMarathonImp*)(base + ctx.r3.u32);
     GuestToHostFunction<void>(sub_825E9E28, ctx.r3.u32, ctx.r4.u32);
 
@@ -443,18 +445,18 @@ PPC_FUNC(sub_82161AB8)
 
     auto pDevMode = (*(be<uint32_t>*)(base + 0x82D35E78)).get();
 
-    //nah vft call
+    //nah vft call, sub_825E8D78 should do it
     //DocSetMode
     GuestToHostFunction<void>(sub_825E8D78, ctx.r3.u32, pDevMode);
 
 }
 
+//tateDevTitle, vft + 8
 PPC_FUNC_IMPL(__imp__sub_82162298);
 PPC_FUNC(sub_82162298)
 {
     auto pDoc = (Sonicteam::DocMarathonState*)(base + ctx.r4.u32);
     auto pTitle = (StateDevTitle*)(base + ctx.r3.u32);
-
 
     if (ctx.r3.u32 && pTitle->m_PictureTitle && pTitle->m_PictureTitle->m_State3 > 4)
     {
@@ -464,6 +466,7 @@ PPC_FUNC(sub_82162298)
     {
         DevTitleDelay = DevTitleDelayDefault;
     }
+
     if (!GuestToHostFunction<uint32_t>(sub_82581C68, ctx.r4.u32)) 
     {
         //Wait for transistion
@@ -481,11 +484,18 @@ PPC_FUNC(sub_82162298)
 
 void DevTitleMenu::Init() 
 {
+    if (!Config::DevTitle)
+        return;
+
     g_mrodinFont = ImFontAtlasSnapshot::GetFont("FOT-RodinPro-DB.otf");
     g_mnewRodinFont = ImFontAtlasSnapshot::GetFont("FOT-NewRodinPro-UB.otf");
     
 }
-void DevTitleMenu::Draw() {
+void DevTitleMenu::Draw()
+{
+
+    if (!Config::DevTitle)
+        return;
 
     if (!App::s_pApp)
         return;
@@ -509,7 +519,7 @@ void DevTitleMenu::Draw() {
             DrawDevTitle();
         };
         break;
-        //StageSelect
+        //StageSelect/StoreSelect
         case 0x820336A4:
         {
             DevTitleMenu::IsVisible = true;
