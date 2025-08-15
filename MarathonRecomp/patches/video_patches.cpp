@@ -111,5 +111,5 @@ void FurtherObjectShadows(PPCRegister& scope)
 
 bool DisableRadialBlur()
 {
-    return Config::DisableRadialBlur;
+    return Config::RadialBlur == ERadialBlur::Off;
 }
