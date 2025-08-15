@@ -32,6 +32,7 @@ void AudioPatches::Update(float deltaTime)
     if (!pAudioEngine)
         return;
 
+    const float musicVolume = Config::MusicVolume * Config::MasterVolume;
     if (Config::MusicAttenuation && CanAttenuate())
     {
         auto time = 1.0f - expf(2.5f * -deltaTime);
@@ -42,11 +43,11 @@ void AudioPatches::Update(float deltaTime)
         }
         else
         {
-            pAudioEngine->m_MusicVolume = std::lerp(pAudioEngine->m_MusicVolume, Config::MusicVolume, time);
+            pAudioEngine->m_MusicVolume = std::lerp(pAudioEngine->m_MusicVolume, musicVolume, time);
         }
     }
     else
     {
-        pAudioEngine->m_MusicVolume = Config::MusicVolume;
+        pAudioEngine->m_MusicVolume = musicVolume;
     }
 }
