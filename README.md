@@ -156,13 +156,15 @@ This project does not plan to support any more platforms other than Windows, Lin
 ### Marathon Recompiled
 - [ga2mer](https://github.com/ga2mer): Creator and Lead Developer of the recompilation.
 
-- [Rei-san](https://github.com/ReimousTH): Game Internals Researcher and Patch Developer.
+- [IsaacMarovitz](https://github.com/IsaacMarovitz): Graphics & Installer Developer.
 
 - [squidbus](https://github.com/squidbus): Graphics Developer.
 
-- [IsaacMarovitz](https://github.com/IsaacMarovitz): Graphics & Installer Developer.
+- [Rei-san](https://github.com/ReimousTH): Game Internals Researcher and Patch Developer.
 
-- [Hyper](https://github.com/hyperbx): Custom menus and Game Internals Researcher.
+- [Hyper](https://github.com/hyperbx): Custom Menus, Game Internals Researcher and Patch Developer.
+
+- [Desko](https://github.com/FateForWindows): Game Internals Researcher and Patch Developer.
 
 - [LJSTAR](https://github.com/LJSTARbird): Artist behind the project logo.
 
