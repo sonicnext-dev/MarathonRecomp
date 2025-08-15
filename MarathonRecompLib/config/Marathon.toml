@@ -199,3 +199,8 @@ registers = ["r4"]
 name = "FurtherObjectShadows"
 address = 0x8260D7E0
 registers = ["r26"]
+
+[[midasm_hook]]
+name = "DisableRadialBlur"
+address = 0x82653834
+jump_address_on_true = 0x82653840
