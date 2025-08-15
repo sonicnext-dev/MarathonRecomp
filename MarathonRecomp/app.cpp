@@ -20,13 +20,6 @@ void App::Restart(std::vector<std::string> restartArgs)
 
 void App::Exit()
 {
-    // TODO (Hyper): remove this once the new options menu is implemented.
-    if (auto pAudioEngine = Sonicteam::AudioEngineXenon::GetInstance())
-    {
-        Config::MusicVolume = pAudioEngine->m_MusicVolume;
-        Config::EffectsVolume = pAudioEngine->m_EffectsVolume;
-    }
-
     Config::Save();
 
 #ifdef _WIN32
