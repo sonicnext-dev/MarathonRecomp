@@ -120,6 +120,12 @@ enum class EReflectionResolution : int32_t
     Full
 };
 
+enum class ERadialBlur : uint32_t
+{
+    Off,
+    Original
+};
+
 enum class ECutsceneAspectRatio : uint32_t
 {
     Original,

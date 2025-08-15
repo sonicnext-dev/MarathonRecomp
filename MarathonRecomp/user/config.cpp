@@ -313,6 +313,12 @@ CONFIG_DEFINE_ENUM_TEMPLATE(EWindowState)
     { "Maximized", EWindowState::Maximised }
 };
 
+CONFIG_DEFINE_ENUM_TEMPLATE(ERadialBlur)
+{
+    { "Off", ERadialBlur::Off },
+    { "Original", ERadialBlur::Original },
+};
+
 CONFIG_DEFINE_ENUM_TEMPLATE(EAspectRatio)
 {
     { "Auto", EAspectRatio::Auto },
