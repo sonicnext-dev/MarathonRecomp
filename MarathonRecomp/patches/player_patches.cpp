@@ -99,3 +99,55 @@ bool MidairSnowboardControl3()
 {
     return Config::MidairControlForSnowboards;
 }
+
+
+//Add Missing SetupModuleDebug to table
+void DebugPlayerSwitch_0(PPCRegister& r_sstring, PPCRegister& r_index)
+{
+    if (!Config::DebugSwitch)
+    {
+        return;
+    }
+
+    auto pString = (stdx::string*)(g_memory.Translate(r_sstring.u32));
+    auto Index = r_index.u32;
+    switch (Index)
+    {
+    case 0:
+        *pString = "SetupModuleDebug";
+        break;
+    case 1:
+        *pString = "SetupModule";
+        break;
+    case 2:
+        *pString = "SetupModuleDebug";
+        break;
+    }
+}
+
+PPC_FUNC_IMPL(__imp__sub_82195500);
+PPC_FUNC(sub_82195500)
+{
+    if (!Config::DebugSwitch)
+    {
+        __imp__sub_82195500(ctx, base);
+        return;
+    }
+
+    auto pDoc = App::s_pApp->m_pDoc;
+    auto pGameImp = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->m_pGameImp;
+    auto pPlayer = (Sonicteam::Player::Object*)(base + ctx.r3.u32);
+
+
+    if (pPlayer->m_SetupModuleIndexPost != -2 && pPlayer->isPlayer)
+    {
+        auto PIndex = pGameImp->PlayerActorIDToIndex(pPlayer->m_ActorID);
+        auto PManager = pDoc->m_vspInputManager[pDoc->m_PlayerControllerID[PIndex].get()].get();
+        if ((PManager->m_Gamepad.wLastButtons.get() & Sonicteam::SoX::Input::XENON_GAMEPAD_BACK) != 0)
+        {
+            pPlayer->m_SetupModuleIndexPost = 2;
+        }
+    }
+
+    __imp__sub_82195500(ctx, base);
+}

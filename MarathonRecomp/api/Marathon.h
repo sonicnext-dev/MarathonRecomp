@@ -58,6 +58,7 @@
 #include "Sonicteam/SoX/Object.h"
 #include "Sonicteam/SoX/Physics/Havok/WorldHavok.h"
 #include "Sonicteam/SoX/Physics/World.h"
+#include "Sonicteam/SoX/Input/Manager.h"
 #include "Sonicteam/SoX/RefCountObject.h"
 #include "Sonicteam/System/CreateStatic.h"
 #include "Sonicteam/System/Singleton.h"
@@ -65,3 +66,4 @@
 #include "boost/smart_ptr/make_shared_object.h"
 #include "boost/smart_ptr/shared_ptr.h"
 #include "stdx/string.h"
+#include "stdx/vector.h"

@@ -10,9 +10,15 @@ namespace Sonicteam::Player
     public:
         MARATHON_INSERT_PADDING(0x40);
         be<uint32_t> m_PlayerIndex;
-        MARATHON_INSERT_PADDING(0x48);
+        MARATHON_INSERT_PADDING(0x2C);
+        uint8_t isPlayer;
+        uint8_t isPosture;
+        uint8_t isAI;
+        MARATHON_INSERT_PADDING(0x19);
         boost::shared_ptr<State::Machine2> m_spStateMachine;
-        MARATHON_INSERT_PADDING(0x18);
+        MARATHON_INSERT_PADDING(0x10);
+        be<uint32_t> m_SetupModuleIndexPre;
+        be<uint32_t> m_SetupModuleIndexPost;
         boost::shared_ptr<IGauge> m_spGauge;
         MARATHON_INSERT_PADDING(0x204);
 
