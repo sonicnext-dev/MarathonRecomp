@@ -200,8 +200,6 @@ name = "FurtherObjectShadows"
 address = 0x8260D7E0
 registers = ["r26"]
 
-
-
 [[midasm_hook]]
 name = "DebugPlayerSwitch_0"
 address = 0x82195AD0

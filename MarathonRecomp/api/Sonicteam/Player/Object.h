@@ -11,9 +11,9 @@ namespace Sonicteam::Player
         MARATHON_INSERT_PADDING(0x40);
         be<uint32_t> m_PlayerIndex;
         MARATHON_INSERT_PADDING(0x2C);
-        uint8_t isPlayer;
-        uint8_t isPosture;
-        uint8_t isAI;
+        bool m_IsPlayer;
+        bool m_IsPosture;
+        bool m_IsAmigo; //AI::Amigo
         MARATHON_INSERT_PADDING(0x19);
         boost::shared_ptr<State::Machine2> m_spStateMachine;
         MARATHON_INSERT_PADDING(0x10);

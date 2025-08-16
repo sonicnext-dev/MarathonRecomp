@@ -37,7 +37,7 @@ namespace Sonicteam
         template <typename T>
         inline T* GetPhysicsWorld();
 
-        uint32_t PlayerActorIDToIndex(uint32_t ActorID)
+        int32_t PlayerActorIDToIndex(int32_t ActorID)
         {
             for (int i = 0; i < 4; i++)
             {

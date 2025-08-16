@@ -6,7 +6,6 @@
 #include <boost/smart_ptr/shared_ptr.h>
 #include <api/stdx/vector.h>
 
-
 namespace Sonicteam
 {
     class DocMarathonImp : public SoX::Engine::Doc

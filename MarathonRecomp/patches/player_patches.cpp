@@ -100,7 +100,6 @@ bool MidairSnowboardControl3()
     return Config::MidairControlForSnowboards;
 }
 
-
 //Add Missing SetupModuleDebug to table
 void DebugPlayerSwitch_0(PPCRegister& r_sstring, PPCRegister& r_index)
 {

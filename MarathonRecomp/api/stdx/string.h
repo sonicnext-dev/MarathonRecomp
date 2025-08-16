@@ -3,7 +3,6 @@
 #include <kernel/heap.h>
 #include <kernel/function.h>
 
-
 namespace stdx
 {
     class string
@@ -67,7 +66,6 @@ namespace stdx
             _Mysize = 0;
             _bx._buffer[0] = '\0';
         }
-
 
         void cleanup()
         {

@@ -17,9 +17,11 @@ namespace stdx
         {
             return *(Type*)((uint64_t)_MyFirst.get() + (index * sizeof(Type)));
         }
+
         size_t size()
         {
             return (_MyLast.ptr.get() - _MyFirst.ptr.get()) / sizeof(Type);
         }
     };
 }
+
