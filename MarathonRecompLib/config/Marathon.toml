@@ -201,6 +201,11 @@ address = 0x8260D7E0
 registers = ["r26"]
 
 [[midasm_hook]]
+DebugPlayerSwitch
 name = "DebugPlayerSwitch_0"
 address = 0x82195AD0
 registers = ["r5","r27"]
+
+name = "DisableRadialBlur"
+address = 0x82653834
+jump_address_on_true = 0x82653840
