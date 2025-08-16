@@ -7811,7 +7811,6 @@ public:
                     "{},"
                     "{},"
                     "{},"
-                    "{},"
                     "RenderBlend::{},"
                     "RenderBlend::{},"
                     "RenderCullMode::{},"
