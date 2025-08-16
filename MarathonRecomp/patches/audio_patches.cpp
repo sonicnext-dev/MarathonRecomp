@@ -4,6 +4,7 @@
 #include <os/version.h>
 #include <patches/audio_patches.h>
 #include <user/config.h>
+#include <app.h>
 
 int AudioPatches::m_isAttenuationSupported = -1;
 
@@ -33,6 +34,7 @@ void AudioPatches::Update(float deltaTime)
         return;
 
     const float musicVolume = Config::MusicVolume * Config::MasterVolume;
+
     if (Config::MusicAttenuation && CanAttenuate())
     {
         auto time = 1.0f - expf(2.5f * -deltaTime);
@@ -50,4 +52,39 @@ void AudioPatches::Update(float deltaTime)
     {
         pAudioEngine->m_MusicVolume = musicVolume;
     }
+}
+
+// Update function for CRI cues.
+// This hook fixes jingles fading the BGM back in prematurely.
+PPC_FUNC_IMPL(__imp__sub_8260F168);
+PPC_FUNC(sub_8260F168)
+{
+    struct CueParams
+    {
+        be<float> Duration;
+        be<float> FrameTime;
+        be<float> Field08;
+        be<float> Field0C;
+        be<float> MusicVolume;
+        bool Field14;
+    };
+
+    auto pParams = (CueParams*)(base + ctx.r3.u32);
+
+    pParams->FrameTime = App::s_deltaTime;
+
+    __imp__sub_8260F168(ctx, base);
+}
+
+void CriCueUpdateDeltaTimeFix(PPCRegister& deltaTime)
+{
+    deltaTime.f64 = App::s_deltaTime;
+}
+
+void PowerUpJingleDurationFix(PPCRegister& duration)
+{
+    if (!Config::FixPowerUpJingleDuration)
+        return;
+
+    duration.f64 = 20.0;
 }
