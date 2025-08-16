@@ -12,3 +12,9 @@ PPC_FUNC(sub_82587AA8)
 
     __imp__sub_82587AA8(ctx, base);
 }
+
+void HFR_POSTURE_STEER_FIX_01(PPCRegister& c_rotation_speed, PPCRegister& stack)
+{
+    double delta_time = *(be<double>*)g_memory.Translate(stack.u32 + 0x200);
+    c_rotation_speed.f64 = (c_rotation_speed.f64 * (60.0f * delta_time));
+}

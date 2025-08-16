@@ -204,3 +204,8 @@ registers = ["r26"]
 name = "DisableRadialBlur"
 address = 0x82653834
 jump_address_on_true = 0x82653840
+
+[[midasm_hook]]
+name = "HFR_POSTURE_STEER_FIX_01"
+address = 0x82201C6C
+registers = ["f1","r1"]
