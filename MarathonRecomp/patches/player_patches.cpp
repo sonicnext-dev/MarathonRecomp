@@ -137,12 +137,11 @@ PPC_FUNC(sub_82195500)
     auto pGameImp = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->m_pGameImp;
     auto pPlayer = (Sonicteam::Player::Object*)(base + ctx.r3.u32);
 
-
-    if (pPlayer->m_SetupModuleIndexPost != -2 && pPlayer->isPlayer)
+    if (pPlayer->m_SetupModuleIndexPost != -2 && pPlayer->m_IsPlayer)
     {
         auto PIndex = pGameImp->PlayerActorIDToIndex(pPlayer->m_ActorID);
         auto PManager = pDoc->m_vspInputManager[pDoc->m_PlayerControllerID[PIndex].get()].get();
-        if ((PManager->m_Gamepad.wLastButtons.get() & Sonicteam::SoX::Input::XENON_GAMEPAD_BACK) != 0)
+        if ((PManager->m_PadState.LastButtons.get() & Sonicteam::SoX::Input::KeyState_Select) != 0)
         {
             pPlayer->m_SetupModuleIndexPost = 2;
         }

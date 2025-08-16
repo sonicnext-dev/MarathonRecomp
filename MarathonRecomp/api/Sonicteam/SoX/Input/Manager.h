@@ -4,7 +4,6 @@
 
 namespace Sonicteam::SoX::Input
 {
-    static const uint32_t XENON_GAMEPAD_BACK = 2048;
 
     enum KeyState
     {
