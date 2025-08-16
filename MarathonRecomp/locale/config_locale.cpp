@@ -148,6 +148,17 @@ CONFIG_DEFINE_LOCALE(ControlTutorial)
 };
 
 // Japanese Notes: This localization should include furigana.
+CONFIG_DEFINE_LOCALE(Autosave)
+{
+    { ELanguage::English,  { "Autosave", "Save the game automatically at manual save points." } },
+    { ELanguage::Japanese, { "", "" } },
+    { ELanguage::German,   { "", "" } },
+    { ELanguage::French,   { "", "" } },
+    { ELanguage::Spanish,  { "", "" } },
+    { ELanguage::Italian,  { "", "" } }
+};
+
+// Japanese Notes: This localization should include furigana.
 CONFIG_DEFINE_LOCALE(AchievementNotifications)
 {
     { ELanguage::English,  { "Achievement Notifications", "Show notifications for unlocking achievements.\n\nAchievements will still be rewarded with notifications disabled." } },

@@ -219,3 +219,15 @@ registers = ["f13"]
 name = "PowerUpJingleDurationFix"
 address = 0x8216CC28
 registers = ["f31"]
+
+# Overwrite
+[[midasm_hook]]
+name = "SaveAlertThreeOptionRemoveDeviceSelect"
+address = 0x8238CCCC
+registers = ["r5"]
+
+# No Save Data
+[[midasm_hook]]
+name = "SaveAlertThreeOptionRemoveDeviceSelect"
+address = 0x8238CE34
+registers = ["r5"]
