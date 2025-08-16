@@ -77,6 +77,7 @@ CONFIG_DEFINE_HIDDEN("Codes", bool, DisableDWMRoundedCorners, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, DisableTitleInputDelay, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, HUDToggleKey, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, SkipIntroLogos, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, FixPowerUpJingleDuration, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, UseOfficialTitleOnTitleBar, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, DisableLowResolutionFontOnCustomUI, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreContextualHUDColours, false);

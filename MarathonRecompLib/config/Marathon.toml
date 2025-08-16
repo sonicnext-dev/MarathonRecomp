@@ -209,3 +209,13 @@ jump_address_on_true = 0x82653840
 name = "PostureControlRotationSpeedFix"
 address = 0x82201C6C
 registers = ["f1", "r1"]
+
+[[midasm_hook]]
+name = "CriCueUpdateDeltaTimeFix"
+address = 0x8260F238
+registers = ["f13"]
+
+[[midasm_hook]]
+name = "PowerUpJingleDurationFix"
+address = 0x8216CC28
+registers = ["f31"]
