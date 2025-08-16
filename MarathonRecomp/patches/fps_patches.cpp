@@ -12,3 +12,9 @@ PPC_FUNC(sub_82587AA8)
 
     __imp__sub_82587AA8(ctx, base);
 }
+
+void PostureControlRotationSpeedFix(PPCRegister& c_rotation_speed, PPCRegister& stack)
+{
+    double deltaTime = *(be<double>*)g_memory.Translate(stack.u32 + 0x200);
+    c_rotation_speed.f64 = (c_rotation_speed.f64 * (60.0f * deltaTime));
+}
