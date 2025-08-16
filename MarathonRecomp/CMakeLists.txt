@@ -159,6 +159,7 @@ set(MARATHON_RECOMP_UI_CXX_SOURCES
     "ui/options_menu.cpp"
     "ui/options_menu_thumbnails.cpp"
     "ui/tv_static.cpp"
+    "ui/devtitle_menu.cpp"
 )
 
 set(MARATHON_RECOMP_INSTALL_CXX_SOURCES

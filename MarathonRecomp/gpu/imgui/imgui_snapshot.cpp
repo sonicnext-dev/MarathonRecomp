@@ -7,6 +7,7 @@
 #include <kernel/xdbf.h>
 #include <app.h>
 
+
 template<typename T1, typename T2>
 void ImFontAtlasSnapshot::SnapPointer(size_t offset, const T1& value, const T2& ptr, size_t count)
 {
