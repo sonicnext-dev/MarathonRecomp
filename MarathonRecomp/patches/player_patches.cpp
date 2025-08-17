@@ -41,7 +41,6 @@ PPC_FUNC(sub_8221A7D8)
     __imp__sub_8221A7D8(ctx, base);
 }
 
-
 // Sonicteam::Player::State::*Context IDynamicLink::Init, Removed
 // SonicTeam::Player::Score::ctor
 PPC_FUNC_IMPL(__imp__sub_821E8C48);
@@ -64,7 +63,6 @@ PPC_FUNC(sub_821E8C48)
     }
     __imp__sub_821E8C48(ctx, base);
 }
-
 
 
 bool MidairMachSpeedControl1()
