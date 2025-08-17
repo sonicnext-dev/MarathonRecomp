@@ -64,7 +64,6 @@ PPC_FUNC(sub_821E8C48)
     __imp__sub_821E8C48(ctx, base);
 }
 
-
 bool MidairMachSpeedControl1()
 {
     return Config::MidairControlForMachSpeed;
