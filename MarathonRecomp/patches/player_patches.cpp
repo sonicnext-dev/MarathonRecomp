@@ -41,28 +41,15 @@ PPC_FUNC(sub_8221A7D8)
     __imp__sub_8221A7D8(ctx, base);
 }
 
-// Sonicteam::Player::State::*Context IDynamicLink::Init
-PPC_FUNC_IMPL(__imp__sub_8220F330);
-PPC_FUNC(sub_8220F330)
+
+// Sonicteam::Player::State::*Context IDynamicLink::Init, Removed
+// SonicTeam::Player::Score::ctor
+PPC_FUNC_IMPL(__imp__sub_821E8C48);
+PPC_FUNC(sub_821E8C48)
 {
-    if (!Config::TailsGauge)
+    auto pPlayer = (Sonicteam::Player::Object*)(base + ctx.r4.u32);
+    if (pPlayer->m_PlayerLUA == "player/tails.lua")
     {
-        __imp__sub_8220F330(ctx, base);
-        return;
-    }
-
-    auto pDynamicLink = (Sonicteam::Player::IDynamicLink*)(base + ctx.r3.u32);
-    auto spPlugin = (boost::shared_ptr<Sonicteam::Player::IPlugIn>*)(base + ctx.r4.u32);
-
-    //Skip null plugin
-    if (!*spPlugin)
-        return;
-
-    // If this call is from TailsContext and this plugin is Sonicteam::Player::Score, set up the action gauge.
-    // This is typically set up by OpenGauge in Lua, but we can't do this here.
-    if (pDynamicLink->m_pVftable.ptr == 0x8200B7F4 && spPlugin->get()->m_Name == "score")
-    {
-        auto pScore = (Sonicteam::Player::Score*)spPlugin->get();
         auto pSonicGauge = GuestToHostFunction<Sonicteam::Player::SonicGauge*>(sub_8223F208, g_userHeap.Alloc(sizeof(Sonicteam::Player::SonicGauge)));
 
         guest_stack_var<boost::shared_ptr<Sonicteam::Player::IGauge>> spSonicGauge;
@@ -71,13 +58,14 @@ PPC_FUNC(sub_8220F330)
         GuestToHostFunction<void>(sub_821BEAB0, spSonicGauge.get(), pSonicGauge);
 
         // Add gauge plugin to player.
-        GuestToHostFunction<void>(sub_821BECE0, pScore->m_pPlayer.get(), spSonicGauge.get(), 1);
+        GuestToHostFunction<void>(sub_821BECE0, pPlayer, spSonicGauge.get(), 1);
 
-        pScore->m_pPlayer->m_spGauge = *spSonicGauge.get();
+        pPlayer->m_spGauge = *spSonicGauge.get();
     }
-
-    __imp__sub_8220F330(ctx, base);
+    __imp__sub_821E8C48(ctx, base);
 }
+
+
 
 bool MidairMachSpeedControl1()
 {

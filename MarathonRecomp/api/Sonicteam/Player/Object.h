@@ -8,7 +8,9 @@ namespace Sonicteam::Player
     class Object : public Actor
     {
     public:
-        MARATHON_INSERT_PADDING(0x40);
+        stdx::string m_PlayerLUA;
+        stdx::string m_PlayerPKG;
+        MARATHON_INSERT_PADDING(0x8);
         be<uint32_t> m_PlayerIndex;
         MARATHON_INSERT_PADDING(0x48);
         boost::shared_ptr<State::Machine2> m_spStateMachine;
