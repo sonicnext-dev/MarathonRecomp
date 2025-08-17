@@ -54,6 +54,10 @@ PPC_FUNC(sub_8220F330)
     auto pDynamicLink = (Sonicteam::Player::IDynamicLink*)(base + ctx.r3.u32);
     auto spPlugin = (boost::shared_ptr<Sonicteam::Player::IPlugIn>*)(base + ctx.r4.u32);
 
+    //Skip null plugin
+    if (!*spPlugin)
+        return;
+
     // If this call is from TailsContext and this plugin is Sonicteam::Player::Score, set up the action gauge.
     // This is typically set up by OpenGauge in Lua, but we can't do this here.
     if (pDynamicLink->m_pVftable.ptr == 0x8200B7F4 && spPlugin->get()->m_Name == "score")
