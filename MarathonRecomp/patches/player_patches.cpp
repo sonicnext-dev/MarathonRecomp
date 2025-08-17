@@ -46,6 +46,12 @@ PPC_FUNC(sub_8221A7D8)
 PPC_FUNC_IMPL(__imp__sub_821E8C48);
 PPC_FUNC(sub_821E8C48)
 {
+    if (!Config::TailsGauge)
+    {
+        __imp__sub_821E8C48(ctx, base);
+        return;
+    }
+
     auto pPlayer = (Sonicteam::Player::Object*)(base + ctx.r4.u32);
     if (pPlayer->m_PlayerLua == "player/tails.lua")
     {
@@ -61,6 +67,7 @@ PPC_FUNC(sub_821E8C48)
 
         pPlayer->m_spGauge = *spSonicGauge.get();
     }
+
     __imp__sub_821E8C48(ctx, base);
 }
 
