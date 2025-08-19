@@ -102,3 +102,12 @@ bool DisableHints()
 {
     return !Config::Hints;
 }
+
+PPC_FUNC_IMPL(__imp__sub_824A6EA8);
+PPC_FUNC(sub_824A6EA8)
+{
+    if (Config::SkipIntroLogos && ctx.r4.u32 == 1)
+        ctx.r4.u32 = 4;
+
+    __imp__sub_824A6EA8(ctx, base);
+}
