@@ -71,6 +71,8 @@
 #include "Sonicteam/SoX/IResourceMgr.h"
 #include "Sonicteam/SoX/MessageReceiver.h"
 #include "Sonicteam/SoX/Object.h"
+#include "Sonicteam/SoX/Physics/Havok/WorldHavok.h"
+#include "Sonicteam/SoX/Physics/World.h"
 #include "Sonicteam/SoX/RefCountObject.h"
 #include "Sonicteam/System/CreateStatic.h"
 #include "Sonicteam/System/Singleton.h"

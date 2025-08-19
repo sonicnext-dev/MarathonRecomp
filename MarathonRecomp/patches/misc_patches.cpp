@@ -86,7 +86,8 @@ void ContextualHUD_RING_1(PPCRegister& index, PPCRegister& hud)
     index.u32 = chr_index;
 }
 
-void PostureDisableEdgeGrabLeftover(PPCRegister& posture) {
+void PostureDisableEdgeGrabLeftover(PPCRegister& posture)
+{
     if (!Config::DisableEdgeGrabLeftover) {
         return;
     }
@@ -105,11 +106,21 @@ PPC_FUNC(sub_8264AC48)
     __imp__sub_8264AC48(ctx, base);
 }
 
-void PedestrianAnimationLOD(PPCRegister& val) {
+void PedestrianAnimationLOD(PPCRegister& val)
+{
     val.u32 = 0;
 }
 
 bool DisableHints()
 {
     return !Config::Hints;
+}
+
+PPC_FUNC_IMPL(__imp__sub_824A6EA8);
+PPC_FUNC(sub_824A6EA8)
+{
+    if (Config::SkipIntroLogos && ctx.r4.u32 == 1)
+        ctx.r4.u32 = 4;
+
+    __imp__sub_824A6EA8(ctx, base);
 }

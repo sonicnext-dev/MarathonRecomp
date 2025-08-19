@@ -166,27 +166,27 @@ registers = ["r29"]
 after_instruction = true
 
 [[midasm_hook]]
-name = "MidairMachSpeedControl1"
+name = "MidairMachSpeedControl"
 address = 0x82210380
 jump_address_on_true = 0x82210388
 
 [[midasm_hook]]
-name = "MidairMachSpeedControl2"
+name = "MidairMachSpeedControl"
 address = 0x822103B4
 jump_address_on_true = 0x822103BC
 
 [[midasm_hook]]
-name = "MidairSnowboardControl1"
+name = "MidairSnowboardControl"
 address = 0x82214710
 jump_address_on_true = 0x82214714
 
 [[midasm_hook]]
-name = "MidairSnowboardControl2"
+name = "MidairSnowboardControl"
 address = 0x82214878
 jump_address_on_true = 0x8221487C
 
 [[midasm_hook]]
-name = "MidairSnowboardControl3"
+name = "MidairSnowboardControl"
 address = 0x822145B8
 jump_address_on_true = 0x822145BC
 
@@ -204,3 +204,23 @@ registers = ["r4"]
 name = "FurtherObjectShadows"
 address = 0x8260D7E0
 registers = ["r26"]
+
+[[midasm_hook]]
+name = "DisableRadialBlur"
+address = 0x82653834
+jump_address_on_true = 0x82653840
+
+[[midasm_hook]]
+name = "PostureControlRotationSpeedFix"
+address = 0x82201C6C
+registers = ["f1", "r1"]
+
+[[midasm_hook]]
+name = "CriCueUpdateDeltaTimeFix"
+address = 0x8260F238
+registers = ["f13"]
+
+[[midasm_hook]]
+name = "PowerUpJingleDurationFix"
+address = 0x8216CC28
+registers = ["f31"]

@@ -157,7 +157,6 @@ struct PipelineState
     GuestShader* vertexShader = nullptr;
     GuestShader* pixelShader = nullptr;
     GuestVertexDeclaration* vertexDeclaration = nullptr;
-    bool instancing = false;
     bool zEnable = true;
     bool zWriteEnable = true;
     bool stencilEnable = false;
@@ -165,6 +164,7 @@ struct PipelineState
     RenderBlend srcBlend = RenderBlend::ONE;
     RenderBlend destBlend = RenderBlend::ZERO;
     RenderCullMode cullMode = RenderCullMode::NONE;
+    RenderFrontFace frontFace = RenderFrontFace::CLOCKWISE;
     RenderComparisonFunction zFunc = RenderComparisonFunction::LESS;
     RenderComparisonFunction stencilFunc = RenderComparisonFunction::ALWAYS;
     RenderStencilOp stencilFail = RenderStencilOp::KEEP;
@@ -724,6 +724,7 @@ static void DestructTempResources()
         {
         case ResourceType::Texture:
         case ResourceType::VolumeTexture:
+        case ResourceType::ArrayTexture:
         {
             const auto texture = reinterpret_cast<GuestTexture*>(resource);
 
@@ -731,10 +732,14 @@ static void DestructTempResources()
                 g_userHeap.Free(texture->mappedMemory);
             }
 
+            g_textureDescriptorSet->setTexture(texture->descriptorIndex, nullptr, {});
             g_textureDescriptorAllocator.free(texture->descriptorIndex);
 
             if (texture->patchedTexture != nullptr)
+            {
+                g_textureDescriptorSet->setTexture(texture->patchedTexture->descriptorIndex, nullptr, {});
                 g_textureDescriptorAllocator.free(texture->patchedTexture->descriptorIndex);
+            }
 
             texture->~GuestTexture();
             break;
@@ -759,7 +764,10 @@ static void DestructTempResources()
             const auto surface = reinterpret_cast<GuestSurface*>(resource);
 
             if (surface->descriptorIndex != NULL)
+            {
+                g_textureDescriptorSet->setTexture(surface->descriptorIndex, nullptr, {});
                 g_textureDescriptorAllocator.free(surface->descriptorIndex);
+            }
 
             surface->~GuestSurface();
             break;
@@ -1248,14 +1256,16 @@ static void ProcSetRenderState(const RenderCommand& cmd)
         RenderCullMode cullMode;
 
         switch (value) {
-        case D3DCULL_NONE:
-        case D3DCULL_NONE_2:
+        case D3DCULL_NONE_CCW:
+        case D3DCULL_NONE_CW:
             cullMode = RenderCullMode::NONE;
             break;
-        case D3DCULL_CW:
+        case D3DCULL_FRONT_CCW:
+        case D3DCULL_FRONT_CW:
             cullMode = RenderCullMode::FRONT;
             break;
-        case D3DCULL_CCW:
+        case D3DCULL_BACK_CCW:
+        case D3DCULL_BACK_CW:
             cullMode = RenderCullMode::BACK;
             break;
         default:
@@ -1265,6 +1275,7 @@ static void ProcSetRenderState(const RenderCommand& cmd)
         }
 
         SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.cullMode, cullMode);
+        SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.frontFace, value < D3DCULL_NONE_CW ? RenderFrontFace::COUNTER_CLOCKWISE : RenderFrontFace::CLOCKWISE);
         break;
     }
     case D3DRS_ZFUNC:
@@ -4410,6 +4421,7 @@ static std::unique_ptr<RenderPipeline> CreateGraphicsPipeline(const PipelineStat
     desc.depthClipEnabled = true;
     desc.primitiveTopology = pipelineState.primitiveTopology;
     desc.cullMode = pipelineState.cullMode;
+    desc.frontFace = pipelineState.frontFace;
     desc.renderTargetFormat[0] = pipelineState.renderTargetFormat;
     desc.renderTargetBlend[0].blendEnabled = pipelineState.alphaBlendEnable;
     desc.renderTargetBlend[0].srcBlend = pipelineState.srcBlend;
@@ -4450,11 +4462,7 @@ static std::unique_ptr<RenderPipeline> CreateGraphicsPipeline(const PipelineStat
         auto& inputSlot = inputSlots[inputSlotIndex - 1];
         inputSlot.index = inputElement.slotIndex;
         inputSlot.stride = pipelineState.vertexStrides[inputElement.slotIndex];
-    
-        if (pipelineState.instancing && inputElement.slotIndex != 0 && inputElement.slotIndex != 15)
-            inputSlot.classification = RenderInputSlotClassification::PER_INSTANCE_DATA;
-        else
-            inputSlot.classification = RenderInputSlotClassification::PER_VERTEX_DATA;
+        inputSlot.classification = RenderInputSlotClassification::PER_VERTEX_DATA;
     }
     
     desc.inputSlots = inputSlots;
@@ -4498,13 +4506,26 @@ static RenderPipeline* CreateGraphicsPipelineInRenderThread(PipelineState pipeli
                 "  vertexShader: {}\n"
                 "  pixelShader: {}\n"
                 "  vertexDeclaration: {:X}\n"
-                "  instancing: {}\n"
                 "  zEnable: {}\n"
                 "  zWriteEnable: {}\n"
+                "  stencilEnable: {}\n"
+                "  stencilTwoSided: {}\n"
                 "  srcBlend: {}\n"
                 "  destBlend: {}\n"
                 "  cullMode: {}\n"
+                "  frontFace: {}\n"
                 "  zFunc: {}\n"
+                "  stencilFunc: {}\n"
+                "  stencilFail: {}\n"
+                "  stencilZFail: {}\n"
+                "  stencilPass: {}\n"
+                "  stencilFuncCCW: {}\n"
+                "  stencilFailCCW: {}\n"
+                "  stencilZFailCCW: {}\n"
+                "  stencilPassCCW: {}\n"
+                "  stencilMask: {}\n"
+                "  stencilWriteMask: {}\n"
+                "  stencilRef: {}\n"
                 "  alphaBlendEnable: {}\n"
                 "  blendOp: {}\n"
                 "  slopeScaledDepthBias: {}\n"
@@ -4527,13 +4548,26 @@ static RenderPipeline* CreateGraphicsPipelineInRenderThread(PipelineState pipeli
                 pipelineState.vertexShader->name,
                 pipelineState.pixelShader != nullptr ? pipelineState.pixelShader->name : "<none>",
                 reinterpret_cast<size_t>(pipelineState.vertexDeclaration),
-                pipelineState.instancing,
                 pipelineState.zEnable,
                 pipelineState.zWriteEnable,
+                pipelineState.stencilEnable,
+                pipelineState.stencilTwoSided,
                 magic_enum::enum_name(pipelineState.srcBlend),
                 magic_enum::enum_name(pipelineState.destBlend),
                 magic_enum::enum_name(pipelineState.cullMode),
+                magic_enum::enum_name(pipelineState.frontFace),
                 magic_enum::enum_name(pipelineState.zFunc),
+                magic_enum::enum_name(pipelineState.stencilFunc),
+                magic_enum::enum_name(pipelineState.stencilFail),
+                magic_enum::enum_name(pipelineState.stencilZFail),
+                magic_enum::enum_name(pipelineState.stencilPass),
+                magic_enum::enum_name(pipelineState.stencilFuncCCW),
+                magic_enum::enum_name(pipelineState.stencilFailCCW),
+                magic_enum::enum_name(pipelineState.stencilZFailCCW),
+                magic_enum::enum_name(pipelineState.stencilPassCCW),
+                pipelineState.stencilMask,
+                pipelineState.stencilWriteMask,
+                pipelineState.stencilRef,
                 pipelineState.alphaBlendEnable,
                 magic_enum::enum_name(pipelineState.blendOp),
                 pipelineState.slopeScaledDepthBias,
@@ -4915,36 +4949,6 @@ static void SetPrimitiveType(uint32_t primitiveType)
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.primitiveTopology, ConvertPrimitiveType(primitiveType));
 }
 
-static uint32_t CheckInstancing()
-{
-    uint32_t indexCount = 0;
-
-    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.instancing, g_pipelineState.vertexDeclaration->indexVertexStream != 0);
-    if (g_pipelineState.instancing)
-    {
-        // Index buffer is passed as a vertex stream
-        indexCount = g_vertexBufferViews[g_pipelineState.vertexDeclaration->indexVertexStream].size / 4;
-    }
-
-    return indexCount;
-}
-
-static void UnsetInstancingStream()
-{
-    bool dirty = false;
-    uint32_t index = g_pipelineState.vertexDeclaration->indexVertexStream;
-
-    SetDirtyValue(dirty, g_vertexBufferViews[index].buffer, RenderBufferReference{});
-    SetDirtyValue(dirty, g_vertexBufferViews[index].size, 0u);
-    SetDirtyValue(dirty, g_inputSlots[index].stride, 0u);
-
-    if (dirty)
-    {
-        g_dirtyStates.vertexStreamFirst = std::min<uint8_t>(g_dirtyStates.vertexStreamFirst, index);
-        g_dirtyStates.vertexStreamLast = std::max<uint8_t>(g_dirtyStates.vertexStreamLast, index);
-    }
-}
-
 static void DrawPrimitive(GuestDevice* device, uint32_t primitiveType, uint32_t startVertex, uint32_t primitiveCount) 
 {
     LocalRenderCommandQueue queue;
@@ -4965,26 +4969,10 @@ static void ProcDrawPrimitive(const RenderCommand& cmd)
 
     SetPrimitiveType(args.primitiveType);
 
-    uint32_t indexCount = CheckInstancing();
-    if (indexCount > 0)
-    {
-        auto& vertexBufferView = g_vertexBufferViews[g_pipelineState.vertexDeclaration->indexVertexStream];
-
-        SetDirtyValue(g_dirtyStates.indices, g_indexBufferView.buffer, vertexBufferView.buffer);
-        SetDirtyValue(g_dirtyStates.indices, g_indexBufferView.size, vertexBufferView.size);
-        SetDirtyValue(g_dirtyStates.indices, g_indexBufferView.format, RenderFormat::R32_UINT);
-
-        UnsetInstancingStream();
-    }
-
     FlushRenderStateForRenderThread();
 
     auto& commandList = g_commandLists[g_frame];
-
-    if (indexCount > 0)
-        commandList->drawIndexedInstanced(indexCount, args.primitiveCount / indexCount, 0, 0, 0);
-    else
-        commandList->drawInstanced(args.primitiveCount, 1, args.startVertex, 0);
+    commandList->drawInstanced(args.primitiveCount, 1, args.startVertex, 0);
 }
 
 static void DrawIndexedPrimitive(GuestDevice* device, uint32_t primitiveType, int32_t baseVertexIndex, uint32_t startIndex, uint32_t primCount)
@@ -5005,10 +4993,6 @@ static void DrawIndexedPrimitive(GuestDevice* device, uint32_t primitiveType, in
 static void ProcDrawIndexedPrimitive(const RenderCommand& cmd)
 {
     const auto& args = cmd.drawIndexedPrimitive;
-
-    uint32_t indexCount = CheckInstancing();
-    if (indexCount > 0)
-        UnsetInstancingStream();
 
     SetPrimitiveType(args.primitiveType);
     FlushRenderStateForRenderThread();
@@ -5037,10 +5021,6 @@ static void ProcDrawPrimitiveUP(const RenderCommand& cmd)
 {
     const auto& args = cmd.drawPrimitiveUP;
 
-    uint32_t indexCount = CheckInstancing();
-    if (indexCount > 0)
-        UnsetInstancingStream();
-
     SetPrimitiveType(args.primitiveType);
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.vertexStrides[0], uint8_t(args.vertexStreamZeroStride));
 
@@ -5052,7 +5032,7 @@ static void ProcDrawPrimitiveUP(const RenderCommand& cmd)
     g_inputSlots[0].stride = args.vertexStreamZeroStride;
     g_dirtyStates.vertexStreamFirst = 0;
 
-    indexCount = 0;
+    uint32_t indexCount = 0;
 
     if (args.primitiveType == D3DPT_QUADLIST)
         indexCount = g_quadIndexData.prepare(args.primitiveCount);
@@ -6768,7 +6748,6 @@ struct CompilationArgs
     bool hasMoreThanOneBone{};
     bool velocityMapQuickStep{};
     bool objectIcon{};
-    bool instancing{};
 };
 
 enum class MeshLayer
@@ -7802,7 +7781,6 @@ public:
                 pipelineState.sampleCount = 1;
                 pipelineState.enableAlphaToCoverage = false;
 
-                pipelineState.specConstants &= ~SPEC_CONSTANT_BICUBIC_GI_FILTER;
                 if ((pipelineState.specConstants & SPEC_CONSTANT_ALPHA_TO_COVERAGE) != 0)
                 {
                     pipelineState.specConstants &= ~SPEC_CONSTANT_ALPHA_TO_COVERAGE;
@@ -7832,10 +7810,23 @@ public:
                     "{},"
                     "{},"
                     "{},"
+                    "{},"
                     "RenderBlend::{},"
                     "RenderBlend::{},"
                     "RenderCullMode::{},"
+                    "RenderFrontFace::{},"
                     "RenderComparisonFunction::{},"
+                    "RenderComparisonFunction::{},"
+                    "RenderStencilOp::{},"
+                    "RenderStencilOp::{},"
+                    "RenderStencilOp::{},"
+                    "RenderComparisonFunction::{},"
+                    "RenderStencilOp::{},"
+                    "RenderStencilOp::{},"
+                    "RenderStencilOp::{},"
+                    "{},"
+                    "{},"
+                    "{},"
                     "{},"
                     "RenderBlendOperation::{},"
                     "{},"
@@ -7854,13 +7845,26 @@ public:
                     pipelineState.vertexShader->shaderCacheEntry->hash,
                     pipelineState.pixelShader != nullptr ? pipelineState.pixelShader->shaderCacheEntry->hash : 0,
                     pipelineState.vertexDeclaration->hash,
-                    pipelineState.instancing,
                     pipelineState.zEnable,
                     pipelineState.zWriteEnable,
+                    pipelineState.stencilEnable,
+                    pipelineState.stencilTwoSided,
                     magic_enum::enum_name(pipelineState.srcBlend),
                     magic_enum::enum_name(pipelineState.destBlend),
                     magic_enum::enum_name(pipelineState.cullMode),
+                    magic_enum::enum_name(pipelineState.frontFace),
                     magic_enum::enum_name(pipelineState.zFunc),
+                    magic_enum::enum_name(pipelineState.stencilFunc),
+                    magic_enum::enum_name(pipelineState.stencilFail),
+                    magic_enum::enum_name(pipelineState.stencilZFail),
+                    magic_enum::enum_name(pipelineState.stencilPass),
+                    magic_enum::enum_name(pipelineState.stencilFuncCCW),
+                    magic_enum::enum_name(pipelineState.stencilFailCCW),
+                    magic_enum::enum_name(pipelineState.stencilZFailCCW),
+                    magic_enum::enum_name(pipelineState.stencilPassCCW),
+                    pipelineState.stencilMask,
+                    pipelineState.stencilWriteMask,
+                    pipelineState.stencilRef,
                     pipelineState.alphaBlendEnable,
                     magic_enum::enum_name(pipelineState.blendOp),
                     pipelineState.slopeScaledDepthBias,
