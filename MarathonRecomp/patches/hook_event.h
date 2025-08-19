@@ -4,9 +4,9 @@ class IHookEvent
 {
 public:
     virtual ~IHookEvent() = default;
-    virtual void Prefix();
-    virtual void Update(float deltaTime);
-    virtual void Postfix();
+    virtual void Prefix() = 0;
+    virtual void Update(float deltaTime) = 0;
+    virtual void Postfix() = 0;
 };
 
 class HookEvent : public IHookEvent
