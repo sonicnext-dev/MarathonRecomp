@@ -177,13 +177,18 @@ jump_address_on_true = 0x82214714
 
 [[midasm_hook]]
 name = "MidairSnowboardControl"
-address = 0x82214878
-jump_address_on_true = 0x8221487C
+address = 0x8221487C
+jump_address_on_true = 0x82214880
 
 [[midasm_hook]]
 name = "MidairSnowboardControl"
 address = 0x822145B8
 jump_address_on_true = 0x822145BC
+
+[[midasm_hook]]
+name = "MidairSnowboardControl"
+address = 0x8221486C
+jump_address_on_true = 0x82214870
 
 [[midasm_hook]]
 name = "DisableHints"
