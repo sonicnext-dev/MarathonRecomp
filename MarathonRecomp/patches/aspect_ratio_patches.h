@@ -25,7 +25,7 @@ inline XXH64_hash_t HashStr(const std::string_view& value)
     return XXH3_64bits(value.data(), value.size());
 }
 
-struct CsdRepeatUVs
+struct CsdRepeatUV
 {
     float U0{};
     float V0{};
@@ -37,7 +37,7 @@ struct CsdRepeatUVs
     float V3{};
 };
 
-struct CsdRepeatColours
+struct CsdRepeatColour
 {
     uint32_t C0{};
     uint32_t C1{};
@@ -48,8 +48,8 @@ struct CsdRepeatColours
 struct CsdModifier
 {
     uint32_t Flags{};
-    CsdRepeatUVs UVs{};
-    CsdRepeatColours Colours{};
+    CsdRepeatUV UVs{};
+    CsdRepeatColour Colours{};
     float CornerMax{};
     uint32_t CornerIndex{};
 };
@@ -91,18 +91,21 @@ enum
     REPEAT_FLIP_HORIZONTAL = 1 << 16,
     REPEAT_FLIP_VERTICAL = 1 << 17,
     REPEAT_EXTEND = 1 << 18,
-    REPEAT_UV_MODIFIER = 1 << 19,
-    REPEAT_COLOUR_MODIFIER = 1 << 20,
 
-    PILLARBOX = 1 << 21,
-    PROHIBIT_BLACK_BAR = 1 << 22,
+    UV_MODIFIER = 1 << 19,
+    COLOUR_MODIFIER = 1 << 20,
+    REPEAT_UV_MODIFIER = 1 << 21,
+    REPEAT_COLOUR_MODIFIER = 1 << 22,
 
-    UNSTRETCH_HORIZONTAL = 1 << 23,
+    PILLARBOX = 1 << 23,
+    PROHIBIT_BLACK_BAR = 1 << 24,
 
-    CORNER_EXTRACT = 1 << 24,
+    UNSTRETCH_HORIZONTAL = 1 << 25,
 
-    RADARMAP = 1 << 25,
-    POD = 1 << 26
+    CORNER_EXTRACT = 1 << 26,
+
+    RADARMAP = 1 << 27,
+    POD = 1 << 28
 };
 
 inline const xxHashMap<CsdModifier> g_modifiers =
@@ -150,39 +153,39 @@ inline const xxHashMap<CsdModifier> g_modifiers =
     { HashStr("sprite/main_menu/mission_plate/mission_plate/Cast_1332"), { EXTEND_RIGHT } },
     { HashStr("sprite/main_menu/mission_plate/mission_plate/Cast_1336"), { EXTEND_RIGHT } },
     { HashStr("sprite/main_menu/text"), { ALIGN_BOTTOM | SCALE } },
-    { HashStr("sprite/main_menu/text_cover/Null_0290/cover_l"), { ALIGN_BOTTOM | SCALE | REPEAT_LEFT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.05f, 0, -0.05f, 0 } } },
+    { HashStr("sprite/main_menu/text_cover/Null_0290/cover_l"), { ALIGN_BOTTOM | SCALE | REPEAT_LEFT | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.05f, 0, -0.05f, 0 } } },
     { HashStr("sprite/main_menu/text_cover/Null_0290/cover_c"), { ALIGN_BOTTOM | SCALE } },
-    { HashStr("sprite/main_menu/text_cover/Null_0290/vocer_r"), { ALIGN_BOTTOM | SCALE | REPEAT_RIGHT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { -0.05f, 0, -0.05f, 0, 0, 0, 0, 0 } } },
+    { HashStr("sprite/main_menu/text_cover/Null_0290/vocer_r"), { ALIGN_BOTTOM | SCALE | REPEAT_RIGHT | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { -0.05f, 0, -0.05f, 0, 0, 0, 0, 0 } } },
     { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0221"), { ALIGN_TOP | SCALE | EXTEND_RIGHT } },
-    { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0222"), { ALIGN_TOP | SCALE | REPEAT_LEFT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0222"), { ALIGN_TOP | SCALE | REPEAT_LEFT | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.1f, 0, -0.1f, 0 } } },
     { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0964"), { ALIGN_TOP | SCALE | EXTEND_RIGHT } },
     { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0965"), { ALIGN_TOP | SCALE | REPEAT_LEFT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 } } },
-    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0226"), { ALIGN_BOTTOM | SCALE | REPEAT_LEFT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 } } },
-    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0227"), { ALIGN_BOTTOM | SCALE | REPEAT_RIGHT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { -0.5f, 0, -0.5f, 0, 0, 0, 0, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0226"), { ALIGN_BOTTOM | SCALE | REPEAT_LEFT | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.8f, 0, -0.8f, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0227"), { ALIGN_BOTTOM | SCALE | REPEAT_RIGHT | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { -0.8f, 0, -0.8f, 0, 0, 0, 0, 0 } } },
 
     // maindisplay
-    { HashStr("sprite/maindisplay/power"), { ALIGN_BOTTOM_RIGHT } },
-    { HashStr("sprite/maindisplay/custom_bar_anime"), { ALIGN_BOTTOM_RIGHT } },
-    { HashStr("sprite/maindisplay/power_a"), { ALIGN_BOTTOM_RIGHT } },
-    { HashStr("sprite/maindisplay/power_bar_anime"), { ALIGN_BOTTOM_RIGHT } },
-    { HashStr("sprite/maindisplay/score"), { ALIGN_TOP_LEFT } },
-    { HashStr("sprite/maindisplay/life_ber_anime"), { ALIGN_TOP_LEFT } },
-    { HashStr("sprite/maindisplay/life"), { ALIGN_TOP_LEFT } },
-    { HashStr("sprite/maindisplay/time"), { ALIGN_TOP_LEFT } },
-    { HashStr("sprite/maindisplay/ring"), { ALIGN_TOP_LEFT } },
-    { HashStr("sprite/maindisplay/ring_anime"), { ALIGN_TOP_LEFT } },
-    { HashStr("sprite/maindisplay/bar_ue"), { ALIGN_BOTTOM_RIGHT } },
-    { HashStr("sprite/maindisplay/power_bar_effect"), { ALIGN_BOTTOM_RIGHT } },
-    { HashStr("sprite/maindisplay/ring_000_effect"), { ALIGN_TOP_LEFT } },
-    { HashStr("sprite/maindisplay/boss_gauge"), { ALIGN_TOP_RIGHT } },
-    { HashStr("sprite/maindisplay/boss_gauge_anime"), { ALIGN_TOP_RIGHT } },
-    { HashStr("sprite/maindisplay/item_ber_anime"), { ALIGN_TOP_LEFT } },
-    { HashStr("sprite/maindisplay/item"), { ALIGN_TOP_LEFT } },
-    { HashStr("sprite/maindisplay/custom_gem"), { ALIGN_BOTTOM_RIGHT } },
-    { HashStr("sprite/maindisplay/custom_level"), { ALIGN_BOTTOM_RIGHT } },
+    { HashStr("sprite/maindisplay/power"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("sprite/maindisplay/custom_bar_anime"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("sprite/maindisplay/power_a"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("sprite/maindisplay/power_bar_anime"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("sprite/maindisplay/score"), { ALIGN_TOP_LEFT | SCALE } },
+    { HashStr("sprite/maindisplay/life_ber_anime"), { ALIGN_TOP_LEFT | SCALE } },
+    { HashStr("sprite/maindisplay/life"), { ALIGN_TOP_LEFT | SCALE } },
+    { HashStr("sprite/maindisplay/time"), { ALIGN_TOP_LEFT | SCALE } },
+    { HashStr("sprite/maindisplay/ring"), { ALIGN_TOP_LEFT | SCALE } },
+    { HashStr("sprite/maindisplay/ring_anime"), { ALIGN_TOP_LEFT | SCALE } },
+    { HashStr("sprite/maindisplay/bar_ue"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("sprite/maindisplay/power_bar_effect"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("sprite/maindisplay/ring_000_effect"), { ALIGN_TOP_LEFT | SCALE } },
+    { HashStr("sprite/maindisplay/boss_gauge"), { ALIGN_TOP_RIGHT | SCALE } },
+    { HashStr("sprite/maindisplay/boss_gauge_anime"), { ALIGN_TOP_RIGHT | SCALE } },
+    { HashStr("sprite/maindisplay/item_ber_anime"), { ALIGN_TOP_LEFT | SCALE } },
+    { HashStr("sprite/maindisplay/item"), { ALIGN_TOP_LEFT | SCALE } },
+    { HashStr("sprite/maindisplay/custom_gem"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("sprite/maindisplay/custom_level"), { ALIGN_BOTTOM_RIGHT | SCALE } },
 
     // radarmap_cover
-    { HashStr("sprite/radarmap_cover/radarmap_cover/Scene_0000"), { ALIGN_TOP_RIGHT | RADARMAP } },
+    { HashStr("sprite/radarmap_cover/radarmap_cover/Scene_0000"), { ALIGN_TOP_RIGHT | SCALE | RADARMAP } },
 
     // result_English
     { HashStr("sprite/result/result_English/title_plate"), { PILLARBOX } }, // TODO
@@ -205,8 +208,8 @@ inline const xxHashMap<CsdModifier> g_modifiers =
     { HashStr("sprite/title/title_English/Scene_Title/copyright"), { ALIGN_BOTTOM } },
 
     // towndisplay
-    { HashStr("sprite/towndisplay/ring"), { ALIGN_TOP_LEFT } },
-    { HashStr("sprite/towndisplay/ring_anime"), { ALIGN_TOP_LEFT } },
+    { HashStr("sprite/towndisplay/ring"), { ALIGN_TOP_LEFT | SCALE } },
+    { HashStr("sprite/towndisplay/ring_anime"), { ALIGN_TOP_LEFT | SCALE } },
 
     // trickpoint_English
     // TODO: offset score text properly.

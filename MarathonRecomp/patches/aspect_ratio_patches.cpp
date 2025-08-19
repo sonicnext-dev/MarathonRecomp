@@ -638,7 +638,7 @@ PPC_FUNC(sub_824F1538)
 
     __imp__sub_824F1538(ctx, base);
 
-    auto radermapScale = 256 * g_aspectRatioScale;
+    auto radermapScale = 256 * g_aspectRatioScale * g_aspectRatioGameplayScale;
 
     pHUDRaderMap->m_pMaskTexture->m_Width = radermapScale;
     pHUDRaderMap->m_pMaskTexture->m_Height = radermapScale;

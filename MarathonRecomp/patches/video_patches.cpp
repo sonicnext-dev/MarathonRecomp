@@ -58,7 +58,7 @@ PPC_FUNC(sub_82619D00)
 
     if (*pName == "radermap")
     {
-        auto radermapScale = 256 * g_aspectRatioScale;
+        auto radermapScale = 256 * g_aspectRatioScale * g_aspectRatioGameplayScale;
 
         ctx.r5.u32 = radermapScale;
         ctx.r6.u32 = radermapScale;
