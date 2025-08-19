@@ -2,6 +2,8 @@
 #include <api/Marathon.h>
 #include <gpu/video.h>
 #include <hid/hid.h>
+#include <patches/hook_event.h>
+#include <patches/loading_patches.h>
 #include <ui/black_bar.h>
 #include <ui/game_window.h>
 #include <ui/imgui_utils.h>
@@ -31,9 +33,24 @@ static float g_radarMapCoverHeight;
 static float g_scenePositionX;
 static float g_scenePositionY;
 
+static class LoadingPillarboxEvent : public HookEvent
+{
+public:
+    void Update(float deltaTime) override
+    {
+        BlackBar::g_isPillarbox = true;
+    }
+}
+g_loadingPillarboxEvent{};
+
 static float ComputeScale(float aspectRatio)
 {
     return ((aspectRatio * 720.0f) / 1280.0f) / sqrt((aspectRatio * 720.0f) / 1280.0f);
+}
+
+void AspectRatioPatches::Init()
+{
+    LoadingPatches::Events.push_back(&g_loadingPillarboxEvent);
 }
 
 void AspectRatioPatches::ComputeOffsets()
@@ -328,9 +345,18 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
     uint8_t* stack = base + ctx.r1.u32;
     memcpy(stack, base + ctx.r4.u32, size);
 
-    auto getPosition = [&](size_t index)
+    struct CSDVertex
     {
-        return reinterpret_cast<be<float>*>(stack + index * stride);
+        be<float> X;
+        be<float> Y;
+        be<uint32_t> Colour;
+        be<float> U;
+        be<float> V;
+    };
+
+    auto getVertex = [&](size_t index)
+    {
+        return reinterpret_cast<CSDVertex*>(stack + (index * stride));
     };
 
     float offsetX = 0.0f;
@@ -352,7 +378,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
 
         if (needsStretch && (modifier.Flags & UNSTRETCH_HORIZONTAL) != 0)
         {
-            pivotX = *getPosition(0);
+            pivotX = getVertex(0)->X;
             offsetX = pivotX * Video::s_viewportWidth / 1280.0f;
         }
         else
@@ -414,7 +440,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
             offsetScaleModifier = g_castModifier.value();
 
             uint32_t vertexIndex = ((offsetScaleModifier.Flags & STORE_LEFT_CORNER) != 0) ? 0 : 3;
-            corner = *getPosition(vertexIndex);
+            corner = getVertex(vertexIndex)->X;
         }
 
         if (offsetScaleModifier.CornerMax == 0.0f && g_castNodeModifier.has_value())
@@ -449,10 +475,10 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
 
     for (size_t i = 0; i < ctx.r5.u32; i++)
     {
-        auto position = getPosition(i);
+        auto vertex = getVertex(i);
 
-        float x = offsetX + (position[0] - pivotX) * (scaleX * (1280.0f / Video::s_viewportWidth));
-        float y = offsetY + (position[1] - pivotY) * (scaleY * (720.0f / Video::s_viewportHeight));
+        float x = offsetX + (vertex->X - pivotX) * (scaleX * (1280.0f / Video::s_viewportWidth));
+        float y = offsetY + (vertex->Y - pivotY) * (scaleY * (720.0f / Video::s_viewportHeight));
 
         if ((modifier.Flags & EXTEND_LEFT) != 0 && (i == 0 || i == 1))
         {
@@ -477,8 +503,8 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
             g_radarMapY = y;
         }
 
-        position[0] = round(x);
-        position[1] = round(y);
+        vertex->X = round(x);
+        vertex->Y = round(y);
     }
 
     width = lastX - firstX;
@@ -493,23 +519,83 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
     if ((modifier.Flags & PILLARBOX) != 0)
         BlackBar::g_isPillarbox = true;
 
-    // FIXME: currently causes a crash, may need stack alignment.
-    if ((modifier.Flags & REPEAT_LEFT) != 0)
-    {
-        float width = *getPosition(2) - *getPosition(0);
+    if ((modifier.Flags & PROHIBIT_BLACK_BAR) != 0)
+        BlackBar::g_isPillarbox = false;
 
+    auto isRepeatLeft = (modifier.Flags & REPEAT_LEFT) != 0;
+    auto isRepeatRight = (modifier.Flags & REPEAT_RIGHT) != 0;
+
+    if (isRepeatLeft || isRepeatRight)
+    {
         auto r3 = ctx.r3;
         auto r5 = ctx.r5;
+        auto vertexIndex = isRepeatLeft ? 2 : 0;
+        auto x = getVertex(vertexIndex)->X;
 
-        while (*getPosition(2) > 0.0f)
+        while (isRepeatLeft ? x > 0.0f : x < float(Video::s_viewportWidth))
         {
             ctx.r3 = r3;
             ctx.r4 = ctx.r1;
             ctx.r5 = r5;
             original(ctx, base);
 
-            for (size_t i = 0; i < ctx.r5.u32; i++)
-                *getPosition(i) = *getPosition(i) - width;
+            if (isRepeatLeft)
+            {
+                for (size_t i = 0; i < r5.u32; i++)
+                    getVertex(i)->X = getVertex(i)->X - width;
+            }
+            else if (isRepeatRight)
+            {
+                for (size_t i = 0; i < r5.u32; i++)
+                    getVertex(i)->X = getVertex(i)->X + width;
+            }
+
+            x = getVertex(vertexIndex)->X;
+
+            auto isFlipHorz = (modifier.Flags & REPEAT_FLIP_HORIZONTAL) != 0;
+
+            if (isFlipHorz)
+            {
+                getVertex(0)->X = getVertex(0)->X + width;
+                getVertex(1)->X = getVertex(1)->X + width;
+                getVertex(2)->X = getVertex(2)->X - width;
+                getVertex(3)->X = getVertex(3)->X - width;
+            }
+
+            if ((modifier.Flags & REPEAT_UV_MODIFIER) != 0)
+            {
+                getVertex(0)->U = getVertex(0)->U + modifier.UVs.U0;
+                getVertex(0)->V = getVertex(0)->V + modifier.UVs.V0;
+                getVertex(1)->U = getVertex(1)->U + modifier.UVs.U1;
+                getVertex(1)->V = getVertex(1)->V + modifier.UVs.V1;
+                getVertex(2)->U = getVertex(2)->U + modifier.UVs.U2;
+                getVertex(2)->V = getVertex(2)->V + modifier.UVs.V2;
+                getVertex(3)->U = getVertex(3)->U + modifier.UVs.U3;
+                getVertex(3)->V = getVertex(3)->V + modifier.UVs.V3;
+            }
+
+            if ((modifier.Flags & REPEAT_COLOUR_MODIFIER) != 0)
+            {
+                getVertex(0)->Colour = modifier.Colours.C0;
+                getVertex(1)->Colour = modifier.Colours.C1;
+                getVertex(2)->Colour = modifier.Colours.C2;
+                getVertex(3)->Colour = modifier.Colours.C3;
+            }
+
+            if ((modifier.Flags & REPEAT_EXTEND) != 0)
+            {
+                for (size_t i = 0; i < r5.u32; i++)
+                {
+                    if (isRepeatLeft && (i == (isFlipHorz ? 2 : 0) || i == (isFlipHorz ? 3 : 1)))
+                    {
+                        getVertex(i)->X = std::min(getVertex(i)->X.get(), 0.0f);
+                    }
+                    else if (isRepeatRight && (i == (isFlipHorz ? 0 : 2) || i == (isFlipHorz ? 1 : 3)))
+                    {
+                        getVertex(i)->X = std::max(getVertex(i)->X.get(), float(Video::s_viewportWidth));
+                    }
+                }
+            }
         }
 
         ctx.r1.u32 += size;
@@ -559,32 +645,6 @@ PPC_FUNC(sub_824F1538)
     pHUDRaderMap->m_X = g_radarMapX - g_radarMapCoverWidth / 2;
     pHUDRaderMap->m_Y = g_radarMapY - g_radarMapCoverHeight / 2;
 }
-
-// Sonicteam::HUDLoading::HUDLoading
-// PPC_FUNC_IMPL(__imp__sub_824D7BC8);
-// PPC_FUNC(sub_824D7BC8)
-// {
-//     App::s_isLoading = true;
-//     BlackBar::g_isPillarbox = true;
-// 
-//     __imp__sub_824D7BC8(ctx, base);
-// }
-// 
-// // Sonicteam::HUDLoading::~HUDLoading
-// PPC_FUNC_IMPL(__imp__sub_824D7520);
-// PPC_FUNC(sub_824D7520)
-// {
-//     App::s_isLoading = false;
-//     BlackBar::g_isPillarbox = false;
-// 
-//     __imp__sub_824D7520(ctx, base);
-// }
-
-// PPC_FUNC_IMPL(__imp__sub_82167D70);
-// PPC_FUNC(sub_82167D70)
-// {
-//     __imp__sub_82167D70(ctx, base);
-// }
 
 void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity, xxHashMap<TextFontPictureParams> pftParams)
 {
@@ -682,7 +742,7 @@ PPC_FUNC(sub_8262D868)
 {
     auto pTextEntity = (Sonicteam::TextEntity*)(base + ctx.r3.u32);
 
-    LOGFN_UTILITY("TextEntity: 0x{:08X}", (uint64_t)pTextEntity);
+    // LOGFN_UTILITY("TextEntity: 0x{:08X}", (uint64_t)pTextEntity);
 
     constexpr auto baseWidth = 1280.0f;
     constexpr auto baseHeight = 720.0f;

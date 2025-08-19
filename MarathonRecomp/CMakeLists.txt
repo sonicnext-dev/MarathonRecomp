@@ -139,6 +139,7 @@ set(MARATHON_RECOMP_PATCHES_CXX_SOURCES
     "patches/audio_patches.cpp"
     "patches/camera_patches.cpp"
     "patches/frontend_listener.cpp"
+    "patches/loading_patches.cpp"
     "patches/misc_patches.cpp"
     "patches/player_patches.cpp"
     "patches/TitleTask_patches.cpp"

@@ -16,6 +16,7 @@ inline float g_aspectRatioNarrowScale;
 class AspectRatioPatches
 {
 public:
+    static void Init();
     static void ComputeOffsets();
 };
 
@@ -24,9 +25,31 @@ inline XXH64_hash_t HashStr(const std::string_view& value)
     return XXH3_64bits(value.data(), value.size());
 }
 
+struct CsdRepeatUVs
+{
+    float U0{};
+    float V0{};
+    float U1{};
+    float V1{};
+    float U2{};
+    float V2{};
+    float U3{};
+    float V3{};
+};
+
+struct CsdRepeatColours
+{
+    uint32_t C0{};
+    uint32_t C1{};
+    uint32_t C2{};
+    uint32_t C3{};
+};
+
 struct CsdModifier
 {
     uint32_t Flags{};
+    CsdRepeatUVs UVs{};
+    CsdRepeatColours Colours{};
     float CornerMax{};
     uint32_t CornerIndex{};
 };
@@ -64,50 +87,45 @@ enum
     OFFSET_SCALE_RIGHT = 1 << 13,
 
     REPEAT_LEFT = 1 << 14,
+    REPEAT_RIGHT = 1 << 15,
+    REPEAT_FLIP_HORIZONTAL = 1 << 16,
+    REPEAT_FLIP_VERTICAL = 1 << 17,
+    REPEAT_EXTEND = 1 << 18,
+    REPEAT_UV_MODIFIER = 1 << 19,
+    REPEAT_COLOUR_MODIFIER = 1 << 20,
 
-    PILLARBOX = 1 << 15,
+    PILLARBOX = 1 << 21,
+    PROHIBIT_BLACK_BAR = 1 << 22,
 
-    UNSTRETCH_HORIZONTAL = 1 << 16,
+    UNSTRETCH_HORIZONTAL = 1 << 23,
 
-    CORNER_EXTRACT = 1 << 17,
+    CORNER_EXTRACT = 1 << 24,
 
-    RADARMAP = 1 << 18
+    RADARMAP = 1 << 25,
+    POD = 1 << 26
 };
 
 inline const xxHashMap<CsdModifier> g_modifiers =
 {
     // audio
-    // TODO: extend main box right (implement REPEAT_RIGHT).
+    { HashStr("sprite/audio/audio/pod/pod"), { POD } },
     { HashStr("sprite/audio/audio/pod/pod/Cast_1084"), { EXTEND_RIGHT } },
     { HashStr("sprite/audio/audio/pod/pod/Cast_1088"), { EXTEND_RIGHT } },
-    { HashStr("sprite/audio/audio/genre"), { ALIGN_TOP_LEFT } },
-    { HashStr("sprite/audio/audio/genre_cursor"), { ALIGN_TOP_LEFT } },
 
     // background
-    { HashStr("sprite/background/background/mainmenu_back"), { STRETCH } },
+    { HashStr("sprite/background/background/mainmenu_back"), { STRETCH | PROHIBIT_BLACK_BAR } },
 
     // black_out
     { HashStr("sprite/black_out/black_out"), { STRETCH } },
 
     // button_window
-    // { HashStr("sprite/button_window/button_window/Scene_0000"), { ALIGN_BOTTOM_RIGHT } },
+    { HashStr("sprite/button_window/button_window/Scene_0000"), { ALIGN_BOTTOM | SCALE } },
 
     // gadget_ber
     { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar"), { ALIGN_BOTTOM_RIGHT } },
     { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar_anime"), { ALIGN_BOTTOM_RIGHT } },
     { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar_ue"), { ALIGN_BOTTOM_RIGHT } },
     { HashStr("sprite/gadget_ber/gadget_bar/icon_text"), { ALIGN_BOTTOM_RIGHT } },
-
-    // goldmedal
-    // TODO: reimplement this menu entirely to add achievements.
-    { HashStr("sprite/goldmedal/goldmedal/goldmedal"), { ALIGN_RIGHT } },
-    { HashStr("sprite/goldmedal/goldmedal/charaselect_cursor"), { ALIGN_LEFT } },
-    { HashStr("sprite/goldmedal/goldmedal/charaselect_cursor2"), { ALIGN_LEFT } },
-    { HashStr("sprite/goldmedal/goldmedal/total_medal"), { ALIGN_RIGHT } },
-    { HashStr("sprite/goldmedal/goldmedal/sonic"), { ALIGN_LEFT } },
-    { HashStr("sprite/goldmedal/goldmedal/shadow"), { ALIGN_LEFT } },
-    { HashStr("sprite/goldmedal/goldmedal/silver"), { ALIGN_LEFT } },
-    { HashStr("sprite/goldmedal/goldmedal/last"), { ALIGN_LEFT } },
 
     // cri_logo
     { HashStr("sprite/logo/cri_logo/Scene_0000/Null_0002/bg"), { STRETCH } },
@@ -122,32 +140,25 @@ inline const xxHashMap<CsdModifier> g_modifiers =
     { HashStr("sprite/loading/loading_english/Scene_0000/arrow_03"), { ALIGN_BOTTOM } },
 
     // main_menu
-    // TODO: use ImGui to stitch together the bottom metal panels (step through CSD for textures).
-    // { HashStr("sprite/main_menu/main_menu_cursor"), { ALIGN_TOP_LEFT | SCALE } },
-    // { HashStr("sprite/main_menu/main_menu_cursor2"), { ALIGN_TOP_LEFT | SCALE } },
-    // { HashStr("sprite/main_menu/main_menu_cursor3"), { ALIGN_TOP_LEFT | SCALE } },
-    // { HashStr("sprite/main_menu/eposodeselect"), { ALIGN_LEFT | SCALE } },
-    // { HashStr("sprite/main_menu/episodeselect_cursor1"), { ALIGN_LEFT | SCALE } },
-    // { HashStr("sprite/main_menu/episodeselect_cursor2"), { ALIGN_LEFT | SCALE } },
-    // { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita3"), { EXTEND_RIGHT } },
-    // { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita5"), { EXTEND_RIGHT } },
-    // { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita8"), { EXTEND_RIGHT } },
-    // { HashStr("sprite/main_menu/mission_plate/mission_plate/mission_plate2"), { EXTEND_RIGHT } },
-    // { HashStr("sprite/main_menu/mission_plate/mission_plate/Cast_1332"), { EXTEND_RIGHT } },
-    // { HashStr("sprite/main_menu/mission_plate/mission_plate/Cast_1336"), { EXTEND_RIGHT } },
-    // { HashStr("sprite/main_menu/stage_cursor"), { ALIGN_TOP_LEFT | SCALE } },
-    // { HashStr("sprite/main_menu/mission_cursor"), { ALIGN_TOP_LEFT | SCALE } },
-    // { HashStr("sprite/main_menu/stage_cursor2"), { ALIGN_TOP_LEFT | SCALE } },
-    // { HashStr("sprite/main_menu/text"), { ALIGN_BOTTOM | STRETCH_HORIZONTAL | SCALE } },
-    // { HashStr("sprite/main_menu/text_cover/Null_0290"), { ALIGN_BOTTOM | STRETCH_HORIZONTAL | SCALE } },
-    // { HashStr("sprite/main_menu/mission_next"), { ALIGN_BOTTOM_LEFT } },
-    // { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0965"), { ALIGN_TOP_LEFT | SCALE } },
-    // { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0964"), { ALIGN_TOP_LEFT | EXTEND_RIGHT | SCALE } },
-    // { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0966"), { ALIGN_TOP_LEFT | SCALE } },
-    // { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0221"), { ALIGN_TOP_LEFT | EXTEND_RIGHT | SCALE } },
-    // { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0222"), { ALIGN_TOP_LEFT | SCALE } },
-    // { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0226"), { ALIGN_BOTTOM_LEFT | STRETCH_HORIZONTAL | SCALE } },
-    // { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0227"), { ALIGN_BOTTOM_RIGHT | STRETCH_HORIZONTAL | SCALE } },
+    { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita3"), { EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita5"), { EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita8"), { EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/stage_plate/stage_plate/stage_plate2"), { EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/stage_plate/stage_plate/Cast_1337"), { EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/stage_plate/stage_plate/Cast_1340"), { EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/mission_plate/mission_plate/mission_plate2"), { EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/mission_plate/mission_plate/Cast_1332"), { EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/mission_plate/mission_plate/Cast_1336"), { EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/text"), { ALIGN_BOTTOM | SCALE } },
+    { HashStr("sprite/main_menu/text_cover/Null_0290/cover_l"), { ALIGN_BOTTOM | SCALE | REPEAT_LEFT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.05f, 0, -0.05f, 0 } } },
+    { HashStr("sprite/main_menu/text_cover/Null_0290/cover_c"), { ALIGN_BOTTOM | SCALE } },
+    { HashStr("sprite/main_menu/text_cover/Null_0290/vocer_r"), { ALIGN_BOTTOM | SCALE | REPEAT_RIGHT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { -0.05f, 0, -0.05f, 0, 0, 0, 0, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0221"), { ALIGN_TOP | SCALE | EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0222"), { ALIGN_TOP | SCALE | REPEAT_LEFT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0964"), { ALIGN_TOP | SCALE | EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0965"), { ALIGN_TOP | SCALE | REPEAT_LEFT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0226"), { SCALE | REPEAT_LEFT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0227"), { SCALE | REPEAT_RIGHT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { -0.5f, 0, -0.5f, 0, 0, 0, 0, 0 } } },
 
     // maindisplay
     { HashStr("sprite/maindisplay/power"), { ALIGN_BOTTOM_RIGHT } },
@@ -174,15 +185,14 @@ inline const xxHashMap<CsdModifier> g_modifiers =
     { HashStr("sprite/radarmap_cover/radarmap_cover/Scene_0000"), { ALIGN_TOP_RIGHT | RADARMAP } },
 
     // result_English
-    { HashStr("sprite/result/result_English/title_plate/plate_ue"), { STRETCH } },   // TODO: use REPEAT modes.
-    { HashStr("sprite/result/result_English/title_plate/plate_sita"), { STRETCH } }, // TODO: use REPEAT modes.
+    { HashStr("sprite/result/result_English/title_plate"), { PILLARBOX } }, // TODO
 
     // sonicteam_logo
     { HashStr("sprite/logo/sonicteam_logo/sonicteam"), { SCALE } },
 
     // tag_character
-    { HashStr("sprite/tag_character/tag_character/1p_tug/1p_tug/1p_tug1"), { EXTEND_LEFT } },
-    { HashStr("sprite/tag_character/tag_character/2p_tug/2p_tug/2p_tug1"), { EXTEND_RIGHT } },
+    { HashStr("sprite/tag_character/tag_character/1p_tug/1p_tug/1p_tug1"), { REPEAT_LEFT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER | REPEAT_COLOUR_MODIFIER, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 }, { 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50 } } },
+    { HashStr("sprite/tag_character/tag_character/2p_tug/2p_tug/2p_tug1"), { REPEAT_RIGHT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER | REPEAT_COLOUR_MODIFIER, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 }, { 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50 } } },
 
     // talkwindow
     { HashStr("sprite/talkwindow/talkwindow/window"), { SCALE } },
@@ -192,7 +202,7 @@ inline const xxHashMap<CsdModifier> g_modifiers =
     // title_English
     { HashStr("sprite/title/title_English/Scene_Title/Logo_add"), { SCALE } },
     { HashStr("sprite/title/title_English/Scene_Title/Logo"), { SCALE } },
-    { HashStr("sprite/title/title_English/Scene_Title/copyright"), { ALIGN_BOTTOM_RIGHT } },
+    { HashStr("sprite/title/title_English/Scene_Title/copyright"), { ALIGN_BOTTOM } },
 
     // towndisplay
     { HashStr("sprite/towndisplay/ring"), { ALIGN_TOP_LEFT } },

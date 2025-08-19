@@ -29,6 +29,7 @@
 #include "Sonicteam/GameImp.h"
 #include "Sonicteam/GameMode.h"
 #include "Sonicteam/HUDButtonWindow.h"
+#include "Sonicteam/HUDLoading.h"
 #include "Sonicteam/HUDPopupScreen.h"
 #include "Sonicteam/HUDRaderMap.h"
 #include "Sonicteam/HudTextParts.h"

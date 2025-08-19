@@ -4,6 +4,7 @@
 #include <kernel/function.h>
 #include <os/process.h>
 #include <os/logger.h>
+#include <patches/aspect_ratio_patches.h>
 #include <ui/game_window.h>
 #include <user/config.h>
 #include <user/paths.h>
@@ -64,6 +65,8 @@ PPC_FUNC(sub_8262A568)
     __imp__sub_8262A568(ctx, base);
 
     App::s_pApp = (Sonicteam::AppMarathon*)g_memory.Translate(ctx.r3.u32);
+
+    AspectRatioPatches::Init();
 }
 
 // Sonicteam::DocMarathonState::Update
@@ -97,6 +100,13 @@ PPC_FUNC(sub_825EA610)
 
     // Allow variable FPS when config is not 60 FPS.
     App::s_pApp->m_pDoc->m_VFrame = Config::FPS != 60;
+
+    // TODO: REMOVE THIS!!!
+    if (auto pGameMode = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>())
+    {
+        if (GetAsyncKeyState(VK_F5) & 1)
+            pGameMode->m_pGameImp->m_GameState = Sonicteam::GameImp::eGameState_Result;
+    }
 
     __imp__sub_825EA610(ctx, base);
 }
