@@ -157,8 +157,8 @@ inline const xxHashMap<CsdModifier> g_modifiers =
     { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0222"), { ALIGN_TOP | SCALE | REPEAT_LEFT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 } } },
     { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0964"), { ALIGN_TOP | SCALE | EXTEND_RIGHT } },
     { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0965"), { ALIGN_TOP | SCALE | REPEAT_LEFT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 } } },
-    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0226"), { SCALE | REPEAT_LEFT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 } } },
-    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0227"), { SCALE | REPEAT_RIGHT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { -0.5f, 0, -0.5f, 0, 0, 0, 0, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0226"), { ALIGN_BOTTOM | SCALE | REPEAT_LEFT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0227"), { ALIGN_BOTTOM | SCALE | REPEAT_RIGHT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { -0.5f, 0, -0.5f, 0, 0, 0, 0, 0 } } },
 
     // maindisplay
     { HashStr("sprite/maindisplay/power"), { ALIGN_BOTTOM_RIGHT } },
