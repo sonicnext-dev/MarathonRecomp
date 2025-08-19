@@ -236,6 +236,11 @@ address = 0x826121BC
 registers = ["r8"]
 
 [[midasm_hook]]
+name = "CsbSbkLang"
+address = 0x821784F8
+registers = ["r8"]
+
+[[midasm_hook]]
 name = "MovieVoiceLang"
 address = 0x8264B4E4
 registers = ["r19"]
