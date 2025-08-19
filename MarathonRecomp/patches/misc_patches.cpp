@@ -85,7 +85,8 @@ void ContextualHUD_RING_1(PPCRegister& index, PPCRegister& hud)
     index.u32 = chr_index;
 }
 
-void PostureDisableEdgeGrabLeftover(PPCRegister& posture) {
+void PostureDisableEdgeGrabLeftover(PPCRegister& posture)
+{
     if (!Config::DisableEdgeGrabLeftover) {
         return;
     }
@@ -94,7 +95,8 @@ void PostureDisableEdgeGrabLeftover(PPCRegister& posture) {
     *(volatile uint8_t*)(base + (posture.u32 + 0x3C0)) = 1;
 }
 
-void PedestrianAnimationLOD(PPCRegister& val) {
+void PedestrianAnimationLOD(PPCRegister& val)
+{
     val.u32 = 0;
 }
 

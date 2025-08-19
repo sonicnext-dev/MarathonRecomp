@@ -71,27 +71,12 @@ PPC_FUNC(sub_821E8C48)
     __imp__sub_821E8C48(ctx, base);
 }
 
-bool MidairMachSpeedControl1()
+bool MidairMachSpeedControl()
 {
     return Config::MidairControlForMachSpeed;
 }
 
-bool MidairMachSpeedControl2()
-{
-    return Config::MidairControlForMachSpeed;
-}
-
-bool MidairSnowboardControl1()
-{
-    return Config::MidairControlForSnowboards;
-}
-
-bool MidairSnowboardControl2()
-{
-    return Config::MidairControlForSnowboards;
-}
-
-bool MidairSnowboardControl3()
+bool MidairSnowboardControl()
 {
     return Config::MidairControlForSnowboards;
 }
