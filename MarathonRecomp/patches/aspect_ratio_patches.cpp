@@ -333,7 +333,13 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
         return;
     }
 
-    if (Config::UIAlignmentMode == EUIAlignmentMode::Centre)
+    if ((modifier.Flags & PILLARBOX) != 0)
+        BlackBar::g_isPillarbox = true;
+
+    if ((modifier.Flags & PROHIBIT_BLACK_BAR) != 0)
+        BlackBar::g_isPillarbox = false;
+
+    if (Config::UIAlignmentMode == EUIAlignmentMode::Centre || BlackBar::g_isPillarbox)
     {
         if (g_aspectRatio >= WIDE_ASPECT_RATIO)
             modifier.Flags &= ~(ALIGN_LEFT | ALIGN_RIGHT);
@@ -516,11 +522,31 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
         g_radarMapCoverHeight = height;
     }
 
-    if ((modifier.Flags & PILLARBOX) != 0)
-        BlackBar::g_isPillarbox = true;
+    auto applyUVModifier = [&](CsdUVs uvModifier)
+    {
+        getVertex(0)->U = getVertex(0)->U + uvModifier.U0;
+        getVertex(0)->V = getVertex(0)->V + uvModifier.V0;
+        getVertex(1)->U = getVertex(1)->U + uvModifier.U1;
+        getVertex(1)->V = getVertex(1)->V + uvModifier.V1;
+        getVertex(2)->U = getVertex(2)->U + uvModifier.U2;
+        getVertex(2)->V = getVertex(2)->V + uvModifier.V2;
+        getVertex(3)->U = getVertex(3)->U + uvModifier.U3;
+        getVertex(3)->V = getVertex(3)->V + uvModifier.V3;
+    };
 
-    if ((modifier.Flags & PROHIBIT_BLACK_BAR) != 0)
-        BlackBar::g_isPillarbox = false;
+    auto applyColourModifier = [&](CsdColours colourModifier)
+    {
+        getVertex(0)->Colour = colourModifier.C0;
+        getVertex(1)->Colour = colourModifier.C1;
+        getVertex(2)->Colour = colourModifier.C2;
+        getVertex(3)->Colour = colourModifier.C3;
+    };
+
+    if ((modifier.Flags & UV_MODIFIER) != 0)
+        applyUVModifier(modifier.UVs);
+
+    if ((modifier.Flags & COLOUR_MODIFIER) != 0)
+        applyColourModifier(modifier.Colours);
 
     auto isRepeatLeft = (modifier.Flags & REPEAT_LEFT) != 0;
     auto isRepeatRight = (modifier.Flags & REPEAT_RIGHT) != 0;
@@ -563,24 +589,10 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
             }
 
             if ((modifier.Flags & REPEAT_UV_MODIFIER) != 0)
-            {
-                getVertex(0)->U = getVertex(0)->U + modifier.UVs.U0;
-                getVertex(0)->V = getVertex(0)->V + modifier.UVs.V0;
-                getVertex(1)->U = getVertex(1)->U + modifier.UVs.U1;
-                getVertex(1)->V = getVertex(1)->V + modifier.UVs.V1;
-                getVertex(2)->U = getVertex(2)->U + modifier.UVs.U2;
-                getVertex(2)->V = getVertex(2)->V + modifier.UVs.V2;
-                getVertex(3)->U = getVertex(3)->U + modifier.UVs.U3;
-                getVertex(3)->V = getVertex(3)->V + modifier.UVs.V3;
-            }
+                applyUVModifier(modifier.RepeatUVs);
 
             if ((modifier.Flags & REPEAT_COLOUR_MODIFIER) != 0)
-            {
-                getVertex(0)->Colour = modifier.Colours.C0;
-                getVertex(1)->Colour = modifier.Colours.C1;
-                getVertex(2)->Colour = modifier.Colours.C2;
-                getVertex(3)->Colour = modifier.Colours.C3;
-            }
+                applyColourModifier(modifier.RepeatColours);
 
             if ((modifier.Flags & REPEAT_EXTEND) != 0)
             {
@@ -602,7 +614,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
     }
     else
     {
-        ctx.r4.u32 = ctx.r1.u32;
+        ctx.r4 = ctx.r1;
         original(ctx, base);
         ctx.r1.u32 += size;
     }

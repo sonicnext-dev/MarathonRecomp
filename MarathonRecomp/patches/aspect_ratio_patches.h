@@ -25,7 +25,7 @@ inline XXH64_hash_t HashStr(const std::string_view& value)
     return XXH3_64bits(value.data(), value.size());
 }
 
-struct CsdRepeatUV
+struct CsdUVs
 {
     float U0{};
     float V0{};
@@ -37,7 +37,7 @@ struct CsdRepeatUV
     float V3{};
 };
 
-struct CsdRepeatColour
+struct CsdColours
 {
     uint32_t C0{};
     uint32_t C1{};
@@ -48,8 +48,10 @@ struct CsdRepeatColour
 struct CsdModifier
 {
     uint32_t Flags{};
-    CsdRepeatUV UVs{};
-    CsdRepeatColour Colours{};
+    CsdUVs UVs{};
+    CsdColours Colours{};
+    CsdUVs RepeatUVs{};
+    CsdColours RepeatColours{};
     float CornerMax{};
     uint32_t CornerIndex{};
 };
@@ -121,8 +123,35 @@ inline const xxHashMap<CsdModifier> g_modifiers =
     // black_out
     { HashStr("sprite/black_out/black_out"), { STRETCH } },
 
+    // bossname
+    { HashStr("sprite/bossname/egg_cerberus/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("event/e1071/egg_cerberus/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("event/e1081/egg_cerberus/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("sprite/bossname/egg_genesis/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("event/e1091/egg_genesis/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("sprite/bossname/egg_wyvern/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("event/e1111/egg_wyvern/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("sprite/bossname/egg_wyvern/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("event/e1111/egg_wyvern/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("sprite/bossname/iblis/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("event/e1001/iblis/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("event/e1011/iblis/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("event/e1031/iblis/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("sprite/bossname/mephiles/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("event/e1041/mephiles/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("event/e1061/mephiles/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("sprite/bossname/shadow_the_hedgehog/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("event/e1161/shadow_the_hedgehog/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("sprite/bossname/silver_the_hedgehog/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("event/e1151/silver_the_hedgehog/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("sprite/bossname/solaris/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("event/e1121/solaris/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("sprite/bossname/sonic_the_hedgehog/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+    { HashStr("event/e1141/sonic_the_hedgehog/Scene_0000"), { ALIGN_BOTTOM_RIGHT | SCALE } },
+
     // button_window
     { HashStr("sprite/button_window/button_window/Scene_0000"), { ALIGN_BOTTOM | SCALE } },
+    { HashStr("sprite/button_window/button_window/Scene_0000/Null_0000/Cast_0002"), { EXTEND_RIGHT } },
 
     // gadget_ber
     { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar"), { ALIGN_BOTTOM_RIGHT } },
@@ -153,15 +182,15 @@ inline const xxHashMap<CsdModifier> g_modifiers =
     { HashStr("sprite/main_menu/mission_plate/mission_plate/Cast_1332"), { EXTEND_RIGHT } },
     { HashStr("sprite/main_menu/mission_plate/mission_plate/Cast_1336"), { EXTEND_RIGHT } },
     { HashStr("sprite/main_menu/text"), { ALIGN_BOTTOM | SCALE } },
-    { HashStr("sprite/main_menu/text_cover/Null_0290/cover_l"), { ALIGN_BOTTOM | SCALE | REPEAT_LEFT | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.05f, 0, -0.05f, 0 } } },
+    { HashStr("sprite/main_menu/text_cover/Null_0290/cover_l"), { ALIGN_BOTTOM | SCALE | UV_MODIFIER | REPEAT_LEFT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0.0015f, 0, 0.0015f, 0, 0, 0, 0, 0 }, {}, { 0, 0, 0, 0, -0.05f, 0, -0.05f, 0 } } },
     { HashStr("sprite/main_menu/text_cover/Null_0290/cover_c"), { ALIGN_BOTTOM | SCALE } },
-    { HashStr("sprite/main_menu/text_cover/Null_0290/vocer_r"), { ALIGN_BOTTOM | SCALE | REPEAT_RIGHT | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { -0.05f, 0, -0.05f, 0, 0, 0, 0, 0 } } },
+    { HashStr("sprite/main_menu/text_cover/Null_0290/vocer_r"), { ALIGN_BOTTOM | SCALE | UV_MODIFIER | REPEAT_RIGHT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0, 0, 0, 0, 0.0015f, 0, 0.0015f, 0 }, {}, { -0.05f, 0, -0.05f, 0, 0, 0, 0, 0 } } },
     { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0221"), { ALIGN_TOP | SCALE | EXTEND_RIGHT } },
-    { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0222"), { ALIGN_TOP | SCALE | REPEAT_LEFT | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.1f, 0, -0.1f, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0222"), { ALIGN_TOP | SCALE | UV_MODIFIER | REPEAT_LEFT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0.0015f, 0, 0.0015f, 0, 0, 0, 0, 0 }, {}, { 0.1f, 0, 0.1f, 0, -0.1f, 0, -0.1f, 0 } } },
     { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0964"), { ALIGN_TOP | SCALE | EXTEND_RIGHT } },
-    { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0965"), { ALIGN_TOP | SCALE | REPEAT_LEFT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 } } },
-    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0226"), { ALIGN_BOTTOM | SCALE | REPEAT_LEFT | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.8f, 0, -0.8f, 0 } } },
-    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0227"), { ALIGN_BOTTOM | SCALE | REPEAT_RIGHT | REPEAT_EXTEND | REPEAT_UV_MODIFIER, { -0.8f, 0, -0.8f, 0, 0, 0, 0, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0965"), { ALIGN_TOP | SCALE | REPEAT_LEFT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0226"), { ALIGN_BOTTOM | SCALE | REPEAT_LEFT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.8f, 0, -0.8f, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0227"), { ALIGN_BOTTOM | SCALE | REPEAT_RIGHT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER, {}, {}, { -0.8f, 0, -0.8f, 0, 0, 0, 0, 0 } } },
 
     // maindisplay
     { HashStr("sprite/maindisplay/power"), { ALIGN_BOTTOM_RIGHT | SCALE } },
@@ -185,7 +214,7 @@ inline const xxHashMap<CsdModifier> g_modifiers =
     { HashStr("sprite/maindisplay/custom_level"), { ALIGN_BOTTOM_RIGHT | SCALE } },
 
     // radarmap_cover
-    { HashStr("sprite/radarmap_cover/radarmap_cover/Scene_0000"), { ALIGN_TOP_RIGHT | SCALE | RADARMAP } },
+    { HashStr("sprite/radarmap_cover/radarmap_cover/Scene_0000"), { RADARMAP | ALIGN_TOP_RIGHT | SCALE } },
 
     // result_English
     { HashStr("sprite/result/result_English/title_plate"), { PILLARBOX } }, // TODO
@@ -194,8 +223,8 @@ inline const xxHashMap<CsdModifier> g_modifiers =
     { HashStr("sprite/logo/sonicteam_logo/sonicteam"), { SCALE } },
 
     // tag_character
-    { HashStr("sprite/tag_character/tag_character/1p_tug/1p_tug/1p_tug1"), { REPEAT_LEFT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER | REPEAT_COLOUR_MODIFIER, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 }, { 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50 } } },
-    { HashStr("sprite/tag_character/tag_character/2p_tug/2p_tug/2p_tug1"), { REPEAT_RIGHT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER | REPEAT_COLOUR_MODIFIER, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 }, { 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50 } } },
+    { HashStr("sprite/tag_character/tag_character/1p_tug/1p_tug/1p_tug1"), { REPEAT_LEFT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER | REPEAT_COLOUR_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 }, { 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50 } } },
+    { HashStr("sprite/tag_character/tag_character/2p_tug/2p_tug/2p_tug1"), { REPEAT_RIGHT | REPEAT_FLIP_HORIZONTAL | REPEAT_EXTEND | REPEAT_UV_MODIFIER | REPEAT_COLOUR_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 }, { 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50 } } },
 
     // talkwindow
     { HashStr("sprite/talkwindow/talkwindow/window"), { SCALE } },
