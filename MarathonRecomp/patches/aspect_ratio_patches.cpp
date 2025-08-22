@@ -2,11 +2,6 @@
 #include <api/Marathon.h>
 #include <gpu/video.h>
 
-static float ComputeScale(float aspectRatio)
-{
-    return ((aspectRatio * 720.0f) / 1280.0f) / sqrt((aspectRatio * 720.0f) / 1280.0f);
-}
-
 void AspectRatioPatches::ComputeOffsets()
 {
     float width = Video::s_viewportWidth;
@@ -153,3 +148,10 @@ PPC_FUNC(sub_8264CC90)
 
     __imp__sub_8264CC90(ctx, base);
 }
+
+// -------------- MODIFIERS --------------- //
+
+const xxHashMap<MovieModifier> g_movieModifiers =
+{
+    { HashStr("sound\\title_loop_GBn.wmv"), { CROP_NARROW } }
+};

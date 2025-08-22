@@ -18,9 +18,9 @@ struct AspectRatioPatches
     static void ComputeOffsets();
 };
 
-inline XXH64_hash_t HashStr(const std::string_view& value)
+inline float ComputeScale(float aspectRatio)
 {
-    return XXH3_64bits(value.data(), value.size());
+    return ((aspectRatio * 720.0f) / 1280.0f) / sqrt((aspectRatio * 720.0f) / 1280.0f);
 }
 
 enum MovieFlags : uint32_t
@@ -35,10 +35,7 @@ struct MovieModifier
     MovieFlags Flags{};
 };
 
-inline const xxHashMap<MovieModifier> g_movieModifiers =
-{
-    { HashStr("sound\\title_loop_GBn.wmv"), { CROP_NARROW } },
-};
+extern const xxHashMap<MovieModifier> g_movieModifiers;
 
 inline MovieModifier FindMovieModifier(XXH64_hash_t nameHash)
 {
@@ -48,9 +45,4 @@ inline MovieModifier FindMovieModifier(XXH64_hash_t nameHash)
         return findResult->second;
 
     return {};
-}
-
-inline MovieModifier FindMovieModifier(const char* name)
-{
-    return FindMovieModifier(HashStr(name));
 }
