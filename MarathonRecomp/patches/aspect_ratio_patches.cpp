@@ -1,8 +1,6 @@
 #include "aspect_ratio_patches.h"
 #include <api/Marathon.h>
 #include <gpu/video.h>
-#include <user/config.h>
-#include <app.h>
 
 static float ComputeScale(float aspectRatio)
 {
@@ -111,16 +109,12 @@ PPC_FUNC(sub_8264CC90)
     }
     else
     {
-        auto shouldCrop = (movieModifier.Flags & MovieFlags::CROP) != 0;
-
         width = 2.0f;
         height = 2.0f;
 
         if (g_aspectRatio > movieAspectRatio)
         {
-            shouldCrop = (movieModifier.Flags & MovieFlags::CROP_WIDE) != 0;
-
-            if (shouldCrop)
+            if ((movieModifier.Flags & MovieFlags::CROP_WIDE) != 0)
             {
                 // Crop vertically at wide aspect ratios.
                 height = 2.0f * (g_aspectRatio / movieAspectRatio);
@@ -133,9 +127,7 @@ PPC_FUNC(sub_8264CC90)
         }
         else
         {
-            shouldCrop = (movieModifier.Flags & MovieFlags::CROP_NARROW) != 0;
-
-            if (shouldCrop)
+            if ((movieModifier.Flags & MovieFlags::CROP_NARROW) != 0)
             {
                 // Crop horizontally at narrow aspect ratios.
                 width = 2.0f * (movieAspectRatio / g_aspectRatio);
