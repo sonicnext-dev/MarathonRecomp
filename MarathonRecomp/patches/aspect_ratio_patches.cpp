@@ -80,15 +80,29 @@ PPC_FUNC(sub_8264CC90)
 
     if (s_movieUsesCustomDimensions)
     {
-        auto movieRectLeft = s_movieLeft / (g_aspectRatio / movieAspectRatio);
-        auto movieRectRight = s_movieRight / (g_aspectRatio / movieAspectRatio);
-        auto movieRectWidth = movieRectRight - movieRectLeft;
-        auto movieRectHeight = s_movieTop - s_movieBottom;
-        auto movieRectCentreX = (movieRectLeft + movieRectRight) / 2.0f;
-        auto movieRectCentreY = (s_movieTop + s_movieBottom) / 2.0f;
+        auto movieRectLeft = s_movieLeft;
+        auto movieRectRight = s_movieRight;
+        auto movieRectTop = s_movieTop;
+        auto movieRectBottom = s_movieBottom;
 
-        width = movieRectWidth;
-        height = movieRectHeight;
+        if (g_aspectRatio > movieAspectRatio)
+        {
+            // Scale width at wide aspect ratios.
+            movieRectLeft = s_movieLeft / (g_aspectRatio / movieAspectRatio);
+            movieRectRight = s_movieRight / (g_aspectRatio / movieAspectRatio);
+        }
+        else
+        {
+            // Scale height at narrow aspect ratios.
+            movieRectTop = s_movieTop / (movieAspectRatio / g_aspectRatio);
+            movieRectBottom = s_movieBottom / (movieAspectRatio / g_aspectRatio);
+        }
+
+        auto movieRectCentreX = (movieRectLeft + movieRectRight) / 2.0f;
+        auto movieRectCentreY = (movieRectTop + movieRectBottom) / 2.0f;
+
+        width = movieRectRight - movieRectLeft;
+        height = movieRectTop - movieRectBottom;
     
         left = movieRectCentreX - (width / 2.0f);
         right = movieRectCentreX + (width / 2.0f);
