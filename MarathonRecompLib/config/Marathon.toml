@@ -120,16 +120,6 @@ address = 0x82512B10
 registers = ["r3", "r4"]
 
 [[midasm_hook]]
-name = "RenderCsdCastNodeMidAsmHook"
-address = 0x828C8FBC
-registers = ["r10", "r24"]
-
-[[midasm_hook]]
-name = "RenderCsdCastMidAsmHook"
-address = 0x828C8FFC
-registers = ["r4"]
-
-[[midasm_hook]]
 name = "ContextualHUD_LIFE_BER_ANIME_1"
 address = 0x824D8044
 registers = ["r5", "r31"]
