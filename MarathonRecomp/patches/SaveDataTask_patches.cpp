@@ -9,8 +9,8 @@ PPC_FUNC(sub_8238CB18)
 {
     // Redirect storage device lost alert to load failed alert.
     // The user should never see this alert, but if they do, it should make a bit more sense.
-    if (ctx.r4.u32 == Sonicteam::SaveDataTaskXENON::eSaveDataOperation_AlertSelectDevice)
-        ctx.r4.u32 = Sonicteam::SaveDataTaskXENON::eSaveDataOperation_AlertLoadFailed;
+    if (ctx.r4.u32 == Sonicteam::SaveDataTaskXENON::SaveDataOperation_AlertSelectDevice)
+        ctx.r4.u32 = Sonicteam::SaveDataTaskXENON::SaveDataOperation_AlertLoadFailed;
 
     // Update current alert to operations that only display
     // messages so we can keep track of the last message displayed.
@@ -18,20 +18,20 @@ PPC_FUNC(sub_8238CB18)
         g_currentAlert = (Sonicteam::SaveDataTaskXENON::SaveDataOperation)ctx.r4.u32;
 
     // Redirect overwrite alert to just save the game, if requested.
-    if (Config::Autosave && ctx.r4.u32 == Sonicteam::SaveDataTaskXENON::eSaveDataOperation_AlertOverwrite)
-        ctx.r4.u32 = Sonicteam::SaveDataTaskXENON::eSaveDataOperation_WriteSaveData;
+    if (Config::Autosave && ctx.r4.u32 == Sonicteam::SaveDataTaskXENON::SaveDataOperation_AlertOverwrite)
+        ctx.r4.u32 = Sonicteam::SaveDataTaskXENON::SaveDataOperation_WriteSaveData;
 
     // Redirect storage device select operation to access the save data.
     // This option is replaced with a "Retry" option, so it should attempt to access it again.
-    if (ctx.r4.u32 == Sonicteam::SaveDataTaskXENON::eSaveDataOperation_SelectStorageDevice)
+    if (ctx.r4.u32 == Sonicteam::SaveDataTaskXENON::SaveDataOperation_SelectStorageDevice)
     {
-        if (g_currentAlert == Sonicteam::SaveDataTaskXENON::eSaveDataOperation_AlertLoadFailed)
+        if (g_currentAlert == Sonicteam::SaveDataTaskXENON::SaveDataOperation_AlertLoadFailed)
         {
-            ctx.r4.u32 = Sonicteam::SaveDataTaskXENON::eSaveDataOperation_ReadSaveData;
+            ctx.r4.u32 = Sonicteam::SaveDataTaskXENON::SaveDataOperation_ReadSaveData;
         }
         else
         {
-            ctx.r4.u32 = Sonicteam::SaveDataTaskXENON::eSaveDataOperation_WriteSaveData;
+            ctx.r4.u32 = Sonicteam::SaveDataTaskXENON::SaveDataOperation_WriteSaveData;
         }
     }
 

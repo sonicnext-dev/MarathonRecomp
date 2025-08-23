@@ -10,15 +10,15 @@ namespace Sonicteam
     public:
         enum GameState : uint32_t
         {
-            eGameState_MainMenu,
-            eGameState_Stage,
-            eGameState_Event,
-            eGameState_Movie,
-            eGameState_Result,
-            eGameState_Message,
-            eGameState_6,
-            eGameState_Save,
-            eGameState_ReturnToMainMenu
+            GameState_MainMenu,
+            GameState_Stage,
+            GameState_Event,
+            GameState_Movie,
+            GameState_Result,
+            GameState_Message,
+            GameState_6,
+            GameState_Save,
+            GameState_ReturnToMainMenu
         };
 
         struct PlayerData

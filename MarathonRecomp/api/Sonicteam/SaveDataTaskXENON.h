@@ -9,16 +9,16 @@ namespace Sonicteam
     public:
         enum SaveDataOperation : uint32_t
         {
-            eSaveDataOperation_AlertOverwrite,
-            eSaveDataOperation_AlertNoSaveData,
-            eSaveDataOperation_AlertSelectDevice,
-            eSaveDataOperation_SelectStorageDevice,
-            eSaveDataOperation_WriteSaveData,
-            eSaveDataOperation_ReadSaveData,
-            eSaveDataOperation_AlertSaveFailed,
-            eSaveDataOperation_AlertLoadFailed,
-            eSaveDataOperation_8,
-            eSaveDataOperation_9
+            SaveDataOperation_AlertOverwrite,
+            SaveDataOperation_AlertNoSaveData,
+            SaveDataOperation_AlertSelectDevice,
+            SaveDataOperation_SelectStorageDevice,
+            SaveDataOperation_WriteSaveData,
+            SaveDataOperation_ReadSaveData,
+            SaveDataOperation_AlertSaveFailed,
+            SaveDataOperation_AlertLoadFailed,
+            SaveDataOperation_8,
+            SaveDataOperation_9
         };
 
         xpointer<AlertWindowTask> m_pAlertWindowTask;
