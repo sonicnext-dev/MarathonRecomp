@@ -12,8 +12,8 @@ namespace Sonicteam
         {
             eGameState_MainMenu,
             eGameState_Stage,
-            eGameState_2,
-            eGameState_Load,
+            eGameState_Event,
+            eGameState_Movie,
             eGameState_Result,
             eGameState_Message,
             eGameState_6,

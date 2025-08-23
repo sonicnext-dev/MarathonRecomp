@@ -27,6 +27,7 @@
 #include "Sonicteam/GameImp.h"
 #include "Sonicteam/GameMode.h"
 #include "Sonicteam/HUDCALLBACK.h"
+#include "Sonicteam/HUDLoading.h"
 #include "Sonicteam/ImageFilter.h"
 #include "Sonicteam/Player/IDynamicLink.h"
 #include "Sonicteam/Player/IExportPostureRequestFlag.h"

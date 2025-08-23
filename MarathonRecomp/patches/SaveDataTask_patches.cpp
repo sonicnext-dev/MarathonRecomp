@@ -1,8 +1,6 @@
 #include <api/Marathon.h>
 #include <user/config.h>
 
-#include <os/logger.h>
-
 static Sonicteam::SaveDataTaskXENON::SaveDataOperation g_currentAlert{};
 
 // Sonicteam::SaveDataTaskXENON::RunOperation (speculatory)
@@ -73,22 +71,4 @@ PPC_FUNC(sub_825ECB48)
         return;
 
     g_userHeap.Free(pNewMessage);
-}
-
-// Sonicteam::GameImp::UpdateResults (speculatory)
-PPC_FUNC_IMPL(__imp__sub_82173D88);
-PPC_FUNC(sub_82173D88)
-{
-    auto pGameImp = (Sonicteam::GameImp*)(base + ctx.r3.u32);
-
-    // Force all post-results states to save if autosave is enabled.
-    // This allows town missions to save during episodes.
-    if (Config::Autosave && pGameImp->m_Field1180 && ((pGameImp->m_Flags >> 15) & 1) != 0)
-    {
-        pGameImp->m_Flags = pGameImp->m_Flags & 0xFFFE7FFF;
-        pGameImp->m_GameState = Sonicteam::GameImp::eGameState_Save;
-        return;
-    }
-
-    __imp__sub_82173D88(ctx, base);
 }
