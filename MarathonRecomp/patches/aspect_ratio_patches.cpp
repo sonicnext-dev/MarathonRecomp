@@ -85,13 +85,13 @@ void AspectRatioPatches::ComputeOffsets()
     g_aspectRatioNarrowScale = std::clamp((g_aspectRatio - NARROW_ASPECT_RATIO) / (WIDE_ASPECT_RATIO - NARROW_ASPECT_RATIO), 0.0f, 1.0f);
 }
 
-static void EmplacePath(const void* key, const std::string_view& value)
+void EmplacePath(const void* key, const std::string_view& value)
 {
     std::lock_guard lock(g_pathMutex);
     g_paths.emplace(key, HashStr(value));
 }
 
-static void TraverseCast(Chao::CSD::Scene* scene, uint32_t castNodeIndex, Chao::CSD::CastNode* castNode, uint32_t castIndex, const std::string& parentPath)
+void TraverseCast(Chao::CSD::Scene* scene, uint32_t castNodeIndex, Chao::CSD::CastNode* castNode, uint32_t castIndex, const std::string& parentPath)
 {
     if (castIndex == ~0)
         return;
@@ -122,7 +122,7 @@ static void TraverseCast(Chao::CSD::Scene* scene, uint32_t castNodeIndex, Chao::
     // LOGFN_UTILITY("CSD hierarchy: {}", path);
 }
 
-static void TraverseScene(Chao::CSD::Scene* scene, std::string path)
+void TraverseScene(Chao::CSD::Scene* scene, std::string path)
 {
     EmplacePath(scene, path);
     path += "/";
@@ -134,7 +134,7 @@ static void TraverseScene(Chao::CSD::Scene* scene, std::string path)
     }
 }
 
-static void TraverseSceneNode(Chao::CSD::SceneNode* sceneNode, std::string path)
+void TraverseSceneNode(Chao::CSD::SceneNode* sceneNode, std::string path)
 {
     EmplacePath(sceneNode, path);
     path += "/";
@@ -150,116 +150,6 @@ static void TraverseSceneNode(Chao::CSD::SceneNode* sceneNode, std::string path)
         auto& sceneNodeIndex = sceneNode->pSceneNodeIndices[i];
         TraverseSceneNode(&sceneNode->pSceneNodes[sceneNodeIndex.SceneNodeIndex], path + sceneNodeIndex.pSceneNodeName.get());
     }
-}
-
-// Sonicteam::MovieObjectWmv::Draw
-PPC_FUNC_IMPL(__imp__sub_8264CC90);
-PPC_FUNC(sub_8264CC90)
-{
-    auto pMovieObjectWmv = (Sonicteam::MovieObjectWmv*)(base + ctx.r3.u32);
-
-    static XXH64_hash_t s_movieNameHash{};
-    static bool s_movieUsesCustomDimensions{};
-    static float s_movieLeft{};
-    static float s_movieRight{};
-    static float s_movieTop{};
-    static float s_movieBottom{};
-
-    auto movieNameHash = HashStr(pMovieObjectWmv->m_FilePath.c_str());
-
-    if (movieNameHash != s_movieNameHash)
-    {
-        s_movieNameHash = movieNameHash;
-        s_movieUsesCustomDimensions = pMovieObjectWmv->m_UseCustomDimensions;
-        s_movieLeft = pMovieObjectWmv->m_Left;
-        s_movieRight = pMovieObjectWmv->m_Right;
-        s_movieTop = pMovieObjectWmv->m_Top;
-        s_movieBottom = pMovieObjectWmv->m_Bottom;
-
-        LOGFN_UTILITY("Movie: {} - {}x{}", pMovieObjectWmv->m_FilePath.c_str(), pMovieObjectWmv->m_Width.get(), pMovieObjectWmv->m_Height.get());
-    }
-
-    auto movieModifier = FindMovieModifier(movieNameHash);
-    auto movieAspectRatio = (float)pMovieObjectWmv->m_Width / (float)pMovieObjectWmv->m_Height;
-
-    float width, height, left, right, top, bottom;
-
-    if (s_movieUsesCustomDimensions)
-    {
-        auto movieRectLeft = s_movieLeft;
-        auto movieRectRight = s_movieRight;
-        auto movieRectTop = s_movieTop;
-        auto movieRectBottom = s_movieBottom;
-
-        if (g_aspectRatio > movieAspectRatio)
-        {
-            // Scale width at wide aspect ratios.
-            movieRectLeft = s_movieLeft / (g_aspectRatio / movieAspectRatio);
-            movieRectRight = s_movieRight / (g_aspectRatio / movieAspectRatio);
-        }
-        else
-        {
-            // Scale height at narrow aspect ratios.
-            movieRectTop = s_movieTop / (movieAspectRatio / g_aspectRatio);
-            movieRectBottom = s_movieBottom / (movieAspectRatio / g_aspectRatio);
-        }
-
-        auto movieRectCentreX = (movieRectLeft + movieRectRight) / 2.0f;
-        auto movieRectCentreY = (movieRectTop + movieRectBottom) / 2.0f;
-
-        width = movieRectRight - movieRectLeft;
-        height = movieRectTop - movieRectBottom;
-    
-        left = movieRectCentreX - (width / 2.0f);
-        right = movieRectCentreX + (width / 2.0f);
-        top = movieRectCentreY + (height / 2.0f);
-        bottom = movieRectCentreY - (height / 2.0f);
-    }
-    else
-    {
-        width = 2.0f;
-        height = 2.0f;
-
-        if (g_aspectRatio > movieAspectRatio)
-        {
-            if ((movieModifier.Flags & MovieFlags::CROP_WIDE) != 0)
-            {
-                // Crop vertically at wide aspect ratios.
-                height = 2.0f * (g_aspectRatio / movieAspectRatio);
-            }
-            else
-            {
-                // Pillarbox at wide aspect ratios.
-                width = 2.0f * (movieAspectRatio / g_aspectRatio);
-            }
-        }
-        else
-        {
-            if ((movieModifier.Flags & MovieFlags::CROP_NARROW) != 0)
-            {
-                // Crop horizontally at narrow aspect ratios.
-                width = 2.0f * (movieAspectRatio / g_aspectRatio);
-            }
-            else
-            {
-                // Letterbox at narrow aspect ratios.
-                height = 2.0f * (g_aspectRatio / movieAspectRatio);
-            }
-        }
-
-        left = -width / 2.0f;
-        right = (width / 2.0f) * 2.0f;
-        top = height / 2.0f;
-        bottom = (-height / 2.0f) * 2.0f;
-    }
-
-    pMovieObjectWmv->m_UseCustomDimensions = true;
-    pMovieObjectWmv->m_Left = left;
-    pMovieObjectWmv->m_Right = right;
-    pMovieObjectWmv->m_Top = top;
-    pMovieObjectWmv->m_Bottom = bottom;
-
-    __imp__sub_8264CC90(ctx, base);
 }
 
 // Sonicteam::CsdResource::MakeResource
@@ -280,12 +170,12 @@ PPC_FUNC(sub_82617570)
 
     auto pCsdObject = reinterpret_cast<Sonicteam::CsdObject*>(base + ppCsdObject);
 
-    if (!pCsdObject || !pCsdObject->pCsdProject)
+    if (!pCsdObject || !pCsdObject->m_pCsdProject)
         return;
 
-    LOGFN_UTILITY("CSD loaded: {} (0x{:08X})", pName, (uint64_t)pCsdObject->pCsdProject.get());
+    LOGFN_UTILITY("CSD loaded: {} (0x{:08X})", pName, (uint64_t)pCsdObject->m_pCsdProject.get());
 
-    TraverseSceneNode(pCsdObject->pCsdProject->m_pResource->pRootNode, pName);
+    TraverseSceneNode(pCsdObject->m_pCsdProject->m_pResource->pRootNode, pName);
 }
 
 // Chao::CSD::CMemoryAlloc::Free
@@ -342,7 +232,7 @@ PPC_FUNC(sub_828C8F60)
 
     if (g_sceneModifier.has_value())
     {
-        if (g_aspectRatio > WIDE_ASPECT_RATIO && (g_sceneModifier->Flags & (OFFSET_SCALE_LEFT | OFFSET_SCALE_RIGHT | CORNER_EXTRACT)) != 0)
+        if (g_aspectRatio > WIDE_ASPECT_RATIO && (g_sceneModifier->Flags & (CSD_OFFSET_SCALE_LEFT | CSD_OFFSET_SCALE_RIGHT | CSD_CORNER_EXTRACT)) != 0)
         {
             auto r3 = ctx.r3;
             auto r4 = ctx.r4;
@@ -385,7 +275,7 @@ void RenderCsdCastMidAsmHook(PPCRegister& r4)
     g_castModifier = FindCsdModifier(r4.u32);
 }
 
-static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
+void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 {
     CsdModifier modifier{};
 
@@ -402,32 +292,30 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
         modifier = g_sceneModifier.value();
     }
     
-    if ((modifier.Flags & SKIP) != 0)
-    {
+    if ((modifier.Flags & CSD_SKIP) != 0)
         return;
-    }
 
     if (g_cornerExtract)
     {
-        if ((modifier.Flags & (STORE_LEFT_CORNER | STORE_RIGHT_CORNER)) != 0)
+        if ((modifier.Flags & (CSD_STORE_LEFT_CORNER | CSD_STORE_RIGHT_CORNER)) != 0)
         {
-            uint32_t vertexIndex = ((modifier.Flags & STORE_LEFT_CORNER) != 0) ? 0 : 3;
+            uint32_t vertexIndex = ((modifier.Flags & CSD_STORE_LEFT_CORNER) != 0) ? 0 : 3;
             g_corners[modifier.CornerIndex] = *reinterpret_cast<be<float>*>(base + ctx.r4.u32 + vertexIndex * stride);
         }
 
         return;
     }
 
-    if ((modifier.Flags & PILLARBOX) != 0)
+    if ((modifier.Flags & CSD_PILLARBOX) != 0)
         BlackBar::g_isPillarbox = true;
 
-    if ((modifier.Flags & PROHIBIT_BLACK_BAR) != 0)
+    if ((modifier.Flags & CSD_PROHIBIT_BLACK_BAR) != 0)
         BlackBar::g_isPillarbox = false;
 
     if (Config::UIAlignmentMode == EUIAlignmentMode::Centre || BlackBar::g_isPillarbox)
     {
         if (g_aspectRatio >= WIDE_ASPECT_RATIO)
-            modifier.Flags &= ~(ALIGN_LEFT | ALIGN_RIGHT);
+            modifier.Flags &= ~(CSD_ALIGN_LEFT | CSD_ALIGN_RIGHT);
     }
 
     uint32_t size = ctx.r5.u32 * stride;
@@ -459,7 +347,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
 
     bool needsStretch = g_aspectRatio >= WIDE_ASPECT_RATIO;
 
-    if (needsStretch && (modifier.Flags & STRETCH_HORIZONTAL) != 0)
+    if (needsStretch && (modifier.Flags & CSD_STRETCH_HORIZONTAL) != 0)
     {
         scaleX = Video::s_viewportWidth / 1280.0f;
     }
@@ -467,26 +355,36 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
     {
         scaleX = g_aspectRatioScale;
 
-        if (needsStretch && (modifier.Flags & UNSTRETCH_HORIZONTAL) != 0)
+        if (needsStretch && (modifier.Flags & CSD_UNSTRETCH_HORIZONTAL) != 0)
         {
             pivotX = getVertex(0)->X;
             offsetX = pivotX * Video::s_viewportWidth / 1280.0f;
         }
         else
         {
-            if ((modifier.Flags & ALIGN_RIGHT) != 0)
+            if ((modifier.Flags & CSD_ALIGN_RIGHT) != 0)
+            {
                 offsetX = g_aspectRatioOffsetX * 2.0f;
-            else if ((modifier.Flags & ALIGN_LEFT) == 0)
+
+                if ((modifier.Flags & CSD_MULTIPLAYER) != 0)
+                    offsetX /= 2.0f;
+            }
+            else if ((modifier.Flags & CSD_ALIGN_LEFT) == 0)
+            {
                 offsetX = g_aspectRatioOffsetX;
 
-            if ((modifier.Flags & SCALE) != 0)
+                if ((modifier.Flags & CSD_MULTIPLAYER_CENTER) != 0)
+                    offsetX /= 1.5f;
+            }
+
+            if ((modifier.Flags & CSD_SCALE) != 0)
             {
                 scaleX *= g_aspectRatioGameplayScale;
                 pivotX = g_scenePositionX;
 
-                if ((modifier.Flags & ALIGN_RIGHT) != 0)
+                if ((modifier.Flags & CSD_ALIGN_RIGHT) != 0)
                     offsetX += 1280.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
-                else if ((modifier.Flags & ALIGN_LEFT) == 0)
+                else if ((modifier.Flags & CSD_ALIGN_LEFT) == 0)
                     offsetX += 640.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
 
                 offsetX += pivotX * g_aspectRatioScale;
@@ -494,7 +392,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
         }
     }
 
-    if ((modifier.Flags & STRETCH_VERTICAL) != 0)
+    if ((modifier.Flags & CSD_STRETCH_VERTICAL) != 0)
     {
         scaleY = Video::s_viewportHeight / 720.0f;
     }
@@ -502,19 +400,19 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
     {
         scaleY = g_aspectRatioScale;
 
-        if ((modifier.Flags & ALIGN_BOTTOM) != 0)
+        if ((modifier.Flags & CSD_ALIGN_BOTTOM) != 0)
             offsetY = g_aspectRatioOffsetY * 2.0f;
-        else if ((modifier.Flags & ALIGN_TOP) == 0)
+        else if ((modifier.Flags & CSD_ALIGN_TOP) == 0)
             offsetY = g_aspectRatioOffsetY;
 
-        if ((modifier.Flags & SCALE) != 0)
+        if ((modifier.Flags & CSD_SCALE) != 0)
         {
             scaleY *= g_aspectRatioGameplayScale;
             pivotY = g_scenePositionY;
 
-            if ((modifier.Flags & ALIGN_BOTTOM) != 0)
+            if ((modifier.Flags & CSD_ALIGN_BOTTOM) != 0)
                 offsetY += 720.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
-            else if ((modifier.Flags & ALIGN_TOP) == 0)
+            else if ((modifier.Flags & CSD_ALIGN_TOP) == 0)
                 offsetY += 360.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
 
             offsetY += pivotY * g_aspectRatioScale;
@@ -530,7 +428,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
         {
             offsetScaleModifier = g_castModifier.value();
 
-            uint32_t vertexIndex = ((offsetScaleModifier.Flags & STORE_LEFT_CORNER) != 0) ? 0 : 3;
+            uint32_t vertexIndex = ((offsetScaleModifier.Flags & CSD_STORE_LEFT_CORNER) != 0) ? 0 : 3;
             corner = getVertex(vertexIndex)->X;
         }
 
@@ -551,9 +449,9 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
             fmt::println("Corner: {}", corner);
 #endif
 
-        if ((offsetScaleModifier.Flags & OFFSET_SCALE_LEFT) != 0)
+        if ((offsetScaleModifier.Flags & CSD_OFFSET_SCALE_LEFT) != 0)
             offsetX *= corner / offsetScaleModifier.CornerMax;
-        else if ((offsetScaleModifier.Flags & OFFSET_SCALE_RIGHT) != 0)
+        else if ((offsetScaleModifier.Flags & CSD_OFFSET_SCALE_RIGHT) != 0)
             offsetX = Video::s_viewportWidth - (Video::s_viewportWidth - offsetX) * (1280.0f - corner) / (1280.0f - offsetScaleModifier.CornerMax);
     }
 
@@ -571,11 +469,11 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
         float x = offsetX + (vertex->X - pivotX) * (scaleX * (1280.0f / Video::s_viewportWidth));
         float y = offsetY + (vertex->Y - pivotY) * (scaleY * (720.0f / Video::s_viewportHeight));
 
-        if ((modifier.Flags & EXTEND_LEFT) != 0 && (i == 0 || i == 1))
+        if ((modifier.Flags & CSD_EXTEND_LEFT) != 0 && (i == 0 || i == 1))
         {
             x = std::min(x, 0.0f);
         }
-        else if ((modifier.Flags & EXTEND_RIGHT) != 0 && (i == 2 || i == 3))
+        else if ((modifier.Flags & CSD_EXTEND_RIGHT) != 0 && (i == 2 || i == 3))
         {
             x = std::max(x, float(Video::s_viewportWidth));
         }
@@ -588,7 +486,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
             case 3: lastX  = x; break;
         }
 
-        if ((modifier.Flags & RADARMAP) != 0)
+        if ((modifier.Flags & CSD_RADARMAP) != 0)
         {
             g_radarMapX = x;
             g_radarMapY = y;
@@ -601,7 +499,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
     width = lastX - firstX;
     height = lastY - firstY;
 
-    if ((modifier.Flags & RADARMAP) != 0)
+    if ((modifier.Flags & CSD_RADARMAP) != 0)
     {
         g_radarMapCoverWidth = width;
         g_radarMapCoverHeight = height;
@@ -627,14 +525,14 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
         getVertex(3)->Colour = colourModifier.C3;
     };
 
-    if ((modifier.Flags & UV_MODIFIER) != 0)
+    if ((modifier.Flags & CSD_UV_MODIFIER) != 0)
         applyUVModifier(modifier.UVs);
 
-    if ((modifier.Flags & COLOUR_MODIFIER) != 0)
+    if ((modifier.Flags & CSD_COLOUR_MODIFIER) != 0)
         applyColourModifier(modifier.Colours);
 
-    auto isRepeatLeft = (modifier.Flags & REPEAT_LEFT) != 0;
-    auto isRepeatRight = (modifier.Flags & REPEAT_RIGHT) != 0;
+    auto isRepeatLeft = (modifier.Flags & CSD_REPEAT_LEFT) != 0;
+    auto isRepeatRight = (modifier.Flags & CSD_REPEAT_RIGHT) != 0;
 
     if (isRepeatLeft || isRepeatRight)
     {
@@ -663,7 +561,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
 
             x = getVertex(vertexIndex)->X;
 
-            auto isFlipHorz = (modifier.Flags & REPEAT_FLIP_HORIZONTAL) != 0;
+            auto isFlipHorz = (modifier.Flags & CSD_REPEAT_FLIP_HORIZONTAL) != 0;
 
             if (isFlipHorz)
             {
@@ -673,13 +571,13 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
                 getVertex(3)->X = getVertex(3)->X - width;
             }
 
-            if ((modifier.Flags & REPEAT_UV_MODIFIER) != 0)
+            if ((modifier.Flags & CSD_REPEAT_UV_MODIFIER) != 0)
                 applyUVModifier(modifier.RepeatUVs);
 
-            if ((modifier.Flags & REPEAT_COLOUR_MODIFIER) != 0)
+            if ((modifier.Flags & CSD_REPEAT_COLOUR_MODIFIER) != 0)
                 applyColourModifier(modifier.RepeatColours);
 
-            if ((modifier.Flags & REPEAT_EXTEND) != 0)
+            if ((modifier.Flags & CSD_REPEAT_EXTEND) != 0)
             {
                 for (size_t i = 0; i < r5.u32; i++)
                 {
@@ -743,7 +641,117 @@ PPC_FUNC(sub_824F1538)
     pHUDRaderMap->m_Y = g_radarMapY - g_radarMapCoverHeight / 2;
 }
 
-void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity, xxHashMap<TextFontPictureParams> pftParams)
+// Sonicteam::MovieObjectWmv::Draw
+PPC_FUNC_IMPL(__imp__sub_8264CC90);
+PPC_FUNC(sub_8264CC90)
+{
+    auto pMovieObjectWmv = (Sonicteam::MovieObjectWmv*)(base + ctx.r3.u32);
+
+    static XXH64_hash_t s_movieNameHash{};
+    static bool s_movieUsesCustomDimensions{};
+    static float s_movieLeft{};
+    static float s_movieRight{};
+    static float s_movieTop{};
+    static float s_movieBottom{};
+
+    auto movieNameHash = HashStr(pMovieObjectWmv->m_FilePath.c_str());
+
+    if (movieNameHash != s_movieNameHash)
+    {
+        s_movieNameHash = movieNameHash;
+        s_movieUsesCustomDimensions = pMovieObjectWmv->m_UseCustomDimensions;
+        s_movieLeft = pMovieObjectWmv->m_Left;
+        s_movieRight = pMovieObjectWmv->m_Right;
+        s_movieTop = pMovieObjectWmv->m_Top;
+        s_movieBottom = pMovieObjectWmv->m_Bottom;
+
+        LOGFN_UTILITY("Movie: {} - {}x{}", pMovieObjectWmv->m_FilePath.c_str(), pMovieObjectWmv->m_Width.get(), pMovieObjectWmv->m_Height.get());
+    }
+
+    auto movieModifier = FindMovieModifier(movieNameHash);
+    auto movieAspectRatio = (float)pMovieObjectWmv->m_Width / (float)pMovieObjectWmv->m_Height;
+
+    float width, height, left, right, top, bottom;
+
+    if (s_movieUsesCustomDimensions)
+    {
+        auto movieRectLeft = s_movieLeft;
+        auto movieRectRight = s_movieRight;
+        auto movieRectTop = s_movieTop;
+        auto movieRectBottom = s_movieBottom;
+
+        if (g_aspectRatio > movieAspectRatio)
+        {
+            // Scale width at wide aspect ratios.
+            movieRectLeft = s_movieLeft / (g_aspectRatio / movieAspectRatio);
+            movieRectRight = s_movieRight / (g_aspectRatio / movieAspectRatio);
+        }
+        else
+        {
+            // Scale height at narrow aspect ratios.
+            movieRectTop = s_movieTop / (movieAspectRatio / g_aspectRatio);
+            movieRectBottom = s_movieBottom / (movieAspectRatio / g_aspectRatio);
+        }
+
+        auto movieRectCentreX = (movieRectLeft + movieRectRight) / 2.0f;
+        auto movieRectCentreY = (movieRectTop + movieRectBottom) / 2.0f;
+
+        width = movieRectRight - movieRectLeft;
+        height = movieRectTop - movieRectBottom;
+
+        left = movieRectCentreX - (width / 2.0f);
+        right = movieRectCentreX + (width / 2.0f);
+        top = movieRectCentreY + (height / 2.0f);
+        bottom = movieRectCentreY - (height / 2.0f);
+    }
+    else
+    {
+        width = 2.0f;
+        height = 2.0f;
+
+        if (g_aspectRatio > movieAspectRatio)
+        {
+            if ((movieModifier.Flags & MOVIE_CROP_WIDE) != 0)
+            {
+                // Crop vertically at wide aspect ratios.
+                height = 2.0f * (g_aspectRatio / movieAspectRatio);
+            }
+            else
+            {
+                // Pillarbox at wide aspect ratios.
+                width = 2.0f * (movieAspectRatio / g_aspectRatio);
+            }
+        }
+        else
+        {
+            if ((movieModifier.Flags & MOVIE_CROP_NARROW) != 0)
+            {
+                // Crop horizontally at narrow aspect ratios.
+                width = 2.0f * (movieAspectRatio / g_aspectRatio);
+            }
+            else
+            {
+                // Letterbox at narrow aspect ratios.
+                height = 2.0f * (g_aspectRatio / movieAspectRatio);
+            }
+        }
+
+        left = -width / 2.0f;
+        right = (width / 2.0f) * 2.0f;
+        top = height / 2.0f;
+        bottom = (-height / 2.0f) * 2.0f;
+    }
+
+    pMovieObjectWmv->m_UseCustomDimensions = true;
+    pMovieObjectWmv->m_Left = left;
+    pMovieObjectWmv->m_Right = right;
+    pMovieObjectWmv->m_Top = top;
+    pMovieObjectWmv->m_Bottom = bottom;
+
+    __imp__sub_8264CC90(ctx, base);
+}
+
+void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity, xxHashMap<TextFontPictureModifier> pftModifier)
 {
     if (!pTextEntity || !pTextEntity->m_ImageVertexCount)
         return;
@@ -771,8 +779,8 @@ void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity, xxHashMap<TextFont
             auto w = g_pTextFontPicture->m_TextureWidth;
             auto h = g_pTextFontPicture->m_TextureHeight;
 
-            auto baseParams = FindFontPictureParams(g_pftParamsXenon, variable.second);
-            auto newParams = FindFontPictureParams(pftParams, variable.second);
+            auto baseParams = FindFontPictureModifier(g_pftModifierXenon, variable.second);
+            auto newParams = FindFontPictureModifier(pftModifier, variable.second);
 
             auto  uv = PIXELS_TO_UV_COORDS(w, h, newParams.X, newParams.Y, newParams.Width, newParams.Height);
             auto& min = std::get<0>(uv);
@@ -873,12 +881,12 @@ PPC_FUNC(sub_8262D868)
     if (Config::ControllerIcons == EControllerIcons::Auto)
         isPlayStation = hid::g_inputDeviceController == hid::EInputDevice::PlayStation;
 
-    auto& pftParams = isPlayStation
-        ? g_pftParamsPS3
-        : g_pftParamsXenon;
+    auto& pftModifier = isPlayStation
+        ? g_pftModifierPS3
+        : g_pftModifierXenon;
 
     // TODO (Hyper): why does this not apply to the B button in Audio Room?
-    ReplaceTextVariables(pTextEntity, pftParams);
+    ReplaceTextVariables(pTextEntity, pftModifier);
 }
 
 // Sonicteam::HUDButtonWindow::Draw
@@ -935,7 +943,293 @@ PPC_FUNC(sub_8263CC40)
 
 // -------------- MODIFIERS --------------- //
 
+const xxHashMap<CsdModifier> g_csdModifiers =
+{
+    // audio
+    { HashStr("sprite/audio/audio/pod/pod"), { CSD_POD } },
+    { HashStr("sprite/audio/audio/pod/pod/Cast_1084"), { CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/audio/audio/pod/pod/Cast_1088"), { CSD_EXTEND_RIGHT } },
+
+    // background
+    { HashStr("sprite/background/background/mainmenu_back"), { CSD_STRETCH | CSD_PROHIBIT_BLACK_BAR } },
+
+    // battledisplay_1p
+    { HashStr("sprite/battledisplay_1p/power"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_1p/power_a"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_1p/power_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_1p/itembox_01"), { CSD_MULTIPLAYER | CSD_MULTIPLAYER_CENTER | CSD_ALIGN_BOTTOM | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_1p/ring"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_1p/ring_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_1p/enemy"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_1p/bronze_medal"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_1p/gold_medal"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_1p/bar_ue"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_1p/power_bar_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_1p/ring_000_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_1p/custom_gem"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_1p/custom_level1"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_1p/custom_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+
+    // battledisplay_2p
+    { HashStr("sprite/battledisplay_2p/power"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_2p/power_a"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_2p/power_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_2p/itembox_01"), { CSD_MULTIPLAYER | CSD_MULTIPLAYER_CENTER | CSD_ALIGN_BOTTOM | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_2p/ring"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_2p/ring_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_2p/enemy"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_2p/bronze_medal"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_2p/gold_medal"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_2p/bar_ue"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_2p/power_bar_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_2p/ring_000_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_2p/custom_gem"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_2p/custom_level1"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_2p/custom_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+
+    // black_out
+    { HashStr("sprite/black_out/black_out"), { CSD_STRETCH } },
+
+    // bossname
+    { HashStr("sprite/bossname/egg_cerberus/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("event/e1071/egg_cerberus/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("event/e1081/egg_cerberus/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/bossname/egg_genesis/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("event/e1091/egg_genesis/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/bossname/egg_wyvern/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("event/e1111/egg_wyvern/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/bossname/egg_wyvern/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("event/e1111/egg_wyvern/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/bossname/iblis/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("event/e1001/iblis/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("event/e1011/iblis/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("event/e1031/iblis/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/bossname/mephiles/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("event/e1041/mephiles/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("event/e1061/mephiles/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/bossname/shadow_the_hedgehog/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("event/e1161/shadow_the_hedgehog/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/bossname/silver_the_hedgehog/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("event/e1151/silver_the_hedgehog/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/bossname/solaris/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("event/e1121/solaris/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/bossname/sonic_the_hedgehog/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("event/e1141/sonic_the_hedgehog/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+
+    // button_window
+    { HashStr("sprite/button_window/button_window/Scene_0000"), { CSD_ALIGN_BOTTOM | CSD_SCALE } },
+    { HashStr("sprite/button_window/button_window/Scene_0000/Null_0000/Cast_0002"), { CSD_EXTEND_RIGHT } },
+
+    // gadget_ber
+    { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar"), { CSD_ALIGN_BOTTOM_RIGHT } },
+    { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar_anime"), { CSD_ALIGN_BOTTOM_RIGHT } },
+    { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar_ue"), { CSD_ALIGN_BOTTOM_RIGHT } },
+    { HashStr("sprite/gadget_ber/gadget_bar/icon_text"), { CSD_ALIGN_BOTTOM_RIGHT } },
+
+    // cri_logo
+    { HashStr("sprite/logo/cri_logo/Scene_0000/Null_0002/bg"), { CSD_STRETCH } },
+    { HashStr("sprite/logo/cri_logo/Scene_0000/Null_0002/criware"), { CSD_SCALE } },
+
+    // loading_english
+    // TODO: draw pillarbox.
+    { HashStr("sprite/loading/loading_english/Scene_0000/Loading"), { CSD_ALIGN_BOTTOM } },
+    { HashStr("sprite/loading/loading_english/Scene_0000/Loading_02"), { CSD_ALIGN_BOTTOM } },
+    { HashStr("sprite/loading/loading_english/Scene_0000/arrow_01"), { CSD_ALIGN_BOTTOM } },
+    { HashStr("sprite/loading/loading_english/Scene_0000/arrow_02"), { CSD_ALIGN_BOTTOM } },
+    { HashStr("sprite/loading/loading_english/Scene_0000/arrow_03"), { CSD_ALIGN_BOTTOM } },
+
+    // main_menu
+    { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita3"), { CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita5"), { CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita8"), { CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/stage_plate/stage_plate/stage_plate2"), { CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/stage_plate/stage_plate/Cast_1337"), { CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/stage_plate/stage_plate/Cast_1340"), { CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/mission_plate/mission_plate/mission_plate2"), { CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/mission_plate/mission_plate/Cast_1332"), { CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/mission_plate/mission_plate/Cast_1336"), { CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/text"), { CSD_ALIGN_BOTTOM | CSD_SCALE } },
+    { HashStr("sprite/main_menu/text_cover/Null_0290/cover_l"), { CSD_ALIGN_BOTTOM | CSD_SCALE | CSD_UV_MODIFIER | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, { 0.0015f, 0, 0.0015f, 0, 0, 0, 0, 0 }, {}, { 0, 0, 0, 0, -0.05f, 0, -0.05f, 0 } } },
+    { HashStr("sprite/main_menu/text_cover/Null_0290/cover_c"), { CSD_ALIGN_BOTTOM | CSD_SCALE } },
+    { HashStr("sprite/main_menu/text_cover/Null_0290/vocer_r"), { CSD_ALIGN_BOTTOM | CSD_SCALE | CSD_UV_MODIFIER | CSD_REPEAT_RIGHT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, { 0, 0, 0, 0, 0.0015f, 0, 0.0015f, 0 }, {}, { -0.05f, 0, -0.05f, 0, 0, 0, 0, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0221"), { CSD_ALIGN_TOP | CSD_SCALE | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0222"), { CSD_ALIGN_TOP | CSD_SCALE | CSD_UV_MODIFIER | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, { 0.0015f, 0, 0.0015f, 0, 0, 0, 0, 0 }, {}, { 0.1f, 0, 0.1f, 0, -0.1f, 0, -0.1f, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0964"), { CSD_ALIGN_TOP | CSD_SCALE | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0965"), { CSD_ALIGN_TOP | CSD_SCALE | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0226"), { CSD_ALIGN_BOTTOM | CSD_SCALE | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.8f, 0, -0.8f, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0227"), { CSD_ALIGN_BOTTOM | CSD_SCALE | CSD_REPEAT_RIGHT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, {}, {}, { -0.8f, 0, -0.8f, 0, 0, 0, 0, 0 } } },
+
+    // maindisplay
+    { HashStr("sprite/maindisplay/power"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/maindisplay/custom_bar_anime"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/maindisplay/power_a"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/maindisplay/power_bar_anime"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/maindisplay/itembox_01"), { CSD_ALIGN_BOTTOM | CSD_SCALE } },
+    { HashStr("sprite/maindisplay/score"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/maindisplay/life_ber_anime"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/maindisplay/life"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/maindisplay/time"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/maindisplay/ring"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/maindisplay/ring_anime"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/maindisplay/bar_ue"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/maindisplay/power_bar_effect"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/maindisplay/ring_000_effect"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/maindisplay/boss_gauge"), { CSD_ALIGN_TOP_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/maindisplay/boss_gauge_anime"), { CSD_ALIGN_TOP_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/maindisplay/item_ber_anime"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/maindisplay/item"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/maindisplay/custom_gem"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/maindisplay/custom_level"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+
+    // radarmap_cover
+    { HashStr("sprite/radarmap_cover/radarmap_cover/Scene_0000"), { CSD_RADARMAP | CSD_ALIGN_TOP_RIGHT | CSD_SCALE } },
+
+    // result_English
+    { HashStr("sprite/result/result_English/title_plate"), { CSD_PILLARBOX } }, // TODO
+
+    // sonicteam_logo
+    { HashStr("sprite/logo/sonicteam_logo/sonicteam"), { CSD_SCALE } },
+
+    // tag_character
+    { HashStr("sprite/tag_character/tag_character/1p_tug/1p_tug/1p_tug1"), { CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER | CSD_REPEAT_COLOUR_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 }, { 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50 } } },
+    { HashStr("sprite/tag_character/tag_character/2p_tug/2p_tug/2p_tug1"), { CSD_REPEAT_RIGHT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER | CSD_REPEAT_COLOUR_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 }, { 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50 } } },
+
+    // tagdisplay_1p
+    { HashStr("sprite/tagdisplay_1p/power"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_1p/power_a"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_1p/power_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_1p/itembox_01"), { CSD_MULTIPLAYER | CSD_MULTIPLAYER_CENTER | CSD_ALIGN_BOTTOM | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_1p/score"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_1p/time"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_1p/ring"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_1p/ring_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_1p/bar_ue"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_1p/life_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_1p/life"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_1p/item_ber_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_1p/item"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_1p/power_bar_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_1p/ring_000_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_1p/custom_gem"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_1p/custom_level1"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_1p/custom_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+
+    // tagdisplay_2p
+    { HashStr("sprite/tagdisplay_2p/power"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_2p/power_a"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_2p/power_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_2p/itembox_01"), { CSD_MULTIPLAYER | CSD_MULTIPLAYER_CENTER | CSD_ALIGN_BOTTOM | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_2p/score"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_2p/time"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_2p/ring"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_2p/ring_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_2p/bar_ue"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_2p/life_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_2p/life"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_2p/item_ber_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_2p/item"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_2p/power_bar_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_2p/ring_000_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_2p/custom_gem"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_2p/custom_level1"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_2p/custom_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+
+    // talkwindow
+    { HashStr("sprite/talkwindow/talkwindow/window"), { CSD_SCALE } },
+    { HashStr("sprite/talkwindow/talkwindow/nafuda"), { CSD_SCALE } },
+    { HashStr("sprite/talkwindow/talkwindow/Scene_0021"), { CSD_SCALE } },
+
+    // title_English
+    { HashStr("sprite/title/title_English/Scene_Title/Logo_add"), { CSD_SCALE } },
+    { HashStr("sprite/title/title_English/Scene_Title/Logo"), { CSD_SCALE } },
+    { HashStr("sprite/title/title_English/Scene_Title/copyright"), { CSD_ALIGN_BOTTOM } },
+
+    // titleloop_sth
+    // TODO: adjust this if letterboxed.
+    { HashStr("sprite/logo/titleloop_sth/Scene_0000"), { CSD_ALIGN_BOTTOM } },
+
+    // towndisplay
+    { HashStr("sprite/towndisplay/ring"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/towndisplay/ring_anime"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+
+    // trickpoint_English
+    // TODO: offset score text properly.
+    { HashStr("sprite/trickpoint/trickpoint_English/Scene_0000"), { CSD_ALIGN_TOP_RIGHT } },
+    { HashStr("sprite/trickpoint/trickpoint_English/Scene_0001"), { CSD_ALIGN_TOP_RIGHT } },
+    { HashStr("sprite/trickpoint/trickpoint_English/score"), { CSD_ALIGN_TOP_RIGHT } },
+};
+
+std::optional<CsdModifier> FindCsdModifier(uint32_t data)
+{
+    XXH64_hash_t path;
+    {
+        std::lock_guard lock(g_pathMutex);
+
+        auto findResult = g_paths.find(g_memory.Translate(data));
+
+        if (findResult == g_paths.end())
+            return {};
+
+        path = findResult->second;
+    }
+
+    auto findResult = g_csdModifiers.find(path);
+
+    if (findResult != g_csdModifiers.end())
+        return findResult->second;
+
+    return {};
+}
+
+const xxHashMap<TextFontPictureModifier> g_pftModifierXenon =
+{
+    { HashStr("button_a"), { 0, 0, 28, 28 } },
+    { HashStr("button_b"), { 28, 0, 28, 28 } },
+    { HashStr("button_x"), { 56, 0, 28, 28 } },
+    { HashStr("button_y"), { 84, 0, 28, 28 } },
+    { HashStr("button_lb"), { 112, 0, 53, 28 } },
+    { HashStr("button_lt"), { 56, 28, 55, 28 } },
+    { HashStr("button_rb"), { 168, 0, 53, 28 } },
+    { HashStr("button_rt"), { 0, 28, 55, 28 } },
+    { HashStr("button_start"), { 112, 28, 28, 28 } },
+    { HashStr("button_back"), { 140, 28, 28, 28 } }
+};
+
+const xxHashMap<TextFontPictureModifier> g_pftModifierPS3 =
+{
+    { HashStr("button_a"), { 0, 56, 28, 28 } },
+    { HashStr("button_b"), { 28, 56, 28, 28 } },
+    { HashStr("button_x"), { 56, 56, 28, 28 } },
+    { HashStr("button_y"), { 84, 56, 28, 28 } },
+    { HashStr("button_lb"), { 112, 56, 48, 28 } },
+    { HashStr("button_lt"), { 168, 56, 48, 28 } },
+    { HashStr("button_rb"), { 0, 84, 48, 28 } },
+    { HashStr("button_rt"), { 56, 84, 48, 28 } },
+    { HashStr("button_start"), { 140, 84, 28, 28 } },
+    { HashStr("button_back"), { 112, 84, 28, 28 } }
+};
+
+TextFontPictureModifier FindFontPictureModifier(xxHashMap<TextFontPictureModifier> pftModifier, std::string_view& name)
+{
+    auto findResult = pftModifier.find(HashStr(name));
+
+    if (findResult != pftModifier.end())
+        return findResult->second;
+
+    return {};
+}
+
 const xxHashMap<MovieModifier> g_movieModifiers =
 {
-    { HashStr("sound\\title_loop_GBn.wmv"), { CROP_NARROW } }
+    { HashStr("sound\\title_loop_GBn.wmv"), { MOVIE_CROP_NARROW } }
 };
+
+MovieModifier FindMovieModifier(XXH64_hash_t nameHash)
+{
+    auto findResult = g_movieModifiers.find(nameHash);
+
+    if (findResult != g_movieModifiers.end())
+        return findResult->second;
+
+    return {};
+}

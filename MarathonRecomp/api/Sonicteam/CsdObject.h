@@ -2,6 +2,7 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/SoX/RefCountObject.h>
+#include <Sonicteam/CsdResource.h>
 
 namespace Sonicteam
 {
@@ -9,7 +10,7 @@ namespace Sonicteam
     {
     public:
         MARATHON_INSERT_PADDING(4);
-        xpointer<Chao::CSD::CProject> pCsdProject;
-        MARATHON_INSERT_PADDING(4);
+        xpointer<Chao::CSD::CProject> m_pCsdProject;
+        xpointer<CsdResource> m_pCsdResource;
     };
 }

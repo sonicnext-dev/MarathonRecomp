@@ -7,7 +7,7 @@ PPC_FUNC(sub_824D7340)
 {
     auto pHUDLoading = (Sonicteam::HUDLoading*)(base + ctx.r3.u32);
 
-    if ((pHUDLoading->m_Flags.get() & Sonicteam::HUDLoading::eHUDLoadingFlags_Finished) == 0)
+    if ((pHUDLoading->m_Flags.get() & Sonicteam::HUDLoading::HUDLoadingFlags_Finished) == 0)
     {
         for (auto& event : LoadingPatches::Events)
             event->Update(ctx.f1.f64);
