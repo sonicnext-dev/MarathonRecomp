@@ -6,6 +6,7 @@ CONFIG_DEFINE_ENUM_LOCALISED("System", EVoiceLanguage, VoiceLanguage, EVoiceLang
 CONFIG_DEFINE_LOCALISED("System", bool, Subtitles, true);
 CONFIG_DEFINE_LOCALISED("System", bool, Hints, true);
 CONFIG_DEFINE_LOCALISED("System", bool, ControlTutorial, true);
+CONFIG_DEFINE_LOCALISED("System", bool, Autosave, true);
 CONFIG_DEFINE_LOCALISED("System", bool, AchievementNotifications, true);
 CONFIG_DEFINE("System", bool, ShowConsole, false);
 
