@@ -133,17 +133,18 @@ PPC_FUNC(sub_82195500)
         return;
     }
 
-    auto pDoc = App::s_pApp->m_pDoc;
-    auto pGameImp = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->m_pGameImp;
     auto pPlayer = (Sonicteam::Player::Object*)(base + ctx.r3.u32);
+    auto pDoc = App::s_pApp->m_pDoc;
 
-    if (pPlayer->m_SetupModuleIndexPost != -2 && pPlayer->m_IsPlayer)
+    if (auto pGameMode = pDoc->GetDocMode<Sonicteam::GameMode>())
     {
-        auto PIndex = pGameImp->PlayerActorIDToIndex(pPlayer->m_ActorID);
-        auto PManager = pDoc->m_vspInputManager[pDoc->m_PlayerControllerID[PIndex].get()].get();
-        if ((PManager->m_PadState.LastButtons.get() & Sonicteam::SoX::Input::KeyState_Select) != 0)
+        if (pPlayer->m_SetupModuleIndexPostfix != -2 && pPlayer->m_IsPlayer)
         {
-            pPlayer->m_SetupModuleIndexPost = 2;
+            auto playerIndex = pGameMode->m_pGameImp->PlayerActorIDToIndex(pPlayer->m_ActorID);
+            auto& spManager = pDoc->m_vspInputManager[pDoc->m_PlayerControllerID[playerIndex]];
+
+            if ((spManager->m_PadState.LastButtons.get() & Sonicteam::SoX::Input::KeyState_Select) != 0)
+                pPlayer->m_SetupModuleIndexPostfix = 2;
         }
     }
 

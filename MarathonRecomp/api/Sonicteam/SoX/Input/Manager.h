@@ -4,7 +4,6 @@
 
 namespace Sonicteam::SoX::Input
 {
-
     enum KeyState
     {
         KeyState_DpadUp = 0x40,
@@ -26,7 +25,7 @@ namespace Sonicteam::SoX::Input
     struct PadState
     {
         be<uint32_t> LastButtons;
-        be<uint32_t> InvertedLastButtons; // ~wLastButtons
+        be<uint32_t> InvertedLastButtons;
         MARATHON_INSERT_PADDING(8);
 
         be<float> LeftStickHorizontal;

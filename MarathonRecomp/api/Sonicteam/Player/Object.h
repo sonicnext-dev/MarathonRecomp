@@ -13,12 +13,12 @@ namespace Sonicteam::Player
         MARATHON_INSERT_PADDING(0x2C);
         bool m_IsPlayer;
         bool m_IsPosture;
-        bool m_IsAmigo; //AI::Amigo
+        bool m_IsAmigo;
         MARATHON_INSERT_PADDING(0x19);
         boost::shared_ptr<State::Machine2> m_spStateMachine;
         MARATHON_INSERT_PADDING(0x10);
-        be<uint32_t> m_SetupModuleIndexPre;
-        be<uint32_t> m_SetupModuleIndexPost;
+        be<uint32_t> m_SetupModuleIndexPrefix;
+        be<uint32_t> m_SetupModuleIndexPostfix;
         boost::shared_ptr<IGauge> m_spGauge;
         MARATHON_INSERT_PADDING(0x204);
 

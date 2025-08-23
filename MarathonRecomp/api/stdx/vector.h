@@ -1,8 +1,5 @@
 #pragma once
 
-#include <kernel/heap.h>
-#include <kernel/function.h>
-
 namespace stdx
 {
     template <typename Type>
