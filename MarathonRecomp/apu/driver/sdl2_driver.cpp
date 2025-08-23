@@ -131,8 +131,11 @@ void XAudioSubmitFrame(void* samples)
             float ch4 = floatSamples[4 * XAUDIO_NUM_SAMPLES + i];
             float ch5 = floatSamples[5 * XAUDIO_NUM_SAMPLES + i];
 
-            audioFrames[i * 2 + 0] = (ch0 + ch2 * 0.75f + ch4) * Config::MasterVolume;
-            audioFrames[i * 2 + 1] = (ch1 + ch2 * 0.75f + ch5) * Config::MasterVolume;
+            float samp0 = (ch0 + ch2 * 0.75f + ch4) * Config::MasterVolume;
+            float samp1 = (ch1 + ch2 * 0.75f + ch5) * Config::MasterVolume;
+
+            audioFrames[i * 2 + 0] = isnan(samp0) ? 0.0f : samp0;
+            audioFrames[i * 2 + 1] = isnan(samp1) ? 0.0f : samp1;
         }
 
         SDL_QueueAudio(g_audioDevice, &audioFrames, sizeof(audioFrames));
@@ -143,8 +146,10 @@ void XAudioSubmitFrame(void* samples)
 
         for (size_t i = 0; i < XAUDIO_NUM_SAMPLES; i++)
         {
-            for (size_t j = 0; j < XAUDIO_NUM_CHANNELS; j++)
-                audioFrames[i * XAUDIO_NUM_CHANNELS + j] = floatSamples[j * XAUDIO_NUM_SAMPLES + i] * Config::MasterVolume;
+            for (size_t j = 0; j < XAUDIO_NUM_CHANNELS; j++) {
+                float samp = floatSamples[j * XAUDIO_NUM_SAMPLES + i] * Config::MasterVolume;
+                audioFrames[i * 2 + j] = isnan(samp) ? 0.0f : samp;
+            }
         }
 
         SDL_QueueAudio(g_audioDevice, &audioFrames, sizeof(audioFrames));

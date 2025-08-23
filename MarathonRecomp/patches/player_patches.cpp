@@ -41,8 +41,7 @@ PPC_FUNC(sub_8221A7D8)
     __imp__sub_8221A7D8(ctx, base);
 }
 
-// Sonicteam::Player::State::*Context IDynamicLink::Init, Removed
-// SonicTeam::Player::Score::ctor
+// SonicTeam::Player::Score::Score
 PPC_FUNC_IMPL(__imp__sub_821E8C48);
 PPC_FUNC(sub_821E8C48)
 {
@@ -53,6 +52,7 @@ PPC_FUNC(sub_821E8C48)
     }
 
     auto pPlayer = (Sonicteam::Player::Object*)(base + ctx.r4.u32);
+
     if (pPlayer->m_PlayerLua == "player/tails.lua")
     {
         auto pSonicGauge = GuestToHostFunction<Sonicteam::Player::SonicGauge*>(sub_8223F208, g_userHeap.Alloc(sizeof(Sonicteam::Player::SonicGauge)));

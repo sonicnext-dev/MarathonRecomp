@@ -20,9 +20,9 @@ public:
     static void ComputeOffsets();
 };
 
-inline XXH64_hash_t HashStr(const std::string_view& value)
+inline float ComputeScale(float aspectRatio)
 {
-    return XXH3_64bits(value.data(), value.size());
+    return ((aspectRatio * 720.0f) / 1280.0f) / sqrt((aspectRatio * 720.0f) / 1280.0f);
 }
 
 struct CsdUVs
@@ -288,6 +288,30 @@ inline TextFontPictureParams FindFontPictureParams(xxHashMap<TextFontPicturePara
     auto findResult = pftParams.find(HashStr(name));
 
     if (findResult != pftParams.end())
+        return findResult->second;
+
+    return {};
+}
+
+enum MovieFlags : uint32_t
+{
+    CROP_NARROW = 1 << 0,
+    CROP_WIDE = 1 << 1,
+    CROP = CROP_NARROW | CROP_WIDE
+};
+
+struct MovieModifier
+{
+    MovieFlags Flags{};
+};
+
+extern const xxHashMap<MovieModifier> g_movieModifiers;
+
+inline MovieModifier FindMovieModifier(XXH64_hash_t nameHash)
+{
+    auto findResult = g_movieModifiers.find(nameHash);
+
+    if (findResult != g_movieModifiers.end())
         return findResult->second;
 
     return {};

@@ -143,6 +143,7 @@ set(MARATHON_RECOMP_PATCHES_CXX_SOURCES
     "patches/loading_patches.cpp"
     "patches/misc_patches.cpp"
     "patches/player_patches.cpp"
+    "patches/SaveDataTask_patches.cpp"
     "patches/TitleTask_patches.cpp"
     "patches/video_patches.cpp"
 )

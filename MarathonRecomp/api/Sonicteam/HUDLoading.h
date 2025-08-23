@@ -9,7 +9,7 @@ namespace Sonicteam
     public:
         enum HUDLoadingFlags
         {
-            eHUDLoadingFlags_Finished = 6
+            HUDLoadingFlags_Finished = 6
         };
 
         MARATHON_INSERT_PADDING(0x5C);

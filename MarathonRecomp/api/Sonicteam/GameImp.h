@@ -10,15 +10,15 @@ namespace Sonicteam
     public:
         enum GameState : uint32_t
         {
-            eGameState_MainMenu,
-            eGameState_Stage,
-            eGameState_Event,
-            eGameState_Movie,
-            eGameState_Result,
-            eGameState_Message,
-            eGameState_6,
-            eGameState_Save,
-            eGameState_ReturnToMainMenu
+            GameState_MainMenu,
+            GameState_Stage,
+            GameState_Event,
+            GameState_Movie,
+            GameState_Result,
+            GameState_Message,
+            GameState_6,
+            GameState_Save,
+            GameState_ReturnToMainMenu
         };
 
         struct PlayerData
@@ -47,7 +47,11 @@ namespace Sonicteam
         be<uint32_t> m_Flags;
         MARATHON_INSERT_PADDING(0xE2C);
         PlayerData m_PlayerData[4];
-        MARATHON_INSERT_PADDING(0xA4C);
+        MARATHON_INSERT_PADDING(0x200);
+        bool m_IsStage;
+        MARATHON_INSERT_PADDING(0x0C);
+        be<uint32_t> m_Field1180;
+        MARATHON_INSERT_PADDING(0x838);
         xpointer<SoX::Physics::World> m_pPhysicsWorld;
         xpointer<void> m_pMyCollisionFilter;
 
