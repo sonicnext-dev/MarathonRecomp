@@ -58,10 +58,8 @@ PPC_FUNC(sub_82619D00)
 
     if (*pName == "radermap")
     {
-        auto radermapScale = 256 * g_aspectRatioScale * g_aspectRatioGameplayScale;
-
-        ctx.r5.u32 = radermapScale;
-        ctx.r6.u32 = radermapScale;
+        ctx.r5.u32 = g_radarMapScale;
+        ctx.r6.u32 = g_radarMapScale;
     }
 
     if (*pName == "reflection0")
@@ -94,10 +92,8 @@ PPC_FUNC(sub_82619B88)
     {
         if (strcmp(g_pBlockName, "radermap0") == 0)
         {
-            auto radermapScale = 256 * g_aspectRatioScale;
-
-            ctx.r5.u32 = radermapScale;
-            ctx.r6.u32 = radermapScale;
+            ctx.r5.u32 = g_radarMapScale;
+            ctx.r6.u32 = g_radarMapScale;
         }
     }
 

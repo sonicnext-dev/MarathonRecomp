@@ -12,6 +12,7 @@ inline float g_aspectRatioOffsetY;
 inline float g_aspectRatioScale;
 inline float g_aspectRatioGameplayScale;
 inline float g_aspectRatioNarrowScale;
+inline float g_radarMapScale;
 
 class AspectRatioPatches
 {
@@ -19,11 +20,6 @@ public:
     static void Init();
     static void ComputeOffsets();
 };
-
-inline float ComputeScale(float aspectRatio)
-{
-    return ((aspectRatio * 720.0f) / 1280.0f) / sqrt((aspectRatio * 720.0f) / 1280.0f);
-}
 
 // -------------- CSD --------------- //
 

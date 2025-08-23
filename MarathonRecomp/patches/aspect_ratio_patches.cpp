@@ -13,25 +13,25 @@
 // #define CORNER_DEBUG
 
 static Mutex g_pathMutex;
-static std::map<const void*, XXH64_hash_t> g_paths;
+static std::map<const void*, XXH64_hash_t> g_paths{};
 
-static std::optional<CsdModifier> g_sceneModifier;
-static std::optional<CsdModifier> g_castNodeModifier;
-static std::optional<CsdModifier> g_castModifier;
+static std::optional<CsdModifier> g_sceneModifier{};
+static std::optional<CsdModifier> g_castNodeModifier{};
+static std::optional<CsdModifier> g_castModifier{};
 
-static Sonicteam::TextFontPicture* g_pTextFontPicture;
+static Sonicteam::TextFontPicture* g_pTextFontPicture{};
 
-static float g_corners[8];
-static bool g_cornerExtract;
+static float g_corners[8]{};
+static bool g_cornerExtract{};
 
-static float g_radarMapX;
-static float g_radarMapY;
-static float g_radarMapCoverWidth;
-static float g_radarMapCoverHeight;
+static float g_radarMapX{};
+static float g_radarMapY{};
+static float g_radarMapCoverWidth{};
+static float g_radarMapCoverHeight{};
 
 // Explicit translations don't get affected by gameplay UI downscaling.
-static float g_scenePositionX;
-static float g_scenePositionY;
+static float g_scenePositionX{};
+static float g_scenePositionY{};
 
 static class LoadingPillarboxEvent : public HookEvent
 {
@@ -42,6 +42,11 @@ public:
     }
 }
 g_loadingPillarboxEvent{};
+
+float ComputeScale(float aspectRatio)
+{
+    return ((aspectRatio * 720.0f) / 1280.0f) / sqrt((aspectRatio * 720.0f) / 1280.0f);
+}
 
 void AspectRatioPatches::Init()
 {
@@ -83,6 +88,7 @@ void AspectRatioPatches::ComputeOffsets()
     } 
 
     g_aspectRatioNarrowScale = std::clamp((g_aspectRatio - NARROW_ASPECT_RATIO) / (WIDE_ASPECT_RATIO - NARROW_ASPECT_RATIO), 0.0f, 1.0f);
+    g_radarMapScale = 256 * g_aspectRatioScale * g_aspectRatioGameplayScale;
 }
 
 void EmplacePath(const void* key, const std::string_view& value)
@@ -633,10 +639,8 @@ PPC_FUNC(sub_824F1538)
 
     __imp__sub_824F1538(ctx, base);
 
-    auto radermapScale = 256 * g_aspectRatioScale * g_aspectRatioGameplayScale;
-
-    pHUDRaderMap->m_pMaskTexture->m_Width = radermapScale;
-    pHUDRaderMap->m_pMaskTexture->m_Height = radermapScale;
+    pHUDRaderMap->m_pMaskTexture->m_Width = g_radarMapScale;
+    pHUDRaderMap->m_pMaskTexture->m_Height = g_radarMapScale;
     pHUDRaderMap->m_X = g_radarMapX - g_radarMapCoverWidth / 2;
     pHUDRaderMap->m_Y = g_radarMapY - g_radarMapCoverHeight / 2;
 }
@@ -1017,8 +1021,8 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("event/e1141/sonic_the_hedgehog/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
 
     // button_window
-    { HashStr("sprite/button_window/button_window/Scene_0000"), { CSD_ALIGN_BOTTOM | CSD_SCALE } },
-    { HashStr("sprite/button_window/button_window/Scene_0000/Null_0000/Cast_0002"), { CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/button_window/button_window/Scene_0000/Null_0000/Cast_0001"), { CSD_ALIGN_BOTTOM | CSD_SCALE } },
+    { HashStr("sprite/button_window/button_window/Scene_0000/Null_0000/Cast_0002"), { CSD_ALIGN_BOTTOM | CSD_SCALE | CSD_EXTEND_RIGHT } },
 
     // gadget_ber
     { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar"), { CSD_ALIGN_BOTTOM_RIGHT } },
@@ -1056,8 +1060,10 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0222"), { CSD_ALIGN_TOP | CSD_SCALE | CSD_UV_MODIFIER | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, { 0.0015f, 0, 0.0015f, 0, 0, 0, 0, 0 }, {}, { 0.1f, 0, 0.1f, 0, -0.1f, 0, -0.1f, 0 } } },
     { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0964"), { CSD_ALIGN_TOP | CSD_SCALE | CSD_EXTEND_RIGHT } },
     { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0965"), { CSD_ALIGN_TOP | CSD_SCALE | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0966"), { CSD_ALIGN_TOP | CSD_SCALE } },
     { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0226"), { CSD_ALIGN_BOTTOM | CSD_SCALE | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.8f, 0, -0.8f, 0 } } },
     { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0227"), { CSD_ALIGN_BOTTOM | CSD_SCALE | CSD_REPEAT_RIGHT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, {}, {}, { -0.8f, 0, -0.8f, 0, 0, 0, 0, 0 } } },
+    { HashStr("sprite/main_menu/titlebar_effect"), { CSD_ALIGN_TOP | CSD_SCALE } },
 
     // maindisplay
     { HashStr("sprite/maindisplay/power"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },

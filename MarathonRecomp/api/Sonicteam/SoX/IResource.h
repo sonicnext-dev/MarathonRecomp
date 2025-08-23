@@ -10,6 +10,6 @@ namespace Sonicteam::SoX
     public:
         MARATHON_INSERT_PADDING(4);
         stdx::string m_FilePath;
-        MARATHON_INSERT_PADDING(0x38);
+        MARATHON_INSERT_PADDING(0x3C);
     };
 }
