@@ -100,27 +100,27 @@ bool MidairSnowboardControl3()
     return Config::MidairControlForSnowboards;
 }
 
-//Add Missing SetupModuleDebug to table
-void DebugPlayerSwitch_0(PPCRegister& r_sstring, PPCRegister& r_index)
+// Add missing SetupModuleDebug to table.
+void DebugPlayerSwitch(PPCRegister& str, PPCRegister& index)
 {
     if (!Config::DebugSwitch)
-    {
         return;
-    }
 
-    auto pString = (stdx::string*)(g_memory.Translate(r_sstring.u32));
-    auto Index = r_index.u32;
-    switch (Index)
+    auto pString = (stdx::string*)g_memory.Translate(str.u32);
+
+    switch (index.u32)
     {
-    case 0:
-        *pString = "SetupModuleDebug";
-        break;
-    case 1:
-        *pString = "SetupModule";
-        break;
-    case 2:
-        *pString = "SetupModuleDebug";
-        break;
+        case 0:
+            *pString = "SetupModuleDebug";
+            break;
+
+        case 1:
+            *pString = "SetupModule";
+            break;
+
+        case 2:
+            *pString = "SetupModuleDebug";
+            break;
     }
 }
 
