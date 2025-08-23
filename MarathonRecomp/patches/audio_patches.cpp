@@ -88,3 +88,21 @@ void PowerUpJingleDurationFix(PPCRegister& duration)
 
     duration.f64 = 20.0;
 }
+
+void XmvPlayerLang(PPCRegister& r11)
+{
+    r11.u32 = 1;
+
+    if (Config::VoiceLanguage == EVoiceLanguage::Japanese)
+        r11.u32++;
+}
+
+void CsbSbkLang(PPCRegister& r8)
+{
+    r8.u32 = Config::VoiceLanguage == EVoiceLanguage::Japanese ? 0 : 1;
+}
+
+void MovieVoiceLang(PPCRegister& r19)
+{
+    r19.u32 = Config::VoiceLanguage == EVoiceLanguage::Japanese ? 0x80000000 : 0x40000000;
+}
