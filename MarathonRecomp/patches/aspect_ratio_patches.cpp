@@ -162,7 +162,7 @@ void TraverseSceneNode(Chao::CSD::SceneNode* sceneNode, std::string path)
 PPC_FUNC_IMPL(__imp__sub_82617570);
 PPC_FUNC(sub_82617570)
 {
-    auto pName = reinterpret_cast<const char*>(base + PPC_LOAD_U32(ctx.r4.u32 + 4));
+    auto pName = reinterpret_cast<char*>(base + PPC_LOAD_U32(ctx.r4.u32 + 4));
 
     __imp__sub_82617570(ctx, base);
 
@@ -180,6 +180,33 @@ PPC_FUNC(sub_82617570)
         return;
 
     LOGFN_UTILITY("CSD loaded: {} (0x{:08X})", pName, (uint64_t)pCsdObject->m_pCsdProject.get());
+
+    static const char* s_languages[7] =
+    {
+        nullptr, // Maps to ELanguages enum.
+        "_English",
+        "_Japanese",
+        "_German",
+        "_French",
+        "_Spanish",
+        "_Italian"
+    };
+
+    auto pSuffix = s_languages[(int)Config::Language.Value];
+
+    auto nameLen = strlen(pName);
+    auto suffixLen = strlen(pSuffix);
+
+    // Truncate language names to redirect CSD modifiers.
+    if (suffixLen < nameLen)
+    {
+        if (strcmp(pName + nameLen - suffixLen, pSuffix) == 0)
+        {
+            pName[nameLen - suffixLen] = '\0';
+
+            LOGFN_UTILITY("CSD modifier(s) redirected: {}", pName);
+        }
+    }
 
     TraverseSceneNode(pCsdObject->m_pCsdProject->m_pResource->pRootNode, pName);
 }
@@ -1034,13 +1061,12 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/logo/cri_logo/Scene_0000/Null_0002/bg"), { CSD_STRETCH } },
     { HashStr("sprite/logo/cri_logo/Scene_0000/Null_0002/criware"), { CSD_SCALE } },
 
-    // loading_english
-    // TODO: draw pillarbox.
-    { HashStr("sprite/loading/loading_english/Scene_0000/Loading"), { CSD_ALIGN_BOTTOM } },
-    { HashStr("sprite/loading/loading_english/Scene_0000/Loading_02"), { CSD_ALIGN_BOTTOM } },
-    { HashStr("sprite/loading/loading_english/Scene_0000/arrow_01"), { CSD_ALIGN_BOTTOM } },
-    { HashStr("sprite/loading/loading_english/Scene_0000/arrow_02"), { CSD_ALIGN_BOTTOM } },
-    { HashStr("sprite/loading/loading_english/Scene_0000/arrow_03"), { CSD_ALIGN_BOTTOM } },
+    // loading
+    { HashStr("sprite/loading/loading/Scene_0000/Loading"), { CSD_ALIGN_BOTTOM } },
+    { HashStr("sprite/loading/loading/Scene_0000/Loading_02"), { CSD_ALIGN_BOTTOM } },
+    { HashStr("sprite/loading/loading/Scene_0000/arrow_01"), { CSD_ALIGN_BOTTOM } },
+    { HashStr("sprite/loading/loading/Scene_0000/arrow_02"), { CSD_ALIGN_BOTTOM } },
+    { HashStr("sprite/loading/loading/Scene_0000/arrow_03"), { CSD_ALIGN_BOTTOM } },
 
     // main_menu
     { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita3"), { CSD_EXTEND_RIGHT } },
@@ -1145,10 +1171,10 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/talkwindow/talkwindow/nafuda"), { CSD_SCALE } },
     { HashStr("sprite/talkwindow/talkwindow/Scene_0021"), { CSD_SCALE } },
 
-    // title_English
-    { HashStr("sprite/title/title_English/Scene_Title/Logo_add"), { CSD_SCALE } },
-    { HashStr("sprite/title/title_English/Scene_Title/Logo"), { CSD_SCALE } },
-    { HashStr("sprite/title/title_English/Scene_Title/copyright"), { CSD_ALIGN_BOTTOM } },
+    // title
+    { HashStr("sprite/title/title/Scene_Title/Logo_add"), { CSD_SCALE } },
+    { HashStr("sprite/title/title/Scene_Title/Logo"), { CSD_SCALE } },
+    { HashStr("sprite/title/title/Scene_Title/copyright"), { CSD_ALIGN_BOTTOM } },
 
     // titleloop_sth
     // TODO: adjust this if letterboxed.
@@ -1158,11 +1184,11 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/towndisplay/ring"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
     { HashStr("sprite/towndisplay/ring_anime"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
 
-    // trickpoint_English
+    // trickpoint
     // TODO: offset score text properly.
-    { HashStr("sprite/trickpoint/trickpoint_English/Scene_0000"), { CSD_ALIGN_TOP_RIGHT } },
-    { HashStr("sprite/trickpoint/trickpoint_English/Scene_0001"), { CSD_ALIGN_TOP_RIGHT } },
-    { HashStr("sprite/trickpoint/trickpoint_English/score"), { CSD_ALIGN_TOP_RIGHT } },
+    { HashStr("sprite/trickpoint/trickpoint/Scene_0000"), { CSD_ALIGN_TOP_RIGHT } },
+    { HashStr("sprite/trickpoint/trickpoint/Scene_0001"), { CSD_ALIGN_TOP_RIGHT } },
+    { HashStr("sprite/trickpoint/trickpoint/score"), { CSD_ALIGN_TOP_RIGHT } },
 };
 
 std::optional<CsdModifier> FindCsdModifier(uint32_t data)
