@@ -29,6 +29,8 @@ static float g_radarMapY{};
 static float g_radarMapCoverWidth{};
 static float g_radarMapCoverHeight{};
 
+static float g_podBaseRightX{};
+
 // Explicit translations don't get affected by gameplay UI downscaling.
 static float g_scenePositionX{};
 static float g_scenePositionY{};
@@ -278,7 +280,7 @@ PPC_FUNC(sub_828C8F60)
             g_cornerExtract = false;
 
 #ifdef CORNER_DEBUG
-            if (g_sceneModifier->cornerMax == FLT_MAX)
+            if (g_sceneModifier->CornerMax == FLT_MAX)
             {
                 fmt::print("Corners: ");
                 for (auto corner : g_corners)
@@ -478,7 +480,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
         }
 
 #ifdef CORNER_DEBUG
-        if ((offsetScaleModifier.Flags & (OFFSET_SCALE_LEFT | OFFSET_SCALE_RIGHT)) != 0 && offsetScaleModifier.cornerMax == FLT_MAX)
+        if ((offsetScaleModifier.Flags & (CSD_OFFSET_SCALE_LEFT | CSD_OFFSET_SCALE_RIGHT)) != 0 && offsetScaleModifier.CornerMax == FLT_MAX)
             fmt::println("Corner: {}", corner);
 #endif
 
@@ -508,6 +510,10 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
         }
         else if ((modifier.Flags & CSD_EXTEND_RIGHT) != 0 && (i == 2 || i == 3))
         {
+            // Preserve Audio Room "pod" base right edge.
+            if ((modifier.Flags & CSD_POD_BASE) != 0)
+                g_podBaseRightX = x;
+
             x = std::max(x, float(Video::s_viewportWidth));
         }
 
@@ -604,9 +610,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
                 getVertex(3)->X = getVertex(3)->X - width;
             }
 
-            auto isFlipVert = (modifier.Flags & CSD_REPEAT_FLIP_VERTICAL) != 0;
-
-            if (isFlipVert)
+            if ((modifier.Flags & CSD_REPEAT_FLIP_VERTICAL) != 0)
             {
                 getVertex(0)->Y = getVertex(0)->Y + height;
                 getVertex(1)->Y = getVertex(1)->Y - height;
@@ -640,8 +644,44 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
     }
     else
     {
+        auto r3 = ctx.r3;
+        auto r5 = ctx.r5;
+
+        ctx.r3 = r3;
         ctx.r4 = ctx.r1;
+        ctx.r5 = r5;
         original(ctx, base);
+
+        // Clone Audio Room "pod" left edge to fill
+        // in the rest of the box at ultrawide.
+        if ((modifier.Flags & CSD_POD_CLONE) != 0)
+        {
+            auto v0 = getVertex(0);
+            auto v1 = getVertex(1);
+            auto v2 = getVertex(2);
+            auto v3 = getVertex(3);
+            auto vpWidth = (float)Video::s_viewportWidth;
+
+            // Shift cloned element to base edge.
+            v0->X = g_podBaseRightX;
+            v1->X = g_podBaseRightX;
+
+            // Stretch cloned element to screen edge.
+            v2->X = vpWidth;
+            v3->X = vpWidth;
+
+            // Shift UVs to remove cloned element edge line.
+            v0->U = v0->U + 0.008f;
+            v0->V = v0->V + 0.008f;
+            v1->U = v1->U + 0.008f;
+            v1->V = v1->V + 0.008f;
+
+            ctx.r3 = r3;
+            ctx.r4 = ctx.r1;
+            ctx.r5 = r5;
+            original(ctx, base);
+        }
+
         ctx.r1.u32 += size;
     }
 }
@@ -1015,8 +1055,8 @@ PPC_FUNC(sub_8263CC40)
 const xxHashMap<CsdModifier> g_csdModifiers =
 {
     // audio
-    { HashStr("sprite/audio/audio/pod/pod"), { CSD_POD } },
-    { HashStr("sprite/audio/audio/pod/pod/Cast_1084"), { CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/audio/audio/pod/pod/Cast_1084"), { CSD_POD_BASE | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/audio/audio/pod/pod/Cast_1086"), { CSD_POD_CLONE } },
     { HashStr("sprite/audio/audio/pod/pod/Cast_1088"), { CSD_EXTEND_RIGHT } },
 
     // background

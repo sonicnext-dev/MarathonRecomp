@@ -74,10 +74,12 @@ enum CsdFlags
     CSD_CORNER_EXTRACT = 1 << 26,
 
     CSD_RADARMAP = 1 << 27,
-    CSD_POD = 1 << 28,
 
-    CSD_MULTIPLAYER = 1 << 29,
-    CSD_MULTIPLAYER_CENTER = 1 << 30
+    CSD_POD_BASE = 1 << 28,
+    CSD_POD_CLONE = 1 << 29,
+
+    CSD_MULTIPLAYER = 1 << 30,
+    CSD_MULTIPLAYER_CENTER = 1 << 31
 };
 
 struct CsdUVs
@@ -102,7 +104,7 @@ struct CsdColours
 
 struct CsdModifier
 {
-    uint32_t Flags{};
+    int64_t Flags{};
     CsdUVs UVs{};
     CsdColours Colours{};
     CsdUVs RepeatUVs{};
