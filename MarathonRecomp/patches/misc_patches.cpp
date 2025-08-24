@@ -11,16 +11,16 @@ void AchievementManagerUnlockMidAsmHook(PPCRegister& id)
 
 void SetLifeBarAnimation(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5, PPCRegister& r31)
 {
-    static bool g_initContextualHUD{};
-    static char* g_lifeBarSceneName{};
+    static bool s_initContextualHUD{};
+    static char* s_lifeBarSceneName{};
 
-    if (!g_initContextualHUD)
+    if (!s_initContextualHUD)
     {
         constexpr const char* LIFE_BAR_ANIME = "life_bar_anime";
 
-        g_lifeBarSceneName = (char*)g_userHeap.Alloc(strlen(LIFE_BAR_ANIME) + 1);
+        s_lifeBarSceneName = (char*)g_userHeap.Alloc(strlen(LIFE_BAR_ANIME) + 1);
 
-        strcpy(g_lifeBarSceneName, LIFE_BAR_ANIME);
+        strcpy(s_lifeBarSceneName, LIFE_BAR_ANIME);
 
         if (Config::RestoreContextualHUDColours)
         {
@@ -32,7 +32,7 @@ void SetLifeBarAnimation(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5, PPCR
             *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Blaze] = 2.0f;
         }
 
-        g_initContextualHUD = true;
+        s_initContextualHUD = true;
     }
 
     auto base = g_memory.base;
@@ -45,7 +45,7 @@ void SetLifeBarAnimation(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5, PPCR
         pCsdObject->m_pCsdResource->m_FilePath == "sprite/tagdisplay_2p") &&
         strcmp(pSceneName, "life_ber_anime") == 0)
     {
-        r4.u32 = g_memory.MapVirtual(g_lifeBarSceneName);
+        r4.u32 = g_memory.MapVirtual(s_lifeBarSceneName);
     }
 
     if (!Config::RestoreContextualHUDColours)
@@ -96,16 +96,6 @@ void PostureDisableEdgeGrabLeftover(PPCRegister& posture)
     auto base = g_memory.base;
 
     *(volatile uint8_t*)(base + (posture.u32 + 0x3C0)) = 1;
-}
-
-// Sonicteam::EventEntityTask::Update
-PPC_FUNC_IMPL(__imp__sub_8264AC48);
-PPC_FUNC(sub_8264AC48)
-{
-    if (Config::CutsceneAspectRatio == ECutsceneAspectRatio::Original)
-        BlackBar::g_isPillarbox = true;
-
-    __imp__sub_8264AC48(ctx, base);
 }
 
 void PedestrianAnimationLOD(PPCRegister& val)

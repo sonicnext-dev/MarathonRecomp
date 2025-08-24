@@ -604,6 +604,16 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
                 getVertex(3)->X = getVertex(3)->X - width;
             }
 
+            auto isFlipVert = (modifier.Flags & CSD_REPEAT_FLIP_VERTICAL) != 0;
+
+            if (isFlipVert)
+            {
+                getVertex(0)->Y = getVertex(0)->Y + height;
+                getVertex(1)->Y = getVertex(1)->Y - height;
+                getVertex(2)->Y = getVertex(2)->Y + height;
+                getVertex(3)->Y = getVertex(3)->Y - height;
+            }
+
             if ((modifier.Flags & CSD_REPEAT_UV_MODIFIER) != 0)
                 applyUVModifier(modifier.RepeatUVs);
 
@@ -656,6 +666,34 @@ PPC_FUNC(sub_82631718)
     // r5 = vertex count
 
     Draw(ctx, base, __imp__sub_82631718, 0x0C);
+}
+
+// Sonicteam::EventEntityTask::Update
+PPC_FUNC_IMPL(__imp__sub_8264AC48);
+PPC_FUNC(sub_8264AC48)
+{
+    if (Config::CutsceneAspectRatio == ECutsceneAspectRatio::Original)
+        BlackBar::g_isPillarbox = true;
+
+    __imp__sub_8264AC48(ctx, base);
+}
+
+// Sonicteam::HUDResult::Update
+PPC_FUNC_IMPL(__imp__sub_824F4D80);
+PPC_FUNC(sub_824F4D80)
+{
+    BlackBar::g_isPillarbox = true;
+
+    __imp__sub_824F4D80(ctx, base);
+}
+
+// Sonicteam::HUDBattleResult::Update
+PPC_FUNC_IMPL(__imp__sub_824D32C8);
+PPC_FUNC(sub_824D32C8)
+{
+    BlackBar::g_isPillarbox = true;
+
+    __imp__sub_824D32C8(ctx, base);
 }
 
 // Sonicteam::HUDRaderMap::Update
@@ -1018,6 +1056,17 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/battledisplay_2p/custom_level1"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
     { HashStr("sprite/battledisplay_2p/custom_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
 
+    // battle_result
+    { HashStr("sprite/battle_result/battle_result_English/congratulations"), { CSD_ALIGN_TOP } },
+    { HashStr("sprite/battle_result/battle_result_English/plate/plate_ue/plate1"), { CSD_ALIGN_TOP | CSD_EXTEND_LEFT } },
+    { HashStr("sprite/battle_result/battle_result_English/plate/plate_ue/plate2"), { CSD_ALIGN_TOP } },
+    { HashStr("sprite/battle_result/battle_result_English/plate/plate_ue/plate3"), { CSD_ALIGN_TOP } },
+    { HashStr("sprite/battle_result/battle_result_English/plate/plate_ue/plate4"), { CSD_ALIGN_TOP | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/battle_result/battle_result_English/plate/plate_sita/plate5"), { CSD_ALIGN_BOTTOM | CSD_EXTEND_LEFT } },
+    { HashStr("sprite/battle_result/battle_result_English/plate/plate_sita/plate6"), { CSD_ALIGN_BOTTOM } },
+    { HashStr("sprite/battle_result/battle_result_English/plate/plate_sita/plate7"), { CSD_ALIGN_BOTTOM } },
+    { HashStr("sprite/battle_result/battle_result_English/plate/plate_sita/plate8"), { CSD_ALIGN_BOTTOM | CSD_EXTEND_RIGHT } },
+
     // black_out
     { HashStr("sprite/black_out/black_out"), { CSD_STRETCH } },
 
@@ -1116,8 +1165,148 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     // radarmap_cover
     { HashStr("sprite/radarmap_cover/radarmap_cover/Scene_0000"), { CSD_RADARMAP | CSD_ALIGN_TOP_RIGHT | CSD_SCALE } },
 
-    // result_English
-    { HashStr("sprite/result/result_English/title_plate"), { CSD_PILLARBOX } }, // TODO
+    // result
+    { HashStr("sprite/result/result/title_plate/plate_ue"), { CSD_ALIGN_TOP | CSD_SCALE } },
+    { HashStr("sprite/result/result/title_plate/plate_sita"), { CSD_ALIGN_BOTTOM | CSD_SCALE } },
+    { HashStr("sprite/result/result/title_plate/result_title/result_title_ob"), { CSD_ALIGN_TOP | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/score/score_plate_kage"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/score/score_plate"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/score/score_plate/score_text"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/score/score_plate/score_plate_title"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/time/time_plate_kage"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/time/time_plate"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/time/time_plate/time_text"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/time/time_plate/time_plate_title"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/ring/ring_plare_kage"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/ring/ring_plate"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/ring/ring_plate/ring_text"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/ring/ring_plate/ring_title"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/time_bonus/time_bonus_kage"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/time_bonus/time_bonus_plate"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/time_bonus/time_bonus_plate/timebonus_text"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/time_bonus/time_bonus_plate/time_bonus_plate_title"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/ring_bonus/ring_bonus_plate_kage"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/ring_bonus/ring_bonus_plate"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/ring_bonus/ring_bonus_plate/ringbonus_text"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/ring_bonus/ring_bonus_plate/ring_bonus_plate_title"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/amiplate/ami_plate_kage"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/result/parts_anime_result/amiplate/ami_plate"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/town_score_t/score_plate_kage_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/town_score_t/score_plate_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/town_score_t/score_plate_t/score_text_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/town_score_t/score_plate_t/score_plate_title_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/time_t/time_plate_kage_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/time_t/time_plate_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/time_t/time_plate_t/time_text_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/time_t/time_plate_t/time_plate_title_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/ring_t/ring_plare_kage_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/ring_t/ring_plate_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/ring_t/ring_plate_t/ring_text_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/ring_t/ring_plate_t/ring_title_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/time_bonus_t/time_bonus_kage_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/time_bonus_t/time_bonus_plate_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/time_bonus_t/time_bonus_plate_t/timebonus_text_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/time_bonus_t/time_bonus_plate_t/time_bonus_plate_title_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/ring_bonus_t/ring_bonus_plate_kage_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/ring_bonus_t/ring_bonus_plate_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/ring_bonus_t/ring_bonus_plate_t/ringbonus_text_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/ring_bonus_t/ring_bonus_plate_t/ring_bonus_plate_title_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/record_t/record_plate_kage_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/record_t/record_bonus_plate_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/record_t/record_bonus_plate_t/record_text_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/record_t/record_bonus_plate_t/record_plate_title_t"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/record_t/item_icon"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/town_mission/parts_anime_result_t/amiplate_t"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_s/list_plate_kage01"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_s/list_plate01"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_s/list_plate01/list_text01"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_s/list_plate01/list_text01/nyoro01"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_s/list_plate01/ring01"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_s/list_plate01/ring01/ring01_b"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_s/list_plate01/bonus_text01"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_s/list_plate01/rank_list_s_kage"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_s/list_plate01/rank_list_s"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_a/list_plate_kage02"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_a/list_plate02"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_a/list_plate02/list_text02"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_a/list_plate02/list_text02/nyoro02"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_a/list_plate02/ring02"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_a/list_plate02/ring02/ring02_b"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_a/list_plate02/bonus_text02"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_a/list_plate02/rank_list_a_kage"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_a/list_plate02/rank_list_a"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_b/list_plate_kage03"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_b/list_plate03"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_b/list_plate03/list_text03"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_b/list_plate03/list_text03/nyoro03"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_b/list_plate03/ring03"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_b/list_plate03/ring03/ring03_b"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_b/list_plate03/bonus_text03"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_b/list_plate03/rank_list_b_kage"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_b/list_plate03/rank_list_b"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_c/list_plate_kage04"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_c/list_plate04"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_c/list_plate04/list_text04"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_c/list_plate04/list_text04/nyoro04"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_c/list_plate04/ring04"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_c/list_plate04/ring04/ring04_b"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_c/list_plate04/bonus_text04"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_c/rank_list_c_kage"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_c/rank_list_c"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_d/list_plate_kage05"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_d/list_plate05"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_d/list_plate05/list_text05"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_d/list_plate05/list_text05/nyoro05"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_d/list_plate05/ring05"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_d/list_plate05/ring05/ring05_b"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_d/list_plate05/bonus_text05"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_d/list_plate05/rank_list_d_kage"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_d/list_plate05/rank_list_d"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/amiplate/ami_plate_kage"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/amiplate/ami_plate"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/rank_bonus/rank_bonus_plate_kage"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/rank_bonus/rank_bonus_plate"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/rank_bonus/rank_bonus_plate/rank_bonus_plate_text"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/rank_bonus/rank_bonus_plate/rank_bonus_plate_title"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/rank_bonus/rank_bonus_ring"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/rank_bonus/rank_bonus_ring/rank_bonus_ring_b"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/total_ring/total_ring_plate_kage"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/total_ring/total_ring_plate"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/total_ring/total_ring_plate/total_ring_plate_title"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/TotalRing_Goldfont/total_ring_text"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/TotalRing_Goldfont/ring_l"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/bonus/parts_anime_bonus/TotalRing_Goldfont/ring_l_b"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/totalscore_rank/parts_anime/total_score/total_score_plate_kage"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/totalscore_rank/parts_anime/total_score/total_score_plate"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/totalscore_rank/parts_anime/total_score/total_score_plate/totalscore_text"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/totalscore_rank/parts_anime/total_score/total_score_plate/total_score_plate_title"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/totalscore_rank/parts_anime/rank/rank_plate_kage"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/totalscore_rank/parts_anime/rank/rank_plate"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/totalscore_rank/parts_anime/rank/rank_plate/rank_plate_title"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/rank_anime"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/result/result/score_newrecord"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/time_newrecord"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/ring_newrecord"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/timebonus_newrecord"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+    { HashStr("sprite/result/result/ringbonus_newrecord"), { CSD_ALIGN_LEFT | CSD_SCALE } },
+
+    // result WIP ultrawide adjustments
+    // { HashStr("sprite/result/result/title_plate/plate_ue/plate_ue_kage_l"), { CSD_ALIGN_TOP | CSD_REPEAT_FLIP_HORIZONTAL | CSD_UV_MODIFIER | CSD_REPEAT_LEFT | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, { 0.015f, 0, 0.015f, 0, 0, 0, 0, 0 }, {}, { 0, 0, 0, 0, -0.6f, 0, -0.6f, 0 } } },
+    // { HashStr("sprite/result/result/title_plate/plate_ue/plate_ue_kage_r"), { CSD_SKIP | CSD_ALIGN_TOP | CSD_REPEAT_FLIP_HORIZONTAL | CSD_UV_MODIFIER | CSD_REPEAT_RIGHT | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.08f, 0, -0.08f, 0 }, {}, { 0.6f, 0, 0.6f, 0, 0, 0, 0, 0 } } },
+    // { HashStr("sprite/result/result/title_plate/plate_ue/plate_ue_plate_l"), { CSD_ALIGN_TOP | CSD_REPEAT_FLIP_HORIZONTAL | CSD_UV_MODIFIER | CSD_REPEAT_LEFT | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, { 0.015f, 0, 0.015f, 0, 0, 0, 0, 0 }, {}, { 0, 0, 0, 0, -0.6f, 0, -0.6f, 0 } } },
+    // { HashStr("sprite/result/result/title_plate/plate_ue/plate_ue_plate_r"), { CSD_ALIGN_TOP | CSD_REPEAT_FLIP_HORIZONTAL | CSD_UV_MODIFIER | CSD_REPEAT_RIGHT | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.015f, 0, -0.015f, 0 }, {}, { 0.6f, 0, 0.6f, 0, 0, 0, 0, 0 } } },
+    // { HashStr("sprite/result/result/title_plate/plate_sita/plate_sita_kage_l"), { CSD_ALIGN_BOTTOM | CSD_REPEAT_FLIP_HORIZONTAL | CSD_UV_MODIFIER | CSD_REPEAT_RIGHT | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.08f, 0, -0.08f, 0 }, {}, { 0.6f, 0, 0.6f, 0, 0, 0, 0, 0 } } },    // TODO: this crashes the game.
+    // { HashStr("sprite/result/result/title_plate/plate_sita/plate_sita_kage_r"), { CSD_ALIGN_BOTTOM | CSD_REPEAT_FLIP_HORIZONTAL | CSD_UV_MODIFIER | CSD_REPEAT_LEFT | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, { 0.015f, 0, 0.015f, 0, 0, 0, 0, 0 }, {}, { 0, 0, 0, 0, -0.6f, 0, -0.6f, 0 } } },   // TODO: this crashes the game.
+    // { HashStr("sprite/result/result/title_plate/plate_sita/plate_sita_plate_l"), { CSD_ALIGN_BOTTOM | CSD_REPEAT_FLIP_HORIZONTAL | CSD_UV_MODIFIER | CSD_REPEAT_RIGHT | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.015f, 0, -0.015f, 0 }, {}, { 0.6f, 0, 0.6f, 0, 0, 0, 0, 0 } } }, // TODO: this crashes the game.
+    // { HashStr("sprite/result/result/title_plate/plate_sita/plate_sita_plate_r"), { CSD_ALIGN_BOTTOM | CSD_REPEAT_FLIP_HORIZONTAL | CSD_UV_MODIFIER | CSD_REPEAT_LEFT | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, { 0.015f, 0, 0.015f, 0, 0, 0, 0, 0 }, {}, { 0, 0, 0, 0, -0.6f, 0, -0.6f, 0 } } },  // TODO: this crashes the game.
+    // { HashStr("sprite/result/result/result/parts_anime_result/amiplate/ami_plate"), { CSD_REPEAT_RIGHT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_FLIP_VERTICAL | CSD_UV_MODIFIER | CSD_REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.025f, 0, -0.025f, 0 }, {}, { -0.01285f, 0.002f, -0.01285f, 0.002f, -0.01285f, 0.002f, -0.01285f, 0.002f } } },
+    // { HashStr("sprite/result/result/town_mission/parts_anime_result_t/amiplate_t/ami_plate_t"), { CSD_REPEAT_RIGHT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_FLIP_VERTICAL | CSD_UV_MODIFIER | CSD_REPEAT_UV_MODIFIER, { 0, 0, 0, 0, -0.025f, 0, -0.025f, 0 }, {}, { -0.01285f, 0.002f, -0.01285f, 0.002f, -0.01285f, 0.002f, -0.01285f, 0.002f } } },
+    // { HashStr("sprite/result/result/bonus/parts_anime_bonus/amiplate/ami_plate"), { CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_FLIP_VERTICAL | CSD_UV_MODIFIER | CSD_REPEAT_UV_MODIFIER, { 0.025f, 0, 0.025f, 0, 0, 0, 0, 0 }, {}, { 0.027f, 0.002f, 0.027f, 0.002f, 0.027f, 0.002f, 0.027f, 0.002f } } },
+
+    // result amiplate fade (needs special case for 16:9 or narrower)
+    // { HashStr("sprite/result/result/result/parts_anime_result/amiplate/ami_plate"), { CSD_COLOUR_MODIFIER, {}, { 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFF00, 0xFFFFFF00 }, } },
+    // { HashStr("sprite/result/result/town_mission/parts_anime_result_t/amiplate_t/ami_plate_t"), { CSD_COLOUR_MODIFIER, {}, { 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFF00, 0xFFFFFF00 } } },
+    // { HashStr("sprite/result/result/bonus/parts_anime_bonus/amiplate/ami_plate"), { CSD_COLOUR_MODIFIER, {}, { 0xFFFFFF00, 0xFFFFFF00, 0xFFFFFFFF, 0xFFFFFFFF } } },
 
     // sonicteam_logo
     { HashStr("sprite/logo/sonicteam_logo/sonicteam"), { CSD_SCALE } },
