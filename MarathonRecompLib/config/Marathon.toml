@@ -206,6 +206,14 @@ address = 0x82195AD0
 registers = ["r5", "r27"]
 
 [[midasm_hook]]
+name = "DebugPlayerSwitchPostureSwitchButton"
+address = 0x82221CA8 
+registers = ["r30","r11"]
+jump_address_on_true = 0x82221CAC
+jump_address_on_false = 0x82221CD8
+
+
+[[midasm_hook]]
 name = "DisableRadialBlur"
 address = 0x82653834
 jump_address_on_true = 0x82653840

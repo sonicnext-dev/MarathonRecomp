@@ -124,6 +124,13 @@ void DebugPlayerSwitch(PPCRegister& str, PPCRegister& index)
     }
 }
 
+bool DebugPlayerSwitchPostureSwitchButton(PPCRegister& r_PadState, PPCRegister& r_out)
+{
+    
+    auto pPadState = (Sonicteam::SoX::Input::PadState*)(g_memory.Translate(r_PadState.u32));
+    return pPadState->IsPressed(Sonicteam::SoX::Input::KeyState_Select);
+}
+
 PPC_FUNC_IMPL(__imp__sub_82195500);
 PPC_FUNC(sub_82195500)
 {
@@ -135,16 +142,30 @@ PPC_FUNC(sub_82195500)
 
     auto pPlayer = (Sonicteam::Player::Object*)(base + ctx.r3.u32);
     auto pDoc = App::s_pApp->m_pDoc;
-
+    auto pZock = pPlayer->GetPlugin<Sonicteam::Player::Zock>("zock");
+	
     if (auto pGameMode = pDoc->GetDocMode<Sonicteam::GameMode>())
     {
-        if (pPlayer->m_SetupModuleIndexPostfix != -2 && pPlayer->m_IsPlayer)
+
+        if (pPlayer->m_IsPlayer)
         {
             auto playerIndex = pGameMode->m_pGameImp->PlayerActorIDToIndex(pPlayer->m_ActorID);
             auto& spManager = pDoc->m_vspInputManager[pDoc->m_PlayerControllerID[playerIndex]];
 
-            if ((spManager->m_PadState.LastButtons.get() & Sonicteam::SoX::Input::KeyState_Select) != 0)
-                pPlayer->m_SetupModuleIndexPostfix = 2;
+            if (pPlayer->m_SetupModuleIndexPostfix == 2 && spManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_B))
+            {
+                auto pValue = (pZock->m_pPhantom->m_RigidBody->m_CollisionFilter = pZock->m_pPhantom->m_RigidBody->m_CollisionFilter.get() == 6) ? 0x383 : 6;
+                if (pZock->m_pPhantom.get()) pZock->m_pPhantom->Release();
+                if (pZock->m_pPhantomB.get()) pZock->m_pPhantomB->Release();
+                GuestToHostFunction<void>(sub_821E3628, &pZock->m_pPhantom, &pPlayer->m_RootFrame,static_cast<Sonicteam::SoX::MessageReceiver*>(pPlayer), pValue, 50.0);
+                pZock->m_pPhantomB = pZock->m_pPhantom;
+                pZock->m_pPhantom->AddRef();
+                GuestToHostFunction<void>(*(be<uint32_t>*)(g_memory.Translate(*(be<uint32_t>*)(pZock->m_pPhantom.get()) + (0x3C))), pZock->m_pPhantom.get(), &pGameMode->m_pGameImp->m_pPhysicsWorld);
+                GuestToHostFunction<void>(*(be<uint32_t>*)(g_memory.Translate(*(be<uint32_t>*)(pZock->m_pPhantom.get()) + (0x58))), pZock->m_pPhantom.get(), (uint64_t)pZock + 0xA0);   
+            }
+
+            if (pPlayer->m_SetupModuleIndexPostfix != 2 && !(pPlayer->m_SetupModuleIndexPrefix == 2 && pPlayer->m_SetupModuleIndexPostfix == 1) && spManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_Select))
+                    pPlayer->m_SetupModuleIndexPostfix = 2;
         }
     }
 

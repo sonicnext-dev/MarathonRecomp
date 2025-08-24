@@ -4,6 +4,7 @@
 
 namespace Sonicteam::SoX::Input
 {
+
     enum KeyState
     {
         KeyState_DpadUp = 0x40,
@@ -20,13 +21,16 @@ namespace Sonicteam::SoX::Input
         KeyState_B = 0x2,
         KeyState_X = 0x8,
         KeyState_Y = 0x10,
+        KeyState_LeftTrigger = 0x4000,
+        KeyState_RightTrigger = 0x8000,
     };
 
     struct PadState
     {
         be<uint32_t> LastButtons;
         be<uint32_t> InvertedLastButtons;
-        MARATHON_INSERT_PADDING(8);
+        be<uint32_t> PressedButtons;
+        be<uint32_t> ReleasedButtons;
 
         be<float> LeftStickHorizontal;
         be<float> LeftStickVertical;
@@ -37,6 +41,10 @@ namespace Sonicteam::SoX::Input
         be<float> RightStickVertical;
         be<short> RightStickHorizontalS16;
         be<short> RightStickVerticalS16;
+
+        bool IsDown(const KeyState in_Keys) const;
+        bool IsPressed(const KeyState in_Keys) const;
+        bool IsReleased(const KeyState in_Keys) const;
     };
 
     class Manager
@@ -48,3 +56,5 @@ namespace Sonicteam::SoX::Input
         MARATHON_INSERT_PADDING(0x28);
     };
 }
+
+#include "Manger.inl"
