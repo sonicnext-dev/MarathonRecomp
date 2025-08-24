@@ -11,7 +11,9 @@ namespace Sonicteam::Player
     class Object : public Actor
     {
     public:
-        MARATHON_INSERT_PADDING(0x40);
+        stdx::string m_PlayerLua;
+        stdx::string m_PlayerPackage;
+        MARATHON_INSERT_PADDING(0x8);
         be<uint32_t> m_PlayerIndex;
         MARATHON_INSERT_PADDING(0x2C);
         bool m_IsPlayer;

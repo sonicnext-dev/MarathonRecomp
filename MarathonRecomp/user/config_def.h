@@ -6,6 +6,7 @@ CONFIG_DEFINE_ENUM_LOCALISED("System", EVoiceLanguage, VoiceLanguage, EVoiceLang
 CONFIG_DEFINE_LOCALISED("System", bool, Subtitles, true);
 CONFIG_DEFINE_LOCALISED("System", bool, Hints, true);
 CONFIG_DEFINE_LOCALISED("System", bool, ControlTutorial, true);
+CONFIG_DEFINE_LOCALISED("System", bool, Autosave, true);
 CONFIG_DEFINE_LOCALISED("System", bool, AchievementNotifications, true);
 CONFIG_DEFINE("System", bool, ShowConsole, false);
 
@@ -77,6 +78,7 @@ CONFIG_DEFINE_HIDDEN("Codes", bool, DisableDWMRoundedCorners, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, DisableTitleInputDelay, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, HUDToggleKey, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, SkipIntroLogos, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, FixPowerUpJingleDuration, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, UseOfficialTitleOnTitleBar, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, DisableLowResolutionFontOnCustomUI, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreContextualHUDColours, false);

@@ -12,3 +12,8 @@ struct xxHash
 
 template<typename T>
 using xxHashMap = ankerl::unordered_dense::map<XXH64_hash_t, T, xxHash>;
+
+inline XXH64_hash_t HashStr(const std::string_view& value)
+{
+    return XXH3_64bits(value.data(), value.size());
+}

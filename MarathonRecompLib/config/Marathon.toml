@@ -120,16 +120,6 @@ address = 0x82512B10
 registers = ["r3", "r4"]
 
 [[midasm_hook]]
-name = "RenderCsdCastNodeMidAsmHook"
-address = 0x828C8FBC
-registers = ["r10", "r24"]
-
-[[midasm_hook]]
-name = "RenderCsdCastMidAsmHook"
-address = 0x828C8FFC
-registers = ["r4"]
-
-[[midasm_hook]]
 name = "ContextualHUD_LIFE_BER_ANIME_1"
 address = 0x824D8044
 registers = ["r5", "r31"]
@@ -161,29 +151,34 @@ registers = ["r29"]
 after_instruction = true
 
 [[midasm_hook]]
-name = "MidairMachSpeedControl1"
+name = "MidairMachSpeedControl"
 address = 0x82210380
 jump_address_on_true = 0x82210388
 
 [[midasm_hook]]
-name = "MidairMachSpeedControl2"
+name = "MidairMachSpeedControl"
 address = 0x822103B4
 jump_address_on_true = 0x822103BC
 
 [[midasm_hook]]
-name = "MidairSnowboardControl1"
+name = "MidairSnowboardControl"
 address = 0x82214710
 jump_address_on_true = 0x82214714
 
 [[midasm_hook]]
-name = "MidairSnowboardControl2"
-address = 0x82214878
-jump_address_on_true = 0x8221487C
+name = "MidairSnowboardControl"
+address = 0x8221487C
+jump_address_on_true = 0x82214880
 
 [[midasm_hook]]
-name = "MidairSnowboardControl3"
+name = "MidairSnowboardControl"
 address = 0x822145B8
 jump_address_on_true = 0x822145BC
+
+[[midasm_hook]]
+name = "MidairSnowboardControl"
+address = 0x8221486C
+jump_address_on_true = 0x82214870
 
 [[midasm_hook]]
 name = "DisableHints"
@@ -217,3 +212,55 @@ jump_address_on_false = 0x82221CD8
 name = "DisableRadialBlur"
 address = 0x82653834
 jump_address_on_true = 0x82653840
+
+[[midasm_hook]]
+name = "PostureControlRotationSpeedFix"
+address = 0x82201C6C
+registers = ["f1", "r1"]
+
+[[midasm_hook]]
+name = "CriCueUpdateDeltaTimeFix"
+address = 0x8260F238
+registers = ["f13"]
+
+[[midasm_hook]]
+name = "PowerUpJingleDurationFix"
+address = 0x8216CC28
+registers = ["f31"]
+
+# Overwrite
+[[midasm_hook]]
+name = "SaveAlertThreeOptionRemoveDeviceSelect"
+address = 0x8238CCCC
+registers = ["r5"]
+
+# No Save Data
+[[midasm_hook]]
+name = "SaveAlertThreeOptionRemoveDeviceSelect"
+address = 0x8238CE34
+registers = ["r5"]
+
+[[midasm_hook]]
+name = "XmvPlayerLang"
+address = 0x8264D844
+registers = ["r11"]
+
+[[midasm_hook]]
+name = "CsbSbkLang"
+address = 0x826124B0
+registers = ["r8"]
+
+[[midasm_hook]]
+name = "CsbSbkLang"
+address = 0x826121BC
+registers = ["r8"]
+
+[[midasm_hook]]
+name = "CsbSbkLang"
+address = 0x821784F8
+registers = ["r8"]
+
+[[midasm_hook]]
+name = "MovieVoiceLang"
+address = 0x8264B4E4
+registers = ["r19"]
