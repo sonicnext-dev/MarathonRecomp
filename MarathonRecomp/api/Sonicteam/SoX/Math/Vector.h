@@ -11,6 +11,14 @@ namespace Sonicteam::SoX::Math
         be<float> Y;
     };
 
+    class Vector3
+    {
+    public:
+        be<float> X;
+        be<float> Y;
+        be<float> Z;
+    };
+
     class __declspec(align(16)) Vector
     {
     public:
