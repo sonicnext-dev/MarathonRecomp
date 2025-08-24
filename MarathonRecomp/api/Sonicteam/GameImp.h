@@ -57,6 +57,17 @@ namespace Sonicteam
 
         template <typename T>
         inline T* GetPhysicsWorld();
+
+        int32_t PlayerActorIDToIndex(int32_t actorId) const
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                if (m_PlayerData[i].ActorID == actorId)
+                    return i;
+            }
+
+            return -1;
+        }
     };
 }
 
