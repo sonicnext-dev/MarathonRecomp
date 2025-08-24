@@ -44,7 +44,7 @@ void XAudioInitializeSystem()
 #endif
 
     SDL_SetHint(SDL_HINT_AUDIO_CATEGORY, "playback");
-    SDL_SetHint(SDL_HINT_AUDIO_DEVICE_APP_NAME, "Unleashed Recompiled");
+    SDL_SetHint(SDL_HINT_AUDIO_DEVICE_APP_NAME, "Marathon Recompiled");
 
     if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
     {
