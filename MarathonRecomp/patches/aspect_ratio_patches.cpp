@@ -1057,15 +1057,15 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/battledisplay_2p/custom_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
 
     // battle_result
-    { HashStr("sprite/battle_result/battle_result_English/congratulations"), { CSD_ALIGN_TOP } },
-    { HashStr("sprite/battle_result/battle_result_English/plate/plate_ue/plate1"), { CSD_ALIGN_TOP | CSD_EXTEND_LEFT } },
-    { HashStr("sprite/battle_result/battle_result_English/plate/plate_ue/plate2"), { CSD_ALIGN_TOP } },
-    { HashStr("sprite/battle_result/battle_result_English/plate/plate_ue/plate3"), { CSD_ALIGN_TOP } },
-    { HashStr("sprite/battle_result/battle_result_English/plate/plate_ue/plate4"), { CSD_ALIGN_TOP | CSD_EXTEND_RIGHT } },
-    { HashStr("sprite/battle_result/battle_result_English/plate/plate_sita/plate5"), { CSD_ALIGN_BOTTOM | CSD_EXTEND_LEFT } },
-    { HashStr("sprite/battle_result/battle_result_English/plate/plate_sita/plate6"), { CSD_ALIGN_BOTTOM } },
-    { HashStr("sprite/battle_result/battle_result_English/plate/plate_sita/plate7"), { CSD_ALIGN_BOTTOM } },
-    { HashStr("sprite/battle_result/battle_result_English/plate/plate_sita/plate8"), { CSD_ALIGN_BOTTOM | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/battle_result/battle_result/congratulations"), { CSD_ALIGN_TOP } },
+    { HashStr("sprite/battle_result/battle_result/plate/plate_ue/plate1"), { CSD_ALIGN_TOP | CSD_EXTEND_LEFT } },
+    { HashStr("sprite/battle_result/battle_result/plate/plate_ue/plate2"), { CSD_ALIGN_TOP } },
+    { HashStr("sprite/battle_result/battle_result/plate/plate_ue/plate3"), { CSD_ALIGN_TOP } },
+    { HashStr("sprite/battle_result/battle_result/plate/plate_ue/plate4"), { CSD_ALIGN_TOP | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/battle_result/battle_result/plate/plate_sita/plate5"), { CSD_ALIGN_BOTTOM | CSD_EXTEND_LEFT } },
+    { HashStr("sprite/battle_result/battle_result/plate/plate_sita/plate6"), { CSD_ALIGN_BOTTOM } },
+    { HashStr("sprite/battle_result/battle_result/plate/plate_sita/plate7"), { CSD_ALIGN_BOTTOM } },
+    { HashStr("sprite/battle_result/battle_result/plate/plate_sita/plate8"), { CSD_ALIGN_BOTTOM | CSD_EXTEND_RIGHT } },
 
     // black_out
     { HashStr("sprite/black_out/black_out"), { CSD_STRETCH } },
