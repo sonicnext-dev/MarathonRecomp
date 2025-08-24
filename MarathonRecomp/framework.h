@@ -64,6 +64,26 @@ inline std::unique_ptr<uint8_t[]> ReadAllBytes(const char* filePath, size_t& fil
     return data;
 }
 
+inline bool strcmpIgnoreCase(const char* a, const char* b)
+{
+    for (size_t i = 0; i < strlen(a); i++)
+    {
+        if (a[i] != '\0' && b[i] == '\0')
+            return false;
+
+        if (a[i] == '\0' && b[i] != '\0')
+            return false;
+
+        auto c1 = std::tolower((uint8_t)a[i]);
+        auto c2 = std::tolower((uint8_t)b[i]);
+
+        if (c1 != c2)
+            return false;
+    }
+
+    return true;
+}
+
 #ifndef __cpp_lib_atomic_ref
 // Polyfill for std::atomic_ref
 namespace std {

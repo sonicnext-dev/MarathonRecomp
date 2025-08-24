@@ -200,7 +200,7 @@ PPC_FUNC(sub_82617570)
     // Truncate language names to redirect CSD modifiers.
     if (suffixLen < nameLen)
     {
-        if (strcmp(pName + nameLen - suffixLen, pSuffix) == 0)
+        if (strcmpIgnoreCase(pName + nameLen - suffixLen, pSuffix))
         {
             pName[nameLen - suffixLen] = '\0';
 
