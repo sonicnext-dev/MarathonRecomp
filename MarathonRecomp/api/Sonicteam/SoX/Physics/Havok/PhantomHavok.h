@@ -6,8 +6,5 @@
 
 namespace Sonicteam::SoX::Physics::Havok
 {
-
-    class PhantomHavok : public EntityHavokImp <SoX::Physics::Phantom>
-    {
-    };
+    class PhantomHavok : public EntityHavokImp<SoX::Physics::Phantom> {};
 }

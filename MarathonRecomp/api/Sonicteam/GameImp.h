@@ -2,6 +2,8 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/SoX/Physics/World.h>
+#include <Sonicteam/SoX/RefSharedPointer.h>
+#include <Sonicteam/SoX/RefCountObject.h>
 
 namespace Sonicteam
 {
@@ -52,7 +54,7 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(0x0C);
         be<uint32_t> m_Field1180;
         MARATHON_INSERT_PADDING(0x838);
-        xpointer<SoX::Physics::World> m_pPhysicsWorld;
+        SoX::RefSharedPointer<SoX::Physics::World> m_spPhysicsWorld;
         xpointer<void> m_pMyCollisionFilter;
 
         template <typename T>

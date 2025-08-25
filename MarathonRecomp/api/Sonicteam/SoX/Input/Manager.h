@@ -4,7 +4,6 @@
 
 namespace Sonicteam::SoX::Input
 {
-
     enum KeyState
     {
         KeyState_DpadUp = 0x40,
@@ -57,4 +56,4 @@ namespace Sonicteam::SoX::Input
     };
 }
 
-#include "Manger.inl"
+#include "Manager.inl"

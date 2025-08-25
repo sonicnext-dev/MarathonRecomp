@@ -19,7 +19,7 @@ namespace Sonicteam::SoX::Math
         be<float> Z;
     };
 
-    class __declspec(align(16)) Vector
+    class alignas(16) Vector
     {
     public:
         be<float> X;
@@ -28,7 +28,7 @@ namespace Sonicteam::SoX::Math
         be<float> W;
     };
 
-    class __declspec(align(16)) Vector4
+    class alignas(16) Vector4
     {
     public:
         be<float> X;

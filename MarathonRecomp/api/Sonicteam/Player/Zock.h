@@ -7,17 +7,24 @@
 #include <Sonicteam/Player/IDynamicLink.h>
 #include <Sonicteam/Player/IVariable.h>
 #include <Sonicteam/MyPhantom.h>
+#include <Sonicteam/SoX/Physics/World.h>
+#include <Sonicteam/SoX/RefCountObject.h>
+#include <Sonicteam/SoX/RefSharedPointer.h>
+#include <Sonicteam/Player/RootFrame.h>
+#include <Sonicteam/SoX/Physics/PhantomListener.h>
 
 namespace Sonicteam::Player
 {
     class Zock : public IZock, public IFlagCommunicator, public IStepable, public IDynamicLink, public IVariable
     {
     public:
-        MARATHON_INSERT_PADDING(0x8);
-        xpointer<Sonicteam::MyPhantom> m_pPhantom;
+        SoX::RefSharedPointer<Sonicteam::SoX::Physics::World> m_spWorld;
+        SoX::RefSharedPointer<Sonicteam::SoX::Physics::World> m_spRootFrame;
+        SoX::RefSharedPointer<Sonicteam::MyPhantom> m_pPhantom;
         MARATHON_INSERT_PADDING(0x20);
-        xpointer<Sonicteam::MyPhantom> m_pPhantomB;
-        MARATHON_INSERT_PADDING(0x84);
-
+        SoX::RefSharedPointer<Sonicteam::MyPhantom> m_pPhantomB;
+        MARATHON_INSERT_PADDING(0x40);
+        SoX::RefSharedPointer<Sonicteam::SoX::Physics::PhantomListener> m_spPhantomListener;
+        MARATHON_INSERT_PADDING(0x3C);
     };
 }

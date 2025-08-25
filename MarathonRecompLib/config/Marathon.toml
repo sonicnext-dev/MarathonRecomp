@@ -207,7 +207,6 @@ registers = ["r30","r11"]
 jump_address_on_true = 0x82221CAC
 jump_address_on_false = 0x82221CD8
 
-
 [[midasm_hook]]
 name = "DisableRadialBlur"
 address = 0x82653834
