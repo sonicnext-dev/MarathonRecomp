@@ -5,7 +5,6 @@
 
 namespace Sonicteam::SoX
 {
-
     template <typename RefType = RefCountObject>
     class RefSharedPointer
     {
@@ -56,14 +55,13 @@ namespace Sonicteam::SoX
 
         RefSharedPointer& operator=(const RefSharedPointer& other)
         {
-            if (this != &other) {
-                if (m_value.get()) {
-                    m_value->Release();
-                }
-
+            if (this != &other) 
+            {
+                reset();
                 m_value = other.m_value;
 
-                if (m_value.get()) {
+                if (m_value.get()) 
+                {
                     m_value->AddRef();
                 }
             }
@@ -72,10 +70,9 @@ namespace Sonicteam::SoX
 
         RefSharedPointer& operator=(RefSharedPointer&& other) noexcept
         {
-            if (this != &other) {
-                if (m_value.get()) {
-                    m_value->Release();
-                }
+            if (this != &other) 
+            {
+                reset();
 
                 m_value = std::move(other.m_value);
                 other.m_value = nullptr;
