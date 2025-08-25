@@ -24,8 +24,4 @@
         return GuestToHostFunction<returnType>(m_pVftable->virtualFunc, this, __VA_ARGS__); \
     }
 
- 
-
-#define MARATHON_VIRTUAL_FUNCTION_ATTRITUBE __attribute__((annotate("__virtual_function__")))
-
 struct marathon_null_ctor {};
