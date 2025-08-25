@@ -18,10 +18,4 @@
 #define MARATHON_VIRTUAL_FUNCTION(returnType, virtualIndex, ...) \
     GuestToHostFunction<returnType>(*(be<uint32_t>*)(g_memory.Translate(*(be<uint32_t>*)(this) + (4 * virtualIndex))), __VA_ARGS__)
 
-#define MARATHON_DEFINE_VIRTUAL_FUNCTION(returnType, virtualFunc, ...) \
-    returnType virtualFunc(__VA_ARGS__) \
-    { \
-        return GuestToHostFunction<returnType>(m_pVftable->virtualFunc, this, __VA_ARGS__); \
-    }
-
 struct marathon_null_ctor {};
