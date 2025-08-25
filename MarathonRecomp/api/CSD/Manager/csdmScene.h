@@ -44,7 +44,9 @@ namespace Chao::CSD
 
     struct Scene
     {
-        MARATHON_INSERT_PADDING(0x30);
+        MARATHON_INSERT_PADDING(8);
+        be<float> FPS;
+        MARATHON_INSERT_PADDING(0x24);
         be<uint32_t> CastNodeCount;
         MARATHON_INSERT_PADDING(4);
         xpointer<CastNode> pCastNodes;
@@ -52,6 +54,17 @@ namespace Chao::CSD
         be<uint32_t> CastCount;
         MARATHON_INSERT_PADDING(4);
         xpointer<CastIndex> pCastIndices;
+        MARATHON_INSERT_PADDING(4);
+        be<uint32_t> AnimationCount;
+        MARATHON_INSERT_PADDING(4);
+        xpointer<void> pAnimationKeyFrameDataList;
+        MARATHON_INSERT_PADDING(4);
+        xpointer<void> pAnimationDictionary;
+        MARATHON_INSERT_PADDING(4);
+        be<float> AspectRatio;
+        MARATHON_INSERT_PADDING(4);
+        xpointer<void> pAnimationFrameDataList;
+        MARATHON_INSERT_PADDING(4);
     };
 
     struct SceneIndex

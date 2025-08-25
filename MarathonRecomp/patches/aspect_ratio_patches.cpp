@@ -12,6 +12,9 @@
 
 // #define CORNER_DEBUG
 
+constexpr float CHEVRON_INTRO_DURATION = 0.083f;
+constexpr float CHEVRON_OUTRO_DURATION = 2.01666666666667f;
+
 static Mutex g_pathMutex;
 static std::map<const void*, XXH64_hash_t> g_paths{};
 
@@ -34,6 +37,57 @@ static float g_podBaseRightX{};
 // Explicit translations don't get affected by gameplay UI downscaling.
 static float g_scenePositionX{};
 static float g_scenePositionY{};
+
+static float g_bgArrowsEnd{};
+static float g_fgArrowsEnd{};
+static float g_chevronLoopTime{};
+static float g_chevronAspectRatio{};
+
+struct ChevronAnim
+{
+    uint8_t EndAlpha{};
+
+    float IntroDuration{};
+    float IntroStartTime{};
+
+    float OutroDuration{};
+    float OutroStartTime{};
+
+    float TimeElapsed{};
+
+    uint8_t CurrentAlpha{};
+    float CurrentOffsetX{};
+
+    void Reset()
+    {
+        TimeElapsed = 0.0f;
+        CurrentAlpha = 0;
+    }
+
+    void Update(float deltaTime)
+    {
+        TimeElapsed += deltaTime;
+
+        if (TimeElapsed < IntroStartTime && TimeElapsed < OutroStartTime)
+        {
+            CurrentAlpha = std::lerp(0, EndAlpha, std::clamp((TimeElapsed - IntroStartTime) / IntroDuration, 0.0f, 1.0f));
+        }
+        else
+        {
+            CurrentAlpha = std::lerp(EndAlpha, 0, std::clamp((TimeElapsed - OutroStartTime) / OutroDuration, 0.0f, 1.0f));
+        }
+
+        CurrentOffsetX = std::lerp(0.0f, 2.0f, std::clamp(TimeElapsed / g_chevronLoopTime, 0.0f, 1.0f));
+
+        if (TimeElapsed < g_chevronLoopTime)
+            return;
+
+        Reset();
+    }
+};
+
+static std::unordered_map<int32_t, ChevronAnim> g_bgArrows{};
+static std::unordered_map<int32_t, ChevronAnim> g_fgArrows{};
 
 static class LoadingPillarboxEvent : public HookEvent
 {
@@ -263,37 +317,45 @@ PPC_FUNC(sub_825CB378)
 PPC_FUNC_IMPL(__imp__sub_828C8F60);
 PPC_FUNC(sub_828C8F60)
 {
+    auto pScene = (Chao::CSD::Scene*)(base + ctx.r3.u32);
+
     g_sceneModifier = FindCsdModifier(ctx.r3.u32);
 
     if (g_sceneModifier.has_value())
     {
-        if (g_aspectRatio > WIDE_ASPECT_RATIO && (g_sceneModifier->Flags & (CSD_OFFSET_SCALE_LEFT | CSD_OFFSET_SCALE_RIGHT | CSD_CORNER_EXTRACT)) != 0)
+        if (g_aspectRatio > WIDE_ASPECT_RATIO)
         {
-            auto r3 = ctx.r3;
-            auto r4 = ctx.r4;
-            auto r5 = ctx.r5;
-            auto r6 = ctx.r6;
+            if ((g_sceneModifier->Flags & CSD_SCENE_DISABLE_MOTION) != 0)
+                pScene->FPS = 0;
 
-            // Queue draw calls, but don't actually draw anything. We just want to extract the corner.
-            g_cornerExtract = true;
-            __imp__sub_828C8F60(ctx, base);
-            g_cornerExtract = false;
+            if ((g_sceneModifier->Flags & (CSD_OFFSET_SCALE_LEFT | CSD_OFFSET_SCALE_RIGHT | CSD_CORNER_EXTRACT)) != 0)
+            {
+                auto r3 = ctx.r3;
+                auto r4 = ctx.r4;
+                auto r5 = ctx.r5;
+                auto r6 = ctx.r6;
+
+                // Queue draw calls, but don't actually draw anything. We just want to extract the corner.
+                g_cornerExtract = true;
+                __imp__sub_828C8F60(ctx, base);
+                g_cornerExtract = false;
 
 #ifdef CORNER_DEBUG
-            if (g_sceneModifier->CornerMax == FLT_MAX)
-            {
-                fmt::print("Corners: ");
-                for (auto corner : g_corners)
-                    fmt::print("{} ", corner);
+                if (g_sceneModifier->CornerMax == FLT_MAX)
+                {
+                    fmt::print("Corners: ");
+                    for (auto corner : g_corners)
+                        fmt::print("{} ", corner);
 
-                fmt::println("");
-            }
+                    fmt::println("");
+                }
 #endif
 
-            ctx.r3 = r3;
-            ctx.r4 = r4;
-            ctx.r5 = r5;
-            ctx.r6 = r6;
+                ctx.r3 = r3;
+                ctx.r4 = r4;
+                ctx.r5 = r5;
+                ctx.r6 = r6;
+            }
         }
     }
 
@@ -328,7 +390,18 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
     }
     
     if ((modifier.Flags & CSD_SKIP) != 0)
-        return;
+    {
+        if ((modifier.Flags & CSD_CHEVRON) != 0)
+        {
+            // Don't draw non-extended arrows at ultrawide.
+            if (g_aspectRatio > WIDE_ASPECT_RATIO)
+                return;
+        }
+        else
+        {
+            return;
+        }
+    }
 
     if (g_cornerExtract)
     {
@@ -411,6 +484,10 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
                 if ((modifier.Flags & CSD_MULTIPLAYER_CENTER) != 0)
                     offsetX /= 1.5f;
             }
+
+            // Don't offset arrows at 16:9 or narrower.
+            if ((modifier.Flags & CSD_CHEVRON) != 0 && g_aspectRatio <= WIDE_ASPECT_RATIO)
+                offsetX = 0.0f;
 
             if ((modifier.Flags & CSD_SCALE) != 0)
             {
@@ -570,6 +647,10 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
     if ((modifier.Flags & CSD_COLOUR_MODIFIER) != 0)
         applyColourModifier(modifier.Colours);
 
+    // Don't repeat arrows at 16:9 or narrower.
+    if ((modifier.Flags & CSD_CHEVRON) != 0 && g_aspectRatio <= WIDE_ASPECT_RATIO)
+        modifier.Flags &= ~(CSD_REPEAT_LEFT | CSD_REPEAT_RIGHT);
+
     auto isRepeatLeft = (modifier.Flags & CSD_REPEAT_LEFT) != 0;
     auto isRepeatRight = (modifier.Flags & CSD_REPEAT_RIGHT) != 0;
 
@@ -577,31 +658,11 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
     {
         auto r3 = ctx.r3;
         auto r5 = ctx.r5;
-        auto vertexIndex = isRepeatLeft ? 2 : 0;
-        auto x = getVertex(vertexIndex)->X;
 
-        while (isRepeatLeft ? x > 0.0f : x < float(Video::s_viewportWidth))
+        auto isFlipHorz = (modifier.Flags & CSD_REPEAT_FLIP_HORIZONTAL) != 0;
+
+        auto applyRepeatModifiers = [&]()
         {
-            ctx.r3 = r3;
-            ctx.r4 = ctx.r1;
-            ctx.r5 = r5;
-            original(ctx, base);
-
-            if (isRepeatLeft)
-            {
-                for (size_t i = 0; i < r5.u32; i++)
-                    getVertex(i)->X = getVertex(i)->X - width;
-            }
-            else if (isRepeatRight)
-            {
-                for (size_t i = 0; i < r5.u32; i++)
-                    getVertex(i)->X = getVertex(i)->X + width;
-            }
-
-            x = getVertex(vertexIndex)->X;
-
-            auto isFlipHorz = (modifier.Flags & CSD_REPEAT_FLIP_HORIZONTAL) != 0;
-
             if (isFlipHorz)
             {
                 getVertex(0)->X = getVertex(0)->X + width;
@@ -623,18 +684,184 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
             if ((modifier.Flags & CSD_REPEAT_COLOUR_MODIFIER) != 0)
                 applyColourModifier(modifier.RepeatColours);
+        };
 
-            if ((modifier.Flags & CSD_REPEAT_EXTEND) != 0)
+        if (isRepeatLeft)
+        {
+            if ((modifier.Flags & CSD_CHEVRON) != 0)
             {
+                // Shift root arrow forwards to use entirely custom arrows.
                 for (size_t i = 0; i < r5.u32; i++)
+                    getVertex(i)->X = getVertex(i)->X + width;
+            }
+
+            auto x = getVertex(2)->X;
+            auto arrowIndex = 0;
+            auto arrowCount = 0;
+
+            if ((modifier.Flags & CSD_CHEVRON) != 0)
+            {
+                // Compute number of foreground arrows.
+                while (x > 0.0f)
                 {
-                    if (isRepeatLeft && (i == (isFlipHorz ? 2 : 0) || i == (isFlipHorz ? 3 : 1)))
+                    x = x - width;
+                    arrowCount++;
+                }
+
+                g_fgArrowsEnd = (CHEVRON_INTRO_DURATION / 2.0f) * float(arrowCount + 1);
+
+                // Reset X to first vertex.
+                x = getVertex(0)->X;
+            }
+
+            while (x > 0.0f)
+            {
+                ctx.r3 = r3;
+                ctx.r4 = ctx.r1;
+                ctx.r5 = r5;
+                original(ctx, base);
+
+                if ((modifier.Flags & CSD_CHEVRON) != 0)
+                {
+                    auto halfWidth = width / 2.5f;
+                    auto endAlpha = (uint8_t)std::lerp(30, 10, x / float(Video::s_viewportWidth));
+                    auto introDuration = CHEVRON_INTRO_DURATION;
+                    auto introStartTime = (introDuration / 2.0f) * float(arrowIndex + 1) + g_bgArrowsEnd;
+                    auto outroDuration = CHEVRON_OUTRO_DURATION;
+                    auto outroStartTime = (g_fgArrowsEnd + introStartTime) + 0.5f;
+
+                    g_chevronLoopTime = outroStartTime + outroDuration;
+
+                    if (g_fgArrows.count(arrowIndex))
                     {
-                        getVertex(i)->X = std::min(getVertex(i)->X.get(), 0.0f);
+                        g_fgArrows[arrowIndex].EndAlpha = endAlpha;
+                        g_fgArrows[arrowIndex].IntroDuration = introDuration;
+                        g_fgArrows[arrowIndex].IntroStartTime = introStartTime;
+                        g_fgArrows[arrowIndex].OutroDuration = outroDuration;
+                        g_fgArrows[arrowIndex].OutroStartTime = outroStartTime;
                     }
-                    else if (isRepeatRight && (i == (isFlipHorz ? 0 : 2) || i == (isFlipHorz ? 1 : 3)))
+                    else
                     {
-                        getVertex(i)->X = std::max(getVertex(i)->X.get(), float(Video::s_viewportWidth));
+                        g_fgArrows.emplace(arrowIndex, ChevronAnim{ endAlpha, introDuration, introStartTime, outroDuration, outroStartTime });
+                    }
+
+                    for (size_t i = 0; i < r5.u32; i++)
+                    {
+                        getVertex(i)->X = getVertex(i)->X - (width - halfWidth) - g_bgArrows[arrowIndex].CurrentOffsetX;
+                        getVertex(i)->Colour = 0xFFFFFF00 | g_fgArrows[arrowIndex].CurrentAlpha;
+                    }
+
+                    // TODO: The last two foreground arrows are slightly more opaque
+                    // than the rest. They also need to fade out later too.
+                    // if (getVertex(0)->X > 0.0f && getVertex(0)->X - halfWidth < 0.0f)
+                    // {
+                    //     for (size_t j = 0; j < r5.u32; j++)
+                    //         getVertex(j)->Colour = 0xFFFFFF00 | (g_fgArrows[arrowIndex].CurrentAlpha + 10);
+                    // }
+
+                    arrowIndex++;
+                }
+                else
+                {
+                    for (size_t i = 0; i < r5.u32; i++)
+                        getVertex(i)->X = getVertex(i)->X - width;
+                }
+
+                x = getVertex(2)->X;
+
+                applyRepeatModifiers();
+
+                if ((modifier.Flags & CSD_REPEAT_EXTEND) != 0)
+                {
+                    for (size_t i = 0; i < r5.u32; i++)
+                    {
+                        if (i == (isFlipHorz ? 2 : 0) || i == (isFlipHorz ? 3 : 1))
+                            getVertex(i)->X = std::min(getVertex(i)->X.get(), 0.0f);
+                    }
+                }
+            }
+        }
+
+        if (isRepeatRight)
+        {
+            if ((modifier.Flags & CSD_CHEVRON) != 0)
+            {
+                // Shift root arrow backwards to use entirely custom arrows.
+                for (size_t i = 0; i < r5.u32; i++)
+                    getVertex(i)->X = getVertex(i)->X - width;
+            }
+
+            auto x = getVertex(0)->X;
+            auto arrowIndex = 0;
+            auto arrowCount = 0;
+
+            if ((modifier.Flags & CSD_CHEVRON) != 0)
+            {
+                // Compute number of background arrows.
+                while (x < float(Video::s_viewportWidth))
+                {
+                    x = x + width;
+                    arrowCount++;
+                }
+
+                g_bgArrowsEnd = (CHEVRON_INTRO_DURATION / 2.0f) * float(arrowCount + 1);
+
+                // Reset X to first vertex.
+                x = getVertex(0)->X;
+            }
+
+            while (x < float(Video::s_viewportWidth))
+            {
+                ctx.r3 = r3;
+                ctx.r4 = ctx.r1;
+                ctx.r5 = r5;
+                original(ctx, base);
+
+                if ((modifier.Flags & CSD_CHEVRON) != 0)
+                {
+                    auto endAlpha = (uint8_t)std::lerp(5, 35, x / float(Video::s_viewportWidth));
+                    auto introDuration = CHEVRON_INTRO_DURATION;
+                    auto introStartTime = (introDuration / 2.0f) * float(arrowIndex + 1);
+                    auto outroDuration = CHEVRON_OUTRO_DURATION;
+                    auto outroStartTime = (g_bgArrowsEnd + introStartTime) + 0.5f;
+
+                    if (g_bgArrows.count(arrowIndex))
+                    {
+                        g_bgArrows[arrowIndex].EndAlpha = endAlpha;
+                        g_bgArrows[arrowIndex].IntroDuration = introDuration;
+                        g_bgArrows[arrowIndex].IntroStartTime = introStartTime;
+                        g_bgArrows[arrowIndex].OutroDuration = outroDuration;
+                        g_bgArrows[arrowIndex].OutroStartTime = outroStartTime;
+                    }
+                    else
+                    {
+                        g_bgArrows.emplace(arrowIndex, ChevronAnim{ endAlpha, introDuration, introStartTime, outroDuration, outroStartTime });
+                    }
+
+                    for (size_t i = 0; i < r5.u32; i++)
+                    {
+                        getVertex(i)->X = (getVertex(i)->X + (width - (width / 4.0f))) + g_bgArrows[arrowIndex].CurrentOffsetX;
+                        getVertex(i)->Colour = 0xFFFFFF00 | g_bgArrows[arrowIndex].CurrentAlpha;
+                    }
+
+                    arrowIndex++;
+                }
+                else
+                {
+                    for (size_t i = 0; i < r5.u32; i++)
+                        getVertex(i)->X = getVertex(i)->X + width;
+                }
+
+                x = getVertex(0)->X;
+
+                applyRepeatModifiers();
+
+                if ((modifier.Flags & CSD_REPEAT_EXTEND) != 0)
+                {
+                    for (size_t i = 0; i < r5.u32; i++)
+                    {
+                        if (i == (isFlipHorz ? 0 : 2) || i == (isFlipHorz ? 1 : 3))
+                            getVertex(i)->X = std::max(getVertex(i)->X.get(), float(Video::s_viewportWidth));
                     }
                 }
             }
@@ -706,6 +933,41 @@ PPC_FUNC(sub_82631718)
     // r5 = vertex count
 
     Draw(ctx, base, __imp__sub_82631718, 0x0C);
+}
+
+// Sonicteam::MainMenuTask::Update
+PPC_FUNC_IMPL(__imp__sub_824FFCF8);
+PPC_FUNC(sub_824FFCF8)
+{
+    auto pMainMenuTask = (Sonicteam::MainMenuTask*)(base + ctx.r3.u32);
+    auto deltaTime = ctx.f1.f64;
+
+    if (g_aspectRatio > WIDE_ASPECT_RATIO)
+    {
+        auto aspectRatioChanged = false;
+
+        if (g_aspectRatio != g_chevronAspectRatio)
+            aspectRatioChanged = true;
+
+        g_chevronAspectRatio = g_aspectRatio;
+
+        if (pMainMenuTask->m_State == Sonicteam::MainMenuTask::MainMenuState_MainMenuBack ||
+            pMainMenuTask->m_State == Sonicteam::MainMenuTask::MainMenuState_AudioRoom    ||
+            pMainMenuTask->m_State == Sonicteam::MainMenuTask::MainMenuState_TheaterRoom  ||
+            aspectRatioChanged)
+        {
+            g_bgArrows.clear();
+            g_fgArrows.clear();
+        }
+
+        for (auto& arrow : g_bgArrows)
+            arrow.second.Update(deltaTime);
+
+        for (auto& arrow : g_fgArrows)
+            arrow.second.Update(deltaTime);
+    }
+
+    __imp__sub_824FFCF8(ctx, base);
 }
 
 // Sonicteam::EventEntityTask::Update
@@ -1061,6 +1323,22 @@ const xxHashMap<CsdModifier> g_csdModifiers =
 
     // background
     { HashStr("sprite/background/background/mainmenu_back"), { CSD_STRETCH | CSD_PROHIBIT_BLACK_BAR } },
+    { HashStr("sprite/background/background/main_menu"), { CSD_SCENE_DISABLE_MOTION } },
+    { HashStr("sprite/background/background/main_menu/main_menu1/yaji1"), { CSD_CHEVRON | CSD_SKIP } },
+    { HashStr("sprite/background/background/main_menu/main_menu1/yaji2"), { CSD_CHEVRON | CSD_SKIP } },
+    { HashStr("sprite/background/background/main_menu/main_menu1/yaji3"), { CSD_CHEVRON | CSD_SKIP } },
+    { HashStr("sprite/background/background/main_menu/main_menu1/yaji4"), { CSD_CHEVRON | CSD_SKIP } },
+    { HashStr("sprite/background/background/main_menu/main_menu1/yaji5"), { CSD_CHEVRON | CSD_SKIP } },
+    { HashStr("sprite/background/background/main_menu/main_menu1/yaji6"), { CSD_CHEVRON | CSD_ALIGN_RIGHT | CSD_REPEAT_LEFT } },
+    { HashStr("sprite/background/background/main_menu/main_menu2/yaji7"), { CSD_CHEVRON | CSD_SKIP } },
+    { HashStr("sprite/background/background/main_menu/main_menu2/yaji8"), { CSD_CHEVRON | CSD_SKIP } },
+    { HashStr("sprite/background/background/main_menu/main_menu2/yaji9"), { CSD_CHEVRON | CSD_SKIP } },
+    { HashStr("sprite/background/background/main_menu/main_menu2/yaji10"), { CSD_CHEVRON | CSD_SKIP } },
+    { HashStr("sprite/background/background/main_menu/main_menu2/yaji11"), { CSD_CHEVRON | CSD_SKIP } },
+    { HashStr("sprite/background/background/main_menu/main_menu2/yaji12"), { CSD_CHEVRON | CSD_SKIP } },
+    { HashStr("sprite/background/background/main_menu/main_menu2/yaji13"), { CSD_CHEVRON | CSD_SKIP } },
+    { HashStr("sprite/background/background/main_menu/main_menu2/yaji14"), { CSD_CHEVRON | CSD_SKIP } },
+    { HashStr("sprite/background/background/main_menu/main_menu2/yaji15"), { CSD_CHEVRON | CSD_ALIGN_LEFT | CSD_REPEAT_RIGHT } },
 
     // battledisplay_1p
     { HashStr("sprite/battledisplay_1p/power"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },

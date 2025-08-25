@@ -39,6 +39,7 @@
 #include "Sonicteam/HUDRaderMap.h"
 #include "Sonicteam/HudTextParts.h"
 #include "Sonicteam/ImageFilter.h"
+#include "Sonicteam/MainMenuTask.h"
 #include "Sonicteam/MovieObject.h"
 #include "Sonicteam/MovieObjectWmv.h"
 #include "Sonicteam/MovieTask.h"
