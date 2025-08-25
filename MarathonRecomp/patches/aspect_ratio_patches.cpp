@@ -323,11 +323,14 @@ PPC_FUNC(sub_828C8F60)
 
     if (g_sceneModifier.has_value())
     {
+        if ((g_sceneModifier->Flags & CSD_MODIFIER_ULTRAWIDE_ONLY) != 0 && g_aspectRatio <= WIDE_ASPECT_RATIO)
+            g_sceneModifier->Flags &= (~g_sceneModifier->Flags) | CSD_MODIFIER_ULTRAWIDE_ONLY;
+
+        if ((g_sceneModifier->Flags & CSD_SCENE_DISABLE_MOTION) != 0)
+            pScene->FPS = 0;
+
         if (g_aspectRatio > WIDE_ASPECT_RATIO)
         {
-            if ((g_sceneModifier->Flags & CSD_SCENE_DISABLE_MOTION) != 0)
-                pScene->FPS = 0;
-
             if ((g_sceneModifier->Flags & (CSD_OFFSET_SCALE_LEFT | CSD_OFFSET_SCALE_RIGHT | CSD_CORNER_EXTRACT)) != 0)
             {
                 auto r3 = ctx.r3;
@@ -388,6 +391,9 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
     {
         modifier = g_sceneModifier.value();
     }
+
+    if ((modifier.Flags & CSD_MODIFIER_ULTRAWIDE_ONLY) != 0 && g_aspectRatio <= WIDE_ASPECT_RATIO)
+        modifier.Flags &= (~modifier.Flags) | CSD_MODIFIER_ULTRAWIDE_ONLY;
     
     if ((modifier.Flags & CSD_SKIP) != 0)
     {
@@ -1323,7 +1329,7 @@ const xxHashMap<CsdModifier> g_csdModifiers =
 
     // background
     { HashStr("sprite/background/background/mainmenu_back"), { CSD_STRETCH | CSD_PROHIBIT_BLACK_BAR } },
-    { HashStr("sprite/background/background/main_menu"), { CSD_SCENE_DISABLE_MOTION } },
+    { HashStr("sprite/background/background/main_menu"), { CSD_SCENE_DISABLE_MOTION | CSD_MODIFIER_ULTRAWIDE_ONLY } },
     { HashStr("sprite/background/background/main_menu/main_menu1/yaji1"), { CSD_CHEVRON | CSD_SKIP } },
     { HashStr("sprite/background/background/main_menu/main_menu1/yaji2"), { CSD_CHEVRON | CSD_SKIP } },
     { HashStr("sprite/background/background/main_menu/main_menu1/yaji3"), { CSD_CHEVRON | CSD_SKIP } },
