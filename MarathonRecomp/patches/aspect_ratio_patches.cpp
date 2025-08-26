@@ -77,7 +77,7 @@ struct ChevronAnim
             CurrentAlpha = std::lerp(EndAlpha, 0, std::clamp((TimeElapsed - OutroStartTime) / OutroDuration, 0.0f, 1.0f));
         }
 
-        CurrentOffsetX = std::lerp(0.0f, 2.0f, std::clamp(TimeElapsed / g_chevronLoopTime, 0.0f, 1.0f));
+        CurrentOffsetX = std::lerp(0.0f, 5.0f, std::clamp(TimeElapsed / g_chevronLoopTime, 0.0f, 1.0f));
 
         if (TimeElapsed < g_chevronLoopTime)
             return;
@@ -694,23 +694,24 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
         if (isRepeatLeft)
         {
+            auto x = getVertex(2)->X;
+            auto arrowIndex = 0;
+            auto arrowCount = 0;
+            auto arrowWidth = (width - (width / 2.5f));
+
             if ((modifier.Flags & CSD_CHEVRON) != 0)
             {
                 // Shift root arrow forwards to use entirely custom arrows.
                 for (size_t i = 0; i < r5.u32; i++)
-                    getVertex(i)->X = getVertex(i)->X + width;
+                    getVertex(i)->X = getVertex(i)->X + arrowWidth;
             }
-
-            auto x = getVertex(2)->X;
-            auto arrowIndex = 0;
-            auto arrowCount = 0;
 
             if ((modifier.Flags & CSD_CHEVRON) != 0)
             {
                 // Compute number of foreground arrows.
                 while (x > 0.0f)
                 {
-                    x = x - width;
+                    x = x - arrowWidth;
                     arrowCount++;
                 }
 
@@ -729,7 +730,6 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
                 if ((modifier.Flags & CSD_CHEVRON) != 0)
                 {
-                    auto halfWidth = width / 2.5f;
                     auto endAlpha = (uint8_t)std::lerp(30, 10, x / float(Video::s_viewportWidth));
                     auto introDuration = CHEVRON_INTRO_DURATION;
                     auto introStartTime = (introDuration / 2.0f) * float(arrowIndex + 1) + g_bgArrowsEnd;
@@ -753,17 +753,9 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
                     for (size_t i = 0; i < r5.u32; i++)
                     {
-                        getVertex(i)->X = getVertex(i)->X - (width - halfWidth) - g_bgArrows[arrowIndex].CurrentOffsetX;
+                        getVertex(i)->X = (getVertex(i)->X - arrowWidth) - g_bgArrows[arrowIndex].CurrentOffsetX;
                         getVertex(i)->Colour = 0xFFFFFF00 | g_fgArrows[arrowIndex].CurrentAlpha;
                     }
-
-                    // TODO: The last two foreground arrows are slightly more opaque
-                    // than the rest. They also need to fade out later too.
-                    // if (getVertex(0)->X > 0.0f && getVertex(0)->X - halfWidth < 0.0f)
-                    // {
-                    //     for (size_t j = 0; j < r5.u32; j++)
-                    //         getVertex(j)->Colour = 0xFFFFFF00 | (g_fgArrows[arrowIndex].CurrentAlpha + 10);
-                    // }
 
                     arrowIndex++;
                 }
@@ -790,23 +782,24 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
         if (isRepeatRight)
         {
+            auto x = getVertex(0)->X;
+            auto arrowIndex = 0;
+            auto arrowCount = 0;
+            auto arrowWidth = (width - (width / 4.0f));
+
             if ((modifier.Flags & CSD_CHEVRON) != 0)
             {
                 // Shift root arrow backwards to use entirely custom arrows.
                 for (size_t i = 0; i < r5.u32; i++)
-                    getVertex(i)->X = getVertex(i)->X - width;
+                    getVertex(i)->X = getVertex(i)->X - arrowWidth;
             }
-
-            auto x = getVertex(0)->X;
-            auto arrowIndex = 0;
-            auto arrowCount = 0;
 
             if ((modifier.Flags & CSD_CHEVRON) != 0)
             {
                 // Compute number of background arrows.
                 while (x < float(Video::s_viewportWidth))
                 {
-                    x = x + width;
+                    x = x + arrowWidth;
                     arrowCount++;
                 }
 
@@ -825,7 +818,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
                 if ((modifier.Flags & CSD_CHEVRON) != 0)
                 {
-                    auto endAlpha = (uint8_t)std::lerp(5, 35, x / float(Video::s_viewportWidth));
+                    auto endAlpha = (uint8_t)std::lerp(10, 35, x / float(Video::s_viewportWidth));
                     auto introDuration = CHEVRON_INTRO_DURATION;
                     auto introStartTime = (introDuration / 2.0f) * float(arrowIndex + 1);
                     auto outroDuration = CHEVRON_OUTRO_DURATION;
@@ -846,7 +839,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
                     for (size_t i = 0; i < r5.u32; i++)
                     {
-                        getVertex(i)->X = (getVertex(i)->X + (width - (width / 4.0f))) + g_bgArrows[arrowIndex].CurrentOffsetX;
+                        getVertex(i)->X = (getVertex(i)->X + arrowWidth) + g_bgArrows[arrowIndex].CurrentOffsetX;
                         getVertex(i)->Colour = 0xFFFFFF00 | g_bgArrows[arrowIndex].CurrentAlpha;
                     }
 
