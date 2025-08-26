@@ -5,52 +5,40 @@
 
 namespace Sonicteam::SoX
 {
-    template <typename RefType = RefCountObject>
+    template <typename T = RefCountObject>
     class RefSharedPointer
     {
     private:
-        xpointer<RefType> m_value;
+        xpointer<T> m_ptr;
 
     public:
-        explicit RefSharedPointer(RefType* value)
-            : m_value(value)
+        explicit RefSharedPointer(T* value) : m_ptr(value)
         {
-            if (m_value.get()) 
-            {
-                m_value->AddRef();
-            }
+            if (m_ptr.get())
+                m_ptr->AddRef();
         }
 
-        explicit RefSharedPointer(xpointer<RefType> value)
-            : m_value(value)
+        explicit RefSharedPointer(xpointer<T> value) : m_ptr(value)
         {
-            if (m_value.get()) 
-            {
-                m_value->AddRef();
-            }
+            if (m_ptr.get())
+                m_ptr->AddRef();
         }
 
-        RefSharedPointer(const RefSharedPointer& other)
-            : m_value(other.m_value)
+        RefSharedPointer(const RefSharedPointer& other) : m_ptr(other.m_ptr)
         {
-            if (m_value.get()) 
-            {
-                m_value->AddRef();
-            }
+            if (m_ptr.get())
+                m_ptr->AddRef();
         }
 
-        RefSharedPointer(RefSharedPointer&& other) noexcept
-            : m_value(std::move(other.m_value))
+        RefSharedPointer(RefSharedPointer&& other) noexcept : m_ptr(std::move(other.m_ptr))
         {
-            other.m_value = nullptr;
+            other.m_ptr = nullptr;
         }
 
         ~RefSharedPointer()
         {
-            if (m_value.get())
-            {
-                m_value->Release();
-            }
+            if (m_ptr.get())
+                m_ptr->Release();
         }
 
         RefSharedPointer& operator=(const RefSharedPointer& other)
@@ -58,13 +46,13 @@ namespace Sonicteam::SoX
             if (this != &other) 
             {
                 reset();
-                m_value = other.m_value;
 
-                if (m_value.get()) 
-                {
-                    m_value->AddRef();
-                }
+                m_ptr = other.m_ptr;
+
+                if (m_ptr.get())
+                    m_ptr->AddRef();
             }
+
             return *this;
         }
 
@@ -74,44 +62,45 @@ namespace Sonicteam::SoX
             {
                 reset();
 
-                m_value = std::move(other.m_value);
-                other.m_value = nullptr;
+                m_ptr = std::move(other.m_ptr);
+
+                other.m_ptr = nullptr;
             }
+
             return *this;
         }
 
         void reset()
         {
-            if (m_value.get())
-            {
-                m_value->Release();
-            }
-            m_value = 0;
+            if (m_ptr.get())
+                m_ptr->Release();
+
+            m_ptr = 0;
         }
 
-        RefType* get() const noexcept
+        T* get() const noexcept
         {
-            return m_value.get();
+            return m_ptr.get();
         }
 
-        RefType* operator->() const noexcept
+        T* operator->() const noexcept
         {
-            return m_value.get();
+            return m_ptr.get();
         }
 
-        RefType& operator*() const noexcept
+        T& operator*() const noexcept
         {
-            return *m_value.get();
+            return *m_ptr.get();
         }
 
         explicit operator bool() const noexcept
         {
-            return m_value.get() != nullptr;
+            return m_ptr.get() != nullptr;
         }
 
         bool operator==(const RefSharedPointer& other) const noexcept
         {
-            return m_value.get() == other.m_value.get();
+            return m_ptr.get() == other.m_ptr.get();
         }
 
         bool operator!=(const RefSharedPointer& other) const noexcept

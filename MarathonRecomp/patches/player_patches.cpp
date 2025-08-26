@@ -82,9 +82,9 @@ bool MidairSnowboardControl()
 }
 
 // Add missing SetupModuleDebug to table.
-void DebugPlayerSwitch(PPCRegister& str, PPCRegister& index)
+void PlayerDebugMode_RegisterLuaSetup(PPCRegister& str, PPCRegister& index)
 {
-    if (!Config::DebugSwitch)
+    if (!Config::PlayerDebugMode)
         return;
 
     auto pString = (stdx::string*)g_memory.Translate(str.u32);
@@ -105,24 +105,26 @@ void DebugPlayerSwitch(PPCRegister& str, PPCRegister& index)
     }
 }
 
-bool DebugPlayerSwitchPostureSwitchButton(PPCRegister& r_PadState, PPCRegister& r_out)
+bool PlayerDebugMode_RemapDebugExitButton(PPCRegister& r_PadState, PPCRegister& r_out)
 {
     auto pPadState = (Sonicteam::SoX::Input::PadState*)(g_memory.Translate(r_PadState.u32));
+
     return pPadState->IsPressed(Sonicteam::SoX::Input::KeyState_Select);
 }
 
+// Sonicteam::Player::Object::Update
 PPC_FUNC_IMPL(__imp__sub_82195500);
 PPC_FUNC(sub_82195500)
 {
-    if (!Config::DebugSwitch)
+    if (!Config::PlayerDebugMode)
     {
         __imp__sub_82195500(ctx, base);
         return;
     }
 
     auto pPlayer = (Sonicteam::Player::Object*)(base + ctx.r3.u32);
-    auto pDoc = App::s_pApp->m_pDoc;
     auto pZock = pPlayer->GetPlugin<Sonicteam::Player::Zock>("zock");
+    auto pDoc = App::s_pApp->m_pDoc;
 	
     if (auto pGameMode = pDoc->GetDocMode<Sonicteam::GameMode>())
     {
@@ -131,22 +133,28 @@ PPC_FUNC(sub_82195500)
             auto playerIndex = pGameMode->m_pGameImp->PlayerActorIDToIndex(pPlayer->m_ActorID);
             auto& spManager = pDoc->m_vspInputManager[pDoc->m_PlayerControllerID[playerIndex]];
 
+            // Disable camera volume collision on B press.
             if (pPlayer->m_SetupModuleIndexPostfix == 2 && spManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_B))
             {
-                auto pValue = (pZock->m_pPhantom->m_pRigidBody->m_collidable.m_BroadPhaseHandle.m_CollisionFilter = pZock->m_pPhantom->m_pRigidBody->m_collidable.m_BroadPhaseHandle.m_CollisionFilter.get() == 6) ? 0x383 : 6;
-              
-                pZock->m_pPhantom.reset();
-                pZock->m_pPhantomB.reset();
+                auto value = pZock->m_spPhantomA->m_pRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo == 6 ? 0x383 : 6;
 
-                GuestToHostFunction<void>(sub_821E3628, &pZock->m_pPhantom, &pPlayer->m_spRootFrame, static_cast<Sonicteam::SoX::MessageReceiver*>(pPlayer), pValue, 50.0);
+                pZock->m_spPhantomA.reset();
+                pZock->m_spPhantomB.reset();
 
-                pZock->m_pPhantomB = pZock->m_pPhantom;
-                pZock->m_pPhantom->InitializeToWorld(pGameMode->m_pGameImp->m_spPhysicsWorld);
-                pZock->m_pPhantom->SetPhantomListener(pZock->m_spPhantomListener); 
+                GuestToHostFunction<void>(sub_821E3628, &pZock->m_spPhantomA, &pPlayer->m_spRootFrame, static_cast<Sonicteam::SoX::MessageReceiver*>(pPlayer), value, 50.0);
+
+                pZock->m_spPhantomB = pZock->m_spPhantomA;
+                pZock->m_spPhantomA->InitializeToWorld(pGameMode->m_pGameImp->m_spPhysicsWorld);
+                pZock->m_spPhantomA->SetPhantomListener(pZock->m_spPhantomListener); 
             }
 
-            if (pPlayer->m_SetupModuleIndexPostfix != 2 && !(pPlayer->m_SetupModuleIndexPrefix == 2 && pPlayer->m_SetupModuleIndexPostfix == 1) && spManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_Select))
+            // Enter debug posture on Select press.
+            if (pPlayer->m_SetupModuleIndexPostfix != 2 &&
+                !(pPlayer->m_SetupModuleIndexPrefix == 2 && pPlayer->m_SetupModuleIndexPostfix == 1) &&
+                spManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_Select))
+            {
                 pPlayer->m_SetupModuleIndexPostfix = 2;
+            }
         }
     }
 

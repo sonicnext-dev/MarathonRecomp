@@ -8,15 +8,14 @@ namespace hk330
     class hkArray
     {
     public:
-        xpointer<T> m_ptr;
-        uint32_t m_numElements;
-        uint32_t m_maxElements;
+        xpointer<T> m_data;
+        be<uint32_t> m_size;
+        be<uint32_t> m_capacityAndFlags;
 
-        template <typename P>
-        T* GetAt(P at)
+        template <typename E>
+        T* GetIndex(E i)
         {
-            return (T*)((uintptr_t)m_ptr.get() + (at * sizeof(T)));
+            return (T*)(m_data.get() + ((int)i * sizeof(T)));
         }
     };
 }
-

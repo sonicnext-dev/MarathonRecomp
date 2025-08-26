@@ -15,11 +15,12 @@ namespace Sonicteam::SoX
         xpointer<Vftable> m_pVftable;
         be<uint32_t> m_ReferenceCount;
 
-        void Release(uint32_t Flag = 1)
+        void Release(uint32_t flag = 1)
         {
             m_ReferenceCount = m_ReferenceCount - 1;
+
             if (!m_ReferenceCount.get())
-                Destroy(1);
+                Destroy(flag);
         }
 
         inline void AddRef()
@@ -27,11 +28,9 @@ namespace Sonicteam::SoX
             m_ReferenceCount = m_ReferenceCount + 1;
         }
 
-        //Virtual
         void* Destroy(uint32_t flag)
         {
-            return GuestToHostFunction<void*>(m_pVftable->Destroy,this,flag);
+            return GuestToHostFunction<void*>(m_pVftable->Destroy, this, flag);
         }
-
     };
 }

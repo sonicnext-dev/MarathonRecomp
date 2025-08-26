@@ -9,7 +9,8 @@ namespace hk330
     {
     public:
         xpointer<hkpShape> m_shape;
-        MARATHON_INSERT_PADDING(0xC);
+        be<uint32_t> m_shapeKey;
+        xpointer<void> m_motion;
+        xpointer<hk330::hkpCdBody> m_parent;
     };
 }
-

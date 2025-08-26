@@ -69,14 +69,14 @@ namespace stdx
 
         void cleanup()
         {
-            if (!is_short()) {
+            if (!is_short())
                 g_userHeap.Free((void*)_bx._str.get());
-            }
         }
 
         void from_cstr(const char* str)
         {
             auto len = strlen(str);
+
             if (len <= 0xF)
             {
                 memcpy((void*)&_bx._buffer, str, len + 1);

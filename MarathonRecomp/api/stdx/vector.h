@@ -5,10 +5,11 @@
 #include <utility>
 #include <algorithm>
 
-namespace stdx {
-
+namespace stdx
+{
     template <typename T>
-    class vector {
+    class vector
+    {
     private:
         be<uint32_t> _Myproxy;
         xpointer<T> _MyFirst;
@@ -23,14 +24,14 @@ namespace stdx {
 
         void _ConstructRange(T* first, T* last, const T& value)
         {
-            for (; first != last; ++first) {
+            for (; first != last; ++first)
                 new (first) T(value);
-            }
         }
 
         void _DestroyRange(T* first, T* last)
         {
-            while (first != last) {
+            while (first != last)
+            {
                 first->~T();
                 ++first;
             }
@@ -41,14 +42,16 @@ namespace stdx {
             T* new_block = static_cast<T*>(g_userHeap.Alloc(sizeof(T) * new_capacity));
             const size_t old_size = size();
 
-            for (size_t i = 0; i < old_size; ++i) {
+            for (size_t i = 0; i < old_size; ++i)
+            {
                 T* target = reinterpret_cast<T*>(
                     reinterpret_cast<uintptr_t>(new_block) + i * sizeof(T));
                 new (target) T(std::move(_MyFirst[i]));
                 _MyFirst[i].~T();
             }
 
-            if (_MyFirst) {
+            if (_MyFirst)
+            {
                 _DestroyRange(_MyFirst.get(), _MyLast.get());
                 g_userHeap.Free(_MyFirst.get());
             }
@@ -60,20 +63,17 @@ namespace stdx {
 
         void _GrowIfNeeded()
         {
-            if (_MyLast.get() == _MyEnd.get()) {
+            if (_MyLast.get() == _MyEnd.get())
                 _Reallocate(size() ? size() * 2 : 1);
-            }
         }
 
-        class iterator_wrapper {
+        class iterator_wrapper
+        {
         private:
             xpointer<T> _ptr;
 
         public:
-            explicit iterator_wrapper(xpointer<T> ptr)
-                : _ptr(ptr)
-            {
-            }
+            explicit iterator_wrapper(xpointer<T> ptr) : _ptr(ptr) {}
 
             T& operator*() const
             {
@@ -89,6 +89,7 @@ namespace stdx {
             {
                 _ptr = xpointer<T>(reinterpret_cast<T*>(
                     reinterpret_cast<uintptr_t>(_ptr.get()) + sizeof(T)));
+
                 return *this;
             }
 
@@ -103,6 +104,7 @@ namespace stdx {
             {
                 _ptr = xpointer<T>(reinterpret_cast<T*>(
                     reinterpret_cast<uintptr_t>(_ptr.get()) - sizeof(T)));
+
                 return *this;
             }
 
@@ -136,15 +138,13 @@ namespace stdx {
             }
         };
 
-        class const_iterator_wrapper {
+        class const_iterator_wrapper
+        {
         private:
             xpointer<const T> _ptr;
 
         public:
-            explicit const_iterator_wrapper(xpointer<const T> ptr)
-                : _ptr(ptr)
-            {
-            }
+            explicit const_iterator_wrapper(xpointer<const T> ptr) : _ptr(ptr) {}
 
             const T& operator*() const
             {
@@ -160,6 +160,7 @@ namespace stdx {
             {
                 _ptr = xpointer<const T>(reinterpret_cast<const T*>(
                     reinterpret_cast<uintptr_t>(_ptr.get()) + sizeof(T)));
+
                 return *this;
             }
 
@@ -174,6 +175,7 @@ namespace stdx {
             {
                 _ptr = xpointer<const T>(reinterpret_cast<const T*>(
                     reinterpret_cast<uintptr_t>(_ptr.get()) - sizeof(T)));
+
                 return *this;
             }
 
@@ -211,12 +213,7 @@ namespace stdx {
         using iterator = iterator_wrapper;
         using const_iterator = const_iterator_wrapper;
 
-        vector() noexcept
-            : _MyFirst(nullptr)
-            , _MyLast(nullptr)
-            , _MyEnd(nullptr)
-        {
-        }
+        vector() noexcept : _MyFirst(nullptr), _MyLast(nullptr), _MyEnd(nullptr) {}
 
         explicit vector(size_t count)
         {
@@ -240,15 +237,11 @@ namespace stdx {
             _MyLast = xpointer_add(_MyFirst, other.size());
             _MyEnd = _MyLast;
 
-            for (size_t i = 0; i < other.size(); ++i) {
+            for (size_t i = 0; i < other.size(); ++i)
                 new (xpointer_add(_MyFirst, i).get()) T(other._MyFirst[i]);
-            }
         }
 
-        vector(vector&& other) noexcept
-            : _MyFirst(other._MyFirst)
-            , _MyLast(other._MyLast)
-            , _MyEnd(other._MyEnd)
+        vector(vector&& other) noexcept : _MyFirst(other._MyFirst), _MyLast(other._MyLast), _MyEnd(other._MyEnd)
         {
             other._MyFirst = other._MyLast = other._MyEnd = nullptr;
         }
@@ -256,27 +249,30 @@ namespace stdx {
         ~vector()
         {
             clear();
-            if (_MyFirst) {
+
+            if (_MyFirst)
                 g_userHeap.Free(_MyFirst.get());
-            }
         }
 
         vector& operator=(const vector& other)
         {
-            if (this != &other) {
+            if (this != &other)
+            {
                 vector tmp(other);
                 swap(tmp);
             }
+
             return *this;
         }
 
         vector& operator=(vector&& other) noexcept
         {
-            if (this != &other) {
+            if (this != &other)
+            {
                 clear();
-                if (_MyFirst) {
+
+                if (_MyFirst)
                     g_userHeap.Free(_MyFirst.get());
-                }
 
                 _MyFirst = other._MyFirst;
                 _MyLast = other._MyLast;
@@ -284,6 +280,7 @@ namespace stdx {
 
                 other._MyFirst = other._MyLast = other._MyEnd = nullptr;
             }
+
             return *this;
         }
 
@@ -384,16 +381,14 @@ namespace stdx {
 
         void reserve(size_t new_capacity)
         {
-            if (new_capacity > capacity()) {
+            if (new_capacity > capacity())
                 _Reallocate(new_capacity);
-            }
         }
 
         void shrink_to_fit()
         {
-            if (size() < capacity()) {
+            if (size() < capacity())
                 _Reallocate(size());
-            }
         }
 
         void clear()
@@ -432,13 +427,17 @@ namespace stdx {
 
         void resize(size_t count)
         {
-            if (count < size()) {
+            if (count < size())
+            {
                 _DestroyRange(xpointer_add(_MyFirst, count).get(), _MyLast.get());
                 _MyLast = xpointer_add(_MyFirst, count);
             }
-            else if (count > size()) {
+            else if (count > size())
+            {
                 reserve(count);
-                while (_MyLast.get() != xpointer_add(_MyFirst, count).get()) {
+
+                while (_MyLast.get() != xpointer_add(_MyFirst, count).get())
+                {
                     new (_MyLast.get()) T();
                     _MyLast = xpointer_add(_MyLast, 1);
                 }
@@ -447,13 +446,17 @@ namespace stdx {
 
         void resize(size_t count, const T& value)
         {
-            if (count < size()) {
+            if (count < size())
+            {
                 _DestroyRange(xpointer_add(_MyFirst, count).get(), _MyLast.get());
                 _MyLast = xpointer_add(_MyFirst, count);
             }
-            else if (count > size()) {
+            else if (count > size())
+            {
                 reserve(count);
-                while (_MyLast.get() != xpointer_add(_MyFirst, count).get()) {
+
+                while (_MyLast.get() != xpointer_add(_MyFirst, count).get())
+                {
                     new (_MyLast.get()) T(value);
                     _MyLast = xpointer_add(_MyLast, 1);
                 }
@@ -511,5 +514,4 @@ namespace stdx {
     {
         return !(lhs < rhs);
     }
-
 }

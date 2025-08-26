@@ -5,7 +5,5 @@
 
 namespace Sonicteam
 {
-    class MyPhantom : public SoX::Physics::Havok::PhantomHavok
-    {
-    };
+    class MyPhantom : public SoX::Physics::Havok::PhantomHavok {};
 }

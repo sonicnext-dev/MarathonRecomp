@@ -12,7 +12,7 @@ namespace Sonicteam
     {
     public:
         MARATHON_INSERT_PADDING(0x40);
-        stdx::vector<boost::shared_ptr<Sonicteam::SoX::Input::Manager>> m_vspInputManager;
+        stdx::vector<boost::shared_ptr<SoX::Input::Manager>> m_vspInputManager;
         MARATHON_INSERT_PADDING(0x24);
         bool m_VFrame;
         MARATHON_INSERT_PADDING(0x55B58);

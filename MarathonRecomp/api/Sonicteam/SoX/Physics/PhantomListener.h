@@ -5,5 +5,5 @@
 
 namespace Sonicteam::SoX::Physics
 {
-    class PhantomListener : public SoX::RefCountObject{};
+    class PhantomListener : public RefCountObject {};
 }

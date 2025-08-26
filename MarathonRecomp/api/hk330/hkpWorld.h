@@ -5,9 +5,9 @@
 
 namespace hk330
 {
-    class hkpWorld: hkReferencedObject
+    class hkpWorld : public hkReferencedObject
     {
+    public:
         MARATHON_INSERT_PADDING(0x308);
     };
 }
-

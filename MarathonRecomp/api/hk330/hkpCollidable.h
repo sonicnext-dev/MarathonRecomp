@@ -6,13 +6,12 @@
 
 namespace hk330
 {
-    class hkpCollidable : hkpCdBody
+    class hkpCollidable : public hkpCdBody
     {
     public:
-        MARATHON_INSERT_PADDING(0x4);
-        hkpTypedBroadPhaseHandle m_BroadPhaseHandle;
+        MARATHON_INSERT_PADDING(4);
+        hkpTypedBroadPhaseHandle m_broadPhaseHandle;
         MARATHON_INSERT_PADDING(0x28);
-        be<float> m_PenetrationDepth;
+        be<float> m_allowedPenetrationDepth;
     };
 }
-

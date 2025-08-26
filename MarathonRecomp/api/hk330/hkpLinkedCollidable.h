@@ -9,12 +9,12 @@ namespace hk330
     class hkpLinkedCollidable : public hkpCollidable
     {
     public:
-        struct Entry
+        struct CollisionEntry
         {
             MARATHON_INSERT_PADDING(4);
-            xpointer<hkpLinkedCollidable> m_other;
+            xpointer<hkpLinkedCollidable> m_partner;
         };
-        hkArray<Entry> m_Entries;
+
+        hkArray<CollisionEntry> m_collisionEntries;
     };
 }
-

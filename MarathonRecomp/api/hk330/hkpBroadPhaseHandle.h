@@ -11,4 +11,3 @@ namespace hk330
         be<uint32_t> m_id;
     };
 }
-

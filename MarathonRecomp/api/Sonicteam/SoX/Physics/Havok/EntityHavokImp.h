@@ -7,5 +7,5 @@
 namespace Sonicteam::SoX::Physics::Havok
 {
     template<typename T>
-    class EntityHavokImp :public T,public Sonicteam::SoX::Physics::Havok::EntityHavok {};
+    class EntityHavokImp : public T, public EntityHavok {};
 }

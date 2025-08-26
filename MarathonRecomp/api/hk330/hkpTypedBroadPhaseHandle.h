@@ -5,14 +5,12 @@
 
 namespace hk330
 {
-    class hkpTypedBroadPhaseHandle : hkpBroadPhaseHandle
+    class hkpTypedBroadPhaseHandle : public hkpBroadPhaseHandle
     {
     public: 
         int8_t m_type;
-        int8_t m_owner;
-        be<int16_t> m_QualityType;
-        be<uint32_t> m_CollisionFilter;
-
+        int8_t m_ownerOffset;
+        be<int16_t> m_objectQualityType;
+        be<uint32_t> m_collisionFilterInfo;
     };
 }
-

@@ -5,8 +5,5 @@
 
 namespace hk330
 {
-    class hkpRigidBody : public hkpEntity
-    {
-    };
+    class hkpRigidBody : public hkpEntity {};
 }
-

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Marathon.inl"
+#include <Marathon.inl>
 
 namespace Sonicteam::SoX::Math
 {
@@ -20,15 +20,6 @@ namespace Sonicteam::SoX::Math
     };
 
     class alignas(16) Vector
-    {
-    public:
-        be<float> X;
-        be<float> Y;
-        be<float> Z;
-        be<float> W;
-    };
-
-    class alignas(16) Vector4
     {
     public:
         be<float> X;

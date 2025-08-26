@@ -196,12 +196,12 @@ address = 0x8260D7E0
 registers = ["r26"]
 
 [[midasm_hook]]
-name = "DebugPlayerSwitch"
+name = "PlayerDebugMode_RegisterLuaSetup"
 address = 0x82195AD0
 registers = ["r5", "r27"]
 
 [[midasm_hook]]
-name = "DebugPlayerSwitchPostureSwitchButton"
+name = "PlayerDebugMode_RemapDebugExitButton"
 address = 0x82221CA8 
 registers = ["r30","r11"]
 jump_address_on_true = 0x82221CAC

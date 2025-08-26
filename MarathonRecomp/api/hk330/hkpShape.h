@@ -5,11 +5,10 @@
 
 namespace hk330
 {
-    class hkpShape : hkReferencedObject
+    class hkpShape : public hkReferencedObject
     {
     public:
-        be<uint32_t> m_userdata;
+        be<uint32_t> m_userData;
         be<uint32_t> m_type;
     };
 }
-

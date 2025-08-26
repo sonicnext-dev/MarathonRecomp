@@ -11,10 +11,10 @@
 
 namespace Sonicteam::SoX::Physics
 {
-    class Entity : public SoX::MessageReceiver, public SoX::RefCountObject
+    class Entity : public MessageReceiver, public RefCountObject
     {
     public:
-        struct Vftable:MessageReceiver::Vftable
+        struct Vftable : public MessageReceiver::Vftable
         {
             MARATHON_INSERT_PADDING(0x38);
             be<uint32_t> InitializeToWorld;
@@ -23,18 +23,17 @@ namespace Sonicteam::SoX::Physics
         };
 
         MARATHON_INSERT_PADDING(0x10);
-        SoX::RefSharedPointer<SoX::Physics::Shape> m_spPhantomListener;
-        xpointer<SoX::MessageReceiver> m_pReceiver;
-        SoX::RefSharedPointer<SoX::Physics::Shape> m_spShape;
+        RefSharedPointer<Shape> m_spPhantomListener;
+        xpointer<MessageReceiver> m_pReceiver;
+        RefSharedPointer<Shape> m_spShape;
 
-        //Virtual
-        void InitializeToWorld(SoX::RefSharedPointer<Sonicteam::SoX::Physics::World>& world)
+        void InitializeToWorld(RefSharedPointer<World>& world)
         {
             auto vft = static_cast<Vftable*>(MessageReceiver::m_pVftable.get());
             GuestToHostFunction<void>(vft->InitializeToWorld, this, &world);
         }
 
-        void SetPhantomListener(SoX::RefSharedPointer<PhantomListener>& phantomListener)
+        void SetPhantomListener(RefSharedPointer<PhantomListener>& phantomListener)
         {
             auto vft = static_cast<Vftable*>(MessageReceiver::m_pVftable.get());
             GuestToHostFunction<void>(vft->SetPhantomListener, this, &phantomListener);

@@ -5,5 +5,5 @@
 
 namespace Sonicteam::SoX::Physics
 {
-    class Phantom : public Entity{};
+    class Phantom : public Entity {};
 }

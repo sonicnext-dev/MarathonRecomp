@@ -2,7 +2,7 @@
 
 namespace Sonicteam::SoX
 {
-    struct Message{};
+    struct Message;
 
     class MessageReceiver
     {
@@ -14,7 +14,6 @@ namespace Sonicteam::SoX
 
         xpointer<Vftable> m_pVftable;
 
-        //Virtual
         bool OnMessageRecieved(Message* message)
         {
             return GuestToHostFunction<uint32_t>(m_pVftable->OnMessageRecieved, this, message);

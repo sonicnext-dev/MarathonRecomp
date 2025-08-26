@@ -18,13 +18,13 @@ namespace Sonicteam::Player
     class Zock : public IZock, public IFlagCommunicator, public IStepable, public IDynamicLink, public IVariable
     {
     public:
-        SoX::RefSharedPointer<Sonicteam::SoX::Physics::World> m_spWorld;
-        SoX::RefSharedPointer<Sonicteam::SoX::Physics::World> m_spRootFrame;
-        SoX::RefSharedPointer<Sonicteam::MyPhantom> m_pPhantom;
+        SoX::RefSharedPointer<SoX::Physics::World> m_spWorld;
+        SoX::RefSharedPointer<SoX::Physics::World> m_spRootFrame;
+        SoX::RefSharedPointer<MyPhantom> m_spPhantomA;
         MARATHON_INSERT_PADDING(0x20);
-        SoX::RefSharedPointer<Sonicteam::MyPhantom> m_pPhantomB;
+        SoX::RefSharedPointer<MyPhantom> m_spPhantomB;
         MARATHON_INSERT_PADDING(0x40);
-        SoX::RefSharedPointer<Sonicteam::SoX::Physics::PhantomListener> m_spPhantomListener;
+        SoX::RefSharedPointer<SoX::Physics::PhantomListener> m_spPhantomListener;
         MARATHON_INSERT_PADDING(0x3C);
     };
 }

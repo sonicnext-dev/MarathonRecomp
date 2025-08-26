@@ -7,7 +7,7 @@ namespace hk330
 {
     class hkpProperty
     {
-        MARATHON_INSERT_PADDING(0x8);
+    public:
+        MARATHON_INSERT_PADDING(8);
     };
 }
-

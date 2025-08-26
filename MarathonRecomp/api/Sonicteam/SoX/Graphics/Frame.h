@@ -6,11 +6,10 @@
 
 namespace Sonicteam::SoX::Graphics
 {
-    class Frame:SoX::RefCountObject
+    class Frame : public SoX::RefCountObject
     {
     public:
-        MARATHON_INSERT_PADDING(0x18); //SimpleNode
+        MARATHON_INSERT_PADDING(0x18); // SimpleNode
         MARATHON_INSERT_PADDING(0x2C);
-
     };
 }
