@@ -8,14 +8,12 @@ namespace Sonicteam::Player
     }
 
     template<typename T>
-    inline T* Sonicteam::Player::Object::GetPlugin(const char* v_name)
+    inline T* Object::GetPlugin(const char* pluginName)
     {
-        for (stdx::vector<boost::shared_ptr<Sonicteam::Player::IPlugIn>>::iterator it = m_PlayerPlugins.begin(); it != m_PlayerPlugins.end(); it = it + 1)
+        for (auto& spPlugin : m_vspPlayerPlugins)
         {
-            if (it->get()->m_Name == v_name) 
-			{
-                return static_cast<T*>(it->get());
-            }
+            if (spPlugin->m_Name == pluginName)
+                return static_cast<T*>(spPlugin.get());
         }
         return nullptr;
     }

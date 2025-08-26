@@ -3,6 +3,6 @@ namespace Sonicteam
     template <typename T>
     inline T* GameImp::GetPhysicsWorld()
     {
-        return (T*)m_pPhysicsWorld.get();
+        return (T*)m_spPhysicsWorld.get();
     }
 }

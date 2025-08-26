@@ -56,7 +56,25 @@ namespace stdx
             _Myres = 0xF;
             _Mysize = 0;
             _bx._buffer[0] = '\0';
+            from_cstr(str);
+        }
 
+        ~string()
+        {
+            cleanup();
+            _Myres = 0xF;
+            _Mysize = 0;
+            _bx._buffer[0] = '\0';
+        }
+
+        void cleanup()
+        {
+            if (!is_short())
+                g_userHeap.Free((void*)_bx._str.get());
+        }
+
+        void from_cstr(const char* str)
+        {
             auto len = strlen(str);
 
             if (len <= 0xF)
@@ -68,6 +86,7 @@ namespace stdx
             {
                 if (is_short() || capacity() < len + 1)
                 {
+                    cleanup();
                     char* new_buf = g_userHeap.Alloc<char>(len + 1);
                     memset((void*)(new_buf), 0, len + 1);
                     memcpy((void*)(new_buf), (const void*)(str), len + 1);
@@ -83,14 +102,10 @@ namespace stdx
             }
         }
 
-        ~string()
+        string& operator=(const char* str)
         {
-            if (!is_short())
-                g_userHeap.Free((void*)_bx._str.get());
-
-            _Myres = 0xF;
-            _Mysize = 0;
-            _bx._buffer[0] = '\0';
+            from_cstr(str);
+            return *this;
         }
 
         bool operator==(const char* str) const
