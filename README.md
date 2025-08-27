@@ -102,6 +102,7 @@ The save data and configuration files are stored at the following locations:
 
 - Windows: `%APPDATA%\MarathonRecomp\`
 - Linux: `~/.config/MarathonRecomp/`
+- macOS: `~/Library/Application Support/MarathonRecomp/`
 
 You will find the save data under the `save` folder. The configuration file is named `config.toml`.
 
