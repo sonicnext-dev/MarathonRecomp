@@ -394,6 +394,9 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
     if ((modifier.Flags & CSD_MODIFIER_ULTRAWIDE_ONLY) != 0 && g_aspectRatio <= WIDE_ASPECT_RATIO)
         modifier.Flags &= (~modifier.Flags) | CSD_MODIFIER_ULTRAWIDE_ONLY;
+
+    if ((modifier.Flags & CSD_MODIFIER_NARROW_ONLY) != 0 && g_aspectRatio >= WIDE_ASPECT_RATIO)
+        modifier.Flags &= (~modifier.Flags) | CSD_MODIFIER_NARROW_ONLY;
     
     if ((modifier.Flags & CSD_SKIP) != 0)
     {
@@ -534,6 +537,21 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
                 offsetY += 360.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
 
             offsetY += pivotY * g_aspectRatioScale;
+        }
+    }
+
+    if ((modifier.Flags & CSD_MOVIE) != 0)
+    {
+        auto vpWidth = float(Video::s_viewportWidth);
+        auto vpHeight = float(Video::s_viewportHeight);
+
+        if (g_aspectRatio > WIDE_ASPECT_RATIO)
+        {
+            offsetX -= (vpWidth - (vpHeight * WIDE_ASPECT_RATIO)) / 2.0f;
+        }
+        else
+        {
+            offsetY -= (vpHeight - (vpWidth / WIDE_ASPECT_RATIO)) / 2.0f;
         }
     }
 
@@ -704,10 +722,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
                 // Shift root arrow forwards to use entirely custom arrows.
                 for (size_t i = 0; i < r5.u32; i++)
                     getVertex(i)->X = getVertex(i)->X + arrowWidth;
-            }
 
-            if ((modifier.Flags & CSD_CHEVRON) != 0)
-            {
                 // Compute number of foreground arrows.
                 while (x > 0.0f)
                 {
@@ -792,10 +807,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
                 // Shift root arrow backwards to use entirely custom arrows.
                 for (size_t i = 0; i < r5.u32; i++)
                     getVertex(i)->X = getVertex(i)->X - arrowWidth;
-            }
 
-            if ((modifier.Flags & CSD_CHEVRON) != 0)
-            {
                 // Compute number of background arrows.
                 while (x < float(Video::s_viewportWidth))
                 {
@@ -880,7 +892,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
         // Clone Audio Room "pod" left edge to fill
         // in the rest of the box at ultrawide.
-        if ((modifier.Flags & CSD_POD_CLONE) != 0)
+        if ((modifier.Flags & CSD_POD_CLONE) != 0 && g_aspectRatio > WIDE_ASPECT_RATIO)
         {
             auto v0 = getVertex(0);
             auto v1 = getVertex(1);
@@ -1214,9 +1226,9 @@ PPC_FUNC(sub_8262D868)
 {
     auto pTextEntity = (Sonicteam::TextEntity*)(base + ctx.r3.u32);
 
-    auto scale = g_aspectRatioScale * g_aspectRatioGameplayScale;
     auto offsetX = g_aspectRatioOffsetX + (640.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale);
     auto offsetY = g_aspectRatioOffsetY + (360.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale);
+    auto scale = g_aspectRatioScale * g_aspectRatioGameplayScale;
 
     pTextEntity->m_X = offsetX + pTextEntity->m_X * scale;
     pTextEntity->m_Y = offsetY + pTextEntity->m_Y * scale;
@@ -1262,9 +1274,16 @@ PPC_FUNC(sub_8263CC40)
 const xxHashMap<CsdModifier> g_csdModifiers =
 {
     // audio
-    { HashStr("sprite/audio/audio/pod/pod/Cast_1084"), { CSD_POD_BASE | CSD_EXTEND_RIGHT } },
-    { HashStr("sprite/audio/audio/pod/pod/Cast_1086"), { CSD_POD_CLONE } },
-    { HashStr("sprite/audio/audio/pod/pod/Cast_1088"), { CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/audio/audio/pod/pod"), { CSD_SCALE } },
+    { HashStr("sprite/audio/audio/pod/pod/Cast_1084"), { CSD_POD_BASE | CSD_SCALE | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/audio/audio/pod/pod/Cast_1085"), { CSD_SCALE } },
+    { HashStr("sprite/audio/audio/pod/pod/Cast_1086"), { CSD_POD_CLONE | CSD_SCALE } },
+    { HashStr("sprite/audio/audio/pod/pod/Cast_1087"), { CSD_SCALE } },
+    { HashStr("sprite/audio/audio/pod/pod/Cast_1088"), { CSD_SCALE | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/audio/audio/genre"), { CSD_SCALE } },
+    { HashStr("sprite/audio/audio/genre_cursor"), { CSD_SCALE } },
+    { HashStr("sprite/audio/audio/audio_cursor"), { CSD_SCALE } },
+    { HashStr("sprite/audio/audio/audio_cursor2"), { CSD_SCALE } },
 
     // background
     { HashStr("sprite/background/background/mainmenu_back"), { CSD_STRETCH | CSD_PROHIBIT_BLACK_BAR } },
@@ -1363,45 +1382,35 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/button_window/button_window/Scene_0000/Null_0000/Cast_0001"), { CSD_ALIGN_BOTTOM | CSD_SCALE } },
     { HashStr("sprite/button_window/button_window/Scene_0000/Null_0000/Cast_0002"), { CSD_ALIGN_BOTTOM | CSD_SCALE | CSD_EXTEND_RIGHT } },
 
+    // cri_logo
+    { HashStr("sprite/logo/cri_logo/Scene_0000/Null_0002/bg"), { CSD_STRETCH } },
+    { HashStr("sprite/logo/cri_logo/Scene_0000/Null_0002/criware"), { CSD_SCALE } },
+
     // gadget_ber
     { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar"), { CSD_ALIGN_BOTTOM_RIGHT } },
     { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar_anime"), { CSD_ALIGN_BOTTOM_RIGHT } },
     { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar_ue"), { CSD_ALIGN_BOTTOM_RIGHT } },
     { HashStr("sprite/gadget_ber/gadget_bar/icon_text"), { CSD_ALIGN_BOTTOM_RIGHT } },
 
-    // cri_logo
-    { HashStr("sprite/logo/cri_logo/Scene_0000/Null_0002/bg"), { CSD_STRETCH } },
-    { HashStr("sprite/logo/cri_logo/Scene_0000/Null_0002/criware"), { CSD_SCALE } },
+    // goldmedal
+    { HashStr("sprite/goldmedal/goldmedal/ranking"), { CSD_SCALE } },
+    { HashStr("sprite/goldmedal/goldmedal/goldmedal"), { CSD_SCALE } },
+    { HashStr("sprite/goldmedal/goldmedal/charaselect_cursor"), { CSD_SCALE } },
+    { HashStr("sprite/goldmedal/goldmedal/charaselect_cursor2"), { CSD_SCALE } },
+    { HashStr("sprite/goldmedal/goldmedal/board_cursor_sita"), { CSD_SCALE } },
+    { HashStr("sprite/goldmedal/goldmedal/board_cursor_ue"), { CSD_SCALE } },
+    { HashStr("sprite/goldmedal/goldmedal/total_medal"), { CSD_SCALE } },
+    { HashStr("sprite/goldmedal/goldmedal/sonic"), { CSD_SCALE } },
+    { HashStr("sprite/goldmedal/goldmedal/shadow"), { CSD_SCALE } },
+    { HashStr("sprite/goldmedal/goldmedal/silver"), { CSD_SCALE } },
+    { HashStr("sprite/goldmedal/goldmedal/last"), { CSD_SCALE } },
 
     // loading
-    { HashStr("sprite/loading/loading/Scene_0000/Loading"), { CSD_ALIGN_BOTTOM } },
-    { HashStr("sprite/loading/loading/Scene_0000/Loading_02"), { CSD_ALIGN_BOTTOM } },
-    { HashStr("sprite/loading/loading/Scene_0000/arrow_01"), { CSD_ALIGN_BOTTOM } },
-    { HashStr("sprite/loading/loading/Scene_0000/arrow_02"), { CSD_ALIGN_BOTTOM } },
-    { HashStr("sprite/loading/loading/Scene_0000/arrow_03"), { CSD_ALIGN_BOTTOM } },
-
-    // main_menu
-    { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita3"), { CSD_EXTEND_RIGHT } },
-    { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita5"), { CSD_EXTEND_RIGHT } },
-    { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita8"), { CSD_EXTEND_RIGHT } },
-    { HashStr("sprite/main_menu/stage_plate/stage_plate/stage_plate2"), { CSD_EXTEND_RIGHT } },
-    { HashStr("sprite/main_menu/stage_plate/stage_plate/Cast_1337"), { CSD_EXTEND_RIGHT } },
-    { HashStr("sprite/main_menu/stage_plate/stage_plate/Cast_1340"), { CSD_EXTEND_RIGHT } },
-    { HashStr("sprite/main_menu/mission_plate/mission_plate/mission_plate2"), { CSD_EXTEND_RIGHT } },
-    { HashStr("sprite/main_menu/mission_plate/mission_plate/Cast_1332"), { CSD_EXTEND_RIGHT } },
-    { HashStr("sprite/main_menu/mission_plate/mission_plate/Cast_1336"), { CSD_EXTEND_RIGHT } },
-    { HashStr("sprite/main_menu/text"), { CSD_ALIGN_BOTTOM | CSD_SCALE } },
-    { HashStr("sprite/main_menu/text_cover/Null_0290/cover_l"), { CSD_ALIGN_BOTTOM | CSD_SCALE | CSD_UV_MODIFIER | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, { 0.0015f, 0, 0.0015f, 0, 0, 0, 0, 0 }, {}, { 0, 0, 0, 0, -0.05f, 0, -0.05f, 0 } } },
-    { HashStr("sprite/main_menu/text_cover/Null_0290/cover_c"), { CSD_ALIGN_BOTTOM | CSD_SCALE } },
-    { HashStr("sprite/main_menu/text_cover/Null_0290/vocer_r"), { CSD_ALIGN_BOTTOM | CSD_SCALE | CSD_UV_MODIFIER | CSD_REPEAT_RIGHT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, { 0, 0, 0, 0, 0.0015f, 0, 0.0015f, 0 }, {}, { -0.05f, 0, -0.05f, 0, 0, 0, 0, 0 } } },
-    { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0221"), { CSD_ALIGN_TOP | CSD_SCALE | CSD_EXTEND_RIGHT } },
-    { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0222"), { CSD_ALIGN_TOP | CSD_SCALE | CSD_UV_MODIFIER | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, { 0.0015f, 0, 0.0015f, 0, 0, 0, 0, 0 }, {}, { 0.1f, 0, 0.1f, 0, -0.1f, 0, -0.1f, 0 } } },
-    { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0964"), { CSD_ALIGN_TOP | CSD_SCALE | CSD_EXTEND_RIGHT } },
-    { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0965"), { CSD_ALIGN_TOP | CSD_SCALE | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 } } },
-    { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0966"), { CSD_ALIGN_TOP | CSD_SCALE } },
-    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0226"), { CSD_ALIGN_BOTTOM | CSD_SCALE | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.8f, 0, -0.8f, 0 } } },
-    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0227"), { CSD_ALIGN_BOTTOM | CSD_SCALE | CSD_REPEAT_RIGHT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, {}, {}, { -0.8f, 0, -0.8f, 0, 0, 0, 0, 0 } } },
-    { HashStr("sprite/main_menu/titlebar_effect"), { CSD_ALIGN_TOP | CSD_SCALE } },
+    { HashStr("sprite/loading/loading/Scene_0000/Loading"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
+    { HashStr("sprite/loading/loading/Scene_0000/Loading_02"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
+    { HashStr("sprite/loading/loading/Scene_0000/arrow_01"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
+    { HashStr("sprite/loading/loading/Scene_0000/arrow_02"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
+    { HashStr("sprite/loading/loading/Scene_0000/arrow_03"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
 
     // maindisplay
     { HashStr("sprite/maindisplay/power"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
@@ -1424,6 +1433,63 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/maindisplay/item"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
     { HashStr("sprite/maindisplay/custom_gem"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
     { HashStr("sprite/maindisplay/custom_level"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+
+    // main_menu
+    { HashStr("sprite/main_menu/main_menu_cursor"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/main_menu_cursor2"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/main_menu_cursor3"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/eposodeselect"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/episodeselect_cursor1"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/episodeselect_cursor2"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita3"), { CSD_SCALE | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita5"), { CSD_SCALE | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita6"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita7"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita8"), { CSD_SCALE | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita9"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/savedate/savedata/goldmedal"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/savedate/savedata/zanki_3"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/savedate/savedata/zanki_2"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/savedate/savedata/zanki"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/savedate/savedata/ring"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/character_choice"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/character_cursor1"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/character_cursor2"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/stage_plate/stage_plate"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/stage_plate/stage_plate/stage_plate2"), { CSD_SCALE | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/stage_plate/stage_plate/Cast_1337"), { CSD_SCALE | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/stage_plate/stage_plate/Cast_1338"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/stage_plate/stage_plate/Cast_1339"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/stage_plate/stage_plate/Cast_1340"), { CSD_SCALE | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/mission_plate/mission_plate"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/mission_plate/mission_plate/mission_plate2"), { CSD_SCALE | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/mission_plate/mission_plate/Cast_1332"), { CSD_SCALE | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/mission_plate/mission_plate/Cast_1334"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/mission_plate/mission_plate/Cast_1335"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/mission_plate/mission_plate/Cast_1336"), { CSD_SCALE | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/stage_cursor"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/mission_cursor"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/stage_cursor2"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/text"), { CSD_ALIGN_BOTTOM | CSD_SCALE } },
+    { HashStr("sprite/main_menu/text_cover/Null_0290/cover_l"), { CSD_ALIGN_BOTTOM | CSD_SCALE | CSD_UV_MODIFIER | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, { 0.0015f, 0, 0.0015f, 0, 0, 0, 0, 0 }, {}, { 0, 0, 0, 0, -0.05f, 0, -0.05f, 0 } } },
+    { HashStr("sprite/main_menu/text_cover/Null_0290/cover_c"), { CSD_ALIGN_BOTTOM | CSD_SCALE } },
+    { HashStr("sprite/main_menu/text_cover/Null_0290/vocer_r"), { CSD_ALIGN_BOTTOM | CSD_SCALE | CSD_UV_MODIFIER | CSD_REPEAT_RIGHT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, { 0, 0, 0, 0, 0.0015f, 0, 0.0015f, 0 }, {}, { -0.05f, 0, -0.05f, 0, 0, 0, 0, 0 } } },
+    { HashStr("sprite/main_menu/mission_text/rank"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/mission_text/item_icon"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/mission_text/m_ring_icon"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0221"), { CSD_ALIGN_TOP | CSD_SCALE | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0222"), { CSD_ALIGN_TOP | CSD_SCALE | CSD_UV_MODIFIER | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, { 0.0015f, 0, 0.0015f, 0, 0, 0, 0, 0 }, {}, { 0.1f, 0, 0.1f, 0, -0.1f, 0, -0.1f, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0964"), { CSD_ALIGN_TOP | CSD_SCALE | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0965"), { CSD_ALIGN_TOP | CSD_SCALE | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0966"), { CSD_ALIGN_TOP | CSD_SCALE } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0226"), { CSD_ALIGN_BOTTOM | CSD_SCALE | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.8f, 0, -0.8f, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0227"), { CSD_ALIGN_BOTTOM | CSD_SCALE | CSD_REPEAT_RIGHT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, {}, {}, { -0.8f, 0, -0.8f, 0, 0, 0, 0, 0 } } },
+    { HashStr("sprite/main_menu/titlebar_effect"), { CSD_ALIGN_TOP | CSD_SCALE } },
+
+    // pausemenu
+    { HashStr("sprite/pausemenu/pausemenu/pause_menu"), { CSD_SCALE } },
+    { HashStr("sprite/pausemenu/pausemenu/pause_menu_cursor"), { CSD_SCALE } },
+    { HashStr("sprite/pausemenu/pausemenu/mission"), { CSD_SCALE } },
 
     // radarmap_cover
     { HashStr("sprite/radarmap_cover/radarmap_cover/Scene_0000"), { CSD_RADARMAP | CSD_ALIGN_TOP_RIGHT | CSD_SCALE } },
@@ -1575,8 +1641,19 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/logo/sonicteam_logo/sonicteam"), { CSD_SCALE } },
 
     // tag_character
-    { HashStr("sprite/tag_character/tag_character/1p_tug/1p_tug/1p_tug1"), { CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER | CSD_REPEAT_COLOUR_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 }, { 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50 } } },
-    { HashStr("sprite/tag_character/tag_character/2p_tug/2p_tug/2p_tug1"), { CSD_REPEAT_RIGHT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER | CSD_REPEAT_COLOUR_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 }, { 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50 } } },
+    { HashStr("sprite/tag_character/tag_character/1p_tug/1p_tug/1p_tug1"), { CSD_SCALE | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER | CSD_REPEAT_COLOUR_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 }, { 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50 } } },
+    { HashStr("sprite/tag_character/tag_character/1p_tug/1p_tug/1p_tug2"), { CSD_SCALE } },
+    { HashStr("sprite/tag_character/tag_character/2p_tug/2p_tug/2p_tug1"), { CSD_SCALE | CSD_REPEAT_RIGHT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER | CSD_REPEAT_COLOUR_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 }, { 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50 } } },
+    { HashStr("sprite/tag_character/tag_character/2p_tug/2p_tug/2p_tug2"), { CSD_SCALE } },
+    { HashStr("sprite/tag_character/tag_character/1p_cursor"), { CSD_SCALE } },
+    { HashStr("sprite/tag_character/tag_character/2p_cursor"), { CSD_SCALE } },
+    { HashStr("sprite/tag_character/tag_character/1p_name"), { CSD_SCALE } },
+    { HashStr("sprite/tag_character/tag_character/2p_name"), { CSD_SCALE } },
+    { HashStr("sprite/tag_character/tag_character/stage_window"), { CSD_SCALE } },
+    { HashStr("sprite/tag_character/tag_character/stage"), { CSD_SCALE } },
+    { HashStr("sprite/tag_character/tag_character/controller_1p"), { CSD_SCALE } },
+    { HashStr("sprite/tag_character/tag_character/controller_2p"), { CSD_SCALE } },
+    { HashStr("sprite/tag_character/tag_character/entry"), { CSD_SCALE } },
 
     // tagdisplay_1p
     { HashStr("sprite/tagdisplay_1p/power"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
@@ -1626,21 +1703,24 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     // title
     { HashStr("sprite/title/title/Scene_Title/Logo_add"), { CSD_SCALE } },
     { HashStr("sprite/title/title/Scene_Title/Logo"), { CSD_SCALE } },
-    { HashStr("sprite/title/title/Scene_Title/copyright"), { CSD_ALIGN_BOTTOM } },
+    { HashStr("sprite/title/title/Scene_Title/copyright"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
 
     // titleloop_sth
-    // TODO: adjust this if letterboxed.
-    { HashStr("sprite/logo/titleloop_sth/Scene_0000"), { CSD_ALIGN_BOTTOM } },
+    { HashStr("sprite/logo/titleloop_sth/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE | CSD_MOVIE | CSD_MODIFIER_NARROW_ONLY } },
 
     // towndisplay
     { HashStr("sprite/towndisplay/ring"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
     { HashStr("sprite/towndisplay/ring_anime"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
 
     // trickpoint
-    // TODO: offset score text properly.
-    { HashStr("sprite/trickpoint/trickpoint/Scene_0000"), { CSD_ALIGN_TOP_RIGHT } },
-    { HashStr("sprite/trickpoint/trickpoint/Scene_0001"), { CSD_ALIGN_TOP_RIGHT } },
-    { HashStr("sprite/trickpoint/trickpoint/score"), { CSD_ALIGN_TOP_RIGHT } },
+    { HashStr("sprite/trickpoint/trickpoint/Scene_0000"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/trickpoint/trickpoint/Scene_0001"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/trickpoint/trickpoint/score"), { CSD_ALIGN_RIGHT | CSD_SCALE } },
+
+    // windowtest
+    { HashStr("sprite/windowtest/Scene_0000"), { CSD_SCALE } },
+    { HashStr("sprite/windowtest/okuribotan"), { CSD_SCALE } },
+    { HashStr("sprite/windowtest/cursor"), { CSD_SCALE } },
 };
 
 std::optional<CsdModifier> FindCsdModifier(uint32_t data)

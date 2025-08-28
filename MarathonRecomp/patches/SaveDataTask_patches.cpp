@@ -47,7 +47,7 @@ void SaveAlertThreeOptionRemoveDeviceSelect(PPCRegister& r5)
     options[2] = 0;
 }
 
-// Load system message.
+// Load text card.
 PPC_FUNC_IMPL(__imp__sub_825ECB48);
 PPC_FUNC(sub_825ECB48)
 {
