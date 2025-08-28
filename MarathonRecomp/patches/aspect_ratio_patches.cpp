@@ -1142,9 +1142,10 @@ void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity, xxHashMap<TextFont
     auto variablesIndex = 0;
     auto pictureIndex = 0;
 
-    for (int i = 0; i < pTextEntity->m_TextLength * 2; i++)
+    for (int i = 0; i < pTextEntity->m_Text.size(); i++)
     {
-        auto c = ByteSwap(pTextEntity->m_pText[i]);
+        auto str = pTextEntity->m_Text.c_str();
+        auto c = ByteSwap(str[i]);
 
         if (c != L'$')
             continue;
@@ -1246,7 +1247,6 @@ PPC_FUNC(sub_8262D868)
         ? g_pftModifierPS3
         : g_pftModifierXenon;
 
-    // TODO (Hyper): why does this not apply to the B button in Audio Room?
     ReplaceTextVariables(pTextEntity, pftModifier);
 }
 

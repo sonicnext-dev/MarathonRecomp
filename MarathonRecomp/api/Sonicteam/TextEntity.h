@@ -2,6 +2,7 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/CsdLink.h>
+#include <stdx/wstring.h>
 
 namespace Sonicteam
 {
@@ -36,11 +37,9 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(4);
         be<float> m_X;
         be<float> m_Y;
-        MARATHON_INSERT_PADDING(0x0C);
-        xpointer<const wchar_t> m_pText;
-        MARATHON_INSERT_PADDING(0x0C);
-        be<uint32_t> m_TextLength;
-        MARATHON_INSERT_PADDING(0x24);
+        MARATHON_INSERT_PADDING(0x08);
+        stdx::wstring m_Text;
+        MARATHON_INSERT_PADDING(0x20);
         xpointer<const char> m_pVariables;
         MARATHON_INSERT_PADDING(0x4C);
         be<float> m_ScaleX;
@@ -58,7 +57,7 @@ namespace Sonicteam
             float w{};
             float h{};
 
-            if (m_TextLength <= 0)
+            if (m_Text.size() <= 0)
                 return { w, h };
 
             if (m_FieldE0)

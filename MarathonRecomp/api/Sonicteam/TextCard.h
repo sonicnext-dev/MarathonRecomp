@@ -8,7 +8,7 @@ namespace Sonicteam
     {
     public:
         boost::shared_ptr<uint8_t> m_spResource;
-        xpointer<const wchar_t> m_pText;
+        xpointer<const uint16_t> m_pText;
         xpointer<const char> m_pVariables;
         MARATHON_INSERT_PADDING(0x30);
     };
