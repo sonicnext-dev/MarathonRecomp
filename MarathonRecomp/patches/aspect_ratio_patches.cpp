@@ -584,8 +584,8 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
     {
         auto vertex = getVertex(i);
 
-        float x = offsetX + (vertex->X - pivotX) * (scaleX * (1280.0f / Video::s_viewportWidth));
-        float y = offsetY + (vertex->Y - pivotY) * (scaleY * (720.0f / Video::s_viewportHeight));
+        float x = offsetX + (vertex->X - pivotX) * scaleX;
+        float y = offsetY + (vertex->Y - pivotY) * scaleY;
 
         if ((modifier.Flags & CSD_EXTEND_LEFT) != 0 && (i == 0 || i == 1))
         {
@@ -1208,41 +1208,20 @@ void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity, xxHashMap<TextFont
     }
 }
 
-static float g_textScaleY;
-static float g_textHeight;
-
 // Sonicteam::TextEntity::Draw
 PPC_FUNC_IMPL(__imp__sub_8262D868);
 PPC_FUNC(sub_8262D868)
 {
     auto pTextEntity = (Sonicteam::TextEntity*)(base + ctx.r3.u32);
 
-    // LOGFN_UTILITY("TextEntity: 0x{:08X}", (uint64_t)pTextEntity);
+    auto scale = g_aspectRatioScale * g_aspectRatioGameplayScale;
+    auto offsetX = g_aspectRatioOffsetX + (640.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale);
+    auto offsetY = g_aspectRatioOffsetY + (360.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale);
 
-    constexpr auto baseWidth = 1280.0f;
-    constexpr auto baseHeight = 720.0f;
-
-    auto scaleFactor = 1.0f;
-    auto scaleY = 1.0f;
-    auto offsetY = (baseHeight - (baseHeight * scaleY)) / 2.0f;
-
-    if (g_aspectRatio < WIDE_ASPECT_RATIO)
-    {
-        scaleFactor = 1.125f;
-        scaleY = g_aspectRatio / WIDE_ASPECT_RATIO;
-
-        pTextEntity->m_Y = pTextEntity->m_Y * scaleY + offsetY;
-        pTextEntity->m_ScaleY = scaleY * scaleFactor;
-
-        g_textScaleY = pTextEntity->m_ScaleY;
-    }
-
-    auto scaleX = 1.0f * (WIDE_ASPECT_RATIO / g_aspectRatio) * scaleY;
-    auto scaledWidth = baseWidth * scaleX;
-    auto offsetX = (baseWidth - scaledWidth) / 2.0f;
-
-    pTextEntity->m_X = pTextEntity->m_X * scaleX + offsetX;
-    pTextEntity->m_ScaleX = scaleX * scaleFactor;
+    pTextEntity->m_X = offsetX + pTextEntity->m_X * scale;
+    pTextEntity->m_Y = offsetY + pTextEntity->m_Y * scale;
+    pTextEntity->m_ScaleX = scale;
+    pTextEntity->m_ScaleY = scale;
 
     __imp__sub_8262D868(ctx, base);
 
@@ -1259,47 +1238,14 @@ PPC_FUNC(sub_8262D868)
     ReplaceTextVariables(pTextEntity, pftModifier);
 }
 
-// Sonicteam::HUDButtonWindow::Draw
-PPC_FUNC_IMPL(__imp__sub_824D4628);
-PPC_FUNC(sub_824D4628)
+// Set CSD scale.
+PPC_FUNC_IMPL(__imp__sub_828C78E0);
+PPC_FUNC(sub_828C78E0)
 {
-    auto pHUDButtonWindow = (Sonicteam::HUDButtonWindow*)g_memory.Translate(ctx.r3.u32);
+    ctx.f1.f64 = 1280.0;
+    ctx.f2.f64 = 720.0;
 
-    auto width = Video::s_viewportWidth;
-    auto height = Video::s_viewportHeight;
-    auto baseWidth = height * WIDE_ASPECT_RATIO;
-    auto baseHeight = width / WIDE_ASPECT_RATIO;
-
-    auto horizontalBar = 0.0f;
-    auto verticalBar = 0.0f;
-
-    if (width < baseWidth)
-        horizontalBar = (baseWidth - width) / 2.0f;
-
-    if (height < baseHeight)
-        verticalBar = (baseHeight - height) / 2.0f;
-
-    // LOGFN_UTILITY("vert: {}", verticalBar);
-    // LOGFN_UTILITY("horz: {}", horizontalBar);
-
-    // pHUDButtonWindow->m_pHudTextParts->m_OffsetX = -55.0f;
-
-    if (horizontalBar > 0)
-        pHUDButtonWindow->m_pHudTextParts->m_OffsetY = horizontalBar;
-
-    __imp__sub_824D4628(ctx, base);
-}
-
-// Sonicteam::HudTextParts::HudTextParts
-PPC_FUNC_IMPL(__imp__sub_824D04C8);
-PPC_FUNC(sub_824D04C8)
-{
-    auto pTextBookName = (const char*)g_memory.Translate(ctx.r7.u32);
-    auto pTextCardName = (const char*)g_memory.Translate(ctx.r8.u32);
-
-    __imp__sub_824D04C8(ctx, base);
-
-    auto pHudTextParts = (Sonicteam::HudTextParts*)g_memory.Translate(ctx.r3.u32);
+    __imp__sub_828C78E0(ctx, base);
 }
 
 // Sonicteam::TextFontPicture::LoadResource
