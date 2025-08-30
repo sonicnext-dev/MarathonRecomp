@@ -10,6 +10,7 @@ inline constexpr float WIDE_ASPECT_RATIO = 16.0f / 9.0f;
 inline constexpr float STEAM_DECK_ASPECT_RATIO = 16.0f / 10.0f;
 
 inline float g_aspectRatio;
+inline float g_aspectRatioMovie;
 inline float g_aspectRatioOffsetX;
 inline float g_aspectRatioOffsetY;
 inline float g_aspectRatioScale;
@@ -91,7 +92,9 @@ enum CsdFlags : uint64_t
 
     CSD_SCENE_DISABLE_MOTION = MAKE_BITFLAG64(35),
 
-    CSD_MOVIE = MAKE_BITFLAG64(36)
+    CSD_MOVIE = MAKE_BITFLAG64(36),
+
+    CSD_CRI_LOGO = MAKE_BITFLAG64(37)
 };
 
 struct CsdUVs

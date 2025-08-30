@@ -545,13 +545,13 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
         auto vpWidth = float(Video::s_viewportWidth);
         auto vpHeight = float(Video::s_viewportHeight);
 
-        if (g_aspectRatio > WIDE_ASPECT_RATIO)
+        if (g_aspectRatio > g_aspectRatioMovie)
         {
-            offsetX -= (vpWidth - (vpHeight * WIDE_ASPECT_RATIO)) / 2.0f;
+            offsetX -= (vpWidth - (vpHeight * g_aspectRatioMovie)) / 2.0f;
         }
         else
         {
-            offsetY -= (vpHeight - (vpWidth / WIDE_ASPECT_RATIO)) / 2.0f;
+            offsetY -= (vpHeight - (vpWidth / g_aspectRatioMovie)) / 2.0f;
         }
     }
 
@@ -920,6 +920,109 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             original(ctx, base);
         }
 
+        // Don't adjust CRI logo at 16:9 or if the alignment mode is centre at ultrawide.
+        if (g_aspectRatio >= WIDE_ASPECT_RATIO && Config::UIAlignmentMode == EUIAlignmentMode::Centre)
+            modifier.Flags &= ~CSD_CRI_LOGO;
+
+        // Clone CRI logo to move the technology
+        // logos to the true bottom right corner.
+        if ((modifier.Flags & CSD_CRI_LOGO) != 0)
+        {
+            auto v0 = getVertex(0);
+            auto v1 = getVertex(1);
+            auto v2 = getVertex(2);
+            auto v3 = getVertex(3);
+
+            auto originalTop = v0->Y;
+            auto originalHeight = v1->Y - v0->Y;
+
+            auto vpWidth = float(Video::s_viewportWidth);
+            auto vpHeight = float(Video::s_viewportHeight);
+
+            auto width = 422.0f;
+            auto height = 132.0f;
+            auto widthScaled = width * g_aspectRatioScale;
+            auto heightScaled = height * g_aspectRatioScale;
+
+            /////////////////////////////////////////////////////////////////////////
+            // Clone and scale white square to block the original technology logos //
+            /////////////////////////////////////////////////////////////////////////
+
+            auto top = originalTop + (originalHeight - heightScaled);
+            auto left = g_aspectRatio >= WIDE_ASPECT_RATIO ? 0.0f : vpWidth - widthScaled;
+
+            // Top Left
+            v0->X = left;
+            v0->Y = top;
+            v0->U = 0.0f;
+            v0->V = 0.01f;
+
+            // Bottom Left
+            v1->X = left;
+            v1->Y = vpHeight;
+            v1->U = 0.0f;
+            v1->V = 0.01f;
+
+            // Top Right
+            v2->X = vpWidth;
+            v2->Y = top;
+            v2->U = 0.0f;
+            v2->V = 0.01f;
+
+            // Bottom Right
+            v3->X = vpWidth;
+            v3->Y = vpHeight;
+            v3->U = 0.0f;
+            v3->V = 0.01f;
+
+            ctx.r3 = r3;
+            ctx.r4 = ctx.r1;
+            ctx.r5 = r5;
+            original(ctx, base);
+
+            /////////////////////////////////////////////
+            // Clone and scale to fit technology logos //
+            /////////////////////////////////////////////
+
+            v0 = getVertex(0);
+            v1 = getVertex(1);
+            v2 = getVertex(2);
+            v3 = getVertex(3);
+
+            auto uv = PIXELS_TO_UV_COORDS(2048, 512, 858, 380, width, height);
+            auto& min = std::get<0>(uv);
+            auto& max = std::get<1>(uv);
+
+            // Top Left
+            v0->X = vpWidth - widthScaled;
+            v0->Y = vpHeight - heightScaled;
+            v0->U = min.x;
+            v0->V = min.y;
+
+            // Bottom Left
+            v1->X = vpWidth - widthScaled;
+            v1->Y = vpHeight;
+            v1->U = min.x;
+            v1->V = max.y;
+
+            // Top Right
+            v2->X = vpWidth;
+            v2->Y = vpHeight - heightScaled;
+            v2->U = max.x;
+            v2->V = min.y;
+
+            // Bottom Right
+            v3->X = vpWidth;
+            v3->Y = vpHeight;
+            v3->U = max.x;
+            v3->V = max.y;
+
+            ctx.r3 = r3;
+            ctx.r4 = ctx.r1;
+            ctx.r5 = r5;
+            original(ctx, base);
+        }
+
         ctx.r1.u32 += size;
     }
 }
@@ -1051,7 +1154,8 @@ PPC_FUNC(sub_8264CC90)
     }
 
     auto movieModifier = FindMovieModifier(movieNameHash);
-    auto movieAspectRatio = (float)pMovieObjectWmv->m_Width / (float)pMovieObjectWmv->m_Height;
+
+    g_aspectRatioMovie = (float)pMovieObjectWmv->m_Width / (float)pMovieObjectWmv->m_Height;
 
     float width, height, left, right, top, bottom;
 
@@ -1062,17 +1166,17 @@ PPC_FUNC(sub_8264CC90)
         auto movieRectTop = s_movieTop;
         auto movieRectBottom = s_movieBottom;
 
-        if (g_aspectRatio > movieAspectRatio)
+        if (g_aspectRatio > g_aspectRatioMovie)
         {
             // Scale width at wide aspect ratios.
-            movieRectLeft = s_movieLeft / (g_aspectRatio / movieAspectRatio);
-            movieRectRight = s_movieRight / (g_aspectRatio / movieAspectRatio);
+            movieRectLeft = s_movieLeft / (g_aspectRatio / g_aspectRatioMovie);
+            movieRectRight = s_movieRight / (g_aspectRatio / g_aspectRatioMovie);
         }
         else
         {
             // Scale height at narrow aspect ratios.
-            movieRectTop = s_movieTop / (movieAspectRatio / g_aspectRatio);
-            movieRectBottom = s_movieBottom / (movieAspectRatio / g_aspectRatio);
+            movieRectTop = s_movieTop / (g_aspectRatioMovie / g_aspectRatio);
+            movieRectBottom = s_movieBottom / (g_aspectRatioMovie / g_aspectRatio);
         }
 
         auto movieRectCentreX = (movieRectLeft + movieRectRight) / 2.0f;
@@ -1091,17 +1195,17 @@ PPC_FUNC(sub_8264CC90)
         width = 2.0f;
         height = 2.0f;
 
-        if (g_aspectRatio > movieAspectRatio)
+        if (g_aspectRatio > g_aspectRatioMovie)
         {
             if ((movieModifier.Flags & MOVIE_CROP_WIDE) != 0)
             {
                 // Crop vertically at wide aspect ratios.
-                height = 2.0f * (g_aspectRatio / movieAspectRatio);
+                height = 2.0f * (g_aspectRatio / g_aspectRatioMovie);
             }
             else
             {
                 // Pillarbox at wide aspect ratios.
-                width = 2.0f * (movieAspectRatio / g_aspectRatio);
+                width = 2.0f * (g_aspectRatioMovie / g_aspectRatio);
             }
         }
         else
@@ -1109,12 +1213,12 @@ PPC_FUNC(sub_8264CC90)
             if ((movieModifier.Flags & MOVIE_CROP_NARROW) != 0)
             {
                 // Crop horizontally at narrow aspect ratios.
-                width = 2.0f * (movieAspectRatio / g_aspectRatio);
+                width = 2.0f * (g_aspectRatioMovie / g_aspectRatio);
             }
             else
             {
                 // Letterbox at narrow aspect ratios.
-                height = 2.0f * (g_aspectRatio / movieAspectRatio);
+                height = 2.0f * (g_aspectRatio / g_aspectRatioMovie);
             }
         }
 
@@ -1226,6 +1330,8 @@ PPC_FUNC_IMPL(__imp__sub_8262D868);
 PPC_FUNC(sub_8262D868)
 {
     auto pTextEntity = (Sonicteam::TextEntity*)(base + ctx.r3.u32);
+
+    LOGFN_UTILITY("TextEntity: {:08X}", (uint64_t)pTextEntity);
 
     auto offsetX = g_aspectRatioOffsetX + (640.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale);
     auto offsetY = g_aspectRatioOffsetY + (360.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale);
@@ -1384,7 +1490,7 @@ const xxHashMap<CsdModifier> g_csdModifiers =
 
     // cri_logo
     { HashStr("sprite/logo/cri_logo/Scene_0000/Null_0002/bg"), { CSD_STRETCH } },
-    { HashStr("sprite/logo/cri_logo/Scene_0000/Null_0002/criware"), { CSD_SCALE } },
+    { HashStr("sprite/logo/cri_logo/Scene_0000/Null_0002/criware"), { CSD_CRI_LOGO | CSD_SCALE } },
 
     // gadget_ber
     { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar"), { CSD_ALIGN_BOTTOM_RIGHT } },
@@ -1482,6 +1588,7 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0964"), { CSD_ALIGN_TOP | CSD_SCALE | CSD_EXTEND_RIGHT } },
     { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0965"), { CSD_ALIGN_TOP | CSD_SCALE | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 } } },
     { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0966"), { CSD_ALIGN_TOP | CSD_SCALE } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0966/Cast_0967"), { CSD_ALIGN_TOP | CSD_SCALE } },
     { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0226"), { CSD_ALIGN_BOTTOM | CSD_SCALE | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.8f, 0, -0.8f, 0 } } },
     { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0227"), { CSD_ALIGN_BOTTOM | CSD_SCALE | CSD_REPEAT_RIGHT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, {}, {}, { -0.8f, 0, -0.8f, 0, 0, 0, 0, 0 } } },
     { HashStr("sprite/main_menu/titlebar_effect"), { CSD_ALIGN_TOP | CSD_SCALE } },
