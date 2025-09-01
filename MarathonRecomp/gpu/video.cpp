@@ -50,6 +50,8 @@
 #include "shader/hlsl/csd_filter_ps.hlsl.dxil.h"
 #include "shader/hlsl/csd_no_tex_vs.hlsl.dxil.h"
 #include "shader/hlsl/csd_vs.hlsl.dxil.h"
+#include "shader/hlsl/enhanced_burnout_blur_vs.hlsl.dxil.h"
+#include "shader/hlsl/enhanced_burnout_blur_ps.hlsl.dxil.h"
 #include "shader/hlsl/enhanced_motion_blur_ps.hlsl.dxil.h"
 #include "shader/hlsl/gamma_correction_ps.hlsl.dxil.h"
 #include "shader/hlsl/gaussian_blur_3x3.hlsl.dxil.h"
@@ -76,6 +78,8 @@
 #include "shader/msl/csd_filter_ps.metal.metallib.h"
 #include "shader/msl/csd_no_tex_vs.metal.metallib.h"
 #include "shader/msl/csd_vs.metal.metallib.h"
+#include "shader/msl/enhanced_burnout_blur_vs.metal.metallib.h"
+#include "shader/msl/enhanced_burnout_blur_ps.metal.metallib.h"
 #include "shader/msl/enhanced_motion_blur_ps.metal.metallib.h"
 #include "shader/msl/gamma_correction_ps.metal.metallib.h"
 #include "shader/msl/gaussian_blur_3x3.metal.metallib.h"
@@ -101,6 +105,8 @@
 #include "shader/hlsl/csd_filter_ps.hlsl.spirv.h"
 #include "shader/hlsl/csd_no_tex_vs.hlsl.spirv.h"
 #include "shader/hlsl/csd_vs.hlsl.spirv.h"
+#include "shader/hlsl/enhanced_burnout_blur_vs.hlsl.spirv.h"
+#include "shader/hlsl/enhanced_burnout_blur_ps.hlsl.spirv.h"
 #include "shader/hlsl/enhanced_motion_blur_ps.hlsl.spirv.h"
 #include "shader/hlsl/gamma_correction_ps.hlsl.spirv.h"
 #include "shader/hlsl/gaussian_blur_3x3.hlsl.spirv.h"
@@ -1466,6 +1472,8 @@ static std::unique_ptr<GuestShader> g_gaussianBlurShaders[GAUSSIAN_BLUR_COUNT];
 static std::unique_ptr<GuestShader> g_csdFilterShader;
 static GuestShader* g_csdShader;
 
+static std::unique_ptr<GuestShader> g_enhancedBurnoutBlurVSShader;
+static std::unique_ptr<GuestShader> g_enhancedBurnoutBlurPSShader;
 static std::unique_ptr<GuestShader> g_enhancedMotionBlurShader;
 
 #if defined(MARATHON_RECOMP_D3D12)
@@ -2204,6 +2212,12 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
 
     g_csdFilterShader = std::make_unique<GuestShader>(ResourceType::PixelShader);
     g_csdFilterShader->shader = CREATE_SHADER(csd_filter_ps);
+
+    g_enhancedBurnoutBlurVSShader = std::make_unique<GuestShader>(ResourceType::VertexShader);
+    g_enhancedBurnoutBlurVSShader->shader = CREATE_SHADER(enhanced_burnout_blur_vs);
+
+    g_enhancedBurnoutBlurPSShader = std::make_unique<GuestShader>(ResourceType::PixelShader);
+    g_enhancedBurnoutBlurPSShader->shader = CREATE_SHADER(enhanced_burnout_blur_ps);
 
     g_enhancedMotionBlurShader = std::make_unique<GuestShader>(ResourceType::PixelShader);
     g_enhancedMotionBlurShader->shader = CREATE_SHADER(enhanced_motion_blur_ps);
@@ -5483,7 +5497,18 @@ static void SetVertexShader(GuestDevice* device, GuestShader* shader)
 
 static void ProcSetVertexShader(const RenderCommand& cmd)
 {
-    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.vertexShader, cmd.setVertexShader.shader);
+    GuestShader* shader = cmd.setVertexShader.shader;
+
+    if (shader != nullptr &&
+    shader->shaderCacheEntry != nullptr)
+    {
+        if (shader->shaderCacheEntry->hash == 0x3687D038CE7D0BEA || shader->shaderCacheEntry->hash == 0xB4DA7A442DBB16CC)
+        {
+            shader = g_enhancedBurnoutBlurVSShader.get();
+        }
+    }
+
+    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.vertexShader, shader);
 }
 
 static void SetStreamSource(GuestDevice* device, uint32_t index, GuestBuffer* buffer, uint32_t offset, uint32_t stride) 
@@ -5549,6 +5574,16 @@ static void SetPixelShader(GuestDevice* device, GuestShader* shader)
 static void ProcSetPixelShader(const RenderCommand& cmd)
 {
     GuestShader* shader = cmd.setPixelShader.shader;
+
+    if (shader != nullptr &&
+        shader->shaderCacheEntry != nullptr)
+    {
+        if (shader->shaderCacheEntry->hash == 0xDA58F0110A8595D9 || shader->shaderCacheEntry->hash == 0x845A4EF989446C01)
+        {
+            shader = g_enhancedBurnoutBlurPSShader.get();
+        }
+    }
+
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.pixelShader, shader);
 }
 

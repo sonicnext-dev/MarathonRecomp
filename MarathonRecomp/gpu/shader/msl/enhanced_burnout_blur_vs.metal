@@ -1,12 +1,12 @@
 #include "../../../../tools/XenosRecomp/XenosRecomp/shader_common.h"
 
-#define g_SampleCount (*(reinterpret_cast<device int*>(g_PushConstants.VertexShaderConstants + 0)))
+// #define g_SampleCount (*(reinterpret_cast<device int*>(g_PushConstants.VertexShaderConstants + 0)))
 #define g_Velocity (*(reinterpret_cast<device float4*>(g_PushConstants.VertexShaderConstants + 3360)))
 
 struct VertexShaderInput
 {
     float4 iPosition0 [[attribute(0)]];
-    float2 iTexCoord0 [[attribute(4)]];
+    float2 iTexCoord0 [[attribute(13)]];
 };
 
 struct Interpolators
@@ -26,24 +26,16 @@ Interpolators shaderMain(VertexShaderInput input [[stage_in]],
     output.oPos = input.iPosition0;
     output.oTexCoord0 = input.iTexCoord0;
 
-    if (g_SampleCount == 1)
-    {
-        output.oVelocity = float2(0.0);
-        output.oVelScale = float2(0.0);
-        return output;
-    }
-
-    float2 centeredUV = input.iTexCoord0 * 2.0 - 1.0;
+    float2 centeredUV;
+    centeredUV.x = input.iTexCoord0.y * 2.0 - 1.0;
+    centeredUV.y = input.iTexCoord0.x * 2.0 - 1.0;
 
     output.oVelocity.x = -g_Velocity.x - centeredUV.y;
     output.oVelocity.y = centeredUV.x - g_Velocity.y;
 
-    float sampleScaleX = 0.00002 / (float)g_SampleCount;
-    float sampleScaleY = 0.00001 / (float)g_SampleCount;
-
     float2 scaledVec = output.oVelocity * g_Velocity.w;
-    output.oVelScale.x = scaledVec.x * sampleScaleX;
-    output.oVelScale.y = scaledVec.y * sampleScaleY;
+    output.oVelScale.x = scaledVec.x * 0.00002;
+    output.oVelScale.y = -scaledVec.y * 0.00001;
 
     return output;
 }
