@@ -263,3 +263,12 @@ registers = ["r8"]
 name = "MovieVoiceLang"
 address = 0x8264B4E4
 registers = ["r19"]
+
+[[midasm_hook]]
+name = "BeginBlock"
+address = 0x82607854
+registers = ["r4"]
+
+[[midasm_hook]]
+name = "EndBlock"
+address = 0x826078D8
