@@ -263,3 +263,18 @@ registers = ["r8"]
 name = "MovieVoiceLang"
 address = 0x8264B4E4
 registers = ["r19"]
+
+[[midasm_hook]]
+name = "RestorePauseMissionText"
+address = 0x824F0018
+jump_address_on_true = 0x824F001C
+
+[[midasm_hook]]
+name = "RestorePauseMissionText"
+address = 0x824F02A0
+jump_address_on_true = 0x824F02A4
+
+[[midasm_hook]]
+name = "RestorePauseMissionText2"
+address = 0x82509AEC
+registers = ["f1"]
