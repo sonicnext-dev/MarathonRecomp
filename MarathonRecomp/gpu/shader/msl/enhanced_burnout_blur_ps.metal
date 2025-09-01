@@ -42,6 +42,5 @@ float4 shaderMain(Interpolators input [[stage_in]],
         result += texture.sample(samp, samplePos, level(0));
     }
 
-    return float4(1.0 / (float)(64 - g_SampleCount));
     return result * (1.0 / (float)g_SampleCount);
 }
