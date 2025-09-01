@@ -2,19 +2,15 @@
 
 #ifdef __spirv__
 
-#define g_Velocity = vk::RawBufferLoad<float4>(g_PushConstants.VertexShaderConstants + 3360, 0x10);
-#define g_SampleCount vk::RawBufferLoad<int>(g_PushConstants.SharedConstants + 4)
+#define g_SampleCount vk::RawBufferLoad<int>(g_PushConstants.VertexShaderConstants + 0)
+#define g_Velocity vk::RawBufferLoad<float4>(g_PushConstants.VertexShaderConstants + 3360, 0x10)
 
 #else
 
 cbuffer VertexShaderConstants : register(b1, space4)
 {
+    int g_SampleCount;
     float4 g_Velocity : packoffset(c210);
-};
-
-cbuffer SharedConstants : register(b2, space4)
-{
-    int g_SampleCount : packoffset(c0.y);
 };
 
 #endif
@@ -32,20 +28,20 @@ void shaderMain(
 
     if (g_SampleCount == 1)
     {
-        oVelocity = float2(0.0);
-        oVelScale = float2(0.0);
+        oVelocity = float2(0.0, 0.0);
+        oVelScale = float2(0.0, 0.0);
         return;
     }
 
     float2 centeredUV = iTexCoord0 * 2.0 - 1.0;
 
     oVelocity.x = -g_Velocity.x - centeredUV.y;
-    oVelocity.y = centeredUV.x - centeredUV.y;
+    oVelocity.y = centeredUV.x - g_Velocity.y;
 
     float sampleScaleX = 0.00002 / (float)g_SampleCount;
     float sampleScaleY = 0.00001 / (float)g_SampleCount;
 
     float2 scaledVec = oVelocity * g_Velocity.w;
-    output oVelScale.x = scaledVec * sampleScaleX;
-    output oVelScale.y = scaledVec * sampleScaleY;
+    oVelScale.x = scaledVec.x * sampleScaleX;
+    oVelScale.y = scaledVec.y * sampleScaleY;
 }
