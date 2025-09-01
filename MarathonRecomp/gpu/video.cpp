@@ -52,7 +52,6 @@
 #include "shader/hlsl/csd_vs.hlsl.dxil.h"
 #include "shader/hlsl/enhanced_burnout_blur_vs.hlsl.dxil.h"
 #include "shader/hlsl/enhanced_burnout_blur_ps.hlsl.dxil.h"
-#include "shader/hlsl/enhanced_motion_blur_ps.hlsl.dxil.h"
 #include "shader/hlsl/gamma_correction_ps.hlsl.dxil.h"
 #include "shader/hlsl/gaussian_blur_3x3.hlsl.dxil.h"
 #include "shader/hlsl/gaussian_blur_5x5.hlsl.dxil.h"
@@ -80,7 +79,6 @@
 #include "shader/msl/csd_vs.metal.metallib.h"
 #include "shader/msl/enhanced_burnout_blur_vs.metal.metallib.h"
 #include "shader/msl/enhanced_burnout_blur_ps.metal.metallib.h"
-#include "shader/msl/enhanced_motion_blur_ps.metal.metallib.h"
 #include "shader/msl/gamma_correction_ps.metal.metallib.h"
 #include "shader/msl/gaussian_blur_3x3.metal.metallib.h"
 #include "shader/msl/gaussian_blur_5x5.metal.metallib.h"
@@ -107,7 +105,6 @@
 #include "shader/hlsl/csd_vs.hlsl.spirv.h"
 #include "shader/hlsl/enhanced_burnout_blur_vs.hlsl.spirv.h"
 #include "shader/hlsl/enhanced_burnout_blur_ps.hlsl.spirv.h"
-#include "shader/hlsl/enhanced_motion_blur_ps.hlsl.spirv.h"
 #include "shader/hlsl/gamma_correction_ps.hlsl.spirv.h"
 #include "shader/hlsl/gaussian_blur_3x3.hlsl.spirv.h"
 #include "shader/hlsl/gaussian_blur_5x5.hlsl.spirv.h"
@@ -1474,7 +1471,6 @@ static GuestShader* g_csdShader;
 
 static std::unique_ptr<GuestShader> g_enhancedBurnoutBlurVSShader;
 static std::unique_ptr<GuestShader> g_enhancedBurnoutBlurPSShader;
-static std::unique_ptr<GuestShader> g_enhancedMotionBlurShader;
 
 #if defined(MARATHON_RECOMP_D3D12)
 
@@ -2218,9 +2214,6 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
 
     g_enhancedBurnoutBlurPSShader = std::make_unique<GuestShader>(ResourceType::PixelShader);
     g_enhancedBurnoutBlurPSShader->shader = CREATE_SHADER(enhanced_burnout_blur_ps);
-
-    g_enhancedMotionBlurShader = std::make_unique<GuestShader>(ResourceType::PixelShader);
-    g_enhancedMotionBlurShader->shader = CREATE_SHADER(enhanced_motion_blur_ps);
 
     CreateImGuiBackend();
 
