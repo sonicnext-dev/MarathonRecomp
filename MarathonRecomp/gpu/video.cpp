@@ -5504,7 +5504,8 @@ static void ProcSetVertexShader(const RenderCommand& cmd)
     {
         if (shader->shaderCacheEntry->hash == 0x3687D038CE7D0BEA || shader->shaderCacheEntry->hash == 0xB4DA7A442DBB16CC)
         {
-            shader = g_enhancedBurnoutBlurVSShader.get();
+            if (Config::RadialBlur == ERadialBlur::Enhanced)
+                shader = g_enhancedBurnoutBlurVSShader.get();
         }
     }
 
@@ -5580,7 +5581,8 @@ static void ProcSetPixelShader(const RenderCommand& cmd)
     {
         if (shader->shaderCacheEntry->hash == 0xDA58F0110A8595D9 || shader->shaderCacheEntry->hash == 0x845A4EF989446C01)
         {
-            shader = g_enhancedBurnoutBlurPSShader.get();
+            if (Config::RadialBlur == ERadialBlur::Enhanced)
+                shader = g_enhancedBurnoutBlurPSShader.get();
         }
     }
 
