@@ -2,7 +2,7 @@
 
 #ifdef __spirv__
 
-#define g_Velocity = vk::RawBufferLoad<float4>(g_PushConstants.VertexShaderConstants + 210, 0x10);
+#define g_Velocity = vk::RawBufferLoad<float4>(g_PushConstants.VertexShaderConstants + 3360, 0x10);
 #define g_SampleCount vk::RawBufferLoad<int>(g_PushConstants.SharedConstants + 4)
 
 #else
