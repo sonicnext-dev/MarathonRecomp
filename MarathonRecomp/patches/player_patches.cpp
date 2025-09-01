@@ -160,3 +160,8 @@ PPC_FUNC(sub_82195500)
 
     __imp__sub_82195500(ctx, base);
 }
+
+bool ControllableTeleportDash()
+{
+    return Config::ControllableTeleportDash;
+}
