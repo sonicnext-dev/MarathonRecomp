@@ -1482,7 +1482,6 @@ static void DrawInfoPanel(ImVec2 infoMin, ImVec2 infoMax)
         clipRectMin = { clipRectMin.x, thumbnailMax.y };
 
         auto fontSize = Scale(28.0f);
-        auto annotationFontSize = fontSize * ANNOTATION_FONT_SIZE_MODIFIER;
 
         /* Extra padding between the start
            of the description text and the
@@ -1492,25 +1491,6 @@ static void DrawInfoPanel(ImVec2 infoMin, ImVec2 infoMax)
         auto textX = clipRectMin.x - Scale(0.5f);
         auto textY = thumbnailMax.y + offsetY;
         float lineWidth = clipRectMax.x - clipRectMin.x;
-
-        if (Config::Language == ELanguage::Japanese)
-        {
-            /* Removing some padding of the applied due
-               to the inclusion of annotation for Japanese. */
-            textY -= Scale(8.0f);
-
-            /* The annotation (and thus the Japanese) can be
-               drawn above the edges of the info panel thus the
-               clip needs to be extended a bit. */
-            clipRectMin.x -= annotationFontSize;
-            clipRectMax.x += annotationFontSize;
-
-            textY += annotationFontSize;
-            
-            // Dirty hack to disallow clipping on Japanese text
-            // whilst allowing annotations to go over the border
-            lineWidth -= annotationFontSize;
-        }
 
         auto textSize = MeasureCentredParagraph(g_rodinFont, fontSize, lineWidth, 5.0f, desc.c_str());
 
@@ -1584,7 +1564,7 @@ static void DrawInfoPanel(ImVec2 infoMin, ImVec2 infoMax)
 
         SetVerticalMarqueeFade({ clipRectMin.x, clipRectMin.y + Scale(5.5f) }, clipRectMax, Scale(10), Scale(10));
 
-        DrawRubyAnnotatedText
+        DrawTextParagraph
         (
             g_rodinFont,
             fontSize,
@@ -1592,13 +1572,10 @@ static void DrawInfoPanel(ImVec2 infoMin, ImVec2 infoMax)
             { textX, textY - scrollOffset },
             5.0f,
             desc.c_str(),
+
             [=](const char* str, ImVec2 pos)
             {
                 DrawTextBasic(g_rodinFont, fontSize, pos, IM_COL32_WHITE, str);
-            },
-            [=](const char* str, float size, ImVec2 pos)
-            {
-                DrawTextBasic(g_rodinFont, size, pos, IM_COL32_WHITE, str);
             }
         );
 

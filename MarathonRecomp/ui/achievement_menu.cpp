@@ -66,7 +66,7 @@ static void DrawContainer(ImVec2 min, ImVec2 max, ImU32 gradientTop, ImU32 gradi
 {
     auto drawList = ImGui::GetBackgroundDrawList();
 
-    DrawPauseContainer(min, max, alpha);
+    // DrawPauseContainer(min, max, alpha);
 
     drawList->PushClipRect({ min.x, min.y + Scale(20) }, { max.x, max.y - Scale(5) });
 }
@@ -101,7 +101,7 @@ static void DrawHeaderContainer(const char* text)
     ImVec2 min = { g_aspectRatioOffsetX + Scale(containerMarginX), g_aspectRatioOffsetY + Scale(136) };
     ImVec2 max = { std::max(min.x + minTextSize, min.x + textMarginX * 2 + textSize.x + Scale(5)), g_aspectRatioOffsetY + Scale(196) };
 
-    DrawPauseHeaderContainer(min, max, alpha);
+    // DrawPauseHeaderContainer(min, max, alpha);
 
     SetTextSkew((min.y + max.y) / 2.0f, Scale(3.0f));
 
@@ -139,8 +139,8 @@ static void DrawAchievement(int rowIndex, float yOffset, Achievement& achievemen
     auto icon = g_xdbfTextureCache[achievement.ID];
     auto isSelected = rowIndex == g_selectedRowIndex;
 
-    if (isSelected)
-        DrawSelectionContainer(min, max);
+    // if (isSelected)
+    //     DrawSelectionContainer(min, max);
 
     auto desc = isUnlocked ? achievement.UnlockedDesc.c_str() : achievement.LockedDesc.c_str();
     auto fontSize = Scale(24);
