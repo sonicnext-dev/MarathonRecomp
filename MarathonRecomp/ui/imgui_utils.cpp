@@ -4,25 +4,28 @@
 #include <decompressor.h>
 #include <version.h>
 
-#include <res/images/common/general_window.dds.h>
+#include <res/images/common/window.dds.h>
 #include <res/images/common/light.dds.h>
 #include <res/images/common/select.dds.h>
+#include <res/images/common/select_arrow.dds.h>
 #include <res/images/common/main_menu1.dds.h>
 #include <res/images/common/arrow.dds.h>
 
-std::unique_ptr<GuestTexture> g_texGeneralWindow;
+std::unique_ptr<GuestTexture> g_texWindow;
 std::unique_ptr<GuestTexture> g_texLight;
 std::unique_ptr<GuestTexture> g_texSelect;
+std::unique_ptr<GuestTexture> g_texSelectArrow;
 std::unique_ptr<GuestTexture> g_texMainMenu1;
 std::unique_ptr<GuestTexture> g_texArrow;
 
 void InitImGuiUtils()
 {
-    g_texGeneralWindow = LOAD_ZSTD_TEXTURE(g_general_window);
+    g_texWindow = LOAD_ZSTD_TEXTURE(g_window);
     g_texLight = LOAD_ZSTD_TEXTURE(g_light);
     g_texSelect = LOAD_ZSTD_TEXTURE(g_select);
+    g_texSelectArrow = LOAD_ZSTD_TEXTURE(g_select_arrow);
     g_texMainMenu1 = LOAD_ZSTD_TEXTURE(g_main_menu1);
-    g_texArrow = LOAD_ZSTD_TEXTURE(arrow);
+    g_texArrow = LOAD_ZSTD_TEXTURE(g_arrow);
 }
 
 void SetGradient(const ImVec2& min, const ImVec2& max, ImU32 top, ImU32 bottom)
@@ -171,43 +174,19 @@ float Scale(float size)
     return size * g_aspectRatioScale;
 }
 
-static double ComputeLoopMotion(double time, double offset)
+double ComputeLoopMotion(double time, double offset, double total)
 {
-    const double fadeInDuration = 0.1;
-    const double fadeOutDuration = 10.0;
-
-    double elapsedTime = time - offset;
-
-    if (elapsedTime < 0.0) {
-        return 0.0;
-    }
-
-    double result;
-
-    if (elapsedTime < fadeInDuration) {
-        double progress = elapsedTime / fadeInDuration;
-        result = 1.0 - pow(1.0 - progress, 2.0);
-
-    } else if (elapsedTime < fadeInDuration + fadeOutDuration) {
-        double fadeOutTime = elapsedTime - fadeInDuration;
-        double progress = fadeOutTime / fadeOutDuration;
-        result = pow(1.0 - progress, 10.0);
-
-    } else {
-        result = 0.0;
-    }
-
-    return std::clamp(result, 0.0, 1.0);
+    return std::clamp(fmod((ImGui::GetTime() - time - (offset / 60.0)) / (total / 60.0), 1.0 + (total / 60.0)), 0.0, 1.0) / 1.0;
 }
 
-double ComputeLinearMotion(double duration, double offset, double total)
+double ComputeLinearMotion(double time, double offset, double total)
 {
-    return std::clamp((ImGui::GetTime() - duration - offset / 60.0) / total * 60.0, 0.0, 1.0);
+    return std::clamp((ImGui::GetTime() - time - offset / 60.0) / total * 60.0, 0.0, 1.0);
 }
 
-double ComputeMotion(double duration, double offset, double total)
+double ComputeMotion(double time, double offset, double total)
 {
-    return sqrt(ComputeLinearMotion(duration, offset, total));
+    return sqrt(ComputeLinearMotion(time, offset, total));
 }
 
 void DrawArrows(ImVec2 min, ImVec2 max)
@@ -236,11 +215,42 @@ void DrawArrows(ImVec2 min, ImVec2 max)
     auto leftBaseY = min.y - (leftArrowSize / 2);
     auto leftEndY = min.y + (leftArrowSize / 2);
 
+    auto computeArrowLoopMotion = [&](double time, double offset)
+    {
+        const double fadeInDuration = 0.1;
+        const double fadeOutDuration = 10.0;
+
+        double elapsedTime = time - offset;
+
+        if (elapsedTime < 0.0)
+            return 0.0;
+
+        double result;
+
+        if (elapsedTime < fadeInDuration)
+        {
+            double progress = elapsedTime / fadeInDuration;
+            result = 1.0 - pow(1.0 - progress, 2.0);
+        }
+        else if (elapsedTime < fadeInDuration + fadeOutDuration)
+        {
+            double fadeOutTime = elapsedTime - fadeInDuration;
+            double progress = fadeOutTime / fadeOutDuration;
+            result = pow(1.0 - progress, 10.0);
+        }
+        else
+        {
+            result = 0.0;
+        }
+
+        return std::clamp(result, 0.0, 1.0);
+    };
+
     for (uint32_t i = 0; i < leftArrows; i++)
     {
         auto baseX = min.x + (i * leftArrowOffset) - Scale(200) - totalAnimOffset;
         auto endX = baseX + leftArrowSize;
-        auto opacity = (uint32_t)((maxOpacity * ComputeLoopMotion(cycleTime, 1.0 + ((double)(leftArrows - i) / leftArrows))) * 255);
+        auto opacity = (uint32_t)((maxOpacity * computeArrowLoopMotion(cycleTime, 1.0 + ((double)(leftArrows - i) / leftArrows))) * 255);
 
         drawList->AddImage(g_texArrow.get(), { endX, leftBaseY }, { baseX, leftEndY }, GET_UV_COORDS(arrowUV), IM_COL32(255, 255, 255, opacity));
     }
@@ -252,7 +262,7 @@ void DrawArrows(ImVec2 min, ImVec2 max)
     {
         auto baseX = max.x - (i * rightArrowOffset) - rightArrowSize + Scale(20) + totalAnimOffset;
         auto endX = baseX + rightArrowSize;
-        auto opacity = (uint32_t)((maxOpacity * ComputeLoopMotion(cycleTime, ((double)(rightArrows - i) / rightArrows))) * 255);
+        auto opacity = (uint32_t)((maxOpacity * computeArrowLoopMotion(cycleTime, ((double)(rightArrows - i) / rightArrows))) * 255);
 
         drawList->AddImage(g_texArrow.get(), { baseX, rightBaseY }, { endX, rightEndY }, GET_UV_COORDS(arrowUV), IM_COL32(255, 255, 255, opacity));
     }
@@ -364,54 +374,6 @@ void DrawContainerBox(ImVec2 min, ImVec2 max, float alpha)
     ResetGradient();
 }
 
-void DrawPauseContainer(ImVec2 min, ImVec2 max, float alpha)
-{
-    auto drawList = ImGui::GetBackgroundDrawList();
-
-    auto commonWidth = Scale(35);
-    auto commonHeight = Scale(35);
-    auto bottomHeight = Scale(5);
-
-    auto tl = PIXELS_TO_UV_COORDS(128, 512, 0, 0, 35, 35);
-    auto tc = PIXELS_TO_UV_COORDS(128, 512, 51, 0, 5, 35);
-    auto tr = PIXELS_TO_UV_COORDS(128, 512, 70, 0, 35, 35);
-    auto cl = PIXELS_TO_UV_COORDS(128, 512, 0, 35, 35, 235);
-    auto cc = PIXELS_TO_UV_COORDS(128, 512, 51, 35, 5, 235);
-    auto cr = PIXELS_TO_UV_COORDS(128, 512, 70, 35, 35, 235);
-    auto bl = PIXELS_TO_UV_COORDS(128, 512, 0, 270, 35, 40);
-    auto bc = PIXELS_TO_UV_COORDS(128, 512, 51, 270, 5, 40);
-    auto br = PIXELS_TO_UV_COORDS(128, 512, 70, 270, 35, 40);
-
-    auto colour = IM_COL32(255, 255, 255, 255 * alpha);
-
-    drawList->AddImage(g_texGeneralWindow.get(), min, { min.x + commonWidth, min.y + commonHeight }, GET_UV_COORDS(tl), colour);
-    drawList->AddImage(g_texGeneralWindow.get(), { min.x + commonWidth, min.y }, { max.x - commonWidth, min.y + commonHeight }, GET_UV_COORDS(tc), colour);
-    drawList->AddImage(g_texGeneralWindow.get(), { max.x - commonWidth, min.y }, { max.x, min.y + commonHeight }, GET_UV_COORDS(tr), colour);
-    drawList->AddImage(g_texGeneralWindow.get(), { min.x, min.y + commonHeight }, { min.x + commonWidth, max.y - commonHeight }, GET_UV_COORDS(cl), colour);
-    drawList->AddImage(g_texGeneralWindow.get(), { min.x + commonWidth, min.y + commonHeight }, { max.x - commonWidth, max.y - commonHeight }, GET_UV_COORDS(cc), colour);
-    drawList->AddImage(g_texGeneralWindow.get(), { max.x - commonWidth, min.y + commonHeight }, { max.x, max.y - commonHeight }, GET_UV_COORDS(cr), colour);
-    drawList->AddImage(g_texGeneralWindow.get(), { min.x, max.y - commonHeight }, { min.x + commonWidth, max.y + bottomHeight }, GET_UV_COORDS(bl), colour);
-    drawList->AddImage(g_texGeneralWindow.get(), { min.x + commonWidth, max.y - commonHeight }, { max.x - commonWidth, max.y + bottomHeight }, GET_UV_COORDS(bc), colour);
-    drawList->AddImage(g_texGeneralWindow.get(), { max.x - commonWidth, max.y - commonHeight }, { max.x, max.y + bottomHeight }, GET_UV_COORDS(br), colour);
-}
-
-void DrawPauseHeaderContainer(ImVec2 min, ImVec2 max, float alpha)
-{
-    auto drawList = ImGui::GetBackgroundDrawList();
-
-    auto commonWidth = Scale(35);
-
-    auto left = PIXELS_TO_UV_COORDS(128, 512, 0, 314, 35, 60);
-    auto centre = PIXELS_TO_UV_COORDS(128, 512, 51, 314, 5, 60);
-    auto right = PIXELS_TO_UV_COORDS(128, 512, 70, 314, 35, 60);
-
-    auto colour = IM_COL32(255, 255, 255, 255 * alpha);
-
-    drawList->AddImage(g_texGeneralWindow.get(), min, { min.x + commonWidth, max.y }, GET_UV_COORDS(left), colour);
-    drawList->AddImage(g_texGeneralWindow.get(), { min.x + commonWidth, min.y }, { max.x - commonWidth, max.y }, GET_UV_COORDS(centre), colour);
-    drawList->AddImage(g_texGeneralWindow.get(), { max.x - commonWidth, min.y }, max, GET_UV_COORDS(right), colour);
-}
-
 void DrawTextBasic(const ImFont* font, float fontSize, const ImVec2& pos, ImU32 colour, const char* text)
 {
     auto drawList = ImGui::GetBackgroundDrawList();
@@ -429,46 +391,10 @@ void DrawTextWithMarquee(const ImFont* font, float fontSize, const ImVec2& posit
     drawList->PushClipRect(min, max, true);
 
     if (textX <= position.x)
-    {
-        DrawRubyAnnotatedText
-        (
-            font,
-            fontSize,
-            FLT_MAX,
-            { textX, position.y },
-            0.0f,
-            text,
-            [=](const char* str, ImVec2 pos)
-            {
-                DrawTextBasic(font, fontSize, pos, color, str);
-            },
-            [=](const char* str, float size, ImVec2 pos)
-            {
-                DrawTextBasic(font, size, pos, color, str);
-            }
-        );
-    }
+        DrawTextBasic(font, fontSize, { textX, position.y }, color, text);
 
     if (textX + textSize.x < position.x)
-    {
-        DrawRubyAnnotatedText
-        (
-            font,
-            fontSize,
-            FLT_MAX,
-            { textX + textSize.x + rectWidth, position.y },
-            0.0f,
-            text,
-            [=](const char* str, ImVec2 pos)
-            {
-                DrawTextBasic(font, fontSize, pos, color, str);
-            },
-            [=](const char* str, float size, ImVec2 pos)
-            {
-                DrawTextBasic(font, size, pos, color, str);
-            }
-        );
-    }
+        DrawTextBasic(font, fontSize, { textX + textSize.x + rectWidth, position.y }, color, text);
 
     drawList->PopClipRect();
 }
@@ -527,6 +453,34 @@ void DrawTextWithShadow(const ImFont* font, float fontSize, const ImVec2& pos, I
     drawList->AddText(font, fontSize, pos, colour, text, nullptr);
 }
 
+void DrawTextParagraph(const ImFont* font, float fontSize, float maxWidth, const ImVec2& pos, float lineMargin, const char* text, std::function<void(const char*, ImVec2)> drawMethod, bool isCentred)
+{
+    auto lines = Split(text, font, fontSize, maxWidth);
+    auto paragraphSize = MeasureCentredParagraph(font, fontSize, lineMargin, lines);
+    auto offsetY = 0.0f;
+
+    for (auto& line : lines)
+    {
+        auto textSize = font->CalcTextSizeA(fontSize, FLT_MAX, 0, line.c_str());
+        auto textX = pos.x;
+        auto textY = pos.y + offsetY;
+
+        if (isCentred)
+        {
+            textX = line.starts_with("- ")
+                ? pos.x - paragraphSize.x / 2
+                : pos.x - textSize.x / 2;
+
+            textY = pos.y - paragraphSize.y / 2 + offsetY;
+        }
+
+        drawMethod(line.c_str(), { textX, textY });
+
+        textX += textSize.x;
+        offsetY += textSize.y + Scale(lineMargin);
+    }
+}
+
 float CalcWidestTextSize(const ImFont* font, float fontSize, std::span<std::string> strs)
 {
     auto result = 0.0f;
@@ -561,86 +515,6 @@ std::string Truncate(const std::string& input, size_t maxLength, bool useEllipsi
     }
 
     return input;
-}
-
-std::pair<std::string, std::map<std::string, std::string>> RemoveRubyAnnotations(const char* input)
-{
-    std::string output;
-    std::map<std::string, std::string> rubyMap;
-    std::string currentMain, currentRuby;
-    size_t idx = 0;
-
-    while (input[idx] != '\0')
-    {
-        if (input[idx] == '[')
-        {
-            idx++;
-            currentMain.clear();
-            currentRuby.clear();
-
-            while (input[idx] != ':' && input[idx] != ']' && input[idx] != '\0')
-            {
-                currentMain += input[idx++];
-            }
-            if (input[idx] == ':')
-            {
-                idx++;
-                while (input[idx] != ']' && input[idx] != '\0')
-                {
-                    currentRuby += input[idx++];
-                }
-            }
-            if (input[idx] == ']') 
-            {
-                idx++;
-            }
-
-            if (!currentMain.empty() && !currentRuby.empty())
-            {
-                rubyMap[currentMain] = currentRuby;
-            }
-
-            output += currentMain;
-        }
-        else
-        {
-            output += input[idx++];
-        }
-    }
-
-    return { output, rubyMap };
-}
-
-std::string ReAddRubyAnnotations(const std::string_view& wrappedText, const std::map<std::string, std::string>& rubyMap)
-{
-    std::string annotatedText;
-    size_t idx = 0;
-    size_t length = wrappedText.length();
-
-    while (idx < length) {
-        bool matched = false;
-        for (const auto& [mainText, rubyText] : rubyMap)
-        {
-            if (wrappedText.substr(idx, mainText.length()) == mainText) 
-            {
-                annotatedText += "[";
-                annotatedText += mainText;
-                annotatedText += ":";
-                annotatedText += rubyText;
-                annotatedText += "]";
-
-                idx += mainText.length();
-                matched = true;
-                break;
-            }
-        }
-        if (!matched)
-        {
-            annotatedText += wrappedText[idx++];
-        }
-    }
-
-    return annotatedText;
 }
 
 std::vector<std::string> Split(const char* strStart, const ImFont* font, float fontSize, float maxWidth)
@@ -757,102 +631,17 @@ std::vector<std::string> Split(const char* strStart, const ImFont* font, float f
     return result;
 }
 
-Paragraph CalculateAnnotatedParagraph(const std::vector<std::string>& lines)
-{
-    Paragraph result;
-
-    for (const auto& line : lines)
-    {
-        std::vector<TextSegment> segments;
-
-        size_t pos = 0;
-        size_t start = 0;
-
-        while ((start = line.find('[', pos)) != std::string::npos)
-        {
-            size_t end = line.find(']', start);
-            if (end == std::string::npos)
-                break;
-
-            size_t colon = line.find(':', start);
-            if (colon != std::string::npos && colon < end)
-            {
-                if (start != pos)
-                {
-                    segments.push_back({ false, line.substr(pos, start - pos), "" });
-                }
-
-                segments.push_back({ true, line.substr(start + 1, colon - start - 1), line.substr(colon + 1, end - colon - 1) });
-
-                result.annotated = true;
-                pos = end + 1;
-            }
-            else
-            {
-                pos = start + 1;
-            }
-        }
-
-        if (pos < line.size())
-        {
-            segments.push_back({ false, line.substr(pos), "" });
-        }
-
-        result.lines.push_back(segments);
-    }
-
-    return result;
-}
-
-std::vector<std::string> RemoveAnnotationFromParagraph(const std::vector<std::string>& lines)
-{
-    std::vector<std::string> result;
-    const auto paragraph = CalculateAnnotatedParagraph(lines);
-
-    for (auto& annotatedLine : paragraph.lines)
-    {
-        std::string annotationRemovedLine = "";
-
-        for (const auto& segment : annotatedLine)
-            annotationRemovedLine += segment.text;
-
-        result.push_back(annotationRemovedLine);
-    }
-
-    return result;
-}
-
-std::string RemoveAnnotationFromParagraphLine(const std::vector<TextSegment>& annotatedLine)
-{
-    std::string result = "";
-
-    for (auto& segment : annotatedLine)
-        result += segment.text;
-
-    return result;
-}
-
 ImVec2 MeasureCentredParagraph(const ImFont* font, float fontSize, float lineMargin, const std::vector<std::string>& lines)
 {
     auto x = 0.0f;
     auto y = 0.0f;
 
-    const auto paragraph = CalculateAnnotatedParagraph(lines);
-    
-    std::vector<std::string> annotationRemovedLines;
-
-    for (const auto& line : paragraph.lines)
-        annotationRemovedLines.emplace_back(RemoveAnnotationFromParagraphLine(line));
-
-    for (size_t i = 0; i < annotationRemovedLines.size(); i++)
+    for (size_t i = 0; i < lines.size(); i++)
     {
-        auto textSize = font->CalcTextSizeA(fontSize, FLT_MAX, 0, annotationRemovedLines[i].c_str());
+        auto textSize = font->CalcTextSizeA(fontSize, FLT_MAX, 0, lines[i].c_str());
 
         x = std::max(x, textSize.x);
         y += textSize.y + Scale(lineMargin);
-
-        if (paragraph.annotated && i != (annotationRemovedLines.size() - 1))
-            y += fontSize * ANNOTATION_FONT_SIZE_MODIFIER;
     }
 
     return { x, y };
@@ -860,76 +649,7 @@ ImVec2 MeasureCentredParagraph(const ImFont* font, float fontSize, float lineMar
 
 ImVec2 MeasureCentredParagraph(const ImFont* font, float fontSize, float maxWidth, float lineMargin, const char* text)
 {
-    const auto input = RemoveRubyAnnotations(text);
-    auto lines = Split(input.first.c_str(), font, fontSize, maxWidth);
-
-    for (auto& line : lines)
-        line = ReAddRubyAnnotations(line, input.second);
-
-    return MeasureCentredParagraph(font, fontSize, lineMargin, lines);
-}
-
-void DrawRubyAnnotatedText(const ImFont* font, float fontSize, float maxWidth, const ImVec2& pos, float lineMargin, const char* text, std::function<void(const char*, ImVec2)> drawMethod, std::function<void(const char*, float, ImVec2)> annotationDrawMethod, bool isCentred, bool leadingSpace)
-{
-    auto annotationFontSize = fontSize * ANNOTATION_FONT_SIZE_MODIFIER;
-
-    const auto input = RemoveRubyAnnotations(text);
-    auto lines = Split(input.first.c_str(), font, fontSize, maxWidth);
-
-    for (auto& line : lines)
-    {
-        line = ReAddRubyAnnotations(line, input.second);
-        if (!line.empty() && line.substr(0, 3) != "「" && leadingSpace)
-        {
-            line.insert(0, " ");
-        }
-    }
-
-    auto paragraphSize = MeasureCentredParagraph(font, fontSize, lineMargin, lines);
-    auto offsetY = 0.0f;
-
-    const auto paragraph = CalculateAnnotatedParagraph(lines);
-
-    for (const auto& annotatedLine : paragraph.lines)
-    {
-        const auto annotationRemovedLine = RemoveAnnotationFromParagraphLine(annotatedLine);
-
-        auto textSize = font->CalcTextSizeA(fontSize, FLT_MAX, 0, annotationRemovedLine.c_str());
-        auto annotationSize = font->CalcTextSizeA(annotationFontSize, FLT_MAX, 0, "");
-        auto textX = pos.x;
-        auto textY = pos.y + offsetY;
-
-        if (isCentred)
-        {
-            textX = annotationRemovedLine.starts_with("- ")
-                ? pos.x - paragraphSize.x / 2
-                : pos.x - textSize.x / 2;
-
-            textY = pos.y - paragraphSize.y / 2 + offsetY;
-        }
-
-        for (const auto& segment : annotatedLine)
-        {
-            textSize = font->CalcTextSizeA(fontSize, FLT_MAX, 0, segment.text.c_str());
-
-            if (segment.annotated)
-            {
-                annotationSize = font->CalcTextSizeA(annotationFontSize, FLT_MAX, 0, segment.annotation.c_str());
-                float annotationX = textX + (textSize.x - annotationSize.x) / 2.0f;
-
-                annotationDrawMethod(segment.annotation.c_str(), annotationFontSize, { annotationX, textY - annotationFontSize });
-            }
-
-            drawMethod(segment.text.c_str(), { textX, textY });
-            
-            textX += textSize.x;
-        }
-
-        offsetY += textSize.y + Scale(lineMargin);
-
-        if (paragraph.annotated)
-            offsetY += annotationSize.y;
-    }
+    return MeasureCentredParagraph(font, fontSize, lineMargin, Split(text, font, fontSize, maxWidth));
 }
 
 float Lerp(float a, float b, float t)
@@ -975,50 +695,6 @@ void DrawVersionString(const ImFont* font, const ImU32 col)
     auto textSize = font->CalcTextSizeA(fontSize, FLT_MAX, 0, g_versionString);
 
     drawList->AddText(font, fontSize, { res.x - textSize.x - textMargin, res.y - textSize.y - textMargin }, col, g_versionString);
-}
-
-void DrawSelectionContainer(ImVec2 min, ImVec2 max, bool fadeTop)
-{
-    auto drawList = ImGui::GetBackgroundDrawList();
-
-    static auto breatheStart = ImGui::GetTime();
-    auto alpha = BREATHE_MOTION(1.0f, 0.55f, breatheStart, 0.92f);
-    auto colour = IM_COL32(255, 255, 255, 255 * alpha);
-    auto commonWidth = Scale(11);
-    auto commonHeight = Scale(24);
-
-    if (fadeTop)
-    {
-        auto left = PIXELS_TO_UV_COORDS(64, 64, 0, 0, 11, 50);
-        auto centre = PIXELS_TO_UV_COORDS(64, 64, 11, 0, 8, 50);
-        auto right = PIXELS_TO_UV_COORDS(64, 64, 19, 0, 11, 50);
-
-        drawList->AddImage(g_texSelect.get(), min, { min.x + commonWidth, max.y }, GET_UV_COORDS(left), colour);
-        drawList->AddImage(g_texSelect.get(), { min.x + commonWidth, min.y }, { max.x - commonWidth, max.y }, GET_UV_COORDS(centre), colour);
-        drawList->AddImage(g_texSelect.get(), { max.x - commonWidth, min.y }, max, GET_UV_COORDS(right), colour);
-
-        return;
-    }
-
-    auto tl = PIXELS_TO_UV_COORDS(64, 64, 34, 0, 11, 24);
-    auto tc = PIXELS_TO_UV_COORDS(64, 64, 45, 0, 8, 24);
-    auto tr = PIXELS_TO_UV_COORDS(64, 64, 53, 0, 11, 24);
-    auto cl = PIXELS_TO_UV_COORDS(64, 64, 34, 24, 11, 2);
-    auto cc = PIXELS_TO_UV_COORDS(64, 64, 45, 24, 8, 2);
-    auto cr = PIXELS_TO_UV_COORDS(64, 64, 53, 24, 11, 2);
-    auto bl = PIXELS_TO_UV_COORDS(64, 64, 34, 26, 11, 24);
-    auto bc = PIXELS_TO_UV_COORDS(64, 64, 45, 26, 8, 24);
-    auto br = PIXELS_TO_UV_COORDS(64, 64, 53, 26, 11, 24);
-
-    drawList->AddImage(g_texSelect.get(), min, { min.x + commonWidth, min.y + commonHeight }, GET_UV_COORDS(tl), colour);
-    drawList->AddImage(g_texSelect.get(), { min.x + commonWidth, min.y }, { max.x - commonWidth, min.y + commonHeight }, GET_UV_COORDS(tc), colour);
-    drawList->AddImage(g_texSelect.get(), { max.x - commonWidth, min.y }, { max.x, min.y + commonHeight }, GET_UV_COORDS(tr), colour);
-    drawList->AddImage(g_texSelect.get(), { min.x, min.y + commonHeight }, { min.x + commonWidth, max.y - commonHeight }, GET_UV_COORDS(cl), colour);
-    drawList->AddImage(g_texSelect.get(), { min.x + commonWidth, min.y + commonHeight }, { max.x - commonWidth, max.y - commonHeight }, GET_UV_COORDS(cc), colour);
-    drawList->AddImage(g_texSelect.get(), { max.x - commonWidth, min.y + commonHeight }, { max.x, max.y - commonHeight }, GET_UV_COORDS(cr), colour);
-    drawList->AddImage(g_texSelect.get(), { min.x, max.y - commonHeight }, { min.x + commonWidth, max.y }, GET_UV_COORDS(bl), colour);
-    drawList->AddImage(g_texSelect.get(), { min.x + commonWidth, max.y - commonHeight }, { max.x - commonWidth, max.y }, GET_UV_COORDS(bc), colour);
-    drawList->AddImage(g_texSelect.get(), { max.x - commonWidth, max.y - commonHeight }, { max.x, max.y }, GET_UV_COORDS(br), colour);
 }
 
 void DrawToggleLight(ImVec2 pos, bool isEnabled, float alpha)

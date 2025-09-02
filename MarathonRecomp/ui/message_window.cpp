@@ -1,49 +1,38 @@
 #include "message_window.h"
 #include <api/Marathon.h>
+#include <patches/aspect_ratio_patches.h>
 #include <gpu/imgui/imgui_snapshot.h>
 #include <gpu/video.h>
 #include <hid/hid.h>
 #include <locale/locale.h>
-#include <ui/button_guide.h>
 #include <ui/imgui_utils.h>
 #include <app.h>
 #include <decompressor.h>
 #include <exports.h>
 #include <sdl_listener.h>
 
-constexpr double OVERLAY_CONTAINER_COMMON_MOTION_START = 0;
-constexpr double OVERLAY_CONTAINER_COMMON_MOTION_END = 11;
-constexpr double OVERLAY_CONTAINER_INTRO_FADE_START = 5;
-constexpr double OVERLAY_CONTAINER_INTRO_FADE_END = 9;
-constexpr double OVERLAY_CONTAINER_OUTRO_FADE_START = 0;
-constexpr double OVERLAY_CONTAINER_OUTRO_FADE_END = 4;
+static bool g_isAwaitingResult{};
+static bool g_isClosing{};
 
-static bool g_isAwaitingResult = false;
-static bool g_isClosing = false;
-static bool g_isControlsVisible = false;
+static int g_selectedRowIndex{};
+static int g_prevSelectedRowIndex{};
 
-static double g_rowSelectionTime;
-static int g_selectedRowIndex;
-static int g_prevSelectedRowIndex;
-static int g_foregroundCount;
-
-static bool g_upWasHeld;
-static bool g_downWasHeld;
+static bool g_upWasHeld{};
+static bool g_downWasHeld{};
 
 static ImVec2 g_joypadAxis = {};
-static bool g_isAccepted;
-static bool g_isDeclined;
+static bool g_isAccepted{};
+static bool g_isDeclined{};
 
-static double g_appearTime;
-static double g_controlsAppearTime;
+static double g_time{};
 
-static ImFont* g_rodinFont;
+static ImFont* g_rodinFont{};
 
-std::string g_text;
-int g_result;
-static std::vector<std::string> g_buttons;
-int g_defaultButtonIndex;
-int g_cancelButtonIndex;
+static std::string g_text{};
+static int g_result{};
+static std::vector<std::string> g_buttons{};
+static int g_defaultButtonIndex{};
+static int g_cancelButtonIndex{};
 
 class SDLEventListenerForMessageWindow : public SDLEventListener
 {
@@ -65,11 +54,11 @@ public:
                 switch (event->key.keysym.scancode)
                 {
                     case SDL_SCANCODE_UP:
-                        g_joypadAxis.y = -1.0f;
+                        g_joypadAxis.y = 1.0f;
                         break;
 
                     case SDL_SCANCODE_DOWN:
-                        g_joypadAxis.y = 1.0f;
+                        g_joypadAxis.y = -1.0f;
                         break;
 
                     case SDL_SCANCODE_RETURN:
@@ -92,7 +81,7 @@ public:
                     break;
 
                 // Only accept mouse buttons when an item is selected.
-                if (g_isControlsVisible && g_selectedRowIndex == -1)
+                if (g_selectedRowIndex == -1)
                     break;
 
                 g_isAccepted = true;
@@ -105,11 +94,11 @@ public:
                 switch (event->cbutton.button)
                 {
                     case SDL_CONTROLLER_BUTTON_DPAD_UP:
-                        g_joypadAxis = { 0.0f, -1.0f };
+                        g_joypadAxis = { 0.0f, 1.0f };
                         break;
 
                     case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-                        g_joypadAxis = { 0.0f, 1.0f };
+                        g_joypadAxis = { 0.0f, -1.0f };
                         break;
 
                     case SDL_CONTROLLER_BUTTON_A:
@@ -128,7 +117,7 @@ public:
             {
                 if (event->caxis.axis < 2)
                 {
-                    float newAxisValue = event->caxis.value / axisValueRange;
+                    float newAxisValue = -(event->caxis.value / axisValueRange);
                     bool sameDirection = (newAxisValue * g_joypadAxis[event->caxis.axis]) > 0.0f;
                     bool wasInRange = abs(g_joypadAxis[event->caxis.axis]) > axisTapRange;
                     bool isInRange = abs(newAxisValue) > axisTapRange;
@@ -148,79 +137,174 @@ public:
 }
 g_sdlEventListenerForMessageWindow;
 
-bool DrawContainer(float appearTime, ImVec2 centre, ImVec2 max, bool isForeground = true)
+void DrawContainerArrow(const ImVec2 pos, float scale, float rotation, uint32_t colour)
+{
+    auto arrowRadius = Scale(63.0f * scale);
+
+    std::array<ImVec2, 4> vertices =
+    {
+        pos,                                          // Top Left
+        { pos.x + arrowRadius, pos.y },               // Top Right
+        { pos.x + arrowRadius, pos.y + arrowRadius }, // Bottom Right
+        { pos.x, pos.y + arrowRadius }                // Bottom Left
+    };
+
+    // Adjust base rotation, since the texture
+    // points the arrow to the bottom left.
+    auto adjRotation = rotation + 90.0f;
+
+    auto radians = adjRotation * (IM_PI / 180.0f);
+    auto c = cosf(radians);
+    auto s = sinf(radians);
+
+    auto& pivot = vertices[3];
+
+    // Rotate around bottom left.
+    for (auto& v : vertices)
+    {
+        float dx = v.x - pivot.x;
+        float dy = v.y - pivot.y;
+
+        v.x = pivot.x + dx * c - dy * s;
+        v.y = pivot.y + dx * s + dy * c;
+    }
+
+    // Adjust height to pivot.
+    for (auto& v : vertices)
+        v.y -= arrowRadius;
+
+    auto drawList = ImGui::GetBackgroundDrawList();
+    auto arrowUVs = PIXELS_TO_UV_COORDS(128, 128, 65, 0, 63, 63);
+
+    auto& uvMin = std::get<0>(arrowUVs);
+    auto& uvMax = std::get<1>(arrowUVs);
+
+    drawList->AddImageQuad(g_texWindow.get(), vertices[0], vertices[1], vertices[2], vertices[3], uvMin, { uvMax.x, uvMin.y }, { uvMax.x, uvMax.y }, { uvMin.x, uvMax.y }, colour);
+}
+
+void DrawContainer(const ImVec2 min, const ImVec2 max)
 {
     auto drawList = ImGui::GetBackgroundDrawList();
 
-    ImVec2 _min = { centre.x - max.x, centre.y - max.y };
-    ImVec2 _max = { centre.x + max.x, centre.y + max.y };
+    constexpr auto containerTopColour = IM_COL32(20, 56, 130, 200);
+    constexpr auto containerBottomColour = IM_COL32(8, 22, 51, 200);
 
-    // Expand/retract animation.
-    auto containerMotion = ComputeMotion(appearTime, OVERLAY_CONTAINER_COMMON_MOTION_START, OVERLAY_CONTAINER_COMMON_MOTION_END);
+    drawList->AddRectFilledMultiColor(min, max, containerTopColour, containerTopColour, containerBottomColour, containerBottomColour);
 
-    if (g_isClosing)
-    {
-        _min.x = Hermite(_min.x, centre.x, containerMotion);
-        _max.x = Hermite(_max.x, centre.x, containerMotion);
-        _min.y = Hermite(_min.y, centre.y, containerMotion);
-        _max.y = Hermite(_max.y, centre.y, containerMotion);
-    }
-    else
-    {
-        _min.x = Hermite(centre.x, _min.x, containerMotion);
-        _max.x = Hermite(centre.x, _max.x, containerMotion);
-        _min.y = Hermite(centre.y, _min.y, containerMotion);
-        _max.y = Hermite(centre.y, _max.y, containerMotion);
-    }
+    auto lineHorzUVs = PIXELS_TO_UV_COORDS(128, 128, 2, 0, 60, 5);
+    auto lineVertUVs = PIXELS_TO_UV_COORDS(128, 128, 0, 66, 5, 60);
 
-    // Transparency fade animation.
-    auto colourMotion = g_isClosing
-        ? ComputeMotion(appearTime, OVERLAY_CONTAINER_OUTRO_FADE_START, OVERLAY_CONTAINER_OUTRO_FADE_END)
-        : ComputeMotion(appearTime, OVERLAY_CONTAINER_INTRO_FADE_START, OVERLAY_CONTAINER_INTRO_FADE_END);
+    auto lineScale = Scale(1);
+    auto lineOffsetRight = Scale(3);
 
-    auto alpha = g_isClosing
-        ? Lerp(1, 0, colourMotion)
-        : Lerp(0, 1, colourMotion);
+    // Top
+    drawList->AddImage(g_texWindow.get(), min, { max.x, min.y + lineScale }, GET_UV_COORDS(lineHorzUVs));
 
-    if (!isForeground)
-        g_foregroundCount++;
+    // Bottom
+    drawList->AddImage(g_texWindow.get(), { min.x, max.y - lineOffsetRight }, { max.x, (max.y - lineOffsetRight) + lineScale }, GET_UV_COORDS(lineHorzUVs));
 
-    if (isForeground)
-        drawList->AddRectFilled({ 0.0f, 0.0f }, ImGui::GetIO().DisplaySize, IM_COL32(0, 0, 0, 190 * (g_foregroundCount ? 1 : alpha)));
+    // Left
+    drawList->AddImage(g_texWindow.get(), min, { min.x + lineScale, max.y }, GET_UV_COORDS(lineVertUVs));
 
-    DrawPauseContainer(_min, _max, alpha);
+    // Right
+    drawList->AddImage(g_texWindow.get(), { max.x - lineOffsetRight, min.y }, { (max.x - lineOffsetRight) + lineScale, max.y }, GET_UV_COORDS(lineVertUVs));
 
-    if (containerMotion >= 1.0f && !g_isClosing)
-    {
-        drawList->PushClipRect(_min, _max);
-        return true;
-    }
+    SetAdditive(true);
 
-    return false;
+    constexpr auto arrowPixelRadius = 63.0f;
+    constexpr auto arrowInnerScale = 0.16f;
+    constexpr auto arrowOuterScale = 0.225f;
+    constexpr auto arrowOuterColour = IM_COL32(255, 255, 255, 45);
+
+    auto arrowOuterOffset = Scale(arrowPixelRadius * arrowOuterScale) / 2;
+
+    // Top Left (Inner)
+    DrawContainerArrow(min, arrowInnerScale, 0.0f, containerTopColour);
+
+    // Top Right (Inner)
+    DrawContainerArrow({ max.x, min.y }, arrowInnerScale, 90.0f, containerTopColour);
+
+    // Bottom Right (Inner)
+    DrawContainerArrow(max, arrowInnerScale, 180.0f, containerTopColour);
+
+    // Bottom Left (Inner)
+    DrawContainerArrow({ min.x, max.y }, arrowInnerScale, 270.0f, containerTopColour);
+
+    // Top Left (Outer)
+    DrawContainerArrow({ min.x - arrowOuterOffset, min.y - arrowOuterOffset }, arrowOuterScale, 0.0f, arrowOuterColour);
+    
+    // Top Right (Outer)
+    DrawContainerArrow({ max.x + arrowOuterOffset, min.y - arrowOuterOffset }, arrowOuterScale, 90.0f, arrowOuterColour);
+    
+    // Bottom Right (Outer)
+    DrawContainerArrow({ max.x + arrowOuterOffset, max.y + arrowOuterOffset }, arrowOuterScale, 180.0f, arrowOuterColour);
+    
+    // Bottom Left (Outer)
+    DrawContainerArrow({ min.x - arrowOuterOffset, max.y + arrowOuterOffset }, arrowOuterScale, 270.0f, arrowOuterColour);
+
+    ResetAdditive();
+
+    drawList->PushClipRect(min, max);
 }
 
-void DrawButton(int rowIndex, float yOffset, float width, float height, std::string& text)
+void DrawButtonArrow(const ImVec2 pos)
+{
+    auto drawList = ImGui::GetBackgroundDrawList();
+
+    auto arrowUVs = PIXELS_TO_UV_COORDS(50, 50, 0, 0, 27, 50);
+    auto arrowScaleX = Scale(14);
+    auto arrowScaleY = Scale(25);
+    auto arrowOffset = Scale(8);
+
+    for (int i = 0; i < 3; i++)
+    {
+        auto arrowRight = (arrowOffset * 3) - (arrowOffset * i);
+        auto arrowAlphaMotionIn = ComputeLoopMotion(g_time, 3.0 * i, 12.0);
+        auto arrowAlphaMotionOut = ComputeLoopMotion(g_time, 3.0 * (i + 1), 12.0);
+
+        // horrible
+        auto arrowAlphaMotion = arrowAlphaMotionIn >= 1.0
+            ? arrowAlphaMotionOut >= 1.0
+                ? arrowAlphaMotionIn
+                : arrowAlphaMotionOut
+            : arrowAlphaMotionIn;
+
+        auto arrowAlpha = (int)Lerp(50 * (i + 1), 255, arrowAlphaMotion);
+
+        drawList->AddImage
+        (
+            g_texSelectArrow.get(),
+            { pos.x + arrowRight, pos.y },
+            { pos.x + arrowRight + arrowScaleX, pos.y + arrowScaleY },
+            GET_UV_COORDS(arrowUVs),
+            IM_COL32(255, 255, 255, arrowAlpha)
+        );
+    }
+}
+
+void DrawButton(int rowIndex, float yOffset, float yPadding, float width, float height, std::string& text)
 {
     auto drawList = ImGui::GetBackgroundDrawList();
 
     auto clipRectMin = drawList->GetClipRectMin();
     auto clipRectMax = drawList->GetClipRectMax();
 
-    ImVec2 min = { clipRectMin.x + ((clipRectMax.x - clipRectMin.x) - width) / 2, clipRectMin.y + height * rowIndex + yOffset };
+    ImVec2 min = { clipRectMin.x + ((clipRectMax.x - clipRectMin.x) - width) / 2, clipRectMin.y + (height * rowIndex) + yOffset + (yPadding * rowIndex) };
     ImVec2 max = { min.x + width, min.y + height };
 
-    bool isSelected = rowIndex == g_selectedRowIndex;
+    auto textColour = IM_COL32_WHITE;
 
-    if (isSelected)
+    if (rowIndex == g_selectedRowIndex)
     {
-        auto prevItemOffset = (g_prevSelectedRowIndex - g_selectedRowIndex) * height;
-        auto animRatio = std::clamp((ImGui::GetTime() - g_rowSelectionTime) * 60.0 / 8.0, 0.0, 1.0);
-        prevItemOffset *= pow(1.0 - animRatio, 3.0);
+        auto gb = 255 * BREATHE_MOTION(1.0f, 0.0f, g_time, (g_isClosing ? 0.1f : 0.9f));
 
-        DrawSelectionContainer({ min.x, min.y + prevItemOffset }, { max.x, max.y + prevItemOffset }, true);
+        textColour = IM_COL32(255, gb, gb, 255);
+
+        if (!g_isClosing)
+            DrawButtonArrow(min);
     }
 
-    auto fontSize = Scale(28);
+    auto fontSize = Scale(27);
     auto textSize = g_rodinFont->CalcTextSizeA(fontSize, FLT_MAX, 0, text.c_str());
 
     // Show low quality text in-game.
@@ -232,33 +316,13 @@ void DrawButton(int rowIndex, float yOffset, float width, float height, std::str
         g_rodinFont,
         fontSize,
         { /* X */ min.x + ((max.x - min.x) - textSize.x) / 2, /* Y */ min.y + ((max.y - min.y) - textSize.y) / 2 },
-        isSelected ? IM_COL32(255, 128, 0, 255) : IM_COL32(255, 255, 255, 255),
+        textColour,
         text.c_str()
     );
 
     // Reset the shader modifier.
     if (App::s_isInit)
         SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
-}
-
-void DrawNextButtonGuide(bool isController, bool isKeyboard)
-{
-    auto icon = isController
-        ? EButtonIcon::A
-        : isKeyboard
-            ? EButtonIcon::Enter
-            : EButtonIcon::LMB;
-
-    auto fontQuality = EFontQuality::High;
-
-    // Always show controller prompt and low quality text in-game.
-    if (App::s_isInit)
-    {
-        icon = EButtonIcon::A;
-        fontQuality = EFontQuality::Low;
-    }
-
-    ButtonGuide::Open(Button("Common_Next", FLT_MAX, icon, fontQuality));
 }
 
 static void ResetSelection()
@@ -278,8 +342,6 @@ static void ResetSelection()
 
 void MessageWindow::Init()
 {
-    auto& io = ImGui::GetIO();
-
     g_rodinFont = ImFontAtlasSnapshot::GetFont("FOT-RodinPro-DB.otf");
 }
 
@@ -288,40 +350,16 @@ void MessageWindow::Draw()
     if (!s_isVisible)
         return;
 
+    if (g_isClosing && (ImGui::GetTime() - g_time) > (1.0 / 60.0) * 30.0)
+    {
+        g_isAwaitingResult = false;
+        s_isVisible = false;
+        return;
+    }
+
     auto drawList = ImGui::GetBackgroundDrawList();
-    auto& res = ImGui::GetIO().DisplaySize;
-
-    ImVec2 centre = { res.x / 2, res.y / 2 };
-
-    auto maxWidth = Scale(820);
-    auto fontSize = Scale(28);
-
-    const auto input = RemoveRubyAnnotations(g_text.c_str());
-    auto lines = Split(input.first.c_str(), g_rodinFont, fontSize, maxWidth);
-    
-    for (auto& line : lines)
-    {
-        line = ReAddRubyAnnotations(line, input.second);
-    }
-
-    auto lineMargin = Config::Language != ELanguage::Japanese ? 5.0f : 5.5f;
-    auto textSize = MeasureCentredParagraph(g_rodinFont, fontSize, lineMargin, lines);
-    auto textMarginX = Scale(37);
-    auto textMarginY = Scale(45);
-
-    auto textX = centre.x;
-    auto textY = centre.y + Scale(3);
-
-    if (Config::Language == ELanguage::Japanese)
-    {
-        textMarginX -= Scale(2.5f);
-        textMarginY -= Scale(2.0f);
-
-        textY += Scale(lines.size() % 2 == 0 ? 1.5f : 8.0f);
-    }
-    
-    bool isController = hid::IsInputDeviceController();
-    bool isKeyboard = hid::g_inputDevice == hid::EInputDevice::Keyboard;
+    auto isController = hid::IsInputDeviceController();
+    auto isKeyboard = hid::g_inputDevice == hid::EInputDevice::Keyboard;
 
     // Handle controller input when the game is booted.
     if (App::s_isInit)
@@ -329,222 +367,149 @@ void MessageWindow::Draw()
         // Always assume keyboard to prevent mouse from blocking control in-game.
         isKeyboard = true;
 
-//        if (auto pInputState = SWA::CInputState::GetInstance())
-//        {
-//            auto& rPadState = pInputState->GetPadState();
-//
-//            g_joypadAxis.y = rPadState.LeftStickVertical;
-//
-//            if (rPadState.IsTapped(SWA::eKeyState_DpadUp))
-//                g_joypadAxis.y = -1.0f;
-//
-//            if (rPadState.IsTapped(SWA::eKeyState_DpadDown))
-//                g_joypadAxis.y = 1.0f;
-//
-//            g_isAccepted = rPadState.IsTapped(SWA::eKeyState_A);
-//            g_isDeclined = rPadState.IsTapped(SWA::eKeyState_B);
-//
-//            if (isKeyboard)
-//                g_isAccepted = g_isAccepted || rPadState.IsTapped(SWA::eKeyState_Start);
-//        }
+        if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManager[0])
+        {
+            auto& rPadState = spInputManager->m_PadState;
+
+            g_joypadAxis.y = -rPadState.LeftStickVertical;
+
+            if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DpadUp))
+                g_joypadAxis.y = 1.0f;
+
+            if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DpadDown))
+                g_joypadAxis.y = -1.0f;
+
+            g_isAccepted = rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_A);
+            g_isDeclined = rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_B);
+
+            if (isKeyboard)
+                g_isAccepted = g_isAccepted || rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_Start);
+        }
     }
 
-    if (DrawContainer(g_appearTime, centre, { textSize.x / 2 + textMarginX, textSize.y / 2 + textMarginY }, !g_isControlsVisible))
+    ImVec2 msgMin = { g_aspectRatioOffsetX + Scale(96), Scale(96) };
+    ImVec2 msgMax = { msgMin.x + Scale(1088), msgMin.y + Scale(384) };
+    ImVec2 msgCentre = { (msgMin.x / 2) + (msgMax.x / 2), (msgMin.y / 2) + (msgMax.y / 2) };
+
+    DrawContainer(msgMin, msgMax);
+
+    // Use low quality text when the game is booted to not clash with existing UI.
+    if (App::s_isInit)
+        SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
+
+    auto fontSize = Scale(27);
+    auto textSize = g_rodinFont->CalcTextSizeA(fontSize, FLT_MAX, 0, g_text.c_str());
+
+    DrawTextBasic(g_rodinFont, fontSize, { msgCentre.x - textSize.x / 2, msgCentre.y - textSize.y / 2 }, IM_COL32_WHITE, g_text.c_str());
+
+    // Reset the shader modifier.
+    if (App::s_isInit)
+        SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
+
+    drawList->PopClipRect();
+
+    ImVec2 selMin = { msgMin.x, msgMax.y + (msgMin.y / 2) };
+    ImVec2 selMax = { msgMax.x, selMin.y + Scale(128) };
+
+    DrawContainer(selMin, selMax);
+
+    auto rowCount = 0;
+    auto windowMarginX = Scale(36);
+    auto itemWidth = msgMax.x - msgMin.x - windowMarginX;
+    auto itemHeight = Scale(25);
+    auto itemPadding = Scale(18);
+    auto windowMarginY = ((selMax.y - selMin.y) / 2) - (((itemHeight + itemPadding) / 2) * g_buttons.size());
+
+    for (auto& button : g_buttons)
+        DrawButton(rowCount++, windowMarginY, itemPadding, itemWidth, itemHeight, button);
+
+    if (isController || isKeyboard)
     {
-        // Use low quality text when the game is booted to not clash with existing UI.
-        if (App::s_isInit)
-            SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
-
-        DrawRubyAnnotatedText
-        (
-            g_rodinFont,
-            fontSize,
-            maxWidth,
-            { textX, textY },
-            lineMargin,
-            g_text.c_str(),
-
-            [=](const char* str, ImVec2 pos)
-            {
-                DrawTextBasic(g_rodinFont, fontSize, pos, IM_COL32(255, 255, 255, 255), str);
-            },
-            [=](const char* str, float size, ImVec2 pos)
-            {
-                DrawTextBasic(g_rodinFont, size, pos, IM_COL32(255, 255, 255, 255), str);
-            },
-
-            true
-        );
-
-        // Reset the shader modifier.
-        if (App::s_isInit)
-            SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
-
-        drawList->PopClipRect();
-
-        if (g_buttons.size())
+        auto upIsHeld = g_joypadAxis.y > 0.5f;
+        auto downIsHeld = g_joypadAxis.y < -0.5f;
+        auto scrollUp = !g_upWasHeld && upIsHeld;
+        auto scrollDown = !g_downWasHeld && downIsHeld;
+            
+        auto prevSelectedRowIndex = g_selectedRowIndex;
+            
+        if (scrollUp)
         {
-            auto itemWidth = std::max(Scale(162), Scale(CalcWidestTextSize(g_rodinFont, fontSize, g_buttons)));
-            auto itemHeight = Scale(57);
-            auto windowMarginX = Scale(23);
-            auto windowMarginY = Scale(30);
-
-            ImVec2 controlsMax = { /* X */ itemWidth / 2 + windowMarginX, /* Y */ itemHeight / 2 * g_buttons.size() + windowMarginY };
-
-            if (g_isControlsVisible && DrawContainer(g_controlsAppearTime, centre, controlsMax))
+            if (g_selectedRowIndex > 0)
+                --g_selectedRowIndex;
+        }
+        else if (scrollDown)
+        {
+            if (g_selectedRowIndex < rowCount - 1)
+                ++g_selectedRowIndex;
+        }
+            
+        if (scrollUp || scrollDown)
+        {
+            Game_PlaySound("move");
+            g_prevSelectedRowIndex = prevSelectedRowIndex;
+            g_joypadAxis.y = 0;
+        }
+            
+        g_upWasHeld = upIsHeld;
+        g_downWasHeld = downIsHeld;
+            
+        if (g_isDeclined)
+        {
+            if (g_selectedRowIndex == g_cancelButtonIndex)
             {
-                auto rowCount = 0;
-
-                for (auto& button : g_buttons)
-                    DrawButton(rowCount++, windowMarginY, itemWidth, itemHeight, button);
-
-                if (isController || isKeyboard)
-                {
-                    bool upIsHeld = g_joypadAxis.y > 0.5f;
-                    bool downIsHeld = g_joypadAxis.y < -0.5f;
-
-                    bool scrollUp = !g_upWasHeld && upIsHeld;
-                    bool scrollDown = !g_downWasHeld && downIsHeld;
-
-                    auto prevSelectedRowIndex = g_selectedRowIndex;
-
-                    if (scrollUp)
-                    {
-                        --g_selectedRowIndex;
-                        if (g_selectedRowIndex < 0)
-                            g_selectedRowIndex = rowCount - 1;
-                    }
-                    else if (scrollDown)
-                    {
-                        ++g_selectedRowIndex;
-                        if (g_selectedRowIndex >= rowCount)
-                            g_selectedRowIndex = 0;
-                    }
-
-                    if (scrollUp || scrollDown)
-                    {
-                        Game_PlaySound("move");
-                        g_rowSelectionTime = ImGui::GetTime();
-                        g_prevSelectedRowIndex = prevSelectedRowIndex;
-                        g_joypadAxis.y = 0;
-                    }
-
-                    g_upWasHeld = upIsHeld;
-                    g_downWasHeld = downIsHeld;
-
-                    auto selectIcon = EButtonIcon::A;
-                    auto backIcon = EButtonIcon::B;
-
-                    if (isController || isKeyboard)
-                    {
-                        if (isKeyboard && !App::s_isInit)
-                        {
-                            // Only display keyboard prompt during installer.
-                            selectIcon = EButtonIcon::Enter;
-                            backIcon = EButtonIcon::Escape;
-                        }
-
-                        auto fontQuality = EFontQuality::High;
-                        if (App::s_isInit)
-                        {
-                            // Show low quality text in-game.
-                            fontQuality = EFontQuality::Low;
-                        }
-
-                        std::array<Button, 2> buttons =
-                        {
-                            Button("Common_Select", 115.0f, selectIcon, fontQuality),
-                            Button("Common_Back", FLT_MAX, backIcon, fontQuality),
-                        };
-
-                        ButtonGuide::Open(buttons);
-                    }
-
-                    if (g_isDeclined)
-                    {
-                        g_result = g_cancelButtonIndex;
-
-                        Game_PlaySound("cursor2");
-                        MessageWindow::Close();
-                    }
-                }
-                else if (!App::s_isInit) // Only accept mouse input during installer.
-                {
-                    auto clipRectMin = drawList->GetClipRectMin();
-                    auto clipRectMax = drawList->GetClipRectMax();
-
-                    ImVec2 listMin = { clipRectMin.x + windowMarginX, clipRectMin.y + windowMarginY };
-                    ImVec2 listMax = { clipRectMax.x - windowMarginX, clipRectMin.y + windowMarginY + itemHeight * rowCount };
-
-                    // Invalidate index if the mouse cursor is outside of the list box.
-                    if (!ImGui::IsMouseHoveringRect(listMin, listMax, false))
-                        g_selectedRowIndex = -1;
-
-                    for (int i = 0; i < rowCount; i++)
-                    {
-                        ImVec2 itemMin = { listMin.x, listMin.y + itemHeight * i };
-                        ImVec2 itemMax = { listMax.x, clipRectMin.y + windowMarginY + itemHeight * i + itemHeight };
-
-                        if (ImGui::IsMouseHoveringRect(itemMin, itemMax, false))
-                        {
-                            if (g_selectedRowIndex != i)
-                                Game_PlaySound("move");
-
-                            g_selectedRowIndex = i;
-
-                            break;
-                        }
-                    }
-
-                    std::array<Button, 2> buttons =
-                    {
-                        Button("Common_Select", 115.0f, EButtonIcon::LMB),
-                        Button("Common_Back", FLT_MAX, EButtonIcon::Escape),
-                    };
-
-                    ButtonGuide::Open(buttons);
-                }
-
-                if (g_selectedRowIndex != -1 && g_isAccepted)
-                {
-                    g_result = g_selectedRowIndex;
-
-                    Game_PlaySound("main_deside");
-                    MessageWindow::Close();
-                }
-
-                drawList->PopClipRect();
+                Game_PlaySound("window_close");
             }
             else
             {
-                DrawNextButtonGuide(isController, isKeyboard);
-
-                if (!g_isControlsVisible && g_isAccepted)
-                {
-                    g_controlsAppearTime = ImGui::GetTime();
-                    g_isControlsVisible = true;
-
-                    ResetSelection();
-                    Game_PlaySound("window_open");
-                }
+                Game_PlaySound("move");
             }
-        }
-        else
-        {
-            DrawNextButtonGuide(isController, isKeyboard);
-
-            if (g_isAccepted)
-            {
-                g_result = 0;
-
-                MessageWindow::Close();
-            }
+            
+            g_selectedRowIndex = g_cancelButtonIndex;
+            g_isDeclined = false;
         }
     }
-    else if (g_isClosing)
+    else if (!App::s_isInit) // Only accept mouse input during installer.
     {
-        s_isVisible = false;
+        auto clipRectMin = drawList->GetClipRectMin();
+        auto clipRectMax = drawList->GetClipRectMax();
+
+        ImVec2 listMin = { clipRectMin.x, clipRectMin.y + windowMarginY };
+        ImVec2 listMax = { clipRectMax.x, clipRectMin.y + windowMarginY + (itemHeight * rowCount) + (itemPadding * rowCount) };
+
+        // Invalidate index if the mouse cursor is outside of the list box.
+        if (!ImGui::IsMouseHoveringRect(listMin, listMax, false))
+            g_selectedRowIndex = -1;
+
+        for (int i = 0; i < rowCount; i++)
+        {
+            auto currentHeight = itemHeight * i;
+            auto currentPadding = itemPadding * i;
+
+            ImVec2 itemMin = { listMin.x, listMin.y + currentHeight + currentPadding };
+            ImVec2 itemMax = { listMax.x, clipRectMin.y + windowMarginY + currentHeight + itemHeight + currentPadding };
+
+            if (ImGui::IsMouseHoveringRect(itemMin, itemMax, false))
+            {
+                if (g_selectedRowIndex != i)
+                    Game_PlaySound("move");
+
+                g_selectedRowIndex = i;
+
+                break;
+            }
+        }
     }
+
+    if (g_selectedRowIndex != -1 && g_isAccepted && !g_isClosing)
+    {
+        g_result = g_selectedRowIndex;
+
+        Game_PlaySound("main_deside");
+
+        MessageWindow::Close();
+    }
+
+    drawList->PopClipRect();
 }
 
 bool MessageWindow::Open(std::string text, int* result, std::span<std::string> buttons, int defaultButtonIndex, int cancelButtonIndex)
@@ -553,23 +518,21 @@ bool MessageWindow::Open(std::string text, int* result, std::span<std::string> b
     {
         s_isVisible = true;
         g_isClosing = false;
-        g_isControlsVisible = false;
-        g_foregroundCount = 0;
-        g_appearTime = ImGui::GetTime();
-        g_controlsAppearTime = ImGui::GetTime();
+        g_time = ImGui::GetTime();
 
         g_text = text;
         g_buttons = std::vector(buttons.begin(), buttons.end());
         g_defaultButtonIndex = defaultButtonIndex;
         g_cancelButtonIndex = cancelButtonIndex;
 
-        ResetSelection();
+        if (g_buttons.empty())
+            g_buttons.push_back(Localise("Common_OK"));
 
-        Game_PlaySound("window_open");
+        ResetSelection();
 
         g_isAwaitingResult = true;
     }
-
+    
     *result = g_result;
 
     // Returns true when the message window is closed.
@@ -578,17 +541,9 @@ bool MessageWindow::Open(std::string text, int* result, std::span<std::string> b
 
 void MessageWindow::Close()
 {
-    if (!g_isClosing)
-    {
-        g_appearTime = ImGui::GetTime();
-        g_controlsAppearTime = ImGui::GetTime();
-        g_isClosing = true;
-        g_isControlsVisible = false;
-        g_foregroundCount = 0;
-        g_isAwaitingResult = false;
+    if (g_isClosing)
+        return;
 
-        ButtonGuide::Close();
-    }
-
-    Game_PlaySound("window_close");
+    g_time = ImGui::GetTime();
+    g_isClosing = true;
 }

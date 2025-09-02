@@ -98,24 +98,7 @@ address = 0x82607CD4
 registers = ["r4"]
 
 [[midasm_hook]]
-name = "RestoreTitleButtons"
-address = 0x82512810
-registers = ["r4"]
-after_instruction = true
-
-[[midasm_hook]]
-name = "RestoreTitleButtons2"
-address = 0x82512874
-registers = ["r11"]
-after_instruction = true
-
-[[midasm_hook]]
-name = "DisableTitleTaskStartWait"
-address = 0x82512748
-jump_address_on_true = 0x8251274C
-
-[[midasm_hook]]
-name = "SetDefaultTitleTaskSelection"
+name = "TitleTask_SetDefaultOption"
 address = 0x82512B10
 registers = ["r3", "r4"]
 
@@ -263,3 +246,9 @@ registers = ["r8"]
 name = "MovieVoiceLang"
 address = 0x8264B4E4
 registers = ["r19"]
+
+[[midasm_hook]]
+name = "TitleTask_RedirectStateTransitionToOutroAnim"
+address = 0x82512C90
+registers = ["r31"]
+jump_address_on_true = 0x82512C9C
