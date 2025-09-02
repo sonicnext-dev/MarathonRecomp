@@ -2809,8 +2809,8 @@ static void DrawImGui()
 //    OptionsMenu::Draw();
     AchievementOverlay::Draw();
     InstallerWizard::Draw();
-    MessageWindow::Draw();
     ButtonGuide::Draw();
+    MessageWindow::Draw();
     Fader::Draw();
     BlackBar::Draw();
 

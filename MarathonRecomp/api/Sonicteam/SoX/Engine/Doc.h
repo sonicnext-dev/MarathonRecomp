@@ -10,8 +10,12 @@ namespace Sonicteam::SoX::Engine
     public:
         xpointer<void> m_pVftable;
         MARATHON_INSERT_PADDING(4);
-        xpointer<SoX::Engine::DocMode> m_pDocMode;
-        MARATHON_INSERT_PADDING(0x50);
+        xpointer<DocMode> m_pDocMode;
+        xpointer<Task> m_pRootTask;
+        xpointer<Task> m_pRootGTask;
+        MARATHON_INSERT_PADDING(8);
+        xpointer<Task> m_pDocModeExecutor;
+        MARATHON_INSERT_PADDING(0x3C);
 
         template <typename T>
         inline T* GetDocMode();
