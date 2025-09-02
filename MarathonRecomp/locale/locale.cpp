@@ -525,36 +525,36 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         // Notes: message appears when user chooses "Quit" on the first available installation screen.
         "Installer_Message_Quit",
         {
-            { ELanguage::English,  "Are you sure you want to quit?" },
-            { ELanguage::Japanese, "[終了:しゅうりょう]してもよろしいですか？" },
-            { ELanguage::German,   "Installation verlassen?" },
-            { ELanguage::French,   "Êtes-vous sûr de vouloir quitter ?" },
-            { ELanguage::Spanish,  "¿Estás seguro de que quieres\nsalir?" },
-            { ELanguage::Italian,  "Sicuro di voler uscire?" }
+            { ELanguage::English,  "Exit the installer.\nOK?" },
+            { ELanguage::Japanese, "" },
+            { ELanguage::German,   "" },
+            { ELanguage::French,   "" },
+            { ELanguage::Spanish,  "" },
+            { ELanguage::Italian,  "" }
         }
     },
     {
         // Notes: message appears when user chooses "Cancel" during installation.
         "Installer_Message_Cancel",
         {
-            { ELanguage::English,  "Are you sure you want to cancel the installation?" },
-            { ELanguage::Japanese, "インストールをキャンセルしてもよろしいですか？" },
-            { ELanguage::German,   "Bist du dir sicher, dass du die Installation abbrechen möchtest?" },
-            { ELanguage::French,   "Êtes-vous sûr de vouloir annuler l'installation ?" },
-            { ELanguage::Spanish,  "¿Estás seguro de que quieres cancelar la instalación?" },
-            { ELanguage::Italian,  "Sicuro di voler annullare l'installazione?" }
+            { ELanguage::English,  "Cancel the installation.\nOK?" },
+            { ELanguage::Japanese, "" },
+            { ELanguage::German,   "" },
+            { ELanguage::French,   "" },
+            { ELanguage::Spanish,  "" },
+            { ELanguage::Italian,  "" }
         }
     },
     {
         // Notes: message appears when pressing B at the title screen.
         "Title_Message_Quit",
         {
-            { ELanguage::English,  "Are you sure you want to quit?" },
-            { ELanguage::Japanese, "[終了:しゅうりょう]してもよろしいですか？" },
-            { ELanguage::German,   "Spiel verlassen?" },
-            { ELanguage::French,   "Êtes-vous sûr de vouloir quitter ?" },
-            { ELanguage::Spanish,  "¿Estás seguro de que quieres\nsalir?" },
-            { ELanguage::Italian,  "Sicuro di voler uscire ?" }
+            { ELanguage::English,  "Exit the game.\nOK?" },
+            { ELanguage::Japanese, "" },
+            { ELanguage::German,   "" },
+            { ELanguage::French,   "" },
+            { ELanguage::Spanish,  "" },
+            { ELanguage::Italian,  "" }
         }
     },
     {
@@ -661,6 +661,17 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::French,  "La vérification de l'installation a échoué.\n\nErreur : %s\n\nL'application va maintenant se fermer. Essayez de réinstaller le jeu en utilisant l'argument de lancement --install." },
             { ELanguage::Spanish,  "La verificación de la instalación ha fallado.\n\nError: %s\n\nEl juego se cerrará ahora. Intenta reinstalar el juego utilizando el argumento de lanzamiento --install." },
             { ELanguage::Italian,  "La verifica dei file d'installazione non è andata a buon fine.\n\nErrore: %s\n\nIl gioco si chiuderà. Prova a reinstallare il gioco utilizzando l'argomento di avvio --install." }
+        }
+    },
+    {
+        "Common_OK",
+        {
+            { ELanguage::English,  "OK" },
+            { ELanguage::Japanese, "OK" },
+            { ELanguage::German,   "OK" },
+            { ELanguage::French,   "OK" },
+            { ELanguage::Spanish,  "OK" },
+            { ELanguage::Italian,  "OK" }
         }
     },
     {

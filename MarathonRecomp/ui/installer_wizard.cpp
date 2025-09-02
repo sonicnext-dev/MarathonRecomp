@@ -511,7 +511,6 @@ static void DrawDescriptionContainer()
     auto &res = ImGui::GetIO().DisplaySize;
     auto drawList = ImGui::GetBackgroundDrawList();
     auto fontSize = Scale(25.0f);
-    auto annotationFontSize = fontSize * ANNOTATION_FONT_SIZE_MODIFIER;
 
     ImVec2 descriptionMin = { round(g_aspectRatioOffsetX + Scale(CONTAINER_X + 0.5f)), round(g_aspectRatioOffsetY + Scale(CONTAINER_Y + 0.5f)) };
     ImVec2 descriptionMax = { round(g_aspectRatioOffsetX + Scale(CONTAINER_X + 0.5f + CONTAINER_WIDTH)), round(g_aspectRatioOffsetY + Scale(CONTAINER_Y + 0.5f + CONTAINER_HEIGHT)) };
@@ -559,29 +558,9 @@ static void DrawDescriptionContainer()
 
     float lineMargin = 5.0f;
 
-    if (Config::Language == ELanguage::Japanese)
-    {
-        lineMargin = 5.5f;
-
-        // Removing some padding of the applied due to the inclusion of annotation for Japanese
-        textX -= (fontSize + Scale(1.5f));
-        textY -= Scale(7.0f);
-
-        // The annotation (and thus the Japanese) can be drawn above the edges of the info panel thus the clip needs to be extended a bit
-        clipRectMin.x -= annotationFontSize;
-        clipRectMin.y -= annotationFontSize;
-        clipRectMax.x += annotationFontSize;
-        clipRectMax.y += annotationFontSize;
-
-        textX += annotationFontSize;
-        textY += annotationFontSize;
-
-        lineWidth += annotationFontSize;
-    }
-
     drawList->PushClipRect(clipRectMin, clipRectMax, false);
 
-    DrawRubyAnnotatedText
+    DrawTextParagraph
     (
         g_rodinFont,
         fontSize,
@@ -589,16 +568,11 @@ static void DrawDescriptionContainer()
         { textX, textY },
         lineMargin,
         descriptionText,
+
         [=](const char* str, ImVec2 pos)
         {
             DrawTextBasic(g_rodinFont, fontSize, pos, IM_COL32(255, 255, 255, 255 * textAlpha), str);
-        },
-        [=](const char* str, float size, ImVec2 pos)
-        {
-            DrawTextBasic(g_rodinFont, size, pos, IM_COL32(255, 255, 255, 255 * textAlpha), str);
-        },
-        false,
-        Config::Language == ELanguage::Japanese
+        }
     );
 
     drawList->PopClipRect();
