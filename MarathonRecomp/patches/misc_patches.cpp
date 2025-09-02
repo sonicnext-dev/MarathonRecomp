@@ -113,3 +113,14 @@ PPC_FUNC(sub_824A6EA8)
 
     __imp__sub_824A6EA8(ctx, base);
 }
+
+bool RestorePauseMissionText()
+{
+    return Config::RestorePauseMissionText;
+}
+
+void RestorePauseMissionText2(PPCRegister& f1)
+{
+    if (Config::RestorePauseMissionText)
+        f1.f64 = 0x15FC;
+}
