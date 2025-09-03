@@ -16,19 +16,11 @@ namespace Sonicteam
         {
             be<float> X;
             be<float> Y;
-            be<float> Field08;
-            be<float> Field0C;
-            be<float> Field10;
-            be<float> Field14;
+            MARATHON_INSERT_PADDING(0x10);
             be<uint32_t> Colour; // ARGB8888
             be<float> U;
             be<float> V;
-            be<float> Field24;
-            be<float> Field28;
-            be<float> Field2C;
-            be<float> Field30;
-            be<float> Field34;
-            be<float> Field38;
+            MARATHON_INSERT_PADDING(0x18);
         };
 
         MARATHON_INSERT_PADDING(4);

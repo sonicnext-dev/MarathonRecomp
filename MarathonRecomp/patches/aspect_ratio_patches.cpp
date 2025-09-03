@@ -1126,6 +1126,25 @@ PPC_FUNC(sub_824F1538)
     pHUDRaderMap->m_Y = g_radarMapY - g_radarMapCoverHeight / 2;
 }
 
+// Sonicteam::CObjBalloonIconDrawable::Draw
+PPC_FUNC_IMPL(__imp__sub_82352220);
+PPC_FUNC(sub_82352220)
+{
+    auto pCObjBalloonIconDrawable = (Sonicteam::CObjBalloonIconDrawable*)(base + ctx.r3.u32);
+    auto scale = (g_aspectRatio / WIDE_ASPECT_RATIO);
+
+    pCObjBalloonIconDrawable->m_Vertices[0].X = -1.0f / scale;
+    pCObjBalloonIconDrawable->m_Vertices[0].Y = 0.0f;
+    pCObjBalloonIconDrawable->m_Vertices[1].X = -1.0f / scale;
+    pCObjBalloonIconDrawable->m_Vertices[1].Y = g_aspectRatio / scale;
+    pCObjBalloonIconDrawable->m_Vertices[2].X = 1.0f / scale;
+    pCObjBalloonIconDrawable->m_Vertices[2].Y = 0.0f;
+    pCObjBalloonIconDrawable->m_Vertices[3].X = 1.0f / scale;
+    pCObjBalloonIconDrawable->m_Vertices[3].Y = g_aspectRatio / scale;
+
+    __imp__sub_82352220(ctx, base);
+}
+
 // Sonicteam::MovieObjectWmv::Draw
 PPC_FUNC_IMPL(__imp__sub_8264CC90);
 PPC_FUNC(sub_8264CC90)
