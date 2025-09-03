@@ -2,7 +2,7 @@
 
 #ifdef __spirv__
 
-#define s0_TextureDescriptorIndex vk::RawBufferLoad<uint>(g_PushConstants.SharedConstants + 0)
+#define s0_Texture2DDescriptorIndex vk::RawBufferLoad<uint>(g_PushConstants.SharedConstants + 0)
 #define s0_SamplerDescriptorIndex vk::RawBufferLoad<uint>(g_PushConstants.SharedConstants + 192)
 
 #else
@@ -22,7 +22,7 @@ float4 shaderMain(
     in float2 oVelocity : TEXCOORD1,
     in float2 oVelScale : TEXCOORD2) : SV_Target
 {
-    Texture2D<float4> texture = g_Texture2DDescriptorHeap[s0_TextureDescriptorIndex];
+    Texture2D<float4> texture = g_Texture2DDescriptorHeap[s0_Texture2DDescriptorIndex];
     SamplerState samplerState = g_SamplerDescriptorHeap[s0_SamplerDescriptorIndex];
 
     float velocityMag = sqrt(dot(oVelocity, oVelocity));
