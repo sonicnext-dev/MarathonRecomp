@@ -315,8 +315,9 @@ CONFIG_DEFINE_ENUM_TEMPLATE(EWindowState)
 
 CONFIG_DEFINE_ENUM_TEMPLATE(ERadialBlur)
 {
-    { "Off", ERadialBlur::Off },
+    { "Off",      ERadialBlur::Off },
     { "Original", ERadialBlur::Original },
+    { "Enhanced", ERadialBlur::Enhanced }
 };
 
 CONFIG_DEFINE_ENUM_TEMPLATE(EAspectRatio)
