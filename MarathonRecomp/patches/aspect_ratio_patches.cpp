@@ -431,7 +431,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
     if (Config::UIAlignmentMode == EUIAlignmentMode::Centre || BlackBar::g_isPillarbox)
     {
-        if (g_aspectRatio >= WIDE_ASPECT_RATIO)
+        if ((modifier.Flags & CSD_CHEVRON) == 0 && g_aspectRatio >= WIDE_ASPECT_RATIO)
             modifier.Flags &= ~(CSD_ALIGN_LEFT | CSD_ALIGN_RIGHT);
     }
 
