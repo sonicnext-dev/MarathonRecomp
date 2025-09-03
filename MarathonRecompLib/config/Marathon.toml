@@ -196,6 +196,11 @@ address = 0x82653834
 jump_address_on_true = 0x82653840
 
 [[midasm_hook]]
+name = "DisableKingdomValleyMist"
+address = 0x82311E50
+jump_address_on_true = 0x82311E54
+
+[[midasm_hook]]
 name = "PostureControlRotationSpeedFix"
 address = 0x82201C6C
 registers = ["f1", "r1"]

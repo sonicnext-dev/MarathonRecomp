@@ -76,6 +76,7 @@ CONFIG_DEFINE_ENUM_LOCALISED("Video", EUIAlignmentMode, UIAlignmentMode, EUIAlig
 
 CONFIG_DEFINE_HIDDEN("Codes", bool, DisableDWMRoundedCorners, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, DisableTitleInputDelay, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, DisableKingdomValleyMist, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, HUDToggleKey, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, SkipIntroLogos, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, FixPowerUpJingleDuration, false);
