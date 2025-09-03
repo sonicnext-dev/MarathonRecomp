@@ -262,3 +262,20 @@ jump_address_on_true = 0x82512C9C
 name = "ControllableTeleportDash"
 address = 0x8221C49C
 jump_address_on_true = 0x8221C4A0
+
+[[midasm_hook]]
+name = "ControllableBoundAttack"
+address = 0x82217EE0
+jump_address_on_true = 0x82217EE4
+
+[[midasm_hook]]
+name = "ControllableBoundAttack"
+address = 0x82217F1C
+jump_address_on_true = 0x82217F20
+
+[[midasm_hook]]
+name = "ControllableBoundAttack2"
+address = 0x82217DC8
+registers = ["cr6"]
+jump_address_on_true = 0x82217DD8
+jump_address_on_false = 0x82217DCC
