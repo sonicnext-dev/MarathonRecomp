@@ -62,7 +62,7 @@ static bool DrawContainer(ImVec2 min, ImVec2 max, float cornerRadius = 25)
         ? Hermite(1, 0, colourMotion)
         : Hermite(0, 1, colourMotion);
 
-    DrawPauseContainer(min, max, alpha);
+    // DrawPauseContainer(min, max, alpha);
 
     if (containerMotion >= 1.0f)
     {

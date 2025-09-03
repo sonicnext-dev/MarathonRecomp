@@ -76,6 +76,7 @@ CONFIG_DEFINE_ENUM_LOCALISED("Video", EUIAlignmentMode, UIAlignmentMode, EUIAlig
 
 CONFIG_DEFINE_HIDDEN("Codes", bool, DisableDWMRoundedCorners, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, DisableTitleInputDelay, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, DisableKingdomValleyMist, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, HUDToggleKey, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, SkipIntroLogos, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, FixPowerUpJingleDuration, false);
@@ -84,7 +85,11 @@ CONFIG_DEFINE_HIDDEN("Codes", bool, DisableLowResolutionFontOnCustomUI, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreContextualHUDColours, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, DisableEdgeGrabLeftover, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, TailsGauge, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, PlayerDebugMode, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, MidairControlForMachSpeed, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, MidairControlForSnowboards, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, ControllableTeleportDash, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, ControllableBoundAttack, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, ControllableSpinkick, false);
 
 CONFIG_DEFINE("Update", time_t, LastChecked, 0);

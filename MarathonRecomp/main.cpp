@@ -152,7 +152,7 @@ void init()
         printf("[*] CPU does not support the AVX instruction set.\n");
 
 #ifdef _WIN32
-        MessageBoxA(nullptr, "Your CPU does not meet the minimum system requirements.", "Unleashed Recompiled", MB_ICONERROR);
+        MessageBoxA(nullptr, "Your CPU does not meet the minimum system requirements.", "Marathon Recompiled", MB_ICONERROR);
 #endif
 
         std::_Exit(1);

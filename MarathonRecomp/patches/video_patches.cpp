@@ -182,3 +182,8 @@ bool DisableRadialBlur()
 {
     return Config::RadialBlur == ERadialBlur::Off;
 }
+
+bool DisableKingdomValleyMist()
+{
+    return Config::DisableKingdomValleyMist;
+}

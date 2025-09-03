@@ -46,29 +46,3 @@ void SaveAlertThreeOptionRemoveDeviceSelect(PPCRegister& r5)
     // second index for the three option alert windows.
     options[2] = 0;
 }
-
-// Load text card.
-PPC_FUNC_IMPL(__imp__sub_825ECB48);
-PPC_FUNC(sub_825ECB48)
-{
-    auto* pMessage = (const char*)(base + ctx.r5.u32);
-    void* pNewMessage = nullptr;
-
-    if (strcmp(pMessage, "msg_deviceselect") == 0)
-    {
-        constexpr const char* MSG_RETRY = "msg_retry";
-    
-        pNewMessage = g_userHeap.Alloc(strlen(MSG_RETRY) + 1);
-    
-        strcpy((char*)pNewMessage, MSG_RETRY);
-    
-        ctx.r5.u32 = g_memory.MapVirtual(pNewMessage);
-    }
-
-    __imp__sub_825ECB48(ctx, base);
-
-    if (!pNewMessage)
-        return;
-
-    g_userHeap.Free(pNewMessage);
-}

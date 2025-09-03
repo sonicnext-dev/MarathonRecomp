@@ -223,7 +223,7 @@ static bool FontBuilder_Build(ImFontAtlas* atlas)
         double spaceAdvance = 0.0;
 
         auto& config = atlas->ConfigData[i];
-        bool increaseSpacing = strstr(config.Name, "Seurat") != nullptr;
+        bool increaseSpacing = strstr(config.Name, "Rodin") != nullptr;
 
         auto& [index, count] = ranges[i];
         for (size_t j = 0; j < count; j++)
@@ -238,7 +238,7 @@ static bool FontBuilder_Build(ImFontAtlas* atlas)
             {
                 if (increaseSpacing)
                 {
-                    advance *= 1.5;
+                    advance *= 1.75;
                 }
 
                 spaceAdvance = advance;
