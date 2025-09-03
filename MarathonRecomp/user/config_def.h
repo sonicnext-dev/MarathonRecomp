@@ -88,5 +88,6 @@ CONFIG_DEFINE_HIDDEN("Codes", bool, TailsGauge, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, PlayerDebugMode, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, MidairControlForMachSpeed, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, MidairControlForSnowboards, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, ControllableTeleportDash, false);
 
 CONFIG_DEFINE("Update", time_t, LastChecked, 0);

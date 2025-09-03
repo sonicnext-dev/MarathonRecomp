@@ -257,3 +257,8 @@ name = "TitleTask_RedirectStateTransitionToOutroAnim"
 address = 0x82512C90
 registers = ["r31"]
 jump_address_on_true = 0x82512C9C
+
+[[midasm_hook]]
+name = "ControllableTeleportDash"
+address = 0x8221C49C
+jump_address_on_true = 0x8221C4A0
