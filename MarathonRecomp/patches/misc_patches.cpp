@@ -114,13 +114,20 @@ PPC_FUNC(sub_824A6EA8)
     __imp__sub_824A6EA8(ctx, base);
 }
 
-bool RestorePauseMissionText()
-{
-    return Config::RestorePauseMissionText;
-}
-
-void RestorePauseMissionText2(PPCRegister& f1)
+// Sonicteam::HUDPause::ProcessMessage
+PPC_FUNC_IMPL(__imp__sub_824EF788);
+PPC_FUNC(sub_824EF788)
 {
     if (Config::RestorePauseMissionText)
-        f1.f64 = 0x15FC;
+        reinterpret_cast<Sonicteam::HUDPause*>(base + ctx.r3.u32)->m_ShowMissionWindow = true;
+
+    __imp__sub_824EF788(ctx, base);
+}
+
+// The mission text is drawn at a lower priority
+// than the mission box by default. 1001.0f is the
+// priority value used by the rest of the pause menu.
+void PauseTask_SetMissionTextPriority(PPCRegister& priority)
+{
+    priority.f64 = 1001.0f;
 }

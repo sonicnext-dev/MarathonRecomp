@@ -29,6 +29,7 @@
 #include "Sonicteam/GameMode.h"
 #include "Sonicteam/HUDCALLBACK.h"
 #include "Sonicteam/HUDLoading.h"
+#include "Sonicteam/HUDPause.h"
 #include "Sonicteam/ImageFilter.h"
 #include "Sonicteam/MovieObject.h"
 #include "Sonicteam/MovieObjectWmv.h"
