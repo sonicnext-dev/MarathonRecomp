@@ -279,3 +279,13 @@ address = 0x82217DC8
 registers = ["cr6"]
 jump_address_on_true = 0x82217DD8
 jump_address_on_false = 0x82217DCC
+
+[[midasm_hook]]
+name = "ControllableSpinkick"
+address = 0x821A2984
+jump_address_on_true = 0x821A2988
+
+[[midasm_hook]]
+name = "ControllableSpinkick"
+address = 0x821A7A04
+jump_address_on_true = 0x821A7A08

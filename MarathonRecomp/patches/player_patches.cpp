@@ -178,3 +178,8 @@ bool ControllableBoundAttack2(PPCCRRegister& cmp)
 
     return cmp.eq;
 }
+
+bool ControllableSpinkick()
+{
+    return Config::ControllableSpinkick;
+}
