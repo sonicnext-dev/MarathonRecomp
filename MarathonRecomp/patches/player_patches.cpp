@@ -165,3 +165,16 @@ bool ControllableTeleportDash()
 {
     return Config::ControllableTeleportDash;
 }
+
+bool ControllableBoundAttack()
+{
+    return Config::ControllableBoundAttack;
+}
+
+bool ControllableBoundAttack2(PPCCRRegister& cmp)
+{
+    if (Config::ControllableBoundAttack)
+        return !cmp.eq;
+
+    return cmp.eq;
+}
