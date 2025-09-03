@@ -95,15 +95,8 @@ PPC_FUNC(sub_825EA610)
 
     // Allow variable FPS when config is not 60 FPS.
     App::s_pApp->m_pDoc->m_VFrame = Config::FPS != 60;
-    
-    AudioPatches::Update(App::s_deltaTime);
 
-    // TODO: REMOVE THIS!!!
-    if (auto pGameMode = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>())
-    {
-        if (GetAsyncKeyState(VK_F5) & 1)
-            pGameMode->m_pGameImp->m_GameState = Sonicteam::GameImp::GameState_Result;
-    }
+    AudioPatches::Update(App::s_deltaTime);
 
     __imp__sub_825EA610(ctx, base);
 }
