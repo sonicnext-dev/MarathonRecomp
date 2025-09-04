@@ -290,25 +290,25 @@ name = "ControllableSpinkick"
 address = 0x821A7A04
 jump_address_on_true = 0x821A7A08
 
-# Skip SPAABBTree initalisation for point light search
+# Skip SPAABBTree initialisation for point light search
 [[midasm_hook]]
 name = "NOP"
 address = 0x8258DBC4
 jump_address = 0x8258DBE0
 
-# Skip SPAABBTree initalisation for point light search
+# Skip SPAABBTree initialisation for point light search
 [[midasm_hook]]
 name = "NOP"
 address = 0x8258DF60
 jump_address = 0x8258DF7C
 
-# Skip SPAABBTree initalisation for point light search
+# Skip SPAABBTree initialisation for point light search
 [[midasm_hook]]
 name = "NOP"
 address = 0x8258E29C
 jump_address = 0x8258E2B8
 
-# Skip SPAABBTree initalisation for point light search
+# Skip SPAABBTree initialisation for point light search
 [[midasm_hook]]
 name = "NOP"
 address = 0x8258E598
