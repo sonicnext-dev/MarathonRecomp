@@ -290,42 +290,50 @@ name = "ControllableSpinkick"
 address = 0x821A7A04
 jump_address_on_true = 0x821A7A08
 
+# Skip SPAABBTree initalisation for point light search
 [[midasm_hook]]
-name = "SkipSPAABBTree"
+name = "NOP"
 address = 0x8258DBC4
 jump_address = 0x8258DBE0
 
+# Skip SPAABBTree initalisation for point light search
 [[midasm_hook]]
-name = "SkipSPAABBTree"
+name = "NOP"
 address = 0x8258DF60
 jump_address = 0x8258DF7C
 
+# Skip SPAABBTree initalisation for point light search
 [[midasm_hook]]
-name = "SkipSPAABBTree"
+name = "NOP"
 address = 0x8258E29C
 jump_address = 0x8258E2B8
 
+# Skip SPAABBTree initalisation for point light search
 [[midasm_hook]]
-name = "SkipSPAABBTree"
+name = "NOP"
 address = 0x8258E598
 jump_address = 0x8258E5B4
 
+# Skip point light update optimisation
 [[midasm_hook]]
-name = "SkipUpdateOptimisation"
+name = "NOP"
 address = 0x8258DC28
 jump_address = 0x8258DC2C
 
+# Skip point light update optimisation
 [[midasm_hook]]
-name = "SkipUpdateOptimisation"
+name = "NOP"
 address = 0x8258DFC4
 jump_address = 0x8258DFC8
 
+# Skip point light update optimisation
 [[midasm_hook]]
-name = "SkipUpdateOptimisation"
+name = "NOP"
 address = 0x8258E304
 jump_address = 0x8258E308
 
+# Skip point light update optimisation
 [[midasm_hook]]
-name = "SkipUpdateOptimisation"
+name = "NOP"
 address = 0x8258E600
 jump_address = 0x8258E604
