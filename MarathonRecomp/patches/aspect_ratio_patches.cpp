@@ -34,10 +34,6 @@ static float g_radarMapCoverHeight{};
 
 static float g_podBaseRightX{};
 
-// Explicit translations don't get affected by gameplay UI downscaling.
-static float g_scenePositionX{};
-static float g_scenePositionY{};
-
 static float g_bgArrowsEnd{};
 static float g_fgArrowsEnd{};
 static float g_chevronLoopTime{};
@@ -289,30 +285,6 @@ PPC_FUNC(sub_82656650)
     __imp__sub_82656650(ctx, base);
 }
 
-// Chao::CSD::CScene::Render
-PPC_FUNC_IMPL(__imp__sub_825CB378);
-PPC_FUNC(sub_825CB378)
-{
-    g_scenePositionX = 0.0f;
-    g_scenePositionY = 0.0f;
-
-    uint32_t motionPattern = PPC_LOAD_U32(ctx.r3.u32 + 0x70);
-    if (motionPattern != NULL)
-    {
-        uint32_t member = PPC_LOAD_U32(motionPattern + 8);
-        if (member != NULL)
-        {
-            uint32_t x = PPC_LOAD_U32(member + 0x2C);
-            uint32_t y = PPC_LOAD_U32(member + 0x30);
-
-            g_scenePositionX = 1280.0f * reinterpret_cast<float&>(x);
-            g_scenePositionY = 720.0f * reinterpret_cast<float&>(y);
-        }
-    }
-
-    __imp__sub_825CB378(ctx, base);
-}
-
 // Chao::CSD::Scene::Render
 PPC_FUNC_IMPL(__imp__sub_828C8F60);
 PPC_FUNC(sub_828C8F60)
@@ -501,7 +473,6 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             if ((modifier.Flags & CSD_SCALE) != 0)
             {
                 scaleX *= g_aspectRatioGameplayScale;
-                pivotX = g_scenePositionX;
 
                 if ((modifier.Flags & CSD_ALIGN_RIGHT) != 0)
                     offsetX += 1280.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
@@ -529,7 +500,6 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
         if ((modifier.Flags & CSD_SCALE) != 0)
         {
             scaleY *= g_aspectRatioGameplayScale;
-            pivotY = g_scenePositionY;
 
             if ((modifier.Flags & CSD_ALIGN_BOTTOM) != 0)
                 offsetY += 720.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
@@ -1131,7 +1101,7 @@ PPC_FUNC_IMPL(__imp__sub_82352220);
 PPC_FUNC(sub_82352220)
 {
     auto pCObjBalloonIconDrawable = (Sonicteam::CObjBalloonIconDrawable*)(base + ctx.r3.u32);
-    auto scale = (g_aspectRatio / WIDE_ASPECT_RATIO);
+    auto scale = g_aspectRatio / WIDE_ASPECT_RATIO;
 
     pCObjBalloonIconDrawable->m_Vertices[0].X = -1.0f / scale;
     pCObjBalloonIconDrawable->m_Vertices[0].Y = 0.0f;
@@ -1256,7 +1226,7 @@ PPC_FUNC(sub_8264CC90)
     __imp__sub_8264CC90(ctx, base);
 }
 
-void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity, xxHashMap<TextFontPictureModifier> pftModifier)
+void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity)
 {
     if (!pTextEntity || !pTextEntity->m_ImageVertexCount)
         return;
@@ -1284,6 +1254,15 @@ void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity, xxHashMap<TextFont
         {
             auto w = g_pTextFontPicture->m_TextureWidth;
             auto h = g_pTextFontPicture->m_TextureHeight;
+
+            auto isPlayStation = Config::ControllerIcons == EControllerIcons::PlayStation;
+
+            if (Config::ControllerIcons == EControllerIcons::Auto)
+                isPlayStation = hid::g_inputDeviceController == hid::EInputDevice::PlayStation;
+
+            auto& pftModifier = isPlayStation
+                ? g_pftModifierPS3
+                : g_pftModifierXenon;
 
             auto baseParams = FindFontPictureModifier(g_pftModifierXenon, variable.second);
             auto newParams = FindFontPictureModifier(pftModifier, variable.second);
@@ -1350,8 +1329,6 @@ PPC_FUNC(sub_8262D868)
 {
     auto pTextEntity = (Sonicteam::TextEntity*)(base + ctx.r3.u32);
 
-    LOGFN_UTILITY("TextEntity: {:08X}", (uint64_t)pTextEntity);
-
     auto offsetX = g_aspectRatioOffsetX + (640.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale);
     auto offsetY = g_aspectRatioOffsetY + (360.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale);
     auto scale = g_aspectRatioScale * g_aspectRatioGameplayScale;
@@ -1363,16 +1340,7 @@ PPC_FUNC(sub_8262D868)
 
     __imp__sub_8262D868(ctx, base);
 
-    auto isPlayStation = Config::ControllerIcons == EControllerIcons::PlayStation;
-
-    if (Config::ControllerIcons == EControllerIcons::Auto)
-        isPlayStation = hid::g_inputDeviceController == hid::EInputDevice::PlayStation;
-
-    auto& pftModifier = isPlayStation
-        ? g_pftModifierPS3
-        : g_pftModifierXenon;
-
-    ReplaceTextVariables(pTextEntity, pftModifier);
+    ReplaceTextVariables(pTextEntity);
 }
 
 // Set CSD scale.
@@ -1394,7 +1362,7 @@ PPC_FUNC(sub_8263CC40)
     __imp__sub_8263CC40(ctx, base);
 }
 
-// -------------- MODIFIERS --------------- //
+// -------------- CSD MODIFIERS --------------- //
 
 const xxHashMap<CsdModifier> g_csdModifiers =
 {
@@ -1871,6 +1839,8 @@ std::optional<CsdModifier> FindCsdModifier(uint32_t data)
     return {};
 }
 
+// -------------- TEXT MODIFIERS -------------- //
+
 const xxHashMap<TextFontPictureModifier> g_pftModifierXenon =
 {
     { HashStr("button_a"), { 0, 0, 28, 28 } },
@@ -1908,6 +1878,8 @@ TextFontPictureModifier FindFontPictureModifier(xxHashMap<TextFontPictureModifie
 
     return {};
 }
+
+// ------------- MOVIE MODIFIERS -------------- //
 
 const xxHashMap<MovieModifier> g_movieModifiers =
 {

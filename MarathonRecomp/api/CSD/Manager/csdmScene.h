@@ -13,7 +13,7 @@ namespace Chao::CSD
 
     struct Cast
     {
-        MARATHON_INSERT_PADDING(0x144); // TODO: might be 0x130?
+        MARATHON_INSERT_PADDING(0x144);
     };
 
     struct CastLink
@@ -96,12 +96,12 @@ namespace Chao::CSD
         xpointer<SceneNodeIndex> pSceneNodeIndices;
     };
 
-    enum EMotionRepeatType : uint32_t
+    enum MotionRepeatType : uint32_t
     {
-        eMotionRepeatType_PlayOnce = 0,
-        eMotionRepeatType_Loop = 1,
-        eMotionRepeatType_PingPong = 2,
-        eMotionRepeatType_PlayThenDestroy = 3
+        MotionRepeatType_PlayOnce,
+        MotionRepeatType_Loop,
+        MotionRepeatType_PingPong,
+        MotionRepeatType_PlayThenDestroy
     };
 
     class CScene : public CResourceBase<Scene>, SubjectBase<CSceneObserver, CScene>, CBase
@@ -116,22 +116,7 @@ namespace Chao::CSD
         MARATHON_INSERT_PADDING(0x0C);
         be<uint32_t> m_MotionDisableFlag;
         MARATHON_INSERT_PADDING(0x10);
-        be<EMotionRepeatType> m_MotionRepeatType;
+        be<MotionRepeatType> m_MotionRepeatType;
         MARATHON_INSERT_PADDING(0x2C);
-
-        ~CScene();
-        void Update(float in_DeltaTime = 0.0f);
-        void Render(void* in_pUnk);
-
-        void GetNode(RCPtr<CNode>& out_rResult, const char* in_pName);
-
-        bool SetMotion(const char* in_pName);
-        void SetMotionFrame(float in_MotionFrame);
-        void SetPosition(float in_X, float in_Y);
-        void SetHideFlag(uint32_t in_HideFlag);
-        void SetRotation(float in_Angle);
-        void SetScale(float in_X, float in_Y);
     };
 }
-
-#include "CSD/Manager/csdmScene.inl"

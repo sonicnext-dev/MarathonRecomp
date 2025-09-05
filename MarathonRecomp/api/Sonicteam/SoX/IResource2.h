@@ -5,6 +5,6 @@
 
 namespace Sonicteam::SoX
 {
-    template <class TRes, class TMgr>
+    template <class TRes = IResource, class TMgr = IResourceMgr>
     class IResource2 : public IResource {};
 }

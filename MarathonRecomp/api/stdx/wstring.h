@@ -26,37 +26,6 @@ namespace stdx
             return _Mysize <= 8;
         }
 
-        size_t length(const uint16_t* str) const
-        {
-            size_t result = 0;
-            uint16_t c = 0xFFFF;
-
-            while (c != 0)
-            {
-                c = str[result];
-                result++;
-            }
-
-            return result;
-        }
-
-        bool compare(const uint16_t* a, const uint16_t* b) const
-        {
-            for (size_t i = 0; i < length(a); i += 2)
-            {
-                if (a[i] != 0 && b[i] == 0)
-                    return false;
-
-                if (a[i] == 0 && b[i] != 0)
-                    return false;
-
-                if (a[i] != b[i])
-                    return false;
-            }
-
-            return true;
-        }
-
     public:
         const uint16_t* c_str() const
         {
@@ -90,7 +59,7 @@ namespace stdx
             _bx._buffer[0] = '\0';
             _bx._buffer[1] = '\0';
 
-            auto len = length(str);
+            auto len = strlenU16(str);
 
             if (len <= 0xF)
             {
@@ -129,7 +98,7 @@ namespace stdx
 
         bool operator==(const uint16_t* str) const
         {
-            return compare(c_str(), str);
+            return strcmpU16(c_str(), str);
         }
     };
 };
