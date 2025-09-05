@@ -121,6 +121,8 @@
 #include "Sonicteam/StdImageFilters/SingleTechniqueFilter.h"
 #include "Sonicteam/System/CreateStatic.h"
 #include "Sonicteam/System/Singleton.h"
+#include "Sonicteam/TextBook.h"
+#include "Sonicteam/TextBookMgr.h"
 #include "Sonicteam/TextCard.h"
 #include "Sonicteam/TextEntity.h"
 #include "Sonicteam/TextFontPicture.h"
