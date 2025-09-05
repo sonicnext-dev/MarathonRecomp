@@ -77,6 +77,7 @@
 #include "Sonicteam/Player/State/SonicSpinDash.h"
 #include "Sonicteam/Player/State/TailsContext.h"
 #include "Sonicteam/Player/Zock.h"
+#include "Sonicteam/RaderMapManager.h"
 #include "Sonicteam/SaveDataTask.h"
 #include "Sonicteam/SaveDataTaskXENON.h"
 #include "Sonicteam/SelectWindowTask.h"
