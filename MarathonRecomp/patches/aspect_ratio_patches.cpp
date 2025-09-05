@@ -1082,6 +1082,19 @@ PPC_FUNC(sub_824D32C8)
     __imp__sub_824D32C8(ctx, base);
 }
 
+// Sonicteam::HUDLimitTime::ProcessMessage
+PPC_FUNC_IMPL(__imp__sub_824D6E50);
+PPC_FUNC(sub_824D6E50)
+{
+    auto pHUDLimitTime = (Sonicteam::HUDLimitTime*)(base + ctx.r3.u32);
+
+    pHUDLimitTime->m_Y = 64.0f - (g_aspectRatioOffsetY / g_aspectRatioScale);
+
+    GuestToHostFunction<int>(sub_824D6D38, pHUDLimitTime, (double)pHUDLimitTime->m_X, (double)pHUDLimitTime->m_Y);
+
+    __imp__sub_824D6E50(ctx, base);
+}
+
 // Sonicteam::HUDRaderMap::Update
 PPC_FUNC_IMPL(__imp__sub_824F1538);
 PPC_FUNC(sub_824F1538)
