@@ -91,3 +91,47 @@ inline std::vector<std::pair<std::string_view, std::string_view>> MapTextVariabl
 
     return result;
 }
+
+inline size_t strlenU16(const uint16_t* str)
+{
+    size_t result = 0;
+    uint16_t c = 0xFFFF;
+
+    while (c != 0)
+    {
+        c = str[result];
+        result++;
+    }
+
+    return result;
+}
+
+inline bool strcmpU16(const uint16_t* a, const uint16_t* b)
+{
+    for (size_t i = 0; i < strlenU16(a); i += 2)
+    {
+        if (a[i] != 0 && b[i] == 0)
+            return false;
+
+        if (a[i] == 0 && b[i] != 0)
+            return false;
+
+        if (a[i] != b[i])
+            return false;
+    }
+
+    return true;
+}
+
+inline void printU16(const uint16_t* str)
+{
+    for (size_t i = 0; i < strlenU16(str); i++)
+    {
+        auto c0 = str[i] >> 8;
+        auto c1 = str[i] & 0xFF;
+
+        printf("%c%c", c0, c1);
+    }
+
+    printf("\n");
+}
