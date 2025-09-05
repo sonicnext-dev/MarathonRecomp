@@ -4,14 +4,21 @@
 
 namespace Sonicteam::SoX::AI
 {
-    template <typename T>
+    template <typename TState>
     class StateMachine
     {
     public:
         xpointer<void> m_pVftable;
-        xpointer<StateMachine<T>> m_pState;
-        MARATHON_INSERT_PADDING(0x10);
-        be<float> m_Time;
+        xpointer<StateMachine<TState>> m_pState;
         MARATHON_INSERT_PADDING(4);
+        xpointer<Player::State::IContext> m_pContext;
+        MARATHON_INSERT_PADDING(4);
+        be<float> m_Time;
+
+        template <typename TContext = Player::State::IContext>
+        TContext* GetContext()
+        {
+            return (TContext*)m_pContext.get();
+        }
     };
 }

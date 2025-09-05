@@ -116,3 +116,5 @@ PPC_FUNC(sub_824A6EA8)
 
     __imp__sub_824A6EA8(ctx, base);
 }
+
+void NOP() {}
