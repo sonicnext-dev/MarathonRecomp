@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Marathon.inl"
+#include <Marathon.inl>
 
 namespace Chao::CSD
 {
@@ -10,14 +10,10 @@ namespace Chao::CSD
     public:
         struct Vftable
         {
-            be<uint32_t> m_fpDtor;
+            be<uint32_t> fpDestroy;
         };
 
         xpointer<Vftable> m_pVftable;
         MARATHON_INSERT_PADDING(0x08);
-
-        ~CObserverBase();
     };
 }
-
-#include "CSD/Manager/csdmObserverBase.inl"

@@ -1,12 +1,9 @@
 #pragma once
 
-struct BlackBar
+class BlackBar
 {
-    static inline bool g_inspirePillarbox;
-
-    static inline ImVec2 g_loadingBlackBarMin;
-    static inline ImVec2 g_loadingBlackBarMax;
-    static inline uint8_t g_loadingBlackBarAlpha;
+public:
+    static inline bool g_isPillarbox;
 
     static void Draw();
 };
