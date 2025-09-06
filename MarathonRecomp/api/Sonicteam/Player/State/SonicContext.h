@@ -11,31 +11,31 @@ namespace Sonicteam::Player::State
     {
     public:
         //Sprite
-        enum GemsS:uint32_t
+        enum GemSprite:uint32_t
         {
-            SGreen = 1,
-            SRed,
-            SBlue,
-            SWhite,
-            SSky,
-            SYellow,
-            SPurple,
-            SSuper
+            GemSprite_Green = 1,
+            GemSprite_Red,
+            GemSprite_Blue,
+            GemSprite_White,
+            GemSprite_Sky,
+            GemSprite_Yellow,
+            GemSprite_Purple,
+            GemSprite_Super
         };
 
-        enum Gems:uint32_t
+        enum Gem:uint32_t
         {
-            Blue = 1,
-            Red,
-            Green,
-            Purple,
-            Sky,
-            White,
-            Yellow,
-            Super
+            Gem_Blue = 1,
+            Gem_Red,
+            Gem_Green,
+            Gem_Purple,
+            Gem_Sky,
+            Gem_White,
+            Gem_Yellow,
+            Gem_Super
         };
 
-        be<GemsS> m_CurrentGemSprite;
+        be<GemSprite> m_CurrentGemSprite;
         boost::shared_ptr<Sonicteam::Player::SonicGauge> m_Gauge;
         uint8_t m_HomingLockOn;
         uint8_t m_DisablePlayerMovement;
@@ -54,7 +54,7 @@ namespace Sonicteam::Player::State
         uint8_t m_24A;
         uint8_t m_24B;
         be<uint32_t> m_HomingFlip;
-        be<Gems> m_CurrentGem;
+        be<Gem> m_CurrentGem;
         MARATHON_INSERT_PADDING(0x58);
     };
 }

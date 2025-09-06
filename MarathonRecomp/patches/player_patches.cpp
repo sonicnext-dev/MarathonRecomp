@@ -185,23 +185,23 @@ bool ControllableSpinkick()
 }
 
 
-///////////////////////////////////////////////////////
-/////////////   Sonic Gauge Restoration ////////////////
+/////////////////////////////////////////////////////////
+//////////  Sonic Gauge Restoration EX Version /////////
 ////////////////////////////////////////////////////////
 
-const Sonicteam::Player::State::SonicContext::GemsS gemConversionTable[] = {
-    Sonicteam::Player::State::SonicContext::GemsS::SBlue,   
-    Sonicteam::Player::State::SonicContext::GemsS::SRed,    
-    Sonicteam::Player::State::SonicContext::GemsS::SGreen,  
-    Sonicteam::Player::State::SonicContext::GemsS::SPurple, 
-    Sonicteam::Player::State::SonicContext::GemsS::SSky,    
-    Sonicteam::Player::State::SonicContext::GemsS::SWhite,  
-    Sonicteam::Player::State::SonicContext::GemsS::SYellow, 
-    Sonicteam::Player::State::SonicContext::GemsS::SSuper   
+const Sonicteam::Player::State::SonicContext::GemSprite gemConversionTable[] = {
+    Sonicteam::Player::State::SonicContext::GemSprite_Blue,
+    Sonicteam::Player::State::SonicContext::GemSprite_Red,
+    Sonicteam::Player::State::SonicContext::GemSprite_Green,
+    Sonicteam::Player::State::SonicContext::GemSprite_Purple,
+    Sonicteam::Player::State::SonicContext::GemSprite_Sky,
+    Sonicteam::Player::State::SonicContext::GemSprite_White,
+    Sonicteam::Player::State::SonicContext::GemSprite_Yellow,
+    Sonicteam::Player::State::SonicContext::GemSprite_Super
 };
 
 //Check Gauge Drain
-//SonicTeam::Player::SonicGauge (IVariable), IVariable::Init(REF_TYPE(SonicTeam::LuaSystem))
+//SonicTeam::Player::SonicGauge (IVariable), IVariable::Init(RefSharedPointer<SonicTeam::LuaSystem>)
 PPC_FUNC_IMPL(__imp__sub_82217FC0);
 PPC_FUNC(sub_82217FC0) {
 
@@ -214,18 +214,18 @@ PPC_FUNC(sub_82217FC0) {
     auto context = (Sonicteam::Player::State::SonicContext*)g_memory.Translate(ctx.r3.u32);
     auto gauge = context->m_Gauge.get();
 
-    using enum Sonicteam::Player::State::SonicContext::Gems;
-    auto gem_id = (Sonicteam::Player::State::SonicContext::Gems)(ctx.r4.u32);
+    using enum Sonicteam::Player::State::SonicContext::Gem;
+    auto gem_id = (Sonicteam::Player::State::SonicContext::Gem)(ctx.r4.u32);
 
     switch (gem_id) 
     {
-        case Yellow:
-            if (context->m_ThunderGuard) break;
-        case Blue:
-        case Green:
-        case Sky:
-        case White:
-        case Super: 
+        case Gem_Yellow:
+            if (context->m_ThunderGuard) break; //Prevent Yellow Gem spam, useless anyway
+        case Gem_Blue:
+        case Gem_Green:
+        case Gem_Sky:
+        case Gem_White:
+        case Gem_Super:
         {
             size_t index = gemConversionTable[gem_id - 1] - 1;
             if (gauge->m_Value >= (&gauge->m_Green)[index].get()) 
@@ -235,8 +235,8 @@ PPC_FUNC(sub_82217FC0) {
             }
             break;
         }
-        case Red:
-        case Purple:
+        case Gem_Red:
+        case Gem_Purple:
             if (context->m_24A == 0) 
             {
                 ctx.r3.u64 = 1;
@@ -261,26 +261,26 @@ PPC_FUNC(sub_82218068) {
     auto context = (Sonicteam::Player::State::SonicContext*)g_memory.Translate(ctx.r3.u32);
     auto gauge = context->m_Gauge.get();
 
-    using enum Sonicteam::Player::State::SonicContext::Gems;
-    auto gem_id = (Sonicteam::Player::State::SonicContext::Gems)(ctx.r4.u32);
+    using enum Sonicteam::Player::State::SonicContext::Gem;
+    auto gem_id = (Sonicteam::Player::State::SonicContext::Gem)(ctx.r4.u32);
     double delta = ctx.f1.f64;
 
     switch (gem_id) 
     {
-    case Blue:
-        case Green:
-        case Yellow:
-        case Sky:
-        case White:
-        case Super:
+    case Gem_Blue:
+        case Gem_Green:
+        case Gem_Yellow:
+        case Gem_Sky:
+        case Gem_White:
+        case Gem_Super:
         {
             uint32_t index = gemConversionTable[gem_id - 1] - 1;
             gauge->m_Value = gauge->m_Value.get() - (&gauge->m_Green)[index].get();
             gauge->m_GroundedTime = 0.0;
             break;
         }
-        case Red:
-        case Purple:
+        case Gem_Red:
+        case Gem_Purple:
         {
             uint32_t index = gemConversionTable[gem_id - 1] - 1;
             gauge->m_Value = gauge->m_Value.get() - (&gauge->m_Green)[index].get() * delta;
@@ -381,16 +381,16 @@ void SonicGaugeRestorationGaugeFlagFix(PPCRegister& r_gauge, PPCRegister& r_cont
     auto weapons = PContext->m_pScore->m_pPlayer->GetPlugin<Sonicteam::Player::Weapon::SonicWeapons>("sonic_weapons");
     if (PContext->m_Tornado != 0 || PContext->m_AnimationID == 0xCB || PContext->m_AnimationID == 0xCC || PContext->m_AnimationID == 0x46 || PContext->m_AnimationID == 0xCE ||  weapons->m_GunDrive.Entity != 0)
     {
-        pGauge->m_GroundedFlags = 1; // Lock game
+        pGauge->m_GroundedFlags = 1; // Lock gauge
     }
     else
     {
-        using enum Sonicteam::Player::State::SonicContext::Gems;
+        using enum Sonicteam::Player::State::SonicContext::Gem;
         if ((PContext->m_Buttons.get() & 0x10000) != 0) {
             PContext->m_24A = 0;
         }
 
-        if ((PContext->m_Buttons.get() & 0x20000) != 0 && (PContext->m_CurrentGem == Red || PContext->m_CurrentGem == Purple))
+        if ((PContext->m_Buttons.get() & 0x20000) != 0 && (PContext->m_CurrentGem == Gem_Red || PContext->m_CurrentGem == Gem_Purple))
         {
             pGauge->m_GroundedFlags = 1; 
             if (PContext->m_24A) 
@@ -400,7 +400,7 @@ void SonicGaugeRestorationGaugeFlagFix(PPCRegister& r_gauge, PPCRegister& r_cont
                 PContext->m_SlowTime = 0;
             }
         }
-        else if ((PContext->m_PostureFlag.get() & Sonicteam::Player::PostureControl::ePostureFlag_Ground) != 0 || PContext->m_24A)
+        else if ((PContext->m_PostureFlag.get() & Sonicteam::Player::PostureControl::PostureFlag_Ground) != 0 || PContext->m_24A)
         {
             pGauge->m_GroundedFlags = 0;
 

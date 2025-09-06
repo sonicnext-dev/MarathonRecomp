@@ -16,7 +16,6 @@
 #include <boost/smart_ptr/shared_ptr.h>
 #include <Sonicteam/ActorManager.h>
 
-
 namespace Sonicteam::Player
 {
     class IPostureControl : public IVariable, public IDynamicLink, public Unit::ITestCase, public IFlagCommunicator
