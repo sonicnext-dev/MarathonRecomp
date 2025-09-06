@@ -188,3 +188,12 @@ bool RestoreChaosSpearFlips()
 {
     return Config::RestoreChaosSpearFlips;
 }
+
+void RestoreChaosBoostJump(PPCRegister& r10, PPCRegister& r11)
+{
+    if (!Config::RestoreChaosBoostJump)
+        return;
+
+    r10.u32 = 1;
+    r11.u32 = 2;
+}
