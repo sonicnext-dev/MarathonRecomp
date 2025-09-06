@@ -183,3 +183,8 @@ bool ControllableSpinkick()
 {
     return Config::ControllableSpinkick;
 }
+
+bool RestoreChaosSpearFlips()
+{
+    return Config::RestoreChaosSpearFlips;
+}
