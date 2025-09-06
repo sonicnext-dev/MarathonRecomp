@@ -183,3 +183,8 @@ bool ControllableSpinkick()
 {
     return Config::ControllableSpinkick;
 }
+
+bool DisablePushState()
+{
+    return Config::DisablePushState;
+}

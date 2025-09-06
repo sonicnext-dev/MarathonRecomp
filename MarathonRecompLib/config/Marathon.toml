@@ -337,3 +337,8 @@ jump_address = 0x8258E308
 name = "NOP"
 address = 0x8258E600
 jump_address = 0x8258E604
+
+[[midasm_hook]]
+name = "DisablePushState"
+address = 0x821A03F0
+jump_address_on_true = 0x821A03FC
