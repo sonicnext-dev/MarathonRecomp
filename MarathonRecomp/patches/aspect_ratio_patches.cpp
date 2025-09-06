@@ -1109,6 +1109,12 @@ PPC_FUNC(sub_824D32C8)
 PPC_FUNC_IMPL(__imp__sub_824D6E50);
 PPC_FUNC(sub_824D6E50)
 {
+    if (g_aspectRatio < WIDE_ASPECT_RATIO && Config::UIAlignmentMode == EUIAlignmentMode::Centre)
+    {
+        __imp__sub_824D6E50(ctx, base);
+        return;
+    }
+
     auto pHUDLimitTime = (Sonicteam::HUDLimitTime*)(base + ctx.r3.u32);
 
     pHUDLimitTime->m_Y = 64.0f - (g_aspectRatioOffsetY / g_aspectRatioScale);
