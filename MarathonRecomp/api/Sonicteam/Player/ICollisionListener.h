@@ -5,7 +5,6 @@
 
 namespace Sonicteam::Player
 {
-    //Sonicteam::Player::ICollisionListener, Sonicteam::Player::ICollisionListenerTemplate<Sonicteam::SoX::Physics::IntersectListener,Sonicteam::SoX::Physics::IntersectEvent>
     class ICollisionListener
     {
     public:

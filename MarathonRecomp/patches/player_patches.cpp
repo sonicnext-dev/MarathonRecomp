@@ -379,7 +379,7 @@ void SonicGaugeRestorationGaugeFlagFix(PPCRegister& r_gauge, PPCRegister& r_cont
         return;
 
     auto weapons = PContext->m_pScore->m_pPlayer->GetPlugin<Sonicteam::Player::Weapon::SonicWeapons>("sonic_weapons");
-    if (PContext->m_Tornado != 0 || PContext->m_AnimationID == 0xCB || PContext->m_AnimationID == 0xCC || PContext->m_AnimationID == 0x46 || PContext->m_AnimationID == 0xCE ||  weapons->m_GunDrive.Entity != 0)
+    if (PContext->m_Tornado != 0 || PContext->m_AnimationID == 0xCB || PContext->m_AnimationID == 0xCC || PContext->m_AnimationID == 0x46 || PContext->m_AnimationID == 0xCE ||  weapons->m_GunDrive.m_pElement.get() != nullptr)
     {
         pGauge->m_GroundedFlags = 1; // Lock gauge
     }

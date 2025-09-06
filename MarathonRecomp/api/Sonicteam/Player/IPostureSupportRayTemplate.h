@@ -6,7 +6,6 @@
 #include <Sonicteam/SoX/RefSharedPointer.h>
 #include <Sonicteam/Player/RootFrame.h>
 
-
 namespace Sonicteam::Player
 {
     template <typename TCollisionListener>

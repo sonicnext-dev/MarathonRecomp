@@ -5,13 +5,6 @@
 
 namespace Sonicteam::Player
 {
-    //Sonicteam::Player::ICollisionListener, Sonicteam::Player::ICollisionListenerTemplate<Sonicteam::SoX::Physics::IntersectListener,Sonicteam::SoX::Physics::IntersectEvent>
-    
     template <typename Cast, typename Event>
-    class ICollisionListenerTemplate:ICollisionListener,Cast
-    {
-    public:
-   
-
-    };
+    class ICollisionListenerTemplate:ICollisionListener,Cast {};
 }
