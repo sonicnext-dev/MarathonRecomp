@@ -46,11 +46,16 @@ static void DrawBackgroundDev()
 {
     auto& res = ImGui::GetIO().DisplaySize;
     auto drawList = ImGui::GetBackgroundDrawList();
-
-    const uint32_t TOP = IM_COL32(0, 103, 255, 255);
-    const uint32_t BOTTOM = IM_COL32(0, 40, 100, 255);
-
-    drawList->AddRectFilledMultiColor({ 0.0, 0.0 }, res, TOP, TOP, BOTTOM, BOTTOM);
+    if (Config::DevTitle == EDevTitleMenu::Custom)
+    {
+        const uint32_t TOP = IM_COL32(0, 103, 255, 255);
+        const uint32_t BOTTOM = IM_COL32(0, 40, 100, 255);
+        drawList->AddRectFilledMultiColor({ 0.0, 0.0 }, res, TOP, TOP, BOTTOM, BOTTOM);
+    }
+    else
+    {
+        drawList->AddRectFilledMultiColor({ 0.0, 0.0 }, res, 0, 0, 0, 0);
+    }
 }
 
 static void DrawTextDev(const char* text,float posX, float posY,float vfontSize= 24, uint32_t alpha = 255, uint32_t center = CenterFlag::X)
@@ -84,9 +89,9 @@ static void DrawTextDev(const char* text,float posX, float posY,float vfontSize=
 }
 
 //05.08.2025 TODO Kanju Display
+//31.08.2025 CLANG Version
 static std::string ConvertShiftJISToUTF8(const std::string& sjisStr)
 {
-
     int wlen = MultiByteToWideChar(932, 0, sjisStr.c_str(), -1, nullptr, 0);
     std::wstring wstr(wlen, 0);
     MultiByteToWideChar(932, 0, sjisStr.c_str(), -1, &wstr[0], wlen);
@@ -128,7 +133,13 @@ static bool Sonic06Button(ImVec2 pos, const char* label, bool& hovered, const Im
     bool pressed = hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left);
 
     // Colors
-    const ImU32 col_base IM_COL32(0, 6, 142, 255), col_hover IM_COL32(0, 26, 162, 255);
+    ImU32 col_base = 0;
+    ImU32 col_hover = 0;
+    if (Config::DevTitle == EDevTitleMenu::Custom)
+    {
+        col_base = IM_COL32(0, 6, 142, 255);
+        col_hover =  IM_COL32(0, 26, 162, 255);
+    }
 
     const ImU32 bg[4] =
     {
@@ -174,21 +185,28 @@ static void DrawStageMapSelector()
         return;
 
     DrawBackgroundDev();
-    DrawHUD({ 0, 0 }, res, g_mnewRodinFont, pMode->m_StageMapName.get());
 
-    const float WINDOW_WIDTH = 0.8f * res.x;
-    const float BUTTON_HEIGHT = 0.05f * res.y;
-    const float BUTTON_SPACING = 5.0f;
-    const int VISIBLE_ITEMS = 9;
-    const float ITEMS_SCALE_HEIGHT = 0.05f * Video::s_viewportHeight;
-    const float WINDOW_HEIGHT = (BUTTON_HEIGHT + BUTTON_SPACING) * VISIBLE_ITEMS + ITEMS_SCALE_HEIGHT;
+    if (Config::DevTitle == EDevTitleMenu::Custom) DrawHUD({ 0, 0 }, res, g_mnewRodinFont, pMode->m_StageMapName.get());
 
-    // Calculate base position for the selector
-    const ImVec2 base_pos = {
+   float WINDOW_WIDTH = 0.8f * res.x;
+   float BUTTON_HEIGHT = 0.05f * res.y;
+   float BUTTON_SPACING = 5.0f;
+   int VISIBLE_ITEMS = 9;
+   float ITEMS_SCALE_HEIGHT = 0.05f * Video::s_viewportHeight;
+   float WINDOW_HEIGHT = (BUTTON_HEIGHT + BUTTON_SPACING) * VISIBLE_ITEMS + ITEMS_SCALE_HEIGHT;
+
+   ImVec2 base_pos = {
         (res.x - WINDOW_WIDTH) * 0.15f,
         (res.y - WINDOW_HEIGHT) * 0.45f
-    };
+   };
 
+   if (Config::DevTitle == EDevTitleMenu::True)
+   {
+       VISIBLE_ITEMS = 18;
+       base_pos.x = 0;
+       base_pos.y = 0;
+   }
+ 
     auto& items = pMode->m_CurrentStageMap->m_vpStageMap;
     const int itemCount = static_cast<int>(items.size());
     int currentIdx = pMode->m_CurrentStageMapIndex.get();
@@ -224,8 +242,17 @@ static void DrawStageMapSelector()
             base_pos.x + 10,
             base_pos.y + 40 + visible_index * (BUTTON_HEIGHT + BUTTON_SPACING)
         };
+        std::string item_name = item->m_Name.c_str();
+        if (item->m_vpStageMap.size() > 1)
+        {
+            item_name = "[" + item_name + "]"; //mark as group
+        }
+        if (isSelected)
+        {
+            item_name = ">> " + item_name;
+        }
 
-        if (Sonic06Button(button_pos, item->m_Name.c_str(),hovered,
+        if (Sonic06Button(button_pos, item_name.c_str(), hovered,
             ImVec2(WINDOW_WIDTH - 20, BUTTON_HEIGHT), isSelected,CenterFlag::Y))
         {
             currentIdx = i;
@@ -235,7 +262,7 @@ static void DrawStageMapSelector()
         }
 
         // Tooltip with stage information
-        if (hovered && item->m_vpStageMap.size() > 0) {
+        if (hovered && item->m_vpStageMap.size() > 0 && Config::DevTitle == EDevTitleMenu::Custom) {
             ImDrawList* draw_list = ImGui::GetForegroundDrawList();
             const ImVec2 mouse_pos = GetMousePos();
             const float font_size = ImGui::GetFontSize();
@@ -316,10 +343,12 @@ static void DrawStageMapSelector()
                 current_y += line_height + line_spacing;
             }
         }
-     
-     
+
+      
     }
     
+    //Do not draw mouse, if not custom
+    if (Config::DevTitle != EDevTitleMenu::Custom) return;
     // Draw mouse position indicator
     const float dot_radius = 7.5f;
     const ImU32 dot_color = IM_COL32(0, 150, 255, 220);
@@ -506,7 +535,7 @@ void DevTitleMenu::Draw()
     if (!App::s_pApp->m_pDoc->m_pDocMode)
         return;
 
-    if (!EmbeddedPlayer::s_isActive)
+    if (!EmbeddedPlayer::s_isActive && Config::DevTitle == EDevTitleMenu::Custom)
         EmbeddedPlayer::Init();
 
     auto vft = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::SoX::Engine::Task::Object>()->m_pVftable.ptr.get();
