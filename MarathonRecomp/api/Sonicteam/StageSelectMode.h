@@ -12,8 +12,8 @@ namespace Sonicteam
         xpointer<Sonicteam::StageMap> m_StageMap;
         xpointer<Sonicteam::StageMap> m_CurrentStageMap;
         MARATHON_INSERT_PADDING(4);
-        be< uint32_t> m_CurrentStageMapIndex;
-        be< uint32_t> m_Deep;
+        be<uint32_t> m_CurrentStageMapIndex;
+        be<uint32_t> m_Deep;
         MARATHON_INSERT_PADDING(0x1C);
         xpointer<xpointer<const char>> m_StageMapInfo;
         xpointer<uint32_t> m_StageMapType;
