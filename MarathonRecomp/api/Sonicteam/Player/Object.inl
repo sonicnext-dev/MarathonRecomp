@@ -9,7 +9,7 @@ namespace Sonicteam::Player
 
     template<typename T>
 
-    inline T* Object::GetPlugin(const char* pluginName)
+    T* Object::GetPlugin(const char* pluginName)
     {
         for (auto& spPlugin : m_vspPlayerPlugins)
         {

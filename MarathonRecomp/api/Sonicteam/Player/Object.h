@@ -2,6 +2,7 @@
 
 #include <Marathon.h>
 #include <Sonicteam/Player/State/Machine2.h>
+#include <Sonicteam/Player/IPostureControl.h>
 #include <boost/smart_ptr/shared_ptr.h>
 #include <Sonicteam/Player/IPlugIn.h>
 #include <stdx/vector.h>
@@ -40,12 +41,12 @@ namespace Sonicteam::Player
         bool m_IsAmigo;
         MARATHON_INSERT_PADDING(1);
         SoX::RefSharedPointer<RootFrame> m_spRootFrame;
-		SoX::RefSharedPointer<RefCountObject> m_spPackageBinary;
-        boost::shared_ptr<uint32_t> m_spPlayerModel;
-        boost::shared_ptr<uint32_t> m_spPlayerPosture;
+		SoX::RefSharedPointer<SoX::RefCountObject> m_spPackageBinary;
+        boost::shared_ptr<void> m_spPlayerModel;
+        boost::shared_ptr<Player::IPostureControl> m_spPlayerPosture;
         boost::shared_ptr<State::Machine2> m_spStateMachine;
-        boost::shared_ptr<uint32_t> m_spPlayerGravity;
-        boost::shared_ptr<uint32_t> m_spPlayerImpulse;
+        boost::shared_ptr<void> m_spPlayerGravity;
+        boost::shared_ptr<void> m_spPlayerImpulse;
         be<uint32_t> m_SetupModuleIndexPrefix;
         be<uint32_t> m_SetupModuleIndexPostfix;
         boost::shared_ptr<IGauge> m_spGauge;
@@ -63,10 +64,7 @@ namespace Sonicteam::Player
 		
         template <typename T = IPlugIn>
         inline T* GetPlugin(const char* pluginName);
-		
-		template <typename T = Sonicteam::Player::IPlugIn>
-		inline T* GetPlugin(const char* v_name);
-		
+
     };
     #pragma pack(pop) 
 }

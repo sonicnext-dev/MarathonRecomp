@@ -374,22 +374,23 @@ void SonicGaugeRestorationGaugeFlagFix(PPCRegister& r_gauge, PPCRegister& r_cont
 
     auto pGauge = (Sonicteam::Player::SonicGauge*)g_memory.Translate(r_gauge.u32);
     auto PContext = (Sonicteam::Player::State::SonicContext*)g_memory.Translate(r_context.u32);
+
     if ((uint32_t)(static_cast<Sonicteam::Player::IPlugIn*>(pGauge)->m_pVftable.get()) != 0x8200D4D8) // != SonicGauge 
         return;
 
     auto weapons = PContext->m_pScore->m_pPlayer->GetPlugin<Sonicteam::Player::Weapon::SonicWeapons>("sonic_weapons");
-    if (PContext->m_Tornado != 0 || PContext->m_CurrentAnimation == 0xCB || PContext->m_CurrentAnimation == 0xCC || PContext->m_CurrentAnimation == 0x46 || PContext->m_CurrentAnimation == 0xCE ||  weapons->m_GunDrive.Entity != 0)
+    if (PContext->m_Tornado != 0 || PContext->m_AnimationID == 0xCB || PContext->m_AnimationID == 0xCC || PContext->m_AnimationID == 0x46 || PContext->m_AnimationID == 0xCE ||  weapons->m_GunDrive.Entity != 0)
     {
         pGauge->m_GroundedFlags = 1; // Lock game
     }
     else
     {
         using enum Sonicteam::Player::State::SonicContext::Gems;
-        if ((PContext->m_Input.get() & 0x10000) != 0) {
+        if ((PContext->m_Buttons.get() & 0x10000) != 0) {
             PContext->m_24A = 0;
         }
 
-        if ((PContext->m_Input.get() & 0x20000) != 0 && (PContext->m_CurrentGem == Red || PContext->m_CurrentGem == Purple))
+        if ((PContext->m_Buttons.get() & 0x20000) != 0 && (PContext->m_CurrentGem == Red || PContext->m_CurrentGem == Purple))
         {
             pGauge->m_GroundedFlags = 1; 
             if (PContext->m_24A) 
@@ -399,7 +400,7 @@ void SonicGaugeRestorationGaugeFlagFix(PPCRegister& r_gauge, PPCRegister& r_cont
                 PContext->m_SlowTime = 0;
             }
         }
-        else if ((PContext->m_PostureFlags.get() & Sonicteam::Player::State::CommonContext::CC_GROUND) != 0 || PContext->m_24A)
+        else if ((PContext->m_PostureFlag.get() & Sonicteam::Player::PostureControl::ePostureFlag_Ground) != 0 || PContext->m_24A)
         {
             pGauge->m_GroundedFlags = 0;
 

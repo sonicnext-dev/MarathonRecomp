@@ -21,7 +21,7 @@ namespace Sonicteam::Player::State
 		be<float> m_CurrentStickBorder; // 0 .. 1.0
         MARATHON_INSERT_PADDING(4);
 		be<uint32_t> m_AnimationState; // & 2 == 0 (Animation End, no any idea about others)
-		MARATHON_INSERT_PADDING(0x1C);
+		MARATHON_INSERT_PADDING(0x2C);
     };
 	//0x90
 
