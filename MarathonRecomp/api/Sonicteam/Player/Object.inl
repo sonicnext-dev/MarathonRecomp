@@ -1,3 +1,4 @@
+#include "Object.h"
 namespace Sonicteam::Player
 {
     template <typename T>
@@ -7,14 +8,13 @@ namespace Sonicteam::Player
     }
 
     template<typename T>
-    inline T* Object::GetPlugin(const char* pluginName)
+
+    T* Object::GetPlugin(const char* pluginName)
     {
         for (auto& spPlugin : m_vspPlayerPlugins)
         {
             if (spPlugin->m_Name == pluginName)
                 return static_cast<T*>(spPlugin.get());
         }
-
-        return nullptr;
-    }
+	}
 }
