@@ -4,6 +4,7 @@
 #include <hid/hid.h>
 #include <patches/hook_event.h>
 #include <patches/loading_patches.h>
+#include <patches/MainMenuTask_patches.h>
 #include <ui/black_bar.h>
 #include <ui/game_window.h>
 #include <ui/imgui_utils.h>
@@ -37,7 +38,6 @@ static float g_podBaseRightX{};
 static float g_bgArrowsEnd{};
 static float g_fgArrowsEnd{};
 static float g_chevronLoopTime{};
-static float g_chevronAspectRatio{};
 
 struct ChevronAnim
 {
@@ -96,6 +96,41 @@ public:
 }
 g_loadingPillarboxEvent{};
 
+static class ChevronAnimResetEvent : public ContextHookEvent<Sonicteam::MainMenuTask>
+{
+    float m_chevronAspectRatio{};
+
+public:
+    void Update(Sonicteam::MainMenuTask* pThis, float deltaTime) override
+    {
+        if (g_aspectRatio <= WIDE_ASPECT_RATIO)
+            return;
+
+        auto aspectRatioChanged = false;
+
+        if (g_aspectRatio != m_chevronAspectRatio)
+            aspectRatioChanged = true;
+
+        m_chevronAspectRatio = g_aspectRatio;
+
+        if (pThis->m_State == Sonicteam::MainMenuTask::MainMenuState_MainMenuBack ||
+            pThis->m_State == Sonicteam::MainMenuTask::MainMenuState_AudioRoom    ||
+            pThis->m_State == Sonicteam::MainMenuTask::MainMenuState_TheaterRoom  ||
+            aspectRatioChanged)
+        {
+            g_bgArrows.clear();
+            g_fgArrows.clear();
+        }
+
+        for (auto& arrow : g_bgArrows)
+            arrow.second.Update(deltaTime);
+
+        for (auto& arrow : g_fgArrows)
+            arrow.second.Update(deltaTime);
+    }
+}
+g_chevronAnimResetEvent{};
+
 float ComputeScale(float aspectRatio)
 {
     return ((aspectRatio * 720.0f) / 1280.0f) / sqrt((aspectRatio * 720.0f) / 1280.0f);
@@ -104,6 +139,7 @@ float ComputeScale(float aspectRatio)
 void AspectRatioPatches::Init()
 {
     LoadingPatches::Events.push_back(&g_loadingPillarboxEvent);
+    MainMenuTaskPatches::Events.push_back(&g_chevronAnimResetEvent);
 }
 
 void AspectRatioPatches::ComputeOffsets()
@@ -1042,41 +1078,6 @@ PPC_FUNC(sub_828C78E0)
     __imp__sub_828C78E0(ctx, base);
 }
 
-// Sonicteam::MainMenuTask::Update
-PPC_FUNC_IMPL(__imp__sub_824FFCF8);
-PPC_FUNC(sub_824FFCF8)
-{
-    auto pMainMenuTask = (Sonicteam::MainMenuTask*)(base + ctx.r3.u32);
-    auto deltaTime = ctx.f1.f64;
-
-    if (g_aspectRatio > WIDE_ASPECT_RATIO)
-    {
-        auto aspectRatioChanged = false;
-
-        if (g_aspectRatio != g_chevronAspectRatio)
-            aspectRatioChanged = true;
-
-        g_chevronAspectRatio = g_aspectRatio;
-
-        if (pMainMenuTask->m_State == Sonicteam::MainMenuTask::MainMenuState_MainMenuBack ||
-            pMainMenuTask->m_State == Sonicteam::MainMenuTask::MainMenuState_AudioRoom    ||
-            pMainMenuTask->m_State == Sonicteam::MainMenuTask::MainMenuState_TheaterRoom  ||
-            aspectRatioChanged)
-        {
-            g_bgArrows.clear();
-            g_fgArrows.clear();
-        }
-
-        for (auto& arrow : g_bgArrows)
-            arrow.second.Update(deltaTime);
-
-        for (auto& arrow : g_fgArrows)
-            arrow.second.Update(deltaTime);
-    }
-
-    __imp__sub_824FFCF8(ctx, base);
-}
-
 // Sonicteam::EventEntityTask::Update
 PPC_FUNC_IMPL(__imp__sub_8264AC48);
 PPC_FUNC(sub_8264AC48)
@@ -1389,6 +1390,9 @@ PPC_FUNC(sub_8262D868)
     auto pTextEntity = (Sonicteam::TextEntity*)(base + ctx.r3.u32);
     auto textModifier = *(uint64_t*)(base + ctx.r3.u32 + sizeof(Sonicteam::TextEntity));
 
+    if ((textModifier & CSD_SKIP) != 0)
+        return;
+
     auto x = pTextEntity->m_X;
     auto y = pTextEntity->m_Y;
     auto scaleX = pTextEntity->m_ScaleX;
@@ -1477,6 +1481,16 @@ PPC_FUNC(sub_824DCF40)
     __imp__sub_824DCF40(ctx, base);
 }
 
+// Sonicteam::HintWindowTask::Update
+PPC_FUNC_IMPL(__imp__sub_824D12F0);
+PPC_FUNC(sub_824D12F0)
+{
+    auto pHintWindowTask = (Sonicteam::HintWindowTask*)(base + ctx.r3.u32);
+
+    SetTextEntityModifier(pHintWindowTask->m_Field7C.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
+    SetTextEntityModifier(pHintWindowTask->m_Field84.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
+
+    __imp__sub_824D12F0(ctx, base);
 }
 
 // Sonicteam::TextFontPicture::LoadResource
@@ -1629,6 +1643,15 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/goldmedal/goldmedal/silver"), { CSD_SCALE } },
     { HashStr("sprite/goldmedal/goldmedal/last"), { CSD_SCALE } },
 
+    // tips_sh_x
+    { HashStr("sprite/interlude/tips_x/tips_sh_x/Scene_0000"), { CSD_SCALE } },
+
+    // tips_si_x
+    { HashStr("sprite/interlude/tips_x/tips_si_x/Scene_0000"), { CSD_SCALE } },
+
+    // tips_so_x
+    { HashStr("sprite/interlude/tips_x/tips_so_x/Scene_0000"), { CSD_SCALE } },
+
     // loading
     { HashStr("sprite/loading/loading/Scene_0000/Loading"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
     { HashStr("sprite/loading/loading/Scene_0000/Loading_02"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
@@ -1710,6 +1733,9 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0226"), { CSD_SCALE | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.8f, 0, -0.8f, 0 } } },
     { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0227"), { CSD_SCALE | CSD_REPEAT_RIGHT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, {}, {}, { -0.8f, 0, -0.8f, 0, 0, 0, 0, 0 } } },
     { HashStr("sprite/main_menu/titlebar_effect"), { CSD_SCALE } },
+
+    // map_twn
+    { HashStr("sprite/interlude/map_twn/map_twn/Scene_0000"), { CSD_SCALE } },
 
     // pausemenu
     { HashStr("sprite/pausemenu/pausemenu/pause_menu"), { CSD_SCALE } },
@@ -1865,6 +1891,22 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     // sonicteam_logo
     { HashStr("sprite/logo/sonicteam_logo/sonicteam"), { CSD_SCALE } },
 
+    // stagetitle
+    { HashStr("sprite/interlude/stagetitle/stage_title_aqa/Scene_0000"), { CSD_SCALE } },
+    { HashStr("sprite/interlude/stagetitle/stage_title_cmn/Scene_0000"), { CSD_SCALE } },
+    { HashStr("sprite/interlude/stagetitle/stage_title_csc/Scene_0000"), { CSD_SCALE } },
+    { HashStr("sprite/interlude/stagetitle/stage_title_dtd/Scene_0000"), { CSD_SCALE } },
+    { HashStr("sprite/interlude/stagetitle/stage_title_end/Scene_0000"), { CSD_SCALE } },
+    { HashStr("sprite/interlude/stagetitle/stage_title_flc/Scene_0000"), { CSD_SCALE } },
+    { HashStr("sprite/interlude/stagetitle/stage_title_kdv/Scene_0000"), { CSD_SCALE } },
+    { HashStr("sprite/interlude/stagetitle/stage_title_rct/Scene_0000"), { CSD_SCALE } },
+    { HashStr("sprite/interlude/stagetitle/stage_title_tpj/Scene_0000"), { CSD_SCALE } },
+    { HashStr("sprite/interlude/stagetitle/stage_title_twn_a/Scene_0000"), { CSD_SCALE } },
+    { HashStr("sprite/interlude/stagetitle/stage_title_twn_b/Scene_0000"), { CSD_SCALE } },
+    { HashStr("sprite/interlude/stagetitle/stage_title_twn_c/Scene_0000"), { CSD_SCALE } },
+    { HashStr("sprite/interlude/stagetitle/stage_title_wap/Scene_0000"), { CSD_SCALE } },
+    { HashStr("sprite/interlude/stagetitle/stage_title_wvo/Scene_0000"), { CSD_SCALE } },
+
     // tag_character
     { HashStr("sprite/tag_character/tag_character/1p_tug/1p_tug/1p_tug1"), { CSD_SCALE | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER | CSD_REPEAT_COLOUR_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 }, { 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50, 0xFFFFFF50 } } },
     { HashStr("sprite/tag_character/tag_character/1p_tug/1p_tug/1p_tug2"), { CSD_SCALE } },
@@ -1921,9 +1963,9 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/tagdisplay_2p/custom_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
 
     // talkwindow
-    { HashStr("sprite/talkwindow/talkwindow/window"), { CSD_SCALE } },
-    { HashStr("sprite/talkwindow/talkwindow/nafuda"), { CSD_SCALE } },
-    { HashStr("sprite/talkwindow/talkwindow/Scene_0021"), { CSD_SCALE } },
+    { HashStr("sprite/talkwindow/talkwindow/window"), { CSD_ALIGN_BOTTOM | CSD_SCALE } },
+    { HashStr("sprite/talkwindow/talkwindow/nafuda"), { CSD_ALIGN_BOTTOM | CSD_SCALE } },
+    { HashStr("sprite/talkwindow/talkwindow/Scene_0021"), { CSD_ALIGN_BOTTOM | CSD_SCALE } },
 
     // title
     { HashStr("sprite/title/title/Scene_Title/Logo_add"), { CSD_SCALE } },

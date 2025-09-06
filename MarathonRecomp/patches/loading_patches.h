@@ -1,3 +1,5 @@
+#pragma once
+
 #include "hook_event.h"
 
 class LoadingPatches

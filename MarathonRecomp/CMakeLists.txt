@@ -141,6 +141,7 @@ set(MARATHON_RECOMP_PATCHES_CXX_SOURCES
     "patches/fps_patches.cpp"
     "patches/frontend_listener.cpp"
     "patches/loading_patches.cpp"
+    "patches/MainMenuTask_patches.cpp"
     "patches/misc_patches.cpp"
     "patches/player_patches.cpp"
     "patches/SaveDataTask_patches.cpp"
