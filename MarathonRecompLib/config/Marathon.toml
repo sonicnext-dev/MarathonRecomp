@@ -342,3 +342,8 @@ jump_address = 0x8258E604
 name = "RestoreChaosSpearFlips"
 address = 0x821A6730
 jump_address_on_true = 0x821A6734
+
+[[midasm_hook]]
+name = "RestoreChaosBoostJump"
+address = 0x821A6988
+registers = ["r10", "r11"]
