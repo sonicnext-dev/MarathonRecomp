@@ -35,13 +35,18 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(4);
         xpointer<const char> m_pVariables;
         stdx::wstring m_Field80;
-        stdx::wstring m_Field9C;
+        MARATHON_INSERT_PADDING(0x14);
+        be<float> m_Width;
+        be<float> m_FieldB4;
         be<float> m_FieldB8;
         be<float> m_FieldBC;
         MARATHON_INSERT_PADDING(0x0C);
         be<float> m_ScaleX;
         be<float> m_ScaleY;
-        MARATHON_INSERT_PADDING(0x0C);
+        MARATHON_INSERT_PADDING(8);
+        bool m_FieldDC;
+        bool m_FieldDD;
+        MARATHON_INSERT_PADDING(2);
         xpointer<void> m_FieldE0;              // Only present when there's character vertices.
         xpointer<void> m_FieldE4;              // Only present when there's image vertices.
         xpointer<Vertex> m_pCharacterVertices; // BL/TL/TR BL/TR/BR (two triangles per character)
@@ -53,45 +58,9 @@ namespace Sonicteam
         be<float> m_Field100;
         be<float> m_Field104;
         MARATHON_INSERT_PADDING(8);
-
-        std::pair<float, float> Measure() const
-        {
-            float w{};
-            float h{};
-
-            if (m_Text.size() <= 0)
-                return { w, h };
-
-            if (m_FieldE0)
-            {
-                for (int i = 0; i < m_CharacterVertexCount; i += 6)
-                {
-                    auto& tl = m_pCharacterVertices[i + 0];
-                    auto& bl = m_pCharacterVertices[i + 1];
-                    auto& tr = m_pCharacterVertices[i + 2];
-
-                    w += tr.X - tl.X;
-                    h = std::max(h, bl.Y - tl.Y);
-                }
-            }
-
-            if (m_FieldE4)
-            {
-                for (int i = 0; i < m_ImageVertexCount; i += 6)
-                {
-                    auto& tl = m_pImageVertices[i + 0];
-                    auto& bl = m_pImageVertices[i + 1];
-                    auto& tr = m_pImageVertices[i + 2];
-
-                    w += tr.X - tl.X;
-                    h = std::max(h, bl.Y - tl.Y);
-                }
-            }
-
-            return { w, h };
-        }
     };
 
+    MARATHON_ASSERT_OFFSETOF(TextEntity, m_Width, 0xB0);
     MARATHON_ASSERT_OFFSETOF(TextEntity, m_FieldE0, 0xE0);
     MARATHON_ASSERT_OFFSETOF(TextEntity, m_FieldE4, 0xE4);
     MARATHON_ASSERT_OFFSETOF(TextEntity, m_pCharacterVertices, 0xE8);

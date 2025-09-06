@@ -403,8 +403,17 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
     if (Config::UIAlignmentMode == EUIAlignmentMode::Centre || BlackBar::g_isPillarbox)
     {
-        if ((modifier.Flags & CSD_CHEVRON) == 0 && g_aspectRatio >= WIDE_ASPECT_RATIO)
-            modifier.Flags &= ~(CSD_ALIGN_LEFT | CSD_ALIGN_RIGHT);
+        if ((modifier.Flags & CSD_CHEVRON) == 0)
+        {
+            if (g_aspectRatio > WIDE_ASPECT_RATIO)
+            {
+                modifier.Flags &= ~(CSD_ALIGN_LEFT | CSD_ALIGN_RIGHT);
+            }
+            else if (g_aspectRatio < WIDE_ASPECT_RATIO)
+            {
+                modifier.Flags &= ~(CSD_ALIGN_TOP | CSD_ALIGN_BOTTOM);
+            }
+        }
     }
 
     uint32_t size = ctx.r5.u32 * stride;
@@ -1019,6 +1028,16 @@ PPC_FUNC(sub_82631718)
     Draw(ctx, base, __imp__sub_82631718, 0x0C);
 }
 
+// Set CSD scale.
+PPC_FUNC_IMPL(__imp__sub_828C78E0);
+PPC_FUNC(sub_828C78E0)
+{
+    ctx.f1.f64 = 1280.0;
+    ctx.f2.f64 = 720.0;
+
+    __imp__sub_828C78E0(ctx, base);
+}
+
 // Sonicteam::MainMenuTask::Update
 PPC_FUNC_IMPL(__imp__sub_824FFCF8);
 PPC_FUNC(sub_824FFCF8)
@@ -1336,15 +1355,75 @@ void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity)
     }
 }
 
+void TextEntityAlloc(PPCRegister& r3)
+{
+    r3.u32 += sizeof(uint64_t);
+}
+
+// Sonicteam::TextEntity::TextEntity
+PPC_FUNC_IMPL(__imp__sub_8262DC60);
+PPC_FUNC(sub_8262DC60)
+{
+    auto pTextModifier = (uint64_t*)(base + ctx.r3.u32 + sizeof(Sonicteam::TextEntity));
+
+    // Default text modifier to scale.
+    *pTextModifier = CSD_SCALE;
+
+    __imp__sub_8262DC60(ctx, base);
+}
+
 // Sonicteam::TextEntity::Draw
 PPC_FUNC_IMPL(__imp__sub_8262D868);
 PPC_FUNC(sub_8262D868)
 {
     auto pTextEntity = (Sonicteam::TextEntity*)(base + ctx.r3.u32);
+    auto textModifier = *(uint64_t*)(base + ctx.r3.u32 + sizeof(Sonicteam::TextEntity));
 
-    auto offsetX = g_aspectRatioOffsetX + (640.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale);
-    auto offsetY = g_aspectRatioOffsetY + (360.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale);
-    auto scale = g_aspectRatioScale * g_aspectRatioGameplayScale;
+    auto x = pTextEntity->m_X;
+    auto y = pTextEntity->m_Y;
+    auto scaleX = pTextEntity->m_ScaleX;
+    auto scaleY = pTextEntity->m_ScaleY;
+
+    auto offsetX = 0.0f;
+    auto offsetY = 0.0f;
+    auto scale = g_aspectRatioScale;
+
+    if (Config::UIAlignmentMode == EUIAlignmentMode::Centre || BlackBar::g_isVisible)
+    {
+        if (g_aspectRatio > WIDE_ASPECT_RATIO)
+        {
+            textModifier &= ~(CSD_ALIGN_LEFT | CSD_ALIGN_RIGHT);
+        }
+        else if (g_aspectRatio < WIDE_ASPECT_RATIO)
+        {
+            textModifier &= ~(CSD_ALIGN_TOP | CSD_ALIGN_BOTTOM);
+        }
+    }
+
+    if ((textModifier & CSD_ALIGN_RIGHT) != 0)
+        offsetX = g_aspectRatioOffsetX * 2.0f;
+    else if ((textModifier & CSD_ALIGN_LEFT) == 0)
+        offsetX = g_aspectRatioOffsetX;
+
+    if ((textModifier & CSD_ALIGN_BOTTOM) != 0)
+        offsetY = g_aspectRatioOffsetY * 2.0f;
+    else if ((textModifier & CSD_ALIGN_TOP) == 0)
+        offsetY = g_aspectRatioOffsetY;
+
+    if ((textModifier & CSD_SCALE) != 0)
+    {
+        scale *= g_aspectRatioGameplayScale;
+
+        if ((textModifier & CSD_ALIGN_RIGHT) != 0)
+            offsetX += 1280.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
+        else if ((textModifier & CSD_ALIGN_LEFT) == 0)
+            offsetX += 640.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
+
+        if ((textModifier & CSD_ALIGN_BOTTOM) != 0)
+            offsetY += 720.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
+        else if ((textModifier & CSD_ALIGN_TOP) == 0)
+            offsetY += 360.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
+    }
 
     pTextEntity->m_X = offsetX + pTextEntity->m_X * scale;
     pTextEntity->m_Y = offsetY + pTextEntity->m_Y * scale;
@@ -1353,17 +1432,41 @@ PPC_FUNC(sub_8262D868)
 
     __imp__sub_8262D868(ctx, base);
 
+    pTextEntity->m_X = x;
+    pTextEntity->m_Y = y;
+    pTextEntity->m_ScaleX = scaleX;
+    pTextEntity->m_ScaleY = scaleY;
+
     ReplaceTextVariables(pTextEntity);
 }
 
-// Set CSD scale.
-PPC_FUNC_IMPL(__imp__sub_828C78E0);
-PPC_FUNC(sub_828C78E0)
+void SetTextEntityModifier(Sonicteam::TextEntity* pTextEntity, uint64_t flags)
 {
-    ctx.f1.f64 = 1280.0;
-    ctx.f2.f64 = 720.0;
+    if (!pTextEntity)
+        return;
 
-    __imp__sub_828C78E0(ctx, base);
+    auto pTextModifier = (uint64_t*)(reinterpret_cast<uint8_t*>(pTextEntity) + sizeof(Sonicteam::TextEntity));
+
+    *pTextModifier = flags;
+
+    pTextEntity->m_FieldDD = true;
+    pTextEntity->Update();
+}
+
+// Sonicteam::HUDMainDisplay::Update
+PPC_FUNC_IMPL(__imp__sub_824DCF40);
+PPC_FUNC(sub_824DCF40)
+{
+    auto pHUDMainDisplay = (Sonicteam::HUDMainDisplay*)(base + ctx.r3.u32);
+
+    SetTextEntityModifier(pHUDMainDisplay->m_Field184.get(), CSD_ALIGN_RIGHT | CSD_SCALE);
+    SetTextEntityModifier(pHUDMainDisplay->m_TrickPointText.get(), CSD_ALIGN_RIGHT | CSD_SCALE);
+    SetTextEntityModifier(pHUDMainDisplay->m_Field194.get(), CSD_ALIGN_RIGHT | CSD_SCALE);
+    SetTextEntityModifier(pHUDMainDisplay->m_SavePointTimeText.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
+
+    __imp__sub_824DCF40(ctx, base);
+}
+
 }
 
 // Sonicteam::TextFontPicture::LoadResource

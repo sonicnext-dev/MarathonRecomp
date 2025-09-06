@@ -364,3 +364,13 @@ jump_address = 0x8258E308
 name = "NOP"
 address = 0x8258E600
 jump_address = 0x8258E604
+
+[[midasm_hook]]
+name = "TextEntityAlloc"
+address = 0x825EDB70
+registers = ["r3"]
+
+[[midasm_hook]]
+name = "TextEntityAlloc"
+address = 0x825EDCEC
+registers = ["r3"]
