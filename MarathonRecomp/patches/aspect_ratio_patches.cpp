@@ -90,7 +90,8 @@ static class LoadingPillarboxEvent : public HookEvent
 public:
     void Update(float deltaTime) override
     {
-        BlackBar::g_isPillarbox = true;
+        if (g_aspectRatio > WIDE_ASPECT_RATIO)
+            BlackBar::g_isVisible = true;
     }
 }
 g_loadingPillarboxEvent{};
@@ -395,13 +396,13 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
         return;
     }
 
-    if ((modifier.Flags & CSD_PILLARBOX) != 0)
-        BlackBar::g_isPillarbox = true;
+    if ((modifier.Flags & CSD_BLACK_BAR) != 0)
+        BlackBar::g_isVisible = true;
 
     if ((modifier.Flags & CSD_PROHIBIT_BLACK_BAR) != 0)
-        BlackBar::g_isPillarbox = false;
+        BlackBar::g_isVisible = false;
 
-    if (Config::UIAlignmentMode == EUIAlignmentMode::Centre || BlackBar::g_isPillarbox)
+    if (Config::UIAlignmentMode == EUIAlignmentMode::Centre || BlackBar::g_isVisible)
     {
         if ((modifier.Flags & CSD_CHEVRON) == 0)
         {
@@ -436,14 +437,14 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
         return reinterpret_cast<CSDVertex*>(stack + (index * stride));
     };
 
-    float offsetX = 0.0f;
-    float offsetY = 0.0f;
-    float pivotX = 0.0f;
-    float pivotY = 0.0f;
-    float scaleX = 1.0f;
-    float scaleY = 1.0f;
+    auto offsetX = 0.0f;
+    auto offsetY = 0.0f;
+    auto pivotX = 0.0f;
+    auto pivotY = 0.0f;
+    auto scaleX = 1.0f;
+    auto scaleY = 1.0f;
 
-    bool needsStretch = g_aspectRatio >= WIDE_ASPECT_RATIO;
+    auto needsStretch = g_aspectRatio >= WIDE_ASPECT_RATIO;
 
     if (needsStretch && (modifier.Flags & CSD_STRETCH_HORIZONTAL) != 0)
     {
@@ -570,12 +571,12 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             offsetX = Video::s_viewportWidth - (Video::s_viewportWidth - offsetX) * (1280.0f - corner) / (1280.0f - offsetScaleModifier.CornerMax);
     }
 
-    float firstX = 0.0f;
-    float firstY = 0.0f;
-    float lastX = 0.0f;
-    float lastY = 0.0f;
-    float width = 0.0f;
-    float height = 0.0f;
+    auto firstX = 0.0f;
+    auto firstY = 0.0f;
+    auto lastX = 0.0f;
+    auto lastY = 0.0f;
+    auto width = 0.0f;
+    auto height = 0.0f;
 
     for (size_t i = 0; i < ctx.r5.u32; i++)
     {
@@ -656,13 +657,16 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
     auto isRepeatLeft = (modifier.Flags & CSD_REPEAT_LEFT) != 0;
     auto isRepeatRight = (modifier.Flags & CSD_REPEAT_RIGHT) != 0;
+    auto isRepeatUp = (modifier.Flags & CSD_REPEAT_UP) != 0;
+    auto isRepeatDown = (modifier.Flags & CSD_REPEAT_DOWN) != 0;
 
-    if (isRepeatLeft || isRepeatRight)
+    if (isRepeatLeft || isRepeatRight || isRepeatUp || isRepeatDown)
     {
         auto r3 = ctx.r3;
         auto r5 = ctx.r5;
 
         auto isFlipHorz = (modifier.Flags & CSD_REPEAT_FLIP_HORIZONTAL) != 0;
+        auto isFlipVert = (modifier.Flags & CSD_REPEAT_FLIP_VERTICAL) != 0;
 
         auto applyRepeatModifiers = [&]()
         {
@@ -674,7 +678,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
                 getVertex(3)->X = getVertex(3)->X - width;
             }
 
-            if ((modifier.Flags & CSD_REPEAT_FLIP_VERTICAL) != 0)
+            if (isFlipVert)
             {
                 getVertex(0)->Y = getVertex(0)->Y + height;
                 getVertex(1)->Y = getVertex(1)->Y - height;
@@ -1078,7 +1082,7 @@ PPC_FUNC_IMPL(__imp__sub_8264AC48);
 PPC_FUNC(sub_8264AC48)
 {
     if (Config::CutsceneAspectRatio == ECutsceneAspectRatio::Original)
-        BlackBar::g_isPillarbox = true;
+        BlackBar::g_isVisible = true;
 
     __imp__sub_8264AC48(ctx, base);
 }
@@ -1087,7 +1091,7 @@ PPC_FUNC(sub_8264AC48)
 PPC_FUNC_IMPL(__imp__sub_824F4D80);
 PPC_FUNC(sub_824F4D80)
 {
-    BlackBar::g_isPillarbox = true;
+    BlackBar::g_isVisible = true;
 
     __imp__sub_824F4D80(ctx, base);
 }
@@ -1096,7 +1100,7 @@ PPC_FUNC(sub_824F4D80)
 PPC_FUNC_IMPL(__imp__sub_824D32C8);
 PPC_FUNC(sub_824D32C8)
 {
-    BlackBar::g_isPillarbox = true;
+    BlackBar::g_isVisible = true;
 
     __imp__sub_824D32C8(ctx, base);
 }
