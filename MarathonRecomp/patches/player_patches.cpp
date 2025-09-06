@@ -406,6 +406,5 @@ void SonicGaugeRestorationGaugeFlagFix(PPCRegister& r_gauge, PPCRegister& r_cont
 
         }
     }
-
 }
 //Sonic Gauge Restoration
