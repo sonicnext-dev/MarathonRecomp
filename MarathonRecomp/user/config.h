@@ -150,6 +150,17 @@ enum class EPlayerCharacter : uint32_t
     Rouge,
     Knuckles
 };
+enum class EDevTitleMenu : uint32_t
+{
+    False,
+    True,
+    Custom
+};
+
+inline uint32_t operator!(EDevTitleMenu value)
+{
+    return (uint32_t)value == 0;
+}
 
 template<typename T, bool isHidden = false>
 class ConfigDef final : public IConfigDef
@@ -219,6 +230,7 @@ public:
 #define CONFIG_DEFINE_HIDDEN(section, type, name, defaultValue)                 CONFIG_DECLARE_HIDDEN(type, name)
 #define CONFIG_DEFINE_LOCALISED(section, type, name, defaultValue)              CONFIG_DECLARE(type, name)
 #define CONFIG_DEFINE_ENUM(section, type, name, defaultValue)                   CONFIG_DECLARE(type, name)
+#define CONFIG_DEFINE_ENUM_HIDDEN(section, type, name, defaultValue)            CONFIG_DECLARE_HIDDEN(type, name)
 #define CONFIG_DEFINE_ENUM_LOCALISED(section, type, name, defaultValue)         CONFIG_DECLARE(type, name)
 
 class Config
