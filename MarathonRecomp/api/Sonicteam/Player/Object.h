@@ -1,19 +1,28 @@
 #pragma once
 
 #include <Marathon.h>
-#include <Sonicteam/Player/State/Machine2.h>
 #include <boost/smart_ptr/shared_ptr.h>
+#include <Sonicteam/Player/State/Machine2.h>
+#include <Sonicteam/Player/IGauge.h>
 #include <Sonicteam/Player/IPlugIn.h>
-#include <stdx/vector.h>
+#include <Sonicteam/Player/RootFrame.h>
 #include <Sonicteam/SoX/RefCountObject.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
-#include <Sonicteam/Player/RootFrame.h>
+#include <stdx/vector.h>
 
 namespace Sonicteam::Player
 {
     class Object : public Actor
     {
     public:
+        class CreationParams
+        {
+        public:
+            xpointer<const char> m_pPlayerLua;
+            MARATHON_INSERT_PADDING(0x2C);
+            SoX::Math::Vector m_Position;
+        };
+
         stdx::string m_PlayerLua;
         stdx::string m_PlayerPackage;
         MARATHON_INSERT_PADDING(8);

@@ -4,8 +4,8 @@
 #include <kernel/function.h>
 #include <os/process.h>
 #include <os/logger.h>
-#include <patches/aspect_ratio_patches.h>
 #include <patches/audio_patches.h>
+#include <patches/patches.h>
 #include <ui/game_window.h>
 #include <user/config.h>
 #include <user/paths.h>
@@ -61,7 +61,7 @@ PPC_FUNC(sub_8262A568)
 
     App::s_pApp = (Sonicteam::AppMarathon*)g_memory.Translate(ctx.r3.u32);
 
-    AspectRatioPatches::Init();
+    InitPatches();
 }
 
 // Sonicteam::DocMarathonState::Update

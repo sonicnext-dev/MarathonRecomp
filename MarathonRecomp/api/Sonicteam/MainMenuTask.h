@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/Player/Object.h>
+#include <Sonicteam/SoX/Math/Vector.h>
 
 namespace Sonicteam
 {
@@ -30,5 +32,8 @@ namespace Sonicteam
         };
 
         be<uint32_t> m_State;
+        MARATHON_INSERT_PADDING(0x248);
+        xpointer<Actor> m_Field298;
+        xpointer<Player::Object> m_SelectCharacters[9];
     };
 }

@@ -374,3 +374,13 @@ registers = ["r3"]
 name = "TextEntityAlloc"
 address = 0x825EDCEC
 registers = ["r3"]
+
+[[midasm_hook]]
+name = "CameraImp_SetFOV"
+address = 0x82590980
+registers = ["f1"]
+
+[[midasm_hook]]
+name = "CameraImp_SetFOV"
+address = 0x82590AB4
+registers = ["f1"]

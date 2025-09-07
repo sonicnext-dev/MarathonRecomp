@@ -8,8 +8,8 @@ namespace Sonicteam
     {
     public:
         xpointer<void> m_pClump;
-        xpointer<void> m_pFrameGP1;
-        xpointer<void> m_pFrameGP2;
+        xpointer<SoX::Graphics::FrameGP> m_pFrameGP1;
+        xpointer<SoX::Graphics::FrameGP> m_pFrameGP2;
         MARATHON_INSERT_PADDING(0x0C);
         SoX::Math::Vector m_Transform;
         be<float> m_Zoom;
