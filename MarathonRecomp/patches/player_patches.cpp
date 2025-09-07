@@ -184,6 +184,68 @@ bool ControllableSpinkick()
     return Config::ControllableSpinkick;
 }
 
+bool RestoreChainJumpFlips1(PPCRegister& f3, PPCRegister& r1)
+{
+    if (Config::RestoreChainJumpFlips)
+    {
+        auto base = g_memory.base;
+
+        PPCRegister temp{};
+        temp.u32 = PPC_LOAD_U32(r1.u32 + 0x7C);
+        f3.f64 = double(temp.f32);
+
+        return true;
+    }
+
+    return false;
+}
+
+bool RestoreChainJumpFlips2(PPCRegister& r10, PPCRegister& r11)
+{
+    if (Config::RestoreChainJumpFlips)
+    {
+        auto base = g_memory.base;
+
+        PPC_STORE_U32(r10.u32 + 0x44, r11.u32);
+
+        return true;
+    }
+
+    return false;
+}
+
+bool RestoreChainJumpFlips3(PPCRegister& f31, PPCRegister& r11)
+{
+    if (Config::RestoreChainJumpFlips)
+    {
+        auto base = g_memory.base;
+
+        PPCRegister temp{};
+        temp.f32 = float(f31.f64);
+        PPC_STORE_U32(r11.u32 + 0x44, temp.u32);
+
+        return true;
+    }
+
+    return false;
+}
+
+bool RestoreChainJumpFlips4(PPCRegister& f0, PPCRegister& r11)
+{
+    if (Config::RestoreChainJumpFlips)
+    {
+        auto base = g_memory.base;
+
+        PPCRegister temp{};
+        temp.f32 = float(f0.f64);
+        PPC_STORE_U32(r11.u32 + 0x44, temp.u32);
+
+        return true;
+    }
+
+    return false;
+}
+
 bool DisablePushState()
 {
     return Config::DisablePushState;
