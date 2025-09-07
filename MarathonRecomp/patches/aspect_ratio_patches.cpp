@@ -1490,10 +1490,22 @@ PPC_FUNC(sub_824D12F0)
 {
     auto pHintWindowTask = (Sonicteam::HintWindowTask*)(base + ctx.r3.u32);
 
-    SetTextEntityModifier(pHintWindowTask->m_Field7C.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
-    SetTextEntityModifier(pHintWindowTask->m_Field84.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
+    SetTextEntityModifier(pHintWindowTask->m_Field8C.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
+    SetTextEntityModifier(pHintWindowTask->m_Field94.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
 
     __imp__sub_824D12F0(ctx, base);
+}
+
+// Sonicteam::MessageWindowTask::Update
+PPC_FUNC_IMPL(__imp__sub_82507E68);
+PPC_FUNC(sub_82507E68)
+{
+    auto pMessageWindowTask = (Sonicteam::MessageWindowTask*)(base + ctx.r3.u32);
+
+    SetTextEntityModifier(pMessageWindowTask->m_Field90.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
+    SetTextEntityModifier(pMessageWindowTask->m_Field98.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
+
+    __imp__sub_82507E68(ctx, base);
 }
 
 // Sonicteam::TextFontPicture::LoadResource

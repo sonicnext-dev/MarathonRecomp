@@ -47,6 +47,7 @@
 #include "Sonicteam/MainDisplayTask.h"
 #include "Sonicteam/MainMenuTask.h"
 #include "Sonicteam/MainMode.h"
+#include "Sonicteam/MessageWindowTask.h"
 #include "Sonicteam/MovieObject.h"
 #include "Sonicteam/MovieObjectWmv.h"
 #include "Sonicteam/MovieTask.h"
