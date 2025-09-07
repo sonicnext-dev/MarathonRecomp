@@ -201,7 +201,7 @@ address = 0x82311E50
 jump_address_on_true = 0x82311E54
 
 [[midasm_hook]]
-name = "PostureControlRotationSpeedFix"
+name = "PostureControl_RotationSpeedFix"
 address = 0x82201C6C
 registers = ["f1", "r1"]
 
@@ -337,3 +337,25 @@ jump_address = 0x8258E308
 name = "NOP"
 address = 0x8258E600
 jump_address = 0x8258E604
+
+[[midasm_hook]]
+name = "SonicCamera_InvertAzDriveK"
+address = 0x82191D40
+registers = ["f12"]
+
+[[midasm_hook]]
+name = "SonicCamera_InvertAltDriveK"
+address = 0x82191E00
+registers = ["f12"]
+
+[[midasm_hook]]
+name = "SonicCamera_RotationSpeedFix"
+address = 0x82191DA0
+registers = ["f0", "f31", "f13"]
+jump_address = 0x82191DA4
+
+[[midasm_hook]]
+name = "SonicCamera_RotationSpeedFix"
+address = 0x82191E28
+registers = ["f0", "f31", "f13"]
+jump_address = 0x82191E2C
