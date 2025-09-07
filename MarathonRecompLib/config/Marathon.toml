@@ -361,3 +361,8 @@ name = "RestoreChainJumpFlips4"
 address = 0x822106BC
 registers = ["f0", "r11"]
 jump_address_on_true = 0x822106C0
+
+[[midasm_hook]]
+name = "DisablePushState"
+address = 0x821A03F0
+jump_address_on_true = 0x821A03FC
