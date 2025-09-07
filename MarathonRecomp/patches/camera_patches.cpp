@@ -32,18 +32,19 @@ void CameraImp_SetFOV(PPCRegister& f1)
     f1.f64 = 2.0 * atan(tan(0.5 * f1.f64) / g_aspectRatio * WIDE_ASPECT_RATIO);
 }
 
-// Load Sonicteam::Camera::SonicCamera parameters
-PPC_FUNC_IMPL(__imp__sub_82192218);
-PPC_FUNC(sub_82192218)
+void SonicCamera_InvertAzDriveK(PPCRegister& az_driveK)
 {
-    auto pSonicCamera = (Sonicteam::Camera::SonicCamera*)g_memory.Translate(ctx.r3.u32);
-
-    __imp__sub_82192218(ctx, base);
-
     // X axis is inverted by default.
-    if (Config::HorizontalCamera == ECameraRotationMode::Normal)
-        pSonicCamera->m_AzDriveK = -pSonicCamera->m_AzDriveK;
+    if (Config::HorizontalCamera != ECameraRotationMode::Normal)
+        return;
 
-    if (Config::VerticalCamera == ECameraRotationMode::Reverse)
-        pSonicCamera->m_AltDriveK = -pSonicCamera->m_AltDriveK;
+    az_driveK.f64 = -az_driveK.f64;
+}
+
+void SonicCamera_InvertAltDriveK(PPCRegister& alt_driveK)
+{
+    if (Config::VerticalCamera != ECameraRotationMode::Reverse)
+        return;
+
+    alt_driveK.f64 = -alt_driveK.f64;
 }
