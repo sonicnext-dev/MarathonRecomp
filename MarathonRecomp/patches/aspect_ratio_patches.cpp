@@ -1144,7 +1144,10 @@ PPC_FUNC_IMPL(__imp__sub_82352220);
 PPC_FUNC(sub_82352220)
 {
     auto pCObjBalloonIconDrawable = (Sonicteam::CObjBalloonIconDrawable*)(base + ctx.r3.u32);
-    auto scale = g_aspectRatio / WIDE_ASPECT_RATIO;
+    auto scale = g_aspectRatioScale;
+
+    if (g_aspectRatio > WIDE_ASPECT_RATIO)
+        scale = g_aspectRatio / WIDE_ASPECT_RATIO;
 
     pCObjBalloonIconDrawable->m_Vertices[0].X = -1.0f / scale;
     pCObjBalloonIconDrawable->m_Vertices[0].Y = 0.0f;
