@@ -8,7 +8,8 @@ namespace Sonicteam::Camera
         MARATHON_INSERT_PADDING(0x1C);
         be<float> m_SpringK;
         be<float> m_DampingK;
-        MARATHON_INSERT_PADDING(0x08);
+        be<float> m_AzDamping;
+        be<float> m_AltDamping;
         be<float> m_AzDriveK;
         be<float> m_AzDampingK;
         be<float> m_AltDriveK;
