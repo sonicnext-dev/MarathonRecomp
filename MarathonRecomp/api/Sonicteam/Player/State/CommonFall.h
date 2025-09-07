@@ -5,5 +5,9 @@
 
 namespace Sonicteam::Player::State
 {
-    class CommonFall : public CommonObject {};
+    class CommonFall : public CommonObject
+    {
+    public:
+        MARATHON_INSERT_PADDING(8);
+    };
 }

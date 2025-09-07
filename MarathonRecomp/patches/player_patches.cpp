@@ -23,14 +23,14 @@ PPC_FUNC(sub_8221A7D8)
         pGauge->m_Value = (100.0f / pTailsContext->m_FlightDuration) * pTailsContext->m_FlightTime;
     }
 
-    auto pState = pPlayer->m_spStateMachine->GetBase()->m_pState;
+    auto pTailsFlight = pPlayer->m_spStateMachine->GetBase()->GetState<Sonicteam::Player::State::TailsFlight>();
     auto pGameImp = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->m_pGameImp;
 
     auto maturityValue = 1.0f;
 
     // Set maturity value if the current state is Sonicteam::Player::State::TailsFlight.
-    if (pState->m_pVftable.ptr == 0x82005404)
-        maturityValue = (1.0f / pTailsContext->m_FlightLimit) * pState->m_Time;
+    if (pTailsFlight->m_pVftable.ptr == 0x82005404)
+        maturityValue = (1.0f / pTailsContext->m_FlightLimit) * pTailsFlight->m_FlightTime;
 
     for (int i = 0; i < 4; i++)
     {
@@ -182,4 +182,85 @@ bool ControllableBoundAttack2(PPCCRRegister& cmp)
 bool ControllableSpinkick()
 {
     return Config::ControllableSpinkick;
+}
+
+bool RestoreChaosSpearFlips()
+{
+    return Config::RestoreChaosSpearFlips;
+}
+
+void RestoreChaosBoostJump(PPCRegister& r10, PPCRegister& r11)
+{
+    if (!Config::RestoreChaosBoostJump)
+        return;
+
+    r10.u32 = 1;
+    r11.u32 = 2;
+}
+
+bool RestoreChainJumpFlips1(PPCRegister& f3, PPCRegister& r1)
+{
+    if (Config::RestoreChainJumpFlips)
+    {
+        auto base = g_memory.base;
+
+        PPCRegister temp{};
+        temp.u32 = PPC_LOAD_U32(r1.u32 + 0x7C);
+        f3.f64 = double(temp.f32);
+
+        return true;
+    }
+
+    return false;
+}
+
+bool RestoreChainJumpFlips2(PPCRegister& r10, PPCRegister& r11)
+{
+    if (Config::RestoreChainJumpFlips)
+    {
+        auto base = g_memory.base;
+
+        PPC_STORE_U32(r10.u32 + 0x44, r11.u32);
+
+        return true;
+    }
+
+    return false;
+}
+
+bool RestoreChainJumpFlips3(PPCRegister& f31, PPCRegister& r11)
+{
+    if (Config::RestoreChainJumpFlips)
+    {
+        auto base = g_memory.base;
+
+        PPCRegister temp{};
+        temp.f32 = float(f31.f64);
+        PPC_STORE_U32(r11.u32 + 0x44, temp.u32);
+
+        return true;
+    }
+
+    return false;
+}
+
+bool RestoreChainJumpFlips4(PPCRegister& f0, PPCRegister& r11)
+{
+    if (Config::RestoreChainJumpFlips)
+    {
+        auto base = g_memory.base;
+
+        PPCRegister temp{};
+        temp.f32 = float(f0.f64);
+        PPC_STORE_U32(r11.u32 + 0x44, temp.u32);
+
+        return true;
+    }
+
+    return false;
+}
+
+bool DisablePushState()
+{
+    return Config::DisablePushState;
 }
