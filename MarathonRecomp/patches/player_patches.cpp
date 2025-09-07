@@ -23,14 +23,14 @@ PPC_FUNC(sub_8221A7D8)
         pGauge->m_Value = (100.0f / pTailsContext->m_FlightDuration) * pTailsContext->m_FlightTime;
     }
 
-    auto pState = pPlayer->m_spStateMachine->GetBase()->m_pState;
+    auto pTailsFlight = pPlayer->m_spStateMachine->GetBase()->GetState<Sonicteam::Player::State::TailsFlight>();
     auto pGameImp = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->m_pGameImp;
 
     auto maturityValue = 1.0f;
 
     // Set maturity value if the current state is Sonicteam::Player::State::TailsFlight.
-    if (pState->m_pVftable.ptr == 0x82005404)
-        maturityValue = (1.0f / pTailsContext->m_FlightLimit) * pState->m_Time;
+    if (pTailsFlight->m_pVftable.ptr == 0x82005404)
+        maturityValue = (1.0f / pTailsContext->m_FlightLimit) * pTailsFlight->m_FlightTime;
 
     for (int i = 0; i < 4; i++)
     {
