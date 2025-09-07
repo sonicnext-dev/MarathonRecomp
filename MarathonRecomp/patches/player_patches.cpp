@@ -184,6 +184,20 @@ bool ControllableSpinkick()
     return Config::ControllableSpinkick;
 }
 
+bool RestoreChaosSpearFlips()
+{
+    return Config::RestoreChaosSpearFlips;
+}
+
+void RestoreChaosBoostJump(PPCRegister& r10, PPCRegister& r11)
+{
+    if (!Config::RestoreChaosBoostJump)
+        return;
+
+    r10.u32 = 1;
+    r11.u32 = 2;
+}
+
 bool RestoreChainJumpFlips1(PPCRegister& f3, PPCRegister& r1)
 {
     if (Config::RestoreChainJumpFlips)
