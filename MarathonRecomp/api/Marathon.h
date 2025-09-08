@@ -55,6 +55,7 @@
 #include "Sonicteam/MainMode.h"
 #include "Sonicteam/Message/MsgCameramanCameraMode.h"
 #include "Sonicteam/Message/MsgSuckPlayer.h"
+#include "Sonicteam/Message/MsgObjJump123GetNextPoint.h"
 #include "Sonicteam/MessageWindowTask.h"
 #include "Sonicteam/MovieObject.h"
 #include "Sonicteam/MovieObjectWmv.h"

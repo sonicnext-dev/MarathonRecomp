@@ -204,9 +204,11 @@ void RestoreChaosBoostJump(PPCRegister& r10, PPCRegister& r11)
     r11.u32 = 2;
 }
 
-
 void RestoreChainJumpFlips1(PPCRegister& r_ObjectPlayer, PPCRegister& r_Message,PPCRegister& r_ObjectContext,PPCRegister& f1, PPCRegister& f2, PPCRegister& f3)
 {
+    if (!Config::RestoreChainJumpFlips)
+        return;
+
     struct Message0x11047
     {
         be<uint32_t> m_id;
@@ -226,17 +228,10 @@ void RestoreChainJumpFlips1(PPCRegister& r_ObjectPlayer, PPCRegister& r_Message,
     if (pMessage->m_ActorID.get() != -1)
     {
         auto pFixture = GuestToHostFunction<Sonicteam::Fixture*>(sub_821609D0,App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->m_pGameImp->m_spActorManager.get(), &pMessage->m_ActorID);
-        struct Message10007:Sonicteam::SoX::Message
-        {
-            be<uint32_t> m_id;
-            Sonicteam::SoX::Math::Quaternion m_Rotation;
-            Sonicteam::SoX::Math::Vector m_Position;
-        };
-        auto sMessage = guest_stack_var<Message10007>();
-        sMessage->m_id = 0x10007; 
+        auto sMessage = guest_stack_var<Sonicteam::Message::MsgObjJump123GetNextPoint>();
         sMessage->m_Rotation = { 0,0,0,1 };
         sMessage->m_Position = { 0,0,0,1 };
-        if (pFixture->OnMessageRecieved(sMessage))
+        if (pFixture->OnMessageReceived(sMessage))
         {
             Target = sMessage->m_Position;
         }
