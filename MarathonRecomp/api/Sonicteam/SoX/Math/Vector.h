@@ -26,6 +26,7 @@ namespace Sonicteam::SoX::Math
         be<float> Y;
         be<float> Z;
         be<float> W;
+
         std::string tostring()
         {
             return std::format("Vector({}, {}, {}, {})",
@@ -34,6 +35,7 @@ namespace Sonicteam::SoX::Math
                 static_cast<float>(Z),
                 static_cast<float>(W));
         }
+
         float distanceTo(const Vector& other) const
         {
             float dx = static_cast<float>(X) - static_cast<float>(other.X);

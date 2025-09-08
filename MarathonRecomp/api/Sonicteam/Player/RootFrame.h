@@ -14,7 +14,7 @@ namespace Sonicteam::Player
     public:
         SoX::Math::Matrix4x4 m_Field70;
         SoX::Math::Matrix4x4 m_FieldB0;
-        SoX::Math::Vector m_FieldF0;
+        SoX::Math::Vector m_PositionF0;
         SoX::Math::Vector m_Field100;
         SoX::Math::Vector m_Impulse;
         MARATHON_INSERT_PADDING(0x30);
