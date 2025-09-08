@@ -198,9 +198,10 @@ void RestoreChaosBoostJump(PPCRegister& r10, PPCRegister& r11)
     r11.u32 = 2;
 }
 
-
 void RestoreChainJumpFlips1(PPCRegister& r_ObjectPlayer, PPCRegister& r_Message,PPCRegister& r_ObjectContext,PPCRegister& f1, PPCRegister& f2, PPCRegister& f3)
 {
+    if (!Config::RestoreChainJumpFlips)
+        return;
     struct Message0x11047
     {
         be<uint32_t> m_id;
