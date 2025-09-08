@@ -419,13 +419,27 @@ registers = ["r10", "r11"]
 
 [[midasm_hook]]
 name = "RestoreChainJumpFlips1"
-address = 0x82199654
-registers = ["r31","r30","r11","f1", "f2", "f3"]
+address = 0x82199650
+registers = ["f3", "r1"]
+jump_address_on_true = 0x82199654
 
 [[midasm_hook]]
 name = "RestoreChainJumpFlips2"
-address = 0x82199654
-registers = ["r10","r11","r3"]
+address = 0x82209B74
+registers = ["r10", "r11"]
+jump_address_on_true = 0x82209B78
+
+[[midasm_hook]]
+name = "RestoreChainJumpFlips3"
+address = 0x8220C0BC
+registers = ["f31", "r11"]
+jump_address_on_true = 0x8220C0C0
+
+[[midasm_hook]]
+name = "RestoreChainJumpFlips4"
+address = 0x822106BC
+registers = ["f0", "r11"]
+jump_address_on_true = 0x822106C0
 
 [[midasm_hook]]
 name = "DisablePushState"
@@ -556,7 +570,13 @@ address = 0x824FA088
 registers = ["f1", "f31"]
 
 [[midasm_hook]]
+<<<<<<< HEAD
 name = "ObjectVehicleBike_EnemyShot_DisableVehicleCollisionLayer"
 address = 0x822ADBC4
 registers = ["r31"]
 jump_address_on_true = 0x822ADBC8
+=======
+name = "PauseTask_SetMissionTextPriority"
+address = 0x82509AEC
+registers = ["f1"]
+>>>>>>> 5f43c07 (RestorePauseMissionText)
