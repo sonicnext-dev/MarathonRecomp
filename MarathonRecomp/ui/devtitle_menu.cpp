@@ -175,58 +175,191 @@ static bool Sonic06Button(ImVec2 pos, const char* label, bool& hovered, const Im
     return pressed;
 }
 
-static void DrawStageMapSelector()
+//DrawStageMapSelector
+struct StageMapSelectorConfig {
+    // Layout
+    float windowWidthRatio = 0.8f;
+    float buttonHeightRatio = 0.05f;
+    float buttonSpacing = 5.0f;
+    int defaultVisibleItems = 9;
+    float itemsScaleHeightRatio = 0.05f;
+
+    // Positioning
+    ImVec2 basePosRatio = { 0.15f, 0.45f };
+    ImVec2 buttonOffset = { 10.0f, 0.0 };
+
+    // Colors
+    ImU32 tooltipBgColor = IM_COL32(0, 0, 0, 180);
+    ImU32 tooltipBorderColor = IM_COL32(50, 150, 255, 200);
+    ImU32 tooltipNameColor = IM_COL32(255, 255, 255, 255);
+    ImU32 tooltipTextColor = IM_COL32(200, 200, 255, 255);
+
+    // Tooltip
+    float tooltipPadding = 15.0f;
+    float tooltipSeparatorWidth = 5.0f;
+    float tooltipFontSize = 0.0f; // 0 means use current font size
+
+    // Mouse cursor
+    float cursorRadius = 7.5f;
+    ImU32 cursorColor = IM_COL32(0, 150, 255, 220);
+    ImU32 cursorOutlineColor = IM_COL32(255, 255, 255, 180);
+};
+
+static StageMapSelectorConfig s_StageMapSelectorConfig;
+
+static void HandleStageMapSelectorInput(Sonicteam::StageSelectMode* pMode, uintptr_t pMsgRec)
 {
     auto& io = ImGui::GetIO();
-    auto& res = io.DisplaySize;
 
-    auto* pMode = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::StageSelectMode>();
-    if (!pMode)
-        return;
-
-    DrawBackgroundDev();
-
-    if (Config::DevTitle == EDevTitleMenu::Custom) DrawHUD({ 0, 0 }, res, g_mnewRodinFont, pMode->m_StageMapName.get());
-
-   float WINDOW_WIDTH = 0.8f * res.x;
-   float BUTTON_HEIGHT = 0.05f * res.y;
-   float BUTTON_SPACING = 5.0f;
-   int VISIBLE_ITEMS = 9;
-   float ITEMS_SCALE_HEIGHT = 0.05f * Video::s_viewportHeight;
-   float WINDOW_HEIGHT = (BUTTON_HEIGHT + BUTTON_SPACING) * VISIBLE_ITEMS + ITEMS_SCALE_HEIGHT;
-
-   ImVec2 base_pos = {
-        (res.x - WINDOW_WIDTH) * 0.15f,
-        (res.y - WINDOW_HEIGHT) * 0.45f
-   };
-
-   if (Config::DevTitle == EDevTitleMenu::True)
-   {
-       VISIBLE_ITEMS = 18;
-       base_pos.x = 0;
-       base_pos.y = 0;
-   }
- 
-    auto& items = pMode->m_CurrentStageMap->m_vpStageMap;
-    const int itemCount = static_cast<int>(items.size());
-    int currentIdx = pMode->m_CurrentStageMapIndex.get();
-
-    // Input handling (Mouse)
-    auto pMsgRec = reinterpret_cast<uintptr_t>(static_cast<Sonicteam::SoX::MessageReceiver*>(pMode));
-
+    // Mouse wheel scrolling
     if (abs(io.MouseWheel) > ScrollAmount) {
         guest_stack_var<DevMessage> vMsgRec(0x10001, io.MouseWheel > 0 ? 0 : 0xB4, 130);
         GuestToHostFunction<void>(sub_824A8FF0, pMsgRec, vMsgRec.get());
     }
 
+    // Right click handling
     if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
         guest_stack_var<DevMessage> vMsgRec(0x10002, 0, 0);
         GuestToHostFunction<void>(sub_824A8FF0, pMsgRec, vMsgRec.get());
     }
+}
+
+static void DrawStageMapTooltip(stdx::vector<xpointer<Sonicteam::StageMap>>& stages)
+{
+    if (stages.empty()) return;
+
+    auto& io = ImGui::GetIO();
+    auto& config = s_StageMapSelectorConfig;
+    ImDrawList* draw_list = ImGui::GetForegroundDrawList();
+
+    const float font_size = config.tooltipFontSize > 0 ? config.tooltipFontSize : ImGui::GetFontSize();
+    const float line_spacing = 2.0f;
+
+    // Calculate tooltip size
+    float max_name_width = 0.0f;
+    float max_text_width = 0.0f;
+    float total_height = 0.0f;
+    std::vector<std::pair<std::string, std::string>> entries;
+
+    for (auto& stage : stages) {
+        if (!stage.ptr.get()) continue;
+
+        std::string nameUtf8 = ConvertShiftJISToUTF8(stage->m_Name.c_str());
+        std::string textUtf8 = ConvertShiftJISToUTF8(stage->m_Text.c_str());
+        entries.emplace_back(nameUtf8, textUtf8);
+
+        const ImVec2 name_size = g_mnewRodinFont->CalcTextSizeA(font_size, FLT_MAX, 0.0f, nameUtf8.c_str());
+        const ImVec2 text_size = g_mnewRodinFont->CalcTextSizeA(font_size, FLT_MAX, 0.0f, textUtf8.c_str());
+
+        max_name_width = ImMax(max_name_width, name_size.x);
+        max_text_width = ImMax(max_text_width, text_size.x);
+        total_height += ImMax(name_size.y, text_size.y) + line_spacing;
+    }
+
+    const float total_width = max_name_width + config.tooltipSeparatorWidth + max_text_width +
+        config.tooltipPadding * 2;
+    total_height += config.tooltipPadding * 2 - line_spacing;
+
+    // Position tooltip
+    ImVec2 mouse_pos = GetMousePos();
+    ImVec2 tooltip_pos = ImVec2(
+        ImClamp(mouse_pos.x - total_width * 0.5f, 10.0f, io.DisplaySize.x - total_width - 10.0f),
+        ImClamp(mouse_pos.y - total_height - 20.0f, 10.0f, io.DisplaySize.y - total_height - 10.0f)
+    );
+
+    if (tooltip_pos.y <= 10) {
+        tooltip_pos.x += io.DisplaySize.x * 0.040f;
+    }
+
+    // Draw background
+    const ImVec2 tooltip_min = tooltip_pos;
+    const ImVec2 tooltip_max = ImVec2(tooltip_pos.x + total_width, tooltip_pos.y + total_height);
+    draw_list->AddRectFilled(tooltip_min, tooltip_max, config.tooltipBgColor, 5.0f);
+    draw_list->AddRect(tooltip_min, tooltip_max, config.tooltipBorderColor, 5.0f, 0, 1.5f);
+
+    // Draw text entries
+    float current_y = tooltip_pos.y + config.tooltipPadding;
+    for (const auto& [name, text] : entries) {
+        const float name_height = g_mnewRodinFont->CalcTextSizeA(font_size, FLT_MAX, 0.0f, name.c_str()).y;
+        const float text_height = g_mnewRodinFont->CalcTextSizeA(font_size, FLT_MAX, 0.0f, text.c_str()).y;
+        const float line_height = ImMax(name_height, text_height);
+
+        // Draw name
+        draw_list->AddText(
+            g_mnewRodinFont,
+            font_size,
+            ImVec2(tooltip_pos.x + config.tooltipPadding, current_y),
+            config.tooltipNameColor,
+            name.c_str()
+        );
+
+        // Draw text
+        draw_list->AddText(
+            g_mnewRodinFont,
+            font_size,
+            ImVec2(tooltip_pos.x + config.tooltipPadding + max_name_width + config.tooltipSeparatorWidth, current_y),
+            config.tooltipTextColor,
+            text.c_str()
+        );
+
+        current_y += line_height + line_spacing;
+    }
+}
+
+static void DrawStageMapCursor()
+{
+    auto& config = s_StageMapSelectorConfig;
+    ImVec2 mouse_pos = GetMousePos();
+
+    ImGui::GetBackgroundDrawList()->AddCircleFilled(
+        mouse_pos, config.cursorRadius, config.cursorColor, 12
+    );
+    ImGui::GetBackgroundDrawList()->AddCircle(
+        mouse_pos, config.cursorRadius, config.cursorOutlineColor, 12, 1.5f
+    );
+}
+
+static void DrawStageMapSelector()
+{
+    auto& io = ImGui::GetIO();
+    auto& res = io.DisplaySize;
+    auto& config = s_StageMapSelectorConfig;
+
+    auto* pMode = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::StageSelectMode>();
+    if (!pMode) return;
+
+    DrawBackgroundDev();
+
+    // Draw HUD if in custom mode
+    if (Config::DevTitle == EDevTitleMenu::Custom) {
+        DrawHUD({ 0, 0 }, res, g_mnewRodinFont, pMode->m_StageMapName.get());
+    }
+
+    // Calculate layout
+    int visibleItems = config.defaultVisibleItems;
+    ImVec2 base_pos = {
+        (res.x - config.windowWidthRatio * res.x) * config.basePosRatio.x,
+        (res.y - (config.buttonHeightRatio * res.y + config.buttonSpacing) * visibleItems +
+         config.itemsScaleHeightRatio * Video::s_viewportHeight) * config.basePosRatio.y
+    };
+
+    // Adjust for dev mode
+    if (Config::DevTitle == EDevTitleMenu::True) {
+        visibleItems = 18;
+        base_pos = { 0, 0 };
+    }
+
+    auto& items = pMode->m_CurrentStageMap->m_vpStageMap;
+    const int itemCount = static_cast<int>(items.size());
+    int currentIdx = pMode->m_CurrentStageMapIndex.get();
+
+    // Handle input
+    auto pMsgRec = reinterpret_cast<uintptr_t>(static_cast<Sonicteam::SoX::MessageReceiver*>(pMode));
+    HandleStageMapSelectorInput(pMode, pMsgRec);
 
     // Calculate visible range
-    const int start_idx = std::max(0, currentIdx - VISIBLE_ITEMS / 2);
-    const int end_idx = std::min(itemCount, start_idx + VISIBLE_ITEMS);
+    const int start_idx = std::max(0, currentIdx - visibleItems / 2);
+    const int end_idx = std::min(itemCount, start_idx + visibleItems);
 
     // Draw visible items
     for (int i = start_idx; i < end_idx; ++i) {
@@ -234,134 +367,47 @@ static void DrawStageMapSelector()
         if (!item) continue;
 
         const bool isSelected = (i == currentIdx);
-        const int visible_index = i - start_idx; 
+        const int visible_index = i - start_idx;
         bool hovered = false;
 
         // Calculate button position
         const ImVec2 button_pos = {
-            base_pos.x + 10,
-            base_pos.y + 40 + visible_index * (BUTTON_HEIGHT + BUTTON_SPACING)
+            base_pos.x + config.buttonOffset.x,
+            base_pos.y + config.buttonOffset.y + visible_index *
+                        (config.buttonHeightRatio * res.y + config.buttonSpacing)
         };
+
+        // Format item name
         std::string item_name = item->m_Name.c_str();
-        if (item->m_vpStageMap.size() > 1)
-        {
-            item_name = "[" + item_name + "]"; //mark as group
+        if (item->m_vpStageMap.size() > 1) {
+            item_name = "[" + item_name + "]"; // Mark as group
         }
-        if (isSelected)
-        {
+        if (isSelected) {
             item_name = ">> " + item_name;
         }
 
+        // Draw button
         if (Sonic06Button(button_pos, item_name.c_str(), hovered,
-            ImVec2(WINDOW_WIDTH - 20, BUTTON_HEIGHT), isSelected,CenterFlag::Y))
-        {
+            ImVec2(config.windowWidthRatio * res.x - 20, config.buttonHeightRatio * res.y),
+            isSelected, CenterFlag::Y)) {
             currentIdx = i;
             pMode->m_CurrentStageMapIndex = i;
             guest_stack_var<DevMessage> vMsgRec(0x10002, 0x5A, 1);
             GuestToHostFunction<void>(sub_824A8FF0, pMsgRec, vMsgRec.get());
         }
 
-        // Tooltip with stage information
+        // Show tooltip if hovered and in custom mode
         if (hovered && item->m_vpStageMap.size() > 0 && Config::DevTitle == EDevTitleMenu::Custom) {
-            ImDrawList* draw_list = ImGui::GetForegroundDrawList();
-            const ImVec2 mouse_pos = GetMousePos();
-            const float font_size = ImGui::GetFontSize();
-            const float line_spacing = 2.0f;
-
-
-            float max_name_width = 0.0f;
-            float max_text_width = 0.0f;
-            float total_height = 0.0f;
-            std::vector<std::pair<std::string, std::string>> entries;
-
-            for (int j = 0; j < item->m_vpStageMap.size(); ++j) {
-                const auto& stage = item->m_vpStageMap[j];
-                if (!stage.ptr.get()) continue;
-
-                std::string nameUtf8 = ConvertShiftJISToUTF8(stage->m_Name.c_str());
-                std::string textUtf8 = ConvertShiftJISToUTF8(stage->m_Text.c_str());
-                entries.emplace_back(nameUtf8, textUtf8);
-
-                // Measure each part separately using the actual rendering font
-                const ImVec2 name_size = g_mnewRodinFont->CalcTextSizeA(font_size, FLT_MAX, 0.0f, nameUtf8.c_str());
-                const ImVec2 text_size = g_mnewRodinFont->CalcTextSizeA(font_size, FLT_MAX, 0.0f, textUtf8.c_str());
-
-                max_name_width = ImMax(max_name_width, name_size.x);
-                max_text_width = ImMax(max_text_width, text_size.x);
-                total_height += ImMax(name_size.y, text_size.y) + line_spacing;
-            }
-
-            const float text_padding = 10.0f;
-            const float separator_width = 5.0f;
-            const float tooltip_padding = 15.0f;
-            const float total_width = max_name_width + separator_width + max_text_width + tooltip_padding * 2;
-            total_height += tooltip_padding * 2 - line_spacing; 
-
-            // Position tooltip (ensure it stays on screen)
-            ImVec2 tooltip_pos = ImVec2(
-                ImClamp(mouse_pos.x - total_width * 0.5f, 10.0f, io.DisplaySize.x - total_width - 10.0f),
-                ImClamp(mouse_pos.y - total_height - 20.0f, 10.0f, io.DisplaySize.y - total_height - 10.0f)
-            );
-            if (tooltip_pos.y <= 10)
-            {
-                tooltip_pos.x += io.DisplaySize.x * 0.040;
-            }
-
-            // Draw background
-            const ImVec2 tooltip_min = tooltip_pos;
-            const ImVec2 tooltip_max = ImVec2(tooltip_pos.x + total_width, tooltip_pos.y + total_height);
-            draw_list->AddRectFilled(tooltip_min, tooltip_max, IM_COL32(0, 0, 0, 180), 5.0f);
-            draw_list->AddRect(tooltip_min, tooltip_max, IM_COL32(50, 150, 255, 200), 5.0f, 0, 1.5f);
-
-            // Draw text entries
-            float current_y = tooltip_pos.y + tooltip_padding;
-            for (const auto& [name, text] : entries) {
-                // Calculate this line's height
-                const float name_height = g_mnewRodinFont->CalcTextSizeA(font_size, FLT_MAX, 0.0f, name.c_str()).y;
-                const float text_height = g_mnewRodinFont->CalcTextSizeA(font_size, FLT_MAX, 0.0f, text.c_str()).y;
-                const float line_height = ImMax(name_height, text_height);
-
-                // Draw name (left-aligned)
-                draw_list->AddText(
-                    g_mnewRodinFont,
-                    font_size,
-                    ImVec2(tooltip_pos.x + tooltip_padding, current_y),
-                    IM_COL32(255, 255, 255, 255),
-                    name.c_str()
-                );
-
-                // Draw text (right-aligned)
-                const float text_width = g_mnewRodinFont->CalcTextSizeA(font_size, FLT_MAX, 0.0f, text.c_str()).x;
-                draw_list->AddText(
-                    g_mnewRodinFont,
-                    font_size,
-                    ImVec2(tooltip_pos.x + tooltip_padding + max_name_width + separator_width, current_y),
-                    IM_COL32(200, 200, 255, 255),
-                    text.c_str()
-                );
-
-                current_y += line_height + line_spacing;
-            }
+            DrawStageMapTooltip(item->m_vpStageMap);
         }
-
-      
     }
-    
-    //Do not draw mouse, if not custom
-    if (Config::DevTitle != EDevTitleMenu::Custom) return;
-    // Draw mouse position indicator
-    const float dot_radius = 7.5f;
-    const ImU32 dot_color = IM_COL32(0, 150, 255, 220);
-    const ImU32 outline_color = IM_COL32(255, 255, 255, 180);
-    ImVec2 mouse_pos = GetMousePos();
 
-    ImGui::GetBackgroundDrawList()->AddCircleFilled(
-        mouse_pos, dot_radius, dot_color, 12
-    );
-    ImGui::GetBackgroundDrawList()->AddCircle(
-        mouse_pos, dot_radius, outline_color, 12, 1.5f
-    );
+    // Draw mouse cursor in custom mode
+    if (Config::DevTitle == EDevTitleMenu::Custom) {
+        DrawStageMapCursor();
+    }
 }
+//DrawStageMapSelector
 
 static void DrawDevTitle() {
 
