@@ -23,3 +23,61 @@ void SonicCamera_RotationSpeedFix(PPCRegister& f0, PPCRegister& deltaTime, PPCRe
 {
     f0.f64 = float((f0.f64 * (deltaTime.f64 * (1.0 / (deltaTime.f64 * 60.0)))) + f13.f64);
 }
+
+bool ObjTarzan_VolatileBranch(PPCRegister& r30)
+{
+    if (Config::FPS <= 60.0f)
+        return false;
+
+    return r30.f64 >= 0;
+}
+
+void ObjTarzan_PatchStaticDeltaTime(PPCRegister& value, PPCRegister& delta)
+{
+    if (Config::FPS <= 60.0f)
+        return;
+
+    value.f64 = delta.f64;
+}
+
+void ObjTarzan_PatchDeltaTimeArgument(PPCRegister& value, PPCRegister& value2, PPCRegister& stack)
+{
+    if (Config::FPS <= 60.0f)
+        return;
+
+    auto deltaTime = *(be<double>*)g_memory.Translate(stack.u32 + 0x90 + 0x420 - 0x88);
+
+    value.f64 = deltaTime;
+    value2.f64 = deltaTime;
+}
+
+// Sonicteam::ObjTarzan::UpdatePoint (speculatory)
+PPC_FUNC_IMPL(__imp__sub_8232D770);
+PPC_FUNC(sub_8232D770)
+{
+    if (Config::FPS <= 60.0f)
+    {
+        __imp__sub_8232D770(ctx, base);
+        return;
+    }
+
+    struct TarzanPoint
+    {
+        MARATHON_INSERT_PADDING(0x4C);
+        be<float> m_Time;
+        MARATHON_INSERT_PADDING(0xB0);
+    };
+
+    auto pTarzanPoint = (TarzanPoint*)(base + ctx.r3.u32);
+    auto deltaTime = ctx.f1.f64;
+
+    if (deltaTime > 1.0)
+        deltaTime = 1.0;
+
+    do
+    {
+        GuestToHostFunction<void>(sub_8232D288, pTarzanPoint, ctx.f1.u64, deltaTime, deltaTime, deltaTime);
+        pTarzanPoint->m_Time = pTarzanPoint->m_Time - deltaTime;
+    }
+    while (pTarzanPoint->m_Time >= deltaTime);
+}
