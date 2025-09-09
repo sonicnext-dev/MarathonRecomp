@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/SoX/Graphics/Frame.h>
+#include <stdx/string.h>
 
 namespace Sonicteam::SoX::Graphics
 {

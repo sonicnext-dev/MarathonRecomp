@@ -1,6 +1,12 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/SoX/Graphics/FrameObserver.h>
+#include <Sonicteam/SoX/Math/Matrix.h>
+#include <Sonicteam/SoX/Math/Quaternion.h>
+#include <Sonicteam/SoX/Math/Vector.h>
+#include <Sonicteam/MyTransforms.h>
+#include <stdx/string.h>
 
 namespace Sonicteam::SoX::Scenery
 {
