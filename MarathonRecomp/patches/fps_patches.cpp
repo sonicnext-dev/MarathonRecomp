@@ -71,8 +71,8 @@ void FixTPJRopeHFR7EXTRA(PPCRegister& r_value, PPCRegister& r_value2, PPCRegiste
         return;
 
     auto deltaTime = *(be<double>*)g_memory.Translate(r_stack.u32 + 0x90 + 0x420 - 0x88);
-    r_value.f64 = App::s_deltaTime;
-    r_value2.f64 = App::s_deltaTime;
+    r_value.f64 = deltaTime;
+    r_value2.f64 = deltaTime;
 }
 
 //no Tarzan Class implementation, because Fixture in gauge patch o-o
