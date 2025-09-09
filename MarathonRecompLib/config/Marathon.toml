@@ -433,3 +433,9 @@ after_instruction = true
 name = "ObjTarzan_PatchDeltaTimeArgument"
 address = 0x8232D818
 registers = ["f3", "r4", "r1"]
+
+[[midasm_hook]]
+name = "ObjEspSwing_DecayRateFix"
+address = 0x8232A4D0
+registers = ["f0", "f13", "f28"]
+jump_address = 0x8232A4D4

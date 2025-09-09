@@ -81,3 +81,8 @@ PPC_FUNC(sub_8232D770)
     }
     while (pTarzanPoint->m_Time >= deltaTime);
 }
+
+void ObjEspSwing_DecayRateFix(PPCRegister& f0, PPCRegister& f13, PPCRegister& deltaTime)
+{
+    f0.f64 = float(f13.f64 * pow(pow(f0.f64, 60.0), deltaTime.f64));
+}
