@@ -1,6 +1,5 @@
 #include <api/Marathon.h>
 #include <user/config.h>
-#include <app.h>
 
 // Sonicteam::SoX::Physics::Havok::WorldHavok::Update
 PPC_FUNC_IMPL(__imp__sub_82587AA8);
@@ -25,85 +24,60 @@ void SonicCamera_RotationSpeedFix(PPCRegister& f0, PPCRegister& deltaTime, PPCRe
     f0.f64 = float((f0.f64 * (deltaTime.f64 * (1.0 / (deltaTime.f64 * 60.0)))) + f13.f64);
 }
 
-
-bool FixTPJRopeHFR2BNE(PPCRegister& r30)
+bool ObjTarzan_VolatileBranch(PPCRegister& r30)
 {
-    if (Config::FPS > 60.0)
-        return r30.f64 >= 0;
-    else
-        return false; // original
+    if (Config::FPS <= 60.0f)
+        return false;
+
+    return r30.f64 >= 0;
 }
 
-void FixTPJRopeHFR3LFS(PPCRegister& r_value, PPCRegister& r_delta)
+void ObjTarzan_PatchStaticDeltaTime(PPCRegister& value, PPCRegister& delta)
 {
-    if (Config::FPS <= 60.0)
+    if (Config::FPS <= 60.0f)
         return;
 
-    r_value.f64 = r_delta.f64;
+    value.f64 = delta.f64;
 }
-//Not finished
-void FixTPJRopeHFR4LFS(PPCRegister& r_value, PPCRegister& r_delta)
+
+void ObjTarzan_PatchDeltaTimeArgument(PPCRegister& value, PPCRegister& value2, PPCRegister& stack)
 {
-    if (Config::FPS <= 60.0)
+    if (Config::FPS <= 60.0f)
         return;
 
-    r_value.f64 = r_delta.f64;
-}
-void FixTPJRopeHFR5LFS(PPCRegister& r_value, PPCRegister& r_delta)
-{
-    if (Config::FPS <= 60.0)
-        return;
+    auto deltaTime = *(be<double>*)g_memory.Translate(stack.u32 + 0x90 + 0x420 - 0x88);
 
-    r_value.f64 = r_delta.f64;
-}
-void FixTPJRopeHFR6LFS(PPCRegister& r_value, PPCRegister& r_delta)
-{
-    if (Config::FPS <= 60.0)
-        return;
-
-    r_value.f64 = r_delta.f64;
+    value.f64 = deltaTime;
+    value2.f64 = deltaTime;
 }
 
-//force to save
-void FixTPJRopeHFR7EXTRA(PPCRegister& r_value, PPCRegister& r_value2, PPCRegister& r_stack)
-{
-    if (Config::FPS <= 60.0)
-        return;
-
-    auto deltaTime = *(be<double>*)g_memory.Translate(r_stack.u32 + 0x90 + 0x420 - 0x88);
-    r_value.f64 = deltaTime;
-    r_value2.f64 = deltaTime;
-}
-
-//no Tarzan Class implementation, because Fixture in gauge patch o-o
-struct TPJ_POINT
-{
-    MARATHON_INSERT_PADDING(0x4C);
-    be<float> m_Time;
-    MARATHON_INSERT_PADDING(0xB0);
-
-};
-
-// SonicTeam::TPJ
+// Sonicteam::ObjTarzan::UpdatePoint (speculatory)
 PPC_FUNC_IMPL(__imp__sub_8232D770);
 PPC_FUNC(sub_8232D770)
 {
-    if (Config::FPS <= 60.0)
+    if (Config::FPS <= 60.0f)
     {
         __imp__sub_8232D770(ctx, base);
         return;
     }
 
-    auto pTPJ = (TPJ_POINT*)(base + ctx.r3.u32);
-    auto delta = ctx.f1.f64;
-    PPCRegister _r4 = ctx.f1;
+    struct TarzanPoint
+    {
+        MARATHON_INSERT_PADDING(0x4C);
+        be<float> m_Time;
+        MARATHON_INSERT_PADDING(0xB0);
+    };
 
-    if (delta > 1.0)
-        delta = 1.0;
+    auto pTarzanPoint = (TarzanPoint*)(base + ctx.r3.u32);
+    auto deltaTime = ctx.f1.f64;
+
+    if (deltaTime > 1.0)
+        deltaTime = 1.0;
+
     do
     {
-        //f1,f2,f3
-        GuestToHostFunction<void>(sub_8232D288, pTPJ, _r4.u64,delta,delta,delta);
-        pTPJ->m_Time = pTPJ->m_Time - delta;
-    } while (pTPJ->m_Time >= delta);
+        GuestToHostFunction<void>(sub_8232D288, pTarzanPoint, ctx.f1.u64, deltaTime, deltaTime, deltaTime);
+        pTarzanPoint->m_Time = pTarzanPoint->m_Time - deltaTime;
+    }
+    while (pTarzanPoint->m_Time >= deltaTime);
 }

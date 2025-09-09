@@ -400,37 +400,36 @@ address = 0x821A03F0
 jump_address_on_true = 0x821A03FC
 
 [[midasm_hook]]
-name = "FixTPJRopeHFR2BNE"
+name = "ObjTarzan_VolatileBranch"
 address = 0x8232D3E0
-jump_address_on_true = 0x8232D3E4
 registers = ["r30"]
+jump_address_on_true = 0x8232D3E4
 
 [[midasm_hook]]
-name = "FixTPJRopeHFR3LFS"
+name = "ObjTarzan_PatchStaticDeltaTime"
 address = 0x8232D3E4
-registers = ["f0","r30"]
+registers = ["f0", "r30"]
 after_instruction = true
 
 [[midasm_hook]]
-name = "FixTPJRopeHFR4LFS"
+name = "ObjTarzan_PatchStaticDeltaTime"
 address = 0x8232D49C
-registers = ["f1","f3"]
+registers = ["f1", "f3"]
 after_instruction = true
 
 [[midasm_hook]]
-name = "FixTPJRopeHFR5LFS"
+name = "ObjTarzan_PatchStaticDeltaTime"
 address = 0x8232D530
-registers = ["f1","f3"]
+registers = ["f1", "f3"]
 after_instruction = true
 
 [[midasm_hook]]
-name = "FixTPJRopeHFR6LFS"
+name = "ObjTarzan_PatchStaticDeltaTime"
 address = 0x8232D57C
-registers = ["f0","f3"]
+registers = ["f0", "f3"]
 after_instruction = true
 
 [[midasm_hook]]
-name = "FixTPJRopeHFR7EXTRA"
+name = "ObjTarzan_PatchDeltaTimeArgument"
 address = 0x8232D818
-registers = ["f3","r4","r1"]
-
+registers = ["f3", "r4", "r1"]
