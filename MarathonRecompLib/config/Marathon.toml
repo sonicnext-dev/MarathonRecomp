@@ -398,3 +398,39 @@ jump_address_on_true = 0x822106C0
 name = "DisablePushState"
 address = 0x821A03F0
 jump_address_on_true = 0x821A03FC
+
+[[midasm_hook]]
+name = "FixTPJRopeHFR2BNE"
+address = 0x8232D3E0
+jump_address_on_true = 0x8232D3E4
+registers = ["r30"]
+
+[[midasm_hook]]
+name = "FixTPJRopeHFR3LFS"
+address = 0x8232D3E4
+registers = ["f0","r30"]
+after_instruction = true
+
+[[midasm_hook]]
+name = "FixTPJRopeHFR4LFS"
+address = 0x8232D49C
+registers = ["f1","f3"]
+after_instruction = true
+
+[[midasm_hook]]
+name = "FixTPJRopeHFR5LFS"
+address = 0x8232D530
+registers = ["f1","f3"]
+after_instruction = true
+
+[[midasm_hook]]
+name = "FixTPJRopeHFR6LFS"
+address = 0x8232D57C
+registers = ["f0","f3"]
+after_instruction = true
+
+[[midasm_hook]]
+name = "FixTPJRopeHFR7EXTRA"
+address = 0x8232D818
+registers = ["f3","r4","r1"]
+
