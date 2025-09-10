@@ -6,6 +6,21 @@ void SetMSAALevel(PPCRegister& val)
     val.u32 = 0;
 }
 
+std::string g_blockName;
+
+void BeginBlock(PPCRegister& name)
+{
+    auto pName = xpointer(reinterpret_cast<char*>(name.u32));
+    g_blockName = std::string(pName.get());
+}
+
+// Blocks can be nested, so this is actually
+// incorrect, but we only care about one that isn't
+void EndBlock()
+{
+    g_blockName.clear();
+}
+
 float ReflectionScaleFactor(EReflectionResolution ref) {
     switch (ref) {
         case EReflectionResolution::Eighth:
@@ -35,6 +50,13 @@ PPC_FUNC(sub_82619D00)
             ReflectionScaleFactor(Config::ReflectionResolution));
     }
 
+    // RenderMefiress
+    if (*pName == "user0")
+    {
+        ctx.r5.u32 = (int32_t)Config::ShadowResolution.Value;
+        ctx.r6.u32 = (int32_t)Config::ShadowResolution.Value;
+    }
+
     __imp__sub_82619D00(ctx, base);
 }
 
@@ -54,6 +76,13 @@ PPC_FUNC(sub_82619B88)
         // Bad hack to stop EDRAM cache from messing up
         if (Config::ReflectionResolution == EReflectionResolution::Full)
             ctx.r5.u32++;
+    }
+
+    // RenderMefiress
+    if (*pName == "depthstencil_256" && g_blockName == "user0")
+    {
+        ctx.r5.u32 = (int32_t)Config::ShadowResolution.Value;
+        ctx.r6.u32 = (int32_t)Config::ShadowResolution.Value;
     }
 
     __imp__sub_82619B88(ctx, base);
