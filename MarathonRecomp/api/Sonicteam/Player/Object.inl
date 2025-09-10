@@ -1,3 +1,4 @@
+#include "Object.h"
 namespace Sonicteam::Player
 {
     template <typename T>
@@ -14,7 +15,6 @@ namespace Sonicteam::Player
             if (spPlugin->m_Name == pluginName)
                 return static_cast<T*>(spPlugin.get());
         }
-
         return nullptr;
-    }
+	}
 }
