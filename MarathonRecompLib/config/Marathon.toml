@@ -555,3 +555,23 @@ name = "ObjectVehicleBike_EnemyShot_DisableVehicleCollisionLayer"
 address = 0x822ADBC4
 registers = ["r31"]
 jump_address_on_true = 0x822ADBC8
+
+[[midasm_hook]]
+name = "SonicGaugeRestorationGaugeFlagFix"
+address = 0x822196EC
+registers = ["r3","r31"]
+
+[[midasm_hook]]
+name = "SonicGaugeRestorationGaugeGemSpriteResetFix"
+address = 0x82185768
+registers = ["r30"]
+
+[[midasm_hook]]
+name = "SonicGaugeRestorationGaugeGemSpriteResetFix"
+address = 0x821855A4
+registers = ["r29"]
+
+[[midasm_hook]]
+name = "SonicGaugeRestorationGaugeGemSpriteResetFix"
+address = 0x82177DFC
+registers = ["r31"]

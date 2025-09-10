@@ -1,21 +1,28 @@
 #pragma once
-
 #include <Marathon.inl>
 #include <Sonicteam/Player/State/ContextSpeedAndJump.h>
 #include <Sonicteam/Player/State/ICommonContextIF.h>
 #include <Sonicteam/Player/State/IContext.h>
+#include <Sonicteam/SoX/Math/Vector.h>
+#include <Sonicteam/SoX/Math/Quaternion.h>
+
 
 namespace Sonicteam::Player::State
 {
     class ICommonContext : public IContext, public ICommonContextIF, public ContextSpeedAndJump
     {
     public:
-        MARATHON_INSERT_PADDING(0x10);
-        be<uint32_t> m_StateID;
-        MARATHON_INSERT_PADDING(0x10);
+        be<uint32_t> m_AnimationID;
+        be<float> m_LockButtons;
+        be<uint32_t> m_LastVelocityForward;
+        be<uint32_t> m_LastVelocityVertical;
+        be<uint32_t> m_LastLockButtons;
         be<uint32_t> m_Buttons;
-        MARATHON_INSERT_PADDING(0x18);
-        be<int32_t> m_Field70;
-        MARATHON_INSERT_PADDING(0x1C);
+		be<float> m_CurrentStickBorder; // 0 .. 1.0
+        MARATHON_INSERT_PADDING(4);
+		be<uint32_t> m_AnimationState; // & 2 == 0 (Animation End, no any idea about others)
+		MARATHON_INSERT_PADDING(0x2C);
     };
+	//0x90
+
 }
