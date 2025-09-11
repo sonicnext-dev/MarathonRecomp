@@ -95,8 +95,8 @@ struct MsgSuckPlayerEx : public Sonicteam::Message::MsgSuckPlayer
 
 void ObjectInputWarp_ExtendMsgSuckPlayer(PPCRegister& phantom, PPCRegister& message, PPCRegister& deltaTime)
 {
-    auto pPhantom = (Sonicteam::SoX::Physics::Phantom*)(g_memory.Translate(phantom.u32));
-    auto pMessage = (Sonicteam::Message::MsgSuckPlayer*)(g_memory.Translate(message.u32));
+    auto pPhantom = (Sonicteam::SoX::Physics::Phantom*)g_memory.Translate(phantom.u32);
+    auto pMessage = (Sonicteam::Message::MsgSuckPlayer*)g_memory.Translate(message.u32);
 
     auto pNewMessage = (MsgSuckPlayerEx*)g_userHeap.Alloc(sizeof(MsgSuckPlayerEx));
     pNewMessage->ID = pMessage->ID;
@@ -110,14 +110,14 @@ void ObjectInputWarp_ExtendMsgSuckPlayer(PPCRegister& phantom, PPCRegister& mess
 
 void PlayerObject_ProcessMsgSuckPlayer_FixForce(PPCRegister& message, PPCRegister& force)
 {
-    auto pMessage = (MsgSuckPlayerEx*)(g_memory.Translate(message.u32));
+    auto pMessage = (MsgSuckPlayerEx*)g_memory.Translate(message.u32);
 
     force.f64 = pow(force.f64, pMessage->DeltaTime * 60.0);
 }
 
 void PlayerObject_ProcessMsgSuckPlayer_FixDeltaTime(PPCRegister& message, PPCRegister& deltaTime)
 {
-    auto pMessage = (MsgSuckPlayerEx*)(g_memory.Translate(message.u32));
+    auto pMessage = (MsgSuckPlayerEx*)g_memory.Translate(message.u32);
 
     deltaTime.f64 = pMessage->DeltaTime;
 }
