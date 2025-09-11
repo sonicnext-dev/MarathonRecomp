@@ -87,26 +87,29 @@ void ObjEspSwing_DecayRateFix(PPCRegister& f0, PPCRegister& f13, PPCRegister& de
     f0.f64 = float(f13.f64 * pow(pow(f0.f64, 60.0), deltaTime.f64));
 }
 
-struct ObjectMessage_SuckPlayerToPointEX :public Sonicteam::Player::ObjectMessage_SuckPlayerToPoint
+struct MsgSuckPlayerEx : public Sonicteam::Message::MsgSuckPlayer
 {
-public:
-    be<float> m_delta;
+    be<float> DeltaTime;
 };
 
-void ObjectInputWarp_MessageToPlayerExtraDelta(PPCRegister& Phantom, PPCRegister& Message, PPCRegister& delta)
+void ObjectInputWarp_ExtendMsgSuckPlayer(PPCRegister& phantom, PPCRegister& message, PPCRegister& deltaTime)
 {
-    auto pPhantom = (Sonicteam::SoX::Physics::Phantom*)(g_memory.Translate(Phantom.u32));
-    auto pMessage = (Sonicteam::Player::ObjectMessage_SuckPlayerToPoint*)(g_memory.Translate(Message.u32));
-    auto pNewMessage = (ObjectMessage_SuckPlayerToPointEX*)g_userHeap.Alloc(sizeof(ObjectMessage_SuckPlayerToPointEX));
-    pNewMessage->m_ID = pMessage->m_ID;
-    pNewMessage->m_Point = pMessage->m_Point;
-    pNewMessage->m_delta = delta.f64;
-    pPhantom->OnMessageRecieved(pNewMessage); 
+    auto pPhantom = (Sonicteam::SoX::Physics::Phantom*)(g_memory.Translate(phantom.u32));
+    auto pMessage = (Sonicteam::Message::MsgSuckPlayer*)(g_memory.Translate(message.u32));
+
+    auto pNewMessage = (MsgSuckPlayerEx*)g_userHeap.Alloc(sizeof(MsgSuckPlayerEx));
+    pNewMessage->ID = pMessage->ID;
+    pNewMessage->Point = pMessage->Point;
+    pNewMessage->DeltaTime = deltaTime.f64;
+
+    pPhantom->OnMessageRecieved(pNewMessage);
+
     g_userHeap.Free(pNewMessage);
 }
 
-void ObjectPlayer_Message0x1104AExtraDelta(PPCRegister& delta, PPCRegister& Message)
+void PlayerObject_ProcessMsgSuckPlayer(PPCRegister& message, PPCRegister& deltaTime)
 {
-    auto pMessage = (ObjectMessage_SuckPlayerToPointEX*)(g_memory.Translate(Message.u32));
-    delta.f64 = pMessage->m_delta;
+    auto pMessage = (MsgSuckPlayerEx*)(g_memory.Translate(message.u32));
+
+    deltaTime.f64 = pMessage->DeltaTime;
 }

@@ -1,12 +1,10 @@
 #pragma once
 
+#include <Marathon.inl>
+#include <Sonicteam/SoX/Message.h>
+
 namespace Sonicteam::SoX
 {
-    struct Message
-    {
-
-    };
-
     class MessageReceiver
     {
     public:
@@ -18,7 +16,7 @@ namespace Sonicteam::SoX
 
         xpointer<Vftable> m_pVftable;
 
-        bool OnMessageRecieved(Message* message)
+        bool OnMessageRecieved(IMessage* message)
         {
             return GuestToHostFunction<uint32_t>(m_pVftable->OnMessageRecieved, this, message);
         }

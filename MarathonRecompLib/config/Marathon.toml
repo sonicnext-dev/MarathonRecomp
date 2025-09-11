@@ -441,13 +441,12 @@ registers = ["f0", "f13", "f28"]
 jump_address = 0x8232A4D4
 
 [[midasm_hook]]
-name = "ObjectInputWarp_MessageToPlayerExtraDelta"
+name = "ObjectInputWarp_ExtendMsgSuckPlayer"
 address = 0x82389E48
-registers = ["r3","r4","f25"]
+registers = ["r3", "r4", "f25"]
 jump_address = 0x82389E4C
 
 [[midasm_hook]]
-name = "ObjectPlayer_Message0x1104AExtraDelta"
-address = 0x8219B65C
-registers = ["f31","r28"]
-after_instruction = true
+name = "PlayerObject_ProcessMsgSuckPlayer"
+address = 0x8219B660
+registers = ["r28", "f31"]
