@@ -439,3 +439,15 @@ name = "ObjEspSwing_DecayRateFix"
 address = 0x8232A4D0
 registers = ["f0", "f13", "f28"]
 jump_address = 0x8232A4D4
+
+[[midasm_hook]]
+name = "ObjectInputWarp_MessageToPlayerExtraDelta"
+address = 0x82389E48
+registers = ["r3","r4","f25"]
+jump_address = 0x82389E4C
+
+[[midasm_hook]]
+name = "ObjectPlayer_Message0x1104AExtraDelta"
+address = 0x8219B65C
+registers = ["f31","r28"]
+after_instruction = true

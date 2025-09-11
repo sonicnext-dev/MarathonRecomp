@@ -2,13 +2,17 @@
 
 namespace Sonicteam::SoX
 {
-    struct Message;
+    struct Message
+    {
+
+    };
 
     class MessageReceiver
     {
     public:
         struct Vftable
         {
+            be<uint32_t> Destroy;
             be<uint32_t> OnMessageRecieved;
         };
 

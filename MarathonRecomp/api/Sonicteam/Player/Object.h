@@ -8,9 +8,25 @@
 #include <Sonicteam/SoX/RefCountObject.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
 #include <Sonicteam/Player/RootFrame.h>
+#include <Sonicteam/SoX/Math/Vector.h>
 
 namespace Sonicteam::Player
 {
+    template <const uint32_t ID>
+    struct ObjectMessage_Base:Sonicteam::SoX::Message
+    {
+        be<uint32_t> m_ID = ID;
+        static uint32_t GetID()
+        {
+            return ID;
+        }
+    };
+
+    struct ObjectMessage_SuckPlayerToPoint:ObjectMessage_Base<0x11034A>
+    {
+        Sonicteam::SoX::Math::Vector m_Point;
+    };
+
     class Object : public Actor
     {
     public:

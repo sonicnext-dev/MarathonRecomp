@@ -86,3 +86,27 @@ void ObjEspSwing_DecayRateFix(PPCRegister& f0, PPCRegister& f13, PPCRegister& de
 {
     f0.f64 = float(f13.f64 * pow(pow(f0.f64, 60.0), deltaTime.f64));
 }
+
+struct ObjectMessage_SuckPlayerToPointEX :public Sonicteam::Player::ObjectMessage_SuckPlayerToPoint
+{
+public:
+    be<float> m_delta;
+};
+
+void ObjectInputWarp_MessageToPlayerExtraDelta(PPCRegister& Phantom, PPCRegister& Message, PPCRegister& delta)
+{
+    auto pPhantom = (Sonicteam::SoX::Physics::Phantom*)(g_memory.Translate(Phantom.u32));
+    auto pMessage = (Sonicteam::Player::ObjectMessage_SuckPlayerToPoint*)(g_memory.Translate(Message.u32));
+    auto pNewMessage = (ObjectMessage_SuckPlayerToPointEX*)g_userHeap.Alloc(sizeof(ObjectMessage_SuckPlayerToPointEX));
+    pNewMessage->m_ID = pMessage->m_ID;
+    pNewMessage->m_Point = pMessage->m_Point;
+    pNewMessage->m_delta = delta.f64;
+    pPhantom->OnMessageRecieved(pNewMessage); 
+    g_userHeap.Free(pNewMessage);
+}
+
+void ObjectPlayer_Message0x1104AExtraDelta(PPCRegister& delta, PPCRegister& Message)
+{
+    auto pMessage = (ObjectMessage_SuckPlayerToPointEX*)(g_memory.Translate(Message.u32));
+    delta.f64 = pMessage->m_delta;
+}
