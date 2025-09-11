@@ -442,11 +442,22 @@ jump_address = 0x8232A4D4
 
 [[midasm_hook]]
 name = "ObjectInputWarp_ExtendMsgSuckPlayer"
+address = 0x82389D70
+registers = ["r3", "r4", "f25"]
+jump_address = 0x82389D74
+
+[[midasm_hook]]
+name = "ObjectInputWarp_ExtendMsgSuckPlayer"
 address = 0x82389E48
 registers = ["r3", "r4", "f25"]
 jump_address = 0x82389E4C
 
 [[midasm_hook]]
-name = "PlayerObject_ProcessMsgSuckPlayer"
+name = "PlayerObject_ProcessMsgSuckPlayer_FixForce"
+address = 0x8219B64C
+registers = ["r28", "f1"]
+
+[[midasm_hook]]
+name = "PlayerObject_ProcessMsgSuckPlayer_FixDeltaTime"
 address = 0x8219B660
 registers = ["r28", "f31"]

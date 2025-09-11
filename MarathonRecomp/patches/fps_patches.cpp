@@ -16,6 +16,7 @@ PPC_FUNC(sub_82587AA8)
 void PostureControl_RotationSpeedFix(PPCRegister& c_rotation_speed, PPCRegister& stack)
 {
     auto deltaTime = *(be<double>*)g_memory.Translate(stack.u32 + 0x200);
+
     c_rotation_speed.f64 = (c_rotation_speed.f64 * (60.0 * deltaTime));
 }
 
@@ -107,7 +108,14 @@ void ObjectInputWarp_ExtendMsgSuckPlayer(PPCRegister& phantom, PPCRegister& mess
     g_userHeap.Free(pNewMessage);
 }
 
-void PlayerObject_ProcessMsgSuckPlayer(PPCRegister& message, PPCRegister& deltaTime)
+void PlayerObject_ProcessMsgSuckPlayer_FixForce(PPCRegister& message, PPCRegister& force)
+{
+    auto pMessage = (MsgSuckPlayerEx*)(g_memory.Translate(message.u32));
+
+    force.f64 = pow(force.f64, pMessage->DeltaTime * 60.0);
+}
+
+void PlayerObject_ProcessMsgSuckPlayer_FixDeltaTime(PPCRegister& message, PPCRegister& deltaTime)
 {
     auto pMessage = (MsgSuckPlayerEx*)(g_memory.Translate(message.u32));
 
