@@ -221,3 +221,11 @@ PPC_FUNC(sub_8250D698)
 
     __imp__sub_8250D698(ctx, base);
 }
+
+void ObjVehicleBike_BulletDisableCollisionLayer(PPCRegister& r6)
+{
+    if (Config::FPS <= 60.0)
+        return;
+
+    r6.u32 = 0x5E00;
+}

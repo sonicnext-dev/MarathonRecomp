@@ -568,3 +568,10 @@ registers = ["f31", "f1"]
 name = "HUDWindow_Callback"
 address = 0x824FA088
 registers = ["f1", "f31"]
+
+[[midasm_hook]]
+name = "ObjVehicleBike_BulletDisableCollisionLayer"
+address = 0x823D6744
+registers = ["r6"]
+after_instruction =true
+
