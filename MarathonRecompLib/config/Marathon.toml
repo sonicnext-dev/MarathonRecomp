@@ -508,3 +508,21 @@ registers = ["r28", "f1"]
 name = "PlayerObject_ProcessMsgSuckPlayer_FixDeltaTime"
 address = 0x8219B660
 registers = ["r28", "f31"]
+
+[[midasm_hook]]
+name = "ParticleHFR_826454C8"
+address = 0x82645518 
+registers = ["f31"]
+jump_address = 0x8264551C
+
+[[midasm_hook]]
+name = "ParticleHFR_82670658"
+address = 0x82670724 
+registers = ["f1","r1"]
+after_instruction = true
+
+[[midasm_hook]]
+name = "ParticleHFR_8266A418_1"
+address = 0x8266A57C 
+registers = ["f31","r1"]
+after_instruction = true
