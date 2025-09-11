@@ -86,3 +86,11 @@ void ObjEspSwing_DecayRateFix(PPCRegister& f0, PPCRegister& f13, PPCRegister& de
 {
     f0.f64 = float(f13.f64 * pow(pow(f0.f64, 60.0), deltaTime.f64));
 }
+
+void ObjVehicleBike_BulletDisableCollisionLayer(PPCRegister& r6)
+{
+    if (Config::FPS <= 60.0)
+        return;
+
+    r6.u32 = 0x5E00;
+}

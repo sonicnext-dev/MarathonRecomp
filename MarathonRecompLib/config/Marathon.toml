@@ -439,3 +439,9 @@ name = "ObjEspSwing_DecayRateFix"
 address = 0x8232A4D0
 registers = ["f0", "f13", "f28"]
 jump_address = 0x8232A4D4
+
+[[midasm_hook]]
+name = "ObjVehicleBike_BulletDisableCollisionLayer"
+address = 0x823D6744
+registers = ["r6"]
+after_instruction =true
