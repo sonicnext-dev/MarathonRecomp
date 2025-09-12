@@ -115,8 +115,13 @@
 #include "Sonicteam/SoX/Graphics/Xenon/DeviceXenon.h"
 #include "Sonicteam/SoX/Graphics/Xenon/TextureXenon.h"
 #include "Sonicteam/SoX/IResource.h"
+<<<<<<< HEAD
 #include "Sonicteam/SoX/IResource2.h"
 #include "Sonicteam/SoX/IResourceMgr.h"
+=======
+#include "Sonicteam/NamedTask.h"
+#include "Sonicteam/NamedActor.h"
+>>>>>>> b9d30a6 (Api #2)
 #include "Sonicteam/SoX/Input/Manager.h"
 #include "Sonicteam/SoX/Math/Matrix.h"
 #include "Sonicteam/SoX/Math/Quaternion.h"

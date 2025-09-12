@@ -115,6 +115,7 @@ void ObjEspSwing_DecayRateFix(PPCRegister& f0, PPCRegister& f13, PPCRegister& de
     f0.f64 = float(f13.f64 * pow(pow(f0.f64, 60.0), deltaTime.f64));
 }
 
+<<<<<<< HEAD
 struct MsgSuckPlayerEx : public Sonicteam::Message::MsgSuckPlayer
 {
     be<float> DeltaTime;
@@ -222,10 +223,54 @@ PPC_FUNC(sub_8250D698)
     __imp__sub_8250D698(ctx, base);
 }
 
-void ObjVehicleBike_BulletDisableCollisionLayer(PPCRegister& r6)
+void ObjVehicleBike_BulletDisableCollisionLayer(PPCRegister& r3)
 {
     if (Config::FPS <= 60.0)
         return;
 
-    r6.u32 = 0x5E00;
+    auto ctx = GetPPCContext();
+    auto base = g_memory.base;
+    auto pVehicleBike = (Sonicteam::ObjectVehicleBike*)(g_memory.Translate(r3.u32));
+    auto pNamedActorEntity = (Sonicteam::NamedActor*)(pVehicleBike->m_pDependency.get());
+    auto pEnemyShotNormal = (Sonicteam::Enemy::EnemyShotNormal*)pNamedActorEntity->GetFirstDependent();
+    sub_822C1FA8(*ctx, g_memory.base);
+    auto pEnemyShotNormalAfter = (Sonicteam::Enemy::EnemyShotNormal*)pNamedActorEntity->GetFirstDependent();
+    while (pEnemyShotNormal != pEnemyShotNormalAfter)
+    {
+        pEnemyShotNormal = ((Sonicteam::Enemy::EnemyShotNormal*)pEnemyShotNormal->m_pSiblingPrev.get());
+        auto pObject = reinterpret_cast<Sonicteam::SoX::Object*>(pEnemyShotNormal);
+
+        if (pObject->m_pVftable.ptr.get() == 0x820200C8)
+        {
+            auto hkpCollideable = &pEnemyShotNormal->m_spPhantom->m_pRigidBody->m_collidable;
+            auto owner = hkpCollideable->m_parent.get();
+         //   pEnemyShotNormal->m_spPhantom->m_spWorldHavok->
+
+            printf("hkpCollideable %x\n", hkpCollideable);
+            printf("owner %x\n", owner);
+            printf("m_collisionFilterInfo : %x\n", pEnemyShotNormal->m_spPhantom->m_pRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo.get()); 
+            printf("hkPhantom : %x\n", pEnemyShotNormal->m_spPhantom->m_pRigidBody->m_collidable);
+            pEnemyShotNormal->m_spPhantom->m_pRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo = 0xFFFF0000;
+            printf("pObject : %x\n", pObject);
+        }
+
+    }
+ 
+    /*
+    if (pVehicleBike->m_pVehicleMissileCtrlAutomatic->m_IsShot)
+    {
+        pEnemyShotNormal->m_spPhantom->m_pRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo = 0x5E00;
+        printf("SHOT\n");
+    }
+    */
+    printf("pEntityB : %x\n", pNamedActorEntity);
+    printf("pEntityF : %x\n", pEnemyShotNormalAfter);
+
+    printf("NamedActor : %s\n", pNamedActorEntity->m_Name.c_str());
+    printf("NamedActor : %s\n", pNamedActorEntity->m_Name.c_str());
+    printf("pEntity : %x\n", pEnemyShotNormal);
+    printf("m_pVehicleMissileCtrlAutomatic : %x\n", pVehicleBike->m_pVehicleMissileCtrlAutomatic->m_pMyPhantom.get());
+    printf("m_pShotInfo : %x\n", pVehicleBike->m_pVehicleMissileCtrlAutomatic->m_pShotInfo.get());
+    printf("m_pShotParameter : %x\n", pVehicleBike->m_pVehicleMissileCtrlAutomatic->m_pShotParameter.get());
+ 
 }

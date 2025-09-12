@@ -1,6 +1,9 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/MyPhantom.h>
+#include <Sonicteam/SoX/RefCountObject.h>
+#include <Sonicteam/SoX/RefSharedPointer.h>
 
 namespace Sonicteam::Enemy
 {
@@ -8,7 +11,7 @@ namespace Sonicteam::Enemy
     {
     public:
         MARATHON_INSERT_PADDING(0x20);
-        xpointer<void> m_Field88;
+        SoX::RefSharedPointer<MyPhantom> m_spPhantom;
         MARATHON_INSERT_PADDING(0xD4);
     };
 }
