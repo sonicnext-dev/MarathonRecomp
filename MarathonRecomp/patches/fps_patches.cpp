@@ -103,7 +103,7 @@ void ObjectInputWarp_ExtendMsgSuckPlayer(PPCRegister& phantom, PPCRegister& mess
     pNewMessage->Point = pMessage->Point;
     pNewMessage->DeltaTime = deltaTime.f64;
 
-    pPhantom->OnMessageRecieved(pNewMessage);
+    pPhantom->OnMessageReceived(pNewMessage);
 
     g_userHeap.Free(pNewMessage);
 }
