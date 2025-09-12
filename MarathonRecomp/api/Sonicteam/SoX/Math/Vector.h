@@ -26,5 +26,10 @@ namespace Sonicteam::SoX::Math
         be<float> Y;
         be<float> Z;
         be<float> W;
+
+        Vector operator+(float addend)
+        {
+            return { X + addend, Y + addend, Z + addend, W + addend };
+        }
     };
 }
