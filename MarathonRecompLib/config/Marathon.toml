@@ -442,5 +442,6 @@ jump_address = 0x8232A4D4
 
 [[midasm_hook]]
 name = "ObjVehicleBike_BulletDisableCollisionLayer"
-address = 0x823D6748
-registers = ["r6"]
+address = 0x822ADBC4
+registers = ["r31"]
+jump_address = 0x822ADBC8

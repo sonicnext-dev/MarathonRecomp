@@ -13,7 +13,7 @@ namespace hk330
     {
     public:
         xpointer<hkpWorld> m_world;
-        uint32_t m_userData;
+        be<uint32_t> m_userData;
         MARATHON_INSERT_PADDING(0x0C);
         hkpLinkedCollidable m_collidable;
         MARATHON_INSERT_PADDING(8);
