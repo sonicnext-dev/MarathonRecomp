@@ -1,13 +1,12 @@
 #pragma once
 
-#include <Marathon.h>
-#include <Sonicteam/Player/State/Machine2.h>
+#include <Marathon.inl>
 #include <boost/smart_ptr/shared_ptr.h>
+#include <Sonicteam/Player/State/Machine2.h>
 #include <Sonicteam/Player/IPlugIn.h>
-#include <stdx/vector.h>
-#include <Sonicteam/SoX/RefCountObject.h>
-#include <Sonicteam/SoX/RefSharedPointer.h>
 #include <Sonicteam/Player/RootFrame.h>
+#include <Sonicteam/SoX/RefSharedPointer.h>
+#include <stdx/vector.h>
 
 namespace Sonicteam::Player
 {
@@ -34,12 +33,22 @@ namespace Sonicteam::Player
         stdx::vector<boost::shared_ptr<IPlugIn>> m_vspPlayerPlugins;
         MARATHON_INSERT_PADDING(0x1F4);
 
-        template <typename T>
-        inline T* GetGauge();
+        template <typename T = IGauge>
+        T* GetGauge()
+        {
+            return (T*)m_spGauge.get();
+        }
 
         template <typename T = IPlugIn>
-        inline T* GetPlugin(const char* pluginName);
+        inline T* GetPlugin(const char* pluginName)
+        {
+            for (auto& spPlugin : m_vspPlayerPlugins)
+            {
+                if (spPlugin->m_Name == pluginName)
+                    return static_cast<T*>(spPlugin.get());
+            }
+
+            return nullptr;
+        }
     };
 }
-
-#include <Sonicteam/Player/Object.inl>
