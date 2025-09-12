@@ -571,7 +571,6 @@ registers = ["f1", "f31"]
 
 [[midasm_hook]]
 name = "ObjVehicleBike_BulletDisableCollisionLayer"
-address = 0x823D6744
+address = 0x823D6748
 registers = ["r6"]
 after_instruction =true
-
