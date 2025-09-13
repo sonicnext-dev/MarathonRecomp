@@ -1,14 +1,18 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/SoX/ApplicationXenon.h>
 #include <Sonicteam/DocMarathonState.h>
 
 namespace Sonicteam
 {
-    class AppMarathon
+    class AppMarathon : public SoX::ApplicationXenon
     {
     public:
-        MARATHON_INSERT_PADDING(0x180);
         xpointer<DocMarathonState> m_pDoc;
+
+        static AppMarathon* GetInstance();
     };
 }
+
+#include <Sonicteam/AppMarathon.inl>

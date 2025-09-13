@@ -5,6 +5,7 @@
 #include <os/process.h>
 #include <os/logger.h>
 #include <patches/audio_patches.h>
+#include <patches/patches.h>
 #include <ui/game_window.h>
 #include <user/config.h>
 #include <user/paths.h>
@@ -37,6 +38,7 @@ PPC_FUNC(sub_8262A568)
     App::s_isMissingDLC = true;
     App::s_language = Config::Language;
 
+    Sonicteam::Globals::Init();
     Registry::Save();
 
     struct RenderConfig
@@ -58,6 +60,8 @@ PPC_FUNC(sub_8262A568)
     __imp__sub_8262A568(ctx, base);
 
     App::s_pApp = (Sonicteam::AppMarathon*)g_memory.Translate(ctx.r3.u32);
+
+    InitPatches();
 }
 
 // Sonicteam::DocMarathonState::Update

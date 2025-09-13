@@ -5,7 +5,9 @@ namespace Sonicteam::Camera
     class SonicCamera : public CameraMode
     {
     public:
-        MARATHON_INSERT_PADDING(0x1C);
+        MARATHON_INSERT_PADDING(4);
+        xpointer<DocMarathonState> m_pDoc;
+        MARATHON_INSERT_PADDING(0x14);
         be<float> m_SpringK;
         be<float> m_DampingK;
         be<float> m_AzDamping;
@@ -16,5 +18,8 @@ namespace Sonicteam::Camera
         be<float> m_AltDampingK;
         MARATHON_INSERT_PADDING(0x3C);
         be<float> m_FovY;
+        MARATHON_INSERT_PADDING(0x3C);
+        be<float> m_Distance;
+        MARATHON_INSERT_PADDING(0x0C);
     };
 }
