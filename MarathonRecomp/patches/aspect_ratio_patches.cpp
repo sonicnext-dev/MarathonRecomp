@@ -1254,6 +1254,15 @@ PPC_FUNC(sub_824D32C8)
     __imp__sub_824D32C8(ctx, base);
 }
 
+// Sonicteam::EndingMode::Update
+PPC_FUNC_IMPL(__imp__sub_824A4A40);
+PPC_FUNC(sub_824A4A40)
+{
+    BlackBar::g_isVisible = true;
+
+    __imp__sub_824A4A40(ctx, base);
+}
+
 // Sonicteam::HUDLimitTime::ProcessMessage
 PPC_FUNC_IMPL(__imp__sub_824D6E50);
 PPC_FUNC(sub_824D6E50)
