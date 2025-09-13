@@ -2,7 +2,6 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/SoX/Graphics/FrameGP.h>
-#include <Sonicteam/SoX/Graphics/FrameObserver.h>
 
 namespace Sonicteam::SoX::Graphics
 {
