@@ -12,7 +12,7 @@ namespace Sonicteam
     {
     public:
         xpointer<HudTextParts> m_pNext;
-        xpointer<DocMarathonState> m_pDocMarathonState;
+        xpointer<DocMarathonState> m_pDoc;
         boost::shared_ptr<TextCard> m_spTextCard;
         boost::shared_ptr<TextEntity> m_spTextEntity;
         xpointer<CsdObject> m_pCsdObject;
