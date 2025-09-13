@@ -1,22 +1,24 @@
 #pragma once
 
+#include <Marathon.inl>
+#include <Sonicteam/SoX/Message.h>
+
 namespace Sonicteam::SoX
 {
-    struct Message;
-
     class MessageReceiver
     {
     public:
         struct Vftable
         {
-            be<uint32_t> OnMessageRecieved;
+            be<uint32_t> fpDestroy;
+            be<uint32_t> fpOnMessageReceived;
         };
 
         xpointer<Vftable> m_pVftable;
 
-        bool OnMessageRecieved(Message* message)
+        bool OnMessageReceived(IMessage* pMessage)
         {
-            return GuestToHostFunction<uint32_t>(m_pVftable->OnMessageRecieved, this, message);
+            return GuestToHostFunction<uint32_t>(m_pVftable->fpOnMessageReceived, this, pMessage);
         }
     };
 }
