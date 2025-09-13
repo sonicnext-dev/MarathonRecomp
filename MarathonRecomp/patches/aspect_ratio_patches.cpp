@@ -718,8 +718,22 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
     auto isRepeatLeft = (modifier.Flags & CSD_REPEAT_LEFT) != 0;
     auto isRepeatRight = (modifier.Flags & CSD_REPEAT_RIGHT) != 0;
 
+    auto isMainMenuPanels = (modifier.Flags &
+        (CSD_MAIN_MENU_PARTS_CAST_0221 |
+         CSD_MAIN_MENU_PARTS_CAST_0222 |
+         CSD_MAIN_MENU_PARTS_CAST_0226 |
+         CSD_MAIN_MENU_PARTS_CAST_0227)) != 0;
+
     auto r3 = ctx.r3;
     auto r5 = ctx.r5;
+
+    auto drawOriginal = [&]()
+    {
+        ctx.r3 = r3;
+        ctx.r4 = ctx.r1;
+        ctx.r5 = r5;
+        original(ctx, base);
+    };
 
     if (isRepeatLeft || isRepeatRight)
     {
@@ -769,10 +783,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
             while (x > 0.0f)
             {
-                ctx.r3 = r3;
-                ctx.r4 = ctx.r1;
-                ctx.r5 = r5;
-                original(ctx, base);
+                drawOriginal();
 
                 if ((modifier.Flags & CSD_CHEVRON) != 0)
                 {
@@ -859,10 +870,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
             while (x < vpWidth)
             {
-                ctx.r3 = r3;
-                ctx.r4 = ctx.r1;
-                ctx.r5 = r5;
-                original(ctx, base);
+                drawOriginal();
 
                 if ((modifier.Flags & CSD_CHEVRON) != 0)
                 {
@@ -920,10 +928,8 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
     }
     else
     {
-        ctx.r3 = r3;
-        ctx.r4 = ctx.r1;
-        ctx.r5 = r5;
-        original(ctx, base);
+        if (!isMainMenuPanels)
+            drawOriginal();
 
         // Clone Audio Room "pod" left edge to fill
         // in the rest of the box at ultrawide.
@@ -948,10 +954,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             v1->U = v1->U + 0.008f;
             v1->V = v1->V + 0.008f;
 
-            ctx.r3 = r3;
-            ctx.r4 = ctx.r1;
-            ctx.r5 = r5;
-            original(ctx, base);
+            drawOriginal();
         }
 
         // Don't adjust CRI logo at 16:9 or if the alignment mode is centre at ultrawide.
@@ -1006,10 +1009,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             v3->U = 0.0f;
             v3->V = 0.01f;
 
-            ctx.r3 = r3;
-            ctx.r4 = ctx.r1;
-            ctx.r5 = r5;
-            original(ctx, base);
+            drawOriginal();
 
             /////////////////////////////////////////////
             // Clone and scale to fit technology logos //
@@ -1048,15 +1048,15 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             v3->U = max.x;
             v3->V = max.y;
 
-            ctx.r3 = r3;
-            ctx.r4 = ctx.r1;
-            ctx.r5 = r5;
-            original(ctx, base);
+            drawOriginal();
         }
     }
 
     if (g_aspectRatio > WIDE_ASPECT_RATIO)
     {
+        if (isMainMenuPanels)
+            drawOriginal();
+
         /////////////////////////////////////////////////
         //  Scale metal borders to wide aspect ratios  //
         /////////////////////////////////////////////////
@@ -1079,10 +1079,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             getVertex(2)->U = getVertex(2)->U + -0.1f;
             getVertex(3)->U = getVertex(3)->U + -0.1f;
 
-            ctx.r3 = r3;
-            ctx.r4 = ctx.r1;
-            ctx.r5 = r5;
-            original(ctx, base);
+            drawOriginal();
         }
 
         if ((modifier.Flags & CSD_MAIN_MENU_PARTS_CAST_0226) != 0)
@@ -1101,10 +1098,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             getVertex(2)->U = getVertex(2)->U + -0.8f;
             getVertex(3)->U = getVertex(3)->U + -0.8f;
 
-            ctx.r3 = r3;
-            ctx.r4 = ctx.r1;
-            ctx.r5 = r5;
-            original(ctx, base);
+            drawOriginal();
         }
 
         if ((modifier.Flags & CSD_MAIN_MENU_PARTS_CAST_0227) != 0)
@@ -1123,10 +1117,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             getVertex(0)->U = getVertex(0)->U + -0.8f;
             getVertex(1)->U = getVertex(1)->U + -0.8f;
 
-            ctx.r3 = r3;
-            ctx.r4 = ctx.r1;
-            ctx.r5 = r5;
-            original(ctx, base);
+            drawOriginal();
         }
     }
     else
@@ -1137,9 +1128,19 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
         if ((modifier.Flags & (CSD_MAIN_MENU_PARTS_CAST_0221 | CSD_MAIN_MENU_PARTS_CAST_0222)) != 0)
         {
+            // Move vertices for UV adjustment.
+            getVertex(0)->Y = getVertex(0)->Y + 7.0f;
+            getVertex(2)->Y = getVertex(2)->Y + 7.0f;
+
+            // Crop UVs to move panel top to vertex edge.
+            getVertex(0)->V = getVertex(0)->V + 0.00675f;
+            getVertex(2)->V = getVertex(2)->V + 0.00675f;
+
+            drawOriginal();
+
             // Move cloned cast above existing cast.
             for (size_t i = 0; i < r5.u32; i++)
-                getVertex(i)->Y = getVertex(i)->Y - height + 6.0f;
+                getVertex(i)->Y = getVertex(i)->Y - height;
 
             flipVertically();
 
@@ -1152,22 +1153,27 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             }
 
             // Crop UVs to remove metal notch.
-            getVertex(0)->V = getVertex(0)->V + 0.005f;
-            getVertex(1)->V = getVertex(1)->V + -0.075f;
-            getVertex(2)->V = getVertex(2)->V + 0.005f;
-            getVertex(3)->V = getVertex(3)->V + -0.075f;
+            getVertex(1)->V = getVertex(1)->V + -0.067f;
+            getVertex(3)->V = getVertex(3)->V + -0.067f;
 
-            ctx.r3 = r3;
-            ctx.r4 = ctx.r1;
-            ctx.r5 = r5;
-            original(ctx, base);
+            drawOriginal();
         }
 
         if ((modifier.Flags & (CSD_MAIN_MENU_PARTS_CAST_0226 | CSD_MAIN_MENU_PARTS_CAST_0227)) != 0)
         {
+            // Move vertices for UV adjustment.
+            getVertex(1)->Y = getVertex(1)->Y - 20.0f;
+            getVertex(3)->Y = getVertex(3)->Y - 20.0f;
+
+            // Crop UVs to move panel bottom to vertex edge.
+            getVertex(1)->V = getVertex(1)->V + -0.0168;
+            getVertex(3)->V = getVertex(3)->V + -0.0168;
+
+            drawOriginal();
+
             // Move cloned cast below existing cast.
             for (size_t i = 0; i < r5.u32; i++)
-                getVertex(i)->Y = getVertex(i)->Y + height - 18.0f;
+                getVertex(i)->Y = getVertex(i)->Y + height;
 
             flipVertically();
 
@@ -1181,14 +1187,9 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
             // Crop UVs to remove metal dip.
             getVertex(0)->V = getVertex(0)->V + 0.065f;
-            getVertex(1)->V = getVertex(1)->V + -0.0175f;
             getVertex(2)->V = getVertex(2)->V + 0.065f;
-            getVertex(3)->V = getVertex(3)->V + -0.0175f;
 
-            ctx.r3 = r3;
-            ctx.r4 = ctx.r1;
-            ctx.r5 = r5;
-            original(ctx, base);
+            drawOriginal();
         }
     }
 
