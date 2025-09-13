@@ -7,21 +7,40 @@ namespace Sonicteam::SoX::Math
     class Matrix4x4
     {
     public:
-        be<float> M00;
-        be<float> M01;
-        be<float> M02;
-        be<float> M03;
-        be<float> M10;
-        be<float> M11;
-        be<float> M12;
-        be<float> M13;
-        be<float> M20;
-        be<float> M21;
-        be<float> M22;
-        be<float> M23;
-        be<float> M30;
-        be<float> M31;
-        be<float> M32;
-        be<float> M33;
+        be<float> M[4][4];
+
+        Matrix4x4() {}
+
+        Matrix4x4(Matrix4x4& other)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                    M[i][j] = other.M[i][j];
+            }
+        }
+
+        Matrix4x4 Multiply(const Matrix4x4& other) const
+        {
+            Matrix4x4 result{};
+
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    result.M[i][j] = 0.0f;
+
+                    for (int k = 0; k < 4; k++)
+                        result.M[i][j] = result.M[i][j] + (M[i][k] * other.M[k][j]);
+                }
+            }
+
+            return result;
+        }
+
+        Matrix4x4 operator*(Matrix4x4 other)
+        {
+            return Multiply(other);
+        }
     };
 }
