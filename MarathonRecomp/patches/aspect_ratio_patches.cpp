@@ -23,7 +23,7 @@ static std::optional<CsdModifier> g_sceneModifier{};
 static std::optional<CsdModifier> g_castNodeModifier{};
 static std::optional<CsdModifier> g_castModifier{};
 
-static Sonicteam::TextFontPicture* g_pTextFontPicture{};
+static Sonicteam::TextFontPicture g_textFontPicture{};
 
 static float g_corners[8]{};
 static bool g_cornerExtract{};
@@ -1455,8 +1455,8 @@ void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity)
 
         if (variable.first == "picture")
         {
-            auto w = g_pTextFontPicture->m_TextureWidth;
-            auto h = g_pTextFontPicture->m_TextureHeight;
+            auto w = g_textFontPicture.m_TextureWidth;
+            auto h = g_textFontPicture.m_TextureHeight;
 
             auto isPlayStation = Config::ControllerIcons == EControllerIcons::PlayStation;
 
@@ -1719,9 +1719,11 @@ PPC_FUNC(sub_82507E68)
 PPC_FUNC_IMPL(__imp__sub_8263CC40);
 PPC_FUNC(sub_8263CC40)
 {
-    g_pTextFontPicture = (Sonicteam::TextFontPicture*)(base + ctx.r3.u32);
+    auto pTextFontPicture = (Sonicteam::TextFontPicture*)(base + ctx.r3.u32);
 
     __imp__sub_8263CC40(ctx, base);
+
+    g_textFontPicture = *pTextFontPicture;
 }
 
 // -------------- CSD MODIFIERS --------------- //
