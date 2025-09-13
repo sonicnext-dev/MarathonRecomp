@@ -23,7 +23,8 @@ static std::optional<CsdModifier> g_sceneModifier{};
 static std::optional<CsdModifier> g_castNodeModifier{};
 static std::optional<CsdModifier> g_castModifier{};
 
-static Sonicteam::TextFontPicture g_textFontPicture{};
+static float g_fontPictureWidth{};
+static float g_fontPictureHeight{};
 
 static float g_corners[8]{};
 static bool g_cornerExtract{};
@@ -1455,9 +1456,6 @@ void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity)
 
         if (variable.first == "picture")
         {
-            auto w = g_textFontPicture.m_TextureWidth;
-            auto h = g_textFontPicture.m_TextureHeight;
-
             auto isPlayStation = Config::ControllerIcons == EControllerIcons::PlayStation;
 
             if (Config::ControllerIcons == EControllerIcons::Auto)
@@ -1470,7 +1468,7 @@ void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity)
             auto baseParams = FindFontPictureModifier(g_pftModifierXenon, variable.second);
             auto newParams = FindFontPictureModifier(pftModifier, variable.second);
 
-            auto  uv = PIXELS_TO_UV_COORDS(w, h, newParams.X, newParams.Y, newParams.Width, newParams.Height);
+            auto  uv = PIXELS_TO_UV_COORDS(g_fontPictureWidth, g_fontPictureHeight, newParams.X, newParams.Y, newParams.Width, newParams.Height);
             auto& min = std::get<0>(uv);
             auto& max = std::get<1>(uv);
 
@@ -1723,7 +1721,8 @@ PPC_FUNC(sub_8263CC40)
 
     __imp__sub_8263CC40(ctx, base);
 
-    g_textFontPicture = *pTextFontPicture;
+    g_fontPictureWidth = pTextFontPicture->m_TextureWidth;
+    g_fontPictureHeight = pTextFontPicture->m_TextureHeight;
 }
 
 // -------------- CSD MODIFIERS --------------- //
