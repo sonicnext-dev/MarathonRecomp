@@ -57,9 +57,9 @@ namespace Sonicteam
         bool m_IsStage;
         MARATHON_INSERT_PADDING(0x0C);
         be<uint32_t> m_Field1180;
-        MARATHON_INSERT_PADDING(0x58);
-        xpointer<stdx::vector<boost::shared_ptr<SoX::Scenery::Camera>>> m_pvspCameras;
-        MARATHON_INSERT_PADDING(0x7DC);
+        MARATHON_INSERT_PADDING(0x54);
+        stdx::vector<stdx::vector<boost::shared_ptr<SoX::Scenery::Camera>>> m_vvspCameras;
+        MARATHON_INSERT_PADDING(0x7D4);
         SoX::RefSharedPointer<SoX::Physics::World> m_spPhysicsWorld;
         xpointer<void> m_pMyCollisionFilter;
 
@@ -74,12 +74,12 @@ namespace Sonicteam
             return -1;
         }
 
-        SoX::Scenery::CameraImp* GetCameraImp(const char* pName) const
+        SoX::Scenery::CameraImp* GetCameraImp(const char* pName, int which = 0)
         {
-            if (!m_pvspCameras)
+            if (m_vvspCameras.empty())
                 return nullptr;
 
-            for (auto& spCamera : *m_pvspCameras)
+            for (auto& spCamera : m_vvspCameras[which])
             {
                 auto pCameraImp = (SoX::Scenery::CameraImp*)spCamera.get();
 
