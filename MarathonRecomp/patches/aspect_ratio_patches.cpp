@@ -1132,7 +1132,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             getVertex(0)->Y = getVertex(0)->Y + 7.0f;
             getVertex(2)->Y = getVertex(2)->Y + 7.0f;
 
-            // Crop UVs to move panel top to vertex edge.
+            // Crop top UVs to move panel top to vertex edge.
             getVertex(0)->V = getVertex(0)->V + 0.00675f;
             getVertex(2)->V = getVertex(2)->V + 0.00675f;
 
@@ -1144,17 +1144,21 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
             flipVertically();
 
-            // Extend to the top of the screen
-            // if the first clone no longer fits.
-            if (getVertex(1)->Y - height > 0.0f)
+            // Crop top UVs to reduce pattern repetition.
+            getVertex(0)->V = getVertex(0)->V + 0.005f;
+            getVertex(2)->V = getVertex(2)->V + 0.005f;
+
+            if (g_aspectRatio < NARROW_ASPECT_RATIO)
             {
+                // Extend to the top of the screen
+                // if the first clone no longer fits.
                 getVertex(1)->Y = 0.0f;
                 getVertex(3)->Y = 0.0f;
-            }
 
-            // Crop UVs to remove metal notch.
-            getVertex(1)->V = getVertex(1)->V + -0.067f;
-            getVertex(3)->V = getVertex(3)->V + -0.067f;
+                // Crop bottom UVs to remove metal notch.
+                getVertex(1)->V = getVertex(1)->V + -0.067f;
+                getVertex(3)->V = getVertex(3)->V + -0.067f;
+            }
 
             drawOriginal();
         }
@@ -1165,7 +1169,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             getVertex(1)->Y = getVertex(1)->Y - 20.0f;
             getVertex(3)->Y = getVertex(3)->Y - 20.0f;
 
-            // Crop UVs to move panel bottom to vertex edge.
+            // Crop bottom UVs to move panel bottom to vertex edge.
             getVertex(1)->V = getVertex(1)->V + -0.0168;
             getVertex(3)->V = getVertex(3)->V + -0.0168;
 
@@ -1177,17 +1181,21 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
             flipVertically();
 
-            // Extend to the bottom of the screen
-            // if the first clone no longer fits.
-            if (getVertex(0)->Y - height < vpHeight)
+            // Crop bottom UVs to reduce pattern repetition.
+            getVertex(1)->V = getVertex(1)->V + -0.005f;
+            getVertex(3)->V = getVertex(3)->V + -0.005f;
+
+            if (g_aspectRatio < NARROW_ASPECT_RATIO)
             {
+                // Extend to the bottom of the screen
+                // if the first clone no longer fits.
                 getVertex(0)->Y = vpHeight;
                 getVertex(2)->Y = vpHeight;
-            }
 
-            // Crop UVs to remove metal dip.
-            getVertex(0)->V = getVertex(0)->V + 0.065f;
-            getVertex(2)->V = getVertex(2)->V + 0.065f;
+                // Crop top UVs to remove metal dip.
+                getVertex(0)->V = getVertex(0)->V + 0.065f;
+                getVertex(2)->V = getVertex(2)->V + 0.065f;
+            }
 
             drawOriginal();
         }
