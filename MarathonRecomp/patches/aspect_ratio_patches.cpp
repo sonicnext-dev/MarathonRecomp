@@ -388,6 +388,9 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 {
     CsdModifier modifier{};
 
+    auto vpWidth = float(Video::s_viewportWidth);
+    auto vpHeight = float(Video::s_viewportHeight);
+
     if (g_castModifier.has_value())
     {
         modifier = g_castModifier.value();
@@ -401,9 +404,11 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
         modifier = g_sceneModifier.value();
     }
 
+    // Remove all flags if the aspect ratio is above 16:9.
     if ((modifier.Flags & CSD_MODIFIER_ULTRAWIDE_ONLY) != 0 && g_aspectRatio <= WIDE_ASPECT_RATIO)
         modifier.Flags &= (~modifier.Flags) | CSD_MODIFIER_ULTRAWIDE_ONLY;
 
+    // Remove all flags if the aspect ratio is below 16:9.
     if ((modifier.Flags & CSD_MODIFIER_NARROW_ONLY) != 0 && g_aspectRatio >= WIDE_ASPECT_RATIO)
         modifier.Flags &= (~modifier.Flags) | CSD_MODIFIER_NARROW_ONLY;
     
@@ -417,6 +422,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
         }
         else
         {
+            // Skip drawing this cast.
             return;
         }
     }
@@ -432,31 +438,38 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
         return;
     }
 
+    // Draw black bars if this cast is drawn.
     if ((modifier.Flags & CSD_BLACK_BAR) != 0)
         BlackBar::g_isVisible = true;
 
+    // Prohibit black bars from being drawn if this cast is drawn.
     if ((modifier.Flags & CSD_PROHIBIT_BLACK_BAR) != 0)
         BlackBar::g_isVisible = false;
 
     if (Config::UIAlignmentMode == EUIAlignmentMode::Centre || BlackBar::g_isVisible)
     {
+        // Prevent chevron arrows from being unaligned by centred aspect ratio.
         if ((modifier.Flags & CSD_CHEVRON) == 0)
         {
             if (g_aspectRatio > WIDE_ASPECT_RATIO)
             {
+                // Remove horizontal alignments at wide aspect ratios.
                 modifier.Flags &= ~(CSD_ALIGN_LEFT | CSD_ALIGN_RIGHT);
             }
             else if (g_aspectRatio < WIDE_ASPECT_RATIO)
             {
+                // Remove vertical alignments at narrow aspect ratios.
                 modifier.Flags &= ~(CSD_ALIGN_TOP | CSD_ALIGN_BOTTOM);
             }
         }
     }
 
-    uint32_t size = ctx.r5.u32 * stride;
+    // Reserve stack space for vertices.
+    auto size = ctx.r5.u32 * stride;
     ctx.r1.u32 -= size;
 
-    uint8_t* stack = base + ctx.r1.u32;
+    // Copy vertices to stack.
+    auto stack = base + ctx.r1.u32;
     memcpy(stack, base + ctx.r4.u32, size);
 
     struct CSDVertex
@@ -484,7 +497,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
     if (needsStretch && (modifier.Flags & CSD_STRETCH_HORIZONTAL) != 0)
     {
-        scaleX = Video::s_viewportWidth / 1280.0f;
+        scaleX = vpWidth / 1280.0f;
     }
     else
     {
@@ -493,7 +506,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
         if (needsStretch && (modifier.Flags & CSD_UNSTRETCH_HORIZONTAL) != 0)
         {
             pivotX = getVertex(0)->X;
-            offsetX = pivotX * Video::s_viewportWidth / 1280.0f;
+            offsetX = pivotX * vpWidth / 1280.0f;
         }
         else
         {
@@ -532,7 +545,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
     if ((modifier.Flags & CSD_STRETCH_VERTICAL) != 0)
     {
-        scaleY = Video::s_viewportHeight / 720.0f;
+        scaleY = vpHeight / 720.0f;
     }
     else
     {
@@ -556,11 +569,9 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
         }
     }
 
+    // Offset cast to movie aspect ratio boundaries.
     if ((modifier.Flags & CSD_MOVIE) != 0)
     {
-        auto vpWidth = float(Video::s_viewportWidth);
-        auto vpHeight = float(Video::s_viewportHeight);
-
         if (g_aspectRatio > g_aspectRatioMovie)
         {
             offsetX -= (vpWidth - (vpHeight * g_aspectRatioMovie)) / 2.0f;
@@ -574,14 +585,13 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
     if (g_aspectRatio > WIDE_ASPECT_RATIO)
     {
         CsdModifier offsetScaleModifier{};
-        float corner = 0.0f;
+
+        auto corner = 0.0f;
 
         if (g_castModifier.has_value())
         {
             offsetScaleModifier = g_castModifier.value();
-
-            uint32_t vertexIndex = ((offsetScaleModifier.Flags & CSD_STORE_LEFT_CORNER) != 0) ? 0 : 3;
-            corner = getVertex(vertexIndex)->X;
+            corner = getVertex(((offsetScaleModifier.Flags & CSD_STORE_LEFT_CORNER) != 0) ? 0 : 3)->X;
         }
 
         if (offsetScaleModifier.CornerMax == 0.0f && g_castNodeModifier.has_value())
@@ -604,7 +614,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
         if ((offsetScaleModifier.Flags & CSD_OFFSET_SCALE_LEFT) != 0)
             offsetX *= corner / offsetScaleModifier.CornerMax;
         else if ((offsetScaleModifier.Flags & CSD_OFFSET_SCALE_RIGHT) != 0)
-            offsetX = Video::s_viewportWidth - (Video::s_viewportWidth - offsetX) * (1280.0f - corner) / (1280.0f - offsetScaleModifier.CornerMax);
+            offsetX = vpWidth - (vpWidth - offsetX) * (1280.0f - corner) / (1280.0f - offsetScaleModifier.CornerMax);
     }
 
     auto firstX = 0.0f;
@@ -618,8 +628,8 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
     {
         auto vertex = getVertex(i);
 
-        float x = offsetX + (vertex->X - pivotX) * scaleX;
-        float y = offsetY + (vertex->Y - pivotY) * scaleY;
+        auto x = offsetX + (vertex->X - pivotX) * scaleX;
+        auto y = offsetY + (vertex->Y - pivotY) * scaleY;
 
         if ((modifier.Flags & CSD_EXTEND_LEFT) != 0 && (i == 0 || i == 1))
         {
@@ -631,7 +641,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             if ((modifier.Flags & CSD_POD_BASE) != 0)
                 g_podBaseRightX = x;
 
-            x = std::max(x, float(Video::s_viewportWidth));
+            x = std::max(x, vpWidth);
         }
 
         switch (i)
@@ -660,6 +670,22 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
         g_radarMapCoverWidth = width;
         g_radarMapCoverHeight = height;
     }
+
+    auto flipHorizontally = [&]()
+    {
+        getVertex(0)->X = getVertex(0)->X + width;
+        getVertex(1)->X = getVertex(1)->X + width;
+        getVertex(2)->X = getVertex(2)->X - width;
+        getVertex(3)->X = getVertex(3)->X - width;
+    };
+
+    auto flipVertically = [&]()
+    {
+        getVertex(0)->Y = getVertex(0)->Y + height;
+        getVertex(1)->Y = getVertex(1)->Y - height;
+        getVertex(2)->Y = getVertex(2)->Y + height;
+        getVertex(3)->Y = getVertex(3)->Y - height;
+    };
 
     auto applyUVModifier = [&](CsdUVs uvModifier)
     {
@@ -693,34 +719,22 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
     auto isRepeatLeft = (modifier.Flags & CSD_REPEAT_LEFT) != 0;
     auto isRepeatRight = (modifier.Flags & CSD_REPEAT_RIGHT) != 0;
-    auto isRepeatUp = (modifier.Flags & CSD_REPEAT_UP) != 0;
-    auto isRepeatDown = (modifier.Flags & CSD_REPEAT_DOWN) != 0;
 
-    if (isRepeatLeft || isRepeatRight || isRepeatUp || isRepeatDown)
+    auto r3 = ctx.r3;
+    auto r5 = ctx.r5;
+
+    if (isRepeatLeft || isRepeatRight)
     {
-        auto r3 = ctx.r3;
-        auto r5 = ctx.r5;
-
         auto isFlipHorz = (modifier.Flags & CSD_REPEAT_FLIP_HORIZONTAL) != 0;
         auto isFlipVert = (modifier.Flags & CSD_REPEAT_FLIP_VERTICAL) != 0;
 
         auto applyRepeatModifiers = [&]()
         {
             if (isFlipHorz)
-            {
-                getVertex(0)->X = getVertex(0)->X + width;
-                getVertex(1)->X = getVertex(1)->X + width;
-                getVertex(2)->X = getVertex(2)->X - width;
-                getVertex(3)->X = getVertex(3)->X - width;
-            }
+                flipHorizontally();
 
             if (isFlipVert)
-            {
-                getVertex(0)->Y = getVertex(0)->Y + height;
-                getVertex(1)->Y = getVertex(1)->Y - height;
-                getVertex(2)->Y = getVertex(2)->Y + height;
-                getVertex(3)->Y = getVertex(3)->Y - height;
-            }
+                flipVertically();
 
             if ((modifier.Flags & CSD_REPEAT_UV_MODIFIER) != 0)
                 applyUVModifier(modifier.RepeatUVs);
@@ -764,27 +778,30 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
                 if ((modifier.Flags & CSD_CHEVRON) != 0)
                 {
-                    auto endAlpha = (uint8_t)std::lerp(30, 10, x / float(Video::s_viewportWidth));
+                    ///////////////////////////////////////////////////////////
+                    // Clone foreground arrows to recreate chevron animation //
+                    ///////////////////////////////////////////////////////////
+
+                    // These values are based off the animation in background.xncp.
+                    auto endAlpha = (uint8_t)std::lerp(30, 10, x / vpWidth);
                     auto introDuration = CHEVRON_INTRO_DURATION;
                     auto introStartTime = (introDuration / 2.0f) * float(arrowIndex + 1) + g_bgArrowsEnd;
                     auto outroDuration = CHEVRON_OUTRO_DURATION;
                     auto outroStartTime = (g_fgArrowsEnd + introStartTime) + 0.5f;
 
+                    // This will be set by the last foreground arrow in the
+                    // sequence, therefore making it the loop end point.
                     g_chevronLoopTime = outroStartTime + outroDuration;
 
-                    if (g_fgArrows.count(arrowIndex))
-                    {
-                        g_fgArrows[arrowIndex].EndAlpha = endAlpha;
-                        g_fgArrows[arrowIndex].IntroDuration = introDuration;
-                        g_fgArrows[arrowIndex].IntroStartTime = introStartTime;
-                        g_fgArrows[arrowIndex].OutroDuration = outroDuration;
-                        g_fgArrows[arrowIndex].OutroStartTime = outroStartTime;
-                    }
-                    else
-                    {
-                        g_fgArrows.emplace(arrowIndex, ChevronAnim{ endAlpha, introDuration, introStartTime, outroDuration, outroStartTime });
-                    }
+                    // Store current arrow animation progress.
+                    auto& arrow = g_fgArrows[arrowIndex];
+                    arrow.EndAlpha = endAlpha;
+                    arrow.IntroDuration = introDuration;
+                    arrow.IntroStartTime = introStartTime;
+                    arrow.OutroDuration = outroDuration;
+                    arrow.OutroStartTime = outroStartTime;
 
+                    // Animate arrow position and alpha.
                     for (size_t i = 0; i < r5.u32; i++)
                     {
                         getVertex(i)->X = (getVertex(i)->X - arrowWidth) - g_bgArrows[arrowIndex].CurrentOffsetX;
@@ -795,10 +812,12 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
                 }
                 else
                 {
+                    // Move cloned cast to left edge of existing cast.
                     for (size_t i = 0; i < r5.u32; i++)
                         getVertex(i)->X = getVertex(i)->X - width;
                 }
 
+                // Update loop condition.
                 x = getVertex(2)->X;
 
                 applyRepeatModifiers();
@@ -828,7 +847,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
                     getVertex(i)->X = getVertex(i)->X - arrowWidth;
 
                 // Compute number of background arrows.
-                while (x < float(Video::s_viewportWidth))
+                while (x < vpWidth)
                 {
                     x = x + arrowWidth;
                     arrowCount++;
@@ -840,7 +859,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
                 x = getVertex(0)->X;
             }
 
-            while (x < float(Video::s_viewportWidth))
+            while (x < vpWidth)
             {
                 ctx.r3 = r3;
                 ctx.r4 = ctx.r1;
@@ -849,25 +868,26 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
                 if ((modifier.Flags & CSD_CHEVRON) != 0)
                 {
-                    auto endAlpha = (uint8_t)std::lerp(10, 35, x / float(Video::s_viewportWidth));
+                    ///////////////////////////////////////////////////////////
+                    // Clone background arrows to recreate chevron animation //
+                    ///////////////////////////////////////////////////////////
+
+                    // These values are based off the animation in background.xncp.
+                    auto endAlpha = (uint8_t)std::lerp(10, 35, x / vpWidth);
                     auto introDuration = CHEVRON_INTRO_DURATION;
                     auto introStartTime = (introDuration / 2.0f) * float(arrowIndex + 1);
                     auto outroDuration = CHEVRON_OUTRO_DURATION;
                     auto outroStartTime = (g_bgArrowsEnd + introStartTime) + 0.5f;
 
-                    if (g_bgArrows.count(arrowIndex))
-                    {
-                        g_bgArrows[arrowIndex].EndAlpha = endAlpha;
-                        g_bgArrows[arrowIndex].IntroDuration = introDuration;
-                        g_bgArrows[arrowIndex].IntroStartTime = introStartTime;
-                        g_bgArrows[arrowIndex].OutroDuration = outroDuration;
-                        g_bgArrows[arrowIndex].OutroStartTime = outroStartTime;
-                    }
-                    else
-                    {
-                        g_bgArrows.emplace(arrowIndex, ChevronAnim{ endAlpha, introDuration, introStartTime, outroDuration, outroStartTime });
-                    }
+                    // Store current arrow animation progress.
+                    auto& arrow = g_bgArrows[arrowIndex];
+                    arrow.EndAlpha = endAlpha;
+                    arrow.IntroDuration = introDuration;
+                    arrow.IntroStartTime = introStartTime;
+                    arrow.OutroDuration = outroDuration;
+                    arrow.OutroStartTime = outroStartTime;
 
+                    // Animate arrow position and alpha.
                     for (size_t i = 0; i < r5.u32; i++)
                     {
                         getVertex(i)->X = (getVertex(i)->X + arrowWidth) + g_bgArrows[arrowIndex].CurrentOffsetX;
@@ -878,32 +898,30 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
                 }
                 else
                 {
+                    // Move cloned cast to right edge of existing cast.
                     for (size_t i = 0; i < r5.u32; i++)
                         getVertex(i)->X = getVertex(i)->X + width;
                 }
 
+                // Update loop condition.
                 x = getVertex(0)->X;
 
                 applyRepeatModifiers();
 
+                // Extend to the right of the screen.
                 if ((modifier.Flags & CSD_REPEAT_EXTEND) != 0)
                 {
                     for (size_t i = 0; i < r5.u32; i++)
                     {
                         if (i == (isFlipHorz ? 0 : 2) || i == (isFlipHorz ? 1 : 3))
-                            getVertex(i)->X = std::max(getVertex(i)->X.get(), float(Video::s_viewportWidth));
+                            getVertex(i)->X = std::max(getVertex(i)->X.get(), vpWidth);
                     }
                 }
             }
         }
-
-        ctx.r1.u32 += size;
     }
     else
     {
-        auto r3 = ctx.r3;
-        auto r5 = ctx.r5;
-
         ctx.r3 = r3;
         ctx.r4 = ctx.r1;
         ctx.r5 = r5;
@@ -917,7 +935,6 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             auto v1 = getVertex(1);
             auto v2 = getVertex(2);
             auto v3 = getVertex(3);
-            auto vpWidth = (float)Video::s_viewportWidth;
 
             // Shift cloned element to base edge.
             v0->X = g_podBaseRightX;
@@ -954,9 +971,6 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
             auto originalTop = v0->Y;
             auto originalHeight = v1->Y - v0->Y;
-
-            auto vpWidth = float(Video::s_viewportWidth);
-            auto vpHeight = float(Video::s_viewportHeight);
 
             auto width = 422.0f;
             auto height = 132.0f;
@@ -1041,9 +1055,146 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             ctx.r5 = r5;
             original(ctx, base);
         }
-
-        ctx.r1.u32 += size;
     }
+
+    if (g_aspectRatio > WIDE_ASPECT_RATIO)
+    {
+        /////////////////////////////////////////////////
+        //  Scale metal borders to wide aspect ratios  //
+        /////////////////////////////////////////////////
+
+        if ((modifier.Flags & CSD_MAIN_MENU_PARTS_CAST_0222) != 0)
+        {
+            // Move cloned cast to left edge of existing cast.
+            for (size_t i = 0; i < r5.u32; i++)
+                getVertex(i)->X = getVertex(i)->X - width;
+
+            flipHorizontally();
+
+            // Extend to the left of the screen.
+            getVertex(2)->X = 0.0f;
+            getVertex(3)->X = 0.0f;
+
+            // Crop UVs to remove metal notch.
+            getVertex(0)->U = getVertex(0)->U + 0.0015f;
+            getVertex(1)->U = getVertex(1)->U + 0.0015f;
+            getVertex(2)->U = getVertex(2)->U + -0.1f;
+            getVertex(3)->U = getVertex(3)->U + -0.1f;
+
+            ctx.r3 = r3;
+            ctx.r4 = ctx.r1;
+            ctx.r5 = r5;
+            original(ctx, base);
+        }
+
+        if ((modifier.Flags & CSD_MAIN_MENU_PARTS_CAST_0226) != 0)
+        {
+            // Move cloned cast to left edge of existing cast.
+            for (size_t i = 0; i < r5.u32; i++)
+                getVertex(i)->X = getVertex(i)->X - width;
+
+            flipHorizontally();
+
+            // Extend to the left of the screen.
+            getVertex(2)->X = 0.0f;
+            getVertex(3)->X = 0.0f;
+
+            // Crop UVs to remove metal dip.
+            getVertex(2)->U = getVertex(2)->U + -0.8f;
+            getVertex(3)->U = getVertex(3)->U + -0.8f;
+
+            ctx.r3 = r3;
+            ctx.r4 = ctx.r1;
+            ctx.r5 = r5;
+            original(ctx, base);
+        }
+
+        if ((modifier.Flags & CSD_MAIN_MENU_PARTS_CAST_0227) != 0)
+        {
+            // Move cloned cast to right edge of existing cast.
+            for (size_t i = 0; i < r5.u32; i++)
+                getVertex(i)->X = getVertex(i)->X + width;
+
+            flipHorizontally();
+
+            // Extend to the right of the screen.
+            getVertex(0)->X = vpWidth;
+            getVertex(1)->X = vpWidth;
+
+            // Crop UVs to remove metal dip.
+            getVertex(0)->U = getVertex(0)->U + -0.8f;
+            getVertex(1)->U = getVertex(1)->U + -0.8f;
+
+            ctx.r3 = r3;
+            ctx.r4 = ctx.r1;
+            ctx.r5 = r5;
+            original(ctx, base);
+        }
+    }
+    else
+    {
+        /////////////////////////////////////////////////
+        // Scale metal borders to narrow aspect ratios //
+        /////////////////////////////////////////////////
+
+        if ((modifier.Flags & (CSD_MAIN_MENU_PARTS_CAST_0221 | CSD_MAIN_MENU_PARTS_CAST_0222)) != 0)
+        {
+            // Move cloned cast above existing cast.
+            for (size_t i = 0; i < r5.u32; i++)
+                getVertex(i)->Y = getVertex(i)->Y - height + 6.0f;
+
+            flipVertically();
+
+            // Extend to the top of the screen
+            // if the first clone no longer fits.
+            if (getVertex(1)->Y - height > 0.0f)
+            {
+                getVertex(1)->Y = 0.0f;
+                getVertex(3)->Y = 0.0f;
+            }
+
+            // Crop UVs to remove metal notch.
+            getVertex(0)->V = getVertex(0)->V + 0.005f;
+            getVertex(1)->V = getVertex(1)->V + -0.075f;
+            getVertex(2)->V = getVertex(2)->V + 0.005f;
+            getVertex(3)->V = getVertex(3)->V + -0.075f;
+
+            ctx.r3 = r3;
+            ctx.r4 = ctx.r1;
+            ctx.r5 = r5;
+            original(ctx, base);
+        }
+
+        if ((modifier.Flags & (CSD_MAIN_MENU_PARTS_CAST_0226 | CSD_MAIN_MENU_PARTS_CAST_0227)) != 0)
+        {
+            // Move cloned cast below existing cast.
+            for (size_t i = 0; i < r5.u32; i++)
+                getVertex(i)->Y = getVertex(i)->Y + height - 18.0f;
+
+            flipVertically();
+
+            // Extend to the bottom of the screen
+            // if the first clone no longer fits.
+            if (getVertex(0)->Y - height < vpHeight)
+            {
+                getVertex(0)->Y = vpHeight;
+                getVertex(2)->Y = vpHeight;
+            }
+
+            // Crop UVs to remove metal dip.
+            getVertex(0)->V = getVertex(0)->V + 0.065f;
+            getVertex(1)->V = getVertex(1)->V + -0.0175f;
+            getVertex(2)->V = getVertex(2)->V + 0.065f;
+            getVertex(3)->V = getVertex(3)->V + -0.0175f;
+
+            ctx.r3 = r3;
+            ctx.r4 = ctx.r1;
+            ctx.r5 = r5;
+            original(ctx, base);
+        }
+    }
+
+    ctx.r1.u32 += size;
 }
 
 // Sonicteam::CPlatformMarathon::Draw
@@ -1051,8 +1202,8 @@ PPC_FUNC_IMPL(__imp__sub_826315C8);
 PPC_FUNC(sub_826315C8)
 {
     // r3 = Sonicteam::CPlatformMarathon*
-    // r4 = pointer to vertices
-    // r5 = vertex count
+    // r4 = Vertex[r5]
+    // r5 = Vertex Count
 
     Draw(ctx, base, __imp__sub_826315C8, 0x14);
 }
@@ -1062,8 +1213,8 @@ PPC_FUNC_IMPL(__imp__sub_82631718);
 PPC_FUNC(sub_82631718)
 {
     // r3 = Sonicteam::CPlatformMarathon*
-    // r4 = pointer to vertices
-    // r5 = vertex count
+    // r4 = Vertex[r5]
+    // r5 = Vertex Count
 
     Draw(ctx, base, __imp__sub_82631718, 0x0C);
 }
@@ -1739,14 +1890,14 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/main_menu/mission_text/rank"), { CSD_SCALE } },
     { HashStr("sprite/main_menu/mission_text/item_icon"), { CSD_SCALE } },
     { HashStr("sprite/main_menu/mission_text/m_ring_icon"), { CSD_SCALE } },
-    { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0221"), { CSD_SCALE | CSD_EXTEND_RIGHT | CSD_REPEAT_UP | CSD_REPEAT_FLIP_VERTICAL | CSD_REPEAT_UV_MODIFIER, {}, {}, { 0, 0, 0, 0, 0, 0, 0, 0 } } },
-    { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0222"), { CSD_SCALE | CSD_UV_MODIFIER | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, { 0.0015f, 0, 0.0015f, 0, 0, 0, 0, 0 }, {}, { 0.1f, 0, 0.1f, 0, -0.1f, 0, -0.1f, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0221"), { CSD_MAIN_MENU_PARTS_CAST_0221 | CSD_SCALE | CSD_EXTEND_RIGHT, { 0, 0.005f, 0, 0, 0, 0.005f, 0, 0 }, {}, { 0, 0, 0, -0.0175f, 0, 0, 0, -0.0175f } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0218/Cast_0222"), { CSD_MAIN_MENU_PARTS_CAST_0222 | CSD_SCALE | CSD_UV_MODIFIER, { 0.0015f, 0, 0.0015f, 0, 0, 0, 0, 0 } } },
     { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0964"), { CSD_SCALE | CSD_EXTEND_RIGHT } },
     { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0965"), { CSD_SCALE | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.5f, 0, -0.5f, 0 } } },
     { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0966"), { CSD_SCALE } },
     { HashStr("sprite/main_menu/main_menu_parts/Null_0960/Cast_0966/Cast_0967"), { CSD_SCALE } },
-    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0226"), { CSD_SCALE | CSD_REPEAT_LEFT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, {}, {}, { 0, 0, 0, 0, -0.8f, 0, -0.8f, 0 } } },
-    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0227"), { CSD_SCALE | CSD_REPEAT_RIGHT | CSD_REPEAT_FLIP_HORIZONTAL | CSD_REPEAT_EXTEND | CSD_REPEAT_UV_MODIFIER, {}, {}, { -0.8f, 0, -0.8f, 0, 0, 0, 0, 0 } } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0226"), { CSD_MAIN_MENU_PARTS_CAST_0226 | CSD_SCALE } },
+    { HashStr("sprite/main_menu/main_menu_parts/Null_0224/Cast_0227"), { CSD_MAIN_MENU_PARTS_CAST_0227 | CSD_SCALE } },
     { HashStr("sprite/main_menu/titlebar_effect"), { CSD_SCALE } },
 
     // map_twn
