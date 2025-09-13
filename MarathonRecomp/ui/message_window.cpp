@@ -387,7 +387,7 @@ void MessageWindow::Draw()
         }
     }
 
-    ImVec2 msgMin = { g_aspectRatioOffsetX + Scale(96), Scale(96) };
+    ImVec2 msgMin = { g_aspectRatioOffsetX + Scale(96), g_aspectRatioOffsetY + Scale(96) };
     ImVec2 msgMax = { msgMin.x + Scale(1088), msgMin.y + Scale(384) };
     ImVec2 msgCentre = { (msgMin.x / 2) + (msgMax.x / 2), (msgMin.y / 2) + (msgMax.y / 2) };
 
@@ -408,7 +408,7 @@ void MessageWindow::Draw()
 
     drawList->PopClipRect();
 
-    ImVec2 selMin = { msgMin.x, msgMax.y + (msgMin.y / 2) };
+    ImVec2 selMin = { msgMin.x, msgMax.y + ((msgMin.y - g_aspectRatioOffsetY) / 2) };
     ImVec2 selMax = { msgMax.x, selMin.y + Scale(128) };
 
     DrawContainer(selMin, selMax);

@@ -17,9 +17,10 @@ namespace Sonicteam::SoX::Engine
         xpointer<Task> m_pDocModeExecutor;
         MARATHON_INSERT_PADDING(0x3C);
 
-        template <typename T>
-        inline T* GetDocMode();
+        template <typename T = DocMode>
+        inline T* GetDocMode()
+        {
+            return (T*)m_pDocMode.get();
+        }
     };
 }
-
-#include <Sonicteam/SoX/Engine/Doc.inl>

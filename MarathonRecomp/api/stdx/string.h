@@ -34,12 +34,12 @@ namespace stdx
 
         size_t size() const
         {
-            return _Mysize;
+            return _Mysize.get();
         }
 
         size_t capacity() const
         {
-            return _Myres;
+            return _Myres.get();
         }
 
         string()

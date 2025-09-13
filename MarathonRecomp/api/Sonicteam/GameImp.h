@@ -1,9 +1,13 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <boost/smart_ptr/shared_ptr.h>
 #include <Sonicteam/SoX/Physics/World.h>
+#include <Sonicteam/SoX/Scenery/Camera.h>
+#include <Sonicteam/SoX/Scenery/CameraImp.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
 #include <Sonicteam/SoX/RefCountObject.h>
+#include <stdx/vector.h>
 
 namespace Sonicteam
 {
@@ -53,14 +57,13 @@ namespace Sonicteam
         bool m_IsStage;
         MARATHON_INSERT_PADDING(0x0C);
         be<uint32_t> m_Field1180;
-        MARATHON_INSERT_PADDING(0x838);
+        MARATHON_INSERT_PADDING(0x58);
+        xpointer<stdx::vector<boost::shared_ptr<SoX::Scenery::Camera>>> m_pvspCameras;
+        MARATHON_INSERT_PADDING(0x7DC);
         SoX::RefSharedPointer<SoX::Physics::World> m_spPhysicsWorld;
         xpointer<void> m_pMyCollisionFilter;
 
-        template <typename T>
-        inline T* GetPhysicsWorld();
-
-        int32_t PlayerActorIDToIndex(int32_t actorId) const
+        int PlayerActorIDToIndex(int32_t actorId) const
         {
             for (int i = 0; i < 4; i++)
             {
@@ -70,7 +73,27 @@ namespace Sonicteam
 
             return -1;
         }
+
+        SoX::Scenery::CameraImp* GetCameraImp(const char* pName) const
+        {
+            if (!m_pvspCameras)
+                return nullptr;
+
+            for (auto& spCamera : *m_pvspCameras)
+            {
+                auto pCameraImp = (SoX::Scenery::CameraImp*)spCamera.get();
+
+                if (pCameraImp->m_Name == pName)
+                    return pCameraImp;
+            }
+
+            return nullptr;
+        }
+
+        template <typename T = SoX::Physics::World>
+        T* GetPhysicsWorld() const
+        {
+            return (T*)m_spPhysicsWorld.get();
+        }
     };
 }
-
-#include <Sonicteam/GameImp.inl>

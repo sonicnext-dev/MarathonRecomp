@@ -103,29 +103,34 @@ address = 0x82512B10
 registers = ["r3", "r4"]
 
 [[midasm_hook]]
-name = "ContextualHUD_LIFE_BER_ANIME_1"
-address = 0x824D8044
-registers = ["r5", "r31"]
+name = "SetLifeBarAnimation"
+address = 0x824D804C
+registers = ["r3", "r4", "r5", "r31"]
 
 [[midasm_hook]]
-name = "ContextualHUD_LIFE_BER_ANIME_1"
-address = 0x824D80A0
-registers = ["r5", "r31"]
+name = "SetLifeBarAnimation"
+address = 0x824D80A8
+registers = ["r3", "r4", "r5", "r31"]
 
 [[midasm_hook]]
-name = "ContextualHUD_LIFE_BER_ANIME_1"
-address = 0x824D8F2C
-registers = ["r5", "r31"]
+name = "SetLifeBarAnimation"
+address = 0x824D8F34
+registers = ["r3", "r4", "r5", "r31"]
 
 [[midasm_hook]]
-name = "ContextualHUD_RING_1"
-address = 0x824DEB38
+name = "SetRingBarIndex"
+address = 0x824DEB40
 registers = ["r5", "r31"]
 
 [[midasm_hook]]
 name = "PostureDisableEdgeGrabLeftover"
 address = 0x82200568
 registers = ["r31"]
+
+[[midasm_hook]]
+name = "BeginBlockGetName"
+address = 0x82607850
+registers = ["r3"]
 
 [[midasm_hook]]
 name = "PedestrianAnimationLOD"
@@ -253,6 +258,28 @@ address = 0x8264B4E4
 registers = ["r19"]
 
 [[midasm_hook]]
+name = "RenderCsdCastNodeMidAsmHook"
+address = 0x828C8FBC
+registers = ["r10", "r24"]
+
+[[midasm_hook]]
+name = "RenderCsdCastMidAsmHook"
+address = 0x828C8FFC
+registers = ["r4"]
+
+# Redirect tagdisplay_2p to tagdisplay_1p
+[[midasm_hook]]
+name = "Load2PDisplayMidAsmHook"
+address = 0x824DAE90
+jump_address = 0x824DAE94
+
+# Redirect battledisplay_2p to battledisplay_1p
+[[midasm_hook]]
+name = "Load2PDisplayMidAsmHook"
+address = 0x824DADE8
+jump_address = 0x824DADEC
+
+[[midasm_hook]]
 name = "TitleTask_RedirectStateTransitionToOutroAnim"
 address = 0x82512C90
 registers = ["r31"]
@@ -337,6 +364,26 @@ jump_address = 0x8258E308
 name = "NOP"
 address = 0x8258E600
 jump_address = 0x8258E604
+
+[[midasm_hook]]
+name = "TextEntityAlloc"
+address = 0x825EDB70
+registers = ["r3"]
+
+[[midasm_hook]]
+name = "TextEntityAlloc"
+address = 0x825EDCEC
+registers = ["r3"]
+
+[[midasm_hook]]
+name = "CameraImp_SetFOV"
+address = 0x82590980
+registers = ["f1"]
+
+[[midasm_hook]]
+name = "CameraImp_SetFOV"
+address = 0x82590AB4
+registers = ["f1"]
 
 [[midasm_hook]]
 name = "SonicCamera_InvertAzDriveK"
