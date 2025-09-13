@@ -106,17 +106,20 @@ inline size_t strlenU16(const uint16_t* str)
     return result;
 }
 
-inline bool strcmpU16(const uint16_t* a, const uint16_t* b)
+inline bool strcmpU16(const uint16_t* a, const uint16_t* b, bool endianSwapA = false, bool endianSwapB = false)
 {
     for (size_t i = 0; i < strlenU16(a); i += 2)
     {
-        if (a[i] != 0 && b[i] == 0)
+        auto c1 = endianSwapA ? ByteSwap(a[i]) : a[i];
+        auto c2 = endianSwapB ? ByteSwap(b[i]) : b[i];
+
+        if (c1 != 0 && c2 == 0)
             return false;
 
-        if (a[i] == 0 && b[i] != 0)
+        if (c1 == 0 && c2 != 0)
             return false;
 
-        if (a[i] != b[i])
+        if (c1 != c2)
             return false;
     }
 

@@ -6,5 +6,6 @@
 class MainMenuTaskPatches
 {
 public:
+    static inline Sonicteam::MainMenuTask::MainMenuState State{};
     static inline std::vector<IContextHookEvent<Sonicteam::MainMenuTask>*> Events{};
 };

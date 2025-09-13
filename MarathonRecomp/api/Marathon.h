@@ -37,6 +37,7 @@
 #include "Sonicteam/HUDLimitTime.h"
 #include "Sonicteam/HUDLoading.h"
 #include "Sonicteam/HUDMainDisplay.h"
+#include "Sonicteam/HUDMainMenu.h"
 #include "Sonicteam/HUDMessageWindow.h"
 #include "Sonicteam/HUDPopupScreen.h"
 #include "Sonicteam/HUDRaderMap.h"

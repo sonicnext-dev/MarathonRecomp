@@ -6,6 +6,8 @@ PPC_FUNC(sub_824FFCF8)
 {
     auto pMainMenuTask = (Sonicteam::MainMenuTask*)(base + ctx.r3.u32);
 
+    MainMenuTaskPatches::State = (Sonicteam::MainMenuTask::MainMenuState)pMainMenuTask->m_State.get();
+
     for (auto& event : MainMenuTaskPatches::Events)
         event->Update(pMainMenuTask, ctx.f1.f64);
 

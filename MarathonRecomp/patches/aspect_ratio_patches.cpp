@@ -1621,6 +1621,56 @@ void SetTextEntityModifier(Sonicteam::TextEntity* pTextEntity, uint64_t flags)
     pTextEntity->Update();
 }
 
+// Sonicteam::HUDMainMenu::Update
+PPC_FUNC_IMPL(__imp__sub_824E11D0);
+PPC_FUNC(sub_824E11D0)
+{
+    auto pHUDMainMenu = (Sonicteam::HUDMainMenu*)(base + ctx.r3.u32);
+    auto pHudTextRoot = pHUDMainMenu->m_pHudTextRoot->m_pNext;
+
+    static bool s_preservedTextPositions{};
+    static float s_multiplayerTextOffsetX{};
+    static float s_tagTextOffsetX{};
+    static float s_battleTextOffsetX{};
+
+    auto isTrialSelect = MainMenuTaskPatches::State >= 12 && MainMenuTaskPatches::State <= 15;
+    auto isTag = MainMenuTaskPatches::State == Sonicteam::MainMenuTask::MainMenuState_Tag;
+
+    while (pHudTextRoot)
+    {
+        if (pHudTextRoot->m_SceneName == "main_menu")
+        {
+            if (pHudTextRoot->m_CastName == "multi_player")
+            {
+                if (!s_preservedTextPositions)
+                    s_multiplayerTextOffsetX = pHudTextRoot->m_OffsetX;
+
+                pHudTextRoot->m_OffsetX = isTrialSelect ? -10000.0f : s_multiplayerTextOffsetX;
+            }
+            else if (pHudTextRoot->m_CastName == "tag")
+            {
+                if (!s_preservedTextPositions)
+                    s_tagTextOffsetX = pHudTextRoot->m_OffsetX;
+
+                pHudTextRoot->m_OffsetX = (isTrialSelect || isTag) ? -10000.0f : s_tagTextOffsetX;
+            }
+            else if (pHudTextRoot->m_CastName == "battle")
+            {
+                if (!s_preservedTextPositions)
+                    s_battleTextOffsetX = pHudTextRoot->m_OffsetX;
+
+                pHudTextRoot->m_OffsetX = isTrialSelect ? -10000.0f : s_battleTextOffsetX;
+            }
+        }
+
+        pHudTextRoot = pHudTextRoot->m_pNext;
+    }
+
+    s_preservedTextPositions = true;
+
+    __imp__sub_824E11D0(ctx, base);
+}
+
 // Sonicteam::HUDMainDisplay::Update
 PPC_FUNC_IMPL(__imp__sub_824DCF40);
 PPC_FUNC(sub_824DCF40)
@@ -1628,9 +1678,9 @@ PPC_FUNC(sub_824DCF40)
     auto pHUDMainDisplay = (Sonicteam::HUDMainDisplay*)(base + ctx.r3.u32);
 
     SetTextEntityModifier(pHUDMainDisplay->m_Field184.get(), CSD_ALIGN_RIGHT | CSD_SCALE);
-    SetTextEntityModifier(pHUDMainDisplay->m_TrickPointText.get(), CSD_ALIGN_RIGHT | CSD_SCALE);
+    SetTextEntityModifier(pHUDMainDisplay->m_spTrickPointText.get(), CSD_ALIGN_RIGHT | CSD_SCALE);
     SetTextEntityModifier(pHUDMainDisplay->m_Field194.get(), CSD_ALIGN_RIGHT | CSD_SCALE);
-    SetTextEntityModifier(pHUDMainDisplay->m_SavePointTimeText.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
+    SetTextEntityModifier(pHUDMainDisplay->m_spSavePointTimeText.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
 
     __imp__sub_824DCF40(ctx, base);
 }
