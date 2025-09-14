@@ -1634,6 +1634,16 @@ void SetTextEntityModifier(Sonicteam::TextEntity* pTextEntity, uint64_t flags)
     pTextEntity->Update();
 }
 
+// Sonicteam::HUDMainMenu::Destroy
+PPC_FUNC_IMPL(__imp__sub_824E2978);
+PPC_FUNC(sub_824E2978)
+{
+    g_bgArrows.clear();
+    g_fgArrows.clear();
+
+    __imp__sub_824E2978(ctx, base);
+}
+
 // Sonicteam::HUDMainMenu::Update
 PPC_FUNC_IMPL(__imp__sub_824E11D0);
 PPC_FUNC(sub_824E11D0)
