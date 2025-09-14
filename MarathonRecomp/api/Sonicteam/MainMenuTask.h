@@ -28,7 +28,8 @@ namespace Sonicteam
             MainMenuState_AudioRoom = 0x2F,
             MainMenuState_TheaterRoom = 0x31,
             MainMenuState_Options = 0x33,
-            MainMenuState_MainMenuExit = 0x3C
+            MainMenuState_MainMenuExitToStage = 0x3B,
+            MainMenuState_MainMenuExitToTitle = 0x3C
         };
 
         be<uint32_t> m_State;
