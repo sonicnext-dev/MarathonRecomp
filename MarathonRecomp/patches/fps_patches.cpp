@@ -2,7 +2,6 @@
 #include <user/config.h>
 #include <app.h>
 
-
 // Sonicteam::SoX::Physics::Havok::WorldHavok::Update
 PPC_FUNC_IMPL(__imp__sub_82587AA8);
 PPC_FUNC(sub_82587AA8)
@@ -122,20 +121,24 @@ void PlayerObject_ProcessMsgSuckPlayer_FixDeltaTime(PPCRegister& message, PPCReg
     auto pMessage = (MsgSuckPlayerEx*)g_memory.Translate(message.u32);
 
     deltaTime.f64 = pMessage->DeltaTime;
-
-//not need anything here
-void ParticleHFR_826454C8(PPCRegister& f31)
-{
-
 }
 
 void ParticleHFR_82670658(PPCRegister& f1,PPCRegister& stack)
 {
-    auto delta = ((be<double>*)(g_memory.Translate(stack.u32 + 0x1A0 - 0x48 - 8)))->get();
-    f1.f64 = App::s_deltaTime; //find delta normally, someday
+    f1.f64 = App::s_deltaTime; 
 }
 
 void ParticleHFR_8266A418_1(PPCRegister& f31,PPCRegister& stack)
 {
-    f31.f64 = App::s_deltaTime; //find delta normally, someday
+    f31.f64 = App::s_deltaTime; 
+}
+
+void ParticleHFR_82673F88(PPCRegister& f13,PPCRegister& stack)
+{
+    f13.f64 = App::s_deltaTime; 
+}
+
+void ParticleHFR_82674550(PPCRegister& f13,PPCRegister& stack)
+{
+    f13.f64 = App::s_deltaTime;
 }
