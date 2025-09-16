@@ -10,7 +10,7 @@ namespace Sonicteam::SoX::Graphics
     public:
         xpointer<void> m_pVftable;
         MARATHON_INSERT_PADDING(8);
-        xpointer<FrameObserver> m_pThis;
+        xpointer<FrameObserver> m_pParent;
         xpointer<FrameGP> m_pFrameGP;
     };
 }

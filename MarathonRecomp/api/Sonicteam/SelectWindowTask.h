@@ -12,5 +12,7 @@ namespace Sonicteam
         be<uint32_t> m_ChosenIndex;
         MARATHON_INSERT_PADDING(0x28);
         be<uint32_t> m_SelectedIndex;
+        MARATHON_INSERT_PADDING(0x14);
+        be<uint32_t> m_BreatheFrame;
     };
 }
