@@ -508,3 +508,33 @@ registers = ["r28", "f1"]
 name = "PlayerObject_ProcessMsgSuckPlayer_FixDeltaTime"
 address = 0x8219B660
 registers = ["r28", "f31"]
+
+[[midasm_hook]]
+name = "HUDLoadingAlloc"
+address = 0x824FAE14
+registers = ["r3"]
+
+[[midasm_hook]]
+name = "HUDLoadingAlloc"
+address = 0x824FAF60
+registers = ["r3"]
+
+[[midasm_hook]]
+name = "HUDLoadingAlloc"
+address = 0x824FB008
+registers = ["r3"]
+
+[[midasm_hook]]
+name = "HUDLoading_DeltaTimeFix"
+address = 0x824D7510
+registers = ["r31", "f1"]
+
+[[midasm_hook]]
+name = "HUDWindow_PreserveDeltaTime"
+address = 0x824FA03C
+registers = ["f31", "f1"]
+
+[[midasm_hook]]
+name = "HUDWindow_Callback"
+address = 0x824FA088
+registers = ["f1", "f31"]

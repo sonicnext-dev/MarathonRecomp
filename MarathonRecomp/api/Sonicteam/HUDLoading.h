@@ -9,10 +9,13 @@ namespace Sonicteam
     public:
         enum HUDLoadingFlags
         {
-            HUDLoadingFlags_Finished = 6
+            HUDLoadingFlags_Finished = 6,
+            HUDLoadingFlags_Open = 0x200,
+            HUDLoadingFlags_End = 0x400
         };
 
         MARATHON_INSERT_PADDING(0x5C);
         be<uint32_t> m_Flags;
+        MARATHON_INSERT_PADDING(8);
     };
 }
