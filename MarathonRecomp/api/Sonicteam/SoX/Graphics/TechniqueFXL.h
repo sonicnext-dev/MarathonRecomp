@@ -10,7 +10,7 @@ namespace Sonicteam::SoX::Graphics
     public:
         xpointer<void> m_pShader;
         MARATHON_INSERT_PADDING(0x10);
-        xpointer<TechniqueFXL> m_pThis;
+        xpointer<TechniqueFXL> m_pParent;
         MARATHON_INSERT_PADDING(4);
         stdx::string m_TechniqueName;
     };
