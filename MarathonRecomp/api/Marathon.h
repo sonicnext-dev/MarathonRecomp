@@ -59,6 +59,7 @@
 #include "Sonicteam/MyTexture.h"
 #include "Sonicteam/MyTransforms.h"
 #include "Sonicteam/NoSyncThread.h"
+#include "Sonicteam/PauseTask.h"
 #include "Sonicteam/Player/IDynamicLink.h"
 #include "Sonicteam/Player/IExportExternalFlag.h"
 #include "Sonicteam/Player/IExportPostureRequestFlag.h"

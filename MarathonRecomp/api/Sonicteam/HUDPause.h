@@ -11,7 +11,8 @@ namespace Sonicteam
         xpointer<CsdObject> m_pCsdObject;
         MARATHON_INSERT_PADDING(0xA0);
         be<float> m_TextPriority;
-        MARATHON_INSERT_PADDING(0x44);
+        MARATHON_INSERT_PADDING(0x40);
+        xpointer<HudTextParts> m_pHudTextRoot;
         bool m_ShowMissionWindow;
     };
 }
