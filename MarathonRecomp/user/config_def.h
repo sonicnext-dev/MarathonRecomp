@@ -95,6 +95,7 @@ CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreChaosBoostJump, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreChaosSpearFlips, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreContextualHUDColours, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreDemoCameraMode, false, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, RestorePauseMissionText, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreSonicActionGauge, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, SkipIntroLogos, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, TailsGauge, false, false);
