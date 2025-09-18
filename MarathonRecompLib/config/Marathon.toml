@@ -568,3 +568,8 @@ registers = ["f31", "f1"]
 name = "HUDWindow_Callback"
 address = 0x824FA088
 registers = ["f1", "f31"]
+
+[[midasm_hook]]
+name = "PauseTask_SetMissionTextPriority"
+address = 0x82509AEC
+registers = ["f1"]

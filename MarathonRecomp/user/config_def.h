@@ -87,6 +87,7 @@ CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreContextualHUDColours, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreChaosSpearFlips, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreChaosBoostJump, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreChainJumpFlips, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, RestorePauseMissionText, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, DisableEdgeGrabLeftover, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, TailsGauge, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, PlayerDebugMode, false);
