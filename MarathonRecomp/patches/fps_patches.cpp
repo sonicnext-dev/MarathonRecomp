@@ -149,24 +149,9 @@ void PlayerObject_ProcessMsgSuckPlayer_FixDeltaTime(PPCRegister& message, PPCReg
     deltaTime.f64 = pMessage->DeltaTime;
 }
 
-void ParticleHFR_82670658(PPCRegister& f1,PPCRegister& stack)
+void Spanverse_GE1PE_DeltaTimeFix(PPCRegister& deltaTime)
 {
-    f1.f64 = App::s_deltaTime; 
-}
-
-void ParticleHFR_8266A418_1(PPCRegister& f31,PPCRegister& stack)
-{
-    f31.f64 = App::s_deltaTime; 
-}
-
-void ParticleHFR_82673F88(PPCRegister& f13,PPCRegister& stack)
-{
-    f13.f64 = App::s_deltaTime; 
-}
-
-void ParticleHFR_82674550(PPCRegister& f13,PPCRegister& stack)
-{
-    f13.f64 = App::s_deltaTime;
+    deltaTime.f64 = App::s_deltaTime;
 }
 
 // Allocate more space to store the previous loading
