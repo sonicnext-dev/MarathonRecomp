@@ -71,6 +71,7 @@
 #include "Sonicteam/NoSyncThread.h"
 #include "Sonicteam/ObjectVehicle.h"
 #include "Sonicteam/ObjectVehicleBike.h"
+#include "Sonicteam/PauseTask.h"
 #include "Sonicteam/Player/GroundRayListener.h"
 #include "Sonicteam/Player/ICollisionListener.h"
 #include "Sonicteam/Player/ICollisionListenerTemplate.h"
