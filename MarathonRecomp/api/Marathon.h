@@ -49,6 +49,7 @@
 #include "Sonicteam/HUDMainMenu.h"
 #include "Sonicteam/HUDMessageWindow.h"
 #include "Sonicteam/HUDOption.h"
+#include "Sonicteam/HUDPause.h"
 #include "Sonicteam/HUDPopupScreen.h"
 #include "Sonicteam/HUDRaderMap.h"
 #include "Sonicteam/HUDStageTitle.h"

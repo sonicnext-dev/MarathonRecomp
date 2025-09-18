@@ -25,7 +25,12 @@ namespace Sonicteam
         be<uint32_t> m_SelectedIndex;
         MARATHON_INSERT_PADDING(0x28);
         be<uint32_t> m_Buttons;
-        MARATHON_INSERT_PADDING(0x1E0);
+        MARATHON_INSERT_PADDING(0x1D8);
+        xpointer<TextEntity> m_pMissionText;
+        MARATHON_INSERT_PADDING(0x4);
         be<uint32_t> m_ItemCount;
     };
+
+    MARATHON_ASSERT_OFFSETOF(PauseTask, m_pMissionText, 0x27C);
+    MARATHON_ASSERT_OFFSETOF(PauseTask, m_ItemCount, 0x284);
 }

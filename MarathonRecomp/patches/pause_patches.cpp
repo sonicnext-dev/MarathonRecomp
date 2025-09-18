@@ -2,6 +2,8 @@
 #include <kernel/memory.h>
 #include <ui/options_menu.h>
 
+#include "aspect_ratio_patches.h"
+
 void AddPauseMenuItem
 (
     Sonicteam::TextBook* in_pTextBook,
@@ -106,6 +108,8 @@ PPC_FUNC(sub_82509870)
             break;
         }
     }
+
+    SetTextEntityModifier(pPauseTask->m_pMissionText.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
 
     __imp__sub_82509870(ctx, base);
 }
