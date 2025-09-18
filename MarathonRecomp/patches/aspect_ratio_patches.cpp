@@ -1982,7 +1982,7 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     // pausemenu
     { HashStr("sprite/pausemenu/pausemenu/pause_menu"), { CSD_SCALE } },
     { HashStr("sprite/pausemenu/pausemenu/pause_menu_cursor"), { CSD_SCALE } },
-    { HashStr("sprite/pausemenu/pausemenu/mission"), { CSD_SCALE } },
+    { HashStr("sprite/pausemenu/pausemenu/mission"), { CSD_ALIGN_BOTTOM | CSD_SCALE } },
 
     // radarmap_cover
     { HashStr("sprite/radarmap_cover/radarmap_cover/Scene_0000"), { CSD_RADARMAP | CSD_ALIGN_TOP_RIGHT | CSD_SCALE } },
