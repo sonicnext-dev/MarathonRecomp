@@ -1,5 +1,6 @@
 #include <api/Marathon.h>
 #include <user/config.h>
+#include <app.h>
 
 constexpr double REFERENCE_DELTA_TIME = 1.0 / 60.0;
 
@@ -146,6 +147,26 @@ void PlayerObject_ProcessMsgSuckPlayer_FixDeltaTime(PPCRegister& message, PPCReg
     auto pMessage = (MsgSuckPlayerEx*)g_memory.Translate(message.u32);
 
     deltaTime.f64 = pMessage->DeltaTime;
+}
+
+void ParticleHFR_82670658(PPCRegister& f1,PPCRegister& stack)
+{
+    f1.f64 = App::s_deltaTime; 
+}
+
+void ParticleHFR_8266A418_1(PPCRegister& f31,PPCRegister& stack)
+{
+    f31.f64 = App::s_deltaTime; 
+}
+
+void ParticleHFR_82673F88(PPCRegister& f13,PPCRegister& stack)
+{
+    f13.f64 = App::s_deltaTime; 
+}
+
+void ParticleHFR_82674550(PPCRegister& f13,PPCRegister& stack)
+{
+    f13.f64 = App::s_deltaTime;
 }
 
 // Allocate more space to store the previous loading
