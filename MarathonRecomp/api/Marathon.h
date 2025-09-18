@@ -68,6 +68,7 @@
 #include "Sonicteam/NoSyncThread.h"
 #include "Sonicteam/ObjectVehicle.h"
 #include "Sonicteam/ObjectVehicleBike.h"
+#include "Sonicteam/PauseTask.h"
 #include "Sonicteam/Player/IDynamicLink.h"
 #include "Sonicteam/Player/IExportExternalFlag.h"
 #include "Sonicteam/Player/IExportPostureRequestFlag.h"
