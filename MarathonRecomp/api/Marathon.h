@@ -138,7 +138,7 @@
 #include "Sonicteam/StdImageFilters/BurnoutBlurFilter.h"
 #include "Sonicteam/StdImageFilters/SingleTechniqueFilter.h"
 #include "Sonicteam/System/CreateStatic.h"
-#include "Sonicteam/System/Diagnostics/Perfomance.h"
+#include "Sonicteam/System/Diagnostics/Performance.h"
 #include "Sonicteam/System/Singleton.h"
 #include "Sonicteam/TextBook.h"
 #include "Sonicteam/TextBookMgr.h"

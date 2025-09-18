@@ -509,35 +509,35 @@ name = "PlayerObject_ProcessMsgSuckPlayer_FixDeltaTime"
 address = 0x8219B660
 registers = ["r28", "f31"]
 
-# ParticleHFR_826454C8
+# Sonicteam::MyPE::CManageParticle::ManageParticleTask
 [[midasm_hook]]
 name = "NOP"
 address = 0x82645518
 jump_address = 0x8264551C
 
+# Sonicteam::MyPE::MyEmitter / Sonicteam::GE1PE::Emitter
 [[midasm_hook]]
-name = "ParticleHFR_82670658"
-address = 0x82670724 
-registers = ["f1", "r1"]
-after_instruction = true
+name = "Spanverse_GE1PE_DeltaTimeFix"
+address = 0x82670728
+registers = ["f1"]
 
+# Sonicteam::Spanverse::SpangleObject / Sonicteam::Spanverse::SpkCustomObject
 [[midasm_hook]]
-name = "ParticleHFR_8266A418_1"
-address = 0x8266A57C 
-registers = ["f31", "r1"]
-after_instruction = true
+name = "Spanverse_GE1PE_DeltaTimeFix"
+address = 0x8266A580
+registers = ["f31"]
 
+# Sonicteam::Spanverse::SpangleParticle
 [[midasm_hook]]
-name = "ParticleHFR_82673F88"
-address = 0x8267402C 
-registers = ["f13", "r1"]
-after_instruction = true
+name = "Spanverse_GE1PE_DeltaTimeFix"
+address = 0x82674030
+registers = ["f13"]
 
+# Sonicteam::Spanverse::SpangleLight
 [[midasm_hook]]
-name = "ParticleHFR_82674550"
-address = 0x826747FC 
-registers = ["f13", "r1"]
-after_instruction = true
+name = "Spanverse_GE1PE_DeltaTimeFix"
+address = 0x82674800
+registers = ["f13"]
 
 [[midasm_hook]]
 name = "HUDLoadingAlloc"
