@@ -98,6 +98,11 @@ namespace stdx
 
         bool operator==(const uint16_t* str) const
         {
+            return strcmpU16(c_str(), str, false, true);
+        }
+
+        bool operator==(xpointer<const uint16_t> str) const
+        {
             return strcmpU16(c_str(), str);
         }
     };

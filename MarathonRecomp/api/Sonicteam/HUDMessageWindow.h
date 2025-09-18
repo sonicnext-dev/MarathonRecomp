@@ -10,7 +10,7 @@ namespace Sonicteam
     public:
         xpointer<CsdObject> m_pCsdObject;
         MARATHON_INSERT_PADDING(0x1C);
-        xpointer<HUDMessageWindow> m_pThis;
+        xpointer<HUDMessageWindow> m_pParent;
         MARATHON_INSERT_PADDING(0x14);
         xpointer<HintWindowTask> m_pHintWindowTask;
     };

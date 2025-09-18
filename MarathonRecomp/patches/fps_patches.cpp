@@ -2,6 +2,32 @@
 #include <user/config.h>
 #include <app.h>
 
+constexpr double REFERENCE_DELTA_TIME = 1.0 / 60.0;
+
+// Only use this in threaded context with fixed delta time!
+double MakeDeltaTime(std::chrono::steady_clock::time_point& prev)
+{
+    auto now = std::chrono::steady_clock::now();
+    auto deltaTime = std::min(std::chrono::duration<double>(now - prev).count(), 1.0 / 15.0);
+
+    prev = now;
+    now = std::chrono::steady_clock::now();
+
+    return deltaTime;
+}
+
+bool HasFrameElapsed(double reference, double& timeElapsed, double deltaTime)
+{
+    timeElapsed += deltaTime;
+
+    if (timeElapsed < reference)
+        return false;
+
+    timeElapsed = 0.0f;
+
+    return true;
+}
+
 // Sonicteam::SoX::Physics::Havok::WorldHavok::Update
 PPC_FUNC_IMPL(__imp__sub_82587AA8);
 PPC_FUNC(sub_82587AA8)
@@ -141,4 +167,72 @@ void ParticleHFR_82673F88(PPCRegister& f13,PPCRegister& stack)
 void ParticleHFR_82674550(PPCRegister& f13,PPCRegister& stack)
 {
     f13.f64 = App::s_deltaTime;
+}
+
+// Allocate more space to store the previous loading
+// time for this instance of Sonicteam::HUDLoading.
+void HUDLoadingAlloc(PPCRegister& r3)
+{
+    r3.u32 += sizeof(std::chrono::steady_clock::time_point);
+}
+
+// Sonicteam::HUDLoading::HUDLoading
+PPC_FUNC_IMPL(__imp__sub_824D7BC8);
+PPC_FUNC(sub_824D7BC8)
+{
+    auto pPrevLoadingTime = (std::chrono::steady_clock::time_point*)(base + ctx.r3.u32 + sizeof(Sonicteam::HUDLoading));
+
+    *pPrevLoadingTime = {};
+
+    __imp__sub_824D7BC8(ctx, base);
+}
+
+// Accumulate own delta time and provide it to the CSD update function.
+void HUDLoading_DeltaTimeFix(PPCRegister& pThis, PPCRegister& deltaTime)
+{
+    auto pPrevLoadingTime = (std::chrono::steady_clock::time_point*)g_memory.Translate(pThis.u32 + sizeof(Sonicteam::HUDLoading));
+
+    deltaTime.f64 = MakeDeltaTime(*pPrevLoadingTime);
+}
+
+// This function is an override of Sonicteam::SoX::Engine::Task::Update,
+// it does not pass delta time to HUDCALLBACK::Update, so we must preserve
+// the register here in order to do it ourselves.
+void HUDWindow_PreserveDeltaTime(PPCRegister& f31, PPCRegister& f1)
+{
+    f31.f64 = f1.f64;
+}
+
+// HUDCALLBACK::Update doesn't have a delta time argument,
+// so we pass one in here to do some delta time accumulation
+// safely in the hooks below.
+void HUDWindow_Callback(PPCRegister& f1, PPCRegister& f31)
+{
+    f1.f64 = f31.f64;
+}
+
+// Sonicteam::PriceListWindowTask::HUDCALLBACK::Update
+PPC_FUNC_IMPL(__imp__sub_8250AAB0);
+PPC_FUNC(sub_8250AAB0)
+{
+    static auto s_time = 0.0;
+
+    // Fix for white ⇄ red text breathing animation.
+    if (!HasFrameElapsed(REFERENCE_DELTA_TIME, s_time, ctx.f1.f64))
+        return;
+
+    __imp__sub_8250AAB0(ctx, base);
+}
+
+// Sonicteam::SelectWindowTask::HUDCALLBACK::Update
+PPC_FUNC_IMPL(__imp__sub_8250D698);
+PPC_FUNC(sub_8250D698)
+{
+    static auto s_time = 0.0;
+
+    // Fix for white ⇄ red text breathing animation.
+    if (!HasFrameElapsed(REFERENCE_DELTA_TIME, s_time, ctx.f1.f64))
+        return;
+
+    __imp__sub_8250D698(ctx, base);
 }
