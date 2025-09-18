@@ -509,8 +509,7 @@ name = "PlayerObject_ProcessMsgSuckPlayer_FixDeltaTime"
 address = 0x8219B660
 registers = ["r28", "f31"]
 
-#ParticleHFR_826454C8
-
+# ParticleHFR_826454C8
 [[midasm_hook]]
 name = "NOP"
 address = 0x82645518
