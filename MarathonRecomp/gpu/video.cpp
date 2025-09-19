@@ -345,6 +345,8 @@ static Backend g_backend;
 #endif
 
 static bool g_triangleStripWorkaround = false;
+static bool g_conditionalSurveyActive = false;
+static bool g_conditionalRenderingActive = false;
 
 static std::unique_ptr<RenderInterface> g_interface;
 static std::unique_ptr<RenderDevice> g_device;
@@ -4961,6 +4963,9 @@ static void DrawPrimitive(GuestDevice* device, uint32_t primitiveType, uint32_t 
     LocalRenderCommandQueue queue;
     FlushRenderStateForMainThread(device, queue);
 
+    if (g_conditionalRenderingActive)
+        return;
+
     auto& cmd = queue.enqueue();
     cmd.type = RenderCommandType::DrawPrimitive;
     cmd.drawPrimitive.primitiveType = primitiveType;
@@ -4987,6 +4992,9 @@ static void DrawIndexedPrimitive(GuestDevice* device, uint32_t primitiveType, in
     LocalRenderCommandQueue queue;
     FlushRenderStateForMainThread(device, queue);
 
+    if (g_conditionalRenderingActive)
+        return;
+
     auto& cmd = queue.enqueue();
     cmd.type = RenderCommandType::DrawIndexedPrimitive;
     cmd.drawIndexedPrimitive.primitiveType = primitiveType;
@@ -5011,6 +5019,9 @@ static void DrawPrimitiveUP(GuestDevice* device, uint32_t primitiveType, uint32_
 {
     LocalRenderCommandQueue queue;
     FlushRenderStateForMainThread(device, queue);
+
+    if (g_conditionalRenderingActive)
+        return;
 
     auto& cmd = queue.enqueue();
     cmd.type = RenderCommandType::DrawPrimitiveUP;
@@ -8437,3 +8448,31 @@ GUEST_FUNCTION_STUB(sub_8254D7B0); // BeginConditional
 GUEST_FUNCTION_STUB(sub_8254D9D0); // BeginConditional
 GUEST_FUNCTION_STUB(sub_8254DB90); // BeginConditional
 GUEST_FUNCTION_STUB(sub_8254DD40); // SetScreenExtentQueryMode
+
+PPC_FUNC_IMPL(__imp__sub_82636BF8);
+PPC_FUNC(sub_82636BF8) {
+    g_conditionalSurveyActive = true;
+
+    __imp__sub_82636BF8(ctx, base);
+}
+
+PPC_FUNC_IMPL(__imp__sub_82636C08);
+PPC_FUNC(sub_82636C08) {
+    g_conditionalSurveyActive = false;
+
+    __imp__sub_82636C08(ctx, base);
+}
+
+PPC_FUNC_IMPL(__imp__sub_82636C10);
+PPC_FUNC(sub_82636C10) {
+    g_conditionalRenderingActive = true;
+
+    __imp__sub_82636C10(ctx, base);
+}
+
+PPC_FUNC_IMPL(__imp__sub_82636C18);
+PPC_FUNC(sub_82636C18) {
+    g_conditionalRenderingActive = false;
+
+    __imp__sub_82636C18(ctx, base);
+}
