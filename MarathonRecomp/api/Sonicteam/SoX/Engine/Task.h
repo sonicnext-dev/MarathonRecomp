@@ -2,38 +2,41 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/SoX/Component.h>
-#include <Sonicteam/SoX/MessageReceiver.h>
 #include <Sonicteam/SoX/LinkNode.h>
+#include <Sonicteam/SoX/MessageReceiver.h>
 
 namespace Sonicteam::SoX::Engine
 {
     class Doc;
+
     class Task : public Component, public MessageReceiver
     {
     public:
-        be<uint32_t> m_flags; //used to store last pointer for itterate, sometimes
-        be<uint32_t> m_timestamp; //not always
-        xpointer<Task> m_pSiblingPrev;
-        xpointer<Task> m_pSiblingNext;
+        be<uint32_t> m_Flags;
+        be<uint32_t> m_Timestamp;
+        xpointer<Task> m_pPrevSibling;
+        xpointer<Task> m_pNextSibling;
         xpointer<Task> m_pDependency;
-        xpointer<Task> m_pDependents;
-        xpointer<Sonicteam::SoX::Engine::Doc> m_pDoc;
-        SoX::LinkNode<Task> m_lnTask;
+        xpointer<Task> m_pDependencies;
+        xpointer<Doc> m_pDoc;
+        LinkNode<Task> m_lnTask;
 
-        Task* GetFirstDependent() const 
+        Task* GetFirstDependency() const 
         {
-            if (!m_pDependents) return nullptr;
+            if (!m_pDependencies)
+                return nullptr;
 
-            Task* current = m_pDependents.get();
-            while (current->m_pSiblingPrev && current->m_pSiblingPrev != m_pDependents.get()) {
-                current = current->m_pSiblingPrev.get();
-            }
-            return current;
+            auto pCurrent = m_pDependencies.get();
+
+            while (pCurrent->m_pPrevSibling && pCurrent->m_pPrevSibling != m_pDependencies.get())
+                pCurrent = pCurrent->m_pPrevSibling.get();
+
+            return pCurrent;
         }
 
-        Task* GetLastDependent() const {
-            return m_pDependents.get();
+        Task* GetLastDependency() const
+        {
+            return m_pDependencies.get();
         }
-
     };
 }

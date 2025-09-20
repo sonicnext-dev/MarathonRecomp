@@ -9,8 +9,8 @@ namespace hk330
     public:
         struct Vftable
         {
-            be<uint32_t> ctor;
-            be<uint32_t> isCollisionEnabled; //(a,b)
+            be<uint32_t> fpCtor;
+            be<uint32_t> fpIsCollisionEnabled;
         };
 
         xpointer<Vftable> m_pVftable;

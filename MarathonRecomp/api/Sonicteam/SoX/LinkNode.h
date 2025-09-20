@@ -3,7 +3,7 @@
 namespace Sonicteam::SoX
 {
     template <typename T>
-    class LinkNodeTemplate
+    class ILinkNode
     {
     public:
         xpointer<T> m_pPrev;
@@ -11,10 +11,10 @@ namespace Sonicteam::SoX
     };
 
     template <typename T>
-    class LinkNode : public LinkNodeTemplate<LinkNode<T>>
+    class LinkNode : public ILinkNode<LinkNode<T>>
     {
     public:
-        xpointer<LinkNode<T>> m_pThis;
+        xpointer<T> m_pThis;
     };
 
     template <typename T>
@@ -22,6 +22,6 @@ namespace Sonicteam::SoX
     {
     public:
         xpointer<T> m_pElement;
-        SoX::LinkNode<LinkRef> m_lnElement;
+        LinkNode<LinkRef> m_lnElement;
     };
 }

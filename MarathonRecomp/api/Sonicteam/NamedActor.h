@@ -2,7 +2,7 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/Actor.h>
-#include <api/stdx/string.h>
+#include <stdx/string.h>
 
 namespace Sonicteam
 {

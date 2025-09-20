@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Marathon.inl>
-#include <Sonicteam/SoX/Physics/World.h>
 #include <hk330/hkpWorld.h>
+#include <Sonicteam/SoX/Physics/World.h>
 
 namespace Sonicteam::SoX::Physics::Havok
 {
