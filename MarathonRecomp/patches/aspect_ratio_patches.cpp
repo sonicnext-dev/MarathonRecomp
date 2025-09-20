@@ -1316,14 +1316,14 @@ PPC_FUNC(sub_82352220)
     if (g_aspectRatio > WIDE_ASPECT_RATIO)
         scale = g_aspectRatio / WIDE_ASPECT_RATIO;
 
-    pCObjBalloonIconDrawable->m_Vertices[0].X = -1.0f / scale;
-    pCObjBalloonIconDrawable->m_Vertices[0].Y = 0.0f;
-    pCObjBalloonIconDrawable->m_Vertices[1].X = -1.0f / scale;
-    pCObjBalloonIconDrawable->m_Vertices[1].Y = g_aspectRatio / scale;
-    pCObjBalloonIconDrawable->m_Vertices[2].X = 1.0f / scale;
-    pCObjBalloonIconDrawable->m_Vertices[2].Y = 0.0f;
-    pCObjBalloonIconDrawable->m_Vertices[3].X = 1.0f / scale;
-    pCObjBalloonIconDrawable->m_Vertices[3].Y = g_aspectRatio / scale;
+    pCObjBalloonIconDrawable->m_Vertices[0].m_position.X = -1.0f / scale;
+    pCObjBalloonIconDrawable->m_Vertices[0].m_position.Y = 0.0f;
+    pCObjBalloonIconDrawable->m_Vertices[1].m_position.X = -1.0f / scale;
+    pCObjBalloonIconDrawable->m_Vertices[1].m_position.Y = g_aspectRatio / scale;
+    pCObjBalloonIconDrawable->m_Vertices[2].m_position.X = 1.0f / scale;
+    pCObjBalloonIconDrawable->m_Vertices[2].m_position.Y = 0.0f;
+    pCObjBalloonIconDrawable->m_Vertices[3].m_position.X = 1.0f / scale;
+    pCObjBalloonIconDrawable->m_Vertices[3].m_position.Y = g_aspectRatio / scale;
 
     __imp__sub_82352220(ctx, base);
 }
@@ -1489,42 +1489,42 @@ void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity)
             auto& v4 = pTextEntity->m_pImageVertices[vi + 4];
             auto& v5 = pTextEntity->m_pImageVertices[vi + 5];
 
-            auto centreX = (v0.X + v2.X) / 2.0f;
+            auto centreX = (v0.m_position.X + v2.m_position.X) / 2.0f;
             auto widthAdjust = (float)newParams.Width / (float)baseParams.Width;
             auto adjust = [&](auto& vertex)
             {
-                vertex.X = centreX + (vertex.X - centreX) * widthAdjust;
+                vertex.m_position.X = centreX + (vertex.m_position.X - centreX) * widthAdjust;
             };
 
             // Bottom Left (Triangle 1)
             adjust(v0);
-            v0.U = min.x;
-            v0.V = min.y;
+            v0.m_uv.X = min.x;
+            v0.m_uv.Y = min.y;
 
             // Top Left (Triangle 1)
             adjust(v1);
-            v1.U = min.x;
-            v1.V = max.y;
+            v1.m_uv.X = min.x;
+            v1.m_uv.Y = max.y;
 
             // Top Right (Triangle 1)
             adjust(v2);
-            v2.U = max.x;
-            v2.V = max.y;
+            v2.m_uv.X = max.x;
+            v2.m_uv.Y = max.y;
 
             // Bottom Left (Triangle 2)
             adjust(v3);
-            v3.U = min.x;
-            v3.V = min.y;
+            v3.m_uv.X = min.x;
+            v3.m_uv.Y = min.y;
 
             // Top Right (Triangle 2)
             adjust(v4);
-            v4.U = max.x;
-            v4.V = max.y;
+            v4.m_uv.X = max.x;
+            v4.m_uv.Y = max.y;
 
             // Bottom Right (Triangle 2)
             adjust(v5);
-            v5.U = max.x;
-            v5.V = min.y;
+            v5.m_uv.X = max.x;
+            v5.m_uv.Y = min.y;
 
             pictureIndex++;
         }

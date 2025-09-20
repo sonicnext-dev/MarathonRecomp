@@ -107,6 +107,7 @@
 #include "Sonicteam/SoX/Graphics/Technique.h"
 #include "Sonicteam/SoX/Graphics/TechniqueFXL.h"
 #include "Sonicteam/SoX/Graphics/Transforms.h"
+#include "Sonicteam/SoX/Graphics/Vertex.h"
 #include "Sonicteam/SoX/Graphics/Xenon/DeviceXenon.h"
 #include "Sonicteam/SoX/Graphics/Xenon/TextureXenon.h"
 #include "Sonicteam/SoX/IResource.h"
