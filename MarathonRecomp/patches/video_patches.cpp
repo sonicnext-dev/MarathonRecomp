@@ -70,6 +70,13 @@ PPC_FUNC(sub_82619D00)
             ReflectionScaleFactor(Config::ReflectionResolution));
     }
 
+    // RenderMefiress
+    if (*pName == "user0")
+    {
+        ctx.r5.u32 = static_cast<int>(Config::ShadowResolution.Value);
+        ctx.r6.u32 = static_cast<int>(Config::ShadowResolution.Value);
+    }
+
 #if _DEBUG
     auto width = ctx.r5.u32;
     auto height = ctx.r6.u32;
@@ -94,6 +101,13 @@ PPC_FUNC(sub_82619B88)
         {
             ctx.r5.u32 = g_radarMapScale;
             ctx.r6.u32 = g_radarMapScale;
+        }
+
+        // RenderMefiress
+        if (strcmp(g_pBlockName, "user0") == 0 && *pName == "depthstencil_256")
+        {
+            ctx.r5.u32 = static_cast<int>(Config::ShadowResolution.Value);
+            ctx.r6.u32 = static_cast<int>(Config::ShadowResolution.Value);
         }
     }
 
