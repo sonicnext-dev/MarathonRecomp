@@ -84,7 +84,7 @@ bool MidairSnowboardControl()
 // Add missing SetupModuleDebug to table.
 void PlayerDebugMode_RegisterLuaSetup(PPCRegister& str, PPCRegister& index)
 {
-    if (!Config::PlayerDebugMode)
+    if (!Config::EnableDebugMode)
         return;
 
     auto pString = (stdx::string*)g_memory.Translate(str.u32);
@@ -116,7 +116,7 @@ bool PlayerDebugMode_RemapDebugExitButton(PPCRegister& r_PadState, PPCRegister& 
 PPC_FUNC_IMPL(__imp__sub_82195500);
 PPC_FUNC(sub_82195500)
 {
-    if (!(Config::PlayerDebugMode || Config::PlayerDemoCameraSwitch))
+    if (!(Config::EnableDebugMode || Config::RestoreDemoCameraMode))
     {
         __imp__sub_82195500(ctx, base);
         return;
@@ -136,7 +136,7 @@ PPC_FUNC(sub_82195500)
             auto pGameImp = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->m_pGameImp.get();
 
             // Disable collision on B press.
-            if (pPlayer->m_SetupModuleIndexPostfix == 2 && spManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_B) && Config::PlayerDebugMode)
+            if (pPlayer->m_SetupModuleIndexPostfix == 2 && spManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_B) && Config::EnableDebugMode)
             {
                 auto value = pZock->m_spPhantomA->m_pRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo == 6 ? 0x383 : 6;
                 pZock->m_spPhantomA->m_pRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo = value;
@@ -144,7 +144,7 @@ PPC_FUNC(sub_82195500)
             }
 
             // Switch to Camera <-> DemoGMCamera
-            if ((pPlayer->m_SetupModuleIndexPostfix == 2 || Config::PlayerDemoCameraSwitch) && spManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_DpadUp))
+            if ((pPlayer->m_SetupModuleIndexPostfix == 2 || Config::RestoreDemoCameraMode) && spManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_DpadUp))
             {
                 auto pCamera = static_cast<Sonicteam::Camera::Cameraman*>(pPlayer->m_pCameraman.get());
                 guest_stack_var<Sonicteam::Message::MsgCameramanCameraInitialize> m_initMessage;
@@ -156,7 +156,7 @@ PPC_FUNC(sub_82195500)
 
             // Enter debug posture on Select press.
             if (pPlayer->m_SetupModuleIndexPostfix != 2 &&
-                !(pPlayer->m_SetupModuleIndexPrefix == 2 && pPlayer->m_SetupModuleIndexPostfix == 1) && Config::PlayerDebugMode &&
+                !(pPlayer->m_SetupModuleIndexPrefix == 2 && pPlayer->m_SetupModuleIndexPostfix == 1) && Config::EnableDebugMode &&
                 spManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_Select))
             {
                 pPlayer->m_SetupModuleIndexPostfix = 2;
