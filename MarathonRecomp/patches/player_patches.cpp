@@ -143,7 +143,7 @@ PPC_FUNC(sub_82195500)
                 App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->m_pGameImp->GetPhysicsWorld<Sonicteam::SoX::Physics::Havok::WorldHavok>()->m_pWorld.get()->updateCollisionFilterOnWorld(1,1);
             }
 
-            //Switch to Camera<->DemoGMCamera
+            // Switch to Camera <-> DemoGMCamera
             if ((pPlayer->m_SetupModuleIndexPostfix == 2 || Config::PlayerDemoCameraSwitch) && spManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_DpadUp))
             {
                 auto pCamera = static_cast<Sonicteam::Camera::Cameraman*>(pPlayer->m_pCameraman.get());

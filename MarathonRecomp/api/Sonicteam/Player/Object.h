@@ -25,7 +25,7 @@ namespace Sonicteam::Player
         stdx::string m_PlayerLua;
         stdx::string m_PlayerPackage;
         be<uint32_t> m_TargetCameraActorID; 
-        xpointer<Sonicteam::SoX::MessageReceiver> m_pCameraman; //here as MessageReceiver
+        xpointer<MessageReceiver> m_pCameraman; // Here as MessageReceiver
         be<uint32_t> m_PlayerIndex;
         MARATHON_INSERT_PADDING(0x2C);
         bool m_IsPlayer;

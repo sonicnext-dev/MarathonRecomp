@@ -12,6 +12,6 @@ namespace Sonicteam::Camera
         MARATHON_INSERT_PADDING(0x24);
         boost::shared_ptr<CameraModeManager> m_spCameraModeManager;
         MARATHON_INSERT_PADDING(0x2C);
-        be<float> m_FOV; //0xB0
+        be<float> m_FOV; // 0xB0
     };
 }

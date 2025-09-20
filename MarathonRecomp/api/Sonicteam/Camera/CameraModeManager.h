@@ -10,7 +10,7 @@ namespace Sonicteam::Camera
     class CameraMode;
     class CameraModeManager
     {
-        //TODO figure out all these, 8218C100
+        // TODO: figure out all these, 8218C100
         struct _vector_struct_
         {
             MARATHON_INSERT_PADDING(0x14);
@@ -19,6 +19,6 @@ namespace Sonicteam::Camera
         xpointer<Cameraman> m_pCameraman;
         boost::shared_ptr<CameraMode> m_spCameraMode;
         MARATHON_INSERT_PADDING(0x8);
-        std::vector<_vector_struct_> m_vVector;
+        stdx::vector<_vector_struct_> m_vVector;
     };
 }
