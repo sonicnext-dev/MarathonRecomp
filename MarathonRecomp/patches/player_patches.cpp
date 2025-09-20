@@ -140,7 +140,7 @@ PPC_FUNC(sub_82195500)
             {
                 auto value = pZock->m_spPhantomA->m_pRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo == 6 ? 0x383 : 6;
                 pZock->m_spPhantomA->m_pRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo = value;
-                App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->m_pGameImp->GetPhysicsWorld<Sonicteam::SoX::Physics::Havok::WorldHavok>()->m_pWorld.get()->updateCollisionFilterOnWorld(1,1);
+                pGameImp->GetPhysicsWorld<Sonicteam::SoX::Physics::Havok::WorldHavok>()->m_pWorld.get()->UpdateCollisionFilterOnWorld(1,1);
             }
 
             // Switch to Camera <-> DemoGMCamera

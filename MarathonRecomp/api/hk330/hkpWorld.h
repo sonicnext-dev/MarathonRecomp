@@ -10,7 +10,7 @@ namespace hk330
     public:
         MARATHON_INSERT_PADDING(0x308);
 
-        void updateCollisionFilterOnWorld(uint32_t updateMode, uint32_t updateShapeCollectionFilter)
+        void UpdateCollisionFilterOnWorld(uint32_t updateMode, uint32_t updateShapeCollectionFilter)
         {
             GuestToHostFunction<void>(sub_82832910, this, updateMode, updateShapeCollectionFilter);
         }
