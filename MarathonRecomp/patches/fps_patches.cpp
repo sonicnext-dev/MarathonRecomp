@@ -54,7 +54,7 @@ void SonicCamera_RotationSpeedFix(PPCRegister& f0, PPCRegister& deltaTime, PPCRe
 
 bool ObjTarzan_VolatileBranch(PPCRegister& r30)
 {
-    if (Config::FPS <= 60.0f)
+    if (Config::FPS <= 60)
         return false;
 
     return r30.f64 >= 0;
@@ -62,7 +62,7 @@ bool ObjTarzan_VolatileBranch(PPCRegister& r30)
 
 void ObjTarzan_PatchStaticDeltaTime(PPCRegister& value, PPCRegister& delta)
 {
-    if (Config::FPS <= 60.0f)
+    if (Config::FPS <= 60)
         return;
 
     value.f64 = delta.f64;
@@ -70,7 +70,7 @@ void ObjTarzan_PatchStaticDeltaTime(PPCRegister& value, PPCRegister& delta)
 
 void ObjTarzan_PatchDeltaTimeArgument(PPCRegister& value, PPCRegister& value2, PPCRegister& stack)
 {
-    if (Config::FPS <= 60.0f)
+    if (Config::FPS <= 60)
         return;
 
     auto deltaTime = *(be<double>*)g_memory.Translate(stack.u32 + 0x90 + 0x420 - 0x88);
@@ -83,7 +83,7 @@ void ObjTarzan_PatchDeltaTimeArgument(PPCRegister& value, PPCRegister& value2, P
 PPC_FUNC_IMPL(__imp__sub_8232D770);
 PPC_FUNC(sub_8232D770)
 {
-    if (Config::FPS <= 60.0f)
+    if (Config::FPS <= 60)
     {
         __imp__sub_8232D770(ctx, base);
         return;
@@ -220,4 +220,51 @@ PPC_FUNC(sub_8250D698)
         return;
 
     __imp__sub_8250D698(ctx, base);
+}
+
+bool ObjectVehicleBike_EnemyShot_DisableVehicleCollisionLayer(PPCRegister& r3)
+{
+    if (Config::FPS <= 60)
+        return false;
+
+    auto pObjectVehicleBike = (Sonicteam::ObjectVehicleBike*)g_memory.Translate(r3.u32);
+    auto pPrefixDependency = pObjectVehicleBike->m_pDependency->GetFirstDependency();
+
+    // Call original function.
+    sub_822C1FA8(*GetPPCContext(), g_memory.base);
+
+    auto pPostfixDependency = pObjectVehicleBike->m_pDependency->GetFirstDependency();
+    auto isUpdatePhysicsWorld = false;
+
+    // Process rigid bodies created after the function call.
+    while (pPrefixDependency != pPostfixDependency)
+    {
+        pPrefixDependency = pPrefixDependency->m_pPrevSibling.get();
+
+        if (strcmp(pPrefixDependency->GetName(), "EnemyShotNormal") == 0)
+        {
+            auto pEnemyShotNormal = (Sonicteam::Enemy::EnemyShotNormal*)pPrefixDependency;
+
+            if (auto pPhantom = pEnemyShotNormal->m_spPhantom.get())
+            {
+                // Fix bullets colliding with the bike at high frame rates.
+                auto& collidable = pPhantom->m_pRigidBody->m_collidable;
+                collidable.m_broadPhaseHandle.m_collisionFilterInfo = 0xFFFF5E00;
+                isUpdatePhysicsWorld = true;
+            }
+        }
+    }
+
+    if (isUpdatePhysicsWorld)
+    {
+        if (auto pGameMode = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>())
+        {
+            auto pWorldHavok = pGameMode->m_pGameImp->GetPhysicsWorld<Sonicteam::SoX::Physics::Havok::WorldHavok>();
+
+            if (auto pWorld = pWorldHavok->m_pWorld)
+                pWorld->updateCollisionFilterOnWorld(1, 1);
+        }
+    }
+
+    return true;
 }

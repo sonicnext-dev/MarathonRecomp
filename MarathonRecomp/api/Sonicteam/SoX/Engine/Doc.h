@@ -2,6 +2,7 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/SoX/Engine/DocMode.h>
+#include <Sonicteam/SoX/Engine/Task.h>
 
 namespace Sonicteam::SoX::Engine
 {

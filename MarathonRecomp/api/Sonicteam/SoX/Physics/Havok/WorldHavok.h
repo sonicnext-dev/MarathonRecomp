@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <hk330/hkpWorld.h>
 #include <Sonicteam/SoX/Physics/World.h>
 #include <hk330/hkpWorld.h>
 
