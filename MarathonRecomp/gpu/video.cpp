@@ -2697,6 +2697,9 @@ static void DrawProfiler()
             ImGui::Text("SDL Video Driver: %s", sdlVideoDriver);
 
         ImGui::NewLine();
+        ImGui::Text("Output Resolution: %d x %d", Video::s_viewportWidth, Video::s_viewportHeight);
+
+        ImGui::NewLine();
         ImGui::Checkbox("Show FPS", &Config::ShowFPS.Value);
         ImGui::NewLine();
 
