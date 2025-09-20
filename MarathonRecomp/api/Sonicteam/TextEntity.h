@@ -2,6 +2,7 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/CsdLink.h>
+#include <Sonicteam/SoX/Graphics/Vertex.h>
 #include <stdx/wstring.h>
 
 namespace Sonicteam
@@ -12,17 +13,6 @@ namespace Sonicteam
     class TextEntity : public CsdLink
     {
     public:
-        struct Vertex
-        {
-            be<float> X;
-            be<float> Y;
-            MARATHON_INSERT_PADDING(0x10);
-            be<uint32_t> Colour; // ARGB8888
-            be<float> U;
-            be<float> V;
-            MARATHON_INSERT_PADDING(0x18);
-        };
-
         MARATHON_INSERT_PADDING(4);
         boost::shared_ptr<TextFont> m_spTextFont;
         boost::shared_ptr<TextBoard> m_spTextBoard;
@@ -47,10 +37,10 @@ namespace Sonicteam
         bool m_FieldDC;
         bool m_FieldDD;
         MARATHON_INSERT_PADDING(2);
-        xpointer<void> m_FieldE0;              // Only present when there's character vertices.
-        xpointer<void> m_FieldE4;              // Only present when there's image vertices.
-        xpointer<Vertex> m_pCharacterVertices; // BL/TL/TR BL/TR/BR (two triangles per character)
-        xpointer<Vertex> m_pImageVertices;     // BL/TL/TR BL/TR/BR (two triangles per image)
+        xpointer<void> m_FieldE0;                             // Only present when there's character vertices.
+        xpointer<void> m_FieldE4;                             // Only present when there's image vertices.
+        xpointer<SoX::Graphics::Vertex> m_pCharacterVertices; // BL/TL/TR BL/TR/BR (two triangles per character)
+        xpointer<SoX::Graphics::Vertex> m_pImageVertices;     // BL/TL/TR BL/TR/BR (two triangles per image)
         be<uint32_t> m_CharacterVertexCount;
         be<uint32_t> m_ImageVertexCount;
         be<uint32_t> m_TextLength;
