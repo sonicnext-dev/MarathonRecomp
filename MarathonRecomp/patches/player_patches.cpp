@@ -277,7 +277,7 @@ const Sonicteam::Player::State::SonicContext::GemSprite gemConversionTable[] = {
 // SonicTeam::Player::SonicGauge (IVariable), IVariable::Init(RefSharedPointer<SonicTeam::LuaSystem>)
 PPC_FUNC_IMPL(__imp__sub_82217FC0);
 PPC_FUNC(sub_82217FC0) {
-    if (!Config::SonicGauge)
+    if (!Config::RestoreSonicActionGauge)
     {
         __imp__sub_82217FC0(ctx, base);
         return;
@@ -324,7 +324,7 @@ PPC_FUNC(sub_82217FC0) {
 // Gauge Drain
 PPC_FUNC_IMPL(__imp__sub_82218068);
 PPC_FUNC(sub_82218068) {
-    if (!Config::SonicGauge)
+    if (!Config::RestoreSonicActionGauge)
     {
         __imp__sub_82217FC0(ctx, base);
         return;
@@ -373,7 +373,7 @@ PPC_FUNC_IMPL(__imp__sub_8223F360);
 PPC_FUNC(sub_8223F360) {
     __imp__sub_8223F360(ctx, base);
 
-    if (!Config::SonicGauge)
+    if (!Config::RestoreSonicActionGauge)
         return;
 
     auto iVariable = ctx.r3.u32;
@@ -427,7 +427,7 @@ void SonicGaugeRestorationGaugeGemSpriteResetFix(PPCRegister& r_GameImp) {
 }
 
 void SonicGaugeRestorationGaugeFlagFix(PPCRegister& r_gauge, PPCRegister& r_context) {
-    if (!Config::SonicGauge || !r_gauge.u32)
+    if (!Config::RestoreSonicActionGauge || !r_gauge.u32)
         return;
 
     auto pGauge = (Sonicteam::Player::SonicGauge*)g_memory.Translate(r_gauge.u32);
