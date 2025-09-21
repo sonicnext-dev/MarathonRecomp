@@ -471,11 +471,11 @@ function(compile_shader FILE_PATH TARGET_NAME)
 endfunction()
 
 function(compile_vertex_shader FILE_PATH)
-    compile_shader(${FILE_PATH} vs_6_0 -fvk-invert-y)
+    compile_shader(${FILE_PATH} vs_6_0 -fvk-invert-y -DMARATHON_RECOMP)
 endfunction()
 
 function(compile_pixel_shader FILE_PATH)
-    compile_shader(${FILE_PATH} ps_6_0)
+    compile_shader(${FILE_PATH} ps_6_0 -DMARATHON_RECOMP)
 endfunction()
 
 compile_pixel_shader(blend_color_alpha_ps)

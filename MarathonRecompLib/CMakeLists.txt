@@ -55,6 +55,7 @@ target_compile_definitions(XenosRecomp PRIVATE
     XENOS_RECOMP_INPUT=\"${CMAKE_CURRENT_SOURCE_DIR}/private/shader\" 
     XENOS_RECOMP_OUTPUT=\"${CMAKE_CURRENT_SOURCE_DIR}/shader/shader_cache.cpp\"
     XENOS_RECOMP_INCLUDE_INPUT=\"${XENOS_RECOMP_INCLUDE}\"
+    MARATHON_RECOMP
 )
 
 file(GLOB XENOS_RECOMP_SOURCES 
