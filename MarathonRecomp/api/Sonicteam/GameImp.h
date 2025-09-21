@@ -6,12 +6,11 @@
 #include <Sonicteam/SoX/Scenery/Camera.h>
 #include <Sonicteam/SoX/Scenery/CameraImp.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
-#include <Sonicteam/SoX/RefCountObject.h>
 #include <stdx/vector.h>
 
 namespace Sonicteam
 {
-    class ActorManager; //gauge patch
+    class ActorManager; // Gauge patch
     class GameScript;
     class GameImp : public SoX::MessageReceiver
     {
