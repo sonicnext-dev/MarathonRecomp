@@ -371,13 +371,13 @@ PPC_FUNC(sub_82218068) {
 
 PPC_FUNC_IMPL(__imp__sub_8223F360);
 PPC_FUNC(sub_8223F360) {
+    auto iVariable = ctx.r3.u32;
+    auto refTypeLuaSystem = ctx.r4.u32;
+
     __imp__sub_8223F360(ctx, base);
 
     if (!Config::RestoreSonicActionGauge)
         return;
-
-    auto iVariable = ctx.r3.u32;
-    auto refTypeLuaSystem = ctx.r4.u32;
 
     auto gauge = (Sonicteam::Player::SonicGauge*)g_memory.Translate(iVariable - 0x20);
     auto buffer = g_userHeap.Alloc<stdx::string>();
