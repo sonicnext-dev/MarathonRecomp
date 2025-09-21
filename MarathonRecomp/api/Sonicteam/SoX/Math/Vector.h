@@ -31,5 +31,14 @@ namespace Sonicteam::SoX::Math
         {
             return { X + addend, Y + addend, Z + addend, W + addend };
         }
+
+        float DistanceTo(const Vector& other) const
+        {
+            float dx = static_cast<float>(X) - static_cast<float>(other.X);
+            float dy = static_cast<float>(Y) - static_cast<float>(other.Y);
+            float dz = static_cast<float>(Z) - static_cast<float>(other.Z);
+
+            return std::sqrt(dx * dx + dy * dy + dz * dz);
+        }
     };
 }

@@ -418,28 +418,9 @@ address = 0x821A6988
 registers = ["r10", "r11"]
 
 [[midasm_hook]]
-name = "RestoreChainJumpFlips1"
-address = 0x82199650
-registers = ["f3", "r1"]
-jump_address_on_true = 0x82199654
-
-[[midasm_hook]]
-name = "RestoreChainJumpFlips2"
-address = 0x82209B74
-registers = ["r10", "r11"]
-jump_address_on_true = 0x82209B78
-
-[[midasm_hook]]
-name = "RestoreChainJumpFlips3"
-address = 0x8220C0BC
-registers = ["f31", "r11"]
-jump_address_on_true = 0x8220C0C0
-
-[[midasm_hook]]
-name = "RestoreChainJumpFlips4"
-address = 0x822106BC
-registers = ["f0", "r11"]
-jump_address_on_true = 0x822106C0
+name = "RestoreChainJumpFlips"
+address = 0x82199654
+registers = ["r31","r30","r11","f1", "f2", "f3"]
 
 [[midasm_hook]]
 name = "DisablePushState"

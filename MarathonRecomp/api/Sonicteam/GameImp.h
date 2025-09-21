@@ -6,11 +6,12 @@
 #include <Sonicteam/SoX/Scenery/Camera.h>
 #include <Sonicteam/SoX/Scenery/CameraImp.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
-#include <Sonicteam/SoX/RefCountObject.h>
 #include <stdx/vector.h>
 
 namespace Sonicteam
 {
+    class ActorManager; // Gauge patch
+    class GameScript;
     class GameImp : public SoX::MessageReceiver
     {
     public:
@@ -57,7 +58,10 @@ namespace Sonicteam
         bool m_IsStage;
         MARATHON_INSERT_PADDING(0x0C);
         be<uint32_t> m_Field1180;
-        MARATHON_INSERT_PADDING(0x54);
+        xpointer<GameScript> m_pGameScript;
+        be<uint32_t> m_aObjPlayerActorID[0xF];
+        boost::shared_ptr<ActorManager> m_spActorManager;
+        MARATHON_INSERT_PADDING(0xC);
         stdx::vector<stdx::vector<boost::shared_ptr<SoX::Scenery::Camera>>> m_vvspCameras;
         MARATHON_INSERT_PADDING(0x7D4);
         SoX::RefSharedPointer<SoX::Physics::World> m_spPhysicsWorld;

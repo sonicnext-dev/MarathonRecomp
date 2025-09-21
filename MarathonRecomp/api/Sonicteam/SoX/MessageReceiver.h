@@ -18,7 +18,7 @@ namespace Sonicteam::SoX
 
         bool OnMessageReceived(IMessage* pMessage)
         {
-            return GuestToHostFunction<uint32_t>(m_pVftable->fpOnMessageReceived, this, pMessage);
+            return GuestToHostFunction<bool>(m_pVftable->fpOnMessageReceived, this, pMessage);
         }
     };
 }
