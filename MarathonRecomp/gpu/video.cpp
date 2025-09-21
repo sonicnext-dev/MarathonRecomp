@@ -223,6 +223,8 @@ struct SharedConstants
     float clipPlane[4]{};
     bool clipPlaneEnabled{};
     float alphaThreshold{};
+    uint32_t conditionalSurveyIndex{};
+    uint32_t conditionalRenderingIndex{};
 };
 
 // Depth bias values here are only used when the render device has 
@@ -386,8 +388,12 @@ static uint32_t g_intermediaryBackBufferTextureDescriptorIndex;
 
 static std::unique_ptr<RenderPipeline> g_gammaCorrectionPipeline;
 
-struct std::unique_ptr<RenderDescriptorSet> g_textureDescriptorSet;
-struct std::unique_ptr<RenderDescriptorSet> g_samplerDescriptorSet;
+static std::unique_ptr<RenderDescriptorSet> g_textureDescriptorSet;
+static std::unique_ptr<RenderDescriptorSet> g_samplerDescriptorSet;
+
+static constexpr uint32_t CONDITIONAL_SURVEY_MAX = 64;
+static std::unique_ptr<RenderBuffer> g_conditionalSurveyBuffer;
+static std::unique_ptr<RenderDescriptorSet> g_conditionalSurveyDescriptorSet;
 
 enum
 {
@@ -905,6 +911,8 @@ enum class RenderCommandType
     SetStreamSource,
     SetIndices,
     SetPixelShader,
+    SetConditionalSurvey,
+    SetConditionalRendering,
 };
 
 struct RenderCommand
@@ -1068,6 +1076,18 @@ struct RenderCommand
         {
             GuestShader* shader;
         } setPixelShader;
+
+        struct
+        {
+            bool enabled;
+            uint32_t index;
+        } setConditionalSurvey;
+
+        struct
+        {
+            bool enabled;
+            uint32_t index;
+        } setConditionalRendering;
     };
 };
 
@@ -1343,7 +1363,7 @@ static void ProcSetRenderState(const RenderCommand& cmd)
     }
     case D3DRS_ALPHAREF:
     {
-        SetDirtyValue(g_dirtyStates.pipelineState, g_sharedConstants.alphaThreshold, float(value) / 256.0f);
+        SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.alphaThreshold, float(value) / 256.0f);
         break;
     }
     case D3DRS_ALPHABLENDENABLE:
@@ -1505,7 +1525,7 @@ static bool DetectWine()
 }
 #endif
 
-static constexpr size_t TEXTURE_DESCRIPTOR_SIZE = 65536;
+static constexpr size_t TEXTURE_DESCRIPTOR_SIZE = 32768;
 static constexpr size_t SAMPLER_DESCRIPTOR_SIZE = 1024;
 
 static std::unique_ptr<GuestTexture> g_imFontTexture;
@@ -1800,6 +1820,7 @@ static void BeginCommandList()
     commandList->setGraphicsDescriptorSet(g_textureDescriptorSet.get(), 1);
     commandList->setGraphicsDescriptorSet(g_textureDescriptorSet.get(), 2);
     commandList->setGraphicsDescriptorSet(g_samplerDescriptorSet.get(), 3);
+    commandList->setGraphicsDescriptorSet(g_conditionalSurveyDescriptorSet.get(), 4);
 
     g_readyForCommands = true;
     g_readyForCommands.notify_one();
@@ -2137,6 +2158,23 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
     g_samplerDescriptorSet->setSampler(0, sampler.get());
 
     pipelineLayoutBuilder.addDescriptorSet(descriptorSetBuilder);
+
+    RenderBufferDesc conditionalSurveyBufferDesc;
+    conditionalSurveyBufferDesc.size = CONDITIONAL_SURVEY_MAX * sizeof(uint32_t);
+    conditionalSurveyBufferDesc.heapType = RenderHeapType::DEFAULT;
+    conditionalSurveyBufferDesc.flags = RenderBufferFlag::STORAGE | RenderTextureFlag::UNORDERED_ACCESS;
+    g_conditionalSurveyBuffer = g_device->createBuffer(conditionalSurveyBufferDesc);
+
+    RenderDescriptorSetBuilder conditionalSurveyDescriptorSetBuilder;
+    conditionalSurveyDescriptorSetBuilder.begin();
+    conditionalSurveyDescriptorSetBuilder.addReadWriteStructuredBuffer(0);
+    conditionalSurveyDescriptorSetBuilder.end();
+    g_conditionalSurveyDescriptorSet = conditionalSurveyDescriptorSetBuilder.create(g_device.get());
+
+    RenderBufferStructuredView conditionalSurveyStructuredView(sizeof(uint32_t));
+    g_conditionalSurveyDescriptorSet->setBuffer(0, g_conditionalSurveyBuffer.get(), 0, &conditionalSurveyStructuredView);
+
+    pipelineLayoutBuilder.addDescriptorSet(conditionalSurveyDescriptorSetBuilder);
 
     if (g_backend != Backend::D3D12)
     {
@@ -5585,6 +5623,84 @@ static void ProcSetPixelShader(const RenderCommand& cmd)
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.pixelShader, shader);
 }
 
+static void BeginConditionalSurvey(GuestDevice* device, uint32_t index)
+{
+    assert(index < CONDITIONAL_SURVEY_MAX && "Invalid conditional survey index.");
+
+    RenderCommand cmd;
+    cmd.type = RenderCommandType::SetConditionalSurvey;
+    cmd.setConditionalSurvey.enabled = true;
+    cmd.setConditionalSurvey.index = index;
+    g_renderQueue.enqueue(cmd);
+}
+
+static void EndConditionalSurvey(GuestDevice* device)
+{
+    RenderCommand cmd;
+    cmd.type = RenderCommandType::SetConditionalSurvey;
+    cmd.setConditionalSurvey.enabled = false;
+    cmd.setConditionalSurvey.index = 0;
+    g_renderQueue.enqueue(cmd);
+}
+
+static void ProcSetConditionalSurvey(const RenderCommand& cmd)
+{
+    uint32_t specConstants = g_pipelineState.specConstants;
+    if (cmd.setConditionalSurvey.enabled)
+    {
+        // Clear previous survey result first.
+        auto uploadBuffer = g_device->createBuffer(RenderBufferDesc::UploadBuffer(sizeof(uint32_t)));
+        memset(uploadBuffer->map(), 0, sizeof(uint32_t));
+        uploadBuffer->unmap();
+
+        auto& commandList = g_commandLists[g_frame];
+        commandList->barriers(RenderBarrierStage::COPY, RenderBufferBarrier(g_conditionalSurveyBuffer.get(), RenderBufferAccess::WRITE));
+        commandList->copyBufferRegion(g_conditionalSurveyBuffer->at(cmd.setConditionalSurvey.index * sizeof(uint32_t)), uploadBuffer->at(0), sizeof(uint32_t));
+        commandList->barriers(RenderBarrierStage::GRAPHICS, RenderBufferBarrier(g_conditionalSurveyBuffer.get(), RenderBufferAccess::READ | RenderBufferAccess::WRITE));
+
+        g_tempBuffers[g_frame].emplace_back(std::move(uploadBuffer));
+
+        specConstants |= SPEC_CONSTANT_CONDITIONAL_SURVEY;
+    }
+    else
+        specConstants &= ~SPEC_CONSTANT_CONDITIONAL_SURVEY;
+
+    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.specConstants, specConstants);
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.conditionalSurveyIndex, cmd.setConditionalSurvey.index);
+}
+
+static void BeginConditionalRendering(GuestDevice* device, uint32_t index)
+{
+    assert(index < CONDITIONAL_SURVEY_MAX && "Invalid conditional rendering index.");
+
+    RenderCommand cmd;
+    cmd.type = RenderCommandType::SetConditionalRendering;
+    cmd.setConditionalRendering.enabled = true;
+    cmd.setConditionalRendering.index = index;
+    g_renderQueue.enqueue(cmd);
+}
+
+static void EndConditionalRendering(GuestDevice* device)
+{
+    RenderCommand cmd;
+    cmd.type = RenderCommandType::SetConditionalRendering;
+    cmd.setConditionalRendering.enabled = false;
+    cmd.setConditionalRendering.index = 0;
+    g_renderQueue.enqueue(cmd);
+}
+
+static void ProcSetConditionalRendering(const RenderCommand& cmd)
+{
+    uint32_t specConstants = g_pipelineState.specConstants;
+    if (cmd.setConditionalRendering.enabled)
+        specConstants |= SPEC_CONSTANT_CONDITIONAL_RENDERING;
+    else
+        specConstants &= ~SPEC_CONSTANT_CONDITIONAL_RENDERING;
+
+    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.specConstants, specConstants);
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.conditionalRenderingIndex, cmd.setConditionalRendering.index);
+}
+
 static void SetClipPlane(GuestDevice* device, uint32_t index, const be<float>* plane)
 {
     if (index != 0)
@@ -5643,6 +5759,8 @@ static std::thread g_renderThread([]
                 case RenderCommandType::SetStreamSource:                   ProcSetStreamSource(cmd); break;
                 case RenderCommandType::SetIndices:                        ProcSetIndices(cmd); break;
                 case RenderCommandType::SetPixelShader:                    ProcSetPixelShader(cmd); break;
+                case RenderCommandType::SetConditionalSurvey:              ProcSetConditionalSurvey(cmd); break;
+                case RenderCommandType::SetConditionalRendering:           ProcSetConditionalRendering(cmd); break;
                 default:                                                   assert(false && "Unrecognized render command type."); break;
                 }
             }
@@ -8262,6 +8380,11 @@ GUEST_FUNCTION_HOOK(sub_82543AC8, SetIndices); // replaced
 
 GUEST_FUNCTION_HOOK(sub_82548608, CreatePixelShader); // replaced
 GUEST_FUNCTION_HOOK(sub_82546BD8, SetPixelShader);
+
+GUEST_FUNCTION_HOOK(sub_82636BF8, BeginConditionalSurvey);
+GUEST_FUNCTION_HOOK(sub_82636C08, EndConditionalSurvey);
+GUEST_FUNCTION_HOOK(sub_82636C10, BeginConditionalRendering);
+GUEST_FUNCTION_HOOK(sub_82636C18, EndConditionalRendering);
 
 GUEST_FUNCTION_HOOK(sub_8253B760, IsSet);
 
