@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Marathon.inl>
 #include <Sonicteam/Player/State/ICommonContext.h>
 #include <Sonicteam/Player/IExportPostureRequestFlag.h>
@@ -23,7 +24,7 @@ namespace Sonicteam::Player::State
         be<uint32_t> m_VehicleFlag;
         be<uint32_t> m_AmigoFlag;
         MARATHON_INSERT_PADDING(0x50);
-        boost::shared_ptr<Score> m_pScore; //on merge, rename to spScore also do not forget about player_patches.cpp
+        boost::shared_ptr<Score> m_spScore;
         MARATHON_INSERT_PADDING(0x100);
     };
 }

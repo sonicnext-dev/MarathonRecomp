@@ -6,6 +6,7 @@
 #include <Sonicteam/Player/IGauge.h>
 #include <Sonicteam/Player/IPlugIn.h>
 #include <Sonicteam/Player/RootFrame.h>
+#include <Sonicteam/Player/IPostureControl.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
 #include <stdx/vector.h>
 
@@ -13,6 +14,12 @@ namespace Sonicteam::Player
 {
     class Object : public Actor
     {
+        struct ObjectPlayerUpgrade
+        {
+            uint32_t global_flag;
+            uint32_t equip_flag;
+        };
+
     public:
         class CreationParams
         {
@@ -27,21 +34,33 @@ namespace Sonicteam::Player
         be<uint32_t> m_TargetCameraActorID; 
         xpointer<MessageReceiver> m_pCameraman; // Here as MessageReceiver
         be<uint32_t> m_PlayerIndex;
-        MARATHON_INSERT_PADDING(0x2C);
+        be<uint32_t> m_PlayerControllerIndex;
+        SoX::Math::Quaternion m_SpawnRotation;
+        SoX::Math::Vector m_SpawnPosition;
+        be<uint32_t> m_SpawnRing;
+        SoX::RefSharedPointer<> m_spSpawnSource; // REF_TYPE(RefCountObject)
         bool m_IsPlayer;
         bool m_IsPosture;
         bool m_IsAmigo;
         MARATHON_INSERT_PADDING(1);
         SoX::RefSharedPointer<RootFrame> m_spRootFrame;
-        MARATHON_INSERT_PADDING(0x14);
+        SoX::RefSharedPointer<> m_spPackageBinary;
+        boost::shared_ptr<void> m_spPlayerModel;
+        boost::shared_ptr<IPostureControl> m_spPlayerPosture;
         boost::shared_ptr<State::Machine2> m_spStateMachine;
-        MARATHON_INSERT_PADDING(0x10);
+        boost::shared_ptr<void> m_spPlayerGravity;
+        boost::shared_ptr<void> m_spPlayerImpulse;
         be<uint32_t> m_SetupModuleIndexPrefix;
         be<uint32_t> m_SetupModuleIndexPostfix;
         boost::shared_ptr<IGauge> m_spGauge;
         MARATHON_INSERT_PADDING(8);
         stdx::vector<boost::shared_ptr<IPlugIn>> m_vspPlayerPlugins;
-        MARATHON_INSERT_PADDING(0x1F4);
+        MARATHON_INSERT_PADDING(0x58);
+        be<float> m_PlayerDelta;
+        MARATHON_INSERT_PADDING(0x48);
+        stdx::vector<ObjectPlayerUpgrade> m_PlayerUpgrade;
+        stdx::string m_PlayerName;
+        MARATHON_INSERT_PADDING(0x134);
 
         template <typename T = IGauge>
         T* GetGauge()

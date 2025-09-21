@@ -10,7 +10,7 @@ namespace Sonicteam::Player::State
     class SonicContext : public CommonContext
     {
     public:
-        //Sprite
+        // Sprite
         enum GemSprite:uint32_t
         {
             GemSprite_Green = 1,
@@ -36,7 +36,7 @@ namespace Sonicteam::Player::State
         };
 
         be<GemSprite> m_CurrentGemSprite;
-        boost::shared_ptr<Sonicteam::Player::SonicGauge> m_Gauge;
+        boost::shared_ptr<SonicGauge> m_Gauge;
         uint8_t m_HomingLockOn;
         uint8_t m_DisablePlayerMovement;
         uint8_t m_AntigravityHitBox;

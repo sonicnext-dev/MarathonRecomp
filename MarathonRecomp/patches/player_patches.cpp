@@ -15,7 +15,7 @@ PPC_FUNC(sub_8221A7D8)
     }
 
     auto pTailsContext = (Sonicteam::Player::State::TailsContext*)(base + ctx.r3.u32);
-    auto pPlayer = pTailsContext->m_pScore->m_pPlayer;
+    auto pPlayer = pTailsContext->m_spScore->m_pPlayer;
 
     if (auto pGauge = pPlayer->GetGauge<Sonicteam::Player::SonicGauge>())
     {
@@ -262,10 +262,6 @@ bool DisablePushState()
     return Config::DisablePushState;
 }
 
-/////////////////////////////////////////////////////////
-//////////  Sonic Gauge Restoration EX Version /////////
-////////////////////////////////////////////////////////
-
 const Sonicteam::Player::State::SonicContext::GemSprite gemConversionTable[] = {
     Sonicteam::Player::State::SonicContext::GemSprite_Blue,
     Sonicteam::Player::State::SonicContext::GemSprite_Red,
@@ -277,11 +273,10 @@ const Sonicteam::Player::State::SonicContext::GemSprite gemConversionTable[] = {
     Sonicteam::Player::State::SonicContext::GemSprite_Super
 };
 
-//Check Gauge Drain
-//SonicTeam::Player::SonicGauge (IVariable), IVariable::Init(RefSharedPointer<SonicTeam::LuaSystem>)
+// Check Gauge Drain
+// SonicTeam::Player::SonicGauge (IVariable), IVariable::Init(RefSharedPointer<SonicTeam::LuaSystem>)
 PPC_FUNC_IMPL(__imp__sub_82217FC0);
 PPC_FUNC(sub_82217FC0) {
-
     if (!Config::SonicGauge)
     {
         __imp__sub_82217FC0(ctx, base);
@@ -292,19 +287,20 @@ PPC_FUNC(sub_82217FC0) {
     auto gauge = context->m_Gauge.get();
 
     using enum Sonicteam::Player::State::SonicContext::Gem;
-    auto gem_id = (Sonicteam::Player::State::SonicContext::Gem)(ctx.r4.u32);
+    auto gemId = (Sonicteam::Player::State::SonicContext::Gem)ctx.r4.u32;
 
-    switch (gem_id) 
+    switch (gemId)
     {
         case Gem_Yellow:
-            if (context->m_ThunderGuard) break; //Prevent Yellow Gem spam, useless anyway
+            if (context->m_ThunderGuard)
+                break; // Prevent Yellow Gem spam, useless anyway
         case Gem_Blue:
         case Gem_Green:
         case Gem_Sky:
         case Gem_White:
         case Gem_Super:
         {
-            size_t index = gemConversionTable[gem_id - 1] - 1;
+            size_t index = gemConversionTable[gemId - 1] - 1;
             if (gauge->m_Value >= (&gauge->m_Green)[index].get()) 
             {
                 ctx.r3.u64 = 1;
@@ -321,14 +317,13 @@ PPC_FUNC(sub_82217FC0) {
             }
             break;
     }
-    ctx.r3.u64 = 0;
-    return;
 
+    ctx.r3.u64 = 0;
 }
-//Gauge Drain
+
+// Gauge Drain
 PPC_FUNC_IMPL(__imp__sub_82218068);
 PPC_FUNC(sub_82218068) {
-
     if (!Config::SonicGauge)
     {
         __imp__sub_82217FC0(ctx, base);
@@ -339,19 +334,19 @@ PPC_FUNC(sub_82218068) {
     auto gauge = context->m_Gauge.get();
 
     using enum Sonicteam::Player::State::SonicContext::Gem;
-    auto gem_id = (Sonicteam::Player::State::SonicContext::Gem)(ctx.r4.u32);
+    auto gemId = (Sonicteam::Player::State::SonicContext::Gem)ctx.r4.u32;
     double delta = ctx.f1.f64;
 
-    switch (gem_id) 
+    switch (gemId)
     {
-    case Gem_Blue:
+        case Gem_Blue:
         case Gem_Green:
         case Gem_Yellow:
         case Gem_Sky:
         case Gem_White:
         case Gem_Super:
         {
-            uint32_t index = gemConversionTable[gem_id - 1] - 1;
+            uint32_t index = gemConversionTable[gemId - 1] - 1;
             gauge->m_Value = gauge->m_Value.get() - (&gauge->m_Green)[index].get();
             gauge->m_GroundedTime = 0.0;
             break;
@@ -359,7 +354,7 @@ PPC_FUNC(sub_82218068) {
         case Gem_Red:
         case Gem_Purple:
         {
-            uint32_t index = gemConversionTable[gem_id - 1] - 1;
+            uint32_t index = gemConversionTable[gemId - 1] - 1;
             gauge->m_Value = gauge->m_Value.get() - (&gauge->m_Green)[index].get() * delta;
             gauge->m_GroundedTime = 0.0;
             if (gauge->m_Value <= 0)
@@ -368,94 +363,81 @@ PPC_FUNC(sub_82218068) {
                 context->m_Shrink = 0;
                 context->m_SlowTime = 0;
                 context->m_24A = 1;
-
             }
             break;
         }
     }
 }
 
-
 PPC_FUNC_IMPL(__imp__sub_8223F360);
 PPC_FUNC(sub_8223F360) {
-
-    auto IVariable = ctx.r3.u32;
-    auto RefTypeLuaSystem = ctx.r4.u32;
     __imp__sub_8223F360(ctx, base);
+
     if (!Config::SonicGauge)
         return;
 
-    auto gauge = (Sonicteam::Player::SonicGauge*)g_memory.Translate(IVariable - 0x20);
+    auto iVariable = ctx.r3.u32;
+    auto refTypeLuaSystem = ctx.r4.u32;
+
+    auto gauge = (Sonicteam::Player::SonicGauge*)g_memory.Translate(iVariable - 0x20);
     auto buffer = g_userHeap.Alloc<stdx::string>();
 
     // if (gauge->m_Gem == 0.0) if m_Gem not intitialized by __imp__sub_8223F360
     *buffer = "c_gauge_green";
     if (gauge->m_Green.get() == 0.0)
-        gauge->m_Green = GuestToHostFunction<float>(sub_821EA350, RefTypeLuaSystem, g_memory.MapVirtual(buffer));
+        gauge->m_Green = GuestToHostFunction<float>(sub_821EA350, refTypeLuaSystem, g_memory.MapVirtual(buffer));
 
     *buffer = "c_gauge_red";
     if (gauge->m_Red.get()== 0.0)
-        gauge->m_Red = GuestToHostFunction<float>(sub_821EA350, RefTypeLuaSystem, g_memory.MapVirtual(buffer));
+        gauge->m_Red = GuestToHostFunction<float>(sub_821EA350, refTypeLuaSystem, g_memory.MapVirtual(buffer));
 
     *buffer = "c_gauge_blue";
     if (gauge->m_Blue.get() == 0.0)
-        gauge->m_Blue = GuestToHostFunction<float>(sub_821EA350, RefTypeLuaSystem, g_memory.MapVirtual(buffer));
+        gauge->m_Blue = GuestToHostFunction<float>(sub_821EA350, refTypeLuaSystem, g_memory.MapVirtual(buffer));
 
     *buffer = "c_gauge_white";
     if (gauge->m_White.get() == 0.0)
-        gauge->m_White = GuestToHostFunction<float>(sub_821EA350, RefTypeLuaSystem, g_memory.MapVirtual(buffer));
+        gauge->m_White = GuestToHostFunction<float>(sub_821EA350, refTypeLuaSystem, g_memory.MapVirtual(buffer));
 
     *buffer = "c_gauge_sky";
     if (gauge->m_Sky.get() == 0.0)
-        gauge->m_Sky = GuestToHostFunction<float>(sub_821EA350, RefTypeLuaSystem, g_memory.MapVirtual(buffer));
+        gauge->m_Sky = GuestToHostFunction<float>(sub_821EA350, refTypeLuaSystem, g_memory.MapVirtual(buffer));
 
     *buffer = "c_gauge_yellow";
     if (gauge->m_Yellow.get() == 0.0)
-        gauge->m_Yellow = GuestToHostFunction<float>(sub_821EA350, RefTypeLuaSystem, g_memory.MapVirtual(buffer));
+        gauge->m_Yellow = GuestToHostFunction<float>(sub_821EA350, refTypeLuaSystem, g_memory.MapVirtual(buffer));
 
     *buffer = "c_gauge_purple";
     if (gauge->m_Purple.get() == 0.0)
-        gauge->m_Purple = GuestToHostFunction<float>(sub_821EA350, RefTypeLuaSystem, g_memory.MapVirtual(buffer));
+        gauge->m_Purple = GuestToHostFunction<float>(sub_821EA350, refTypeLuaSystem, g_memory.MapVirtual(buffer));
 
     *buffer = "c_gauge_super";
     if (gauge->m_Super.get() == 0.0)
-        gauge->m_Super = GuestToHostFunction<float>(sub_821EA350, RefTypeLuaSystem, g_memory.MapVirtual(buffer));
-
+        gauge->m_Super = GuestToHostFunction<float>(sub_821EA350, refTypeLuaSystem, g_memory.MapVirtual(buffer));
 
     buffer->~string();
     g_userHeap.Free(buffer);
-
-    /* For Testing
-    gauge->m_Green = 10;
-    gauge->m_Blue = 20;
-    gauge->m_White = 40;
-    gauge->m_Sky = 60;
-    gauge->m_Yellow = 80;
-    gauge->m_Super = 100;
-    gauge->m_Red = 20;
-    gauge->m_Purple = 40;
-    */
 }
  
 void SonicGaugeRestorationGaugeGemSpriteResetFix(PPCRegister& r_GameImp) {
-
     Sonicteam::GameImp* pGameImp = (Sonicteam::GameImp*)g_memory.Translate(r_GameImp.u32);
+
     for (int i = 0; i < 4; i++)
         pGameImp->m_PlayerData[i].GemIndex = 0;
 }
 
 void SonicGaugeRestorationGaugeFlagFix(PPCRegister& r_gauge, PPCRegister& r_context) {
-
     if (!Config::SonicGauge || !r_gauge.u32)
         return;
 
     auto pGauge = (Sonicteam::Player::SonicGauge*)g_memory.Translate(r_gauge.u32);
     auto PContext = (Sonicteam::Player::State::SonicContext*)g_memory.Translate(r_context.u32);
 
-    if ((uint32_t)(static_cast<Sonicteam::Player::IPlugIn*>(pGauge)->m_pVftable.get()) != 0x8200D4D8) // != SonicGauge 
+    if ((uint64_t)static_cast<Sonicteam::Player::IPlugIn*>(pGauge)->m_pVftable.get() != 0x8200D4D8) // != SonicGauge
         return;
 
-    auto weapons = PContext->m_pScore->m_pPlayer->GetPlugin<Sonicteam::Player::Weapon::SonicWeapons>("sonic_weapons");
+    auto weapons = PContext->m_spScore->m_pPlayer->GetPlugin<Sonicteam::Player::Weapon::SonicWeapons>("sonic_weapons");
+
     if (PContext->m_Tornado != 0 || PContext->m_AnimationID == 0xCB || PContext->m_AnimationID == 0xCC || PContext->m_AnimationID == 0x46 || PContext->m_AnimationID == 0xCE ||  weapons->m_GunDrive.m_pElement.get() != nullptr)
     {
         pGauge->m_GroundedFlags = 1; // Lock gauge
@@ -484,4 +466,3 @@ void SonicGaugeRestorationGaugeFlagFix(PPCRegister& r_gauge, PPCRegister& r_cont
         }
     }
 }
-//Sonic Gauge Restoration

@@ -10,14 +10,14 @@
 
 namespace Sonicteam::Player
 {
-    class GroundRayListener:public ICollisionListenerTemplate<Sonicteam::SoX::Physics::IntersectListener, Sonicteam::SoX::Physics::IntersectEvent>
+    class GroundRayListener:public ICollisionListenerTemplate<SoX::Physics::IntersectListener, SoX::Physics::IntersectEvent>
     {
     public:
         SoX::Math::Vector m_ContactPosition;
         SoX::Math::Vector m_ContactNormal;
-        be<float> m_RayDistance; //not sure
-        be<uint32_t> m_RayFlag; //not sure
-        SoX::LinkRef<Sonicteam::SoX::Physics::Entity> m_ContactEntity;
+        be<float> m_RayDistance; // Not sure
+        be<uint32_t> m_RayFlag; // Not sure
+        SoX::LinkRef<SoX::Physics::Entity> m_ContactEntity;
         MARATHON_INSERT_PADDING(0xC);
     };
 }

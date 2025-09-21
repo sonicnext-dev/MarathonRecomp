@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Marathon.inl>
-#include <Sonicteam/SoX/Math/Quaternion.h>
 
 namespace Sonicteam::Player
 {

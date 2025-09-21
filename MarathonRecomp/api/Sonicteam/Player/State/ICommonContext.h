@@ -1,11 +1,9 @@
 #pragma once
+
 #include <Marathon.inl>
 #include <Sonicteam/Player/State/ContextSpeedAndJump.h>
 #include <Sonicteam/Player/State/ICommonContextIF.h>
 #include <Sonicteam/Player/State/IContext.h>
-#include <Sonicteam/SoX/Math/Vector.h>
-#include <Sonicteam/SoX/Math/Quaternion.h>
-
 
 namespace Sonicteam::Player::State
 {
@@ -24,5 +22,4 @@ namespace Sonicteam::Player::State
 		MARATHON_INSERT_PADDING(0x2C);
     };
 	//0x90
-
 }

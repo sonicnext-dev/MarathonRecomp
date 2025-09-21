@@ -7,7 +7,6 @@
 #include <Sonicteam/Player/IVariable.h>
 #include <Sonicteam/Player/IPosturePlugIn.h>
 #include <Sonicteam/Player/Unit/ITestCase.h>
-#include <Sonicteam/SoX/RefCountObject.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
 #include <Sonicteam/SoX/Math/Vector.h>
 #include <Sonicteam/SoX/Engine/Task.h>
@@ -21,7 +20,7 @@ namespace Sonicteam::Player
     class IPostureControl : public IVariable, public IDynamicLink, public Unit::ITestCase, public IFlagCommunicator
     {
     public:
-        SoX::RefSharedPointer<SoX::RefCountObject> m_spRootFrame;
+        SoX::RefSharedPointer<> m_spRootFrame;
         SoX::Math::Quaternion m_RotationFixed;
         SoX::Math::Vector m_PositionFixed;
         SoX::RefSharedPointer<SoX::Physics::World> m_spWorld;
@@ -34,7 +33,7 @@ namespace Sonicteam::Player
         boost::shared_ptr<IPosturePlugIn> m_spPosturePlugIn;
         SoX::Math::Vector m_GravityDirection;
         be<float> m_GravityForce;
-        SoX::Math::Vector m_NormalizedSurface; //ground normal?
+        SoX::Math::Vector m_NormalizedSurface; // Ground normal?
         SoX::Math::Vector m_Position;
         SoX::Math::Quaternion m_Rotation;
         MARATHON_INSERT_PADDING(0x20);
