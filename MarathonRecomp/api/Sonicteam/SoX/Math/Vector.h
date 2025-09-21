@@ -27,21 +27,12 @@ namespace Sonicteam::SoX::Math
         be<float> Z;
         be<float> W;
 
-		Vector operator+(float addend)
+        Vector operator+(float addend)
         {
             return { X + addend, Y + addend, Z + addend, W + addend };
         }
 
-        std::string tostring()
-        {
-            return std::format("Vector({}, {}, {}, {})",
-                static_cast<float>(X),
-                static_cast<float>(Y),
-                static_cast<float>(Z),
-                static_cast<float>(W));
-        }
-
-        float distanceTo(const Vector& other) const
+        float DistanceTo(const Vector& other) const
         {
             float dx = static_cast<float>(X) - static_cast<float>(other.X);
             float dy = static_cast<float>(Y) - static_cast<float>(other.Y);

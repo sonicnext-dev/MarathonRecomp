@@ -236,7 +236,7 @@ void RestoreChainJumpFlips1(PPCRegister& r_ObjectPlayer, PPCRegister& r_Message,
             Target = sMessage->m_Position;
         }
     }
-    auto Distance = Point.distanceTo(Target);
+    auto Distance = Point.DistanceTo(Target);
     double combined_speed = std::sqrt(speed_horizontal * speed_horizontal + speed_forward * speed_forward);
     double time_value = 1.0; // default fallback
     if (Distance > 0.0 && combined_speed > 0.0)
