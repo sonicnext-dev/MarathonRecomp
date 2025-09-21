@@ -418,7 +418,7 @@ address = 0x821A6988
 registers = ["r10", "r11"]
 
 [[midasm_hook]]
-name = "RestoreChainJumpFlips1"
+name = "RestoreChainJumpFlips"
 address = 0x82199654
 registers = ["r31","r30","r11","f1", "f2", "f3"]
 

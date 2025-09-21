@@ -204,7 +204,7 @@ void RestoreChaosBoostJump(PPCRegister& r10, PPCRegister& r11)
     r11.u32 = 2;
 }
 
-void RestoreChainJumpFlips1(PPCRegister& r_ObjectPlayer, PPCRegister& r_Message,PPCRegister& r_ObjectContext,PPCRegister& f1, PPCRegister& f2, PPCRegister& f3)
+void RestoreChainJumpFlips(PPCRegister& r_ObjectPlayer, PPCRegister& r_Message, PPCRegister& r_ObjectContext, PPCRegister& f1, PPCRegister& f2, PPCRegister& f3)
 {
     if (!Config::RestoreChainJumpFlips)
         return;
@@ -217,48 +217,44 @@ void RestoreChainJumpFlips1(PPCRegister& r_ObjectPlayer, PPCRegister& r_Message,
         be<uint32_t> m_ActorID;
     };
 
-    auto pObjectPlayer = ((Sonicteam::Player::Object*)g_memory.Translate(r_ObjectPlayer.u32));
-    auto pMessage = ((Message0x11047*)g_memory.Translate(r_Message.u32));
-    auto pObjectContext = ((Sonicteam::Player::State::ICommonContext*)g_memory.Translate(r_ObjectContext.u32));
-    auto speed_horizontal = f1.f64;
-    auto speed_forward = f2.f64;
+    auto pObjectPlayer = static_cast<Sonicteam::Player::Object *>(g_memory.Translate(r_ObjectPlayer.u32));
+    auto pMessage = static_cast<Message0x11047 *>(g_memory.Translate(r_Message.u32));
+    auto pObjectContext = static_cast<Sonicteam::Player::State::ICommonContext *>(g_memory.Translate(r_ObjectContext.u32));
+    auto speedHorizontal = f1.f64;
+    auto speedForward = f2.f64;
 
-    auto Point = pObjectPlayer->m_spRootFrame->m_PositionF0;
-    auto Target = pMessage->m_position;
+    auto point = pObjectPlayer->m_spRootFrame->m_PositionF0;
+    auto target = pMessage->m_position;
+
     if (pMessage->m_ActorID.get() != -1)
     {
         auto pFixture = GuestToHostFunction<Sonicteam::Fixture*>(sub_821609D0,App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->m_pGameImp->m_spActorManager.get(), &pMessage->m_ActorID);
         auto sMessage = guest_stack_var<Sonicteam::Message::MsgObjJump123GetNextPoint>();
-        sMessage->m_Rotation = { 0,0,0,1 };
-        sMessage->m_Position = { 0,0,0,1 };
+        sMessage->m_Rotation = { 0, 0, 0, 1 };
+        sMessage->m_Position = { 0, 0, 0, 1 };
+
         if (pFixture->OnMessageReceived(sMessage))
         {
-            Target = sMessage->m_Position;
+            target = sMessage->m_Position;
         }
     }
-    auto Distance = Point.DistanceTo(Target);
-    double combined_speed = std::sqrt(speed_horizontal * speed_horizontal + speed_forward * speed_forward);
-    double time_value = 1.0; // default fallback
-    if (Distance > 0.0 && combined_speed > 0.0)
+
+    auto distance = point.DistanceTo(target);
+    double combinedSpeed = std::sqrt(speedHorizontal * speedHorizontal + speedForward * speedForward);
+    double timeValue = 1.0; // Default fallback
+
+    if (distance > 0.0 && combinedSpeed > 0.0)
     {
-        time_value = Distance / combined_speed;
-        /*
-        printf("PlayerPoint : (%s)\n", Point.tostring().c_str());
-        printf("TargetPoint : (%s)\n", Target.tostring().c_str());
-        printf("time_value : %f\n", time_value);
-        printf("distance : %f\n", Distance);
-        printf("c_speed_horizontal : %f\n", speed_horizontal);
-        printf("c_speed_forward : %f\n", speed_forward);
-        */
+        timeValue = distance / combinedSpeed;
     }
 
-    //optional (non fast context)
-    //CommonContext has a slightly different algorithm to process chain flips
+    // CommonContext has a slightly different algorithm to process chain flips
     if (reinterpret_cast<Sonicteam::Player::IPlugIn*>(pObjectContext)->m_pVftable.get() != g_memory.Translate(0x8200A728))
     {
-        time_value *= 0.35;
+        timeValue *= 0.35;
     }
-    f3.f64 = time_value;
+
+    f3.f64 = timeValue;
 }
 
 bool DisablePushState()
