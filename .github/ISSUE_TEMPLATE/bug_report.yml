@@ -17,13 +17,13 @@ body:
       label: DLC
       description: If you have DLC installed, please specify which ones you have.
       options:
-        - label: Shadow Boss Attack
-        - label: Silver Boss Attack
-        - label: Sonic Boss Attack
-        - label: Team Attack Amigo
-        - label: Mission Pack Shadow Very Hard
-        - label: Mission Pack Silver Very Hard
-        - label: Mission Pack Sonic Very Hard
+        - label: Additional Episode "Sonic Boss Attack"
+        - label: Additional Episode "Shadow Boss Attack"
+        - label: Additional Episode "Silver Boss Attack"
+        - label: Additional Episode "Team Attack Amigo"
+        - label: Additional Mission Pack "Sonic/Very Hard"
+        - label: Additional Mission Pack "Shadow/Very Hard"
+        - label: Additional Mission Pack "Silver/Very Hard"
   - type: textarea
     id: mods
     attributes:
