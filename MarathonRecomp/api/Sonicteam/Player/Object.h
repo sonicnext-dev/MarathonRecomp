@@ -16,8 +16,8 @@ namespace Sonicteam::Player
     {
         struct ObjectPlayerUpgrade
         {
-            uint32_t global_flag;
-            uint32_t equip_flag;
+            uint32_t GlobalFlag;
+            uint32_t EquipFlag;
         };
 
     public:
