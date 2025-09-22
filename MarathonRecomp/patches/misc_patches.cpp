@@ -2,6 +2,7 @@
 #include <ui/black_bar.h>
 #include <user/config.h>
 #include <user/achievement_manager.h>
+#include <gpu/imgui/imgui_snapshot.h>
 
 // TODO (Hyper): implement achievements menu.
 void AchievementManagerUnlockMidAsmHook(PPCRegister& id)
@@ -102,6 +103,7 @@ void PedestrianAnimationLOD(PPCRegister& val)
 {
     val.u32 = 0;
 }
+
 
 bool DisableHints()
 {

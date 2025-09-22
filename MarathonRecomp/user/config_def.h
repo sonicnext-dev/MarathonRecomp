@@ -91,6 +91,7 @@ CONFIG_DEFINE_HIDDEN("Codes", bool, DisableEdgeGrabLeftover, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, TailsGauge, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, EnableDebugMode, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreDemoCameraMode, false);
+CONFIG_DEFINE_ENUM_HIDDEN("Codes", EDevTitleMenu, DevTitle, EDevTitleMenu::False);
 CONFIG_DEFINE_HIDDEN("Codes", bool, MidairControlForMachSpeed, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, MidairControlForSnowboards, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, ControllableTeleportDash, false);

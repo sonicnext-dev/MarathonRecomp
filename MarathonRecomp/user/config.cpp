@@ -373,6 +373,13 @@ CONFIG_DEFINE_ENUM_TEMPLATE(EUIAlignmentMode)
     { "Center",  EUIAlignmentMode::Centre }
 };
 
+CONFIG_DEFINE_ENUM_TEMPLATE(EDevTitleMenu)
+{
+    { "false", EDevTitleMenu::False },
+    { "true",  EDevTitleMenu::True },
+    { "custom",  EDevTitleMenu::Custom }
+};
+
 #undef  CONFIG_DEFINE
 #define CONFIG_DEFINE(section, type, name, defaultValue) \
     ConfigDef<type> Config::name{section, #name, defaultValue};
@@ -380,6 +387,10 @@ CONFIG_DEFINE_ENUM_TEMPLATE(EUIAlignmentMode)
 #undef  CONFIG_DEFINE_HIDDEN
 #define CONFIG_DEFINE_HIDDEN(section, type, name, defaultValue) \
     ConfigDef<type, true> Config::name{section, #name, defaultValue};
+
+#undef  CONFIG_DEFINE_ENUM_HIDDEN
+#define CONFIG_DEFINE_ENUM_HIDDEN(section, type, name, defaultValue) \
+    ConfigDef<type,true> Config::name{section, #name, defaultValue, &g_##type##_template};
 
 #undef  CONFIG_DEFINE_LOCALISED
 #define CONFIG_DEFINE_LOCALISED(section, type, name, defaultValue) \

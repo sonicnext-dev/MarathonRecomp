@@ -30,6 +30,7 @@
 #include <ui/options_menu.h>
 #include <ui/game_window.h>
 #include <ui/black_bar.h>
+#include <ui/devtitle_menu.h>
 #include <patches/aspect_ratio_patches.h>
 #include <user/config.h>
 #include <sdl_listener.h>
@@ -1590,6 +1591,7 @@ static void CreateImGuiBackend()
     MessageWindow::Init();
     OptionsMenu::Init();
     InstallerWizard::Init();
+    DevTitleMenu::Init();
 
     ImGui_ImplSDL2_InitForOther(GameWindow::s_pWindow);
 
@@ -2853,6 +2855,7 @@ static void DrawImGui()
     ImGui::End();
 #endif
 
+    DevTitleMenu::Draw();
     AchievementMenu::Draw();
 //    OptionsMenu::Draw();
     AchievementOverlay::Draw();
