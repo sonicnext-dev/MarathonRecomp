@@ -11,7 +11,7 @@ namespace Sonicteam::Player::State
     {
     public:
         // Sprite
-        enum GemSprite:uint32_t
+        enum GemSprite : uint32_t
         {
             GemSprite_Green = 1,
             GemSprite_Red,
@@ -23,7 +23,7 @@ namespace Sonicteam::Player::State
             GemSprite_Super
         };
 
-        enum Gem:uint32_t
+        enum Gem : uint32_t
         {
             Gem_Blue = 1,
             Gem_Red,

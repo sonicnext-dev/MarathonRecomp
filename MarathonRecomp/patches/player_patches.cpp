@@ -462,7 +462,6 @@ void SonicGaugeRestorationGaugeFlagFix(PPCRegister& r_gauge, PPCRegister& r_cont
         else if ((PContext->m_PostureFlag.get() & Sonicteam::Player::PostureControl::PostureFlag_Ground) != 0 || PContext->m_24A)
         {
             pGauge->m_GroundedFlags = 0;
-
         }
     }
 }
