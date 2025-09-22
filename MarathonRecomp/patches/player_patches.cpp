@@ -433,7 +433,7 @@ void SonicGaugeRestorationGaugeFlagFix(PPCRegister& r_gauge, PPCRegister& r_cont
     auto pGauge = (Sonicteam::Player::SonicGauge*)g_memory.Translate(r_gauge.u32);
     auto PContext = (Sonicteam::Player::State::SonicContext*)g_memory.Translate(r_context.u32);
 
-    if ((uint64_t)static_cast<Sonicteam::Player::IPlugIn*>(pGauge)->m_pVftable.get() != 0x8200D4D8) // != SonicGauge
+    if ((uint64_t)static_cast<Sonicteam::Player::IPlugIn*>(pGauge)->m_pVftable.ptr.get() != 0x8200D4D8) // != SonicGauge
         return;
 
     auto weapons = PContext->m_spScore->m_pPlayer->GetPlugin<Sonicteam::Player::Weapon::SonicWeapons>("sonic_weapons");
