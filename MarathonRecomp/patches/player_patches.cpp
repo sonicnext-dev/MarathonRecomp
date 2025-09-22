@@ -431,35 +431,35 @@ void SonicGaugeRestorationGaugeFlagFix(PPCRegister& r_gauge, PPCRegister& r_cont
         return;
 
     auto pGauge = (Sonicteam::Player::SonicGauge*)g_memory.Translate(r_gauge.u32);
-    auto PContext = (Sonicteam::Player::State::SonicContext*)g_memory.Translate(r_context.u32);
+    auto pContext = (Sonicteam::Player::State::SonicContext*)g_memory.Translate(r_context.u32);
 
     if ((uint64_t)static_cast<Sonicteam::Player::IPlugIn*>(pGauge)->m_pVftable.ptr.get() != 0x8200D4D8) // != SonicGauge
         return;
 
-    auto weapons = PContext->m_spScore->m_pPlayer->GetPlugin<Sonicteam::Player::Weapon::SonicWeapons>("sonic_weapons");
+    auto weapons = pContext->m_spScore->m_pPlayer->GetPlugin<Sonicteam::Player::Weapon::SonicWeapons>("sonic_weapons");
 
-    if (PContext->m_Tornado != 0 || PContext->m_AnimationID == 0xCB || PContext->m_AnimationID == 0xCC || PContext->m_AnimationID == 0x46 || PContext->m_AnimationID == 0xCE ||  weapons->m_GunDrive.m_pElement.get() != nullptr)
+    if (pContext->m_Tornado != 0 || pContext->m_AnimationID == 0xCB || pContext->m_AnimationID == 0xCC || pContext->m_AnimationID == 0x46 || pContext->m_AnimationID == 0xCE || weapons->m_GunDrive.m_pElement.get() != nullptr)
     {
         pGauge->m_GroundedFlags = 1; // Lock gauge
     }
     else
     {
         using enum Sonicteam::Player::State::SonicContext::Gem;
-        if ((PContext->m_Buttons.get() & 0x10000) != 0) {
-            PContext->m_24A = 0;
+        if ((pContext->m_Buttons.get() & 0x10000) != 0) {
+            pContext->m_24A = 0;
         }
 
-        if ((PContext->m_Buttons.get() & 0x20000) != 0 && (PContext->m_CurrentGem == Gem_Red || PContext->m_CurrentGem == Gem_Purple))
+        if ((pContext->m_Buttons.get() & 0x20000) != 0 && (pContext->m_CurrentGem == Gem_Red || pContext->m_CurrentGem == Gem_Purple))
         {
             pGauge->m_GroundedFlags = 1; 
-            if (PContext->m_24A) 
+            if (pContext->m_24A)
             {
                 pGauge->m_GroundedFlags = 0;
-                PContext->m_Shrink = 0;
-                PContext->m_SlowTime = 0;
+                pContext->m_Shrink = 0;
+                pContext->m_SlowTime = 0;
             }
         }
-        else if ((PContext->m_PostureFlag.get() & Sonicteam::Player::PostureControl::PostureFlag_Ground) != 0 || PContext->m_24A)
+        else if ((pContext->m_PostureFlag.get() & Sonicteam::Player::PostureControl::PostureFlag_Ground) != 0 || pContext->m_24A)
         {
             pGauge->m_GroundedFlags = 0;
         }
