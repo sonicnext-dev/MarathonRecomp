@@ -2162,7 +2162,7 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
     RenderBufferDesc conditionalSurveyBufferDesc;
     conditionalSurveyBufferDesc.size = CONDITIONAL_SURVEY_MAX * sizeof(uint32_t);
     conditionalSurveyBufferDesc.heapType = RenderHeapType::DEFAULT;
-    conditionalSurveyBufferDesc.flags = RenderBufferFlag::STORAGE | RenderTextureFlag::UNORDERED_ACCESS;
+    conditionalSurveyBufferDesc.flags = RenderBufferFlag::STORAGE | RenderBufferFlag::UNORDERED_ACCESS;
     g_conditionalSurveyBuffer = g_device->createBuffer(conditionalSurveyBufferDesc);
 
     RenderDescriptorSetBuilder conditionalSurveyDescriptorSetBuilder;
