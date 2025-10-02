@@ -575,3 +575,8 @@ registers = ["r29"]
 name = "SonicGaugeRestorationGaugeGemSpriteResetFix"
 address = 0x82177DFC
 registers = ["r31"]
+
+[[midasm_hook]]
+name = "InfiniteLives"
+address = 0x821857B0
+jump_address_on_true = 0x821857B4
