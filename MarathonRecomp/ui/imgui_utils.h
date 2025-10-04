@@ -14,10 +14,14 @@
 
 #define BREATHE_MOTION(start, end, time, rate) Lerp(start, end, (sin((ImGui::GetTime() - time) * (2.0f * M_PI / rate)) + 1.0f) / 2.0f)
 
+extern ImFont* g_fntRodin;
+extern ImFont* g_fntNewRodin;
+
 extern std::unique_ptr<GuestTexture> g_texWindow;
 extern std::unique_ptr<GuestTexture> g_texLight;
 extern std::unique_ptr<GuestTexture> g_texSelect;
 extern std::unique_ptr<GuestTexture> g_texSelectArrow;
+extern std::unique_ptr<GuestTexture> g_texMainMenu1;
 
 void InitImGuiUtils();
 
@@ -41,12 +45,12 @@ void SetProceduralOrigin(ImVec2 proceduralOrigin);
 void ResetProceduralOrigin();
 void SetAdditive(bool enabled);
 void ResetAdditive();
-float Scale(float size);
+void AddImageFlipped(ImTextureID texture, const ImVec2& min, const ImVec2& max, const ImVec2& uvMin = { 0, 0 }, const ImVec2& uvMax = { 0, 0 }, ImU32 col = IM_COL32_WHITE, bool flipHorz = false, bool flipVert = false);
+float Scale(float size, bool useGameplayScale = false);
 double ComputeLoopMotion(double time, double offset, double total);
 double ComputeLinearMotion(double time, double offset, double total);
 double ComputeMotion(double time, double offset, double total);
 void DrawArrows(ImVec2 min, ImVec2 max);
-void DrawHUD(ImVec2 min, ImVec2 max, const ImFont* font, const char* text);
 void DrawContainerBox(ImVec2 min, ImVec2 max, float alpha = 1);
 void DrawTextBasic(const ImFont* font, float fontSize, const ImVec2& pos, ImU32 colour, const char* text);
 void DrawTextWithMarquee(const ImFont* font, float fontSize, const ImVec2& position, const ImVec2& min, const ImVec2& max, ImU32 color, const char* text, double time, double delay, double speed);

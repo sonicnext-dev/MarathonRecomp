@@ -575,3 +575,13 @@ registers = ["r29"]
 name = "SonicGaugeRestorationGaugeGemSpriteResetFix"
 address = 0x82177DFC
 registers = ["r31"]
+
+[[midasm_hook]]
+name = "GameImp_PauseMenu_AddQuitPrefix"
+address = 0x8217DF60
+registers = ["r1", "r30"]
+
+[[midasm_hook]]
+name = "PauseAdapter_DoAction"
+address = 0x82170F3C
+registers = ["r11"]

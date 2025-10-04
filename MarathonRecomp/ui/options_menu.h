@@ -1,20 +1,22 @@
 #pragma once
 
-#include <api/Marathon.h>
+enum class OptionsMenuState
+{
+    Opening,
+    Idle,
+    Closing
+};
 
 class OptionsMenu
 {
 public:
+    static inline OptionsMenuState s_state = OptionsMenuState::Opening;
     static inline bool s_isVisible = false;
     static inline bool s_isPause = false;
     static inline bool s_isRestartRequired = false;
 
-//    static inline SWA::EMenuType s_pauseMenuType;
-
-    static void Init();
-//    static void Draw();
-//    static void Open(bool isPause = false, SWA::EMenuType pauseMenuType = SWA::eMenuType_WorldMap);
+    static void Draw();
+    static void Open(bool isPause = false);
     static void Close();
-
     static bool CanClose();
 };

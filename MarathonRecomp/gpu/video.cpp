@@ -1588,7 +1588,6 @@ static void CreateImGuiBackend()
     AchievementOverlay::Init();
     ButtonGuide::Init();
     MessageWindow::Init();
-    OptionsMenu::Init();
     InstallerWizard::Init();
 
     ImGui_ImplSDL2_InitForOther(GameWindow::s_pWindow);
@@ -2854,7 +2853,7 @@ static void DrawImGui()
 #endif
 
     AchievementMenu::Draw();
-//    OptionsMenu::Draw();
+    OptionsMenu::Draw();
     AchievementOverlay::Draw();
     InstallerWizard::Draw();
     ButtonGuide::Draw();

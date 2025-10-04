@@ -1,4 +1,5 @@
 #include "imgui_utils.h"
+#include <gpu/imgui/imgui_snapshot.h>
 #include <patches/aspect_ratio_patches.h>
 #include <app.h>
 #include <decompressor.h>
@@ -11,6 +12,9 @@
 #include <res/images/common/main_menu1.dds.h>
 #include <res/images/common/arrow.dds.h>
 
+ImFont* g_fntRodin;
+ImFont* g_fntNewRodin;
+
 std::unique_ptr<GuestTexture> g_texWindow;
 std::unique_ptr<GuestTexture> g_texLight;
 std::unique_ptr<GuestTexture> g_texSelect;
@@ -20,6 +24,9 @@ std::unique_ptr<GuestTexture> g_texArrow;
 
 void InitImGuiUtils()
 {
+    g_fntRodin = ImFontAtlasSnapshot::GetFont("FOT-RodinPro-DB.otf");
+    g_fntNewRodin = ImFontAtlasSnapshot::GetFont("FOT-NewRodinPro-UB.otf");
+
     g_texWindow = LOAD_ZSTD_TEXTURE(g_window);
     g_texLight = LOAD_ZSTD_TEXTURE(g_light);
     g_texSelect = LOAD_ZSTD_TEXTURE(g_select);
@@ -169,9 +176,43 @@ void ResetAdditive()
     SetAdditive(false);
 }
 
-float Scale(float size)
+void AddImageFlipped(ImTextureID texture, const ImVec2& min, const ImVec2& max, const ImVec2& uvMin, const ImVec2& uvMax, ImU32 col, bool flipHorz, bool flipVert)
 {
-    return size * g_aspectRatioScale;
+    auto drawList = ImGui::GetBackgroundDrawList();
+
+    ImVec2 uv0 = uvMin;
+    ImVec2 uv1 = { uvMax.x, uvMin.y };
+    ImVec2 uv2 = uvMax;
+    ImVec2 uv3 = { uvMin.x, uvMax.y };
+
+    if (flipHorz)
+    {
+        std::swap(uv0.x, uv1.x);
+        std::swap(uv2.x, uv3.x);
+    }
+
+    if (flipVert)
+    {
+        std::swap(uv0.y, uv3.y);
+        std::swap(uv1.y, uv2.y);
+    }
+
+    ImVec2 p0 = min;
+    ImVec2 p1 = { max.x, min.y };
+    ImVec2 p2 = max;
+    ImVec2 p3 = { min.x, max.y };
+
+    drawList->AddImageQuad(texture, p0, p1, p2, p3, uv0, uv1, uv2, uv3, col);
+}
+
+float Scale(float size, bool useGameplayScale)
+{
+    auto result = size * g_aspectRatioScale;
+
+    if (useGameplayScale)
+        result *= g_aspectRatioGameplayScale;
+
+    return result;
 }
 
 double ComputeLoopMotion(double time, double offset, double total)
@@ -268,81 +309,18 @@ void DrawArrows(ImVec2 min, ImVec2 max)
     }
 }
 
-void DrawHUD(ImVec2 min, ImVec2 max, const ImFont* font, const char* text)
+static double ImValueDebug(double& value, double increment = 1.0)
 {
-    auto drawList = ImGui::GetBackgroundDrawList();
+#ifdef _WIN32
+    if (GetAsyncKeyState(VK_OEM_PLUS) & 1)
+        value += increment;
+    if (GetAsyncKeyState(VK_OEM_MINUS) & 1)
+        value -= increment;
+#endif
 
-    auto leftWidth = Scale(200);
-    auto stripeHeight = Scale(50);
-    auto offset = Scale(81);
+    LOGF_UTILITY("{}", value);
 
-    auto leftStripe = PIXELS_TO_UV_COORDS(1024, 1024, 0, 300, 200, 50);
-    auto centerStripe = PIXELS_TO_UV_COORDS(1024, 1024, 200, 300, 824, 50);
-
-    auto stripeColor = IM_COL32(168, 15, 15, 255);
-
-    drawList->AddImage(g_texMainMenu1.get(), { min.x, min.y + offset }, { min.x + leftWidth, min.y + offset + stripeHeight }, GET_UV_COORDS(leftStripe), stripeColor);
-    drawList->AddImage(g_texMainMenu1.get(), { min.x + leftWidth , min.y + offset }, { max.x, min.y + offset + stripeHeight }, GET_UV_COORDS(centerStripe), stripeColor);
-
-    auto stripOffset = Scale(78);
-    auto stripUV = PIXELS_TO_UV_COORDS(1024, 1024, 201, 501, 264, 50);
-
-    auto strip1LeftOffset = leftWidth + Scale(180);
-
-    auto tlStrip1Color = IM_COL32(255, 172, 0, 0);
-    auto brStrip1Color = IM_COL32(255, 172, 0, 67);
-
-    ImVec2 strip1Min = { min.x + strip1LeftOffset, min.y + stripOffset };
-    ImVec2 strip1Max = { min.x + strip1LeftOffset + Scale(270), min.y + stripOffset + stripeHeight };
-
-    SetHorizontalGradient(strip1Min, strip1Max, tlStrip1Color, brStrip1Color);
-
-    drawList->AddImage(g_texMainMenu1.get(), strip1Min, strip1Max, GET_UV_COORDS(stripUV), IM_COL32_WHITE);
-
-    ResetGradient();
-
-    auto strip2LeftOffset = leftWidth + Scale(40);
-
-    auto tlStrip2Color = IM_COL32(255, 116, 0, 0);
-    auto brStrip2Color = IM_COL32(255, 116, 0, 17);
-
-    ImVec2 strip2Min = { min.x + strip2LeftOffset, min.y + stripOffset };
-    ImVec2 strip2Max = { min.x + strip2LeftOffset + Scale(270), min.y + stripOffset + stripeHeight };
-
-    SetHorizontalGradient(strip2Min, strip2Max, tlStrip2Color, brStrip2Color);
-
-    drawList->AddImage(g_texMainMenu1.get(), strip2Min, strip2Max, GET_UV_COORDS(stripUV), IM_COL32_WHITE);
-
-    ResetGradient();
-
-    auto backBarHeight = Scale(150);
-    auto backBarColor = IM_COL32(0, 23, 57, 255);
-
-    drawList->AddRectFilled({ min.x, max.y - backBarHeight }, { max.x, max.y }, backBarColor);
-
-    auto leftSilver = PIXELS_TO_UV_COORDS(1024, 1024, 0, 154, 200, 116);
-    auto centerSilver = PIXELS_TO_UV_COORDS(1024, 1024, 200, 154, 824, 116);
-
-    auto silverHeight = Scale(116);
-
-    drawList->AddImage(g_texMainMenu1.get(), { min.x - Scale(1), min.y }, { min.x - Scale(1) + leftWidth, min.y + silverHeight }, GET_UV_COORDS(leftSilver), IM_COL32_WHITE);
-    drawList->AddImage(g_texMainMenu1.get(), { min.x - Scale(1) + leftWidth, min.y }, { max.x, min.y + silverHeight }, GET_UV_COORDS(centerSilver), IM_COL32_WHITE);
-
-    auto centerBottomBar = PIXELS_TO_UV_COORDS(1024, 1024, 180, 60, 844, 55);
-
-    auto bottomBarHeight = Scale(55);
-    auto bottomTabWidth = Scale(180);
-
-    drawList->AddImage(g_texMainMenu1.get(), { min.x + bottomTabWidth, max.y - bottomBarHeight }, { max.x - bottomTabWidth, max.y }, GET_UV_COORDS(centerBottomBar), IM_COL32_WHITE);
-
-    auto bottomTab = PIXELS_TO_UV_COORDS(1024, 1024, 0, 0, 180, 115);
-
-    auto bottomTabHeight = Scale(115);
-
-    drawList->AddImage(g_texMainMenu1.get(), { min.x, max.y - bottomTabHeight }, { min.x + bottomTabWidth, max.y }, GET_UV_COORDS(bottomTab), IM_COL32_WHITE);
-    drawList->AddImage(g_texMainMenu1.get(), { max.x, max.y - bottomTabHeight }, { max.x - bottomTabWidth, max.y }, GET_UV_COORDS(bottomTab), IM_COL32_WHITE);
-
-    drawList->AddText(font, Scale(32), { min.x + leftWidth + Scale(2), min.y + offset + Scale(5) }, IM_COL32_WHITE, text);
+    return value;
 }
 
 void DrawContainerBox(ImVec2 min, ImVec2 max, float alpha)
@@ -694,6 +672,7 @@ void DrawVersionString(const ImFont* font, const ImU32 col)
     auto textMargin = Scale(2);
     auto textSize = font->CalcTextSizeA(fontSize, FLT_MAX, 0, g_versionString);
 
+    drawList->AddText(font, fontSize, { textMargin, res.y - textSize.y - textMargin }, col, "WORK IN PROGRESS");
     drawList->AddText(font, fontSize, { res.x - textSize.x - textMargin, res.y - textSize.y - textMargin }, col, g_versionString);
 }
 

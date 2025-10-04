@@ -220,10 +220,19 @@ static bool FontBuilder_Build(ImFontAtlas* atlas)
 
     for (size_t i = 0; i < atlas->ConfigData.size(); i++)
     {
-        double spaceAdvance = 0.0;
-
         auto& config = atlas->ConfigData[i];
-        bool increaseSpacing = strstr(config.Name, "Rodin") != nullptr;
+
+        double spaceAdvance = 0.0;
+        double spaceMultiplier = 1.0;
+
+        if (strstr(config.Name, "FOT-Rodin") != nullptr)
+        {
+            spaceMultiplier = 1.75;
+        }
+        else if (strstr(config.Name, "FOT-NewRodin") != nullptr)
+        {
+            spaceMultiplier = 2.5;
+        }
 
         auto& [index, count] = ranges[i];
         for (size_t j = 0; j < count; j++)
@@ -236,11 +245,7 @@ static bool FontBuilder_Build(ImFontAtlas* atlas)
             double advance = glyph.getAdvance();
             if (glyph.getCodepoint() == ' ')
             {
-                if (increaseSpacing)
-                {
-                    advance *= 1.75;
-                }
-
+                advance *= spaceMultiplier;
                 spaceAdvance = advance;
             }
 

@@ -181,6 +181,15 @@ void AspectRatioPatches::ComputeOffsets()
 
     g_aspectRatioNarrowScale = std::clamp((g_aspectRatio - NARROW_ASPECT_RATIO) / (WIDE_ASPECT_RATIO - NARROW_ASPECT_RATIO), 0.0f, 1.0f);
     g_radarMapScale = 256 * g_aspectRatioScale * g_aspectRatioGameplayScale;
+
+    if (g_aspectRatio > WIDE_ASPECT_RATIO)
+    {
+        g_pillarboxWidth = (width - (height * 16.0f / 9.0f)) / 2.0f;
+    }
+    else if (WIDE_ASPECT_RATIO > g_aspectRatio)
+    {
+        g_letterboxHeight = (height - (width * 9.0f / 16.0f)) / 2.0f;
+    }
 }
 
 void EmplacePath(const void* key, const std::string_view& value)
