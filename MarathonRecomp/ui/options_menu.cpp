@@ -22,6 +22,7 @@ static constexpr double CTRL_OFFSET_X = 30.0;
 
 static double g_stateTime{};
 static double g_flowStateTime{};
+static double g_cursorArrowsTime{};
 static double g_scrollArrowsTime{};
 
 static bool g_up{};
@@ -136,16 +137,6 @@ static void MoveCursor(int& cursorIndex, double& cursorTime, int min = 0, int ma
     }
 }
 
-static void DrawCursor(ImVec2 pos)
-{
-    auto drawList = ImGui::GetBackgroundDrawList();
-
-    auto cursorWidth = Scale(29, true);
-    auto cursorHeight = Scale(24, true);
-
-    drawList->AddRectFilled(pos, { pos.x + cursorWidth, pos.y + cursorHeight }, IM_COL32_WHITE);
-}
-
 static void DrawCategories(ImVec2 min, ImVec2 max)
 {
     auto drawList = ImGui::GetBackgroundDrawList();
@@ -182,12 +173,11 @@ static void DrawCategories(ImVec2 min, ImVec2 max)
 
         if (isCurrent && OptionsMenu::s_flowState == OptionsMenuFlowState::CategoryCursor)
         {
-            auto cursorOffsetX = Scale(89, true);
+            auto cursorOffsetX = Scale(80, true);
             auto cursorOffsetY = Scale(8, true);
 
-            DrawCursor({ categoryMin.x + cursorOffsetX, categoryMin.y + cursorOffsetY });
+            DrawArrowCursor({ categoryMin.x + cursorOffsetX, categoryMin.y + cursorOffsetY }, g_cursorArrowsTime, true, false, OptionsMenu::s_state == OptionsMenuState::Closing);
         }
-
 
         auto fontSize = Scale(27, true);
         auto text = GetCategoryName((OptionsMenuCategory)i);
@@ -264,7 +254,7 @@ static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAcce
             if (config != g_optionCurrent)
                 OptionsMenu::s_commonMenu.SetDescription(isAccessible ? config->GetDescription(Config::Language) : *inaccessibleReason);
 
-            DrawCursor({ titleBgEdgeMin.x + Scale(18, true), titleBgEdgeMin.y + Scale(10, true) });
+            DrawArrowCursor({ titleBgEdgeMin.x + Scale(8, true), titleBgEdgeMin.y + Scale(9, true)}, g_cursorArrowsTime, true, false, OptionsMenu::s_state == OptionsMenuState::Closing);
 
             g_optionCurrent = config;
         }
@@ -836,6 +826,7 @@ void OptionsMenu::Draw()
                     {
                         ResetOptionSelection();
 
+                        g_cursorArrowsTime = ImGui::GetTime();
                         s_commonMenu.SetDescription(GetCategoryDescription((OptionsMenuCategory)g_categoryIndex));
                     });
 
@@ -845,6 +836,7 @@ void OptionsMenu::Draw()
 
                         s_flowState = OptionsMenuFlowState::OptionCursor;
                         g_flowStateTime = ImGui::GetTime();
+                        g_cursorArrowsTime = g_flowStateTime;
                         g_scrollArrowsTime = g_flowStateTime;
                     }
 
@@ -856,7 +848,10 @@ void OptionsMenu::Draw()
 
                 case OptionsMenuFlowState::OptionCursor:
                 {
-                    MoveCursor(g_optionIndex, g_flowStateTime, 0, g_optionCount);
+                    MoveCursor(g_optionIndex, g_flowStateTime, 0, g_optionCount, []()
+                    {
+                        g_cursorArrowsTime = ImGui::GetTime();
+                    });
 
                     if (CheckAndDiscard(g_isDeclined))
                     {
@@ -864,6 +859,7 @@ void OptionsMenu::Draw()
 
                         s_flowState = OptionsMenuFlowState::CategoryCursor;
                         g_flowStateTime = ImGui::GetTime();
+                        g_cursorArrowsTime = g_flowStateTime;
 
                         s_commonMenu.SetDescription(GetCategoryDescription((OptionsMenuCategory)g_categoryIndex));
                     }
@@ -906,6 +902,7 @@ void OptionsMenu::Open(bool isPause)
 {
     s_commonMenu = CommonMenu(Localise("Options_Header_Name"), "", isPause);
     g_stateTime = ImGui::GetTime();
+    g_cursorArrowsTime = g_stateTime;
 
     s_state = OptionsMenuState::Opening;
     s_isVisible = true;
@@ -919,8 +916,9 @@ void OptionsMenu::Close()
     if (s_state == OptionsMenuState::Closing)
         return;
 
-    g_stateTime = ImGui::GetTime();
     s_state = OptionsMenuState::Closing;
+    g_stateTime = ImGui::GetTime();
+    g_cursorArrowsTime = g_stateTime;
 
     Game_PlaySound("window_close");
     Config::Save();

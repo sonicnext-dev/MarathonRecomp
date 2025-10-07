@@ -311,6 +311,45 @@ void DrawArrows(ImVec2 min, ImVec2 max)
     }
 }
 
+void DrawArrowCursor(ImVec2 pos, double time, bool isIntroAnim, bool isBlinkingAnim, bool isReversed)
+{
+    auto drawList = ImGui::GetBackgroundDrawList();
+
+    auto cursorUVs = PIXELS_TO_UV_COORDS(50, 50, 0, 0, 27, 50);
+    auto cursorScaleX = Scale(14, true);
+
+    for (int i = 0; i < 3; i++)
+    {
+        auto cursorMotionTime = isIntroAnim ? ComputeMotion(time, i, 5, isReversed) : 1.0;
+        auto cursorScaleYMotion = Lerp(Scale(37.5, true), Scale(24, true), cursorMotionTime);
+        auto cursorOffsetXMotion = Lerp(0, Scale(8.5, true), cursorMotionTime);
+        auto cursorOffsetYMotion = Lerp(pos.y - cursorScaleYMotion / 6, pos.y, cursorMotionTime);
+        auto cursorRightMotion = (cursorOffsetXMotion * 3) - (cursorOffsetXMotion * i);
+        auto cursorAlphaMotionTime = isIntroAnim ? ComputeMotion(time, i, 2, isReversed) : 1.0;
+        auto cursorAlphaMotion = (int)Lerp(0, 255, cursorAlphaMotionTime);
+
+        if (isBlinkingAnim)
+        {
+            auto cursorAlphaMotionInTime = ComputeLoopMotion(time, 3.0 * i, 12.0);
+            auto cursorAlphaMotionOutTime = ComputeLoopMotion(time, 3.0 * (i + 1), 12.0);
+
+            // horrible
+            cursorAlphaMotionTime = cursorAlphaMotionInTime >= 1.0
+                ? cursorAlphaMotionOutTime >= 1.0
+                    ? cursorAlphaMotionInTime
+                    : cursorAlphaMotionOutTime
+                : cursorAlphaMotionInTime;
+
+            cursorAlphaMotion = (int)Lerp(50 * (i + 1), 255, cursorAlphaMotionTime);
+        }
+
+        ImVec2 cursorMin = { pos.x + cursorRightMotion, cursorOffsetYMotion };
+        ImVec2 cursorMax = { pos.x + cursorRightMotion + cursorScaleX, cursorMin.y + cursorScaleYMotion };
+
+        drawList->AddImage(g_upTexSelectArrow.get(), cursorMin, cursorMax, GET_UV_COORDS(cursorUVs), IM_COL32(255, 255, 255, cursorAlphaMotion));
+    }
+}
+
 double ImValueDebug(double& value, double increment)
 {
 #ifdef _WIN32

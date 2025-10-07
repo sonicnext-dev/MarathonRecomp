@@ -53,6 +53,7 @@ double ComputeLoopMotion(double time, double offset, double total);
 double ComputeLinearMotion(double time, double offset, double total, bool reverse = false);
 double ComputeMotion(double time, double offset, double total, bool reverse = false);
 void DrawArrows(ImVec2 min, ImVec2 max);
+void DrawArrowCursor(ImVec2 pos, double time, bool isIntroAnim = true, bool isBlinkingAnim = true, bool isReversed = false);
 double ImValueDebug(double& value, double increment = 1.0);
 void DrawContainerBox(ImVec2 min, ImVec2 max, float alpha = 1);
 void DrawTextBasic(const ImFont* font, float fontSize, const ImVec2& pos, ImU32 colour, const char* text);
