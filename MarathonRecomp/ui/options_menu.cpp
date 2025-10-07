@@ -655,30 +655,17 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
         }
 
         case OptionsMenuCategory::Code:
-            DrawOption(rowCount++, &Config::ControllableBoundAttack, true);
-            DrawOption(rowCount++, &Config::ControllableSpinkick, true);
-            DrawOption(rowCount++, &Config::ControllableTeleportDash, true);
-            DrawOption(rowCount++, &Config::DisableDWMRoundedCorners, true);
-            DrawOption(rowCount++, &Config::DisableEdgeGrabLeftover, true);
-            DrawOption(rowCount++, &Config::DisableKingdomValleyMist, true);
-            DrawOption(rowCount++, &Config::DisableLowResolutionFontOnCustomUI, true);
-            DrawOption(rowCount++, &Config::DisablePushState, true);
-            DrawOption(rowCount++, &Config::DisableTitleInputDelay, true);
-            DrawOption(rowCount++, &Config::EnableDebugMode, true);
-            DrawOption(rowCount++, &Config::FixPowerUpJingleDuration, true);
-            DrawOption(rowCount++, &Config::HUDToggleKey, true);
-            DrawOption(rowCount++, &Config::MidairControlForMachSpeed, true);
-            DrawOption(rowCount++, &Config::MidairControlForSnowboards, true);
-            DrawOption(rowCount++, &Config::RestoreChainJumpFlips, true);
-            DrawOption(rowCount++, &Config::RestoreChaosBoostJump, true);
-            DrawOption(rowCount++, &Config::RestoreChaosSpearFlips, true);
-            DrawOption(rowCount++, &Config::RestoreContextualHUDColours, true);
-            DrawOption(rowCount++, &Config::RestoreDemoCameraMode, true);
-            DrawOption(rowCount++, &Config::RestoreSonicActionGauge, true);
-            DrawOption(rowCount++, &Config::SkipIntroLogos, true);
-            DrawOption(rowCount++, &Config::TailsGauge, true);
-            DrawOption(rowCount++, &Config::UseOfficialTitleOnTitleBar, true);
+        {
+            for (auto def : g_configDefinitions)
+            {
+                if (def->GetSection() != "Codes")
+                    continue;
+
+                DrawOption(rowCount++, (ConfigDef<bool, true>*)def, true);
+            }
+
             break;
+        }
     }
 
     g_optionCount = rowCount;
