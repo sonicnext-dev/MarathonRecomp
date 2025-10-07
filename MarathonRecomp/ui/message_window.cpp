@@ -420,16 +420,24 @@ void MessageWindow::Draw()
             
         if (g_isDeclined)
         {
-            if (g_selectedRowIndex == g_cancelButtonIndex)
+            if (g_buttons.size() == 1)
             {
                 Game_PlaySound("window_close");
             }
             else
             {
-                Game_PlaySound("move");
+                if (g_selectedRowIndex == g_cancelButtonIndex)
+                {
+                    Game_PlaySound("window_close");
+                }
+                else
+                {
+                    Game_PlaySound("move");
+                }
+
+                g_selectedRowIndex = g_cancelButtonIndex;
             }
-            
-            g_selectedRowIndex = g_cancelButtonIndex;
+
             g_isDeclined = false;
         }
     }

@@ -5,8 +5,10 @@
 #include <res/images/common/main_menu7.dds.h>
 #include <res/images/common/main_menu8.dds.h>
 #include <res/images/common/main_menu9.dds.h>
+#include <ui/fader.h>
 #include <ui/game_window.h>
 #include <ui/imgui_utils.h>
+#include <ui/message_window.h>
 #include <user/config.h>
 #include <app.h>
 #include <decompressor.h>
@@ -42,6 +44,7 @@ static int g_optionIndex{};
 static int g_optionCount{};
 static IConfigDef* g_optionCurrent{};
 static bool g_optionCanReset{};
+static EChannelConfiguration g_optionCurrentChannelConfiguration{};
 
 static std::unique_ptr<GuestTexture> g_upTexMainMenu7{};
 static std::unique_ptr<GuestTexture> g_upTexMainMenu8{};
@@ -109,7 +112,7 @@ static void MoveCursor(int& cursorIndex, double& cursorTime, int min = 0, int ma
 {
     auto time = ImGui::GetTime();
 
-    // TODO: handle holding inputs and allow selecting up/down or left/right.
+    // TODO: handle holding inputs.
 
     if (g_up)
     {
@@ -176,7 +179,7 @@ static void DrawCategories(ImVec2 min, ImVec2 max)
             auto cursorOffsetX = Scale(80, true);
             auto cursorOffsetY = Scale(8, true);
 
-            DrawArrowCursor({ categoryMin.x + cursorOffsetX, categoryMin.y + cursorOffsetY }, g_cursorArrowsTime, true, false, OptionsMenu::s_state == OptionsMenuState::Closing);
+            DrawArrowCursor({ categoryMin.x + cursorOffsetX, categoryMin.y + cursorOffsetY }, g_cursorArrowsTime, true, false, OptionsMenu::s_state != OptionsMenuState::Idle);
         }
 
         auto fontSize = Scale(27, true);
@@ -254,7 +257,7 @@ static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAcce
             if (config != g_optionCurrent)
                 OptionsMenu::s_commonMenu.SetDescription(isAccessible ? config->GetDescription(Config::Language) : *inaccessibleReason);
 
-            DrawArrowCursor({ titleBgEdgeMin.x + Scale(8, true), titleBgEdgeMin.y + Scale(9, true)}, g_cursorArrowsTime, true, false, OptionsMenu::s_state == OptionsMenuState::Closing);
+            DrawArrowCursor({ titleBgEdgeMin.x + Scale(8, true), titleBgEdgeMin.y + Scale(9, true)}, g_cursorArrowsTime, true, false, OptionsMenu::s_state != OptionsMenuState::Idle);
 
             g_optionCurrent = config;
         }
@@ -742,49 +745,6 @@ void OptionsMenu::Draw()
     ImVec2 min = { g_pillarboxWidth, g_letterboxHeight };
     ImVec2 max = { res.x - g_pillarboxWidth, res.y - g_letterboxHeight };
 
-    auto upIsHeld = false;
-    auto downIsHeld = false;
-    auto leftIsHeld = false;
-    auto rightIsHeld = false;
-
-    for (auto& spInputManager : App::s_pApp->m_pDoc->m_vspInputManager)
-    {
-        auto& rPadState = spInputManager->m_PadState;
-
-        if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadUp) || -rPadState.LeftStickVertical > 0.5f)
-            upIsHeld = true;
-
-        if (!g_upWasHeld && upIsHeld)
-            g_up = true;
-
-        if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadDown) || -rPadState.LeftStickVertical < -0.5f)
-            downIsHeld = true;
-
-        if (!g_downWasHeld && downIsHeld)
-            g_down = true;
-
-        if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadLeft) || -rPadState.LeftStickHorizontal > 0.5f)
-            leftIsHeld = true;
-
-        if (!g_leftWasHeld && leftIsHeld)
-            g_left = true;
-
-        if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadRight) || -rPadState.LeftStickHorizontal < -0.5f)
-            rightIsHeld = true;
-
-        if (!g_rightWasHeld && rightIsHeld)
-            g_right = true;
-
-        if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_A))
-            g_isAccepted = true;
-
-        if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_B))
-            g_isDeclined = true;
-
-        if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_X))
-            g_isReset = true;
-    }
-
     auto alphaMotionTime = s_isPause ? ComputeMotion(g_stateTime, 0, 10, s_state == OptionsMenuState::Closing) : 0.0;
     auto alpha = s_isPause ? Lerp(0, 175, alphaMotionTime) : 255;
     auto gradientTop = IM_COL32(0, 103, 255, alpha);
@@ -792,103 +752,168 @@ void OptionsMenu::Draw()
 
     drawList->AddRectFilledMultiColor({ 0.0f, g_letterboxHeight }, { res.x, res.y - g_letterboxHeight }, gradientTop, gradientTop, gradientBottom, gradientBottom);
 
-    switch (s_state)
+    if (s_state == OptionsMenuState::Closing)
     {
-        case OptionsMenuState::Closing:
+        s_commonMenu.Draw();
+
+        if (s_commonMenu.Close(s_isPause))
+            s_isVisible = false;
+    }
+    else
+    {
+        auto upIsHeld = false;
+        auto downIsHeld = false;
+        auto leftIsHeld = false;
+        auto rightIsHeld = false;
+
+        switch (s_state)
         {
-            s_commonMenu.Draw();
-
-            if (s_commonMenu.Close(s_isPause))
-                s_isVisible = false;
-
-            break;
-        }
-
-        default:
-        {
-            if (s_state == OptionsMenuState::Opening)
-            {
+            case OptionsMenuState::Opening:
                 s_commonMenu.Open();
                 s_state = OptionsMenuState::Idle;
-            }
+                break;
 
-            switch (s_flowState)
+            case OptionsMenuState::Idle:
             {
-                case OptionsMenuFlowState::CategoryCursor:
+                for (auto& spInputManager : App::s_pApp->m_pDoc->m_vspInputManager)
                 {
-                    auto categoryCount = (int)OptionsMenuCategory::Count;
+                    auto& rPadState = spInputManager->m_PadState;
 
-                    // Remove codes category from cursor select.
-                    if (!s_isCodesUnlocked)
-                        categoryCount -= 1;
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadUp) || -rPadState.LeftStickVertical > 0.5f)
+                        upIsHeld = true;
 
-                    MoveCursor(g_categoryIndex, g_flowStateTime, 0, categoryCount, []()
-                    {
-                        ResetOptionSelection();
+                    if (!g_upWasHeld && upIsHeld)
+                        g_up = true;
 
-                        g_cursorArrowsTime = ImGui::GetTime();
-                        s_commonMenu.SetDescription(GetCategoryDescription((OptionsMenuCategory)g_categoryIndex));
-                    });
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadDown) || -rPadState.LeftStickVertical < -0.5f)
+                        downIsHeld = true;
 
-                    if (CheckAndDiscard(g_isAccepted))
-                    {
-                        Game_PlaySound("main_deside");
+                    if (!g_downWasHeld && downIsHeld)
+                        g_down = true;
 
-                        s_flowState = OptionsMenuFlowState::OptionCursor;
-                        g_flowStateTime = ImGui::GetTime();
-                        g_cursorArrowsTime = g_flowStateTime;
-                        g_scrollArrowsTime = g_flowStateTime;
-                    }
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadLeft) || -rPadState.LeftStickHorizontal > 0.5f)
+                        leftIsHeld = true;
 
-                    if (CheckAndDiscard(g_isDeclined))
-                        Close();
+                    if (!g_leftWasHeld && leftIsHeld)
+                        g_left = true;
 
-                    break;
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadRight) || -rPadState.LeftStickHorizontal < -0.5f)
+                        rightIsHeld = true;
+
+                    if (!g_rightWasHeld && rightIsHeld)
+                        g_right = true;
+
+                    if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_A))
+                        g_isAccepted = true;
+
+                    if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_B))
+                        g_isDeclined = true;
+
+                    if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_X))
+                        g_isReset = true;
                 }
 
-                case OptionsMenuFlowState::OptionCursor:
-                {
-                    MoveCursor(g_optionIndex, g_flowStateTime, 0, g_optionCount, []()
-                    {
-                        g_cursorArrowsTime = ImGui::GetTime();
-                    });
-
-                    if (CheckAndDiscard(g_isDeclined))
-                    {
-                        Game_PlaySound("window_close");
-
-                        s_flowState = OptionsMenuFlowState::CategoryCursor;
-                        g_flowStateTime = ImGui::GetTime();
-                        g_cursorArrowsTime = g_flowStateTime;
-
-                        s_commonMenu.SetDescription(GetCategoryDescription((OptionsMenuCategory)g_categoryIndex));
-                    }
-
-                    break;
-                }
+                break;
             }
 
-            DrawArrows({ 0, res.y / 2 - Scale(10) }, res);
-            DrawCategories(min, max);
-            DrawContainer(min, max);
+            case OptionsMenuState::Restarting:
+            {
+                static int s_restartMessageResult = -1;
 
-            s_commonMenu.Draw();
+                if (MessageWindow::Open(Localise("Options_Message_Restart"), &s_restartMessageResult) == MSG_CLOSED)
+                    Fader::FadeOut(1, []() { App::Restart(); });
 
-            break;
+                break;
+            }
         }
+
+        switch (s_flowState)
+        {
+            case OptionsMenuFlowState::CategoryCursor:
+            {
+                auto categoryCount = (int)OptionsMenuCategory::Count;
+
+                // Remove codes category from cursor select.
+                if (!s_isCodesUnlocked)
+                    categoryCount -= 1;
+
+                MoveCursor(g_categoryIndex, g_flowStateTime, 0, categoryCount, []()
+                {
+                    ResetOptionSelection();
+
+                    g_cursorArrowsTime = ImGui::GetTime();
+                    s_commonMenu.SetDescription(GetCategoryDescription((OptionsMenuCategory)g_categoryIndex));
+                });
+
+                if (CheckAndDiscard(g_isAccepted))
+                {
+                    Game_PlaySound("main_deside");
+
+                    s_flowState = OptionsMenuFlowState::OptionCursor;
+                    g_flowStateTime = ImGui::GetTime();
+                    g_cursorArrowsTime = g_flowStateTime;
+                    g_scrollArrowsTime = g_flowStateTime;
+                }
+
+                if (CheckAndDiscard(g_isDeclined))
+                {
+                    Game_PlaySound("window_close");
+
+                    if (s_isRestartRequired)
+                    {
+                        s_state = OptionsMenuState::Restarting;
+                    }
+                    else
+                    {
+                        Close();
+                    }
+                }
+
+                break;
+            }
+
+            case OptionsMenuFlowState::OptionCursor:
+            {
+                MoveCursor(g_optionIndex, g_flowStateTime, 0, g_optionCount, []()
+                {
+                    g_cursorArrowsTime = ImGui::GetTime();
+                });
+
+                if (CheckAndDiscard(g_isDeclined))
+                {
+                    Game_PlaySound("window_close");
+
+                    s_flowState = OptionsMenuFlowState::CategoryCursor;
+                    g_flowStateTime = ImGui::GetTime();
+                    g_cursorArrowsTime = g_flowStateTime;
+
+                    s_commonMenu.SetDescription(GetCategoryDescription((OptionsMenuCategory)g_categoryIndex));
+                }
+
+                break;
+            }
+        }
+
+        DrawArrows({ 0, res.y / 2 - Scale(10) }, res);
+        DrawCategories(min, max);
+        DrawContainer(min, max);
+
+        s_commonMenu.Draw();
+
+        g_up = false;
+        g_upWasHeld = upIsHeld;
+        g_down = false;
+        g_downWasHeld = downIsHeld;
+        g_left = false;
+        g_leftWasHeld = leftIsHeld;
+        g_right = false;
+        g_rightWasHeld = rightIsHeld;
+        g_isAccepted = false;
+        g_isDeclined = false;
+        g_isReset = false;
     }
 
-    g_up = false;
-    g_upWasHeld = upIsHeld;
-    g_down = false;
-    g_downWasHeld = downIsHeld;
-    g_left = false;
-    g_leftWasHeld = leftIsHeld;
-    g_right = false;
-    g_rightWasHeld = rightIsHeld;
-    g_isAccepted = false;
-    g_isDeclined = false;
-    g_isReset = false;
+    s_isRestartRequired = Config::Language != App::s_language || Config::ChannelConfiguration != g_optionCurrentChannelConfiguration;
 }
 
 void OptionsMenu::Init()
@@ -907,6 +932,7 @@ void OptionsMenu::Open(bool isPause)
     s_state = OptionsMenuState::Opening;
     s_isVisible = true;
     s_isPause = isPause;
+    g_optionCurrentChannelConfiguration = Config::ChannelConfiguration;
 
     ResetSelection();
 }
@@ -920,7 +946,6 @@ void OptionsMenu::Close()
     g_stateTime = ImGui::GetTime();
     g_cursorArrowsTime = g_stateTime;
 
-    Game_PlaySound("window_close");
     Config::Save();
 }
 

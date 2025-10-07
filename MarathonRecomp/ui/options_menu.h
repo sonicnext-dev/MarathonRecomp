@@ -6,7 +6,8 @@ enum class OptionsMenuState
 {
     Opening,
     Idle,
-    Closing
+    Closing,
+    Restarting
 };
 
 enum class OptionsMenuFlowState
