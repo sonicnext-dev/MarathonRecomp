@@ -188,17 +188,14 @@ static void DrawCategories(ImVec2 min, ImVec2 max)
             DrawCursor({ categoryMin.x + cursorOffsetX, categoryMin.y + cursorOffsetY });
         }
 
-        if (App::s_isInit)
-            SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
 
         auto fontSize = Scale(27, true);
         auto text = GetCategoryName((OptionsMenuCategory)i);
         auto textSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0.0f, text.c_str());
 
+        SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
         drawList->AddText(g_pFntRodin, fontSize, { categoryMin.x + Scale(129, true), categoryMin.y + Scale(6, true) }, categoryAlphaMotion, text.c_str());
-
-        if (App::s_isInit)
-            SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
+        SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
     }
 }
 
@@ -254,15 +251,11 @@ static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAcce
     drawList->AddImage(g_upTexMainMenu8.get(), titleBgStretchMin, titleBgStretchMax, GET_UV_COORDS(bgStretchUVs), bgColour);
     ResetGradient();
 
-    if (App::s_isInit)
-        SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
-
     ImVec2 titlePos = { titleBgEdgeMin.x + Scale(51, true), titleBgEdgeMin.y + Scale(8, true) };
 
+    SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
     drawList->AddText(g_pFntRodin, fontSize, titlePos, accessibleColour, config->GetNameLocalised(Config::Language).c_str());
-
-    if (App::s_isInit)
-        SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
+    SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
 
     if (isCurrent)
     {
@@ -589,13 +582,9 @@ static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAcce
     if (!isValueCentred)
         valuePos.x = ctrlBgRightEdgeMax.x + Scale(10, true);
 
-    if (App::s_isInit)
-        SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
-
+    SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
     drawList->AddText(g_pFntRodin, fontSize, valuePos, accessibleColour, valueText.data());
-
-    if (App::s_isInit)
-        SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
+    SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
 }
 
 static void DrawOptions(ImVec2 min, ImVec2 max)
