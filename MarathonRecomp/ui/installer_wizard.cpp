@@ -18,7 +18,7 @@
 #include <exports.h>
 #include <sdl_listener.h>
 
-#include <res/images/common/hedge-dev.dds.h>
+#include <res/images/common/sonicnext-dev.dds.h>
 #include <res/images/installer/install_001.dds.h>
 #include <res/images/installer/install_002.dds.h>
 #include <res/images/installer/install_003.dds.h>
@@ -82,7 +82,7 @@ static std::filesystem::path g_gameSourcePath;
 static std::array<std::filesystem::path, int(DLC::Count)> g_dlcSourcePaths;
 static std::array<bool, int(DLC::Count)> g_dlcInstalled = {};
 static std::array<std::unique_ptr<GuestTexture>, 8> g_installTextures;
-static std::unique_ptr<GuestTexture> g_upHedgeDev;
+static std::unique_ptr<GuestTexture> g_upSonicNextDev;
 static Journal g_installerJournal;
 static Installer::Sources g_installerSources;
 static uint64_t g_installerAvailableSize = 0;
@@ -549,7 +549,7 @@ static void DrawDescriptionContainer()
 
     DrawTextParagraph
     (
-        g_fntRodin,
+        g_pFntRodin,
         fontSize,
         lineWidth,
         { textX, textY },
@@ -558,7 +558,7 @@ static void DrawDescriptionContainer()
 
         [=](const char* str, ImVec2 pos)
         {
-            DrawTextBasic(g_fntRodin, fontSize, pos, IM_COL32(255, 255, 255, 255 * textAlpha), str);
+            DrawTextBasic(g_pFntRodin, fontSize, pos, IM_COL32(255, 255, 255, 255 * textAlpha), str);
         }
     );
 
@@ -567,11 +567,7 @@ static void DrawDescriptionContainer()
 
     if (g_currentPage == WizardPage::InstallSucceeded)
     {
-        auto descTextSize = MeasureCentredParagraph(g_fntRodin, fontSize, lineWidth, lineMargin, descriptionText);
-
-        auto hedgeDevStr = "hedge-dev";
-        auto hedgeDevTextSize = g_fntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, hedgeDevStr);
-        auto hedgeDevTextMarginX = Scale(15);
+        auto descTextSize = MeasureCentredParagraph(g_pFntRodin, fontSize, lineWidth, lineMargin, descriptionText);
 
         auto colWhite = IM_COL32(255, 255, 255, 255 * textAlpha);
 
@@ -580,7 +576,7 @@ static void DrawDescriptionContainer()
         auto containerRight = containerLeft + Scale(CONTAINER_WIDTH);
         auto containerBottom = containerTop + Scale(CONTAINER_HEIGHT);
 
-        auto marqueeTextSize = g_fntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, g_creditsStr.c_str());
+        auto marqueeTextSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, g_creditsStr.c_str());
         auto marqueeTextMarginX = Scale(5);
         auto marqueeTextMarginY = Scale(15);
 
@@ -588,33 +584,24 @@ static void DrawDescriptionContainer()
         ImVec2 marqueeTextMin = { containerLeft, marqueeTextPos.y };
         ImVec2 marqueeTextMax = { containerRight, containerBottom };
 
-        auto imageScale = hedgeDevTextSize.x / 3;
-        auto imageMarginY = Scale(2);
+        auto imageWidth = Scale(524);
+        auto imageHeight = Scale(45);
 
         ImVec2 imageRegionMin = { containerLeft, textY + descTextSize.y };
         ImVec2 imageRegionMax = { containerRight, containerBottom - (marqueeTextMax.y - marqueeTextMin.y) };
 
         ImVec2 imageMin = 
         {
-            /* X */ imageRegionMin.x + ((imageRegionMax.x - imageRegionMin.x) / 2) - (imageScale / 2) - (hedgeDevTextSize.x / 2) - hedgeDevTextMarginX,
-            /* Y */ imageRegionMin.y + ((imageRegionMax.y - imageRegionMin.y) / 2) - (imageScale / 2) - imageMarginY
+            /* X */ imageRegionMin.x + ((imageRegionMax.x - imageRegionMin.x) / 2) - (imageWidth / 2),
+            /* Y */ imageRegionMin.y + ((imageRegionMax.y - imageRegionMin.y) / 2) - (imageHeight / 2)
         };
 
-        ImVec2 imageMax = { imageMin.x + imageScale, imageMin.y + imageScale };
+        ImVec2 imageMax = { imageMin.x + imageWidth, imageMin.y + imageHeight };
 
-        drawList->AddImage(g_upHedgeDev.get(), imageMin, imageMax, { 0, 0 }, { 1, 1 }, colWhite);
-
-        drawList->AddText
-        (
-            g_fntRodin,
-            fontSize,
-            { /* X */ imageMax.x + hedgeDevTextMarginX, /* Y */ imageMin.y + (imageScale / 2) - (hedgeDevTextSize.y / 2) },
-            colWhite,
-            hedgeDevStr
-        );
+        drawList->AddImage(g_upSonicNextDev.get(), imageMin, imageMax, { 0, 0 }, { 1, 1 }, colWhite);
 
         SetHorizontalMarqueeFade(marqueeTextMin, marqueeTextMax, Scale(32));
-        DrawTextWithMarquee(g_fntRodin, fontSize, marqueeTextPos, marqueeTextMin, marqueeTextMax, colWhite, g_creditsStr.c_str(), g_installerEndTime, 0.9, Scale(200));
+        DrawTextWithMarquee(g_pFntRodin, fontSize, marqueeTextPos, marqueeTextMin, marqueeTextMax, colWhite, g_creditsStr.c_str(), g_installerEndTime, 0.9, Scale(200));
         ResetMarqueeFade();
     }
 
@@ -724,7 +711,7 @@ static void DrawButton(ImVec2 min, ImVec2 max, const char *buttonText, bool sour
 
     DrawButtonContainer(min, max, baser, baseg, alpha);
 
-    ImFont *font = g_fntRodin;
+    ImFont *font = g_pFntRodin;
     float size = Scale(18.0f);
     float squashRatio;
     ImVec2 textSize = ComputeTextSize(font, buttonText, size, squashRatio, Scale(maxTextWidth));
@@ -1000,7 +987,7 @@ static void DrawLanguagePicker()
             if (buttonPressed)
             {
                 Config::Language = LANGUAGE_ENUM[i];
-                g_commonMenu.SetTitle(Localise("Installer_Header_Installer").c_str());
+                g_commonMenu.SetTitle(Localise("Installer_Header_Installer"));
             }
         }
     }
@@ -1015,7 +1002,7 @@ static void DrawSourcePickers()
         constexpr float ADD_BUTTON_MAX_TEXT_WIDTH = 168.0f;
         const std::string &addFilesText = Localise("Installer_Button_AddFiles");
         float squashRatio;
-        ImVec2 textSize = ComputeTextSize(g_fntRodin, addFilesText.c_str(), 20.0f, squashRatio, ADD_BUTTON_MAX_TEXT_WIDTH);
+        ImVec2 textSize = ComputeTextSize(g_pFntRodin, addFilesText.c_str(), 20.0f, squashRatio, ADD_BUTTON_MAX_TEXT_WIDTH);
         ImVec2 min = { g_aspectRatioOffsetX + Scale(CONTAINER_X + BOTTOM_X_GAP), g_aspectRatioOffsetY + Scale(CONTAINER_Y + CONTAINER_HEIGHT + BOTTOM_Y_GAP) };
         ImVec2 max = { g_aspectRatioOffsetX + Scale(CONTAINER_X + BOTTOM_X_GAP + textSize.x * squashRatio + BUTTON_TEXT_GAP), g_aspectRatioOffsetY + Scale(CONTAINER_Y + CONTAINER_HEIGHT + BOTTOM_Y_GAP + BUTTON_HEIGHT) };
         DrawButton(min, max, addFilesText.c_str(), false, true, buttonPressed, ADD_BUTTON_MAX_TEXT_WIDTH);
@@ -1027,7 +1014,7 @@ static void DrawSourcePickers()
         min.x += Scale(BOTTOM_X_GAP + textSize.x * squashRatio + BUTTON_TEXT_GAP);
 
         const std::string &addFolderText = Localise("Installer_Button_AddFolder");
-        textSize = ComputeTextSize(g_fntRodin, addFolderText.c_str(), 20.0f, squashRatio, ADD_BUTTON_MAX_TEXT_WIDTH);
+        textSize = ComputeTextSize(g_pFntRodin, addFolderText.c_str(), 20.0f, squashRatio, ADD_BUTTON_MAX_TEXT_WIDTH);
         max.x = min.x + Scale(textSize.x * squashRatio + BUTTON_TEXT_GAP);
         DrawButton(min, max, addFolderText.c_str(), false, true, buttonPressed, ADD_BUTTON_MAX_TEXT_WIDTH);
         if (buttonPressed)
@@ -1068,7 +1055,7 @@ static void DrawInstallingProgress()
             g_installerThread.reset();
             g_installerEndTime = ImGui::GetTime();
             g_currentPage = g_installerFailed ? WizardPage::InstallFailed : WizardPage::InstallSucceeded;
-            g_commonMenu.SetTitle(Localise("Installer_Header_Installer").c_str());
+            g_commonMenu.SetTitle(Localise("Installer_Header_Installer"));
         }
     }
 }
@@ -1106,7 +1093,7 @@ static void InstallerStart()
     g_installerFailed = false;
     g_installerFinished = false;
     g_installerThread = std::make_unique<std::thread>(InstallerThread);
-    g_commonMenu.SetTitle(Localise("Installer_Header_Installing").c_str());
+    g_commonMenu.SetTitle(Localise("Installer_Header_Installing"));
 }
 
 static bool InstallerParseSources(std::string &errorMessage)
@@ -1167,7 +1154,7 @@ static void DrawNavigationButton()
     }
 
     const std::string &nextButtonText = Localise(nextButtonKey);
-    ImVec2 nextTextSize = ComputeTextSize(g_fntRodin, nextButtonText.c_str(), 20.0f, squashRatio, NAV_BUTTON_MAX_TEXT_WIDTH);
+    ImVec2 nextTextSize = ComputeTextSize(g_pFntRodin, nextButtonText.c_str(), 20.0f, squashRatio, NAV_BUTTON_MAX_TEXT_WIDTH);
     ImVec2 min = { g_aspectRatioOffsetX + Scale(CONTAINER_X + CONTAINER_WIDTH - nextTextSize.x * squashRatio - BOTTOM_X_GAP - BUTTON_TEXT_GAP), g_aspectRatioOffsetY + Scale(CONTAINER_Y + CONTAINER_HEIGHT + BOTTOM_Y_GAP) };
     ImVec2 max = { g_aspectRatioOffsetX + Scale(CONTAINER_X + CONTAINER_WIDTH - BOTTOM_X_GAP), g_aspectRatioOffsetY + Scale(CONTAINER_Y + CONTAINER_HEIGHT + BOTTOM_Y_GAP + BUTTON_HEIGHT) };
 
@@ -1392,7 +1379,7 @@ void InstallerWizard::Init()
 {
     auto &io = ImGui::GetIO();
 
-    g_commonMenu = CommonMenu(Localise("Installer_Header_Installer").c_str(), nullptr, true);
+    g_commonMenu = CommonMenu(Localise("Installer_Header_Installer"), "", true);
     g_installTextures[0] = LOAD_ZSTD_TEXTURE(g_install_001);
     g_installTextures[1] = LOAD_ZSTD_TEXTURE(g_install_002);
     g_installTextures[2] = LOAD_ZSTD_TEXTURE(g_install_003);
@@ -1401,7 +1388,7 @@ void InstallerWizard::Init()
     g_installTextures[5] = LOAD_ZSTD_TEXTURE(g_install_006);
     g_installTextures[6] = LOAD_ZSTD_TEXTURE(g_install_007);
     g_installTextures[7] = LOAD_ZSTD_TEXTURE(g_install_008);
-    g_upHedgeDev = LOAD_ZSTD_TEXTURE(g_hedgedev);
+    g_upSonicNextDev = LOAD_ZSTD_TEXTURE(g_sonicnextdev);
 
     for (int i = 0; i < g_credits.size(); i++)
     {

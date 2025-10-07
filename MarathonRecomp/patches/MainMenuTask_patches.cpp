@@ -13,24 +13,19 @@ PPC_FUNC(sub_824FFCF8)
         if (!OptionsMenu::s_isVisible && (pMainMenuTask->m_PressedButtons.get() & 0x10) != 0)
         {
             OptionsMenu::Open();
-
+    
             Game_PlaySound("main_deside");
-
-            pMainMenuTask->m_State = Sonicteam::MainMenuTask::MainMenuState_MainMenu;
-            pMainMenuTask->m_PressedButtons = 0;
-        }
-        else if (OptionsMenu::s_isVisible && (pMainMenuTask->m_PressedButtons.get() & 0x20) != 0)
-        {
-            OptionsMenu::Close();
-
-            Game_PlaySound("window_close");
-
+    
             pMainMenuTask->m_State = Sonicteam::MainMenuTask::MainMenuState_MainMenu;
             pMainMenuTask->m_PressedButtons = 0;
         }
     }
 
-    if (!OptionsMenu::s_isVisible)
+    if (OptionsMenu::s_isVisible)
+    {
+        pMainMenuTask->m_PressedButtons = 0;
+    }
+    else
     {
         MainMenuTaskPatches::State = (Sonicteam::MainMenuTask::MainMenuState)pMainMenuTask->m_State.get();
 
@@ -38,9 +33,5 @@ PPC_FUNC(sub_824FFCF8)
             event->Update(pMainMenuTask, ctx.f1.f64);
 
         __imp__sub_824FFCF8(ctx, base);
-    }
-    else
-    {
-        pMainMenuTask->m_PressedButtons = 0;
     }
 }

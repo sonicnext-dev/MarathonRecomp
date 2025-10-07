@@ -4,15 +4,16 @@
 
 class CommonMenu
 {
-    const char* m_previousTitle{};
-    const char* m_previousDesc{};
+    std::string m_previousTitle{};
+    std::string m_previousDesc{};
 
     ImVec2 m_descPos{};
     ImVec2 m_previousDescPos{};
 
-    double m_appearTime{};
-    double m_titleAppearTime{};
-    double m_descAppearTime{};
+    bool m_isClosing{};
+    double m_time{};
+    double m_titleTime{};
+    double m_descTime{};
 
     bool m_isDescScrolling{};
     bool m_isDescManualScrolling{};
@@ -44,18 +45,19 @@ class CommonMenu
     }
 
 public:
-    const char* Title{};
-    const char* Description{};
-    bool PlayIntroAnim{};
+    std::string Title{};
+    std::string Description{};
+    bool PlayTransitions{};
     bool ShowVersionString{ true };
 
     CommonMenu() {}
 
-    CommonMenu(const char* title, const char* desc = nullptr, bool playIntroAnim = false, bool showVersionString = true)
-        : Title(title), Description(desc), PlayIntroAnim(playIntroAnim), ShowVersionString(showVersionString) {}
+    CommonMenu(std::string title, std::string desc, bool playTransitions = false)
+        : Title(title), Description(desc), PlayTransitions(playTransitions) {}
 
-    void Open();
     void Draw();
-    void SetTitle(const char* title, bool isAnimated = true);
-    void SetDescription(const char* desc, bool isAnimated = true);
+    void Open();
+    bool Close(bool isAnimated = true);
+    void SetTitle(std::string title, bool isAnimated = true);
+    void SetDescription(std::string desc, bool isAnimated = true);
 };

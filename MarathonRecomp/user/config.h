@@ -80,9 +80,7 @@ enum class EWindowState : uint32_t
 enum class EAspectRatio : uint32_t
 {
     Auto,
-    Wide,
-    Narrow,
-    OriginalNarrow
+    Wide
 };
 
 enum class ETripleBuffering : uint32_t
@@ -97,7 +95,7 @@ static constexpr int32_t FPS_MAX = 241;
 
 enum class EAntiAliasing : uint32_t
 {
-    None = 0,
+    Off = 0,
     MSAA2x = 2,
     MSAA4x = 4,
     MSAA8x = 8

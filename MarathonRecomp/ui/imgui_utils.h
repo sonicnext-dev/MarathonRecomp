@@ -14,14 +14,16 @@
 
 #define BREATHE_MOTION(start, end, time, rate) Lerp(start, end, (sin((ImGui::GetTime() - time) * (2.0f * M_PI / rate)) + 1.0f) / 2.0f)
 
-extern ImFont* g_fntRodin;
-extern ImFont* g_fntNewRodin;
+#define IM_COL32_WHITE_TRANS IM_COL32(255, 255, 255, 0)
 
-extern std::unique_ptr<GuestTexture> g_texWindow;
-extern std::unique_ptr<GuestTexture> g_texLight;
-extern std::unique_ptr<GuestTexture> g_texSelect;
-extern std::unique_ptr<GuestTexture> g_texSelectArrow;
-extern std::unique_ptr<GuestTexture> g_texMainMenu1;
+extern ImFont* g_pFntRodin;
+extern ImFont* g_pFntNewRodin;
+
+extern std::unique_ptr<GuestTexture> g_upTexWindow;
+extern std::unique_ptr<GuestTexture> g_upTexLight;
+extern std::unique_ptr<GuestTexture> g_upTexSelect;
+extern std::unique_ptr<GuestTexture> g_upTexSelectArrow;
+extern std::unique_ptr<GuestTexture> g_upTexMainMenu1;
 
 void InitImGuiUtils();
 
@@ -48,9 +50,10 @@ void ResetAdditive();
 void AddImageFlipped(ImTextureID texture, const ImVec2& min, const ImVec2& max, const ImVec2& uvMin = { 0, 0 }, const ImVec2& uvMax = { 0, 0 }, ImU32 col = IM_COL32_WHITE, bool flipHorz = false, bool flipVert = false);
 float Scale(float size, bool useGameplayScale = false);
 double ComputeLoopMotion(double time, double offset, double total);
-double ComputeLinearMotion(double time, double offset, double total);
-double ComputeMotion(double time, double offset, double total);
+double ComputeLinearMotion(double time, double offset, double total, bool reverse = false);
+double ComputeMotion(double time, double offset, double total, bool reverse = false);
 void DrawArrows(ImVec2 min, ImVec2 max);
+double ImValueDebug(double& value, double increment = 1.0);
 void DrawContainerBox(ImVec2 min, ImVec2 max, float alpha = 1);
 void DrawTextBasic(const ImFont* font, float fontSize, const ImVec2& pos, ImU32 colour, const char* text);
 void DrawTextWithMarquee(const ImFont* font, float fontSize, const ImVec2& position, const ImVec2& min, const ImVec2& max, ImU32 color, const char* text, double time, double delay, double speed);

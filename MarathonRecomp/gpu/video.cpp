@@ -1588,6 +1588,7 @@ static void CreateImGuiBackend()
     AchievementOverlay::Init();
     ButtonGuide::Init();
     MessageWindow::Init();
+    OptionsMenu::Init();
     InstallerWizard::Init();
 
     ImGui_ImplSDL2_InitForOther(GameWindow::s_pWindow);
@@ -3283,23 +3284,6 @@ void Video::ComputeViewportDimensions()
         {
             s_viewportWidth = width;
             s_viewportHeight = width * 9 / 16;
-        }
-
-        break;
-    }
-
-    case EAspectRatio::Narrow:
-    case EAspectRatio::OriginalNarrow:
-    {
-        if (aspectRatio > NARROW_ASPECT_RATIO)
-        {
-            s_viewportWidth = height * 4 / 3;
-            s_viewportHeight = height;
-        }
-        else
-        {
-            s_viewportWidth = width;
-            s_viewportHeight = width * 3 / 4;
         }
 
         break;

@@ -4,37 +4,20 @@
 #include <ui/imgui_utils.h>
 #include <app.h>
 
-void CommonMenu::Open()
-{
-    m_appearTime = ImGui::GetTime();
-    m_titleAppearTime = m_appearTime;
-    m_descAppearTime = m_appearTime;
-}
+static constexpr double ANIMATION_DURATION = 10.0;
 
 void CommonMenu::Draw()
 {
     auto* drawList = ImGui::GetBackgroundDrawList();
     auto& res = ImGui::GetIO().DisplaySize;
 
-    auto width = 0.0f;
-    auto height = 0.0f;
-
-    if (g_aspectRatio > WIDE_ASPECT_RATIO)
-    {
-        width = (res.x - (res.y * 16.0f / 9.0f)) / 2.0f;
-    }
-    else if (WIDE_ASPECT_RATIO > g_aspectRatio)
-    {
-        height = (res.y - (res.x * 9.0f / 16.0f)) / 2.0f;
-    }
-
     if (App::s_isInit)
         SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
 
-    ImVec2 min = { width, height };
-    ImVec2 max = { res.x - width, res.y - height };
+    ImVec2 min = { g_pillarboxWidth, g_letterboxHeight };
+    ImVec2 max = { res.x - g_pillarboxWidth, res.y - g_letterboxHeight };
 
-    auto borderMotionTime = PlayIntroAnim ? ComputeMotion(m_appearTime, 0, 10) : 1.0;
+    auto borderMotionTime = PlayTransitions ? ComputeMotion(m_time, 0, 10, m_isClosing) : 1.0;
 
     auto gradientTop = IM_COL32(0, 103, 255, 255);
     auto gradientBottom = IM_COL32(0, 92, 229, 255);
@@ -57,13 +40,13 @@ void CommonMenu::Draw()
     ImVec2 redStripCornerMax = { redStripCornerMin.x + Scale(300, true), redStripMotion + redStripHeight };
 
     // Draw corner left red strip.
-    drawList->AddImage(g_texMainMenu1.get(), redStripCornerMin, redStripCornerMax, GET_UV_COORDS(redStripCornerUVs), redStripColour);
+    drawList->AddImage(g_upTexMainMenu1.get(), redStripCornerMin, redStripCornerMax, GET_UV_COORDS(redStripCornerUVs), redStripColour);
 
     // Draw left stretched red strip.
-    drawList->AddImage(g_texMainMenu1.get(), { 0.0f, redStripCornerMin.y }, { redStripCornerMin.x, redStripCornerMax.y }, GET_UV_COORDS(redStripLeftStretchUVs), redStripColour);
+    drawList->AddImage(g_upTexMainMenu1.get(), { 0.0f, redStripCornerMin.y }, { redStripCornerMin.x, redStripCornerMax.y }, GET_UV_COORDS(redStripLeftStretchUVs), redStripColour);
 
     // Draw right stretched red strip.
-    drawList->AddImage(g_texMainMenu1.get(), { redStripCornerMax.x, redStripCornerMin.y }, { res.x, redStripCornerMax.y }, GET_UV_COORDS(redStripRightStretchUVs), redStripColour);
+    drawList->AddImage(g_upTexMainMenu1.get(), { redStripCornerMax.x, redStripCornerMin.y }, { res.x, redStripCornerMax.y }, GET_UV_COORDS(redStripRightStretchUVs), redStripColour);
 
     auto redStripHighlightWidth = Scale(270, true);
     auto redStripHighlightHeight = Scale(48, true);
@@ -78,7 +61,7 @@ void CommonMenu::Draw()
         SetAdditive(true);
         SetHorizontalGradient(redStripHighlightMin, redStripHighlightMax, tlColour, brColour);
 
-        drawList->AddImage(g_texMainMenu1.get(), redStripHighlightMin, redStripHighlightMax, GET_UV_COORDS(redStripHighlightUVs));
+        drawList->AddImage(g_upTexMainMenu1.get(), redStripHighlightMin, redStripHighlightMax, GET_UV_COORDS(redStripHighlightUVs));
 
         ResetGradient();
         ResetAdditive();
@@ -89,12 +72,12 @@ void CommonMenu::Draw()
     drawRedStripHighlight({ redStripCornerMax.x + Scale(-43, true), redStripHighlightY }, IM_COL32(255, 89, 0, 0), IM_COL32(255, 89, 0, 20));
 
     auto redStripHighlightMotionOffsetX = Scale(63, true);
-    auto redStripHighlightMotionX1Time = ComputeMotion(m_titleAppearTime, PlayIntroAnim ? 10 : 0, 10);
-    auto redStripHighlightMotionX2Time = ComputeMotion(m_titleAppearTime, PlayIntroAnim ? 12 : 2, 10);
-    auto redStripHighlightMotionAlphaIn1Time = ComputeMotion(m_titleAppearTime, PlayIntroAnim ? 10 : 0, 8);
-    auto redStripHighlightMotionAlphaIn2Time = ComputeMotion(m_titleAppearTime, PlayIntroAnim ? 12 : 2, 8);
-    auto redStripHighlightMotionAlphaOut1Time = ComputeMotion(m_titleAppearTime, PlayIntroAnim ? 18 : 8, 2);
-    auto redStripHighlightMotionAlphaOut2Time = ComputeMotion(m_titleAppearTime, PlayIntroAnim ? 20 : 2, 2);
+    auto redStripHighlightMotionX1Time = ComputeMotion(m_titleTime, PlayTransitions ? 10 : 0, 10, m_isClosing);
+    auto redStripHighlightMotionX2Time = ComputeMotion(m_titleTime, PlayTransitions ? 12 : 2, 10, m_isClosing);
+    auto redStripHighlightMotionAlphaIn1Time = ComputeMotion(m_titleTime, PlayTransitions ? 10 : 0, 8, m_isClosing);
+    auto redStripHighlightMotionAlphaIn2Time = ComputeMotion(m_titleTime, PlayTransitions ? 12 : 2, 8, m_isClosing);
+    auto redStripHighlightMotionAlphaOut1Time = ComputeMotion(m_titleTime, PlayTransitions ? 18 : 8, 2, m_isClosing);
+    auto redStripHighlightMotionAlphaOut2Time = ComputeMotion(m_titleTime, PlayTransitions ? 20 : 2, 2, m_isClosing);
     auto redStripHighlightMotionX1 = Lerp(res.x + redStripHighlightWidth, min.x + redStripHighlightMotionOffsetX, redStripHighlightMotionX1Time);
     auto redStripHighlightMotionX2 = Lerp(res.x + redStripHighlightWidth, min.x + redStripHighlightMotionOffsetX, redStripHighlightMotionX2Time);
     auto redStripHighlightMotionAlpha1 = Lerp(0.0, 100.0, redStripHighlightMotionAlphaIn1Time);
@@ -110,23 +93,24 @@ void CommonMenu::Draw()
     drawRedStripHighlight({ redStripHighlightMotionX1, redStripHighlightY }, IM_COL32(255, 172, 0, 0), IM_COL32(255, 172, 0, redStripHighlightMotionAlpha1));
     drawRedStripHighlight({ redStripHighlightMotionX2, redStripHighlightY }, IM_COL32(255, 172, 0, 0), IM_COL32(255, 172, 0, redStripHighlightMotionAlpha2));
 
+    auto titleText = Title.empty() ? "DUMMY" : Title.data();
     auto titleFontSize = Scale(33, true);
-    auto titleSize = g_fntNewRodin->CalcTextSizeA(titleFontSize, FLT_MAX, 0.0f, Title);
+    auto titleSize = g_pFntNewRodin->CalcTextSizeA(titleFontSize, FLT_MAX, 0.0f, titleText);
     auto titleOffsetX = redStripCornerMax.x - Scale(105, true);
-    auto titleOffsetY = min.y + Scale(85, true);
-    auto titleOffsetXMotionTime = ComputeMotion(m_titleAppearTime, PlayIntroAnim ? 10 : 0, 10);
+    auto titleOffsetY = redStripMotion + Scale(3.25, true);
+    auto titleOffsetXMotionTime = ComputeMotion(m_titleTime, PlayTransitions && !m_isClosing ? 10 : 0, 10, m_isClosing);
     auto titleOffsetXMotion = Lerp(max.x + titleSize.x, titleOffsetX, titleOffsetXMotionTime);
 
-    if (m_previousTitle)
+    if (!m_previousTitle.empty())
     {
-        auto prevTitleAlphaMotionTime = ComputeMotion(m_titleAppearTime, PlayIntroAnim ? 10 : 0, 3);
+        auto prevTitleAlphaMotionTime = ComputeMotion(m_titleTime, PlayTransitions ? 10 : 0, 3, m_isClosing);
 
         // Draw previous title fading out.
-        drawList->AddText(g_fntNewRodin, titleFontSize, { titleOffsetX, titleOffsetY }, IM_COL32(255, 255, 255, Lerp(255, 0, prevTitleAlphaMotionTime)), m_previousTitle);
+        drawList->AddText(g_pFntNewRodin, titleFontSize, { titleOffsetX, titleOffsetY }, IM_COL32(255, 255, 255, Lerp(255, 0, prevTitleAlphaMotionTime)), m_previousTitle.data());
     }
 
     // Draw title.
-    drawList->AddText(g_fntNewRodin, titleFontSize, { titleOffsetXMotion, min.y + Scale(85, true) }, IM_COL32(255, 255, 255, 255 * titleOffsetXMotionTime), Title ? Title : "DUMMY");
+    drawList->AddText(g_pFntNewRodin, titleFontSize, { titleOffsetXMotion, titleOffsetY }, IM_COL32(255, 255, 255, 255 * titleOffsetXMotionTime), titleText);
 
     auto topPlateCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 150, 250, 145);
     auto topPlateLeftStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 2, 150, 150, 145);
@@ -141,14 +125,14 @@ void CommonMenu::Draw()
     ImVec2 topPlateStretchMax = { res.x, topPlateCornerMax.y };
 
     // Draw top left corner metal plate.
-    drawList->AddImage(g_texMainMenu1.get(), topPlateCornerMin, topPlateCornerMax, GET_UV_COORDS(topPlateCornerUVs));
+    drawList->AddImage(g_upTexMainMenu1.get(), topPlateCornerMin, topPlateCornerMax, GET_UV_COORDS(topPlateCornerUVs));
 
     // Draw top left stretched metal plate.
-    AddImageFlipped(g_texMainMenu1.get(), { 0.0f, topPlateCornerMin.y }, { topPlateCornerMin.x + Scale(2, true), topPlateCornerMax.y }, GET_UV_COORDS(topPlateLeftStretchUVs), IM_COL32_WHITE, true);
+    AddImageFlipped(g_upTexMainMenu1.get(), { 0.0f, topPlateCornerMin.y }, { topPlateCornerMin.x + Scale(2, true), topPlateCornerMax.y }, GET_UV_COORDS(topPlateLeftStretchUVs), IM_COL32_WHITE, true);
 
     // Draw top right stretched metal plate.
     SetHorizontalGradient(topPlateStretchMin, topPlateStretchMax, IM_COL32_WHITE, IM_COL32(200, 200, 200, 255));
-    drawList->AddImage(g_texMainMenu1.get(), topPlateStretchMin, topPlateStretchMax, GET_UV_COORDS(topPlateRightStretchUVs));
+    drawList->AddImage(g_upTexMainMenu1.get(), topPlateStretchMin, topPlateStretchMax, GET_UV_COORDS(topPlateRightStretchUVs));
     ResetGradient();
 
     auto textCoverCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 801, 400, 150, 150);
@@ -171,11 +155,11 @@ void CommonMenu::Draw()
     // Draw text cover backdrop.
     drawList->AddRectFilled({ 0.0f, textCoverMotion }, { res.x, textCoverMotion + textCoverHeight }, IM_COL32(0, 0, 0, 65));
 
-    if (Description)
+    if (!Description.empty())
     {
         auto descFadeScale = Scale(20, true);
         auto descFontSize = Scale(27, true);
-        auto descSize = g_fntRodin->CalcTextSizeA(descFontSize, FLT_MAX, 0.0f, Description);
+        auto descSize = g_pFntRodin->CalcTextSizeA(descFontSize, FLT_MAX, 0.0f, Description.data());
 
         ImVec2 descBoundsMin = { textCoverCentreMin.x - Scale(18, true), textCoverCentreMin.y + Scale(20, true) };
         ImVec2 descBoundsMax = { textCoverCentreMax.x + Scale(18, true), textCoverCentreMax.y - Scale(90, true) };
@@ -254,25 +238,25 @@ void CommonMenu::Draw()
             m_descPos.x = (descBoundsMin.x + descFadeScale) - m_descScrollOffset;
         }
 
-        auto descAlphaMotionTime = ComputeMotion(m_descAppearTime, PlayIntroAnim ? 10 : 0, 15);
+        auto descAlphaMotionTime = ComputeMotion(m_descTime, PlayTransitions ? 10 : 0, 15, m_isClosing);
 
         // Draw previous description fading out.
-        if (m_previousDesc)
-            drawList->AddText(g_fntRodin, descFontSize, m_previousDescPos, IM_COL32(255, 255, 255, Lerp(255, 0, descAlphaMotionTime)), m_previousDesc);
+        if (!m_previousDesc.empty())
+            drawList->AddText(g_pFntRodin, descFontSize, m_previousDescPos, IM_COL32(255, 255, 255, Lerp(255, 0, descAlphaMotionTime)), m_previousDesc.data());
 
         // Draw description.
-        drawList->AddText(g_fntRodin, descFontSize, m_descPos, IM_COL32(255, 255, 255, Lerp(0, 255, descAlphaMotionTime)), Description);
+        drawList->AddText(g_pFntRodin, descFontSize, m_descPos, IM_COL32(255, 255, 255, Lerp(0, 255, descAlphaMotionTime)), Description.data());
 
         // Draw left text cover.
-        drawList->AddImage(g_texMainMenu1.get(), { 0.0f, textCoverCornerLeftMin.y }, { textCoverCornerLeftMin.x + textCoverCornerUVCompensation, textCoverCornerLeftMax.y }, GET_UV_COORDS(textCoverCornerExtendUVs), textCoverColour);
-        drawList->AddImage(g_texMainMenu1.get(), textCoverCornerLeftMin, textCoverCornerLeftMax, GET_UV_COORDS(textCoverCornerUVs), textCoverColour);
+        drawList->AddImage(g_upTexMainMenu1.get(), { 0.0f, textCoverCornerLeftMin.y }, { textCoverCornerLeftMin.x + textCoverCornerUVCompensation, textCoverCornerLeftMax.y }, GET_UV_COORDS(textCoverCornerExtendUVs), textCoverColour);
+        drawList->AddImage(g_upTexMainMenu1.get(), textCoverCornerLeftMin, textCoverCornerLeftMax, GET_UV_COORDS(textCoverCornerUVs), textCoverColour);
 
         // Draw centre text cover.
-        drawList->AddImage(g_texMainMenu1.get(), textCoverCentreMin, textCoverCentreMax, GET_UV_COORDS(textCoverCentreUVs), textCoverColour);
+        drawList->AddImage(g_upTexMainMenu1.get(), textCoverCentreMin, textCoverCentreMax, GET_UV_COORDS(textCoverCentreUVs), textCoverColour);
 
         // Draw right text cover.
-        AddImageFlipped(g_texMainMenu1.get(), { textCoverCornerRightMax.x - textCoverCornerUVCompensation, textCoverCornerRightMin.y }, { res.x, textCoverCornerRightMax.y }, GET_UV_COORDS(textCoverCornerExtendUVs), textCoverColour);
-        AddImageFlipped(g_texMainMenu1.get(), textCoverCornerRightMin, textCoverCornerRightMax, GET_UV_COORDS(textCoverCornerUVs), textCoverColour, true);
+        AddImageFlipped(g_upTexMainMenu1.get(), { textCoverCornerRightMax.x - textCoverCornerUVCompensation, textCoverCornerRightMin.y }, { res.x, textCoverCornerRightMax.y }, GET_UV_COORDS(textCoverCornerExtendUVs), textCoverColour);
+        AddImageFlipped(g_upTexMainMenu1.get(), textCoverCornerRightMin, textCoverCornerRightMax, GET_UV_COORDS(textCoverCornerUVs), textCoverColour, true);
     }
     else
     {
@@ -294,29 +278,50 @@ void CommonMenu::Draw()
     ImVec2 bottomPlateRightMax = { bottomPlateRightMin.x + bottomPlateWidth, bottomPlateLeftMax.y };
 
     // Draw bottom left metal plate.
-    drawList->AddImage(g_texMainMenu1.get(), bottomPlateLeftMin, bottomPlateLeftMax, GET_UV_COORDS(bottomPlateUVs));
+    drawList->AddImage(g_upTexMainMenu1.get(), bottomPlateLeftMin, bottomPlateLeftMax, GET_UV_COORDS(bottomPlateUVs));
 
     // Draw bottom left stretched metal plate.
-    AddImageFlipped(g_texMainMenu1.get(), { 0.0f, bottomPlateLeftMin.y }, { bottomPlateLeftMin.x, bottomPlateLeftMax.y }, GET_UV_COORDS(bottomPlateStretchUVs), IM_COL32_WHITE, true);
+    AddImageFlipped(g_upTexMainMenu1.get(), { 0.0f, bottomPlateLeftMin.y }, { bottomPlateLeftMin.x, bottomPlateLeftMax.y }, GET_UV_COORDS(bottomPlateStretchUVs), IM_COL32_WHITE, true);
 
     // Draw bottom right metal plate.
-    AddImageFlipped(g_texMainMenu1.get(), bottomPlateRightMin, bottomPlateRightMax, GET_UV_COORDS(bottomPlateUVs), IM_COL32_WHITE, true);
+    AddImageFlipped(g_upTexMainMenu1.get(), bottomPlateRightMin, bottomPlateRightMax, GET_UV_COORDS(bottomPlateUVs), IM_COL32_WHITE, true);
 
     // Draw bottom right stretched metal plate.
-    AddImageFlipped(g_texMainMenu1.get(), { bottomPlateRightMax.x, bottomPlateRightMin.y }, { res.x, bottomPlateRightMax.y }, GET_UV_COORDS(bottomPlateStretchUVs), IM_COL32_WHITE, true);
+    AddImageFlipped(g_upTexMainMenu1.get(), { bottomPlateRightMax.x, bottomPlateRightMin.y }, { res.x, bottomPlateRightMax.y }, GET_UV_COORDS(bottomPlateStretchUVs), IM_COL32_WHITE, true);
 
     if (App::s_isInit)
         SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
 
     if (ShowVersionString)
     {
-        auto verAlphaMotionTime = PlayIntroAnim ? ComputeMotion(m_appearTime, 10, 10) : 1.0;
+        auto verAlphaMotionTime = PlayTransitions ? ComputeMotion(m_time, 0, m_isClosing ? 3 : 10, m_isClosing) : 1.0;
 
-        DrawVersionString(g_fntNewRodin, IM_COL32(0, 0, 0, 70 * verAlphaMotionTime));
+        DrawVersionString(g_pFntNewRodin, IM_COL32(0, 0, 0, 70 * verAlphaMotionTime));
     }
 }
 
-void CommonMenu::SetTitle(const char* title, bool isAnimated)
+void CommonMenu::Open()
+{
+    m_isClosing = false;
+    m_time = ImGui::GetTime();
+    m_titleTime = m_time;
+    m_descTime = m_time;
+}
+
+bool CommonMenu::Close(bool isAnimated)
+{
+    if (!m_isClosing)
+    {
+        m_isClosing = true;
+        m_time = ImGui::GetTime();
+        m_titleTime = m_time;
+        m_descTime = m_time;
+    }
+
+    return isAnimated ? ComputeMotion(m_time, 0, ANIMATION_DURATION) >= 1.0 : true;
+}
+
+void CommonMenu::SetTitle(std::string title, bool isAnimated)
 {
     m_previousTitle = Title;
     Title = title;
@@ -324,10 +329,10 @@ void CommonMenu::SetTitle(const char* title, bool isAnimated)
     if (!isAnimated)
         return;
 
-    m_titleAppearTime = ImGui::GetTime();
+    m_titleTime = ImGui::GetTime();
 }
 
-void CommonMenu::SetDescription(const char* desc, bool isAnimated)
+void CommonMenu::SetDescription(std::string desc, bool isAnimated)
 {
     m_previousDesc = Description;
     m_previousDescPos = m_descPos;
@@ -338,5 +343,5 @@ void CommonMenu::SetDescription(const char* desc, bool isAnimated)
     if (!isAnimated)
         return;
 
-    m_descAppearTime = ImGui::GetTime();
+    m_descTime = ImGui::GetTime();
 }

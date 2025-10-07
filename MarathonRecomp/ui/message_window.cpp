@@ -179,7 +179,7 @@ void DrawContainerArrow(const ImVec2 pos, float scale, float rotation, uint32_t 
     auto& uvMin = std::get<0>(arrowUVs);
     auto& uvMax = std::get<1>(arrowUVs);
 
-    drawList->AddImageQuad(g_texWindow.get(), vertices[0], vertices[1], vertices[2], vertices[3], uvMin, { uvMax.x, uvMin.y }, { uvMax.x, uvMax.y }, { uvMin.x, uvMax.y }, colour);
+    drawList->AddImageQuad(g_upTexWindow.get(), vertices[0], vertices[1], vertices[2], vertices[3], uvMin, { uvMax.x, uvMin.y }, { uvMax.x, uvMax.y }, { uvMin.x, uvMax.y }, colour);
 }
 
 void DrawContainer(const ImVec2 min, const ImVec2 max)
@@ -198,16 +198,16 @@ void DrawContainer(const ImVec2 min, const ImVec2 max)
     auto lineOffsetRight = Scale(3);
 
     // Top
-    drawList->AddImage(g_texWindow.get(), min, { max.x, min.y + lineScale }, GET_UV_COORDS(lineHorzUVs));
+    drawList->AddImage(g_upTexWindow.get(), min, { max.x, min.y + lineScale }, GET_UV_COORDS(lineHorzUVs));
 
     // Bottom
-    drawList->AddImage(g_texWindow.get(), { min.x, max.y - lineOffsetRight }, { max.x, (max.y - lineOffsetRight) + lineScale }, GET_UV_COORDS(lineHorzUVs));
+    drawList->AddImage(g_upTexWindow.get(), { min.x, max.y - lineOffsetRight }, { max.x, (max.y - lineOffsetRight) + lineScale }, GET_UV_COORDS(lineHorzUVs));
 
     // Left
-    drawList->AddImage(g_texWindow.get(), min, { min.x + lineScale, max.y }, GET_UV_COORDS(lineVertUVs));
+    drawList->AddImage(g_upTexWindow.get(), min, { min.x + lineScale, max.y }, GET_UV_COORDS(lineVertUVs));
 
     // Right
-    drawList->AddImage(g_texWindow.get(), { max.x - lineOffsetRight, min.y }, { (max.x - lineOffsetRight) + lineScale, max.y }, GET_UV_COORDS(lineVertUVs));
+    drawList->AddImage(g_upTexWindow.get(), { max.x - lineOffsetRight, min.y }, { (max.x - lineOffsetRight) + lineScale, max.y }, GET_UV_COORDS(lineVertUVs));
 
     SetAdditive(true);
 
@@ -273,7 +273,7 @@ void DrawButtonArrow(const ImVec2 pos)
 
         drawList->AddImage
         (
-            g_texSelectArrow.get(),
+            g_upTexSelectArrow.get(),
             { pos.x + arrowRight, pos.y },
             { pos.x + arrowRight + arrowScaleX, pos.y + arrowScaleY },
             GET_UV_COORDS(arrowUVs),
