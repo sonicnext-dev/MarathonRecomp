@@ -5,6 +5,7 @@
 #include <res/images/common/main_menu7.dds.h>
 #include <res/images/common/main_menu8.dds.h>
 #include <res/images/common/main_menu9.dds.h>
+#include <ui/button_guide.h>
 #include <ui/fader.h>
 #include <ui/game_window.h>
 #include <ui/imgui_utils.h>
@@ -80,6 +81,7 @@ static void ResetOptionSelection()
 {
     g_optionIndex = 0;
     g_optionCurrent = nullptr;
+    g_optionCanReset = false;
 }
 
 static void ResetSelection()
@@ -254,10 +256,12 @@ static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAcce
             DrawArrowCursor({ titleBgEdgeMin.x + Scale(8, true), titleBgEdgeMin.y + Scale(9, true) }, g_cursorArrowsTime, true, false, OptionsMenu::s_state != OptionsMenuState::Idle);
 
             g_optionCurrent = config;
+            g_optionCanReset = isAccessible && config->GetName().find("Language") == std::string::npos && (void*)config != (void*)&Config::WindowSize;
         }
         else
         {
             g_optionCurrent = nullptr;
+            g_optionCanReset = false;
         }
     }
 
@@ -689,7 +693,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
 
         auto scrollArrowColourMotion = IM_COL32(255, 255, 255, scrollArrowAlphaMotion);
 
-        ImVec2 scrollArrowTopMin = { max.x - scrollArrowScale - Scale(64, true) - g_pillarboxWidth, min.y + Scale(12, true) };
+        ImVec2 scrollArrowTopMin = { max.x - scrollArrowScale - Scale(64, true) - g_aspectRatioOffsetX, min.y + Scale(12, true) };
         ImVec2 scrollArrowTopMax = { scrollArrowTopMin.x + scrollArrowScale, scrollArrowTopMin.y + scrollArrowScale };
         ImVec2 scrollArrowBottomMin = { scrollArrowTopMin.x, max.y - scrollArrowScale - Scale(16, true) };
         ImVec2 scrollArrowBottomMax = { scrollArrowTopMax.x, scrollArrowBottomMin.y + scrollArrowScale };
@@ -739,15 +743,15 @@ void OptionsMenu::Draw()
     auto* drawList = ImGui::GetBackgroundDrawList();
     auto& res = ImGui::GetIO().DisplaySize;
 
-    ImVec2 min = { g_pillarboxWidth, g_letterboxHeight };
-    ImVec2 max = { res.x - g_pillarboxWidth, res.y - g_letterboxHeight };
+    ImVec2 min = { g_aspectRatioOffsetX, g_aspectRatioOffsetY };
+    ImVec2 max = { res.x - g_aspectRatioOffsetX, res.y - g_aspectRatioOffsetY };
 
     auto alphaMotionTime = s_isPause ? ComputeMotion(g_stateTime, 0, 10, s_state == OptionsMenuState::Closing) : 0.0;
     auto alpha = s_isPause ? Lerp(0, 175, alphaMotionTime) : 255;
     auto gradientTop = IM_COL32(0, 103, 255, alpha);
     auto gradientBottom = IM_COL32(0, 41, 100, alpha);
 
-    drawList->AddRectFilledMultiColor({ 0.0f, g_letterboxHeight }, { res.x, res.y - g_letterboxHeight }, gradientTop, gradientTop, gradientBottom, gradientBottom);
+    drawList->AddRectFilledMultiColor({ 0.0f, g_aspectRatioOffsetY }, { res.x, res.y - g_aspectRatioOffsetY }, gradientTop, gradientTop, gradientBottom, gradientBottom);
 
     auto upIsHeld = false;
     auto downIsHeld = false;
@@ -825,7 +829,7 @@ void OptionsMenu::Draw()
             }
 
             if (MessageWindow::Open(Localise("Options_Message_Restart"), &s_restartMessageResult) == MSG_CLOSED)
-                Fader::FadeOut(1, []() { App::Restart(); });
+                Fader::FadeOut(1, []() { App::Restart({ "--use-cwd" }); });
 
             break;
         }
@@ -943,6 +947,15 @@ void OptionsMenu::Open(bool isPause)
     g_optionCurrentChannelConfiguration = Config::ChannelConfiguration;
 
     ResetSelection();
+
+    std::array<Button, 3> buttons =
+    {
+        Button("Common_Reset", EButtonIcon::X, &g_optionCanReset),
+        Button("Common_Select", EButtonIcon::A),
+        Button("Common_Back", EButtonIcon::B)
+    };
+
+    ButtonGuide::Open(buttons);
 }
 
 void OptionsMenu::Close()
@@ -954,6 +967,7 @@ void OptionsMenu::Close()
     g_stateTime = ImGui::GetTime();
     g_cursorArrowsTime = g_stateTime;
 
+    ButtonGuide::Close();
     Config::Save();
 }
 

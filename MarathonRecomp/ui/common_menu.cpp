@@ -14,8 +14,8 @@ void CommonMenu::Draw()
     if (App::s_isInit)
         SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
 
-    ImVec2 min = { g_pillarboxWidth, g_letterboxHeight };
-    ImVec2 max = { res.x - g_pillarboxWidth, res.y - g_letterboxHeight };
+    ImVec2 min = { g_aspectRatioOffsetX, g_aspectRatioOffsetY };
+    ImVec2 max = { res.x - g_aspectRatioOffsetX, res.y - g_aspectRatioOffsetY };
 
     auto borderMotionTime = PlayTransitions ? ComputeMotion(m_time, 0, 10, m_isClosing) : 1.0;
 

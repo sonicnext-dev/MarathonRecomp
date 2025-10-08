@@ -47,7 +47,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Options_Header_Name",
         {
             { ELanguage::English,  "OPTIONS" },
-            { ELanguage::Japanese, "OPTION" },
+            { ELanguage::Japanese, "OPTIONS" },
             { ELanguage::German,   "OPTIONEN" },
             { ELanguage::French,   "OPTIONS" },
             { ELanguage::Spanish,  "OPCIONES" },
@@ -786,9 +786,9 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Select" },
             { ELanguage::Japanese, "決定" },
-            { ELanguage::German,   "Auswählen" },
-            { ELanguage::French,   "Choisir" },
-            { ELanguage::Spanish,  "Seleccionar" },
+            { ELanguage::German,   "Auswählen　" },
+            { ELanguage::French,   "Sélectionner" },
+            { ELanguage::Spanish,  " Seleccionar" },
             { ELanguage::Italian,  "Seleziona" }
         }
     },
@@ -796,10 +796,10 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Common_Back",
         {
             { ELanguage::English,  "Back" },
-            { ELanguage::Japanese, "もどる" },
+            { ELanguage::Japanese, "戻る" },
             { ELanguage::German,   "Zurück" },
             { ELanguage::French,   "Retour" },
-            { ELanguage::Spanish,  "Atrás" },
+            { ELanguage::Spanish,  " Atrás" },
             { ELanguage::Italian,  "Indietro" }
         }
     },
@@ -807,11 +807,11 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Common_Quit",
         {
             { ELanguage::English,  "Quit" },
-            { ELanguage::Japanese, "終了" },
-            { ELanguage::German,   "Verlassen" },
-            { ELanguage::French,   "Quitter" },
-            { ELanguage::Spanish,  "Salir" },
-            { ELanguage::Italian,  "Esci" }
+            { ELanguage::Japanese, "やめる" },
+            { ELanguage::German,   "Abbrechen" },
+            { ELanguage::French,   "Annuler" },
+            { ELanguage::Spanish,  " Cancelar" },
+            { ELanguage::Italian,  "Annulla" }
         }
     },
     {

@@ -18,8 +18,6 @@ inline float g_aspectRatioScale;
 inline float g_aspectRatioGameplayScale;
 inline float g_aspectRatioNarrowScale;
 inline float g_radarMapScale;
-inline float g_pillarboxWidth;
-inline float g_letterboxHeight;
 
 class AspectRatioPatches
 {

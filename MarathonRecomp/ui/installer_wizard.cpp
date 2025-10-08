@@ -395,6 +395,59 @@ static int DLCIndex(DLC dlc)
     return (int)(dlc) - 1;
 }
 
+static void SetCurrentPage(WizardPage page)
+{
+    g_currentPage = page;
+
+    EButtonIcon backIcon;
+    EButtonIcon selectIcon;
+
+    if (hid::IsInputDeviceController())
+    {
+        backIcon = EButtonIcon::B;
+        selectIcon = EButtonIcon::A;
+    }
+    else if (hid::g_inputDevice == hid::EInputDevice::Keyboard)
+    {
+        backIcon = EButtonIcon::Escape;
+        selectIcon = EButtonIcon::Enter;
+    }
+    else
+    {
+        backIcon = EButtonIcon::Escape;
+        selectIcon = EButtonIcon::LMB;
+    }
+
+    if (g_currentPage == WizardPage::InstallSucceeded)
+    {
+        ButtonGuide::Open(Button("Common_Select", selectIcon));
+    }
+    else if (g_currentPage != WizardPage::Installing)
+    {
+        const char* backKey = "Common_Back";
+
+        if (g_currentPage == g_firstPage || g_currentPage == WizardPage::InstallFailed)
+            backKey = "Common_Quit";
+
+        std::array<Button, 2> buttons =
+        {
+            Button("Common_Select", selectIcon),
+            Button(backKey, backIcon)
+        };
+
+        // TODO: prevent this from re-opening if unchanged.
+        ButtonGuide::Open(buttons);
+    }
+    else if (g_currentPage == WizardPage::Installing)
+    {
+        ButtonGuide::Open(Button("Common_Cancel", backIcon));
+    }
+    else
+    {
+        ButtonGuide::Close();
+    }
+}
+
 static double ComputeMotionInstaller(double timeAppear, double timeDisappear, double offset, double total)
 {
     return ComputeMotion(timeAppear, offset, total) * (1.0 - ComputeMotion(timeDisappear, ALL_ANIMATIONS_FULL_DURATION - offset - total, total));
@@ -607,55 +660,10 @@ static void DrawDescriptionContainer()
 
     ImVec2 sideMin = { descriptionMax.x, descriptionMin.y };
     ImVec2 sideMax = { res.x, descriptionMax.y };
+
     DrawContainer(sideMin, sideMax, false);
+
     drawList->PopClipRect();
-
-    EButtonIcon backIcon;
-    EButtonIcon selectIcon;
-    if (hid::IsInputDeviceController())
-    {
-        backIcon = EButtonIcon::B;
-        selectIcon = EButtonIcon::A;
-    }
-    else if (hid::g_inputDevice == hid::EInputDevice::Keyboard)
-    {
-        backIcon = EButtonIcon::Escape;
-        selectIcon = EButtonIcon::Enter;
-    }
-    else
-    {
-        backIcon = EButtonIcon::Escape;
-        selectIcon = EButtonIcon::LMB;
-    }
-
-    if (g_currentPage == WizardPage::InstallSucceeded && textAlpha >= 1.0)
-    {
-        ButtonGuide::Open(Button("Common_Select", 115.0f, selectIcon));
-    }
-    else if (g_currentPage != WizardPage::Installing && textAlpha >= 1.0)
-    {
-        const char *backKey = "Common_Back";
-        if ((g_currentPage == g_firstPage) || (g_currentPage == WizardPage::InstallFailed))
-        {
-            backKey = "Common_Quit";
-        }
-
-        std::array<Button, 2> buttons =
-        {
-            Button("Common_Select", 115.0f, selectIcon),
-            Button(backKey, FLT_MAX, backIcon)
-        };
-
-        ButtonGuide::Open(buttons);
-    }
-    else if (g_currentPage == WizardPage::Installing)
-    {
-        ButtonGuide::Open(Button("Common_Cancel", FLT_MAX, backIcon));
-    }
-    else
-    {
-        ButtonGuide::Close();
-    }
 
     ResetProceduralOrigin();
 }
@@ -1054,7 +1062,7 @@ static void DrawInstallingProgress()
             g_installerThread->join();
             g_installerThread.reset();
             g_installerEndTime = ImGui::GetTime();
-            g_currentPage = g_installerFailed ? WizardPage::InstallFailed : WizardPage::InstallSucceeded;
+            SetCurrentPage(g_installerFailed ? WizardPage::InstallFailed : WizardPage::InstallSucceeded);
             g_commonMenu.SetTitle(Localise("Installer_Header_Installer"));
         }
     }
@@ -1085,7 +1093,7 @@ static void InstallerThread()
 
 static void InstallerStart()
 {
-    g_currentPage = WizardPage::Installing;
+    SetCurrentPage(WizardPage::Installing);
     g_installerStartTime = ImGui::GetTime();
     g_installerEndTime = DBL_MAX;
     g_installerProgressRatioCurrent = 0.0f;
@@ -1178,7 +1186,7 @@ static void DrawNavigationButton()
 
                 g_currentMessagePrompt = stringStream.str();
                 g_currentMessagePromptConfirmation = false;
-                g_currentPage = dlcInstallerMode ? WizardPage::SelectDLC : WizardPage::SelectGame;
+                SetCurrentPage(dlcInstallerMode ? WizardPage::SelectDLC : WizardPage::SelectGame);
             }
             else if (skipButton && dlcInstallerMode)
             {
@@ -1188,7 +1196,7 @@ static void DrawNavigationButton()
             }
             else
             {
-                g_currentPage = WizardPage::CheckSpace;
+                SetCurrentPage(WizardPage::CheckSpace);
             }
         }
         else if (g_currentPage == WizardPage::CheckSpace)
@@ -1202,11 +1210,11 @@ static void DrawNavigationButton()
         }
         else if (g_currentPage == WizardPage::InstallFailed)
         {
-            g_currentPage = g_firstPage;
+            SetCurrentPage(g_firstPage);
         }
         else
         {
-            g_currentPage = WizardPage(int(g_currentPage) + 1);
+            SetCurrentPage(WizardPage(int(g_currentPage) + 1));
         }
     }
 }
@@ -1253,7 +1261,7 @@ static void CheckCancelAction()
     else if (int(g_currentPage) > 0)
     {
         // Just go back to the previous page.
-        g_currentPage = WizardPage(int(g_currentPage) - 1);
+        SetCurrentPage(WizardPage(int(g_currentPage) - 1));
     }
 }
 
@@ -1297,7 +1305,7 @@ static void DrawMessagePrompt()
             else if (g_currentPage == WizardPage::SelectDLC)
             {
                 // If user confirms the message prompt that they wish to skip installing the DLC, proceed to the next step.
-                g_currentPage = WizardPage::CheckSpace;
+                SetCurrentPage(WizardPage::CheckSpace);
             }
         }
 
@@ -1400,9 +1408,7 @@ void InstallerWizard::Init()
 void InstallerWizard::Draw()
 {
     if (!s_isVisible)
-    {
         return;
-    }
 
     ResetCursorRects();
     DrawBackground();
@@ -1485,8 +1491,9 @@ bool InstallerWizard::Run(std::filesystem::path installPath, bool skipGame)
         }
 
         g_firstPage = WizardPage::SelectDLC;
-        g_currentPage = g_firstPage;
     }
+
+    SetCurrentPage(g_firstPage);
 
     GameWindow::SetFullscreenCursorVisibility(true);
     s_isVisible = true;
