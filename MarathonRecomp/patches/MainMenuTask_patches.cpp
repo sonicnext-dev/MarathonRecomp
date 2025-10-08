@@ -8,6 +8,7 @@ PPC_FUNC(sub_824FFCF8)
 {
     auto pMainMenuTask = (Sonicteam::MainMenuTask*)(base + ctx.r3.u32);
 
+#ifdef MARATHON_RECOMP_OPTIONS_MENU
     if (pMainMenuTask->m_State == Sonicteam::MainMenuTask::MainMenuState_MainMenu && pMainMenuTask->m_SelectedIndex == 3)
     {
         if (!OptionsMenu::s_isVisible && (pMainMenuTask->m_PressedButtons.get() & 0x10) != 0)
@@ -20,6 +21,7 @@ PPC_FUNC(sub_824FFCF8)
             pMainMenuTask->m_PressedButtons = 0;
         }
     }
+#endif
 
     if (OptionsMenu::s_isVisible)
     {

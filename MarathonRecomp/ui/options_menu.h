@@ -2,6 +2,8 @@
 
 #include <ui/common_menu.h>
 
+#define MARATHON_RECOMP_OPTIONS_MENU
+
 enum class OptionsMenuState
 {
     Opening,

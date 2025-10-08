@@ -745,6 +745,7 @@ void Config::CreateCallbacks()
         if (!App::s_isInit)
             return;
 
+        OptionsMenu::s_commonMenu.SetTitle(Localise("Options_Header_Name"));
         OptionsMenu::s_commonMenu.SetDescription(def->GetDescription(def->Value));
     };
 
