@@ -1,0 +1,17 @@
+#pragma once
+
+#include <Marathon.inl>
+#include <Sonicteam/SoX/Scenery/Drawable.h>
+#include <Sonicteam/SoX/RefSharedPointer.h>
+#include <Sonicteam/SoX/Scenery/CameraEventCallback.h>
+
+namespace Sonicteam::SoX::Scenery
+{
+    class Clump : public Drawable
+    {
+    public:
+        MARATHON_INSERT_PADDING(0x10);
+    };
+
+    MARATHON_ASSERT_SIZEOF(Clump, 0x80);
+}

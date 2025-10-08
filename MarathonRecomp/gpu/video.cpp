@@ -129,7 +129,7 @@ namespace plume
     extern std::unique_ptr<RenderInterface> CreateD3D12Interface();
 #endif
 #ifdef MARATHON_RECOMP_METAL
-extern std::unique_ptr<RenderInterface> CreateMetalInterface();
+    extern std::unique_ptr<RenderInterface> CreateMetalInterface();
 #endif
 #ifdef SDL_VULKAN_ENABLED
     extern std::unique_ptr<RenderInterface> CreateVulkanInterface(RenderWindow sdlWindow);
@@ -464,7 +464,7 @@ enum class PipelineTaskType
 struct PipelineTask
 {
     PipelineTaskType type{};
-//    boost::shared_ptr<Hedgehog::Database::CDatabaseData> databaseData;
+    //    boost::shared_ptr<Hedgehog::Database::CDatabaseData> databaseData;
 };
 
 static Mutex g_pipelineTaskMutex;
@@ -540,7 +540,7 @@ struct UploadAllocator
             buffer.memory = reinterpret_cast<uint8_t*>(buffer.buffer->map());
             buffer.deviceAddress = buffer.buffer->getDeviceAddress();
         }
-        
+
         auto ref = buffer.buffer->at(offset);
         offset += size;
 
@@ -646,7 +646,7 @@ struct PrimitiveIndexData
         {
         case D3DPT_TRIANGLEFAN:
             primCount = guestPrimCount - 2;
-            indexCountPerPrimitive = 3; 
+            indexCountPerPrimitive = 3;
             break;
         case D3DPT_QUADLIST:
             primCount = guestPrimCount / 4;
@@ -918,7 +918,7 @@ struct RenderCommand
             uint32_t value;
         } setRenderState;
 
-        struct 
+        struct
         {
             GuestResource* resource;
         } destructResource;
@@ -933,7 +933,7 @@ struct RenderCommand
             GuestBuffer* buffer;
         } unlockBuffer;
 
-        struct 
+        struct
         {
             GuestDevice* device;
             uint32_t flags;
@@ -941,17 +941,17 @@ struct RenderCommand
             uint32_t destSliceOrFace;
         } stretchRect;
 
-        struct 
+        struct
         {
             GuestSurface* renderTarget;
         } setRenderTarget;
 
-        struct 
+        struct
         {
             GuestSurface* depthStencil;
         } setDepthStencilSurface;
 
-        struct 
+        struct
         {
             uint32_t flags;
             float color[4];
@@ -959,7 +959,7 @@ struct RenderCommand
             uint32_t stencil;
         } clear;
 
-        struct 
+        struct
         {
             float x;
             float y;
@@ -969,13 +969,13 @@ struct RenderCommand
             float maxDepth;
         } setViewport;
 
-        struct 
+        struct
         {
             uint32_t index;
             GuestTexture* texture;
         } setTexture;
 
-        struct 
+        struct
         {
             int32_t left;
             int32_t top;
@@ -1001,8 +1001,8 @@ struct RenderCommand
             uint8_t* memory;
             uint32_t index;
             uint32_t size;
-        } setVertexShaderConstants;  
-        
+        } setVertexShaderConstants;
+
         struct
         {
             uint8_t* memory;
@@ -1016,42 +1016,42 @@ struct RenderCommand
             RenderPipeline* pipeline;
         } addPipeline;
 
-        struct 
+        struct
         {
-            uint32_t primitiveType; 
-            uint32_t startVertex; 
+            uint32_t primitiveType;
+            uint32_t startVertex;
             uint32_t primitiveCount;
         } drawPrimitive;
 
-        struct 
+        struct
         {
             uint32_t primitiveType;
-            int32_t baseVertexIndex; 
+            int32_t baseVertexIndex;
             uint32_t startIndex;
             uint32_t primCount;
         } drawIndexedPrimitive;
 
-        struct 
+        struct
         {
             uint32_t primitiveType;
-            uint32_t primitiveCount; 
+            uint32_t primitiveCount;
             uint8_t* vertexStreamZeroData;
             uint32_t vertexStreamZeroSize;
             uint32_t vertexStreamZeroStride;
             CsdFilterState csdFilterState;
         } drawPrimitiveUP;
 
-        struct 
+        struct
         {
             GuestVertexDeclaration* vertexDeclaration;
         } setVertexDeclaration;
 
-        struct 
+        struct
         {
             GuestShader* shader;
         } setVertexShader;
 
-        struct 
+        struct
         {
             uint32_t index;
             GuestBuffer* buffer;
@@ -1059,12 +1059,12 @@ struct RenderCommand
             uint32_t stride;
         } setStreamSource;
 
-        struct 
+        struct
         {
             GuestBuffer* buffer;
         } setIndices;
 
-        struct 
+        struct
         {
             GuestShader* shader;
         } setPixelShader;
@@ -1379,7 +1379,7 @@ static void ProcSetRenderState(const RenderCommand& cmd)
     {
         if (g_capabilities.dynamicDepthBias)
             SetDirtyValue(g_dirtyStates.depthBias, g_slopeScaledDepthBias, *reinterpret_cast<float*>(&value));
-        else 
+        else
             SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.slopeScaledDepthBias, *reinterpret_cast<float*>(&value));
 
         break;
@@ -1389,7 +1389,7 @@ static void ProcSetRenderState(const RenderCommand& cmd)
         if (g_capabilities.dynamicDepthBias)
             SetDirtyValue(g_dirtyStates.depthBias, g_depthBias, int32_t(*reinterpret_cast<float*>(&value) * (1 << 24)));
         else
-            SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.depthBias, int32_t(*reinterpret_cast<float*>(&value)* (1 << 24)));
+            SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.depthBias, int32_t(*reinterpret_cast<float*>(&value) * (1 << 24)));
 
         break;
     }
@@ -1817,14 +1817,14 @@ static void BeginCommandList()
 }
 
 template<typename T>
-static void ApplyLowEndDefault(ConfigDef<T> &configDef, T newDefault, bool &changed)
+static void ApplyLowEndDefault(ConfigDef<T>& configDef, T newDefault, bool& changed)
 {
     if (configDef.IsDefaultValue() && !configDef.IsLoadedFromConfig)
     {
         configDef = newDefault;
         changed = true;
     }
-    
+
     configDef.DefaultValue = newDefault;
 }
 
@@ -1837,13 +1837,13 @@ static void ApplyLowEndDefaults()
     ApplyLowEndDefault(Config::ReflectionResolution, EReflectionResolution::Quarter, changed);
     ApplyLowEndDefault(Config::TransparencyAntiAliasing, false, changed);
 
-    if (changed) 
+    if (changed)
     {
         Config::Save();
     }
 }
 
-bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
+bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
 {
     for (uint32_t i = 0; i < 16; i++)
         g_inputSlots[i].index = i;
@@ -1862,7 +1862,7 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
 
     // Attempt to create the possible backends using a vector of function pointers. Whichever succeeds first will be the chosen API.
     using RenderInterfaceFunction = std::unique_ptr<RenderInterface>(void);
-    std::vector<RenderInterfaceFunction *> interfaceFunctions;
+    std::vector<RenderInterfaceFunction*> interfaceFunctions;
 
 #ifdef MARATHON_RECOMP_D3D12
     bool allowVulkanRedirection = true;
@@ -1904,8 +1904,8 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
             g_device = g_interface->createDevice(Config::GraphicsDevice);
             if (g_device != nullptr)
             {
-                const RenderDeviceDescription &deviceDescription = g_device->getDescription();
-                
+                const RenderDeviceDescription& deviceDescription = g_device->getDescription();
+
 #if defined(MARATHON_RECOMP_D3D12)
                 if (interfaceFunction == CreateD3D12Interface)
                 {
@@ -2007,7 +2007,7 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
     }
 
     const RenderSampleCounts colourSampleCount = g_device->getSampleCountsSupported(RenderFormat::R16G16B16A16_FLOAT);
-    const RenderSampleCounts depthSampleCount  = g_device->getSampleCountsSupported(RenderFormat::D32_FLOAT);
+    const RenderSampleCounts depthSampleCount = g_device->getSampleCountsSupported(RenderFormat::D32_FLOAT);
     const RenderSampleCounts commonSampleCount = colourSampleCount & depthSampleCount;
 
     // Disable specific MSAA levels if they are not supported.
@@ -2070,20 +2070,20 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
 
     for (auto& acquireSemaphore : g_acquireSemaphores)
         acquireSemaphore = g_device->createCommandSemaphore();
-    
+
     for (auto& renderSemaphore : g_renderSemaphores)
         renderSemaphore = g_device->createCommandSemaphore();
 
     RenderPipelineLayoutBuilder pipelineLayoutBuilder;
     pipelineLayoutBuilder.begin(false, true);
-    
+
     RenderDescriptorSetBuilder descriptorSetBuilder;
     descriptorSetBuilder.begin();
     descriptorSetBuilder.addTexture(0, TEXTURE_DESCRIPTOR_SIZE);
     descriptorSetBuilder.end(true, TEXTURE_DESCRIPTOR_SIZE);
-    
+
     g_textureDescriptorSet = descriptorSetBuilder.create(g_device.get());
-    
+
     for (size_t i = 0; i < TEXTURE_DESCRIPTOR_NULL_COUNT; i++)
     {
         auto& texture = g_blankTextures[i];
@@ -2136,11 +2136,11 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
     pipelineLayoutBuilder.addDescriptorSet(descriptorSetBuilder);
     pipelineLayoutBuilder.addDescriptorSet(descriptorSetBuilder);
     pipelineLayoutBuilder.addDescriptorSet(descriptorSetBuilder);
-    
+
     descriptorSetBuilder.begin();
     descriptorSetBuilder.addSampler(0, SAMPLER_DESCRIPTOR_SIZE);
     descriptorSetBuilder.end(true, SAMPLER_DESCRIPTOR_SIZE);
-    
+
     g_samplerDescriptorSet = descriptorSetBuilder.create(g_device.get());
     auto& [descriptorIndex, sampler] = g_samplerStates[XXH3_64bits(&g_samplerDescs[0], sizeof(RenderSamplerDesc))];
     descriptorIndex = 1;
@@ -2178,7 +2178,7 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
         pipelineLayoutBuilder.addPushConstant(3, 4, 4, RenderShaderStageFlag::PIXEL); // For copy/resolve shaders.
     }
     pipelineLayoutBuilder.end();
-    
+
     g_pipelineLayout = pipelineLayoutBuilder.create(g_device.get());
 
     g_copyShader = CREATE_SHADER(copy_vs);
@@ -2311,7 +2311,7 @@ static uint32_t getSetAddress(uint32_t base, int index) {
 static uint32_t CreateDevice(uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4, uint32_t a5, be<uint32_t>* a6)
 {
     LOGF_WARNING("{:p} {:p} {:p} {:p} {:p} {:p}\n", reinterpret_cast<void*>(a1), reinterpret_cast<void*>(a2), reinterpret_cast<void*>(a3), reinterpret_cast<void*>(a4), reinterpret_cast<void*>(a5), reinterpret_cast<void*>(a6));
-    g_xdbfTextureCache = std::unordered_map<uint16_t, GuestTexture *>();
+    g_xdbfTextureCache = std::unordered_map<uint16_t, GuestTexture*>();
 
     // for (auto &achievement : g_xdbfWrapper.GetAchievements(XDBF_LANGUAGE_ENGLISH))
     // {
@@ -2340,7 +2340,7 @@ static uint32_t CreateDevice(uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4,
     // Append render state functions to the end of guest function table.
     uint32_t functionOffsetUnimplemented = PPC_CODE_BASE + PPC_CODE_SIZE;
     g_memory.InsertFunction(functionOffsetUnimplemented, HostToGuestFunction<SetRenderStateUnimplemented>);
-    
+
     uint32_t functionOffset = 0x82B79868;
     for (size_t i = 0; i < std::size(device->setRenderStateFunctions); i++) {
         device->setRenderStateFunctions[i] = functionOffsetUnimplemented;
@@ -2349,7 +2349,7 @@ static uint32_t CreateDevice(uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4,
     // InsertFucntion doesn't work, so we have to do this manually in the end
     for (auto& [state, function] : g_setRenderStateFunctions)
     {
-        auto funcOffset = getSetAddress(functionOffset, state/4);
+        auto funcOffset = getSetAddress(functionOffset, state / 4);
         uint32_t addr = __builtin_bswap32(*(uint32_t*)g_memory.Translate(funcOffset));
         printf("state %d of %x is %x\n", state, funcOffset, addr);
         g_memory.InsertFunction(addr, function);
@@ -2368,7 +2368,7 @@ static uint32_t CreateDevice(uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4,
     return 0;
 }
 
-static void DestructResource(GuestResource* resource) 
+static void DestructResource(GuestResource* resource)
 {
     // Needed for hack in CreateSurface (remove if fix it)
     if (resource->type == ResourceType::RenderTarget || resource->type == ResourceType::DepthStencil)
@@ -2395,7 +2395,7 @@ static uint32_t ComputeTexturePitch(GuestTexture* texture)
     return (texture->width * RenderFormatSize(texture->format) + PITCH_ALIGNMENT - 1) & ~(PITCH_ALIGNMENT - 1);
 }
 
-static void LockTextureRect(GuestTexture* texture, uint32_t, GuestLockedRect* lockedRect) 
+static void LockTextureRect(GuestTexture* texture, uint32_t, GuestLockedRect* lockedRect)
 {
     uint32_t pitch = ComputeTexturePitch(texture);
     uint32_t slicePitch = pitch * texture->height;
@@ -2407,7 +2407,7 @@ static void LockTextureRect(GuestTexture* texture, uint32_t, GuestLockedRect* lo
     lockedRect->bits = g_memory.MapVirtual(texture->mappedMemory);
 }
 
-static void UnlockTextureRect(GuestTexture* texture) 
+static void UnlockTextureRect(GuestTexture* texture)
 {
     assert(std::this_thread::get_id() == g_presentThreadId);
 
@@ -2524,17 +2524,17 @@ static void UnlockVertexBuffer(GuestBuffer* buffer)
     UnlockBuffer<uint32_t>(buffer);
 }
 
-static void GetVertexBufferDesc(GuestBuffer* buffer, GuestBufferDesc* desc) 
+static void GetVertexBufferDesc(GuestBuffer* buffer, GuestBufferDesc* desc)
 {
     desc->size = buffer->dataSize;
 }
 
-static void* LockIndexBuffer(GuestBuffer* buffer, uint32_t, uint32_t, uint32_t flags) 
+static void* LockIndexBuffer(GuestBuffer* buffer, uint32_t, uint32_t, uint32_t flags)
 {
     return LockBuffer(buffer, flags);
 }
 
-static void UnlockIndexBuffer(GuestBuffer* buffer) 
+static void UnlockIndexBuffer(GuestBuffer* buffer)
 {
     if (buffer->guestFormat == D3DFMT_INDEX32)
         UnlockBuffer<uint32_t>(buffer);
@@ -2548,7 +2548,7 @@ static void GetIndexBufferDesc(GuestBuffer* buffer, GuestBufferDesc* desc)
     desc->size = buffer->dataSize;
 }
 
-static void GetSurfaceDesc(GuestSurface* surface, GuestSurfaceDesc* desc) 
+static void GetSurfaceDesc(GuestSurface* surface, GuestSurfaceDesc* desc)
 {
     if (surface->width == 0 && surface->height == 0) {
         LOGF_WARNING("{:p} {:d} {:d} \n", reinterpret_cast<void*>(desc), surface->width, surface->height);
@@ -2561,30 +2561,32 @@ static void GetSurfaceDesc(GuestSurface* surface, GuestSurfaceDesc* desc)
     // desc->multiSampleType = 0;
     if (surface->sampleCount == RenderSampleCount::COUNT_1) {
         desc->multiSampleType = 0;
-    } else if (surface->sampleCount == RenderSampleCount::COUNT_2) {
+    }
+    else if (surface->sampleCount == RenderSampleCount::COUNT_2) {
         desc->multiSampleType = 1;
-    } else {
+    }
+    else {
         desc->multiSampleType = 2;
     }
     desc->multiSampleQuality = 0;
     desc->usage = 0;
 }
 
-static void GetVertexDeclaration(GuestVertexDeclaration* vertexDeclaration, GuestVertexElement* vertexElements, be<uint32_t>* count) 
+static void GetVertexDeclaration(GuestVertexDeclaration* vertexDeclaration, GuestVertexElement* vertexElements, be<uint32_t>* count)
 {
     memcpy(vertexElements, vertexDeclaration->vertexElements.get(), vertexDeclaration->vertexElementCount * sizeof(GuestVertexElement));
     *count = vertexDeclaration->vertexElementCount;
 }
 
-static uint32_t HashVertexDeclaration(uint32_t vertexDeclaration) 
+static uint32_t HashVertexDeclaration(uint32_t vertexDeclaration)
 {
     // Vertex declarations are cached on host side, so the pointer itself can be used.
     return vertexDeclaration;
 }
 
-static const char *DeviceTypeName(RenderDeviceType type)
+static const char* DeviceTypeName(RenderDeviceType type)
 {
-    switch (type) 
+    switch (type)
     {
     case RenderDeviceType::INTEGRATED:
         return "Integrated";
@@ -2664,31 +2666,31 @@ static void DrawProfiler()
                 ImGui::TableHeadersRow();
 
                 auto drawPerfRow = [](const char* name, double ms, double msAvg, bool showFPS = false, double fps = 0, double fpsAvg = 0)
-                {
-                    ImGui::TableNextColumn();
-                    ImGui::Text("%s", name);
-                    ImGui::TableNextColumn();
-                    ImGui::Text("%g ms", ms);
-                    ImGui::TableNextColumn();
-                    ImGui::Text("%g ms", msAvg);
-                    ImGui::TableNextColumn();
+                    {
+                        ImGui::TableNextColumn();
+                        ImGui::Text("%s", name);
+                        ImGui::TableNextColumn();
+                        ImGui::Text("%g ms", ms);
+                        ImGui::TableNextColumn();
+                        ImGui::Text("%g ms", msAvg);
+                        ImGui::TableNextColumn();
 
-                    if (showFPS)
-                        ImGui::Text("%g FPS", fps);
+                        if (showFPS)
+                            ImGui::Text("%g FPS", fps);
 
-                    ImGui::TableNextColumn();
+                        ImGui::TableNextColumn();
 
-                    if (showFPS)
-                        ImGui::Text("%g FPS", fpsAvg);
-                };
+                        if (showFPS)
+                            ImGui::Text("%g FPS", fpsAvg);
+                    };
 
                 // -------- Name ---------------- Current Time --------------------------- Average Time -------- Current FPS ----------------------------- Average FPS ---------- //
-                drawPerfRow("Application",        App::s_deltaTime * 1000.0,               applicationAvg, true, 1.0 / App::s_deltaTime,                   1000.0 / applicationAvg);
-                drawPerfRow("GPU Frame",          g_gpuFrameProfiler.value.load(),         gpuFrameAvg,    true, 1000.0 / g_gpuFrameProfiler.value.load(), 1000.0 / gpuFrameAvg   );
-                drawPerfRow("Present",            g_presentProfiler.value.load(),          presentAvg,     true, 1000.0 / g_presentProfiler.value.load(),  1000.0 / presentAvg    );
-                drawPerfRow("Present Wait",       g_presentWaitProfiler.value.load(),      presentWaitAvg                                                                         );
-                drawPerfRow("Frame Fence",        g_frameFenceProfiler.value.load(),       frameFenceAvg                                                                          );
-                drawPerfRow("Swap Chain Acquire", g_swapChainAcquireProfiler.value.load(), swapChainAcquireAvg                                                                    );
+                drawPerfRow("Application", App::s_deltaTime * 1000.0, applicationAvg, true, 1.0 / App::s_deltaTime, 1000.0 / applicationAvg);
+                drawPerfRow("GPU Frame", g_gpuFrameProfiler.value.load(), gpuFrameAvg, true, 1000.0 / g_gpuFrameProfiler.value.load(), 1000.0 / gpuFrameAvg);
+                drawPerfRow("Present", g_presentProfiler.value.load(), presentAvg, true, 1000.0 / g_presentProfiler.value.load(), 1000.0 / presentAvg);
+                drawPerfRow("Present Wait", g_presentWaitProfiler.value.load(), presentWaitAvg);
+                drawPerfRow("Frame Fence", g_frameFenceProfiler.value.load(), frameFenceAvg);
+                drawPerfRow("Swap Chain Acquire", g_swapChainAcquireProfiler.value.load(), swapChainAcquireAvg);
 
                 ImGui::EndTable();
             }
@@ -2728,17 +2730,17 @@ static void DrawProfiler()
 
             switch (g_backend)
             {
-                case Backend::VULKAN:
-                    backend = "Vulkan";
-                    break;
+            case Backend::VULKAN:
+                backend = "Vulkan";
+                break;
 
-                case Backend::D3D12:
-                    backend = "D3D12";
-                    break;
+            case Backend::D3D12:
+                backend = "D3D12";
+                break;
 
-                case Backend::METAL:
-                    backend = "Metal";
-                    break;
+            case Backend::METAL:
+                backend = "Metal";
+                break;
             }
 
             if (ImGui::BeginTable("GPU", 2))
@@ -2937,7 +2939,7 @@ static void DrawImGui()
     }
 }
 
-static void SetFramebuffer(GuestSurface *renderTarget, GuestSurface *depthStencil, bool settingForClear);
+static void SetFramebuffer(GuestSurface* renderTarget, GuestSurface* depthStencil, bool settingForClear);
 
 static void ProcDrawImGui(const RenderCommand& cmd)
 {
@@ -3006,7 +3008,7 @@ static void ProcDrawImGui(const RenderCommand& cmd)
                 {
                 case ImGuiCallback::SetGradient:
                     setPushConstants(&pushConstants.boundsMin, &callbackData->setGradient, sizeof(callbackData->setGradient));
-                    break;       
+                    break;
                 case ImGuiCallback::SetShaderModifier:
                     setPushConstants(&pushConstants.shaderModifier, &callbackData->setShaderModifier, sizeof(callbackData->setShaderModifier));
                     break;
@@ -3015,7 +3017,7 @@ static void ProcDrawImGui(const RenderCommand& cmd)
                     break;
                 case ImGuiCallback::SetScale:
                     setPushConstants(&pushConstants.scale, &callbackData->setScale, sizeof(callbackData->setScale));
-                    break;       
+                    break;
                 case ImGuiCallback::SetMarqueeFade:
                     setPushConstants(&pushConstants.boundsMin, &callbackData->setMarqueeFade, sizeof(callbackData->setMarqueeFade));
                     break;
@@ -3110,7 +3112,7 @@ void Video::WaitOnSwapChain()
 static bool g_shouldPrecompilePipelines;
 static std::atomic<bool> g_executedCommandList;
 
-void Video::Present() 
+void Video::Present()
 {
     g_readyForCommands = false;
 
@@ -3126,7 +3128,7 @@ void Video::Present()
     // All the shaders are available at this point. We can precompile embedded PSOs then.
     if (g_shouldPrecompilePipelines)
     {
-//        EnqueuePipelineTask(PipelineTaskType::PrecompilePipelines, {});
+        //        EnqueuePipelineTask(PipelineTaskType::PrecompilePipelines, {});
         g_shouldPrecompilePipelines = false;
     }
 
@@ -3160,7 +3162,7 @@ void Video::Present()
 
         // Update the GPU profiler with the results from the timestamps of the frame.
         g_queryPools[g_frame]->queryResults();
-        const uint64_t *frameTimestamps = g_queryPools[g_frame]->getResults();
+        const uint64_t* frameTimestamps = g_queryPools[g_frame]->getResults();
         g_gpuFrameProfiler.Set(double(frameTimestamps[1] - frameTimestamps[0]) / 1000000.0);
     }
 
@@ -3217,7 +3219,7 @@ static void SetRootDescriptor(const UploadAllocation& allocation, size_t index)
 }
 
 static void ProcExecuteCommandList(const RenderCommand& cmd)
-{    
+{
     if (g_swapChainValid)
     {
         auto swapChainTexture = g_swapChain->getTexture(g_backBufferIndex);
@@ -3246,11 +3248,11 @@ static void ProcExecuteCommandList(const RenderCommand& cmd)
             constants.viewportWidth = Video::s_viewportWidth;
             constants.viewportHeight = Video::s_viewportHeight;
 
-            auto &framebuffer = g_backBuffer->framebuffers[swapChainTexture];
+            auto& framebuffer = g_backBuffer->framebuffers[swapChainTexture];
             if (!framebuffer)
             {
                 RenderFramebufferDesc desc;
-                desc.colorAttachments = const_cast<const RenderTexture **>(&swapChainTexture);
+                desc.colorAttachments = const_cast<const RenderTexture**>(&swapChainTexture);
                 desc.colorAttachmentsCount = 1;
                 framebuffer = g_device->createFramebuffer(desc);
             }
@@ -3261,7 +3263,7 @@ static void ProcExecuteCommandList(const RenderCommand& cmd)
                 RenderTextureBarrier(swapChainTexture, RenderTextureLayout::COLOR_WRITE)
             };
 
-            auto &commandList = g_commandLists[g_frame];
+            auto& commandList = g_commandLists[g_frame];
             commandList->barriers(RenderBarrierStage::GRAPHICS, srcBarriers, std::size(srcBarriers));
             commandList->setGraphicsPipelineLayout(g_pipelineLayout.get());
             commandList->setPipeline(g_gammaCorrectionPipeline.get());
@@ -3280,15 +3282,15 @@ static void ProcExecuteCommandList(const RenderCommand& cmd)
         }
     }
 
-    auto &commandList = g_commandLists[g_frame];
+    auto& commandList = g_commandLists[g_frame];
     commandList->writeTimestamp(g_queryPools[g_frame].get(), 1);
     commandList->end();
 
     if (g_swapChainValid)
     {
-        const RenderCommandList *commandLists[] = { commandList.get() };
-        RenderCommandSemaphore *waitSemaphores[] = { g_acquireSemaphores[g_frame].get() };
-        RenderCommandSemaphore *signalSemaphores[] = { g_renderSemaphores[g_frame].get() };
+        const RenderCommandList* commandLists[] = { commandList.get() };
+        RenderCommandSemaphore* waitSemaphores[] = { g_acquireSemaphores[g_frame].get() };
+        RenderCommandSemaphore* signalSemaphores[] = { g_renderSemaphores[g_frame].get() };
 
         g_queue->executeCommandLists(
             commandLists, std::size(commandLists),
@@ -3313,13 +3315,13 @@ static void ProcBeginCommandList(const RenderCommand& cmd)
     BeginCommandList();
 }
 
-static GuestSurface* GetBackBuffer() 
+static GuestSurface* GetBackBuffer()
 {
     g_backBuffer->AddRef();
     return g_backBuffer;
 }
 
-static GuestSurface* GetDepthStencil() 
+static GuestSurface* GetDepthStencil()
 {
     g_depthStencil->AddRef();
     return g_depthStencil;
@@ -3333,26 +3335,26 @@ void Video::ComputeViewportDimensions()
 
     switch (Config::AspectRatio)
     {
-        case EAspectRatio::Original:
+    case EAspectRatio::Original:
+    {
+        if (aspectRatio > WIDE_ASPECT_RATIO)
         {
-            if (aspectRatio > WIDE_ASPECT_RATIO)
-            {
-                s_viewportWidth = height * 16 / 9;
-                s_viewportHeight = height;
-            }
-            else
-            {
-                s_viewportWidth = width;
-                s_viewportHeight = width * 9 / 16;
-            }
-
-            break;
+            s_viewportWidth = height * 16 / 9;
+            s_viewportHeight = height;
+        }
+        else
+        {
+            s_viewportWidth = width;
+            s_viewportHeight = width * 9 / 16;
         }
 
-        default:
-            s_viewportWidth = width;
-            s_viewportHeight = height;
-            break;
+        break;
+    }
+
+    default:
+        s_viewportWidth = width;
+        s_viewportHeight = height;
+        break;
     }
 
     AspectRatioPatches::ComputeOffsets();
@@ -3400,7 +3402,7 @@ static RenderFormat ConvertFormat(uint32_t format)
     }
 }
 
-static GuestTexture* CreateTexture(uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, uint32_t usage, uint32_t format, uint32_t pool, uint32_t type) 
+static GuestTexture* CreateTexture(uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, uint32_t usage, uint32_t format, uint32_t pool, uint32_t type)
 {
     ResourceType resourceType;
 
@@ -3429,7 +3431,8 @@ static GuestTexture* CreateTexture(uint32_t width, uint32_t height, uint32_t dep
     if (texture->type == ResourceType::ArrayTexture) {
         desc.arraySize = depth;
         desc.depth = 1;
-    } else {
+    }
+    else {
         desc.depth = depth;
         desc.arraySize = 1;
     }
@@ -3474,7 +3477,7 @@ static GuestTexture* CreateTexture(uint32_t width, uint32_t height, uint32_t dep
     texture->descriptorIndex = g_textureDescriptorAllocator.allocate();
 
     g_textureDescriptorSet->setTexture(texture->descriptorIndex, texture->texture, RenderTextureLayout::SHADER_READ, texture->textureView.get());
-   
+
 #ifdef _DEBUG 
     texture->texture->setName(fmt::format("Texture {:X}", g_memory.MapVirtual(texture)));
 #endif
@@ -3487,7 +3490,7 @@ static RenderHeapType GetBufferHeapType()
     return g_capabilities.gpuUploadHeap ? RenderHeapType::GPU_UPLOAD : RenderHeapType::DEFAULT;
 }
 
-static GuestBuffer* CreateVertexBuffer(uint32_t length) 
+static GuestBuffer* CreateVertexBuffer(uint32_t length)
 {
     auto buffer = g_userHeap.AllocPhysical<GuestBuffer>(ResourceType::VertexBuffer);
     buffer->buffer = g_device->createBuffer(RenderBufferDesc::VertexBuffer(length, GetBufferHeapType(), RenderBufferFlag::INDEX));
@@ -3515,7 +3518,7 @@ static std::vector<std::pair<GuestSurface*, uint32_t>> g_surfaceCache;
 
 // TODO: Singleplayer (possibly) uses the same memory location in EDRAM for HDR and FB0 surfaces,
 // so we just remember who was created first and use that instead of creating a new one.
-static GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t format, uint32_t multiSample, GuestSurfaceCreateParams* params) 
+static GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t format, uint32_t multiSample, GuestSurfaceCreateParams* params)
 {
     GuestSurface* surface = nullptr;
     uint32_t baseValue = params ? params->base.get() : -1;
@@ -3545,7 +3548,8 @@ static GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t for
         // desc.multisampling.sampleCount = multiSample != 0 && Config::AntiAliasing != EAntiAliasing::None ? int32_t(Config::AntiAliasing.Value) : RenderSampleCount::COUNT_1;
         if (multiSample == 0) {
             desc.multisampling.sampleCount = RenderSampleCount::COUNT_1;
-        } else {
+        }
+        else {
             desc.multisampling.sampleCount = multiSample == 1 ? RenderSampleCount::COUNT_2 : RenderSampleCount::COUNT_4;
         }
         desc.format = ConvertFormat(format);
@@ -3570,9 +3574,9 @@ static GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t for
         surface->descriptorIndex = g_textureDescriptorAllocator.allocate();
         g_textureDescriptorSet->setTexture(surface->descriptorIndex, surface->textureHolder.get(), RenderTextureLayout::SHADER_READ, surface->textureView.get());
 
-    #ifdef _DEBUG 
+#ifdef _DEBUG 
         surface->texture->setName(fmt::format("{} {:X}", desc.flags & RenderTextureFlag::RENDER_TARGET ? "Render Target" : "Depth Stencil", g_memory.MapVirtual(surface)));
-    #endif
+#endif
         if (params) {
             surface->wasCached = true;
             g_surfaceCache.emplace_back(surface, baseValue);
@@ -3688,7 +3692,7 @@ static void SetDefaultViewport(GuestDevice* device, GuestSurface* surface)
     }
 }
 
-static void SetRenderTarget(GuestDevice* device, uint32_t index, GuestSurface* renderTarget) 
+static void SetRenderTarget(GuestDevice* device, uint32_t index, GuestSurface* renderTarget)
 {
     if (index == 0)
     {
@@ -3717,7 +3721,7 @@ static void ProcSetRenderTarget(const RenderCommand& cmd)
     SetAlphaTestMode((g_pipelineState.specConstants & (SPEC_CONSTANT_ALPHA_TEST | SPEC_CONSTANT_ALPHA_TO_COVERAGE)) != 0);
 }
 
-static void SetDepthStencilSurface(GuestDevice* device, GuestSurface* depthStencil) 
+static void SetDepthStencilSurface(GuestDevice* device, GuestSurface* depthStencil)
 {
     RenderCommand cmd;
     cmd.type = RenderCommandType::SetDepthStencilSurface;
@@ -4129,11 +4133,11 @@ static void ProcSetViewport(const RenderCommand& cmd)
     SetDirtyValue<float>(g_dirtyStates.viewport, g_viewport.height, args.height);
     SetDirtyValue<float>(g_dirtyStates.viewport, g_viewport.minDepth, args.minDepth);
     SetDirtyValue<float>(g_dirtyStates.viewport, g_viewport.maxDepth, args.maxDepth);
-    
+
     uint32_t specConstants = g_pipelineState.specConstants;
     if (args.minDepth > args.maxDepth)
         specConstants |= SPEC_CONSTANT_REVERSE_Z;
-    else 
+    else
         specConstants &= ~SPEC_CONSTANT_REVERSE_Z;
 
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.specConstants, specConstants);
@@ -4141,7 +4145,7 @@ static void ProcSetViewport(const RenderCommand& cmd)
     g_dirtyStates.scissorRect |= g_dirtyStates.viewport;
 }
 
-static void SetTexture(GuestDevice* device, uint32_t index, GuestTexture* texture) 
+static void SetTexture(GuestDevice* device, uint32_t index, GuestTexture* texture)
 {
     // printf("SetTexture: %x %d %x\n", device, index, texture);
 
@@ -4201,10 +4205,10 @@ static void ProcSetTexture(const RenderCommand& cmd)
             shouldSetTexture = false;
         }
     }
-    
+
     if (shouldSetTexture)
         SetTextureInRenderThread(args.index, args.texture);
-    
+
     g_textures[args.index] = args.texture;
 }
 
@@ -4232,7 +4236,7 @@ static void ProcSetScissorRect(const RenderCommand& cmd)
 static RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specConstants)
 {
     if (g_backend != Backend::D3D12 ||
-        guestShader->shaderCacheEntry == nullptr || 
+        guestShader->shaderCacheEntry == nullptr ||
         guestShader->shaderCacheEntry->specConstantsMask == 0)
     {
         std::lock_guard lock(guestShader->mutex);
@@ -4255,7 +4259,7 @@ static RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specCons
             }
             case Backend::D3D12:
             {
-                guestShader->shader = g_device->createShader(g_shaderCache.get() + guestShader->shaderCacheEntry->dxilOffset, 
+                guestShader->shader = g_device->createShader(g_shaderCache.get() + guestShader->shaderCacheEntry->dxilOffset,
                     guestShader->shaderCacheEntry->dxilSize, "shaderMain", RenderShaderFormat::DXIL);
                 break;
             }
@@ -4397,7 +4401,7 @@ static RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specCons
 #ifdef _DEBUG
             shader->setName(fmt::format("{}:{:x}", guestShader->shaderCacheEntry->filename, guestShader->shaderCacheEntry->hash));
 #endif
-        }        
+        }
     }
 #endif
 
@@ -4501,7 +4505,8 @@ static std::unique_ptr<RenderPipeline> CreateGraphicsPipeline(const PipelineStat
         desc.stencilBackFace.failOp = pipelineState.stencilFailCCW;
         desc.stencilBackFace.depthFailOp = pipelineState.stencilZFailCCW;
         desc.stencilBackFace.passOp = pipelineState.stencilPassCCW;
-    } else {
+    }
+    else {
         desc.stencilBackFace = desc.stencilFrontFace;
     }
     desc.slopeScaledDepthBias = pipelineState.slopeScaledDepthBias;
@@ -4525,37 +4530,37 @@ static std::unique_ptr<RenderPipeline> CreateGraphicsPipeline(const PipelineStat
     desc.alphaToCoverageEnabled = pipelineState.enableAlphaToCoverage;
     desc.inputElements = pipelineState.vertexDeclaration->inputElements.get();
     desc.inputElementsCount = pipelineState.vertexDeclaration->inputElementCount;
-    
+
     RenderSpecConstant specConstant{};
     specConstant.value = pipelineState.specConstants;
-    
+
     if (pipelineState.specConstants != 0)
     {
         desc.specConstants = &specConstant;
         desc.specConstantsCount = 1;
     }
-    
+
     RenderInputSlot inputSlots[16]{};
     uint32_t inputSlotIndices[16]{};
     uint32_t inputSlotCount = 0;
-    
+
     for (size_t i = 0; i < pipelineState.vertexDeclaration->inputElementCount; i++)
     {
         auto& inputElement = pipelineState.vertexDeclaration->inputElements[i];
         auto& inputSlotIndex = inputSlotIndices[inputElement.slotIndex];
-    
+
         if (inputSlotIndex == NULL)
             inputSlotIndex = ++inputSlotCount;
-    
+
         auto& inputSlot = inputSlots[inputSlotIndex - 1];
         inputSlot.index = inputElement.slotIndex;
         inputSlot.stride = pipelineState.vertexStrides[inputElement.slotIndex];
         inputSlot.classification = RenderInputSlotClassification::PER_VERTEX_DATA;
     }
-    
+
     desc.inputSlots = inputSlots;
     desc.inputSlotsCount = inputSlotCount;
-    
+
     auto pipeline = g_device->createGraphicsPipeline(desc);
 
 #ifdef ASYNC_PSO_DEBUG
@@ -4585,7 +4590,7 @@ static RenderPipeline* CreateGraphicsPipelineInRenderThread(PipelineState pipeli
 
         pipeline->setName(fmt::format("{} {} {} {:X}", loading ? "ASYNC" : "",
             pipelineState.vertexShader->name, pipelineState.pixelShader != nullptr ? pipelineState.pixelShader->name : "<none>", hash));
-        
+
         if (!loading)
         {
             std::lock_guard lock(g_debugMutex);
@@ -4683,7 +4688,7 @@ static RenderPipeline* CreateGraphicsPipelineInRenderThread(PipelineState pipeli
         g_pipelineStatesToCache.emplace(hash, pipelineState);
 #endif
     }
-    
+
     return pipeline.get();
 }
 
@@ -5037,7 +5042,7 @@ static void SetPrimitiveType(uint32_t primitiveType)
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.primitiveTopology, ConvertPrimitiveType(primitiveType));
 }
 
-static void DrawPrimitive(GuestDevice* device, uint32_t primitiveType, uint32_t startVertex, uint32_t primitiveCount) 
+static void DrawPrimitive(GuestDevice* device, uint32_t primitiveType, uint32_t startVertex, uint32_t primitiveCount)
 {
     LocalRenderCommandQueue queue;
     FlushRenderStateForMainThread(device, queue);
@@ -5101,7 +5106,7 @@ static void DrawPrimitiveUP(GuestDevice* device, uint32_t primitiveType, uint32_
     cmd.drawPrimitiveUP.vertexStreamZeroSize = primitiveCount * vertexStreamZeroStride;
     cmd.drawPrimitiveUP.vertexStreamZeroStride = vertexStreamZeroStride;
     cmd.drawPrimitiveUP.csdFilterState = g_csdFilterState;
-    
+
     queue.submit();
 }
 
@@ -5227,7 +5232,7 @@ static RenderFormat ConvertDeclType(uint32_t type)
     }
 }
 
-static GuestVertexDeclaration* CreateVertexDeclarationWithoutAddRef(GuestVertexElement* vertexElements) 
+static GuestVertexDeclaration* CreateVertexDeclarationWithoutAddRef(GuestVertexElement* vertexElements)
 {
     size_t vertexElementCount = 0;
     auto vertexElement = vertexElements;
@@ -5466,7 +5471,7 @@ static GuestVertexDeclaration* CreateVertexDeclaration(GuestVertexElement* verte
     return vertexDeclaration;
 }
 
-static void SetVertexDeclaration(GuestDevice* device, GuestVertexDeclaration* vertexDeclaration) 
+static void SetVertexDeclaration(GuestDevice* device, GuestVertexDeclaration* vertexDeclaration)
 {
     RenderCommand cmd;
     cmd.type = RenderCommandType::SetVertexDeclaration;
@@ -5556,7 +5561,7 @@ static GuestShader* CreateShader(const be<uint32_t>* function, ResourceType reso
     return shader;
 }
 
-static GuestShader* CreateVertexShader(const be<uint32_t>* function) 
+static GuestShader* CreateVertexShader(const be<uint32_t>* function)
 {
     return CreateShader(function, ResourceType::VertexShader);
 }
@@ -5574,7 +5579,7 @@ static void ProcSetVertexShader(const RenderCommand& cmd)
     GuestShader* shader = cmd.setVertexShader.shader;
 
     if (shader != nullptr &&
-    shader->shaderCacheEntry != nullptr)
+        shader->shaderCacheEntry != nullptr)
     {
         if (shader->shaderCacheEntry->hash == 0x3687D038CE7D0BEA || shader->shaderCacheEntry->hash == 0xB4DA7A442DBB16CC)
         {
@@ -5586,7 +5591,7 @@ static void ProcSetVertexShader(const RenderCommand& cmd)
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.vertexShader, shader);
 }
 
-static void SetStreamSource(GuestDevice* device, uint32_t index, GuestBuffer* buffer, uint32_t offset, uint32_t stride) 
+static void SetStreamSource(GuestDevice* device, uint32_t index, GuestBuffer* buffer, uint32_t offset, uint32_t stride)
 {
     RenderCommand cmd;
     cmd.type = RenderCommandType::SetStreamSource;
@@ -5616,7 +5621,7 @@ static void ProcSetStreamSource(const RenderCommand& cmd)
     }
 }
 
-static void SetIndices(GuestDevice* device, GuestBuffer* buffer) 
+static void SetIndices(GuestDevice* device, GuestBuffer* buffer)
 {
     RenderCommand cmd;
     cmd.type = RenderCommandType::SetIndices;
@@ -5832,9 +5837,11 @@ struct BEString
         uint32_t len = size.get();
         if (len == 0) {
             return alval;
-        } else if (len < 16) {
+        }
+        else if (len < 16) {
             return bx._Buf;
-        } else {
+        }
+        else {
             return reinterpret_cast<const char*>(bx._Ptr.get());
         }
     }
@@ -5859,7 +5866,7 @@ struct GuestMyTexture
 
 static RenderTextureDimension ConvertTextureDimension(ddspp::TextureType type)
 {
-    switch (type) 
+    switch (type)
     {
     case ddspp::Texture1D:
         return RenderTextureDimension::TEXTURE_1D;
@@ -5892,7 +5899,7 @@ static RenderTextureViewDimension ConvertTextureViewDimension(ddspp::TextureType
     }
 }
 
-static RenderFormat ConvertDXGIFormat(ddspp::DXGIFormat format) 
+static RenderFormat ConvertDXGIFormat(ddspp::DXGIFormat format)
 {
     switch (format)
     {
@@ -5945,7 +5952,7 @@ static RenderFormat ConvertDXGIFormat(ddspp::DXGIFormat format)
     case ddspp::B8G8R8A8_UNORM:
         return RenderFormat::B8G8R8A8_UNORM;
     case ddspp::B8G8R8X8_UNORM:
-        return RenderFormat::B8G8R8A8_UNORM;   
+        return RenderFormat::B8G8R8A8_UNORM;
     case ddspp::R16G16_TYPELESS:
         return RenderFormat::R16G16_TYPELESS;
     case ddspp::R16G16_FLOAT:
@@ -6055,7 +6062,7 @@ static RenderFormat ConvertDXGIFormat(ddspp::DXGIFormat format)
 static bool LoadTexture(GuestTexture& texture, const uint8_t* data, size_t dataSize, RenderComponentMapping componentMapping)
 {
     ddspp::Descriptor ddsDesc;
-    if (ddspp::decode_header((unsigned char *)(data), ddsDesc) != ddspp::Error)
+    if (ddspp::decode_header((unsigned char*)(data), ddsDesc) != ddspp::Error)
     {
         RenderTextureDesc desc;
         desc.dimension = ConvertTextureDimension(ddsDesc.type);
@@ -6242,13 +6249,13 @@ static void DiffPatchTexture(GuestTexture& texture, uint8_t* data, uint32_t data
     auto header = reinterpret_cast<BlockCompressionDiffPatchHeader*>(g_buttonBcDiff.get());
     auto entries = reinterpret_cast<BlockCompressionDiffPatchEntry*>(g_buttonBcDiff.get() + header->entriesOffset);
     auto end = entries + header->entryCount;
-    
+
     auto hash = XXH3_64bits(data, dataSize);
 
     auto findResult = std::lower_bound(entries, end, hash, [](BlockCompressionDiffPatchEntry& lhs, XXH64_hash_t rhs)
-    {
-        return lhs.hash < rhs;
-    });
+        {
+            return lhs.hash < rhs;
+        });
 
     if (findResult != end && findResult->hash == hash)
     {
@@ -6444,38 +6451,38 @@ static void PipelineCompilerThread()
 
     std::unique_ptr<GuestThreadContext> ctx;
 
-//    while (true)
-//    {
-//        PipelineStateQueueItem queueItem;
-//        g_pipelineStateQueue.wait_dequeue(queueItem);
-//
-//        if (ctx == nullptr)
-//            ctx = std::make_unique<GuestThreadContext>(0);
-//
-//#ifdef _WIN32
-//        int newThreadPriority = threadPriority;
-//
-//        bool loading = *SWA::SGlobals::ms_IsLoading;
-//        if (loading)
-//            newThreadPriority = THREAD_PRIORITY_HIGHEST;
-//        else
-//            newThreadPriority = THREAD_PRIORITY_LOWEST;
-//
-//        if (newThreadPriority != threadPriority)
-//        {
-//            SetThreadPriority(GetCurrentThread(), newThreadPriority);
-//            threadPriority = newThreadPriority;
-//        }
-//#endif
-//
-//        CompilePipeline(queueItem.pipelineHash, queueItem.pipelineState
-//#ifdef ASYNC_PSO_DEBUG
-//            , queueItem.pipelineName.c_str()
-//#endif
-//        );
-//
-//        std::this_thread::yield();
-//    }
+    //    while (true)
+    //    {
+    //        PipelineStateQueueItem queueItem;
+    //        g_pipelineStateQueue.wait_dequeue(queueItem);
+    //
+    //        if (ctx == nullptr)
+    //            ctx = std::make_unique<GuestThreadContext>(0);
+    //
+    //#ifdef _WIN32
+    //        int newThreadPriority = threadPriority;
+    //
+    //        bool loading = *SWA::SGlobals::ms_IsLoading;
+    //        if (loading)
+    //            newThreadPriority = THREAD_PRIORITY_HIGHEST;
+    //        else
+    //            newThreadPriority = THREAD_PRIORITY_LOWEST;
+    //
+    //        if (newThreadPriority != threadPriority)
+    //        {
+    //            SetThreadPriority(GetCurrentThread(), newThreadPriority);
+    //            threadPriority = newThreadPriority;
+    //        }
+    //#endif
+    //
+    //        CompilePipeline(queueItem.pipelineHash, queueItem.pipelineState
+    //#ifdef ASYNC_PSO_DEBUG
+    //            , queueItem.pipelineName.c_str()
+    //#endif
+    //        );
+    //
+    //        std::this_thread::yield();
+    //    }
 }
 
 static std::vector<std::unique_ptr<std::thread>> g_pipelineCompilerThreads = []()
@@ -6497,8 +6504,8 @@ static constexpr uint32_t PARTICLE_MATERIAL_VFTABLE = 0x8211F198;
 // If nothing was compiled, the local "token" variable will get destructed with RAII instead.
 struct PipelineTaskTokenPair
 {
-//    PipelineTaskToken token;
-//    std::shared_ptr<PipelineTaskToken> sharedToken;
+    //    PipelineTaskToken token;
+    //    std::shared_ptr<PipelineTaskToken> sharedToken;
 };
 
 // Having this separate, because I don't want to lock a mutex in the render thread before
@@ -6581,7 +6588,7 @@ struct Mesh
     uint32_t vertexSize{};
     uint32_t morphTargetVertexSize{};
     GuestVertexDeclaration* vertexDeclaration{};
-//    Hedgehog::Mirage::CMaterialData* material{};
+    //    Hedgehog::Mirage::CMaterialData* material{};
     MeshLayer layer{};
     bool morphModel{};
 };
@@ -7241,13 +7248,13 @@ static bool CheckMadeAll(const T& modelData)
         {
             if (!CheckMadeAll(mesh.get()))
                 return false;
-        }     
+        }
 
         for (auto& mesh : meshGroup->m_TransparentMeshes)
         {
             if (!CheckMadeAll(mesh.get()))
                 return false;
-        }    
+        }
 
         for (auto& mesh : meshGroup->m_PunchThroughMeshes)
         {
@@ -7570,7 +7577,7 @@ static bool CheckMadeAll(const T& modelData)
 class SDLEventListenerForPSOCaching : public SDLEventListener
 {
 public:
-    bool OnSDLEvent(SDL_Event* event) override 
+    bool OnSDLEvent(SDL_Event* event) override
     {
         if (event->type != SDL_QUIT)
             return false;
@@ -7735,14 +7742,14 @@ void VideoConfigValueChangedCallback(IConfigDef* config)
 
     if (g_needsResize)
         Video::ComputeViewportDimensions();
-        
+
     // Config options that require pipeline recompilation
     bool shouldRecompile =
         config == &Config::AntiAliasing ||
         config == &Config::TransparencyAntiAliasing;
 
-//    if (shouldRecompile)
-//        EnqueuePipelineTask(PipelineTaskType::RecompilePipelines, {});
+    //    if (shouldRecompile)
+    //        EnqueuePipelineTask(PipelineTaskType::RecompilePipelines, {});
 }
 
 // There is a bug on AMD where restart indices cause incorrect culling and prevent some triangles from being rendered.
@@ -7767,7 +7774,7 @@ static void ConvertToDegenerateTriangles(uint16_t* indices, uint32_t indexCount,
             stripStart = true;
             stripSize = 0;
         }
-        else 
+        else
         {
             if (stripStart && newIndexCount != 0)
             {

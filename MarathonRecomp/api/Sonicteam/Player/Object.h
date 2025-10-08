@@ -9,10 +9,13 @@
 #include <Sonicteam/Player/RootFrame.h>
 #include <Sonicteam/Player/IPostureControl.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
+#include <Sonicteam/Package.h>
 #include <stdx/vector.h>
 
 namespace Sonicteam::Player
 {
+    class AnimationScript;
+
     class Object : public Actor
     {
     public:
@@ -44,10 +47,10 @@ namespace Sonicteam::Player
         bool m_IsAmigo;
         MARATHON_INSERT_PADDING(1);
         SoX::RefSharedPointer<RootFrame> m_spRootFrame;
-        SoX::RefSharedPointer<> m_spPackageBinary;
+        SoX::RefSharedPointer<Package> m_spPackageBinary;
         boost::shared_ptr<void> m_spModel;
         boost::shared_ptr<IPostureControl> m_spPostureControl;
-        boost::shared_ptr<State::Machine2> m_spStateMachine;
+        boost::shared_ptr<State::IMachine> m_spStateMachine;
         boost::shared_ptr<void> m_spGravity;
         boost::shared_ptr<void> m_spImpulse;
         be<uint32_t> m_SetupModuleIndexPrefix;
@@ -59,13 +62,25 @@ namespace Sonicteam::Player
         be<float> m_DeltaTime;
         MARATHON_INSERT_PADDING(0x48);
         stdx::vector<EquipFlags> m_vEquipFlags;
-        stdx::string m_Name;
+        stdx::string m_AttachPoint;
         MARATHON_INSERT_PADDING(0x110);
 
         template <typename T = IGauge>
         T* GetGauge()
         {
             return (T*)m_spGauge.get();
+        }
+
+        template <typename T = IGauge>
+        T* GetModel()
+        {
+            return (T*)m_spModel.get();
+        }
+
+        template <typename T = State::Machine2>
+        T* GetStateMachine()
+        {
+            return static_cast<T*>(m_spStateMachine.get());
         }
 
         template <typename T = IPlugIn>
@@ -90,7 +105,7 @@ namespace Sonicteam::Player
             auto playerIndex = pGame->PlayerActorIDToIndex(m_ActorID);
             auto padID = pDoc->m_aPadIDs[playerIndex];
 
-            return pDoc->m_vspInputManager[padID].get();
+            return pDoc->m_vspInputManagers[padID].get();
         }
     };
 
@@ -126,6 +141,6 @@ namespace Sonicteam::Player
     MARATHON_ASSERT_OFFSETOF(Object, m_vspPlugins, 0x114);
     MARATHON_ASSERT_OFFSETOF(Object, m_DeltaTime, 0x17C);
     MARATHON_ASSERT_OFFSETOF(Object, m_vEquipFlags, 0x1C8);
-    MARATHON_ASSERT_OFFSETOF(Object, m_Name, 0x1D8);
+    MARATHON_ASSERT_OFFSETOF(Object, m_AttachPoint, 0x1D8);
     MARATHON_ASSERT_SIZEOF(Object, 0x310);
 }
