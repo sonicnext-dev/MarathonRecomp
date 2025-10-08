@@ -47,7 +47,7 @@ namespace Sonicteam::Player
         SoX::RefSharedPointer<> m_spPackageBinary;
         boost::shared_ptr<void> m_spModel;
         boost::shared_ptr<IPostureControl> m_spPostureControl;
-        boost::shared_ptr<State::Machine2> m_spStateMachine;
+        boost::shared_ptr<State::IMachine> m_spStateMachine;
         boost::shared_ptr<void> m_spGravity;
         boost::shared_ptr<void> m_spImpulse;
         be<uint32_t> m_SetupModuleIndexPrefix;
@@ -66,6 +66,12 @@ namespace Sonicteam::Player
         T* GetGauge()
         {
             return (T*)m_spGauge.get();
+        }
+
+        template <typename T = State::Machine2>
+        T* GetStateMachine()
+        {
+            return static_cast<T*>(m_spStateMachine.get());
         }
 
         template <typename T = IPlugIn>
@@ -90,7 +96,7 @@ namespace Sonicteam::Player
             auto playerIndex = pGame->PlayerActorIDToIndex(m_ActorID);
             auto padID = pDoc->m_aPadIDs[playerIndex];
 
-            return pDoc->m_vspInputManager[padID].get();
+            return pDoc->m_vspInputManagers[padID].get();
         }
     };
 
