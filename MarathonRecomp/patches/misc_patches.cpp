@@ -43,8 +43,8 @@ void SetLifeBarAnimation(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5, PPCR
 
     // Redirect "life_ber_anime" to "life_bar_anime", as they
     // actually spelt "bar" correctly in the tag XNCP scene names...
-    if ((pCsdObject->m_pCsdResource->m_FilePath == "sprite/tagdisplay_1p" ||
-        pCsdObject->m_pCsdResource->m_FilePath == "sprite/tagdisplay_2p") &&
+    if ((pCsdObject->m_pCsdResource->m_MgrResourceName == "sprite/tagdisplay_1p" ||
+        pCsdObject->m_pCsdResource->m_MgrResourceName == "sprite/tagdisplay_2p") &&
         strcmp(pSceneName, "life_ber_anime") == 0)
     {
         r4.u32 = g_memory.MapVirtual(s_lifeBarSceneName);
@@ -92,12 +92,10 @@ void Load2PDisplayMidAsmHook() {}
 
 void PostureDisableEdgeGrabLeftover(PPCRegister& posture)
 {
-    if (!Config::DisableEdgeGrabLeftover)
+    if (!Config::EnablePostureImprovements)
         return;
 
     auto base = g_memory.base;
-
-    *(volatile uint8_t*)(base + (posture.u32 + 0x3C0)) = 1;
 }
 
 void PedestrianAnimationLOD(PPCRegister& val)

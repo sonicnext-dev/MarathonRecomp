@@ -8,8 +8,11 @@ namespace Sonicteam::Player::State
     class CommonFall : public CommonObject
     {
     public:
-        MARATHON_INSERT_PADDING(8);
+        be<float> m_FallTime;
+        bool m_IsRunBorder;
     };
 
+    MARATHON_ASSERT_OFFSETOF(CommonFall, m_FallTime, 0xC);
+    MARATHON_ASSERT_OFFSETOF(CommonFall, m_IsRunBorder, 0x10);
     MARATHON_ASSERT_SIZEOF(CommonFall, 0x14);
 }

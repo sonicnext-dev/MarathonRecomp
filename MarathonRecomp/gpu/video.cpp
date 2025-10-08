@@ -5195,14 +5195,14 @@ static RenderFormat ConvertDeclType(uint32_t type)
     case D3DDECLTYPE_D3DCOLOR:
         return RenderFormat::B8G8R8A8_UNORM;
     case D3DDECLTYPE_UBYTE4:
-    case D3DDECLTYPE_UBYTE4_2:
+    case D3DDECLTYPE_BYTE4:
         return RenderFormat::R8G8B8A8_UINT;
     case D3DDECLTYPE_SHORT2:
         return RenderFormat::R16G16_SINT;
     case D3DDECLTYPE_SHORT4:
         return RenderFormat::R16G16B16A16_SINT;
     case D3DDECLTYPE_UBYTE4N:
-    case D3DDECLTYPE_UBYTE4N_2:
+    case D3DDECLTYPE_BYTE4N:
         return RenderFormat::R8G8B8A8_UNORM;
     case D3DDECLTYPE_SHORT2N:
         return RenderFormat::R16G16_SNORM;
@@ -5214,8 +5214,8 @@ static RenderFormat ConvertDeclType(uint32_t type)
         return RenderFormat::R16G16B16A16_UNORM;
     case D3DDECLTYPE_UINT1:
         return RenderFormat::R32_UINT;
-    case D3DDECLTYPE_DEC3N_2:
-    case D3DDECLTYPE_DEC3N_3:
+    case D3DDECLTYPE_HEND3N:
+    case D3DDECLTYPE_HEND3:
         return RenderFormat::R32_UINT;
     case D3DDECLTYPE_FLOAT16_2:
         return RenderFormat::R16G16_FLOAT;

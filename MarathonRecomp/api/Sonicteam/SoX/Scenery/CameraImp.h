@@ -30,7 +30,7 @@ namespace Sonicteam::SoX::Scenery
             MARATHON_INSERT_PADDING(8);
         };
 
-        stdx::string m_Name;
+        stdx::string m_AttachPoint;
         be<float> m_FOV;
         be<float> m_AspectRatioWidth;
         be<float> m_AspectRatioHeight;
@@ -54,7 +54,7 @@ namespace Sonicteam::SoX::Scenery
     MARATHON_ASSERT_OFFSETOF(CameraImp::frameObserver, m_pMyTransforms, 0x104);
     MARATHON_ASSERT_SIZEOF(CameraImp::frameObserver, 0x110);
 
-    MARATHON_ASSERT_OFFSETOF(CameraImp, m_Name, 0x04);
+    MARATHON_ASSERT_OFFSETOF(CameraImp, m_AttachPoint, 0x04);
     MARATHON_ASSERT_OFFSETOF(CameraImp, m_FOV, 0x20);
     MARATHON_ASSERT_OFFSETOF(CameraImp, m_AspectRatioWidth, 0x24);
     MARATHON_ASSERT_OFFSETOF(CameraImp, m_AspectRatioHeight, 0x28);

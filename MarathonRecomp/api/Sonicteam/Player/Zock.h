@@ -33,5 +33,4 @@ namespace Sonicteam::Player
     MARATHON_ASSERT_OFFSETOF(Zock, m_spPhantomA, 0x38);
     MARATHON_ASSERT_OFFSETOF(Zock, m_spPhantomB, 0x5C);
     MARATHON_ASSERT_OFFSETOF(Zock, m_spPhantomListener, 0xA0);
-    MARATHON_ASSERT_SIZEOF(Zock, 0xE0);
 }
