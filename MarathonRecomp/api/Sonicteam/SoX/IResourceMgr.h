@@ -1,21 +1,49 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/SoX/IResource.h>
 
 namespace Sonicteam::SoX
 {
+    // Different for each implementation.
+    struct IResourceMgrCreationParams;
+
     class IResourceMgr
     {
     public:
         struct Vftable
         {
             be<uint32_t> fpDestroy;
-            be<uint32_t> fpMakeResource;
-            MARATHON_INSERT_PADDING(4);
+            be<uint32_t> fpCreateResource;
+            be<uint32_t> fpGetPath;
+            MARATHON_INSERT_PADDING(8);
         };
 
         xpointer<Vftable> m_pVftable;
-        MARATHON_INSERT_PADDING(0x0C);
+        be<uint32_t> m_MgrIndex;
+        bool m_IsInResourceManager;
+        bool m_Field9;
+        MARATHON_INSERT_PADDING(2);
+        be<uint32_t> m_FieldC;
+
+        void* Destroy(uint32_t flag)
+        {
+            return GuestToHostFunction<void*>(m_pVftable->fpDestroy, this, flag);
+        }
+
+        Sonicteam::SoX::IResource* CreateResource(IResourceMgrCreationParams& param)
+        {
+            return GuestToHostFunction<Sonicteam::SoX::IResource*>(m_pVftable->fpCreateResource, this, &param);
+        }
+
+        stdx::string GetPath(stdx::string* fileName)
+        {
+            guest_stack_var<stdx::string> out{};
+
+            GuestToHostFunction<void>(m_pVftable->fpGetPath, out.get(), this, fileName);
+
+            return *out;
+        }
     };
 
     MARATHON_ASSERT_OFFSETOF(IResourceMgr, m_pVftable, 0x00);

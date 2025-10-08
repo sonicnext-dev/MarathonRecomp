@@ -10,6 +10,7 @@
 #include <user/config.h>
 #include <user/paths.h>
 #include <user/registry.h>
+#include <magic_enum/magic_enum.hpp>
 
 static std::thread::id g_mainThreadId = std::this_thread::get_id();
 
@@ -46,6 +47,7 @@ PPC_FUNC(sub_8262A568)
         be<uint32_t> Width;
         be<uint32_t> Height;
     };
+   
 
     auto pRenderConfig = reinterpret_cast<RenderConfig*>(g_memory.Translate(ctx.r4.u32));
     pRenderConfig->Width = Video::s_viewportWidth;

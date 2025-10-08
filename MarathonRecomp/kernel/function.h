@@ -332,7 +332,7 @@ T GuestToHostFunction(const TFunction& func, TArgs&&... argv)
 
     if constexpr (std::is_pointer_v<T>)
     {
-        return reinterpret_cast<T>((uint64_t)g_memory.Translate(newCtx.r3.u32));
+        return newCtx.r3.u32 == 0 ? reinterpret_cast<T>(0) : reinterpret_cast<T>((uint64_t)g_memory.Translate(newCtx.r3.u32));
     }
     else if constexpr (is_precise_v<T>)
     {

@@ -5,13 +5,107 @@
 
 namespace hk330
 {
+    enum hkpShapeType
+    {
+        // These Are Confirmed IDS from .xex ( Rei-san )
+        HK_SHAPE_INVALID = 0x0,
+        HK_SHAPE_CONVEX = 0x1,
+        HK_SHAPE_COLLECTION = 0x2,
+        HK_SHAPE_BV_TREE = 0x3,
+        HK_SHAPE_SPHERE = 0x4,
+        HK_SHAPE_CYLINDER = 0x5,
+        HK_SHAPE_TRIANGLE = 0x6,
+        HK_SHAPE_BOX = 0x7,
+        HK_SHAPE_CAPSULE = 0x8,
+        HK_SHAPE_CONVEX_VERTICES = 0x9,
+        HK_SHAPE_MULTI_SPHERE = 0xB,
+        HK_SHAPE_LIST = 0xC,
+        HK_SHAPE_CONVEX_PIECE = 0xD,
+        HK_SHAPE_MULTI_RAY = 0x11,
+        HK_SHAPE_BV = 0x16,
+        HK_SHAPE_PLANE = 0x17,
+        HK_SHAPE_MOPP = 0x18,
+        HK_SHAPE_TRANSFORM = 0x19,
+        HK_SHAPE_PHANTOM_CALLBACK = 0x1A,
+
+        // These are not confirmed, as I cannot find any symbols associated with them ( Rei-san )
+        HK_SHAPE_CONVEX_LIST = 0xE,
+        HK_SHAPE_CONVEX_TRANSLATE = 0xF,
+        HK_SHAPE_TRIANGLE_COLLECTION = 0x10,
+        HK_SHAPE_CONVEX_TRANSFORM = 0x12,
+        HK_SHAPE_SAMPLED_HEIGHT_FIELD = 0x13,
+        HK_SHAPE_SPHERE_REP = 0x14,
+        HK_SHAPE_TRI_PATCH = 0x15,
+        HK_SHAPE_USER0 = 0x1C,
+        HK_SHAPE_USER1 = 0x1D,
+        HK_SHAPE_USER2 = 0x1E,
+        HK_SHAPE_UNKNOWN = 0x1F,
+
+        HK_SHAPE_ALL = -1,
+    };
+
+
     class hkpShape : public hkReferencedObject
     {
     public:
+        struct Vftable : hkReferencedObject::Vftable
+        {
+            be<uint32_t> fpFunc4;
+            be<uint32_t> fpGetShapeType;
+        };
+
         be<uint32_t> m_userData;
-        be<uint32_t> m_type;
+
+        int32_t GetShapeType()
+        {
+            auto vft = (Vftable*)m_pVftable.get();
+            return GuestToHostFunction<int32_t>(vft->fpGetShapeType, this);
+        }
+
+        const char* GetShapeTypeName()
+        {
+            int32_t type = GetShapeType();
+            switch (type)
+            {
+                // Confirmed IDS
+            case HK_SHAPE_INVALID: return "HK_SHAPE_INVALID";
+            case HK_SHAPE_ALL: return "HK_SHAPE_ALL";
+            case HK_SHAPE_COLLECTION: return "HK_SHAPE_COLLECTION";
+            case HK_SHAPE_BV_TREE: return "HK_SHAPE_BV_TREE";
+            case HK_SHAPE_SPHERE: return "HK_SHAPE_SPHERE";
+            case HK_SHAPE_CYLINDER: return "HK_SHAPE_CYLINDER";
+            case HK_SHAPE_TRIANGLE: return "HK_SHAPE_TRIANGLE";
+            case HK_SHAPE_BOX: return "HK_SHAPE_BOX";
+            case HK_SHAPE_CAPSULE: return "HK_SHAPE_CAPSULE";
+            case HK_SHAPE_CONVEX_VERTICES: return "HK_SHAPE_CONVEX_VERTICES";
+            case HK_SHAPE_MULTI_SPHERE: return "HK_SHAPE_MULTI_SPHERE";
+            case HK_SHAPE_LIST: return "HK_SHAPE_LIST";
+            case HK_SHAPE_CONVEX_PIECE: return "HK_SHAPE_CONVEX_PIECE";
+            case HK_SHAPE_MULTI_RAY: return "HK_SHAPE_MULTI_RAY";
+            case HK_SHAPE_BV: return "HK_SHAPE_BV";
+            case HK_SHAPE_PLANE: return "HK_SHAPE_PLANE";
+            case HK_SHAPE_MOPP: return "HK_SHAPE_MOPP";
+            case HK_SHAPE_TRANSFORM: return "HK_SHAPE_TRANSFORM";
+            case HK_SHAPE_PHANTOM_CALLBACK: return "HK_SHAPE_PHANTOM_CALLBACK";
+
+
+                // NOT confirmed IDS
+            case HK_SHAPE_CONVEX: return "HK_SHAPE_CONVEX";
+            case HK_SHAPE_CONVEX_LIST: return "HK_SHAPE_CONVEX_LIST";
+            case HK_SHAPE_CONVEX_TRANSLATE: return "HK_SHAPE_CONVEX_TRANSLATE";
+            case HK_SHAPE_TRIANGLE_COLLECTION: return "HK_SHAPE_TRIANGLE_COLLECTION";
+            case HK_SHAPE_CONVEX_TRANSFORM: return "HK_SHAPE_CONVEX_TRANSFORM";
+            case HK_SHAPE_SAMPLED_HEIGHT_FIELD: return "HK_SHAPE_SAMPLED_HEIGHT_FIELD";
+            case HK_SHAPE_SPHERE_REP: return "HK_SHAPE_SPHERE_REP";
+            case HK_SHAPE_TRI_PATCH: return "HK_SHAPE_TRI_PATCH";
+            case HK_SHAPE_USER0: return "HK_SHAPE_USER0";
+            case HK_SHAPE_USER1: return "HK_SHAPE_USER1";
+            case HK_SHAPE_USER2: return "HK_SHAPE_USER2";
+            case HK_SHAPE_UNKNOWN: return "HK_SHAPE_UNKNOWN";
+            default: return "UNKNOWN_SHAPE_TYPE";
+            }
+        }
     };
 
     MARATHON_ASSERT_OFFSETOF(hkpShape, m_userData, 0x08);
-    MARATHON_ASSERT_OFFSETOF(hkpShape, m_type, 0x0C);
 }

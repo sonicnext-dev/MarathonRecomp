@@ -3,6 +3,11 @@
 #include <os/logger.h>
 #include <user/config.h>
 #include <app.h>
+#include <gpu/video.h>
+#include <magic_enum/magic_enum.hpp>
+
+static float EdgeSmothing = 12.0;
+static float Gonst = 0.7f;
 
 // Sonicteam::Player::Object::Update
 PPC_FUNC_IMPL(__imp__sub_82195500);
@@ -17,36 +22,46 @@ PPC_FUNC(sub_82195500)
         {
             switch (pPlayer->m_SetupModuleIndexPostfix)
             {
-                case 1:
+            case 1:
+            {
+                // Toggle debug posture on Select press.
+                if (pPlayer->m_SetupModuleIndexPrefix == 1 && pInputManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_Select))
                 {
-                    // Toggle debug posture on Select press.
-                    if (pPlayer->m_SetupModuleIndexPrefix == 1 && pInputManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_Select))
-                    {
-                        pPlayer->m_SetupModuleIndexPostfix = 2;
+                    pPlayer->m_SetupModuleIndexPostfix = 2;
 
-                        LOGN("Debug Mode: Enabled");
-                    }
-
-                    break;
+                    LOGN("Debug Mode: Enabled");
+                }
+                if (pInputManager->m_PadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadUp))
+                {
+                    EdgeSmothing += 1.0 * ctx.f1.f64;
+                    printf("EdgeSmothing %f\n", EdgeSmothing);
                 }
 
-                case 2:
+                if (pInputManager->m_PadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadDown))
                 {
-                    // Toggle camera volume collision on B press.
-                    if (pInputManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_B))
-                    {
-                        auto pGame = App::s_pApp->GetGame();
-                        auto pZock = pPlayer->GetPlugin<Sonicteam::Player::Zock>("zock");
-                        auto collisionFilterInfo = pZock->m_spPhantomA->m_pRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo == 6 ? 0x383 : 6;
-
-                        LOGFN("Camera Volumes: {}", collisionFilterInfo != 6 ? "Enabled" : "Disabled");
-
-                        pZock->m_spPhantomA->m_pRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo = collisionFilterInfo;
-                        pGame->GetPhysicsWorld<Sonicteam::SoX::Physics::Havok::WorldHavok>()->m_pWorld->updateCollisionFilterOnWorld(1, 1);
-                    }
-
-                    break;
+                    EdgeSmothing -= 1.0 * ctx.f1.f64;
+                    printf("EdgeSmothing %f\n", EdgeSmothing);
                 }
+
+                break;
+            }
+
+            case 2:
+            {
+                // Toggle camera volume collision on B press.
+                if (pInputManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_B))
+                {
+                    auto pGame = App::s_pApp->GetGame();
+                    auto pZock = pPlayer->GetPlugin<Sonicteam::Player::Zock>("zock");
+                    auto collisionFilterInfo = pZock->m_spPhantomA->m_pRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo == 6 ? 0x383 : 6;
+
+                    LOGFN("Camera Volumes: {}", collisionFilterInfo != 6 ? "Enabled" : "Disabled");
+
+                    pZock->m_spPhantomA->m_pRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo = collisionFilterInfo;
+                    pGame->GetPhysicsWorld<Sonicteam::SoX::Physics::Havok::WorldHavok>()->m_pWorld->updateCollisionFilterOnWorld(1, 1);
+                }
+                break;
+            }
             }
         }
 
@@ -91,7 +106,8 @@ PPC_FUNC(sub_8221A7D8)
         pGauge->m_Value = (100.0f / pTailsContext->m_FlightDuration) * pTailsContext->m_FlightTime;
     }
 
-    auto pTailsFlight = pPlayer->m_spStateMachine->GetBase()->GetState<Sonicteam::Player::State::TailsFlight>();
+    auto pTailsFlight = pPlayer->GetStateMachine()->GetState<Sonicteam::Player::State::TailsFlight>();
+
     auto pGame = App::s_pApp->GetGame();
 
     auto maturityValue = 1.0f;
@@ -149,17 +165,17 @@ void PlayerDebugMode_RegisterLuaSetup(PPCRegister& str, PPCRegister& index)
 
     switch (index.u32)
     {
-        case 0:
-            *pString = "SetupModuleDebug";
-            break;
+    case 0:
+        *pString = "SetupModuleDebug";
+        break;
 
-        case 1:
-            *pString = "SetupModule";
-            break;
+    case 1:
+        *pString = "SetupModule";
+        break;
 
-        case 2:
-            *pString = "SetupModuleDebug";
-            break;
+    case 2:
+        *pString = "SetupModuleDebug";
+        break;
     }
 }
 
@@ -308,41 +324,41 @@ PPC_FUNC(sub_82217FC0)
 
     switch (gemIndex)
     {
-        case Gem_Yellow:
-        {
-            // Prevent Yellow Gem spam.
-            if (pSonicContext->m_ThunderGuard)
-                break;
-        }
-
-        case Gem_Blue:
-        case Gem_Green:
-        case Gem_Sky:
-        case Gem_White:
-        case Gem_Super:
-        {
-            auto spriteIndex = Sonicteam::Player::State::SonicContext::ms_GemSpriteConversionTable[gemIndex - 1] - 1;
-
-            if (pSonicGauge->m_Value >= (&pSonicGauge->c_gauge_green)[spriteIndex].get())
-            {
-                ctx.r3.u64 = 1;
-                return;
-            }
-
+    case Gem_Yellow:
+    {
+        // Prevent Yellow Gem spam.
+        if (pSonicContext->m_ThunderGuard)
             break;
-        }
+    }
 
-        case Gem_Red:
-        case Gem_Purple:
+    case Gem_Blue:
+    case Gem_Green:
+    case Gem_Sky:
+    case Gem_White:
+    case Gem_Super:
+    {
+        auto spriteIndex = Sonicteam::Player::State::SonicContext::ms_GemSpriteConversionTable[gemIndex - 1] - 1;
+
+        if (pSonicGauge->m_Value >= (&pSonicGauge->c_gauge_green)[spriteIndex].get())
         {
-            if (pSonicContext->m_Field24A == 0)
-            {
-                ctx.r3.u64 = 1;
-                return;
-            }
-
-            break;
+            ctx.r3.u64 = 1;
+            return;
         }
+
+        break;
+    }
+
+    case Gem_Red:
+    case Gem_Purple:
+    {
+        if (pSonicContext->m_Field24A == 0)
+        {
+            ctx.r3.u64 = 1;
+            return;
+        }
+
+        break;
+    }
     }
 
     ctx.r3.u64 = 0;
@@ -368,34 +384,34 @@ PPC_FUNC(sub_82218068)
 
     switch (gemIndex)
     {
-        case Gem_Blue:
-        case Gem_Green:
-        case Gem_Yellow:
-        case Gem_Sky:
-        case Gem_White:
-        case Gem_Super:
+    case Gem_Blue:
+    case Gem_Green:
+    case Gem_Yellow:
+    case Gem_Sky:
+    case Gem_White:
+    case Gem_Super:
+    {
+        pSonicGauge->m_Value = pSonicGauge->m_Value.get() - (&pSonicGauge->c_gauge_green)[spriteIndex].get();
+        pSonicGauge->m_GroundedTime = 0.0;
+        break;
+    }
+
+    case Gem_Red:
+    case Gem_Purple:
+    {
+        pSonicGauge->m_Value = pSonicGauge->m_Value.get() - (&pSonicGauge->c_gauge_green)[spriteIndex].get() * deltaTime;
+        pSonicGauge->m_GroundedTime = 0.0;
+
+        if (pSonicGauge->m_Value <= 0)
         {
-            pSonicGauge->m_Value = pSonicGauge->m_Value.get() - (&pSonicGauge->c_gauge_green)[spriteIndex].get();
-            pSonicGauge->m_GroundedTime = 0.0;
-            break;
+            pSonicGauge->m_Value = 0.0;
+            pSonicContext->m_Shrink = 0;
+            pSonicContext->m_SlowTime = 0;
+            pSonicContext->m_Field24A = 1;
         }
 
-        case Gem_Red:
-        case Gem_Purple:
-        {
-            pSonicGauge->m_Value = pSonicGauge->m_Value.get() - (&pSonicGauge->c_gauge_green)[spriteIndex].get() * deltaTime;
-            pSonicGauge->m_GroundedTime = 0.0;
-
-            if (pSonicGauge->m_Value <= 0)
-            {
-                pSonicGauge->m_Value = 0.0;
-                pSonicContext->m_Shrink = 0;
-                pSonicContext->m_SlowTime = 0;
-                pSonicContext->m_Field24A = 1;
-            }
-
-            break;
-        }
+        break;
+    }
     }
 }
 
@@ -459,7 +475,7 @@ PPC_FUNC(sub_8223F360)
 
     g_userHeap.Free(pVariableName);
 }
- 
+
 void SonicGauge_FixGemSprite(PPCRegister& r)
 {
     auto pGame = (Sonicteam::GameImp*)g_memory.Translate(r.u32);
@@ -522,4 +538,156 @@ void SonicGauge_FixFlags(PPCRegister& r3, PPCRegister& r31)
 bool InfiniteLives()
 {
     return Config::InfiniteLives;
+}
+
+#if MARATHON_POSTURECONTROL_USE_RECREATED_VERSION == 1
+PPC_FUNC_IMPL(__imp__sub_82200538);
+PPC_FUNC(sub_82200538)
+{
+    auto PostureControl = (Sonicteam::Player::PostureControl*)(base + ctx.r3.u32);
+    PostureControl->RecreatedUpdate(ctx.f1.f64);
+}
+#endif
+
+//Experimental Edge OC Fix
+PPC_FUNC_IMPL(__imp__sub_82203840);
+PPC_FUNC(sub_82203840)
+{
+    auto pSphere = (Sonicteam::Player::IPostureSupportSphere*)(base + ctx.r3.u32);
+    auto d1 = (Sonicteam::SoX::Math::Vector*)(base + ctx.r4.u32);
+    auto d2 = *(Sonicteam::SoX::Math::Vector*)(base + ctx.r5.u32);
+    auto outFlag1 = (be<uint32_t>*)(base + ctx.r6.u32);
+
+    if (!Config::EnablePostureImprovements)
+    {
+        __imp__sub_82203840(ctx, base);
+        return;
+    }
+
+    Sonicteam::SoX::Math::Vector finalPos = d2;
+
+    if (auto allListener = pSphere->m_spAllListener1.get())
+    {
+        auto PNormal = allListener->m_aContactNormals[0];
+        auto sphereCenter = d2 + pSphere->m_CollisionAllAngle;
+        struct _vector_ { Sonicteam::SoX::Math::Vector p1; Sonicteam::SoX::Math::Vector p2; };
+        guest_heap_var<_vector_> points(sphereCenter, sphereCenter);
+
+        allListener->m_Position = sphereCenter;
+        allListener->m_Radius = pSphere->m_aCollisionAllRadius[pSphere->m_FlagC8];
+        allListener->SetPostureRequestFlag(pSphere->m_pPostureRequestFlag.get()->get());
+
+        pSphere->m_aShapeCollisionAll[pSphere->m_FlagC8]->Func3C(
+            (Sonicteam::SoX::Math::Vector*)points.get(),
+            static_cast<Sonicteam::SoX::Physics::ShapeCastListener*>(allListener)
+        );
+        allListener->Update();
+
+        if ((uint8_t*)outFlag1 != g_memory.base) *outFlag1 = allListener->GetCollisionFlag();
+
+        auto contactPos = allListener->GetContactPosition() - pSphere->m_CollisionAllAngle;
+        int contactCount = allListener->GetCurrentSurfaceContacts();
+
+        if (contactCount > 0)
+        {
+            // PROPER SURFACE ANALYSIS
+            int floorContacts = 0;
+            int wallContacts = 0;
+            Sonicteam::SoX::Math::Vector primaryNormal = allListener->m_aContactNormals[0];
+
+            for (int i = 0; i < contactCount && i < 6; i++)
+            {
+                auto& normal = allListener->m_aContactNormals[i];
+                printf("normal Y : %f\n\n", normal.Y.get());
+                if (normal.Y > 0.39f) // Floor (pointing up)
+                {
+                    floorContacts++;
+                }
+                else if (normal.Y < -0.5f) // Ceiling (pointing down)  
+                {
+                    // Ceiling contact
+                }
+                else // Wall (vertical)
+                {
+                    wallContacts++;
+                }
+            }
+
+            printf("SURFACE: %d floors, %d walls, primaryNormal=(%.2f,%.2f,%.2f)\n",
+                floorContacts, wallContacts, primaryNormal.X.get(), primaryNormal.Y.get(), primaryNormal.Z.get());
+
+            finalPos = contactPos;
+
+            if (floorContacts >= 2 && wallContacts == 0)
+            {
+                bool isTrueEdge = false;
+                for (int i = 0; i < contactCount - 1 && !isTrueEdge; i++)
+                {
+                    for (int j = i + 1; j < contactCount && !isTrueEdge; j++)
+                    {
+                        float dot = allListener->m_aContactNormals[i].Dot(allListener->m_aContactNormals[j]).X;
+                        if (dot < 0.7f) // Significantly different normals
+                        {
+                            isTrueEdge = true;
+                            printf("TRUE EDGE: Applying minimal stabilization (dot=%.3f)\n", dot);
+                        }
+                        else if (dot < 0.98)
+                        {
+                            isTrueEdge = true;
+                            printf("ALT TRUE EDGE: Applying minimal stabilization (dot=%.3f)\n", dot);
+                        }
+                        
+                    }
+                }
+
+                if (isTrueEdge)
+                {
+                    // Use the highest Y normal for stabilization
+                    Sonicteam::SoX::Math::Vector bestNormal = primaryNormal;
+                    for (int i = 1; i < contactCount && i < 6; i++)
+                    {
+                        if (allListener->m_aContactNormals[i].Y > bestNormal.Y)
+                        {
+                            bestNormal = allListener->m_aContactNormals[i];
+                        }
+                    }
+
+                    // TINY push in best normal direction
+                    finalPos = d2;
+                }
+                else if (floorContacts == 2)
+                {
+                    // Two similar floor contacts - micro stabilization only
+                    finalPos = finalPos + (primaryNormal * 2.0);
+                    printf("DOUBLE FLOOR: Micro stabilization\n");
+                }
+            }
+            else if (floorContacts > 0 && wallContacts > 0)
+            {
+                // Floor-wall mix - small stabilization
+                finalPos.Y = finalPos.Y  + 0.02f;
+                printf("FLOOR-WALL: Minimal stabilization\n");
+            }
+            else
+            {
+                // Single floor or other cases - use raw contact position
+                printf("Using raw contact position\n");
+            }
+        }
+        else
+        {
+            finalPos = d2;
+        }
+    }
+
+    if (d1) *d1 = finalPos;
+
+    if (pSphere->m_spAllListener1.get()->GetCurrentSurfaceContacts() > 0)
+    {
+        ctx.r3.u32 = (uint32_t)(uintptr_t)pSphere->m_spAllListener1.get();
+    }
+    else
+    {
+        ctx.r3.u32 = 0;
+    }
 }
