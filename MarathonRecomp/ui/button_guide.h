@@ -40,7 +40,7 @@ public:
 
     static void Init();
     static void Draw();
-    static void Open(Button button);
-    static void Open(const std::span<Button> buttons);
+    static void Open(Button button, bool isAnimated = true);
+    static void Open(const std::span<Button> buttons, bool isAnimated = true);
     static void Close();
 };

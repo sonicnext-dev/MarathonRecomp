@@ -936,6 +936,7 @@ void OptionsMenu::Init()
 
 void OptionsMenu::Open(bool isPause)
 {
+    // TODO: open with main menu options description text to fade into category description.
     s_commonMenu = CommonMenu(Localise("Options_Header_Name"), "", isPause);
     g_stateTime = ImGui::GetTime();
     g_categoryTime = g_stateTime;
@@ -955,7 +956,7 @@ void OptionsMenu::Open(bool isPause)
         Button("Common_Back", EButtonIcon::B)
     };
 
-    ButtonGuide::Open(buttons);
+    ButtonGuide::Open(buttons, s_isPause);
 }
 
 void OptionsMenu::Close()

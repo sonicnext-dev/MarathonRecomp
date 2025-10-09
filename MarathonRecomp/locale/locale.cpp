@@ -55,6 +55,17 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         }
     },
     {
+        "Options_MainMenu_Description",
+        {
+            { ELanguage::English,  "Options: Adjust various game settings" },
+            { ELanguage::Japanese, "オプション：各種ゲームの設定を行います" },
+            { ELanguage::German,   "Optionen: Spieleinstellungen ändern" },
+            { ELanguage::French,   "Options : effectuer divers paramétrages" },
+            { ELanguage::Spanish,  "Opciones: cambiar opciones de juego. " },
+            { ELanguage::Italian,  "Opzioni: regola impostazioni di gioco." }
+        }
+    },
+    {
         "Options_Category_System",
         {
             { ELanguage::English,  "System settings" },

@@ -14,6 +14,7 @@
 static std::vector<Button> g_buttons{};
 
 static double g_time{};
+static bool g_isAnimated{};
 
 static std::unique_ptr<GuestTexture> g_upTexButtonWindow{};
 static std::unique_ptr<GuestTexture> g_upTexController{};
@@ -123,7 +124,7 @@ void ButtonGuide::Draw()
 
     auto windowEdgeUVs = PIXELS_TO_UV_COORDS(64, 64, 1, 0, 40, 64);
     auto windowStretchUVs = PIXELS_TO_UV_COORDS(64, 64, 40, 0, 23, 64);
-    auto windowOffsetX = g_aspectRatioOffsetX + Scale(94, true);
+    auto windowOffsetX = g_aspectRatioOffsetX + Scale(88, true);
     auto windowOffsetY = g_aspectRatioOffsetY + Scale(114.5, true);
     auto windowEdgeWidth = Scale(40, true);
     auto windowWidth = 0.0f;
@@ -144,7 +145,7 @@ void ButtonGuide::Draw()
         windowWidth += btnWidth + textWidth + btnIconPadding + btnTextPadding;
     }
 
-    auto windowMotionTime = ComputeMotion(g_time, 0, 200);
+    auto windowMotionTime = g_isAnimated ? ComputeMotion(g_time, 0, 200) : 1.0;
     auto windowMotion = std::clamp(float(res.x - Scale(1088.4, true) * windowMotionTime), res.x - windowOffsetX - windowWidth, res.x - g_aspectRatioOffsetX);
 
     ImVec2 windowStretchMin = { windowMotion, res.y - windowOffsetY };
@@ -193,7 +194,7 @@ void ButtonGuide::Draw()
     }
 }
 
-void ButtonGuide::Open(Button button)
+void ButtonGuide::Open(Button button, bool isAnimated)
 {
     s_isVisible = true;
 
@@ -201,15 +202,17 @@ void ButtonGuide::Open(Button button)
     g_buttons.push_back(button);
 
     g_time = ImGui::GetTime();
+    g_isAnimated = isAnimated;
 }
 
-void ButtonGuide::Open(const std::span<Button> buttons)
+void ButtonGuide::Open(const std::span<Button> buttons, bool isAnimated)
 {
     s_isVisible = true;
 
     g_buttons = std::vector(buttons.begin(), buttons.end());
 
     g_time = ImGui::GetTime();
+    g_isAnimated = isAnimated;
 }
 
 void ButtonGuide::Close()
