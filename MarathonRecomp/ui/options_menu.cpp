@@ -356,7 +356,7 @@ static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAcce
             ImVec2 gaugeMin = { ctrlBgLeftEdgeMin.x + gaugeOffsetX, (ctrlBgRightEdgeMin.y + bgHeight / 2) - (gaugeHeight / 2) + Scale(1, true) };
             ImVec2 gaugeMax = { ctrlBgRightEdgeMax.x - gaugeOffsetX, gaugeMin.y + gaugeHeight / 2 };
 
-            drawList->AddRectFilled(gaugeMin, gaugeMax, IM_COL32_BLACK, Scale(10, true));
+            drawList->AddRectFilled(gaugeMin, gaugeMax, IM_COL32(0, 0, 0, 255 * optionMotionTime), Scale(10, true));
 
             auto handleUVs = PIXELS_TO_UV_COORDS(256, 256, 72, 49, 49, 19);
             auto handleWidth = Scale(49, true);
