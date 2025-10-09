@@ -6,12 +6,14 @@
 #include <Sonicteam/SoX/Scenery/Camera.h>
 #include <Sonicteam/SoX/Scenery/CameraImp.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
+#include <Sonicteam/TextBook.h>
 #include <stdx/vector.h>
 
 namespace Sonicteam
 {
-    class ActorManager; // Gauge patch
+    class ActorManager;
     class GameScript;
+
     class GameImp : public SoX::MessageReceiver
     {
     public:
@@ -26,6 +28,15 @@ namespace Sonicteam
             GameState_6,
             GameState_Save,
             GameState_ReturnToMainMenu
+        };
+
+        enum GameFlags : uint32_t
+        {
+            GameFlags_RestartArea1 = 1,
+            GameFlags_RestartArea2 = 0x200,
+            GameFlags_IsPaused = 0x1000,
+            GameFlags_LoadArea1 = 0x40000,
+            GameFlags_LoadArea2 = 0x200000
         };
 
         struct PlayerData
@@ -49,9 +60,9 @@ namespace Sonicteam
         };
 
         MARATHON_INSERT_PADDING(4);
-        be<GameState> m_GameState;
+        be<GameState> m_State;
         xpointer<DocMarathonState> m_pDoc;
-        be<uint32_t> m_Flags;
+        be<GameFlags> m_Flags;
         MARATHON_INSERT_PADDING(0xE2C);
         PlayerData m_PlayerData[4];
         MARATHON_INSERT_PADDING(0x200);
@@ -61,7 +72,8 @@ namespace Sonicteam
         xpointer<GameScript> m_pGameScript;
         be<uint32_t> m_aObjPlayerActorID[0xF];
         boost::shared_ptr<ActorManager> m_spActorManager;
-        MARATHON_INSERT_PADDING(0xC);
+        xpointer<TextBook> m_pSystemTextBook;
+        MARATHON_INSERT_PADDING(8);
         stdx::vector<stdx::vector<boost::shared_ptr<SoX::Scenery::Camera>>> m_vvspCameras;
         MARATHON_INSERT_PADDING(0x7D4);
         SoX::RefSharedPointer<SoX::Physics::World> m_spPhysicsWorld;

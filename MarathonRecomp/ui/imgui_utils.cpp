@@ -1,4 +1,5 @@
 #include "imgui_utils.h"
+#include <gpu/imgui/imgui_snapshot.h>
 #include <patches/aspect_ratio_patches.h>
 #include <app.h>
 #include <decompressor.h>
@@ -11,21 +12,27 @@
 #include <res/images/common/main_menu1.dds.h>
 #include <res/images/common/arrow.dds.h>
 
-std::unique_ptr<GuestTexture> g_texWindow;
-std::unique_ptr<GuestTexture> g_texLight;
-std::unique_ptr<GuestTexture> g_texSelect;
-std::unique_ptr<GuestTexture> g_texSelectArrow;
-std::unique_ptr<GuestTexture> g_texMainMenu1;
-std::unique_ptr<GuestTexture> g_texArrow;
+ImFont* g_pFntRodin;
+ImFont* g_pFntNewRodin;
+
+std::unique_ptr<GuestTexture> g_upTexWindow;
+std::unique_ptr<GuestTexture> g_upTexLight;
+std::unique_ptr<GuestTexture> g_upTexSelect;
+std::unique_ptr<GuestTexture> g_upTexSelectArrow;
+std::unique_ptr<GuestTexture> g_upTexMainMenu1;
+std::unique_ptr<GuestTexture> g_upTexArrow;
 
 void InitImGuiUtils()
 {
-    g_texWindow = LOAD_ZSTD_TEXTURE(g_window);
-    g_texLight = LOAD_ZSTD_TEXTURE(g_light);
-    g_texSelect = LOAD_ZSTD_TEXTURE(g_select);
-    g_texSelectArrow = LOAD_ZSTD_TEXTURE(g_select_arrow);
-    g_texMainMenu1 = LOAD_ZSTD_TEXTURE(g_main_menu1);
-    g_texArrow = LOAD_ZSTD_TEXTURE(g_arrow);
+    g_pFntRodin = ImFontAtlasSnapshot::GetFont("FOT-RodinPro-DB.otf");
+    g_pFntNewRodin = ImFontAtlasSnapshot::GetFont("FOT-NewRodinPro-UB.otf");
+
+    g_upTexWindow = LOAD_ZSTD_TEXTURE(g_window);
+    g_upTexLight = LOAD_ZSTD_TEXTURE(g_light);
+    g_upTexSelect = LOAD_ZSTD_TEXTURE(g_select);
+    g_upTexSelectArrow = LOAD_ZSTD_TEXTURE(g_select_arrow);
+    g_upTexMainMenu1 = LOAD_ZSTD_TEXTURE(g_main_menu1);
+    g_upTexArrow = LOAD_ZSTD_TEXTURE(g_arrow);
 }
 
 void SetGradient(const ImVec2& min, const ImVec2& max, ImU32 top, ImU32 bottom)
@@ -169,9 +176,43 @@ void ResetAdditive()
     SetAdditive(false);
 }
 
-float Scale(float size)
+void AddImageFlipped(ImTextureID texture, const ImVec2& min, const ImVec2& max, const ImVec2& uvMin, const ImVec2& uvMax, ImU32 col, bool flipHorz, bool flipVert)
 {
-    return size * g_aspectRatioScale;
+    auto drawList = ImGui::GetBackgroundDrawList();
+
+    ImVec2 uv0 = uvMin;
+    ImVec2 uv1 = { uvMax.x, uvMin.y };
+    ImVec2 uv2 = uvMax;
+    ImVec2 uv3 = { uvMin.x, uvMax.y };
+
+    if (flipHorz)
+    {
+        std::swap(uv0.x, uv1.x);
+        std::swap(uv2.x, uv3.x);
+    }
+
+    if (flipVert)
+    {
+        std::swap(uv0.y, uv3.y);
+        std::swap(uv1.y, uv2.y);
+    }
+
+    ImVec2 p0 = min;
+    ImVec2 p1 = { max.x, min.y };
+    ImVec2 p2 = max;
+    ImVec2 p3 = { min.x, max.y };
+
+    drawList->AddImageQuad(texture, p0, p1, p2, p3, uv0, uv1, uv2, uv3, col);
+}
+
+float Scale(float size, bool useGameplayScale)
+{
+    auto result = size * g_aspectRatioScale;
+
+    if (useGameplayScale)
+        result *= g_aspectRatioGameplayScale;
+
+    return result;
 }
 
 double ComputeLoopMotion(double time, double offset, double total)
@@ -179,14 +220,16 @@ double ComputeLoopMotion(double time, double offset, double total)
     return std::clamp(fmod((ImGui::GetTime() - time - (offset / 60.0)) / (total / 60.0), 1.0 + (total / 60.0)), 0.0, 1.0) / 1.0;
 }
 
-double ComputeLinearMotion(double time, double offset, double total)
+double ComputeLinearMotion(double time, double offset, double total, bool reverse)
 {
-    return std::clamp((ImGui::GetTime() - time - offset / 60.0) / total * 60.0, 0.0, 1.0);
+    auto result = std::clamp((ImGui::GetTime() - time - offset / 60.0) / total * 60.0, 0.0, 1.0);
+
+    return reverse ? 1.0f - result : result;
 }
 
-double ComputeMotion(double time, double offset, double total)
+double ComputeMotion(double time, double offset, double total, bool reverse)
 {
-    return sqrt(ComputeLinearMotion(time, offset, total));
+    return sqrt(ComputeLinearMotion(time, offset, total, reverse));
 }
 
 void DrawArrows(ImVec2 min, ImVec2 max)
@@ -252,7 +295,7 @@ void DrawArrows(ImVec2 min, ImVec2 max)
         auto endX = baseX + leftArrowSize;
         auto opacity = (uint32_t)((maxOpacity * computeArrowLoopMotion(cycleTime, 1.0 + ((double)(leftArrows - i) / leftArrows))) * 255);
 
-        drawList->AddImage(g_texArrow.get(), { endX, leftBaseY }, { baseX, leftEndY }, GET_UV_COORDS(arrowUV), IM_COL32(255, 255, 255, opacity));
+        drawList->AddImage(g_upTexArrow.get(), { endX, leftBaseY }, { baseX, leftEndY }, GET_UV_COORDS(arrowUV), IM_COL32(255, 255, 255, opacity));
     }
 
     auto rightBaseY = min.y - (rightArrowSize / 2);
@@ -264,85 +307,61 @@ void DrawArrows(ImVec2 min, ImVec2 max)
         auto endX = baseX + rightArrowSize;
         auto opacity = (uint32_t)((maxOpacity * computeArrowLoopMotion(cycleTime, ((double)(rightArrows - i) / rightArrows))) * 255);
 
-        drawList->AddImage(g_texArrow.get(), { baseX, rightBaseY }, { endX, rightEndY }, GET_UV_COORDS(arrowUV), IM_COL32(255, 255, 255, opacity));
+        drawList->AddImage(g_upTexArrow.get(), { baseX, rightBaseY }, { endX, rightEndY }, GET_UV_COORDS(arrowUV), IM_COL32(255, 255, 255, opacity));
     }
 }
 
-void DrawHUD(ImVec2 min, ImVec2 max, const ImFont* font, const char* text)
+void DrawArrowCursor(ImVec2 pos, double time, bool isIntroAnim, bool isBlinkingAnim, bool isReversed)
 {
     auto drawList = ImGui::GetBackgroundDrawList();
 
-    auto leftWidth = Scale(200);
-    auto stripeHeight = Scale(50);
-    auto offset = Scale(81);
+    auto cursorUVs = PIXELS_TO_UV_COORDS(50, 50, 0, 0, 27, 50);
+    auto cursorScaleX = Scale(14, true);
 
-    auto leftStripe = PIXELS_TO_UV_COORDS(1024, 1024, 0, 300, 200, 50);
-    auto centerStripe = PIXELS_TO_UV_COORDS(1024, 1024, 200, 300, 824, 50);
+    for (int i = 0; i < 3; i++)
+    {
+        auto cursorMotionTime = isIntroAnim ? ComputeMotion(time, i, 5, isReversed) : 1.0;
+        auto cursorScaleYMotion = Lerp(Scale(37.5, true), Scale(24, true), cursorMotionTime);
+        auto cursorOffsetXMotion = Lerp(0, Scale(8.5, true), cursorMotionTime);
+        auto cursorOffsetYMotion = Lerp(pos.y - cursorScaleYMotion / 6, pos.y, cursorMotionTime);
+        auto cursorRightMotion = (cursorOffsetXMotion * 3) - (cursorOffsetXMotion * i);
+        auto cursorAlphaMotionTime = isIntroAnim ? ComputeMotion(time, i, 2, isReversed) : 1.0;
+        auto cursorAlphaMotion = (int)Lerp(0, 255, cursorAlphaMotionTime);
 
-    auto stripeColor = IM_COL32(168, 15, 15, 255);
+        if (isBlinkingAnim)
+        {
+            auto cursorAlphaMotionInTime = ComputeLoopMotion(time, 3.0 * i, 12.0);
+            auto cursorAlphaMotionOutTime = ComputeLoopMotion(time, 3.0 * (i + 1), 12.0);
 
-    drawList->AddImage(g_texMainMenu1.get(), { min.x, min.y + offset }, { min.x + leftWidth, min.y + offset + stripeHeight }, GET_UV_COORDS(leftStripe), stripeColor);
-    drawList->AddImage(g_texMainMenu1.get(), { min.x + leftWidth , min.y + offset }, { max.x, min.y + offset + stripeHeight }, GET_UV_COORDS(centerStripe), stripeColor);
+            // horrible
+            cursorAlphaMotionTime = cursorAlphaMotionInTime >= 1.0
+                ? cursorAlphaMotionOutTime >= 1.0
+                    ? cursorAlphaMotionInTime
+                    : cursorAlphaMotionOutTime
+                : cursorAlphaMotionInTime;
 
-    auto stripOffset = Scale(78);
-    auto stripUV = PIXELS_TO_UV_COORDS(1024, 1024, 201, 501, 264, 50);
+            cursorAlphaMotion = (int)Lerp(50 * (i + 1), 255, cursorAlphaMotionTime);
+        }
 
-    auto strip1LeftOffset = leftWidth + Scale(180);
+        ImVec2 cursorMin = { pos.x + cursorRightMotion, cursorOffsetYMotion };
+        ImVec2 cursorMax = { pos.x + cursorRightMotion + cursorScaleX, cursorMin.y + cursorScaleYMotion };
 
-    auto tlStrip1Color = IM_COL32(255, 172, 0, 0);
-    auto brStrip1Color = IM_COL32(255, 172, 0, 67);
+        drawList->AddImage(g_upTexSelectArrow.get(), cursorMin, cursorMax, GET_UV_COORDS(cursorUVs), IM_COL32(255, 255, 255, cursorAlphaMotion));
+    }
+}
 
-    ImVec2 strip1Min = { min.x + strip1LeftOffset, min.y + stripOffset };
-    ImVec2 strip1Max = { min.x + strip1LeftOffset + Scale(270), min.y + stripOffset + stripeHeight };
+double ImValueDebug(double& value, double increment)
+{
+#ifdef _WIN32
+    if (GetAsyncKeyState(VK_OEM_PLUS) & 1)
+        value += increment;
+    if (GetAsyncKeyState(VK_OEM_MINUS) & 1)
+        value -= increment;
+#endif
 
-    SetHorizontalGradient(strip1Min, strip1Max, tlStrip1Color, brStrip1Color);
+    LOGF_UTILITY("{}", value);
 
-    drawList->AddImage(g_texMainMenu1.get(), strip1Min, strip1Max, GET_UV_COORDS(stripUV), IM_COL32_WHITE);
-
-    ResetGradient();
-
-    auto strip2LeftOffset = leftWidth + Scale(40);
-
-    auto tlStrip2Color = IM_COL32(255, 116, 0, 0);
-    auto brStrip2Color = IM_COL32(255, 116, 0, 17);
-
-    ImVec2 strip2Min = { min.x + strip2LeftOffset, min.y + stripOffset };
-    ImVec2 strip2Max = { min.x + strip2LeftOffset + Scale(270), min.y + stripOffset + stripeHeight };
-
-    SetHorizontalGradient(strip2Min, strip2Max, tlStrip2Color, brStrip2Color);
-
-    drawList->AddImage(g_texMainMenu1.get(), strip2Min, strip2Max, GET_UV_COORDS(stripUV), IM_COL32_WHITE);
-
-    ResetGradient();
-
-    auto backBarHeight = Scale(150);
-    auto backBarColor = IM_COL32(0, 23, 57, 255);
-
-    drawList->AddRectFilled({ min.x, max.y - backBarHeight }, { max.x, max.y }, backBarColor);
-
-    auto leftSilver = PIXELS_TO_UV_COORDS(1024, 1024, 0, 154, 200, 116);
-    auto centerSilver = PIXELS_TO_UV_COORDS(1024, 1024, 200, 154, 824, 116);
-
-    auto silverHeight = Scale(116);
-
-    drawList->AddImage(g_texMainMenu1.get(), { min.x - Scale(1), min.y }, { min.x - Scale(1) + leftWidth, min.y + silverHeight }, GET_UV_COORDS(leftSilver), IM_COL32_WHITE);
-    drawList->AddImage(g_texMainMenu1.get(), { min.x - Scale(1) + leftWidth, min.y }, { max.x, min.y + silverHeight }, GET_UV_COORDS(centerSilver), IM_COL32_WHITE);
-
-    auto centerBottomBar = PIXELS_TO_UV_COORDS(1024, 1024, 180, 60, 844, 55);
-
-    auto bottomBarHeight = Scale(55);
-    auto bottomTabWidth = Scale(180);
-
-    drawList->AddImage(g_texMainMenu1.get(), { min.x + bottomTabWidth, max.y - bottomBarHeight }, { max.x - bottomTabWidth, max.y }, GET_UV_COORDS(centerBottomBar), IM_COL32_WHITE);
-
-    auto bottomTab = PIXELS_TO_UV_COORDS(1024, 1024, 0, 0, 180, 115);
-
-    auto bottomTabHeight = Scale(115);
-
-    drawList->AddImage(g_texMainMenu1.get(), { min.x, max.y - bottomTabHeight }, { min.x + bottomTabWidth, max.y }, GET_UV_COORDS(bottomTab), IM_COL32_WHITE);
-    drawList->AddImage(g_texMainMenu1.get(), { max.x, max.y - bottomTabHeight }, { max.x - bottomTabWidth, max.y }, GET_UV_COORDS(bottomTab), IM_COL32_WHITE);
-
-    drawList->AddText(font, Scale(32), { min.x + leftWidth + Scale(2), min.y + offset + Scale(5) }, IM_COL32_WHITE, text);
+    return value;
 }
 
 void DrawContainerBox(ImVec2 min, ImVec2 max, float alpha)
@@ -364,12 +383,12 @@ void DrawContainerBox(ImVec2 min, ImVec2 max, float alpha)
 
     SetHorizontalGradient({ max.x - commonWidth, min.y }, max, IM_COL32_WHITE, IM_COL32(255, 255, 255, 0));
 
-    drawList->AddImage(g_texMainMenu1.get(), min, { min.x + commonWidth, min.y + commonHeight }, GET_UV_COORDS(tl), color);
-    drawList->AddImage(g_texMainMenu1.get(), { min.x + commonWidth, min.y }, { max.x, min.y + commonHeight }, GET_UV_COORDS(tc), color);
-    drawList->AddImage(g_texMainMenu1.get(), { min.x, min.y + commonHeight }, { min.x + commonWidth, max.y - commonHeight }, GET_UV_COORDS(cl), color);
-    drawList->AddImage(g_texMainMenu1.get(), { min.x + commonWidth, min.y + commonHeight }, { max.x, max.y - commonHeight }, GET_UV_COORDS(cc), color);
-    drawList->AddImage(g_texMainMenu1.get(), { min.x, max.y - commonHeight }, { min.x + commonWidth, max.y + bottomHeight }, GET_UV_COORDS(bl), color);
-    drawList->AddImage(g_texMainMenu1.get(), { min.x + commonWidth, max.y - commonHeight }, { max.x, max.y + bottomHeight }, GET_UV_COORDS(bc), color);
+    drawList->AddImage(g_upTexMainMenu1.get(), min, { min.x + commonWidth, min.y + commonHeight }, GET_UV_COORDS(tl), color);
+    drawList->AddImage(g_upTexMainMenu1.get(), { min.x + commonWidth, min.y }, { max.x, min.y + commonHeight }, GET_UV_COORDS(tc), color);
+    drawList->AddImage(g_upTexMainMenu1.get(), { min.x, min.y + commonHeight }, { min.x + commonWidth, max.y - commonHeight }, GET_UV_COORDS(cl), color);
+    drawList->AddImage(g_upTexMainMenu1.get(), { min.x + commonWidth, min.y + commonHeight }, { max.x, max.y - commonHeight }, GET_UV_COORDS(cc), color);
+    drawList->AddImage(g_upTexMainMenu1.get(), { min.x, max.y - commonHeight }, { min.x + commonWidth, max.y + bottomHeight }, GET_UV_COORDS(bl), color);
+    drawList->AddImage(g_upTexMainMenu1.get(), { min.x + commonWidth, max.y - commonHeight }, { max.x, max.y + bottomHeight }, GET_UV_COORDS(bc), color);
 
     ResetGradient();
 }
@@ -439,12 +458,6 @@ void DrawTextWithShadow(const ImFont* font, float fontSize, const ImVec2& pos, I
     auto drawList = ImGui::GetBackgroundDrawList();
 
     offset = Scale(offset);
-
-    // Original 4:3 has thicker text shadows.
-    if (Config::AspectRatio == EAspectRatio::OriginalNarrow)
-    {
-        radius *= 1.5f;
-    }
 
     SetOutline(radius);
     drawList->AddText(font, fontSize, { pos.x + offset, pos.y + offset }, shadowColour, text);
@@ -694,6 +707,8 @@ void DrawVersionString(const ImFont* font, const ImU32 col)
     auto textMargin = Scale(2);
     auto textSize = font->CalcTextSizeA(fontSize, FLT_MAX, 0, g_versionString);
 
+    // TODO: remove this line after v1 release.
+    drawList->AddText(font, fontSize, { textMargin, res.y - textSize.y - textMargin }, col, "WORK IN PROGRESS");
     drawList->AddText(font, fontSize, { res.x - textSize.x - textMargin, res.y - textSize.y - textMargin }, col, g_versionString);
 }
 
@@ -715,18 +730,18 @@ void DrawToggleLight(ImVec2 pos, bool isEnabled, float alpha)
         ImVec2 lightGlowMax = { min.x + lightGlowSize, min.y + lightGlowSize };
 
         SetAdditive(true);
-        drawList->AddImage(g_texLight.get(), lightGlowMin, lightGlowMax, GET_UV_COORDS(lightGlowUVs), IM_COL32(255, 255, 0, 127 * alpha));
+        drawList->AddImage(g_upTexLight.get(), lightGlowMin, lightGlowMax, GET_UV_COORDS(lightGlowUVs), IM_COL32(255, 255, 0, 127 * alpha));
         SetAdditive(false);
 
         auto lightOnUVs = PIXELS_TO_UV_COORDS(64, 64, 14, 0, 14, 14);
 
-        drawList->AddImage(g_texLight.get(), min, max, GET_UV_COORDS(lightOnUVs), lightCol);
+        drawList->AddImage(g_upTexLight.get(), min, max, GET_UV_COORDS(lightOnUVs), lightCol);
     }
     else
     {
         auto lightOffUVs = PIXELS_TO_UV_COORDS(64, 64, 0, 0, 14, 14);
 
-        drawList->AddImage(g_texLight.get(), min, max, GET_UV_COORDS(lightOffUVs), lightCol);
+        drawList->AddImage(g_upTexLight.get(), min, max, GET_UV_COORDS(lightOffUVs), lightCol);
     }
 }
 

@@ -17,5 +17,16 @@ public:
         GetEventListeners().emplace_back(this);
     }
 
+    ~SDLEventListener() override
+    {
+        auto& eventListeners = GetEventListeners();
+
+        auto it = std::find(eventListeners.begin(), eventListeners.end(), this);
+
+        assert(it != eventListeners.end());
+
+        eventListeners.erase(it);
+    }
+
     bool OnSDLEvent(SDL_Event* event) override { return false; }
 };

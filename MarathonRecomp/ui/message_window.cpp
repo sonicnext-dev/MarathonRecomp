@@ -179,7 +179,7 @@ void DrawContainerArrow(const ImVec2 pos, float scale, float rotation, uint32_t 
     auto& uvMin = std::get<0>(arrowUVs);
     auto& uvMax = std::get<1>(arrowUVs);
 
-    drawList->AddImageQuad(g_texWindow.get(), vertices[0], vertices[1], vertices[2], vertices[3], uvMin, { uvMax.x, uvMin.y }, { uvMax.x, uvMax.y }, { uvMin.x, uvMax.y }, colour);
+    drawList->AddImageQuad(g_upTexWindow.get(), vertices[0], vertices[1], vertices[2], vertices[3], uvMin, { uvMax.x, uvMin.y }, { uvMax.x, uvMax.y }, { uvMin.x, uvMax.y }, colour);
 }
 
 void DrawContainer(const ImVec2 min, const ImVec2 max)
@@ -198,16 +198,16 @@ void DrawContainer(const ImVec2 min, const ImVec2 max)
     auto lineOffsetRight = Scale(3);
 
     // Top
-    drawList->AddImage(g_texWindow.get(), min, { max.x, min.y + lineScale }, GET_UV_COORDS(lineHorzUVs));
+    drawList->AddImage(g_upTexWindow.get(), min, { max.x, min.y + lineScale }, GET_UV_COORDS(lineHorzUVs));
 
     // Bottom
-    drawList->AddImage(g_texWindow.get(), { min.x, max.y - lineOffsetRight }, { max.x, (max.y - lineOffsetRight) + lineScale }, GET_UV_COORDS(lineHorzUVs));
+    drawList->AddImage(g_upTexWindow.get(), { min.x, max.y - lineOffsetRight }, { max.x, (max.y - lineOffsetRight) + lineScale }, GET_UV_COORDS(lineHorzUVs));
 
     // Left
-    drawList->AddImage(g_texWindow.get(), min, { min.x + lineScale, max.y }, GET_UV_COORDS(lineVertUVs));
+    drawList->AddImage(g_upTexWindow.get(), min, { min.x + lineScale, max.y }, GET_UV_COORDS(lineVertUVs));
 
     // Right
-    drawList->AddImage(g_texWindow.get(), { max.x - lineOffsetRight, min.y }, { (max.x - lineOffsetRight) + lineScale, max.y }, GET_UV_COORDS(lineVertUVs));
+    drawList->AddImage(g_upTexWindow.get(), { max.x - lineOffsetRight, min.y }, { (max.x - lineOffsetRight) + lineScale, max.y }, GET_UV_COORDS(lineVertUVs));
 
     SetAdditive(true);
 
@@ -247,41 +247,6 @@ void DrawContainer(const ImVec2 min, const ImVec2 max)
     drawList->PushClipRect(min, max);
 }
 
-void DrawButtonArrow(const ImVec2 pos)
-{
-    auto drawList = ImGui::GetBackgroundDrawList();
-
-    auto arrowUVs = PIXELS_TO_UV_COORDS(50, 50, 0, 0, 27, 50);
-    auto arrowScaleX = Scale(14);
-    auto arrowScaleY = Scale(25);
-    auto arrowOffset = Scale(8);
-
-    for (int i = 0; i < 3; i++)
-    {
-        auto arrowRight = (arrowOffset * 3) - (arrowOffset * i);
-        auto arrowAlphaMotionIn = ComputeLoopMotion(g_time, 3.0 * i, 12.0);
-        auto arrowAlphaMotionOut = ComputeLoopMotion(g_time, 3.0 * (i + 1), 12.0);
-
-        // horrible
-        auto arrowAlphaMotion = arrowAlphaMotionIn >= 1.0
-            ? arrowAlphaMotionOut >= 1.0
-                ? arrowAlphaMotionIn
-                : arrowAlphaMotionOut
-            : arrowAlphaMotionIn;
-
-        auto arrowAlpha = (int)Lerp(50 * (i + 1), 255, arrowAlphaMotion);
-
-        drawList->AddImage
-        (
-            g_texSelectArrow.get(),
-            { pos.x + arrowRight, pos.y },
-            { pos.x + arrowRight + arrowScaleX, pos.y + arrowScaleY },
-            GET_UV_COORDS(arrowUVs),
-            IM_COL32(255, 255, 255, arrowAlpha)
-        );
-    }
-}
-
 void DrawButton(int rowIndex, float yOffset, float yPadding, float width, float height, std::string& text)
 {
     auto drawList = ImGui::GetBackgroundDrawList();
@@ -301,7 +266,7 @@ void DrawButton(int rowIndex, float yOffset, float yPadding, float width, float 
         textColour = IM_COL32(255, gb, gb, 255);
 
         if (!g_isClosing)
-            DrawButtonArrow(min);
+            DrawArrowCursor(min, g_time, false, true);
     }
 
     auto fontSize = Scale(27);
@@ -455,16 +420,24 @@ void MessageWindow::Draw()
             
         if (g_isDeclined)
         {
-            if (g_selectedRowIndex == g_cancelButtonIndex)
+            if (g_buttons.size() == 1)
             {
                 Game_PlaySound("window_close");
             }
             else
             {
-                Game_PlaySound("move");
+                if (g_selectedRowIndex == g_cancelButtonIndex)
+                {
+                    Game_PlaySound("window_close");
+                }
+                else
+                {
+                    Game_PlaySound("move");
+                }
+
+                g_selectedRowIndex = g_cancelButtonIndex;
             }
-            
-            g_selectedRowIndex = g_cancelButtonIndex;
+
             g_isDeclined = false;
         }
     }
