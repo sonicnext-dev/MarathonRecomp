@@ -8,7 +8,7 @@ namespace Sonicteam
     {
     public:
         xpointer<GameImp> m_pGameImp;
-        be<uint32_t> m_SelectedIndex;
+        be<uint32_t> m_SelectedID;
         be<uint32_t> m_Field54;
     };
 }

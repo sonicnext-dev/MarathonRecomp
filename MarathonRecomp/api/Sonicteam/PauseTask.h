@@ -9,12 +9,12 @@ namespace Sonicteam
     public:
         enum PauseTaskState
         {
-            PauseTaskState_Open,
+            PauseTaskState_Opened,
             PauseTaskState_Opening,
             PauseTaskState_Idle,
-            PauseTaskState_Action,
-            PauseTaskState_Close,
-            PauseTaskState_Closing
+            PauseTaskState_ClosingToAction,
+            PauseTaskState_Closing,
+            PauseTaskState_Closed
         };
 
         MARATHON_INSERT_PADDING(4);

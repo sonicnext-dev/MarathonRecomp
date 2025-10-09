@@ -34,7 +34,7 @@ void GameImp_PauseMenu_AddQuitPrefix(PPCRegister& r1, PPCRegister& r30)
     AddPauseMenuItem(pGameImp->m_pSystemTextBook, pvActionNames, pvTextCards, pvEnabledItems, "options", "msg_options", true);
 }
 
-// Sonicteam::PauseAdapter::MapActionNameToIndex (speculatory)
+// Sonicteam::PauseAdapter::MapActionNameToID (speculatory)
 PPC_FUNC_IMPL(__imp__sub_8216DA08);
 PPC_FUNC(sub_8216DA08)
 {
@@ -43,9 +43,9 @@ PPC_FUNC(sub_8216DA08)
 
     __imp__sub_8216DA08(ctx, base);
 
-    // Set selected index to unused slot.
+    // Set selected ID to unused slot.
     if (pMsgPauseAdapterText->SelectedName == "options")
-        pPauseAdapter->m_SelectedIndex = 6;
+        pPauseAdapter->m_SelectedID = 6;
 }
 
 // Sonicteam::PauseAdapter::DoAction (speculatory)
@@ -54,7 +54,7 @@ PPC_FUNC(sub_82170E48)
 {
     auto pPauseAdapter = (Sonicteam::PauseAdapter*)(base + ctx.r3.u32);
 
-    if (pPauseAdapter->m_SelectedIndex == 6)
+    if (pPauseAdapter->m_SelectedID == 6)
     {
         OptionsMenu::Open(true);
         return;
@@ -86,13 +86,13 @@ PPC_FUNC(sub_82509870)
             break;
         }
 
-        case Sonicteam::PauseTask::PauseTaskState_Closing:
+        case Sonicteam::PauseTask::PauseTaskState_Closed:
         {
             if (OptionsMenu::s_isVisible)
             {
                 if (OptionsMenu::s_state == OptionsMenuState::Closing)
                 {
-                    pPauseTask->m_State = Sonicteam::PauseTask::PauseTaskState_Open;
+                    pPauseTask->m_State = Sonicteam::PauseTask::PauseTaskState_Opened;
                     s_isReturningFromOptionsMenu = true;
                 }
                 else
