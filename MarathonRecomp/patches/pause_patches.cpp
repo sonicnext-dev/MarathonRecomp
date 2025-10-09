@@ -48,12 +48,38 @@ PPC_FUNC(sub_8216DA08)
         pPauseAdapter->m_SelectedIndex = 6;
 }
 
-void PauseAdapter_DoAction(PPCRegister& r11)
+// Sonicteam::PauseAdapter::DoAction (speculatory)
+PPC_FUNC_IMPL(__imp__sub_82170E48);
+PPC_FUNC(sub_82170E48)
 {
-    switch (r11.u32)
+    auto pPauseAdapter = (Sonicteam::PauseAdapter*)(base + ctx.r3.u32);
+
+    if (pPauseAdapter->m_SelectedIndex == 6)
     {
-        case 6:
-            OptionsMenu::Open(true);
-            break;
+        OptionsMenu::Open(true);
+        return;
     }
+
+    __imp__sub_82170E48(ctx, base);
+}
+
+// Sonicteam::PauseTask::Update
+PPC_FUNC_IMPL(__imp__sub_82509870);
+PPC_FUNC(sub_82509870)
+{
+    auto pPauseTask = (Sonicteam::PauseTask*)(base + ctx.r3.u32);
+
+    if (OptionsMenu::s_isVisible && pPauseTask->m_State == Sonicteam::PauseTask::PauseTaskState_Closing)
+    {
+        if (OptionsMenu::s_state == OptionsMenuState::Closing)
+        {
+            pPauseTask->m_State = Sonicteam::PauseTask::PauseTaskState_Opening;
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    __imp__sub_82509870(ctx, base);
 }

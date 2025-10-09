@@ -30,6 +30,15 @@ namespace Sonicteam
             GameState_ReturnToMainMenu
         };
 
+        enum GameFlags : uint32_t
+        {
+            GameFlags_RestartArea1 = 1,
+            GameFlags_RestartArea2 = 0x200,
+            GameFlags_IsPaused = 0x1000,
+            GameFlags_LoadArea1 = 0x40000,
+            GameFlags_LoadArea2 = 0x200000
+        };
+
         struct PlayerData
         {
             be<uint32_t> ActorID;
@@ -51,9 +60,9 @@ namespace Sonicteam
         };
 
         MARATHON_INSERT_PADDING(4);
-        be<GameState> m_GameState;
+        be<GameState> m_State;
         xpointer<DocMarathonState> m_pDoc;
-        be<uint32_t> m_Flags;
+        be<GameFlags> m_Flags;
         MARATHON_INSERT_PADDING(0xE2C);
         PlayerData m_PlayerData[4];
         MARATHON_INSERT_PADDING(0x200);
