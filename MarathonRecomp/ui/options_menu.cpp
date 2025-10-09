@@ -20,6 +20,7 @@ static double g_flowStateTime{};
 static double g_categoryTime{};
 static double g_cursorArrowsTime{};
 static double g_scrollArrowsTime{};
+static double g_lastTappedTime{};
 
 static bool g_up{};
 static bool g_upWasHeld{};
@@ -187,6 +188,64 @@ static void DrawCategories(ImVec2 min, ImVec2 max)
     }
 }
 
+void DrawSelectionArrows(ImVec2 min, ImVec2 max, bool isSelected)
+{
+    if (!isSelected)
+        return;
+
+    auto drawList = ImGui::GetBackgroundDrawList();
+
+    static bool s_isLeftArrowMotion = false;
+    static bool s_isRightArrowMotion = false;
+
+    auto motionTime = (s_isLeftArrowMotion || s_isRightArrowMotion)
+        ? ComputeMotion(g_lastTappedTime, 0, 15)
+        : 0;
+
+    if (g_left)
+    {
+        s_isLeftArrowMotion = true;
+        s_isRightArrowMotion = false;
+    }
+
+    if (g_right)
+    {
+        s_isLeftArrowMotion = false;
+        s_isRightArrowMotion = true;
+    }
+
+    if (motionTime >= 1.0)
+    {
+        s_isLeftArrowMotion = false;
+        s_isRightArrowMotion = false;
+    }
+
+    auto arrowUVs = PIXELS_TO_UV_COORDS(256, 256, 15, 46, 28, 26);
+
+    auto arrowWidth = Scale(28, true);
+    auto arrowHeight = Scale(26, true);
+
+    auto arrowOffsetXMin = Scale(30, true);
+    auto arrowOffsetXMax = Scale(20, true);
+
+    auto arrowOffsetX = Lerp(arrowOffsetXMin, arrowOffsetXMax, sin(motionTime * M_PI));
+    auto arrowOffsetY = Scale(10, true);
+
+    auto arrowLeftOffsetX = s_isLeftArrowMotion ? arrowOffsetX : arrowOffsetXMin;
+    auto arrowRightOffsetX = s_isRightArrowMotion ? arrowOffsetX : arrowOffsetXMin;
+
+    ImVec2 arrowLeftMin = { min.x + arrowLeftOffsetX, min.y + arrowOffsetY };
+    ImVec2 arrowLeftMax = { arrowLeftMin.x + arrowWidth, arrowLeftMin.y + arrowHeight };
+    ImVec2 arrowRightMin = { max.x - arrowWidth - arrowRightOffsetX, arrowLeftMin.y };
+    ImVec2 arrowRightMax = { arrowRightMin.x + arrowWidth, arrowLeftMax.y };
+
+    // Draw left arrow.
+    AddImageFlipped(g_upTexMainMenu8.get(), arrowLeftMin, arrowLeftMax, GET_UV_COORDS(arrowUVs), IM_COL32_WHITE, true);
+
+    // Draw right arrow.
+    drawList->AddImage(g_upTexMainMenu8.get(), arrowRightMin, arrowRightMax, GET_UV_COORDS(arrowUVs));
+};
+
 template <typename T, bool isHidden = false>
 static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAccessible, std::string* inaccessibleReason = nullptr, T valueMin = T(0), T valueCentre = T(0.5), T valueMax = T(1), bool isSlider = true)
 {
@@ -287,29 +346,6 @@ static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAcce
 
     constexpr auto isSliderType = std::is_same_v<T, float> || std::is_same_v<T, int>;
 
-    auto drawSelectionArrows = [=]()
-    {
-        if (!isSelected)
-            return;
-
-        auto arrowUVs = PIXELS_TO_UV_COORDS(256, 256, 15, 46, 28, 26);
-        auto arrowWidth = Scale(28, true);
-        auto arrowHeight = Scale(26, true);
-        auto arrowOffsetX = Scale(30, true);
-        auto arrowOffsetY = Scale(10, true);
-
-        ImVec2 arrowLeftMin = { ctrlBgLeftEdgeMin.x + arrowOffsetX, ctrlBgLeftEdgeMin.y + arrowOffsetY };
-        ImVec2 arrowLeftMax = { arrowLeftMin.x + arrowWidth, arrowLeftMin.y + arrowHeight };
-        ImVec2 arrowRightMin = { ctrlBgRightEdgeMax.x - arrowWidth - arrowOffsetX, arrowLeftMin.y };
-        ImVec2 arrowRightMax = { arrowRightMin.x + arrowWidth, arrowLeftMax.y };
-
-        // Draw left arrow.
-        AddImageFlipped(g_upTexMainMenu8.get(), arrowLeftMin, arrowLeftMax, GET_UV_COORDS(arrowUVs), IM_COL32_WHITE, true);
-
-        // Draw right arrow.
-        drawList->AddImage(g_upTexMainMenu8.get(), arrowRightMin, arrowRightMax, GET_UV_COORDS(arrowUVs));
-    };
-
     if constexpr (isSliderType)
     {
         if (isSlider)
@@ -346,12 +382,12 @@ static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAcce
         }
         else
         {
-            drawSelectionArrows();
+            DrawSelectionArrows(ctrlBgLeftEdgeMin, ctrlBgRightEdgeMax, isSelected);
         }
     }
     else
     {
-        drawSelectionArrows();
+        DrawSelectionArrows(ctrlBgLeftEdgeMin, ctrlBgRightEdgeMax, isSelected);
     }
 
     if (isCurrent)
@@ -432,6 +468,9 @@ static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAcce
             {
                 auto increment = g_right;
                 auto decrement = g_left;
+
+                if (increment || decrement)
+                    g_lastTappedTime = ImGui::GetTime();
 
                 if constexpr (std::is_enum_v<T>)
                 {
