@@ -520,12 +520,12 @@ CONFIG_DEFINE_LOCALE(VSync)
 
 CONFIG_DEFINE_LOCALE(FPS)
 {
-    { ELanguage::English,  { "FPS", "Set the max frame rate the game can run at. WARNING: this may introduce glitches at frame rates higher than 60 FPS." } },
-    { ELanguage::Japanese, { "フレームレート上限", "ゲームの最大フレームレートを設定できます 警告: 60 FPSを超えるフレームレートで不具合が発生する可能性があります" } },
-    { ELanguage::German,   { "FPS", "Setze die maximale Anzahl der Bilder pro Sekunde, die das Spiel darstellen kann. WARNUNG: Das Spiel kann bei höheren FPS als 60 ungewolltes Verhalten aufweisen." } },
-    { ELanguage::French,   { "IPS", "Détermine la fréquence d'images maximale du jeu. ATTENTION : cela peut entraîner des problèmes à des taux de rafraîchissement supérieurs à 60 IPS." } },
-    { ELanguage::Spanish,  { "FPS", "Establece la tasa de fotogramas máxima a la que puede correr el juego. ADVERTENCIA: esto puede introducir fallos en tasas mayores a 60 FPS." } },
-    { ELanguage::Italian,  { "FPS", "Imposta il frame rate massimo del gioco. ATTENZIONE: questa opzione può causare dei glitch a frame rate più alti di 60 FPS." } }
+    { ELanguage::English,  { "FPS", "Set the max frame rate the game can run at. WARNING: this may introduce glitches at frame rates other than 60 FPS." } },
+    { ELanguage::Japanese, { "フレームレート上限", "DUMMY" } },
+    { ELanguage::German,   { "FPS", "DUMMY" } },
+    { ELanguage::French,   { "IPS", "DUMMY" } },
+    { ELanguage::Spanish,  { "FPS", "DUMMY" } },
+    { ELanguage::Italian,  { "FPS", "DUMMY" } }
 };
 
 CONFIG_DEFINE_LOCALE(Brightness)
