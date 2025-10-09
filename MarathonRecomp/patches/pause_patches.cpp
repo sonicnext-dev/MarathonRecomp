@@ -69,15 +69,39 @@ PPC_FUNC(sub_82509870)
 {
     auto pPauseTask = (Sonicteam::PauseTask*)(base + ctx.r3.u32);
 
-    if (OptionsMenu::s_isVisible && pPauseTask->m_State == Sonicteam::PauseTask::PauseTaskState_Closing)
+    static bool s_isReturningFromOptionsMenu{};
+
+    switch (pPauseTask->m_State)
     {
-        if (OptionsMenu::s_state == OptionsMenuState::Closing)
+        case Sonicteam::PauseTask::PauseTaskState_Opening:
+        case Sonicteam::PauseTask::PauseTaskState_Idle:
         {
-            pPauseTask->m_State = Sonicteam::PauseTask::PauseTaskState_Opening;
+            if (!s_isReturningFromOptionsMenu)
+                break;
+
+            // Set cursor to Options (should always be above the last item).
+            pPauseTask->m_SelectedIndex = pPauseTask->m_ItemCount - 2;
+            s_isReturningFromOptionsMenu = false;
+
+            break;
         }
-        else
+
+        case Sonicteam::PauseTask::PauseTaskState_Closing:
         {
-            return;
+            if (OptionsMenu::s_isVisible)
+            {
+                if (OptionsMenu::s_state == OptionsMenuState::Closing)
+                {
+                    pPauseTask->m_State = Sonicteam::PauseTask::PauseTaskState_Open;
+                    s_isReturningFromOptionsMenu = true;
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            break;
         }
     }
 

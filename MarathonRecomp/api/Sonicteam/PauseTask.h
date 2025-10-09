@@ -9,9 +9,12 @@ namespace Sonicteam
     public:
         enum PauseTaskState
         {
-            PauseTaskState_Opening = 0,
-            PauseTaskState_Action = 3,
-            PauseTaskState_Closing = 5
+            PauseTaskState_Open,
+            PauseTaskState_Opening,
+            PauseTaskState_Idle,
+            PauseTaskState_Action,
+            PauseTaskState_Close,
+            PauseTaskState_Closing
         };
 
         MARATHON_INSERT_PADDING(4);
@@ -19,7 +22,10 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(0x18);
         be<PauseTaskState> m_State;
         be<uint32_t> m_Flags;
-        MARATHON_INSERT_PADDING(0x2C);
+        be<uint32_t> m_SelectedIndex;
+        MARATHON_INSERT_PADDING(0x28);
         be<uint32_t> m_Buttons;
+        MARATHON_INSERT_PADDING(0x1E0);
+        be<uint32_t> m_ItemCount;
     };
 }
