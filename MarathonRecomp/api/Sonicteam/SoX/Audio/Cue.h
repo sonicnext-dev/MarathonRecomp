@@ -28,7 +28,7 @@ namespace Sonicteam::SoX::Audio
 
         void SetPause(bool isPaused)
         {
-            GuestToHostFunction<int>(((Vftable*)m_pVftable.get())->fpSetPause.get(), this, isPaused);
+            GuestToHostFunction<int>(((Vftable*)m_pVftable.get())->fpSetPause, this, isPaused);
         }
     };
 }

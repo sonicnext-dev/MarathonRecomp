@@ -79,7 +79,9 @@ namespace Sonicteam
         stdx::vector<stdx::vector<boost::shared_ptr<SoX::Scenery::Camera>>> m_vvspCameras;
         MARATHON_INSERT_PADDING(0x1B4);
         xpointer<SoX::Audio::Cue> m_pBgmCue;
-        MARATHON_INSERT_PADDING(0x61C);
+        MARATHON_INSERT_PADDING(0x36C);
+        xpointer<TextBook> m_pHintTextBook;
+        MARATHON_INSERT_PADDING(0x2AC);
         SoX::RefSharedPointer<SoX::Physics::World> m_spPhysicsWorld;
         xpointer<void> m_pMyCollisionFilter;
 
