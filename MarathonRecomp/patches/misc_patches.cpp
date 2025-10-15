@@ -117,4 +117,9 @@ PPC_FUNC(sub_824A6EA8)
     __imp__sub_824A6EA8(ctx, base);
 }
 
+PPC_FUNC(sub_82188460)
+{
+    ctx.r3.u64 = Config::Subtitles;
+}
+
 void NOP() {}
