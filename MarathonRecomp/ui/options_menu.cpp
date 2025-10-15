@@ -20,6 +20,7 @@ static double g_flowStateTime{};
 static double g_categoryTime{};
 static double g_cursorArrowsTime{};
 static double g_scrollArrowsTime{};
+static double g_lastIncrementTime{};
 static double g_lastTappedTime{};
 
 static bool g_up{};
@@ -87,7 +88,9 @@ static void ResetOptionSelection()
 
 static void ResetSelection()
 {
-    g_flowStateTime = 0.0;
+    auto time = ImGui::GetTime();
+
+    g_flowStateTime = time;
 
     ResetCategorySelection();
     ResetOptionSelection();
@@ -108,16 +111,40 @@ static void MoveCursor(int& cursorIndex, double& cursorTime, int min = 0, int ma
 {
     auto time = ImGui::GetTime();
 
-    // TODO: handle holding inputs.
+    auto scrollUp = g_up;
+    auto scrollDown = g_down;
 
-    if (g_up)
+    if (scrollUp || scrollDown)
+        g_lastTappedTime = time;
+
+    static constexpr auto FAST_SCROLL_THRESHOLD = 0.6;
+    static constexpr auto FAST_SCROLL_SPEED = 1.0 / 6.5;
+
+    auto fastScroll = (time - g_lastTappedTime) > FAST_SCROLL_THRESHOLD;
+
+    if (fastScroll)
+    {
+        if ((time - g_lastIncrementTime) < FAST_SCROLL_SPEED)
+        {
+            fastScroll = false;
+        }
+        else
+        {
+            g_lastIncrementTime = time;
+
+            scrollUp = g_upWasHeld;
+            scrollDown = g_downWasHeld;
+        }
+    }
+
+    if (scrollUp)
     {
         --cursorIndex;
 
         if (cursorIndex < min)
             cursorIndex = max - 1;
     }
-    else if (g_down)
+    else if (scrollDown)
     {
         ++cursorIndex;
 
@@ -125,11 +152,11 @@ static void MoveCursor(int& cursorIndex, double& cursorTime, int min = 0, int ma
             cursorIndex = min;
     }
 
-    if (g_up || g_down)
+    if (scrollUp || scrollDown)
     {
-        cursorTime = ImGui::GetTime();
-
         Game_PlaySound("move");
+
+        cursorTime = ImGui::GetTime();
 
         if (onCursorMoved)
             onCursorMoved();
@@ -504,25 +531,75 @@ static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAcce
                 }
                 else if constexpr (isSliderType)
                 {
-                    if constexpr (std::is_integral_v<T>)
+                    auto time = ImGui::GetTime();
+                    auto fastIncrement = isSlider && (g_leftWasHeld || g_rightWasHeld) && (time - g_lastTappedTime) > 0.5;
+                    auto playIncrementSound = true;
+
+                    static auto s_fastIncrementHoldTime = 0.0;
+                    static auto s_lastIncrementSoundTime = 0.0;
+
+                    static constexpr auto INCREMENT_TIME = 1.0 / 60.0;
+                    static constexpr auto INCREMENT_SOUND_TIME = 1.0 / 20.0;
+
+                    if (fastIncrement)
                     {
-                        if (decrement)
-                            config->Value -= 1;
-                        else if (increment)
-                            config->Value += 1;
+                        s_fastIncrementHoldTime += App::s_deltaTime;
                     }
                     else
                     {
-                        if (decrement)
-                            config->Value -= 0.01f;
-                        else if (increment)
-                            config->Value += 0.01f;
+                        s_fastIncrementHoldTime = 0.0;
                     }
+
+                    if (fastIncrement)
+                    {
+                        playIncrementSound = (time - s_lastIncrementSoundTime) > INCREMENT_SOUND_TIME;
+
+                        if (s_fastIncrementHoldTime < INCREMENT_TIME)
+                        {
+                            fastIncrement = false;
+                        }
+                        else
+                        {
+                            g_lastIncrementTime = time;
+                        }
+                    }
+
+                    if (fastIncrement)
+                    {
+                        increment = g_rightWasHeld;
+                        decrement = g_leftWasHeld;
+                    }
+
+                    do
+                    {
+                        if constexpr (std::is_integral_v<T>)
+                        {
+                            if (decrement)
+                                config->Value -= 1;
+                            else if (increment)
+                                config->Value += 1;
+                        }
+                        else
+                        {
+                            if (decrement)
+                                config->Value -= 0.01f;
+                            else if (increment)
+                                config->Value += 0.01f;
+                        }
+
+                        if (fastIncrement)
+                            s_fastIncrementHoldTime -= INCREMENT_TIME;
+                    }
+                    while (fastIncrement && s_fastIncrementHoldTime >= INCREMENT_TIME);
 
                     auto isValueInBounds = config->Value >= valueMin && config->Value <= valueMax;
 
-                    if ((increment || decrement) && isValueInBounds)
+                    if ((increment || decrement) && isValueInBounds && playIncrementSound)
+                    {
                         Game_PlaySound("move");
+
+                        s_lastIncrementSoundTime = time;
+                    }
 
                     config->Value = std::clamp(config->Value, valueMin, valueMax);
                 }
@@ -693,6 +770,8 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
             {
                 if (def->GetSection() != "Codes")
                     continue;
+
+                def->SetHidden(false);
 
                 DrawOption(rowCount++, (ConfigDef<bool, true>*)def, true);
             }
