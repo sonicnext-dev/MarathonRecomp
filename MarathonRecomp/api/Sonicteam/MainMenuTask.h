@@ -33,7 +33,9 @@ namespace Sonicteam
         };
 
         be<uint32_t> m_State;
-        MARATHON_INSERT_PADDING(0x50);
+        MARATHON_INSERT_PADDING(0x24);
+        xpointer<HUDMainMenu> m_pHUDMainMenu;
+        MARATHON_INSERT_PADDING(0x28);
         be<uint32_t> m_SelectedIndex;
         MARATHON_INSERT_PADDING(0x1D8);
         be<uint32_t> m_PressedButtons;

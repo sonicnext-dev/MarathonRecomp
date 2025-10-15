@@ -442,6 +442,12 @@ bool ConfigDef<T, isHidden>::IsHidden()
 }
 
 template<typename T, bool isHidden>
+void ConfigDef<T, isHidden>::SetHidden(bool hidden)
+{
+    IsLoadedFromConfig = !hidden;
+}
+
+template<typename T, bool isHidden>
 void ConfigDef<T, isHidden>::ReadValue(toml::v3::ex::parse_result& toml)
 {
     if (auto pSection = toml[Section].as_table())

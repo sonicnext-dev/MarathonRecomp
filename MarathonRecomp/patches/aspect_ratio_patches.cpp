@@ -8,6 +8,7 @@
 #include <ui/black_bar.h>
 #include <ui/game_window.h>
 #include <ui/imgui_utils.h>
+#include <ui/options_menu.h>
 #include <user/config.h>
 #include <app.h>
 
@@ -406,6 +407,10 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
     {
         modifier = g_sceneModifier.value();
     }
+
+    // Hide original button window whilst the options menu is visible.
+    if ((modifier.Flags & CSD_BUTTON_WINDOW) != 0 && OptionsMenu::s_isVisible)
+        return;
 
     // Remove all flags if the aspect ratio is above 16:9.
     if ((modifier.Flags & CSD_MODIFIER_ULTRAWIDE_ONLY) != 0 && g_aspectRatio <= WIDE_ASPECT_RATIO)
@@ -1611,6 +1616,10 @@ PPC_FUNC(sub_8262D868)
     pTextEntity->m_ScaleX = scale;
     pTextEntity->m_ScaleY = scale;
 
+    // Disable text rendering whilst options menu is visible.
+    if (OptionsMenu::s_isVisible)
+        pTextEntity->m_ScaleX = 0.0f;
+
     __imp__sub_8262D868(ctx, base);
 
     pTextEntity->m_X = x;
@@ -1859,8 +1868,8 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("event/e1141/sonic_the_hedgehog/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
 
     // button_window
-    { HashStr("sprite/button_window/button_window/Scene_0000/Null_0000/Cast_0001"), { CSD_SCALE } },
-    { HashStr("sprite/button_window/button_window/Scene_0000/Null_0000/Cast_0002"), { CSD_SCALE | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/button_window/button_window/Scene_0000/Null_0000/Cast_0001"), { CSD_BUTTON_WINDOW | CSD_SCALE } },
+    { HashStr("sprite/button_window/button_window/Scene_0000/Null_0000/Cast_0002"), { CSD_BUTTON_WINDOW | CSD_SCALE | CSD_EXTEND_RIGHT } },
 
     // cri_logo
     { HashStr("sprite/logo/cri_logo/Scene_0000/Null_0002/bg"), { CSD_STRETCH } },

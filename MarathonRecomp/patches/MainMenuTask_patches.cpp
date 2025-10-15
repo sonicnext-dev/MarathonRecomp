@@ -8,6 +8,8 @@ PPC_FUNC(sub_824FFCF8)
 {
     auto pMainMenuTask = (Sonicteam::MainMenuTask*)(base + ctx.r3.u32);
 
+    static bool s_isReturningFromOptionsMenu{};
+
 #ifdef MARATHON_RECOMP_OPTIONS_MENU
     if (pMainMenuTask->m_State == Sonicteam::MainMenuTask::MainMenuState_MainMenu && pMainMenuTask->m_SelectedIndex == 3)
     {
@@ -19,20 +21,46 @@ PPC_FUNC(sub_824FFCF8)
     
             pMainMenuTask->m_State = Sonicteam::MainMenuTask::MainMenuState_MainMenu;
             pMainMenuTask->m_PressedButtons = 0;
+
+            guest_stack_var<Sonicteam::Message::MsgHUDMainMenuChangeState> msgHUDMainMenuChangeState
+            (
+                Sonicteam::HUDMainMenu::HUDMainMenuState_MainCursorOutro,
+                pMainMenuTask->m_SelectedIndex
+            );
+
+            // Play cursor outro animation.
+            pMainMenuTask->m_pHUDMainMenu->OnMessageReceived(msgHUDMainMenuChangeState.get());
         }
     }
 #endif
 
+    MainMenuTaskPatches::State = (Sonicteam::MainMenuTask::MainMenuState)pMainMenuTask->m_State.get();
+
+    for (auto& event : MainMenuTaskPatches::Events)
+        event->Update(pMainMenuTask, ctx.f1.f64);
+
     if (OptionsMenu::s_isVisible)
     {
         pMainMenuTask->m_PressedButtons = 0;
+
+        if (OptionsMenu::s_state == OptionsMenuState::Closing)
+            s_isReturningFromOptionsMenu = true;
     }
     else
     {
-        MainMenuTaskPatches::State = (Sonicteam::MainMenuTask::MainMenuState)pMainMenuTask->m_State.get();
+        if (s_isReturningFromOptionsMenu)
+        {
+            guest_stack_var<Sonicteam::Message::MsgHUDMainMenuChangeState> msgHUDMainMenuChangeState
+            (
+                Sonicteam::HUDMainMenu::HUDMainMenuState_MainCursorIntro,
+                pMainMenuTask->m_SelectedIndex
+            );
 
-        for (auto& event : MainMenuTaskPatches::Events)
-            event->Update(pMainMenuTask, ctx.f1.f64);
+            // Play cursor intro animation.
+            pMainMenuTask->m_pHUDMainMenu->OnMessageReceived(msgHUDMainMenuChangeState.get());
+
+            s_isReturningFromOptionsMenu = false;
+        }
 
         __imp__sub_824FFCF8(ctx, base);
     }

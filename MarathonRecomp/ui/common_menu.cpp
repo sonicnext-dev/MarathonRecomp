@@ -24,8 +24,11 @@ void CommonMenu::Draw()
     auto gradientHeight = Scale(126, true);
     auto gradientMotion = Lerp(min.y - gradientHeight, 0.0, borderMotionTime);
 
-    // Draw gradient to fill gap between red strip and top metal plates.
-    drawList->AddRectFilledMultiColor({ 0.0f, gradientMotion }, { res.x, gradientMotion + gradientHeight }, gradientTop, gradientTop, gradientBottom, gradientBottom);
+    if (!ReduceDraw)
+    {
+        // Draw gradient to fill gap between red strip and top metal plates.
+        drawList->AddRectFilledMultiColor({ 0.0f, gradientMotion }, { res.x, gradientMotion + gradientHeight }, gradientTop, gradientTop, gradientBottom, gradientBottom);
+    }
 
     auto redStripCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 301, 300, 50);
     auto redStripLeftStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 301, 150, 50);
@@ -39,6 +42,14 @@ void CommonMenu::Draw()
     ImVec2 redStripCornerMin = { min.x - Scale(43, true), redStripMotion };
     ImVec2 redStripCornerMax = { redStripCornerMin.x + Scale(300, true), redStripMotion + redStripHeight };
 
+    if (ReduceDraw)
+    {
+        ImVec2 redStripClipMin = { redStripCornerMin.x + Scale(160, true), redStripCornerMin.y};
+        ImVec2 redStripClipMax = { res.x, redStripCornerMax.y - Scale(10, true) };
+
+        drawList->PushClipRect(redStripClipMin, redStripClipMax);
+    }
+
     // Draw corner left red strip.
     drawList->AddImage(g_upTexMainMenu1.get(), redStripCornerMin, redStripCornerMax, GET_UV_COORDS(redStripCornerUVs), redStripColour);
 
@@ -47,6 +58,9 @@ void CommonMenu::Draw()
 
     // Draw right stretched red strip.
     drawList->AddImage(g_upTexMainMenu1.get(), { redStripCornerMax.x, redStripCornerMin.y }, { res.x, redStripCornerMax.y }, GET_UV_COORDS(redStripRightStretchUVs), redStripColour);
+
+    if (ReduceDraw)
+        drawList->PopClipRect();
 
     auto redStripHighlightWidth = Scale(270, true);
     auto redStripHighlightHeight = Scale(48, true);
@@ -124,16 +138,19 @@ void CommonMenu::Draw()
     ImVec2 topPlateStretchMin = { topPlateCornerMax.x, topPlateCornerMin.y };
     ImVec2 topPlateStretchMax = { res.x, topPlateCornerMax.y };
 
-    // Draw top left corner metal plate.
-    drawList->AddImage(g_upTexMainMenu1.get(), topPlateCornerMin, topPlateCornerMax, GET_UV_COORDS(topPlateCornerUVs));
+    if (!ReduceDraw)
+    {
+        // Draw top left corner metal plate.
+        drawList->AddImage(g_upTexMainMenu1.get(), topPlateCornerMin, topPlateCornerMax, GET_UV_COORDS(topPlateCornerUVs));
 
-    // Draw top left stretched metal plate.
-    AddImageFlipped(g_upTexMainMenu1.get(), { 0.0f, topPlateCornerMin.y }, { topPlateCornerMin.x + Scale(2, true), topPlateCornerMax.y }, GET_UV_COORDS(topPlateLeftStretchUVs), IM_COL32_WHITE, true);
+        // Draw top left stretched metal plate.
+        AddImageFlipped(g_upTexMainMenu1.get(), { 0.0f, topPlateCornerMin.y }, { topPlateCornerMin.x + Scale(2, true), topPlateCornerMax.y }, GET_UV_COORDS(topPlateLeftStretchUVs), IM_COL32_WHITE, true);
 
-    // Draw top right stretched metal plate.
-    SetHorizontalGradient(topPlateStretchMin, topPlateStretchMax, IM_COL32_WHITE, IM_COL32(200, 200, 200, 255));
-    drawList->AddImage(g_upTexMainMenu1.get(), topPlateStretchMin, topPlateStretchMax, GET_UV_COORDS(topPlateRightStretchUVs));
-    ResetGradient();
+        // Draw top right stretched metal plate.
+        SetHorizontalGradient(topPlateStretchMin, topPlateStretchMax, IM_COL32_WHITE, IM_COL32(200, 200, 200, 255));
+        drawList->AddImage(g_upTexMainMenu1.get(), topPlateStretchMin, topPlateStretchMax, GET_UV_COORDS(topPlateRightStretchUVs));
+        ResetGradient();
+    }
 
     auto textCoverCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 801, 400, 150, 150);
     auto textCoverCornerExtendUVs = PIXELS_TO_UV_COORDS(1024, 1024, 801, 400, 125, 150);
@@ -152,8 +169,15 @@ void CommonMenu::Draw()
     ImVec2 textCoverCornerRightMin = { max.x - textCoverWidth, textCoverCornerLeftMin.y };
     ImVec2 textCoverCornerRightMax = { max.x, textCoverCornerLeftMax.y };
 
-    // Draw text cover backdrop.
-    drawList->AddRectFilled({ 0.0f, textCoverMotion }, { res.x, textCoverMotion + textCoverHeight }, IM_COL32(0, 0, 0, 65));
+    if (ReduceDraw)
+    {
+        auto horzMargin = Scale(128, true);
+
+        ImVec2 textCoverClipMin = { textCoverCornerLeftMin.x + horzMargin, textCoverCornerLeftMin.y + Scale(15, true) };
+        ImVec2 textCoverClipMax = { textCoverCornerRightMax.x - horzMargin, textCoverCornerRightMax.y - Scale(90, true) };
+
+        drawList->PushClipRect(textCoverClipMin, textCoverClipMax);
+    }
 
     if (!Description.empty())
     {
@@ -240,6 +264,9 @@ void CommonMenu::Draw()
 
         auto descAlphaMotionTime = ComputeMotion(m_descTime, PlayTransitions ? 10 : 0, 15, m_isClosing);
 
+        // Draw text cover backdrop.
+        drawList->AddRectFilled({ 0.0f, textCoverMotion }, { res.x, textCoverMotion + textCoverHeight }, IM_COL32(0, 0, 0, 65));
+
         // Draw previous description fading out.
         if (!m_previousDesc.empty())
             drawList->AddText(g_pFntRodin, descFontSize, m_previousDescPos, IM_COL32(255, 255, 255, Lerp(255, 0, descAlphaMotionTime)), m_previousDesc.data());
@@ -264,6 +291,9 @@ void CommonMenu::Draw()
         drawList->AddRectFilled({ 0.0f, textCoverCornerLeftMin.y }, { res.x, textCoverCornerLeftMax.y }, textCoverColour);
     }
 
+    if (ReduceDraw)
+        drawList->PopClipRect();
+
     auto bottomPlateUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 0, 700, 145);
     auto bottomPlateStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 1, 0, 128, 145);
     auto bottomPlateOffsetX = Scale(-59.5, true);
@@ -277,17 +307,20 @@ void CommonMenu::Draw()
     ImVec2 bottomPlateRightMin = { max.x - bottomPlateWidth - bottomPlateOffsetX, bottomPlateLeftMin.y };
     ImVec2 bottomPlateRightMax = { bottomPlateRightMin.x + bottomPlateWidth, bottomPlateLeftMax.y };
 
-    // Draw bottom left metal plate.
-    drawList->AddImage(g_upTexMainMenu1.get(), bottomPlateLeftMin, bottomPlateLeftMax, GET_UV_COORDS(bottomPlateUVs));
+    if (!ReduceDraw)
+    {
+        // Draw bottom left metal plate.
+        drawList->AddImage(g_upTexMainMenu1.get(), bottomPlateLeftMin, bottomPlateLeftMax, GET_UV_COORDS(bottomPlateUVs));
 
-    // Draw bottom left stretched metal plate.
-    AddImageFlipped(g_upTexMainMenu1.get(), { 0.0f, bottomPlateLeftMin.y }, { bottomPlateLeftMin.x, bottomPlateLeftMax.y }, GET_UV_COORDS(bottomPlateStretchUVs), IM_COL32_WHITE, true);
+        // Draw bottom left stretched metal plate.
+        AddImageFlipped(g_upTexMainMenu1.get(), { 0.0f, bottomPlateLeftMin.y }, { bottomPlateLeftMin.x, bottomPlateLeftMax.y }, GET_UV_COORDS(bottomPlateStretchUVs), IM_COL32_WHITE, true);
 
-    // Draw bottom right metal plate.
-    AddImageFlipped(g_upTexMainMenu1.get(), bottomPlateRightMin, bottomPlateRightMax, GET_UV_COORDS(bottomPlateUVs), IM_COL32_WHITE, true);
+        // Draw bottom right metal plate.
+        AddImageFlipped(g_upTexMainMenu1.get(), bottomPlateRightMin, bottomPlateRightMax, GET_UV_COORDS(bottomPlateUVs), IM_COL32_WHITE, true);
 
-    // Draw bottom right stretched metal plate.
-    AddImageFlipped(g_upTexMainMenu1.get(), { bottomPlateRightMax.x, bottomPlateRightMin.y }, { res.x, bottomPlateRightMax.y }, GET_UV_COORDS(bottomPlateStretchUVs), IM_COL32_WHITE, true);
+        // Draw bottom right stretched metal plate.
+        AddImageFlipped(g_upTexMainMenu1.get(), { bottomPlateRightMax.x, bottomPlateRightMin.y }, { res.x, bottomPlateRightMax.y }, GET_UV_COORDS(bottomPlateStretchUVs), IM_COL32_WHITE, true);
+    }
 
     if (App::s_isInit)
         SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);

@@ -49,6 +49,7 @@ public:
     std::string Description{};
     bool PlayTransitions{};
     bool ShowVersionString{ true };
+    bool ReduceDraw{};
 
     CommonMenu() {}
 

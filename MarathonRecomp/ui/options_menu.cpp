@@ -156,7 +156,7 @@ static void MoveCursor(int& cursorIndex, double& cursorTime, int min = 0, int ma
     {
         Game_PlaySound("move");
 
-        cursorTime = ImGui::GetTime();
+        cursorTime = time;
 
         if (onCursorMoved)
             onCursorMoved();
@@ -869,7 +869,26 @@ void OptionsMenu::Draw()
     auto gradientTop = IM_COL32(0, 103, 255, alpha);
     auto gradientBottom = IM_COL32(0, 41, 100, alpha);
 
-    drawList->AddRectFilledMultiColor({ 0.0f, g_aspectRatioOffsetY }, { res.x, res.y - g_aspectRatioOffsetY }, gradientTop, gradientTop, gradientBottom, gradientBottom);
+    auto drawBackground = [=]()
+    {
+        drawList->AddRectFilledMultiColor({ 0.0f, g_aspectRatioOffsetY }, { res.x, res.y - g_aspectRatioOffsetY }, gradientTop, gradientTop, gradientBottom, gradientBottom);
+    };
+
+    if (s_isPause)
+    {
+        drawBackground();
+    }
+    else
+    {
+        auto horzMargin = Scale(128, true);
+
+        ImVec2 footerClipMin = { g_aspectRatioOffsetX + horzMargin, res.y - g_aspectRatioOffsetY - Scale(152, true) };
+        ImVec2 footerClipMax = { res.x - g_aspectRatioOffsetX - horzMargin, res.y - g_aspectRatioOffsetY - Scale(107, true) };
+
+        drawList->PushClipRect(footerClipMin, footerClipMax);
+        drawBackground();
+        drawList->PopClipRect();
+    }
 
     auto upIsHeld = false;
     auto downIsHeld = false;
@@ -929,7 +948,12 @@ void OptionsMenu::Draw()
         case OptionsMenuState::Closing:
         {
             if (s_commonMenu.Close())
+            {
+                if (!s_isPause)
+                    ButtonGuide::Close();
+
                 s_isVisible = false;
+            }
 
             break;
         }
@@ -1024,7 +1048,9 @@ void OptionsMenu::Draw()
         }
     }
 
-    DrawArrows({ 0, res.y / 2 - Scale(10) }, res);
+    if (s_isPause)
+        DrawArrows({ 0, res.y / 2 - Scale(10) }, res);
+
     DrawCategories(min, max);
     DrawContainer(min, max);
 
@@ -1056,6 +1082,8 @@ void OptionsMenu::Open(bool isPause)
 {
     // TODO: open with main menu options description text to fade into category description.
     s_commonMenu = CommonMenu(Localise("Options_Header_Name"), "", isPause);
+    s_commonMenu.ReduceDraw = !isPause;
+
     g_stateTime = ImGui::GetTime();
     g_categoryTime = g_stateTime;
     g_cursorArrowsTime = g_stateTime;
@@ -1086,7 +1114,9 @@ void OptionsMenu::Close()
     g_stateTime = ImGui::GetTime();
     g_cursorArrowsTime = g_stateTime;
 
-    ButtonGuide::Close();
+    if (s_isPause)
+        ButtonGuide::Close();
+
     Config::Save();
 }
 
