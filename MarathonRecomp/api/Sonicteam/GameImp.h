@@ -2,10 +2,12 @@
 
 #include <Marathon.inl>
 #include <boost/smart_ptr/shared_ptr.h>
+#include <Sonicteam/SoX/Audio/Cue.h>
 #include <Sonicteam/SoX/Physics/World.h>
 #include <Sonicteam/SoX/Scenery/Camera.h>
 #include <Sonicteam/SoX/Scenery/CameraImp.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
+#include <Sonicteam/Game.h>
 #include <Sonicteam/TextBook.h>
 #include <stdx/vector.h>
 
@@ -14,7 +16,7 @@ namespace Sonicteam
     class ActorManager;
     class GameScript;
 
-    class GameImp : public SoX::MessageReceiver
+    class GameImp : public Game
     {
     public:
         enum GameState : uint32_t
@@ -75,7 +77,9 @@ namespace Sonicteam
         xpointer<TextBook> m_pSystemTextBook;
         MARATHON_INSERT_PADDING(8);
         stdx::vector<stdx::vector<boost::shared_ptr<SoX::Scenery::Camera>>> m_vvspCameras;
-        MARATHON_INSERT_PADDING(0x7D4);
+        MARATHON_INSERT_PADDING(0x1B4);
+        xpointer<SoX::Audio::Cue> m_pBgmCue;
+        MARATHON_INSERT_PADDING(0x61C);
         SoX::RefSharedPointer<SoX::Physics::World> m_spPhysicsWorld;
         xpointer<void> m_pMyCollisionFilter;
 
@@ -90,7 +94,7 @@ namespace Sonicteam
             return -1;
         }
 
-        SoX::Scenery::CameraImp* GetCameraImp(const char* pName, int which = 0)
+        SoX::Scenery::CameraImp* GetCamera(const char* pName, int which = 0)
         {
             if (m_vvspCameras.empty())
                 return nullptr;
@@ -104,6 +108,12 @@ namespace Sonicteam
             }
 
             return nullptr;
+        }
+
+        template <typename T = SoX::Audio::Cue>
+        T* GetBgmCue() const
+        {
+            return (T*)m_pBgmCue.get();
         }
 
         template <typename T = SoX::Physics::World>

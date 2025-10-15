@@ -259,7 +259,7 @@ bool ObjectVehicleBike_EnemyShot_DisableVehicleCollisionLayer(PPCRegister& r3)
     {
         if (auto pGameMode = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>())
         {
-            auto pWorldHavok = pGameMode->m_pGameImp->GetPhysicsWorld<Sonicteam::SoX::Physics::Havok::WorldHavok>();
+            auto pWorldHavok = pGameMode->GetGame()->GetPhysicsWorld<Sonicteam::SoX::Physics::Havok::WorldHavok>();
 
             if (auto pWorld = pWorldHavok->m_pWorld)
                 pWorld->updateCollisionFilterOnWorld(1, 1);

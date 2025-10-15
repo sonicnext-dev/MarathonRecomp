@@ -24,7 +24,7 @@ PPC_FUNC(sub_8221A7D8)
     }
 
     auto pTailsFlight = pPlayer->m_spStateMachine->GetBase()->GetState<Sonicteam::Player::State::TailsFlight>();
-    auto pGameImp = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->m_pGameImp;
+    auto pGame = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->GetGame();
 
     auto maturityValue = 1.0f;
 
@@ -34,8 +34,8 @@ PPC_FUNC(sub_8221A7D8)
 
     for (int i = 0; i < 4; i++)
     {
-        if (pGameImp->m_PlayerData[i].ActorID == pPlayer->m_ActorID.get())
-            pGameImp->m_PlayerData[i].MaturityValue = maturityValue;
+        if (pGame->m_PlayerData[i].ActorID == pPlayer->m_ActorID.get())
+            pGame->m_PlayerData[i].MaturityValue = maturityValue;
     }
 
     __imp__sub_8221A7D8(ctx, base);
@@ -130,17 +130,17 @@ PPC_FUNC(sub_82195500)
     {
         if (pPlayer->m_IsPlayer)
         {
-            auto playerIndex = pGameMode->m_pGameImp->PlayerActorIDToIndex(pPlayer->m_ActorID);
+            auto playerIndex = pGameMode->GetGame()->PlayerActorIDToIndex(pPlayer->m_ActorID);
             auto padID = pDoc->m_PlayerControllerID[playerIndex];
             auto& spManager = pDoc->m_vspInputManager[padID];
-            auto pGameImp = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->m_pGameImp.get();
+            auto pGame = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->GetGame();
 
             // Disable collision on B press.
             if (pPlayer->m_SetupModuleIndexPostfix == 2 && spManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_B) && Config::EnableDebugMode)
             {
                 auto value = pZock->m_spPhantomA->m_pRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo == 6 ? 0x383 : 6;
                 pZock->m_spPhantomA->m_pRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo = value;
-                pGameImp->GetPhysicsWorld<Sonicteam::SoX::Physics::Havok::WorldHavok>()->m_pWorld->updateCollisionFilterOnWorld(1,1);
+                pGame->GetPhysicsWorld<Sonicteam::SoX::Physics::Havok::WorldHavok>()->m_pWorld->updateCollisionFilterOnWorld(1,1);
             }
 
             // Switch to Camera <-> DemoGMCamera
@@ -228,7 +228,7 @@ void RestoreChainJumpFlips(PPCRegister& r_ObjectPlayer, PPCRegister& r_Message, 
 
     if (pMessage->m_ActorID.get() != -1)
     {
-        auto pFixture = GuestToHostFunction<Sonicteam::Fixture*>(sub_821609D0,App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->m_pGameImp->m_spActorManager.get(), &pMessage->m_ActorID);
+        auto pFixture = GuestToHostFunction<Sonicteam::Fixture*>(sub_821609D0,App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->GetGame()->m_spActorManager.get(), &pMessage->m_ActorID);
         auto sMessage = guest_stack_var<Sonicteam::Message::MsgObjJump123GetNextPoint>();
         sMessage->m_Rotation = { 0, 0, 0, 1 };
         sMessage->m_Position = { 0, 0, 0, 1 };

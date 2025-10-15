@@ -2,6 +2,8 @@
 #include <kernel/memory.h>
 #include <ui/options_menu.h>
 
+static Sonicteam::SoX::Audio::Cue* g_pBgmCue{};
+
 void AddPauseMenuItem
 (
     Sonicteam::TextBook* in_pTextBook,
@@ -57,6 +59,11 @@ PPC_FUNC(sub_82170E48)
     if (pPauseAdapter->m_SelectedID == 6)
     {
         OptionsMenu::Open(true);
+
+        // Unpause background music for volume controls.
+        if ((g_pBgmCue = pPauseAdapter->GetGame()->GetBgmCue()))
+            g_pBgmCue->SetPause(false);
+
         return;
     }
 
@@ -79,8 +86,16 @@ PPC_FUNC(sub_82509870)
             if (!s_isReturningFromOptionsMenu)
                 break;
 
+            if (g_pBgmCue)
+            {
+                // Pause background music again.
+                g_pBgmCue->SetPause(true);
+                g_pBgmCue = nullptr;
+            }
+
             // Set cursor to Options (should always be above the last item).
             pPauseTask->m_SelectedIndex = pPauseTask->m_ItemCount - 2;
+
             s_isReturningFromOptionsMenu = false;
 
             break;
