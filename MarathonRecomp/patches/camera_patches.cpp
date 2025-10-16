@@ -35,7 +35,7 @@ void CameraImp_SetFOV(PPCRegister& f1)
 void SonicCamera_InvertAzDriveK(PPCRegister& az_driveK)
 {
     // X axis is inverted by default.
-    if (Config::HorizontalCamera != ECameraRotationMode::Normal)
+    if (Config::HorizontalCamera == ECameraRotationMode::Reverse)
         return;
 
     az_driveK.f64 = -az_driveK.f64;
@@ -43,8 +43,27 @@ void SonicCamera_InvertAzDriveK(PPCRegister& az_driveK)
 
 void SonicCamera_InvertAltDriveK(PPCRegister& alt_driveK)
 {
-    if (Config::VerticalCamera != ECameraRotationMode::Reverse)
+    // Y axis is not inverted by default.
+    if (Config::VerticalCamera == ECameraRotationMode::Normal)
         return;
 
     alt_driveK.f64 = -alt_driveK.f64;
+}
+
+void DemoGMCamera_InvertHorizontal(PPCRegister& horz)
+{
+    // X axis is inverted by default.
+    if (Config::HorizontalCamera == ECameraRotationMode::Reverse)
+        return;
+
+    horz.f64 = -horz.f64;
+}
+
+void DemoGMCamera_InvertVertical(PPCRegister& vert)
+{
+    // Y axis is inverted by default.
+    if (Config::VerticalCamera == ECameraRotationMode::Reverse)
+        return;
+
+    vert.f64 = -vert.f64;
 }
