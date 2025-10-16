@@ -620,6 +620,10 @@ static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAcce
                         config->Callback(config);
                 }
             }
+
+            // Toggle BGM for master and music volume sliders.
+            if (OptionsMenu::s_pBgmCue)
+                OptionsMenu::s_pBgmCue->SetPause(!(isSelected && ((ConfigDef<float>*)config == &Config::MasterVolume || (ConfigDef<float>*)config == &Config::MusicVolume)));
         }
         else
         {
@@ -1113,6 +1117,12 @@ void OptionsMenu::Close()
     s_state = OptionsMenuState::Closing;
     g_stateTime = ImGui::GetTime();
     g_cursorArrowsTime = g_stateTime;
+
+    if (s_pBgmCue)
+    {
+        s_pBgmCue->SetPause(true);
+        s_pBgmCue = nullptr;
+    }
 
     if (s_isPause)
         ButtonGuide::Close();

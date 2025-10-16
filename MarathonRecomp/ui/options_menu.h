@@ -1,5 +1,6 @@
 #pragma once
 
+#include <api/Marathon.h>
 #include <ui/common_menu.h>
 
 #define MARATHON_RECOMP_OPTIONS_MENU
@@ -35,6 +36,7 @@ public:
     static inline CommonMenu s_commonMenu{};
     static inline OptionsMenuState s_state{};
     static inline OptionsMenuFlowState s_flowState{};
+    static inline Sonicteam::SoX::Audio::Cue* s_pBgmCue{};
     static inline bool s_isVisible{};
     static inline bool s_isPause{};
     static inline bool s_isRestartRequired{};

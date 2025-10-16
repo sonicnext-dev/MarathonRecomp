@@ -1,8 +1,5 @@
 #pragma once
 
-#include <Marathon.inl>
+#include <Sonicteam/SoX/Audio/Cue.h>
 
-namespace
-{
-    class MyCue : public Sonicteam::SoX::Audio::Cue {};
-}
+class MyCue : public Sonicteam::SoX::Audio::Cue {};
