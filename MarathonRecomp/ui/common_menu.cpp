@@ -173,7 +173,7 @@ void CommonMenu::Draw()
     {
         auto horzMargin = Scale(128, true);
 
-        ImVec2 textCoverClipMin = { textCoverCornerLeftMin.x + horzMargin, textCoverCornerLeftMin.y + Scale(15, true) };
+        ImVec2 textCoverClipMin = { textCoverCornerLeftMin.x + horzMargin, textCoverCornerLeftMin.y + Scale(14, true) };
         ImVec2 textCoverClipMax = { textCoverCornerRightMax.x - horzMargin, textCoverCornerRightMax.y - Scale(90, true) };
 
         drawList->PushClipRect(textCoverClipMin, textCoverClipMax);
