@@ -125,14 +125,14 @@ void ObjectInputWarp_ExtendMsgSuckPlayer(PPCRegister& phantom, PPCRegister& mess
     auto pPhantom = (Sonicteam::SoX::Physics::Phantom*)g_memory.Translate(phantom.u32);
     auto pMessage = (Sonicteam::Message::MsgSuckPlayer*)g_memory.Translate(message.u32);
 
-    auto pNewMessage = (MsgSuckPlayerEx*)g_userHeap.Alloc(sizeof(MsgSuckPlayerEx));
-    pNewMessage->ID = pMessage->ID;
-    pNewMessage->Point = pMessage->Point;
-    pNewMessage->DeltaTime = deltaTime.f64;
+    auto pMsgSuckPlayerEx = (MsgSuckPlayerEx*)g_userHeap.Alloc(sizeof(MsgSuckPlayerEx));
+    pMsgSuckPlayerEx->ID = pMessage->ID;
+    pMsgSuckPlayerEx->Point = pMessage->Point;
+    pMsgSuckPlayerEx->DeltaTime = deltaTime.f64;
 
-    pPhantom->OnMessageReceived(pNewMessage);
+    pPhantom->ProcessMessage(pMsgSuckPlayerEx);
 
-    g_userHeap.Free(pNewMessage);
+    g_userHeap.Free(pMsgSuckPlayerEx);
 }
 
 void PlayerObject_ProcessMsgSuckPlayer_FixForce(PPCRegister& message, PPCRegister& force)

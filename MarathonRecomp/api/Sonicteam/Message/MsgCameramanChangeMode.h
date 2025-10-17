@@ -6,10 +6,10 @@
 
 namespace Sonicteam::Message
 {
-    struct MsgCameramanCameraInitialize : SoX::Message<0x14007>
+    struct MsgCameramanChangeMode : SoX::Message<0x14007>
     {
-        be<uint32_t> m_PadID;
-        be<uint32_t> m_TargetActorID;
-        bool IsDemoCam;
+        be<uint32_t> ControllerIndex;
+        be<uint32_t> TargetActorID;
+        bool IsDemoCamera;
     };
 }

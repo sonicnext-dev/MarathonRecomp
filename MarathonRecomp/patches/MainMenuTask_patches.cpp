@@ -29,7 +29,7 @@ PPC_FUNC(sub_824FFCF8)
             );
 
             // Play cursor outro animation.
-            pMainMenuTask->m_pHUDMainMenu->OnMessageReceived(msgHUDMainMenuChangeState.get());
+            pMainMenuTask->m_pHUDMainMenu->ProcessMessage(msgHUDMainMenuChangeState.get());
         }
     }
 #endif
@@ -57,7 +57,7 @@ PPC_FUNC(sub_824FFCF8)
             );
 
             // Play cursor intro animation.
-            pMainMenuTask->m_pHUDMainMenu->OnMessageReceived(msgHUDMainMenuChangeState.get());
+            pMainMenuTask->m_pHUDMainMenu->ProcessMessage(msgHUDMainMenuChangeState.get());
 
             s_isReturningFromOptionsMenu = false;
         }

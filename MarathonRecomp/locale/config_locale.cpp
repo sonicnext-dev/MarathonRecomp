@@ -158,9 +158,118 @@ CONFIG_DEFINE_LOCALE(AchievementNotifications)
     { ELanguage::Italian,  { "Notifiche obiettivi", "Mostra delle notifiche quando sblocchi degli obiettivi. Gli obiettivi verranno comunque assegnati anche con le notifiche disattivate." } }
 };
 
+CONFIG_DEFINE_LOCALE(HorizontalCamera)
+{
+    { ELanguage::English,  { "Horizontal Camera", "Change how the camera moves left and right." } },
+    { ELanguage::Japanese, { "カメラの左右", "カメラ左右の動く方向を選択できます" } },
+    { ELanguage::German,   { "Horizontale Kamera", "Ändere wie sich die Kamera nach links und rechts bewegt." } },
+    { ELanguage::French,   { "Caméra horizontale", "Modifie la rotation horizontale de la caméra." } },
+    { ELanguage::Spanish,  { "Cámara horizontal", "Cambia cómo se mueve la camara hacia la izquierda y la derecha." } },
+    { ELanguage::Italian,  { "Telecamera orizzontale", "Modifica come la telecamera si muove da sinistra a destra." } }
+};
+
+CONFIG_DEFINE_LOCALE(VerticalCamera)
+{
+    { ELanguage::English,  { "Vertical Camera", "Change how the camera moves up and down." } },
+    { ELanguage::Japanese, { "カメラの上下", "カメラ上下の動く方向を選択できます" } },
+    { ELanguage::German,   { "Vertikale Kamera", "Ändere wie sich die Kamera nach oben und unten bewegt." } },
+    { ELanguage::French,   { "Caméra verticale", "Modifie la rotation verticale de la caméra." } },
+    { ELanguage::Spanish,  { "Cámara vertical", "Cambia cómo se mueve la camara hacia arriba y abajo." } },
+    { ELanguage::Italian,  { "Telecamera verticale", "Modifica come la telecamera si muove su e giù." } }
+};
+
+CONFIG_DEFINE_ENUM_LOCALE(EFaceButton)
+{
+    {
+        ELanguage::English,
+        {
+            { EFaceButton::A, { "A", "" } },
+            { EFaceButton::B, { "B", "" } },
+            { EFaceButton::X, { "X", "" } },
+            { EFaceButton::Y, { "Y", "" } }
+        }
+    }
+};
+
+CONFIG_DEFINE_LOCALE(Antigravity)
+{
+    { ELanguage::English,  { "Antigravity", "Change how Antigravity is activated." } },
+    { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
+    { ELanguage::German,   { "DUMMY", "DUMMY" } },
+    { ELanguage::French,   { "DUMMY", "DUMMY" } },
+    { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
+    { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
+};
+
+CONFIG_DEFINE_LOCALE(LightDash)
+{
+    { ELanguage::English,  { "Light Dash", "Change how Light Dash is activated." } },
+    { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
+    { ELanguage::German,   { "DUMMY", "DUMMY" } },
+    { ELanguage::French,   { "DUMMY", "DUMMY" } },
+    { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
+    { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
+};
+
+CONFIG_DEFINE_ENUM_LOCALE(ECameraRotationMode)
+{
+    {
+        ELanguage::English,
+        {
+            { ECameraRotationMode::Normal,  { "Normal", "" } },
+            { ECameraRotationMode::Reverse, { "Reverse", "" } }
+        }
+    },
+    {
+        ELanguage::Japanese,
+        {
+            { ECameraRotationMode::Normal,  { "ノーマル", "" } },
+            { ECameraRotationMode::Reverse, { "リバース", "" } }
+        }
+    },
+    {
+        ELanguage::German,
+        {
+            { ECameraRotationMode::Normal,  { "Normal", "" } },
+            { ECameraRotationMode::Reverse, { "Invertiert", "" } }
+        }
+    },
+    {
+        ELanguage::French,
+        {
+            { ECameraRotationMode::Normal,  { "Normale", "" } },
+            { ECameraRotationMode::Reverse, { "Inversée", "" } }
+        }
+    },
+    {
+        ELanguage::Spanish,
+        {
+            { ECameraRotationMode::Normal,  { "Normal", "" } },
+            { ECameraRotationMode::Reverse, { "Invertido", "" } }
+        }
+    },
+    {
+        ELanguage::Italian,
+        {
+            { ECameraRotationMode::Normal,  { "Normale", "" } },
+            { ECameraRotationMode::Reverse, { "Invertita", "" } }
+        }
+    }
+};
+
+CONFIG_DEFINE_LOCALE(AllowBackgroundInput)
+{
+    { ELanguage::English,  { "Allow Background Input", "Allow controller input whilst the game window is unfocused." } },
+    { ELanguage::Japanese, { "バックグラウンド入力", "フォーカスされていないゲームに入力できるか選択できます" } },
+    { ELanguage::German,   { "Erlaube Hintergrundeingaben", "Erlaube Eingaben deines Controllers auch wenn das Spielfenster nicht fokussiert ist." } },
+    { ELanguage::French,   { "Manette en arrière plan", "Permet d'utiliser la manette dans le jeu lorsque qu'il n'est pas au premier plan." } },
+    { ELanguage::Spanish,  { "Control en segundo plano", "Permite controlar el juego con un mando mientras la ventana esté en segundo plano." } },
+    { ELanguage::Italian,  { "Input con la finestra inattiva", "Attiva/disattiva i tasti del controller mentre la finestra è inattiva." } }
+};
+
 CONFIG_DEFINE_LOCALE(ControllerIcons)
 {
-    { ELanguage::English,  { "Controller Icons", "Change the icons to match your controller." } },
+    { ELanguage::English, { "Controller Icons", "Change the icons to match your controller." } },
     { ELanguage::Japanese, { "コントローラーアイコン", "ゲーム内のコントローラーアイコンを変更できます" } },
     { ELanguage::German,   { "Controllersymbole", "Ändere die Controllersymbole, um sie auf dein Modell anzupassen." } },
     { ELanguage::French,   { "Icône des boutons", "Modifie les icônes pour les faire correspondre à votre manette." } },
@@ -218,82 +327,6 @@ CONFIG_DEFINE_ENUM_LOCALE(EControllerIcons)
             { EControllerIcons::PlayStation, { "PlayStation", "" } }
         }
     }
-};
-
-CONFIG_DEFINE_LOCALE(HorizontalCamera)
-{
-    { ELanguage::English,  { "Horizontal Camera", "Change how the camera moves left and right." } },
-    { ELanguage::Japanese, { "カメラの左右", "カメラ左右の動く方向を選択できます" } },
-    { ELanguage::German,   { "Horizontale Kamera", "Ändere wie sich die Kamera nach links und rechts bewegt." } },
-    { ELanguage::French,   { "Caméra horizontale", "Modifie la rotation horizontale de la caméra." } },
-    { ELanguage::Spanish,  { "Cámara horizontal", "Cambia cómo se mueve la camara hacia la izquierda y la derecha." } },
-    { ELanguage::Italian,  { "Telecamera orizzontale", "Modifica come la telecamera si muove da sinistra a destra." } }
-};
-
-CONFIG_DEFINE_LOCALE(VerticalCamera)
-{
-    { ELanguage::English,  { "Vertical Camera", "Change how the camera moves up and down." } },
-    { ELanguage::Japanese, { "カメラの上下", "カメラ上下の動く方向を選択できます" } },
-    { ELanguage::German,   { "Vertikale Kamera", "Ändere wie sich die Kamera nach oben und unten bewegt." } },
-    { ELanguage::French,   { "Caméra verticale", "Modifie la rotation verticale de la caméra." } },
-    { ELanguage::Spanish, { "Cámara vertical", "Cambia cómo se mueve la camara hacia arriba y abajo." } },
-    { ELanguage::Italian,  { "Telecamera verticale", "Modifica come la telecamera si muove su e giù." } }
-};
-
-CONFIG_DEFINE_ENUM_LOCALE(ECameraRotationMode)
-{
-    {
-        ELanguage::English,
-        {
-            { ECameraRotationMode::Normal,  { "Normal", "" } },
-            { ECameraRotationMode::Reverse, { "Reverse", "" } }
-        }
-    },
-    {
-        ELanguage::Japanese,
-        {
-            { ECameraRotationMode::Normal,  { "ノーマル", "" } },
-            { ECameraRotationMode::Reverse, { "リバース", "" } }
-        }
-    },
-    {
-        ELanguage::German,
-        {
-            { ECameraRotationMode::Normal,  { "Normal", "" } },
-            { ECameraRotationMode::Reverse, { "Invertiert", "" } }
-        }
-    },
-    {
-        ELanguage::French,
-        {
-            { ECameraRotationMode::Normal,  { "Normale", "" } },
-            { ECameraRotationMode::Reverse, { "Inversée", "" } }
-        }
-    },
-    {
-        ELanguage::Spanish,
-        {
-            { ECameraRotationMode::Normal,  { "Normal", "" } },
-            { ECameraRotationMode::Reverse, { "Invertido", "" } }
-        }
-    },
-    {
-        ELanguage::Italian,
-        {
-            { ECameraRotationMode::Normal,  { "Normale", "" } },
-            { ECameraRotationMode::Reverse, { "Invertita", "" } }
-        }
-    }
-};
-
-CONFIG_DEFINE_LOCALE(AllowBackgroundInput)
-{
-    { ELanguage::English,  { "Allow Background Input", "Allow controller input whilst the game window is unfocused." } },
-    { ELanguage::Japanese, { "バックグラウンド入力", "フォーカスされていないゲームに入力できるか選択できます" } },
-    { ELanguage::German,   { "Erlaube Hintergrundeingaben", "Erlaube Eingaben deines Controllers auch wenn das Spielfenster nicht fokussiert ist." } },
-    { ELanguage::French,   { "Manette en arrière plan", "Permet d'utiliser la manette dans le jeu lorsque qu'il n'est pas au premier plan." } },
-    { ELanguage::Spanish,  { "Control en segundo plano", "Permite controlar el juego con un mando mientras la ventana esté en segundo plano." } },
-    { ELanguage::Italian,  { "Input con la finestra inattiva", "Attiva/disattiva i tasti del controller mentre la finestra è inattiva." } }
 };
 
 CONFIG_DEFINE_LOCALE(MasterVolume)
@@ -399,7 +432,7 @@ CONFIG_DEFINE_LOCALE(VoiceLanguage)
     { ELanguage::German,   { "Stimmeinstellung", "Ändere die Sprache, die für Charakterstimmen benutzt wird." } },
     { ELanguage::French,   { "Langue de doublage", "Modifie la langue utilisée pour la voix des personnages." } },
     { ELanguage::Spanish,  { "Idioma de voz", "Cambia el idioma utilizado para las voces de los personajes." } },
-    { ELanguage::Italian, { "Lingua delle voci", "Modifica la lingua utilizzata per le voci dei personaggi." } }
+    { ELanguage::Italian,  { "Lingua delle voci", "Modifica la lingua utilizzata per le voci dei personaggi." } }
 };
 
 CONFIG_DEFINE_LOCALE(Subtitles)
@@ -447,43 +480,43 @@ CONFIG_DEFINE_ENUM_LOCALE(EAspectRatio)
     {
         ELanguage::English,
         {
-            { EAspectRatio::Auto, { "Auto", "Auto: the aspect ratio will dynamically adjust to the window size." } },
-            { EAspectRatio::Wide, { "16:9", "16:9: locks the game to a widescreen aspect ratio." } }
+            { EAspectRatio::Auto,     { "Auto", "Auto: the aspect ratio will dynamically adjust to the window size." } },
+            { EAspectRatio::Original, { "Original", "Original: locks the game to a widescreen aspect ratio." } }
         }
     },
     {
         ELanguage::Japanese,
         {
-            { EAspectRatio::Auto, { "自動", "自動: アスペクト比はウィンドウサイズに合わせて調整されます" } },
-            { EAspectRatio::Wide, { "16:9", "16:9: ワイドスクリーンのアスペクト比に固定されます" } }
+            { EAspectRatio::Auto,     { "自動", "自動: アスペクト比はウィンドウサイズに合わせて調整されます" } },
+            { EAspectRatio::Original, { "オリジナル", "オリジナル: ワイドスクリーンのアスペクト比に固定されます" } }
         }
     },
     {
         ELanguage::German,
         {
-            { EAspectRatio::Auto, { "Auto", "Auto: Das Seitenverhältnis passt sich automatisch der Fenstergröße an." } },
-            { EAspectRatio::Wide, { "16:9", "16:9: Stellt das Spiel in einem Breitbildschirm-Format dar." } }
+            { EAspectRatio::Auto,     { "Auto", "Auto: Das Seitenverhältnis passt sich automatisch der Fenstergröße an." } },
+            { EAspectRatio::Original, { "Original", "Original: Stellt das Spiel in einem Breitbildschirm-Format dar." } }
         }
     },
     {
         ELanguage::French,
         {
-            { EAspectRatio::Auto, { "Auto", "Auto : le format d'image s'adapte automatiquement à la taille de la fenêtre." } },
-            { EAspectRatio::Wide, { "16:9", "16:9 : force le jeu sur un format d'image large." } }
+            { EAspectRatio::Auto,     { "Auto", "Auto : le format d'image s'adapte automatiquement à la taille de la fenêtre." } },
+            { EAspectRatio::Original, { "Original", "Original : force le jeu sur un format d'image large." } }
         }
     },
     {
         ELanguage::Spanish,
         {
-            { EAspectRatio::Auto, { "Auto", "Auto: la relación de aspecto se ajusta de forma dinámica al tamaño de la ventana." } },
-            { EAspectRatio::Wide, { "16:9", "16:9: muestra el juego en relación de aspecto de pantalla ancha." } }
+            { EAspectRatio::Auto,     { "Auto", "Auto: la relación de aspecto se ajusta de forma dinámica al tamaño de la ventana." } },
+            { EAspectRatio::Original, { "Original", "Original: muestra el juego en relación de aspecto de pantalla ancha." } }
         }
     },
     {
         ELanguage::Italian,
         {
-            { EAspectRatio::Auto, { "Auto", "Auto: il rapporto d'aspetto verra cambiato automaticamente in base alle dimensioni della finestra." } },
-            { EAspectRatio::Wide, { "16:9", "16:9: blocca il gioco a un rapporto d'aspetto widescreen." } }
+            { EAspectRatio::Auto,     { "Auto", "Auto: il rapporto d'aspetto verra cambiato automaticamente in base alle dimensioni della finestra." } },
+            { EAspectRatio::Original, { "Originale", "Originale: blocca il gioco a un rapporto d'aspetto widescreen." } }
         }
     }
 };

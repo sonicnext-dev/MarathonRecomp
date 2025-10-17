@@ -2,12 +2,12 @@
 
 #include <Marathon.inl>
 
-namespace Sonicteam::Player
+namespace Sonicteam::Player::Input
 {
-    class IPostureSupportEdge
+    class IListener
     {
     public:
         xpointer<void> m_pVftable;
-        MARATHON_INSERT_PADDING(0x6C);
+        MARATHON_INSERT_PADDING(0x14);
     };
 }

@@ -12,6 +12,8 @@ CONFIG_DEFINE("System", bool, ShowConsole, false);
 
 CONFIG_DEFINE_ENUM_LOCALISED("Input", ECameraRotationMode, HorizontalCamera, ECameraRotationMode::Reverse);
 CONFIG_DEFINE_ENUM_LOCALISED("Input", ECameraRotationMode, VerticalCamera, ECameraRotationMode::Normal);
+CONFIG_DEFINE_ENUM_LOCALISED("Input", EFaceButton, Antigravity, EFaceButton::X);
+CONFIG_DEFINE_ENUM_LOCALISED("Input", EFaceButton, LightDash, EFaceButton::X);
 CONFIG_DEFINE_LOCALISED("Input", bool, AllowBackgroundInput, false);
 CONFIG_DEFINE_ENUM_LOCALISED("Input", EControllerIcons, ControllerIcons, EControllerIcons::Auto);
 
@@ -71,6 +73,7 @@ CONFIG_DEFINE_ENUM_LOCALISED("Video", ERadialBlur, RadialBlur, ERadialBlur::Orig
 CONFIG_DEFINE_ENUM_LOCALISED("Video", ECutsceneAspectRatio, CutsceneAspectRatio, ECutsceneAspectRatio::Original);
 CONFIG_DEFINE_ENUM_LOCALISED("Video", EUIAlignmentMode, UIAlignmentMode, EUIAlignmentMode::Edge);
 
+CONFIG_DEFINE_HIDDEN("Codes", bool, AntigravityRetainsMomentum, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, ControllableBoundAttack, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, ControllableSpinkick, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, ControllableTeleportDash, false);
@@ -93,6 +96,7 @@ CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreDemoCameraMode, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreSonicActionGauge, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, SkipIntroLogos, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, TailsGauge, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, UnlimitedAntigravity, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, UseOfficialTitleOnTitleBar, false);
 
 CONFIG_DEFINE("Update", time_t, LastChecked, 0);
