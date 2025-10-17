@@ -149,16 +149,9 @@ PPC_FUNC(sub_8244D288)
     __imp__sub_8244D288(ctx, base);
 }
 
-bool ControlTutorial()
+bool Super3_DisableChangeRequestHint()
 {
-    return Config::ControlTutorial;
-}
-
-bool HUDStageTitle_DisableControlTutorial(PPCRegister& r14)
-{
-    auto pResourceName = (const char*)g_memory.Translate(r14.u32);
-
-    return !Config::ControlTutorial && !strstr(pResourceName, "map_twn");
+    return !Config::ControlTutorial;
 }
 
 PPC_FUNC_IMPL(__imp__sub_824A6EA8);
