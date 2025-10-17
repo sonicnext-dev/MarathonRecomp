@@ -717,12 +717,18 @@ registers = ["f0"]
 
 # Sonicteam::Player::Sound::SuperSonic
 [[midasm_hook]]
-name = "Super3_DisableChangeRequestHint"
+name = "ControlTutorial"
 address = 0x8226B8EC
-jump_address_on_true = 0x8226B910
+jump_address_on_false = 0x8226B910
 
 # Sonicteam::Player::Sound::SuperShadow / Sonicteam::Player::Sound::SuperSilver
 [[midasm_hook]]
-name = "Super3_DisableChangeRequestHint"
+name = "ControlTutorial"
 address = 0x8226AB4C
-jump_address_on_true = 0x8226AB70
+jump_address_on_false = 0x8226AB70
+
+[[midasm_hook]]
+name = "HUDStageTitle_DisableControlTutorial"
+address = 0x824F819C
+registers = ["r14"]
+jump_address_on_true = 0x824F8308
