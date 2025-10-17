@@ -27,23 +27,23 @@ namespace Sonicteam::Player
         boost::shared_ptr<void> m_spGravity;
         boost::shared_ptr<void> m_spInputListener;
         boost::shared_ptr<void> m_spAmigoListener;
-        boost::shared_ptr<State::ICommonContextIF> m_ContextIF;
+        boost::shared_ptr<State::ICommonContextIF> m_spCommonContextIF;
         boost::shared_ptr<ActorManager> m_spActorManager;
         xpointer<SoX::Engine::Task> m_pTask;
         boost::shared_ptr<IPosturePlugIn> m_spPosturePlugIn;
         SoX::Math::Vector m_GravityDirection;
         be<float> m_GravityForce;
-        SoX::Math::Vector m_NormalizedSurface; // Ground normal?
+        SoX::Math::Vector m_SurfaceNormal;
         SoX::Math::Vector m_Position;
         SoX::Math::Quaternion m_Rotation;
         MARATHON_INSERT_PADDING(0x20);
         be<uint32_t> m_PostureFlag;
         be<float> m_ImpulseForward;
         be<float> m_ImpulseVertical;
-        SoX::Math::Vector m_ImpulseUP;
-        be<uint32_t> m_ContextIFFlag;
-        be<uint32_t> m_PostureRequestFlag;
-        be<uint32_t> m_PostureFlag118;
-        be<uint32_t> m_PostureFlag11C;
+        SoX::Math::Vector m_ImpulseUp;
+        be<uint32_t> m_CommonContextIFFlags;
+        be<uint32_t> m_PostureRequestFlags;
+        be<uint32_t> m_PostureFlags118;
+        be<uint32_t> m_PostureFlags11C;
     };
 }

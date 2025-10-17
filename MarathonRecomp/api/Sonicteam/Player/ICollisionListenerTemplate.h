@@ -5,6 +5,6 @@
 
 namespace Sonicteam::Player
 {
-    template <typename Cast, typename Event>
-    class ICollisionListenerTemplate:ICollisionListener,Cast {};
+    template <typename TListener, typename TEvent>
+    class ICollisionListenerTemplate : public ICollisionListener, public TListener {};
 }
