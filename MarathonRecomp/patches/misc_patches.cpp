@@ -136,6 +136,24 @@ PPC_FUNC(sub_822CE930)
     __imp__sub_822CE930(ctx, base);
 }
 
+PPC_FUNC_IMPL(__imp__sub_8244D288);
+PPC_FUNC(sub_8244D288)
+{
+    auto isShadowEggCerberus = PPC_LOAD_U32(ctx.r3.u32 + 0x1C);
+
+    // Prevent Eggman's voice line playing
+    // for Shadow's variant of Egg Cerberus.
+    if (!Config::Hints && isShadowEggCerberus)
+        return;
+
+    __imp__sub_8244D288(ctx, base);
+}
+
+bool Super3_DisableChangeRequestHint()
+{
+    return !Config::ControlTutorial;
+}
+
 PPC_FUNC_IMPL(__imp__sub_824A6EA8);
 PPC_FUNC(sub_824A6EA8)
 {

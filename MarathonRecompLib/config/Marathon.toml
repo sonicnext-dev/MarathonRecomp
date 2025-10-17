@@ -585,3 +585,15 @@ registers = ["f0"]
 name = "DemoGMCamera_InvertVertical"
 address = 0x8218CC6C
 registers = ["f0"]
+
+# Sonicteam::Player::Sound::SuperSonic
+[[midasm_hook]]
+name = "Super3_DisableChangeRequestHint"
+address = 0x8226B8EC
+jump_address_on_true = 0x8226B910
+
+# Sonicteam::Player::Sound::SuperShadow / Sonicteam::Player::Sound::SuperSilver
+[[midasm_hook]]
+name = "Super3_DisableChangeRequestHint"
+address = 0x8226AB4C
+jump_address_on_true = 0x8226AB70
