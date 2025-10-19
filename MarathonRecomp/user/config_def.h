@@ -44,6 +44,7 @@ CONFIG_DEFINE_LOCALISED("Audio", float, MasterVolume, 1.0f);
 CONFIG_DEFINE_LOCALISED("Audio", float, MusicVolume, 0.6f);
 CONFIG_DEFINE_LOCALISED("Audio", float, EffectsVolume, 0.6f);
 CONFIG_DEFINE_ENUM_LOCALISED("Audio", EChannelConfiguration, ChannelConfiguration, EChannelConfiguration::Stereo);
+CONFIG_DEFINE_LOCALISED("Audio", bool, MuteOnFocusLost, true);
 CONFIG_DEFINE_LOCALISED("Audio", bool, MusicAttenuation, false);
 
 CONFIG_DEFINE("Video", std::string, GraphicsDevice, "");

@@ -741,6 +741,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
             DrawOption(rowCount++, &Config::MusicVolume, true);
             DrawOption(rowCount++, &Config::EffectsVolume, true);
             DrawOption(rowCount++, &Config::ChannelConfiguration, !OptionsMenu::s_isPause, cmnReason);
+            DrawOption(rowCount++, &Config::MuteOnFocusLost, true);
             DrawOption(rowCount++, &Config::MusicAttenuation, AudioPatches::CanAttenuate(), &Localise("Options_Desc_OSNotSupported"));
             break;
 

@@ -72,6 +72,16 @@ CONFIG_DEFINE_ENUM_LOCALE(ELanguage)
     }
 };
 
+CONFIG_DEFINE_LOCALE(VoiceLanguage)
+{
+    { ELanguage::English, { "Voice Language", "Change the language used for character voices." } },
+    { ELanguage::Japanese, { "音声言語", "ゲーム内の音声言語を変更できます" } },
+    { ELanguage::German,   { "Stimmeinstellung", "Ändere die Sprache, die für Charakterstimmen benutzt wird." } },
+    { ELanguage::French,   { "Langue de doublage", "Modifie la langue utilisée pour la voix des personnages." } },
+    { ELanguage::Spanish,  { "Idioma de voz", "Cambia el idioma utilizado para las voces de los personajes." } },
+    { ELanguage::Italian,  { "Lingua delle voci", "Modifica la lingua utilizzata per le voci dei personaggi." } }
+};
+
 CONFIG_DEFINE_ENUM_LOCALE(EVoiceLanguage)
 {
     {
@@ -116,6 +126,16 @@ CONFIG_DEFINE_ENUM_LOCALE(EVoiceLanguage)
             { EVoiceLanguage::Japanese, { "Giapponese", "" } }
         }
     },
+};
+
+CONFIG_DEFINE_LOCALE(Subtitles)
+{
+    { ELanguage::English, { "Subtitles", "Show subtitles during dialogue." } },
+    { ELanguage::Japanese, { "字幕", "字幕の表示を選択できます" } },
+    { ELanguage::German,   { "Untertitel", "Zeige Untertitel bei Dialogen." } },
+    { ELanguage::French,   { "Sous-titres", "Affiche les sous-titres pendant les dialogues." } },
+    { ELanguage::Spanish,  { "Subtítulos", "Muestra subtítulos durante los diálogos." } },
+    { ELanguage::Italian,  { "Sottotitoli", "Mostra i sottotitoli durante i dialoghi." } }
 };
 
 CONFIG_DEFINE_LOCALE(Hints)
@@ -178,39 +198,6 @@ CONFIG_DEFINE_LOCALE(VerticalCamera)
     { ELanguage::Italian,  { "Telecamera verticale", "Modifica come la telecamera si muove su e giù." } }
 };
 
-CONFIG_DEFINE_ENUM_LOCALE(EFaceButton)
-{
-    {
-        ELanguage::English,
-        {
-            { EFaceButton::A, { "A", "" } },
-            { EFaceButton::B, { "B", "" } },
-            { EFaceButton::X, { "X", "" } },
-            { EFaceButton::Y, { "Y", "" } }
-        }
-    }
-};
-
-CONFIG_DEFINE_LOCALE(Antigravity)
-{
-    { ELanguage::English,  { "Antigravity", "Change how Antigravity is activated." } },
-    { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
-    { ELanguage::German,   { "DUMMY", "DUMMY" } },
-    { ELanguage::French,   { "DUMMY", "DUMMY" } },
-    { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
-    { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
-};
-
-CONFIG_DEFINE_LOCALE(LightDash)
-{
-    { ELanguage::English,  { "Light Dash", "Change how Light Dash is activated." } },
-    { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
-    { ELanguage::German,   { "DUMMY", "DUMMY" } },
-    { ELanguage::French,   { "DUMMY", "DUMMY" } },
-    { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
-    { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
-};
-
 CONFIG_DEFINE_ENUM_LOCALE(ECameraRotationMode)
 {
     {
@@ -255,6 +242,39 @@ CONFIG_DEFINE_ENUM_LOCALE(ECameraRotationMode)
             { ECameraRotationMode::Reverse, { "Invertita", "" } }
         }
     }
+};
+
+CONFIG_DEFINE_ENUM_LOCALE(EFaceButton)
+{
+    {
+        ELanguage::English,
+        {
+            { EFaceButton::A, { "A", "" } },
+            { EFaceButton::B, { "B", "" } },
+            { EFaceButton::X, { "X", "" } },
+            { EFaceButton::Y, { "Y", "" } }
+        }
+    }
+};
+
+CONFIG_DEFINE_LOCALE(Antigravity)
+{
+    { ELanguage::English,  { "Antigravity", "Change how Antigravity is activated." } },
+    { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
+    { ELanguage::German,   { "DUMMY", "DUMMY" } },
+    { ELanguage::French,   { "DUMMY", "DUMMY" } },
+    { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
+    { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
+};
+
+CONFIG_DEFINE_LOCALE(LightDash)
+{
+    { ELanguage::English,  { "Light Dash", "Change how Light Dash is activated." } },
+    { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
+    { ELanguage::German,   { "DUMMY", "DUMMY" } },
+    { ELanguage::French,   { "DUMMY", "DUMMY" } },
+    { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
+    { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
 };
 
 CONFIG_DEFINE_LOCALE(AllowBackgroundInput)
@@ -359,16 +379,6 @@ CONFIG_DEFINE_LOCALE(EffectsVolume)
     { ELanguage::Italian,  { "Volume effetti sonori", "Regola il volume degli effetti sonori." } }
 };
 
-CONFIG_DEFINE_LOCALE(MusicAttenuation)
-{
-    { ELanguage::English,  { "Music Attenuation", "Fade out the game's music when external media is playing." } },
-    { ELanguage::Japanese, { "BGM減衰", "外部メディアを再生するとゲームの音楽をフェードアウトします" } },
-    { ELanguage::German,   { "Musikdämpfung", "Stelle die Musik des Spiels stumm während externe Medien abgespielt werden." } },
-    { ELanguage::French,   { "Atténuation audio", "Abaisse le volume des musiques du jeu lorsqu'un média externe est en cours de lecture." } },
-    { ELanguage::Spanish,  { "Atenuación de música", "Atenúa la música del juego cuando un reproductor multimedia se encuentra activo." } },
-    { ELanguage::Italian,  { "Attenuazione musica", "Abbassa il volume della musica di sottofondo quando un'altra applicazione riproduce dei suoni." } }
-};
-
 CONFIG_DEFINE_LOCALE(ChannelConfiguration)
 {
     { ELanguage::English,  { "Channel Configuration", "Change the output mode for your audio device." } },
@@ -425,24 +435,24 @@ CONFIG_DEFINE_ENUM_LOCALE(EChannelConfiguration)
     }
 };
 
-CONFIG_DEFINE_LOCALE(VoiceLanguage)
+CONFIG_DEFINE_LOCALE(MuteOnFocusLost)
 {
-    { ELanguage::English,  { "Voice Language", "Change the language used for character voices." } },
-    { ELanguage::Japanese, { "音声言語", "ゲーム内の音声言語を変更できます" } },
-    { ELanguage::German,   { "Stimmeinstellung", "Ändere die Sprache, die für Charakterstimmen benutzt wird." } },
-    { ELanguage::French,   { "Langue de doublage", "Modifie la langue utilisée pour la voix des personnages." } },
-    { ELanguage::Spanish,  { "Idioma de voz", "Cambia el idioma utilizado para las voces de los personajes." } },
-    { ELanguage::Italian,  { "Lingua delle voci", "Modifica la lingua utilizzata per le voci dei personaggi." } }
+    { ELanguage::English,  { "Mute on Focus Lost", "Mute the game's audio when the window is not in focus." } },
+    { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
+    { ELanguage::German,   { "DUMMY", "DUMMY" } },
+    { ELanguage::French,   { "DUMMY", "DUMMY" } },
+    { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
+    { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
 };
 
-CONFIG_DEFINE_LOCALE(Subtitles)
+CONFIG_DEFINE_LOCALE(MusicAttenuation)
 {
-    { ELanguage::English,  { "Subtitles", "Show subtitles during dialogue." } },
-    { ELanguage::Japanese, { "字幕", "字幕の表示を選択できます" } },
-    { ELanguage::German,   { "Untertitel", "Zeige Untertitel bei Dialogen." } },
-    { ELanguage::French,   { "Sous-titres", "Affiche les sous-titres pendant les dialogues." } },
-    { ELanguage::Spanish,  { "Subtítulos", "Muestra subtítulos durante los diálogos." } },
-    { ELanguage::Italian,  { "Sottotitoli", "Mostra i sottotitoli durante i dialoghi." } }
+    { ELanguage::English,  { "Music Attenuation", "Fade out the game's music when external media is playing." } },
+    { ELanguage::Japanese, { "BGM減衰", "外部メディアを再生するとゲームの音楽をフェードアウトします" } },
+    { ELanguage::German,   { "Musikdämpfung", "Stelle die Musik des Spiels stumm während externe Medien abgespielt werden." } },
+    { ELanguage::French,   { "Atténuation audio", "Abaisse le volume des musiques du jeu lorsqu'un média externe est en cours de lecture." } },
+    { ELanguage::Spanish,  { "Atenuación de música", "Atenúa la música del juego cuando un reproductor multimedia se encuentra activo." } },
+    { ELanguage::Italian,  { "Attenuazione musica", "Abbassa il volume della musica di sottofondo quando un'altra applicazione riproduce dei suoni." } }
 };
 
 CONFIG_DEFINE_LOCALE(WindowSize)
