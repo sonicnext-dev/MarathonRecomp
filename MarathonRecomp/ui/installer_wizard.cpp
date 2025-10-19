@@ -435,7 +435,6 @@ static void SetCurrentPage(WizardPage page)
             Button(backKey, backIcon)
         };
 
-        // TODO: prevent this from re-opening if unchanged.
         ButtonGuide::Open(buttons);
     }
     else if (g_currentPage == WizardPage::Installing)

@@ -31,6 +31,11 @@ public:
 
     Button(std::string name, EButtonIcon icon, bool* visibility = nullptr)
         : Name(name), Icon(icon), Visibility(visibility) {}
+
+    bool operator==(Button& other)
+    {
+        return Name == other.Name && Icon == other.Icon;
+    }
 };
 
 class ButtonGuide

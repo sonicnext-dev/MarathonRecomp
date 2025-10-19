@@ -198,24 +198,50 @@ void ButtonGuide::Open(Button button, bool isAnimated)
 {
     s_isVisible = true;
 
-    g_buttons = {};
-    g_buttons.push_back(button);
+    if (!g_buttons.size() || g_buttons[0] != button)
+    {
+        g_buttons = {};
+        g_buttons.push_back(button);
 
-    g_time = ImGui::GetTime();
-    g_isAnimated = isAnimated;
+        g_time = ImGui::GetTime();
+        g_isAnimated = isAnimated;
+    }
 }
 
 void ButtonGuide::Open(const std::span<Button> buttons, bool isAnimated)
 {
     s_isVisible = true;
 
-    g_buttons = std::vector(buttons.begin(), buttons.end());
+    auto isSameButtons = true;
 
-    g_time = ImGui::GetTime();
-    g_isAnimated = isAnimated;
+    if (g_buttons.size() == buttons.size())
+    {
+        for (size_t i = 0; i < g_buttons.size(); i++)
+        {
+            if (g_buttons[i] != buttons[i])
+            {
+                isSameButtons = false;
+                break;
+            }
+        }
+    }
+    else
+    {
+        isSameButtons = false;
+    }
+
+    if (!isSameButtons)
+    {
+        g_buttons = std::vector(buttons.begin(), buttons.end());
+
+        g_time = ImGui::GetTime();
+        g_isAnimated = isAnimated;
+    }
 }
 
 void ButtonGuide::Close()
 {
     s_isVisible = false;
+
+    g_buttons.clear();
 }
