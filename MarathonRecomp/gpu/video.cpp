@@ -6266,6 +6266,38 @@ static void SetResolution(be<uint32_t>* device)
     device[47] = height == 0 ? 720 : height;
 }
 
+static GuestShader* g_movieVertexShader;
+static GuestShader* g_moviePixelShaderHD;
+static GuestShader* g_moviePixelShaderSD;
+
+static int ScreenShaderInit(be<uint32_t>* a1)
+{
+    if (g_movieVertexShader == nullptr)
+    {
+        g_movieVertexShader = g_userHeap.AllocPhysical<GuestShader>(ResourceType::VertexShader);
+    }
+
+    if (g_moviePixelShaderHD == nullptr)
+    {
+        g_moviePixelShaderHD = g_userHeap.AllocPhysical<GuestShader>(ResourceType::PixelShader);
+    }
+
+    if (g_moviePixelShaderSD == nullptr)
+    {
+        g_moviePixelShaderSD = g_userHeap.AllocPhysical<GuestShader>(ResourceType::PixelShader);
+    }
+
+    g_moviePixelShaderHD->AddRef();
+    g_moviePixelShaderSD->AddRef();
+    g_movieVertexShader->AddRef();
+
+    a1[0x12] = g_memory.MapVirtual(g_movieVertexShader);
+    a1[0x51] = g_memory.MapVirtual(g_moviePixelShaderHD);
+    a1[0x52] = g_memory.MapVirtual(g_moviePixelShaderSD);
+
+    return 0;
+}
+
 // Needed for correct clearing of index buffer
 static bool IsSet() {
     return true;
@@ -7973,6 +8005,8 @@ GUEST_FUNCTION_HOOK(sub_82656B68, MakePictureData);
 GUEST_FUNCTION_HOOK(sub_82656DB8, MakePictureData);
 
 // GUEST_FUNCTION_HOOK(sub_82E9EE38, SetResolution);
+
+GUEST_FUNCTION_HOOK(sub_82736178, ScreenShaderInit);
 
 GUEST_FUNCTION_STUB(sub_8253EB38);
 GUEST_FUNCTION_STUB(sub_8253EB78);
