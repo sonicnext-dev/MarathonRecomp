@@ -466,6 +466,7 @@ void SonicGaugeRestorationGaugeFlagFix(PPCRegister& r_gauge, PPCRegister& r_cont
     }
 }
 
-bool InfiniteLives() {
+bool InfiniteLives()
+{
     return Config::InfiniteLives;
 }
