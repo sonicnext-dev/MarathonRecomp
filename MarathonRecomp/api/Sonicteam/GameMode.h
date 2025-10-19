@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/GameImp.h>
 
 namespace Sonicteam
 {
@@ -8,7 +9,12 @@ namespace Sonicteam
     {
     public:
         MARATHON_INSERT_PADDING(0x1C);
-        xpointer<GameImp> m_pGameImp;
+        xpointer<Game> m_pGame;
         MARATHON_INSERT_PADDING(0x1C);
+
+        GameImp* GetGame() const
+        {
+            return (GameImp*)m_pGame.get();
+        }
     };
 }

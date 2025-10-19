@@ -2,13 +2,13 @@
 
 namespace Sonicteam::System
 {
-    template <typename T, uint32_t TCreator>
+    template <typename T, uint32_t fpCreator>
     class CreateStatic
     {
     public:
         static T* Create()
         {
-            return GuestToHostFunction<T*>(TCreator);
+            return GuestToHostFunction<T*>(fpCreator);
         }
     };
 }

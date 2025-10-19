@@ -4,13 +4,13 @@
 
 namespace Sonicteam::SoX::AI
 {
-    template <typename TContext>
+    template <typename TStateContext>
     class StateMachine
     {
     public:
         xpointer<void> m_pVftable;
-        xpointer<StateMachine<TContext>> m_pState;
-        xpointer<TContext> m_pContext;
+        xpointer<StateMachine<TStateContext>> m_pState;
+        xpointer<TStateContext> m_pContext;
 
         template <typename TState>
         TState* GetState()
@@ -18,6 +18,12 @@ namespace Sonicteam::SoX::AI
             return (TState*)m_pState.get();
         }
 
+        TStateContext* GetContext()
+        {
+            return (TStateContext*)m_pContext.get();
+        }
+
+        template <typename TContext>
         TContext* GetContext()
         {
             return (TContext*)m_pContext.get();

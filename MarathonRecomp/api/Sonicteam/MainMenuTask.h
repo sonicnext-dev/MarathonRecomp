@@ -33,7 +33,13 @@ namespace Sonicteam
         };
 
         be<uint32_t> m_State;
-        MARATHON_INSERT_PADDING(0x248);
+        MARATHON_INSERT_PADDING(0x24);
+        xpointer<HUDMainMenu> m_pHUDMainMenu;
+        MARATHON_INSERT_PADDING(0x28);
+        be<uint32_t> m_SelectedIndex;
+        MARATHON_INSERT_PADDING(0x1D8);
+        be<uint32_t> m_PressedButtons;
+        MARATHON_INSERT_PADDING(0x18);
         xpointer<Actor> m_Field298;
         xpointer<Player::Object> m_SelectCharacters[9];
     };

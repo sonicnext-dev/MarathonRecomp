@@ -10,8 +10,13 @@ namespace Sonicteam::Camera
     class CameraMode : public SoX::MessageReceiver
     {
     public:
-        boost::shared_ptr<GameImp> m_spGameImp;
-        xpointer<void> m_pTPCameraInputListener;
+        boost::shared_ptr<Game> m_spGame;
+        xpointer<void> m_pCameraInputListener;
         MARATHON_INSERT_PADDING(0x18);
+
+        GameImp* GetGame() const
+        {
+            return (GameImp*)m_spGame.get();
+        }
     };
 }

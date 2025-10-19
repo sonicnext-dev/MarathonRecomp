@@ -27,11 +27,6 @@ namespace Sonicteam::SoX::Math
         be<float> Z;
         be<float> W;
 
-        Vector operator+(float addend)
-        {
-            return { X + addend, Y + addend, Z + addend, W + addend };
-        }
-
         float DistanceTo(const Vector& other) const
         {
             float dx = static_cast<float>(X) - static_cast<float>(other.X);
@@ -39,6 +34,11 @@ namespace Sonicteam::SoX::Math
             float dz = static_cast<float>(Z) - static_cast<float>(other.Z);
 
             return std::sqrt(dx * dx + dy * dy + dz * dz);
+        }
+
+        Vector operator+(float addend)
+        {
+            return { X + addend, Y + addend, Z + addend, W + addend };
         }
     };
 }

@@ -8,7 +8,7 @@ namespace Sonicteam::Message
 {
     struct MsgObjJump123GetNextPoint : SoX::Message<0x10007>
     {
-        Sonicteam::SoX::Math::Quaternion m_Rotation;
-		Sonicteam::SoX::Math::Vector m_Position;
+        Sonicteam::SoX::Math::Quaternion Rotation;
+		Sonicteam::SoX::Math::Vector Position;
     };
 }

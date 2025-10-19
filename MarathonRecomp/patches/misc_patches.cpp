@@ -2,6 +2,7 @@
 #include <ui/black_bar.h>
 #include <user/config.h>
 #include <user/achievement_manager.h>
+#include <app.h>
 
 // TODO (Hyper): implement achievements menu.
 void AchievementManagerUnlockMidAsmHook(PPCRegister& id)
@@ -103,9 +104,54 @@ void PedestrianAnimationLOD(PPCRegister& val)
     val.u32 = 0;
 }
 
-bool DisableHints()
+// Sonicteam::CommonObjectHint::Update
+PPC_FUNC_IMPL(__imp__sub_822CE930);
+PPC_FUNC(sub_822CE930)
 {
-    return !Config::Hints;
+    auto pCommonObjectHint = (Sonicteam::CommonObjectHint*)(base + ctx.r3.u32);
+
+    if (!Config::Hints && pCommonObjectHint->m_Type == Sonicteam::CommonObjectHint::CommonObjectHintType_HintRing)
+    {
+        pCommonObjectHint->Destroy();
+        return;
+    }
+
+    if (!Config::ControlTutorial)
+    {
+        guest_stack_var<int> stack{};
+
+        auto pspTextCard = GuestToHostFunction<boost::shared_ptr<Sonicteam::TextCard>*>(sub_825ECB48,
+            stack.get(), App::s_pApp->GetGame()->m_pHintTextBook.get(), (const char*)&pCommonObjectHint->m_MessageName);
+
+        if (auto pTextCard = pspTextCard->get())
+        {
+            if (pTextCard->m_pVariables && strstr(pTextCard->m_pVariables, "picture(button_"))
+            {
+                pCommonObjectHint->Destroy();
+                return;
+            }
+        }
+    }
+
+    __imp__sub_822CE930(ctx, base);
+}
+
+PPC_FUNC_IMPL(__imp__sub_8244D288);
+PPC_FUNC(sub_8244D288)
+{
+    auto isShadowEggCerberus = PPC_LOAD_U32(ctx.r3.u32 + 0x1C);
+
+    // Prevent Eggman's voice line playing
+    // for Shadow's variant of Egg Cerberus.
+    if (!Config::Hints && isShadowEggCerberus)
+        return;
+
+    __imp__sub_8244D288(ctx, base);
+}
+
+bool Super3_DisableChangeRequestHint()
+{
+    return !Config::ControlTutorial;
 }
 
 PPC_FUNC_IMPL(__imp__sub_824A6EA8);
@@ -115,6 +161,11 @@ PPC_FUNC(sub_824A6EA8)
         ctx.r4.u32 = 4;
 
     __imp__sub_824A6EA8(ctx, base);
+}
+
+PPC_FUNC(sub_82188460)
+{
+    ctx.r3.u64 = Config::Subtitles;
 }
 
 void NOP() {}

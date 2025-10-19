@@ -1,7 +1,9 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/SoX/IResource2.h>
 #include <Sonicteam/TextBookMgr.h>
+#include <Sonicteam/TextCard.h>
 #include <stdx/string.h>
 
 namespace Sonicteam

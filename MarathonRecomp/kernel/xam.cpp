@@ -517,7 +517,7 @@ uint32_t XamInputSetState(uint32_t userIndex, uint32_t flags, XAMINPUT_VIBRATION
     if (userIndex != 0)
         return ERROR_NO_SUCH_USER;
 
-    if (!hid::IsInputDeviceController() || !Config::Vibration)
+    if (!hid::IsInputDeviceController())
         return ERROR_SUCCESS;
 
     ByteSwapInplace(vibration->wLeftMotorSpeed);

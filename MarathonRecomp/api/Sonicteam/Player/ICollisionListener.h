@@ -9,10 +9,10 @@ namespace Sonicteam::Player
     public:
         xpointer<void> m_pVftable;
         MARATHON_INSERT_PADDING(0xC);
-        be<uint32_t> m_Flag1;
-        be<uint32_t> m_Flag2;
-        be<uint32_t> m_Flag3;
+        be<uint32_t> m_FlagsA;
+        be<uint32_t> m_FlagsB;
+        be<uint32_t> m_FlagsC;
         MARATHON_INSERT_PADDING(0x4);
-        SoX::Math::Vector m_CollisionNormal;
+        SoX::Math::Vector m_SurfaceNormal;
     };
 }

@@ -3,13 +3,13 @@
 #include <Marathon.inl>
 #include <Sonicteam/SoX/Math/Vector.h>
 #include <Sonicteam/SoX/Message.h>
+#include <stdx/string.h>
 
 namespace Sonicteam::Message
 {
-    struct MsgCameramanCameraInitialize : SoX::Message<0x14007>
+    struct MsgPauseAdapterText : SoX::Message<0x1C003>
     {
-        be<uint32_t> m_PadID;
-        be<uint32_t> m_TargetActorID;
-        bool IsDemoCam;
+        stdx::string PauseName;
+        stdx::string SelectedName;
     };
 }

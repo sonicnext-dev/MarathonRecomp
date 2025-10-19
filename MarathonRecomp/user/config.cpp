@@ -1,7 +1,9 @@
 #include "config.h"
 #include <os/logger.h>
 #include <ui/game_window.h>
+#include <ui/options_menu.h>
 #include <user/paths.h>
+#include <app.h>
 
 std::vector<IConfigDef*> g_configDefinitions;
 
@@ -21,7 +23,19 @@ CONFIG_DEFINE_ENUM_TEMPLATE(ELanguage)
 CONFIG_DEFINE_ENUM_TEMPLATE(ECameraRotationMode)
 {
     { "Normal",  ECameraRotationMode::Normal },
-    { "Reverse", ECameraRotationMode::Reverse },
+    { "Reverse", ECameraRotationMode::Reverse }
+};
+
+CONFIG_DEFINE_ENUM_TEMPLATE(EFaceButton)
+{
+    { "A", EFaceButton::A },
+    { "Cross", EFaceButton::A },
+    { "B", EFaceButton::B },
+    { "Circle", EFaceButton::B },
+    { "X", EFaceButton::X },
+    { "Square", EFaceButton::X },
+    { "Y", EFaceButton::Y },
+    { "Triangle", EFaceButton::Y }
 };
 
 CONFIG_DEFINE_ENUM_TEMPLATE(EControllerIcons)
@@ -313,19 +327,10 @@ CONFIG_DEFINE_ENUM_TEMPLATE(EWindowState)
     { "Maximized", EWindowState::Maximised }
 };
 
-CONFIG_DEFINE_ENUM_TEMPLATE(ERadialBlur)
-{
-    { "Off",      ERadialBlur::Off },
-    { "Original", ERadialBlur::Original },
-    { "Enhanced", ERadialBlur::Enhanced }
-};
-
 CONFIG_DEFINE_ENUM_TEMPLATE(EAspectRatio)
 {
-    { "Auto", EAspectRatio::Auto },
-    { "16:9", EAspectRatio::Wide },
-    { "4:3",  EAspectRatio::Narrow },
-    { "Original 4:3",  EAspectRatio::OriginalNarrow },
+    { "Auto",     EAspectRatio::Auto },
+    { "Original", EAspectRatio::Original }
 };
 
 CONFIG_DEFINE_ENUM_TEMPLATE(ETripleBuffering)
@@ -337,7 +342,7 @@ CONFIG_DEFINE_ENUM_TEMPLATE(ETripleBuffering)
 
 CONFIG_DEFINE_ENUM_TEMPLATE(EAntiAliasing)
 {
-    { "None",    EAntiAliasing::None },
+    { "Off",    EAntiAliasing::Off },
     { "2x MSAA", EAntiAliasing::MSAA2x },
     { "4x MSAA", EAntiAliasing::MSAA4x },
     { "8x MSAA", EAntiAliasing::MSAA8x }
@@ -358,6 +363,13 @@ CONFIG_DEFINE_ENUM_TEMPLATE(EReflectionResolution)
     { "Half",    EReflectionResolution::Half },
     { "Quarter", EReflectionResolution::Quarter },
     { "Eighth",  EReflectionResolution::Eighth },
+};
+
+CONFIG_DEFINE_ENUM_TEMPLATE(ERadialBlur)
+{
+    { "Off",      ERadialBlur::Off },
+    { "Original", ERadialBlur::Original },
+    { "Enhanced", ERadialBlur::Enhanced }
 };
 
 CONFIG_DEFINE_ENUM_TEMPLATE(ECutsceneAspectRatio)
@@ -439,6 +451,12 @@ template<typename T, bool isHidden>
 bool ConfigDef<T, isHidden>::IsHidden()
 {
     return isHidden && !IsLoadedFromConfig;
+}
+
+template<typename T, bool isHidden>
+void ConfigDef<T, isHidden>::SetHidden(bool hidden)
+{
+    IsLoadedFromConfig = !hidden;
 }
 
 template<typename T, bool isHidden>
@@ -740,6 +758,21 @@ std::filesystem::path Config::GetConfigPath()
 
 void Config::CreateCallbacks()
 {
+    Config::Language.Callback = [](ConfigDef<ELanguage>* def)
+    {
+        if (!App::s_isInit)
+            return;
+
+        OptionsMenu::s_commonMenu.SetTitle(Localise("Options_Header_Name"));
+        OptionsMenu::s_commonMenu.SetDescription(def->GetDescription(def->Value));
+    };
+
+    Config::Antigravity.InaccessibleValues.emplace(EFaceButton::A);
+    Config::Antigravity.InaccessibleValues.emplace(EFaceButton::Y);
+
+    Config::LightDash.InaccessibleValues.emplace(EFaceButton::A);
+    Config::LightDash.InaccessibleValues.emplace(EFaceButton::B);
+
     Config::WindowSize.LockCallback = [](ConfigDef<int32_t>* def)
     {
         // Try matching the current window size with a known configuration.

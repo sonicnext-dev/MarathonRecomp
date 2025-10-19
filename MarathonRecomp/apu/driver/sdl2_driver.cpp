@@ -2,6 +2,7 @@
 #include <cpu/guest_thread.h>
 #include <kernel/heap.h>
 #include <os/logger.h>
+#include <ui/game_window.h>
 #include <user/config.h>
 
 static PPCFunc* g_clientCallback{};
@@ -110,6 +111,10 @@ void XAudioRegisterClient(PPCFunc* callback, uint32_t param)
 void XAudioSubmitFrame(void* samples)
 {
     auto floatSamples = reinterpret_cast<be<float>*>(samples);
+    auto volume = Config::MasterVolume.Value;
+
+    if (Config::MuteOnFocusLost && !GameWindow::s_isFocused)
+        volume = 0.0f;
 
     if (g_downMixToStereo)
     {
@@ -131,8 +136,8 @@ void XAudioSubmitFrame(void* samples)
             float ch4 = floatSamples[4 * XAUDIO_NUM_SAMPLES + i];
             float ch5 = floatSamples[5 * XAUDIO_NUM_SAMPLES + i];
 
-            float samp0 = (ch0 + ch2 * 0.75f + ch4) * Config::MasterVolume;
-            float samp1 = (ch1 + ch2 * 0.75f + ch5) * Config::MasterVolume;
+            float samp0 = (ch0 + ch2 * 0.75f + ch4) * volume;
+            float samp1 = (ch1 + ch2 * 0.75f + ch5) * volume;
 
             audioFrames[i * 2 + 0] = isnan(samp0) ? 0.0f : samp0;
             audioFrames[i * 2 + 1] = isnan(samp1) ? 0.0f : samp1;
@@ -146,8 +151,9 @@ void XAudioSubmitFrame(void* samples)
 
         for (size_t i = 0; i < XAUDIO_NUM_SAMPLES; i++)
         {
-            for (size_t j = 0; j < XAUDIO_NUM_CHANNELS; j++) {
-                float samp = floatSamples[j * XAUDIO_NUM_SAMPLES + i] * Config::MasterVolume;
+            for (size_t j = 0; j < XAUDIO_NUM_CHANNELS; j++)
+            {
+                float samp = floatSamples[j * XAUDIO_NUM_SAMPLES + i] * volume;
                 audioFrames[i * 2 + j] = isnan(samp) ? 0.0f : samp;
             }
         }

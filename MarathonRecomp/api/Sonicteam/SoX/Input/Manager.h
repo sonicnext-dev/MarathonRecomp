@@ -49,7 +49,7 @@ namespace Sonicteam::SoX::Input
     class Manager
     {
     public:
-        be<uint32_t> m_ControllerID;
+        be<uint32_t> m_ControllerIndex;
         MARATHON_INSERT_PADDING(0xC);
         PadState m_PadState;
         MARATHON_INSERT_PADDING(0x28);

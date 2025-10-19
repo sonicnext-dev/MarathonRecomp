@@ -2854,7 +2854,7 @@ static void DrawImGui()
 #endif
 
     AchievementMenu::Draw();
-//    OptionsMenu::Draw();
+    OptionsMenu::Draw();
     AchievementOverlay::Draw();
     InstallerWizard::Draw();
     ButtonGuide::Draw();
@@ -3273,43 +3273,26 @@ void Video::ComputeViewportDimensions()
 
     switch (Config::AspectRatio)
     {
-    case EAspectRatio::Wide:
-    {
-        if (aspectRatio > WIDE_ASPECT_RATIO)
+        case EAspectRatio::Original:
         {
-            s_viewportWidth = height * 16 / 9;
-            s_viewportHeight = height;
+            if (aspectRatio > WIDE_ASPECT_RATIO)
+            {
+                s_viewportWidth = height * 16 / 9;
+                s_viewportHeight = height;
+            }
+            else
+            {
+                s_viewportWidth = width;
+                s_viewportHeight = width * 9 / 16;
+            }
+
+            break;
         }
-        else
-        {
+
+        default:
             s_viewportWidth = width;
-            s_viewportHeight = width * 9 / 16;
-        }
-
-        break;
-    }
-
-    case EAspectRatio::Narrow:
-    case EAspectRatio::OriginalNarrow:
-    {
-        if (aspectRatio > NARROW_ASPECT_RATIO)
-        {
-            s_viewportWidth = height * 4 / 3;
             s_viewportHeight = height;
-        }
-        else
-        {
-            s_viewportWidth = width;
-            s_viewportHeight = width * 3 / 4;
-        }
-
-        break;
-    }
-
-    default:
-        s_viewportWidth = width;
-        s_viewportHeight = height;
-        break;
+            break;
     }
 
     AspectRatioPatches::ComputeOffsets();

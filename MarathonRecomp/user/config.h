@@ -7,6 +7,7 @@ class IConfigDef
 public:
     virtual ~IConfigDef() = default;
     virtual bool IsHidden() = 0;
+    virtual void SetHidden(bool hidden) = 0;
     virtual void ReadValue(toml::v3::ex::parse_result& toml) = 0;
     virtual void MakeDefault() = 0;
     virtual std::string_view GetSection() const = 0;
@@ -46,6 +47,14 @@ enum class ECameraRotationMode : uint32_t
     Reverse
 };
 
+enum class EFaceButton : uint32_t
+{
+    A,
+    B,
+    X,
+    Y
+};
+
 enum class EControllerIcons : uint32_t
 {
     Auto,
@@ -80,9 +89,7 @@ enum class EWindowState : uint32_t
 enum class EAspectRatio : uint32_t
 {
     Auto,
-    Wide,
-    Narrow,
-    OriginalNarrow
+    Original
 };
 
 enum class ETripleBuffering : uint32_t
@@ -97,7 +104,7 @@ static constexpr int32_t FPS_MAX = 241;
 
 enum class EAntiAliasing : uint32_t
 {
-    None = 0,
+    Off = 0,
     MSAA2x = 2,
     MSAA4x = 4,
     MSAA8x = 8
@@ -186,6 +193,7 @@ public:
     ~ConfigDef();
 
     bool IsHidden() override;
+    void SetHidden(bool hidden) override;
     void ReadValue(toml::v3::ex::parse_result& toml) override;
     void MakeDefault() override;
     std::string_view GetSection() const override;
