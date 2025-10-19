@@ -59,8 +59,6 @@
 #include "shader/hlsl/gaussian_blur_9x9.hlsl.dxil.h"
 #include "shader/hlsl/imgui_ps.hlsl.dxil.h"
 #include "shader/hlsl/imgui_vs.hlsl.dxil.h"
-#include "shader/hlsl/movie_ps.hlsl.dxil.h"
-#include "shader/hlsl/movie_vs.hlsl.dxil.h"
 #include "shader/hlsl/resolve_msaa_color_2x.hlsl.dxil.h"
 #include "shader/hlsl/resolve_msaa_color_4x.hlsl.dxil.h"
 #include "shader/hlsl/resolve_msaa_color_8x.hlsl.dxil.h"
@@ -86,8 +84,6 @@
 #include "shader/msl/gaussian_blur_9x9.metal.metallib.h"
 #include "shader/msl/imgui_ps.metal.metallib.h"
 #include "shader/msl/imgui_vs.metal.metallib.h"
-#include "shader/msl/movie_ps.metal.metallib.h"
-#include "shader/msl/movie_vs.metal.metallib.h"
 #include "shader/msl/resolve_msaa_color_2x.metal.metallib.h"
 #include "shader/msl/resolve_msaa_color_4x.metal.metallib.h"
 #include "shader/msl/resolve_msaa_color_8x.metal.metallib.h"
@@ -112,8 +108,6 @@
 #include "shader/hlsl/gaussian_blur_9x9.hlsl.spirv.h"
 #include "shader/hlsl/imgui_ps.hlsl.spirv.h"
 #include "shader/hlsl/imgui_vs.hlsl.spirv.h"
-#include "shader/hlsl/movie_ps.hlsl.spirv.h"
-#include "shader/hlsl/movie_vs.hlsl.spirv.h"
 #include "shader/hlsl/resolve_msaa_color_2x.hlsl.spirv.h"
 #include "shader/hlsl/resolve_msaa_color_4x.hlsl.spirv.h"
 #include "shader/hlsl/resolve_msaa_color_8x.hlsl.spirv.h"
@@ -3470,7 +3464,8 @@ static GuestBuffer* CreateIndexBuffer(uint32_t length, uint32_t, uint32_t format
 
 static std::vector<std::pair<GuestSurface*, uint32_t>> g_surfaceCache;
 
-// TODO: singleplayer (possibly) uses the same memory location in edram for hdr and fb0 surfaces, so we just remember who was created first and use that instead of creating a new one
+// TODO: Singleplayer (possibly) uses the same memory location in EDRAM for HDR and FB0 surfaces,
+// so we just remember who was created first and use that instead of creating a new one.
 static GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t format, uint32_t multiSample, GuestSurfaceCreateParams* params) 
 {
     GuestSurface* surface = nullptr;
@@ -5767,126 +5762,6 @@ static std::thread g_renderThread([]
         }
     });
 
-static void D3DXFillTexture(GuestTexture* texture, uint32_t function, void* data)
-{
-    if (texture->width == 1 && texture->height == 1 && texture->format == RenderFormat::R8_UNORM && function == 0x82BA2150)
-    {
-        auto uploadBuffer = g_device->createBuffer(RenderBufferDesc::UploadBuffer(PLACEMENT_ALIGNMENT));
-
-        uint8_t* mappedData = reinterpret_cast<uint8_t*>(uploadBuffer->map());
-        *mappedData = 0xFF;
-        uploadBuffer->unmap();
-
-        ExecuteCopyCommandList([&]
-            {
-                g_copyCommandList->barriers(RenderBarrierStage::COPY, RenderTextureBarrier(texture->texture, RenderTextureLayout::COPY_DEST));
-
-                g_copyCommandList->copyTextureRegion(
-                    RenderTextureCopyLocation::Subresource(texture->texture, 0),
-                    RenderTextureCopyLocation::PlacedFootprint(uploadBuffer.get(), texture->format, 1, 1, 1, PLACEMENT_ALIGNMENT, 0));
-            });
-
-        texture->layout = RenderTextureLayout::COPY_DEST;
-    }
-}
-
-static void D3DXFillVolumeTexture(GuestTexture* texture, uint32_t function, void* data)
-{
-    uint32_t rowPitch0 = (texture->width * 4 + PITCH_ALIGNMENT - 1) & ~(PITCH_ALIGNMENT - 1);
-    uint32_t slicePitch0 = (rowPitch0 * texture->height * texture->depth + PLACEMENT_ALIGNMENT - 1) & ~(PLACEMENT_ALIGNMENT - 1);
-
-    uint32_t rowPitch1 = ((texture->width / 2) * 4 + PITCH_ALIGNMENT - 1) & ~(PITCH_ALIGNMENT - 1);
-    uint32_t slicePitch1 = (rowPitch1 * (texture->height / 2) * (texture->depth / 2) + PLACEMENT_ALIGNMENT - 1) & ~(PLACEMENT_ALIGNMENT - 1);
-
-    auto uploadBuffer = g_device->createBuffer(RenderBufferDesc::UploadBuffer(slicePitch0 + slicePitch1));
-    uint8_t* mappedData = reinterpret_cast<uint8_t*>(uploadBuffer->map());
-
-    thread_local std::vector<float> mipData;
-    mipData.resize((texture->width / 2) * (texture->height / 2) * (texture->depth / 2) * 4);
-    memset(mipData.data(), 0, mipData.size() * sizeof(float));
-
-    for (size_t z = 0; z < texture->depth; z++)
-    {
-        for (size_t y = 0; y < texture->height; y++)
-        {
-            for (size_t x = 0; x < texture->width; x++)
-            {
-                auto dest = mappedData + z * rowPitch0 * texture->height + y * rowPitch0 + x * sizeof(uint32_t);
-                size_t index = z * texture->width * texture->height + y * texture->width + x;
-                size_t mipIndex = ((z / 2) * (texture->width / 2) * (texture->height / 2) + (y / 2) * (texture->width / 2) + x / 2) * 4;
-
-                if (function == 0x82BC7820)
-                {
-                    auto src = reinterpret_cast<be<float>*>(data) + index * 4;
-
-                    float r = static_cast<uint8_t>(src[0] * 255.0f);
-                    float g = static_cast<uint8_t>(src[1] * 255.0f);
-                    float b = static_cast<uint8_t>(src[2] * 255.0f);
-                    float a = static_cast<uint8_t>(src[3] * 255.0f);
-
-                    dest[0] = r;
-                    dest[1] = g;
-                    dest[2] = b;
-                    dest[3] = a;
-
-                    mipData[mipIndex + 0] += r;
-                    mipData[mipIndex + 1] += g;
-                    mipData[mipIndex + 2] += b;
-                    mipData[mipIndex + 3] += a;
-                }
-                else if (function == 0x82BC78A8)
-                {
-                    auto src = reinterpret_cast<uint8_t*>(data) + index * 4;
-
-                    dest[0] = src[3];
-                    dest[1] = src[2];
-                    dest[2] = src[1];
-                    dest[3] = src[0];
-
-                    mipData[mipIndex + 0] += src[3];
-                    mipData[mipIndex + 1] += src[2];
-                    mipData[mipIndex + 2] += src[1];
-                    mipData[mipIndex + 3] += src[0];
-                }
-            }
-        }
-    }
-
-    for (size_t z = 0; z < texture->depth / 2; z++)
-    {
-        for (size_t y = 0; y < texture->height / 2; y++)
-        {
-            for (size_t x = 0; x < texture->width / 2; x++)
-            {
-                auto dest = mappedData + slicePitch0 + z * rowPitch1 * (texture->height / 2) + y * rowPitch1 + x * sizeof(uint32_t);
-                size_t index = (z * (texture->width / 2) * (texture->height / 2) + y * (texture->width / 2) + x) * 4;
-
-                dest[0] = static_cast<uint8_t>(mipData[index + 0] / 8.0f);
-                dest[1] = static_cast<uint8_t>(mipData[index + 1] / 8.0f);
-                dest[2] = static_cast<uint8_t>(mipData[index + 2] / 8.0f);
-                dest[3] = static_cast<uint8_t>(mipData[index + 3] / 8.0f);
-            }
-        }
-    }
-
-    uploadBuffer->unmap();
-
-    ExecuteCopyCommandList([&]
-        {
-            g_copyCommandList->barriers(RenderBarrierStage::COPY, RenderTextureBarrier(texture->texture, RenderTextureLayout::COPY_DEST));
-
-            g_copyCommandList->copyTextureRegion(
-                RenderTextureCopyLocation::Subresource(texture->texture, 0),
-                RenderTextureCopyLocation::PlacedFootprint(uploadBuffer.get(), texture->format, texture->width, texture->height, texture->depth, rowPitch0 / RenderFormatSize(texture->format), 0));
-
-            g_copyCommandList->copyTextureRegion(
-                RenderTextureCopyLocation::Subresource(texture->texture, 1),
-                RenderTextureCopyLocation::PlacedFootprint(uploadBuffer.get(), texture->format, texture->width / 2, texture->height / 2, texture->depth / 2, rowPitch1 / RenderFormatSize(texture->format), slicePitch0));
-        });
-
-    texture->layout = RenderTextureLayout::COPY_DEST;
-}
-
 struct GuestPictureData
 {
     be<uint32_t> vtable;
@@ -6391,56 +6266,6 @@ static void SetResolution(be<uint32_t>* device)
     device[47] = height == 0 ? 720 : height;
 }
 
-// The game does some weird stuff to render targets if they are above 
-// 1024x1024 resolution, setting this bool at address 20 seems to avoid all that.
-// PPC_FUNC(sub_82E9F048)
-// {
-//     PPC_STORE_U8(ctx.r4.u32 + 20, 1);
-//     PPC_STORE_U32(ctx.r4.u32 + 44, PPC_LOAD_U32(ctx.r4.u32 + 8)); // Width
-//     PPC_STORE_U32(ctx.r4.u32 + 48, PPC_LOAD_U32(ctx.r4.u32 + 12)); // Height
-// }
-
-static GuestShader* g_movieVertexShader;
-static GuestShader* g_moviePixelShaderHD;
-static GuestShader* g_moviePixelShaderSD;
-static GuestVertexDeclaration* g_movieVertexDeclaration;
-
-
-// do we even need them?
-static int ScreenShaderInit(be<uint32_t>* a1)
-{
-    // auto g_xvs_VertexShader = (unsigned char*)g_memory.Translate(0x82062778);
-    // auto g_xps_I420PixelShaderSd = (unsigned char*)g_memory.Translate(0x82062868);
-    // auto g_xps_I420PixelShaderHd = (unsigned char*)g_memory.Translate(0x82062A30);
-
-    // __builtin_trap();
-    if (g_movieVertexShader == nullptr)
-    {
-        g_movieVertexShader = g_userHeap.AllocPhysical<GuestShader>(ResourceType::VertexShader);
-        // g_movieVertexShader->shader = CREATE_SHADER(movie_vs);
-    }
-
-    if (g_moviePixelShaderHD == nullptr)
-    {
-        g_moviePixelShaderHD = g_userHeap.AllocPhysical<GuestShader>(ResourceType::PixelShader);
-        // g_moviePixelShaderHD->shader = CREATE_SHADER(movie_ps);
-    }
-
-    if (g_moviePixelShaderSD == nullptr)
-    {
-        g_moviePixelShaderSD = g_userHeap.AllocPhysical<GuestShader>(ResourceType::PixelShader);
-        // g_moviePixelShaderSD->shader = CREATE_SHADER(movie_ps);
-    }
-
-    g_moviePixelShaderHD->AddRef();
-    g_moviePixelShaderSD->AddRef();
-    g_movieVertexShader->AddRef();
-    a1[0x12] = g_memory.MapVirtual(g_movieVertexShader);
-    a1[0x51] = g_memory.MapVirtual(g_moviePixelShaderHD);
-    a1[0x52] = g_memory.MapVirtual(g_moviePixelShaderSD);
-    return 0;
-}
-
 // Needed for correct clearing of index buffer
 static bool IsSet() {
     return true;
@@ -6458,242 +6283,6 @@ void MovieRendererMidAsmHook(PPCRegister& r3)
     }
 
     device->dirtyFlags[3] = device->dirtyFlags[3].get() | 0xe0000000ull;
-}
-
-static PPCRegister g_r4;
-static PPCRegister g_r5;
-
-// CRenderDirectorFxPipeline::Initialize
-// PPC_FUNC_IMPL(__imp__sub_8258C8A0);
-// PPC_FUNC(sub_8258C8A0)
-// {
-//     g_r4 = ctx.r4;
-//     g_r5 = ctx.r5;
-//     __imp__sub_8258C8A0(ctx, base);
-// }
-
-// CRenderDirectorFxPipeline::Update
-// PPC_FUNC_IMPL(__imp__sub_8258CAE0);
-// PPC_FUNC(sub_8258CAE0)
-// {
-//     if (g_needsResize)
-//     {
-//         // Backup job values. These get modified by cutscenes, 
-//         // and resizing will cause the values to be forgotten.
-//         auto traverseFxJobs = [&]<typename TCallback>(const TCallback& callback)
-//         {
-//             uint32_t scheduler = PPC_LOAD_U32(ctx.r3.u32 + 0xE0);
-//             if (scheduler != NULL)
-//             {
-//                 uint32_t member = PPC_LOAD_U32(scheduler + 0x8);
-//                 if (member != NULL)
-//                 {
-//                     for (uint32_t it = PPC_LOAD_U32(member + 0x24); it != PPC_LOAD_U32(member + 0x28); it += 8)
-//                     {
-//                         uint32_t job = PPC_LOAD_U32(it);
-//                         if (job != NULL)
-//                             callback(job);
-//                     }
-//                 }
-//             }
-//         };
-
-//         union JobValues
-//         {
-//             struct
-//             {
-//                 uint8_t field50[0x18];
-//                 uint8_t field88;
-//             } fade;
-
-//             struct
-//             {
-//                 uint8_t camera[0x120];
-//                 uint8_t field44;
-//                 uint8_t fieldA0;
-//             } shadowMap;
-//         };
-
-//         std::map<uint32_t, JobValues> jobValuesMap;
-//         traverseFxJobs([&](uint32_t job)
-//             {
-//                 uint32_t vfTable = PPC_LOAD_U32(job);
-
-//                 if (vfTable == 0x820CA6F8) // SWA::CFxFade
-//                 {
-//                     // NOTE: Intentionally not storing shared pointers here. 
-//                     // Game sends messages that assign these every frame already.
-//                     JobValues jobValues{};
-
-//                     memcpy(jobValues.fade.field50, base + job + 0x50, sizeof(jobValues.fade.field50));
-//                     jobValues.fade.field88 = PPC_LOAD_U8(job + 0x88);
-
-//                     jobValuesMap.emplace(PPC_LOAD_U32(job + 0x48), jobValues);
-//                 }
-//                 else if (vfTable == 0x820CAC5C) // SWA::CFxShadowMap
-//                 {
-//                     for (uint32_t it = PPC_LOAD_U32(job + 0x88); it != PPC_LOAD_U32(job + 0x8C); it += 8)
-//                     {
-//                         uint32_t camera = PPC_LOAD_U32(it);
-//                         if (camera != NULL && PPC_LOAD_U32(camera) == 0x820BF83C) // SWA::CShadowMapCameraLiSPSM
-//                         {
-//                             JobValues jobValues{};
-
-//                             memcpy(jobValues.shadowMap.camera, base + camera, sizeof(jobValues.shadowMap.camera));
-//                             jobValues.shadowMap.field44 = PPC_LOAD_U8(job + 0x44);
-//                             jobValues.shadowMap.fieldA0 = PPC_LOAD_U8(job + 0xA0);
-
-//                             jobValuesMap.emplace(vfTable, jobValues);
-//                             break;
-//                         }
-//                     }
-//                 }
-//             });
-
-//         auto r3 = ctx.r3;
-//         ctx.r4 = g_r4;
-//         ctx.r5 = g_r5;
-//         __imp__sub_8258C8A0(ctx, base);
-//         ctx.r3 = r3;
-
-//         // Restore job values.
-//         traverseFxJobs([&](uint32_t job)
-//             {
-//                 uint32_t vfTable = PPC_LOAD_U32(job);
-
-//                 if (vfTable == 0x820CA6F8) // SWA::CFxFade
-//                 {
-//                     auto findResult = jobValuesMap.find(PPC_LOAD_U32(job + 0x48));
-//                     if (findResult != jobValuesMap.end()) // May NOT actually be found.
-//                     {
-//                         memcpy(base + job + 0x50, findResult->second.fade.field50, sizeof(findResult->second.fade.field50));
-//                         PPC_STORE_U8(job + 0x88, findResult->second.fade.field88);
-//                     }
-//                 }
-//                 else if (vfTable == 0x820CAC5C) // SWA::CFxShadowMap
-//                 {
-//                     auto findResult = jobValuesMap.find(vfTable);
-//                     if (findResult != jobValuesMap.end()) // Would be weird if this one wasn't found.
-//                     {
-//                         for (uint32_t it = PPC_LOAD_U32(job + 0x88); it != PPC_LOAD_U32(job + 0x8C); it += 8)
-//                         {
-//                             uint32_t camera = PPC_LOAD_U32(it);
-//                             if (camera != NULL && PPC_LOAD_U32(camera) == 0x820BF83C) // SWA::CShadowMapCameraLiSPSM
-//                             {
-//                                 memcpy(base + camera, findResult->second.shadowMap.camera, sizeof(findResult->second.shadowMap.camera));
-//                                 PPC_STORE_U32(job + 0x80, camera);
-//                                 PPC_STORE_U8(job + 0x44, findResult->second.shadowMap.field44);
-//                                 PPC_STORE_U8(job + 0xA0, findResult->second.shadowMap.fieldA0);
-//                                 break;
-//                             }
-//                         }
-//                     }
-//                 }
-//             });
-
-//         g_needsResize = false;
-//     }
-
-//     __imp__sub_8258CAE0(ctx, base);
-// }
-
-// PPC_FUNC_IMPL(__imp__sub_824EB5B0);
-// PPC_FUNC(sub_824EB5B0)
-// {
-//     g_updateDirectorProfiler.Begin();
-//     __imp__sub_824EB5B0(ctx, base);
-//     g_updateDirectorProfiler.End();
-// }
-
-// PPC_FUNC_IMPL(__imp__sub_824EB290);
-// PPC_FUNC(sub_824EB290)
-// {
-//     g_renderDirectorProfiler.Begin();
-//     __imp__sub_824EB290(ctx, base);
-//     g_renderDirectorProfiler.End();
-// }
-
-// World map disables VERT+, so scaling by width does not work for it.
-static uint32_t g_forceCheckHeightForPostProcessFix;
-
-// SWA::CWorldMapCamera::CWorldMapCamera
-// PPC_FUNC_IMPL(__imp__sub_824860E0);
-// PPC_FUNC(sub_824860E0)
-// {
-//     ++g_forceCheckHeightForPostProcessFix;
-//     __imp__sub_824860E0(ctx, base);
-// }
-
-// SWA::CCameraController::~CCameraController
-// PPC_FUNC_IMPL(__imp__sub_824831D0);
-// PPC_FUNC(sub_824831D0)
-// {
-//     if (PPC_LOAD_U32(ctx.r3.u32) == 0x8202BF1C) // SWA::CWorldMapCamera
-//         --g_forceCheckHeightForPostProcessFix;
-
-//     __imp__sub_824831D0(ctx, base);
-// }
-
-void PostProcessResolutionFix(PPCRegister& r4, PPCRegister& f1, PPCRegister& f2)
-{
-    auto device = reinterpret_cast<be<uint32_t>*>(g_memory.Translate(r4.u32));
-
-    uint32_t width = device[46].get();
-    uint32_t height = device[47].get();
-    double aspectRatio = double(width) / double(height);
-
-    double factor;
-    if ((aspectRatio >= WIDE_ASPECT_RATIO) || (g_forceCheckHeightForPostProcessFix != 0))
-        factor = 720.0 / double(height);
-    else
-        factor = 1280.0 / double(width);
-
-    f1.f64 *= factor;
-    f2.f64 *= factor;
-}
-
-void LightShaftAspectRatioFix(PPCRegister& f28, PPCRegister& f0)
-{
-    f28.f64 = f0.f64;
-}
-
-static const be<uint16_t> g_particleTestIndexBuffer[] =
-{
-    0, 1, 2,
-    0, 2, 3,
-    0, 3, 4,
-    0, 4, 5
-};
-
-bool ParticleTestIndexBufferMidAsmHook(PPCRegister& r30)
-{
-    if (!g_capabilities.triangleFan)
-    {
-        auto buffer = CreateIndexBuffer(sizeof(g_particleTestIndexBuffer), 0, D3DFMT_INDEX16);
-        void* memory = LockIndexBuffer(buffer, 0, 0, 0);
-        memcpy(memory, g_particleTestIndexBuffer, sizeof(g_particleTestIndexBuffer));
-        UnlockIndexBuffer(buffer);
-
-        r30.u32 = g_memory.MapVirtual(buffer);
-        return true;
-    }
-    return false;
-}
-
-void ParticleTestDrawIndexedPrimitiveMidAsmHook(PPCRegister& r7)
-{
-    if (!g_capabilities.triangleFan)
-        r7.u64 = std::size(g_particleTestIndexBuffer);
-}
-
-void MotionBlurPrevInvViewProjectionMidAsmHook(PPCRegister& r10)
-{
-    auto mtxProjection = reinterpret_cast<be<float>*>(g_memory.Translate(r10.u32));
-
-    // Reverse Z. Have to be done on CPU side because the matrix multiplications
-    // add up and it loses precision by the time it's sent to GPU.
-    mtxProjection[10] = -(mtxProjection[10] + 1.0f);
-    mtxProjection[14] = -mtxProjection[14];
 }
 
 // Normally, we could delay setting IsMadeOne, but the game relies on that flag
@@ -8078,69 +7667,6 @@ void VideoConfigValueChangedCallback(IConfigDef* config)
 //        EnqueuePipelineTask(PipelineTaskType::RecompilePipelines, {});
 }
 
-// SWA::CCsdTexListMirage::SetFilter
-// PPC_FUNC_IMPL(__imp__sub_825E4300);
-// PPC_FUNC(sub_825E4300)
-// {
-//     g_csdFilterState = ctx.r5.u32 == 0 ? CsdFilterState::On : CsdFilterState::Off;
-//     ctx.r5.u32 = 1;
-//     __imp__sub_825E4300(ctx, base);
-// }
-
-// SWA::CCsdPlatformMirage::EndScene
-// PPC_FUNC_IMPL(__imp__sub_825E2F78);
-// PPC_FUNC(sub_825E2F78)
-// {
-//     g_csdFilterState = CsdFilterState::Unknown;
-//     __imp__sub_825E2F78(ctx, base);
-// }
-
-// Game shares surfaces with identical descriptions. We don't want to share shadow maps,
-// so we can set its format to a depth format that still resolves to the same type in recomp,
-// but manages to keep the surfaces actually separated in guest code.
-void FxShadowMapInitMidAsmHook(PPCRegister& r11)
-{
-    uint8_t* base = g_memory.base;
-
-    uint32_t surface = PPC_LOAD_U32(PPC_LOAD_U32(PPC_LOAD_U32(r11.u32 + 0x24) + 0x4));
-    PPC_STORE_U32(surface + 0x20, D3DFMT_D24FS8);
-}
-
-// Re-render objects in the terrain shadow map instead of copying the texture.
-static bool g_jumpOverStretchRect;
-
-void FxShadowMapNoTerrainMidAsmHook(PPCRegister& r4, PPCRegister& r30)
-{
-    // Set the no terrain shadow map as the render target.
-    uint8_t* base = g_memory.base;
-    r4.u64 = PPC_LOAD_U32(r30.u32 + 0x58);
-}
-
-bool FxShadowMapMidAsmHook(PPCRegister& r4, PPCRegister& r5, PPCRegister& r6, PPCRegister& r30)
-{
-    if (g_jumpOverStretchRect)
-    {
-        // Reset for the next time shadow maps get rendered.
-        g_jumpOverStretchRect = false;
-
-        // Jump over the stretch rect call.
-        return false;
-    }
-    else
-    {
-        // Mark to jump over the stretch call the next time.
-        g_jumpOverStretchRect = true;
-
-        // Jump to the beginning. Set registers accordingly to set the terrain shadow map as the render target.
-        uint8_t* base = g_memory.base;
-        r6.u64 = 0;
-        r5.u64 = 0;
-        r4.u64 = PPC_LOAD_U32(r30.u32 + 0x50);
-
-        return true;
-    }
-}
-
 // There is a bug on AMD where restart indices cause incorrect culling and prevent some triangles from being rendered.
 // This seems to happen on both Windows AMD drivers and Mesa. Converting restart indices to degenerate triangles fixes it.
 static void ConvertToDegenerateTriangles(uint16_t* indices, uint32_t indexCount, uint16_t*& newIndices, uint32_t& newIndexCount)
@@ -8322,63 +7848,62 @@ struct LightAndIndexBufferResourceV5
 //         g_userHeap.Free(newIndices);
 // }
 
-GUEST_FUNCTION_HOOK(sub_8253EC98, CreateDevice); // replaced
+GUEST_FUNCTION_HOOK(sub_8253EC98, CreateDevice);
 
-GUEST_FUNCTION_HOOK(sub_8253AE98, DestructResource); // replaced
+GUEST_FUNCTION_HOOK(sub_8253AE98, DestructResource);
 
-GUEST_FUNCTION_HOOK(sub_8253A740, LockTextureRect); // replaced
-GUEST_FUNCTION_HOOK(sub_82538D30, UnlockTextureRect); // GUEST_FUNCTION_HOOK(sub_82BE7780, UnlockTextureRect);
+GUEST_FUNCTION_HOOK(sub_8253A740, LockTextureRect);
+GUEST_FUNCTION_HOOK(sub_82538D30, UnlockTextureRect);
 
-GUEST_FUNCTION_HOOK(sub_8253B5D0, LockVertexBuffer); // replaced
-GUEST_FUNCTION_HOOK(sub_8253B630, UnlockVertexBuffer); // replaced
-// // GUEST_FUNCTION_HOOK(sub_82BE61D0, GetVertexBufferDesc);
+GUEST_FUNCTION_HOOK(sub_8253B5D0, LockVertexBuffer);
+GUEST_FUNCTION_HOOK(sub_8253B630, UnlockVertexBuffer);
+// GUEST_FUNCTION_HOOK(sub_82BE61D0, GetVertexBufferDesc);
 
-GUEST_FUNCTION_HOOK(sub_8253B6F0, LockIndexBuffer); // replaced
-GUEST_FUNCTION_HOOK(sub_8253B750, UnlockIndexBuffer); // replaced
-// // GUEST_FUNCTION_HOOK(sub_82BE6200, GetIndexBufferDesc);
+GUEST_FUNCTION_HOOK(sub_8253B6F0, LockIndexBuffer);
+GUEST_FUNCTION_HOOK(sub_8253B750, UnlockIndexBuffer);
+// GUEST_FUNCTION_HOOK(sub_82BE6200, GetIndexBufferDesc);
 
-GUEST_FUNCTION_HOOK(sub_8253AB20, GetSurfaceDesc); // replaced
+GUEST_FUNCTION_HOOK(sub_8253AB20, GetSurfaceDesc);
 
-GUEST_FUNCTION_HOOK(sub_825471F8, GetVertexDeclaration); // replaced
-// // GUEST_FUNCTION_HOOK(sub_82BE0530, HashVertexDeclaration);
+GUEST_FUNCTION_HOOK(sub_825471F8, GetVertexDeclaration);
+// GUEST_FUNCTION_HOOK(sub_82BE0530, HashVertexDeclaration);
 
 GUEST_FUNCTION_HOOK(sub_825586B0, Video::Present);
-// GUEST_FUNCTION_HOOK(sub_82558CD0, Video::Present); // wmv player present
 GUEST_FUNCTION_HOOK(sub_82543B58, GetBackBuffer);
 GUEST_FUNCTION_HOOK(sub_82543BA0, GetDepthStencil);
 
-GUEST_FUNCTION_HOOK(sub_8253A8D8, CreateTexture); // replaced
-GUEST_FUNCTION_HOOK(sub_8253B508, CreateVertexBuffer); // replaced
-GUEST_FUNCTION_HOOK(sub_8253B640, CreateIndexBuffer); // replaced
-GUEST_FUNCTION_HOOK(sub_8253A9F8, CreateSurface); // replaced
+GUEST_FUNCTION_HOOK(sub_8253A8D8, CreateTexture);
+GUEST_FUNCTION_HOOK(sub_8253B508, CreateVertexBuffer);
+GUEST_FUNCTION_HOOK(sub_8253B640, CreateIndexBuffer);
+GUEST_FUNCTION_HOOK(sub_8253A9F8, CreateSurface);
 
-GUEST_FUNCTION_HOOK(sub_825575B8, StretchRect); // replaced
+GUEST_FUNCTION_HOOK(sub_825575B8, StretchRect);
 
-GUEST_FUNCTION_HOOK(sub_82543EE0, SetRenderTarget); // replaced
-GUEST_FUNCTION_HOOK(sub_825444F0, SetRenderTarget); // replaced
-GUEST_FUNCTION_HOOK(sub_82544210, SetDepthStencilSurface); // replaced
+GUEST_FUNCTION_HOOK(sub_82543EE0, SetRenderTarget);
+GUEST_FUNCTION_HOOK(sub_825444F0, SetRenderTarget);
+GUEST_FUNCTION_HOOK(sub_82544210, SetDepthStencilSurface);
 
 GUEST_FUNCTION_HOOK(sub_82555B30, Clear);
 
-GUEST_FUNCTION_HOOK(sub_825436F0, SetViewport); // replaced
+GUEST_FUNCTION_HOOK(sub_825436F0, SetViewport);
 
-GUEST_FUNCTION_HOOK(sub_8253AC40, SetTexture); // replaced
-GUEST_FUNCTION_HOOK(sub_82543628, SetScissorRect); // replaced
+GUEST_FUNCTION_HOOK(sub_8253AC40, SetTexture);
+GUEST_FUNCTION_HOOK(sub_82543628, SetScissorRect);
 
-GUEST_FUNCTION_HOOK(sub_826FEC28, DrawPrimitive); // replaced
-GUEST_FUNCTION_HOOK(sub_826FF030, DrawIndexedPrimitive); // replaced
+GUEST_FUNCTION_HOOK(sub_826FEC28, DrawPrimitive);
+GUEST_FUNCTION_HOOK(sub_826FF030, DrawIndexedPrimitive);
 GUEST_FUNCTION_HOOK(sub_826FE5C0, DrawPrimitiveUP);
 
-GUEST_FUNCTION_HOOK(sub_82547118, CreateVertexDeclaration); // replaced
-GUEST_FUNCTION_HOOK(sub_825470F8, SetVertexDeclaration); // replaced
+GUEST_FUNCTION_HOOK(sub_82547118, CreateVertexDeclaration);
+GUEST_FUNCTION_HOOK(sub_825470F8, SetVertexDeclaration);
 
-GUEST_FUNCTION_HOOK(sub_82548700, CreateVertexShader); // replaced
-GUEST_FUNCTION_HOOK(sub_82546EE0, SetVertexShader); // replaced
+GUEST_FUNCTION_HOOK(sub_82548700, CreateVertexShader);
+GUEST_FUNCTION_HOOK(sub_82546EE0, SetVertexShader);
 
-GUEST_FUNCTION_HOOK(sub_82543918, SetStreamSource); // replaced
-GUEST_FUNCTION_HOOK(sub_82543AC8, SetIndices); // replaced
+GUEST_FUNCTION_HOOK(sub_82543918, SetStreamSource);
+GUEST_FUNCTION_HOOK(sub_82543AC8, SetIndices);
 
-GUEST_FUNCTION_HOOK(sub_82548608, CreatePixelShader); // replaced
+GUEST_FUNCTION_HOOK(sub_82548608, CreatePixelShader);
 GUEST_FUNCTION_HOOK(sub_82546BD8, SetPixelShader);
 
 GUEST_FUNCTION_HOOK(sub_82636BF8, BeginConditionalSurvey);
@@ -8388,7 +7913,7 @@ GUEST_FUNCTION_HOOK(sub_82636C18, EndConditionalRendering);
 
 GUEST_FUNCTION_HOOK(sub_8253B760, IsSet);
 
-GUEST_FUNCTION_HOOK(sub_82543CF0, SetClipPlane); // replaced
+GUEST_FUNCTION_HOOK(sub_82543CF0, SetClipPlane);
 
 GUEST_FUNCTION_HOOK(sub_82541A78, SetRenderState<D3DRS_ZENABLE>);
 GUEST_FUNCTION_HOOK(sub_82541AC0, SetRenderState<D3DRS_ZWRITEENABLE>);
@@ -8422,10 +7947,12 @@ GUEST_FUNCTION_HOOK(sub_82541D48, SetRenderState<D3DRS_CCW_STENCILPASS>);
 GUEST_FUNCTION_HOOK(sub_82541C98, SetRenderState<D3DRS_CCW_STENCILFUNC>);
 GUEST_FUNCTION_HOOK(sub_82541E38, SetRenderState<D3DRS_CLIPPLANEENABLE>);
 
-int GetType(GuestResource* resource) {
+int GetType(GuestResource* resource)
+{
     if (resource->type == ResourceType::Texture) return 3;
     if (resource->type == ResourceType::VolumeTexture) return 17;
     if (resource->type == ResourceType::ArrayTexture) return 19;
+
     LOGF_WARNING("unknown resource type {:d}!", (int32_t)resource->type);
     __builtin_trap();
     return 0;
@@ -8433,113 +7960,85 @@ int GetType(GuestResource* resource) {
 
 GUEST_FUNCTION_HOOK(sub_8253AE08, GetType);
 
-// Game asks about the size of surface to check if it's need to be tiled, because EDRAM has only 10MB, if size is more than 1024 (kb?), then enable tiling, so we return 0 to disable tiling
-int SurfaceSize(uint32_t width, uint32_t height, uint32_t format, uint32_t multisampleLevel) {
+// Game asks about the size of surface to check if it needs to be tiled.
+// Because EDRAM has only 10MB, if size is more than 1024, then it enables tiling.
+// We return 0 to always disable tiling.
+int SurfaceSize(uint32_t width, uint32_t height, uint32_t format, uint32_t multisampleLevel)
+{
     return 0;
 }
 
 GUEST_FUNCTION_HOOK(sub_82538D60, SurfaceSize);
+GUEST_FUNCTION_HOOK(sub_82656B68, MakePictureData);
+GUEST_FUNCTION_HOOK(sub_82656DB8, MakePictureData);
 
-// // GUEST_FUNCTION_HOOK(sub_82C003B8, D3DXFillTexture);
-// // GUEST_FUNCTION_HOOK(sub_82C00910, D3DXFillVolumeTexture);
+// GUEST_FUNCTION_HOOK(sub_82E9EE38, SetResolution);
 
-GUEST_FUNCTION_HOOK(sub_82656B68, MakePictureData); // GUEST_FUNCTION_HOOK(sub_82E43FC8, MakePictureData);
-GUEST_FUNCTION_HOOK(sub_82656DB8, MakePictureData); // GUEST_FUNCTION_HOOK(sub_82E43FC8, MakePictureData);
-
-// // GUEST_FUNCTION_HOOK(sub_82E9EE38, SetResolution);
-
-GUEST_FUNCTION_HOOK(sub_82736178, ScreenShaderInit); // sub_82AE2BF8
-
-// // This is a buggy function that recreates framebuffers
-// // if the inverse capture ratio is not 2.0, but the parameter
-// // is completely unused and not stored, so it ends up
-// // recreating framebuffers every single frame instead.
-// // GUEST_FUNCTION_STUB(sub_82BAAD38);
-
-// // GUEST_FUNCTION_STUB(sub_822C15D8);
-// // GUEST_FUNCTION_STUB(sub_822C1810);
-GUEST_FUNCTION_STUB(sub_8253EB38); // GUEST_FUNCTION_STUB(sub_82BD97A8); // set thread to d3ddevvice
-GUEST_FUNCTION_STUB(sub_8253EB78); // GUEST_FUNCTION_STUB(sub_82BD97E8); // reset thread to d3ddevice
-// // GUEST_FUNCTION_STUB(sub_82BDD370); // SetGammaRamp
+GUEST_FUNCTION_STUB(sub_8253EB38);
+GUEST_FUNCTION_STUB(sub_8253EB78);
 GUEST_FUNCTION_STUB(sub_82543BE0); // SetGammaRamp
 GUEST_FUNCTION_STUB(sub_82543C68); // SetGammaRamp
-GUEST_FUNCTION_STUB(sub_82547278); // set shader allocation // GUEST_FUNCTION_STUB(sub_82BE05B8);
-// GUEST_FUNCTION_STUB(sub_82558F88); // GUEST_FUNCTION_STUB(sub_82BE9C98); // D3DDevice_BeginTiling
-// GUEST_FUNCTION_STUB(sub_82559480); // GUEST_FUNCTION_STUB(sub_82BEA308); D3DDevice_EndTiling
-GUEST_FUNCTION_STUB(sub_8272FAD0); // GUEST_FUNCTION_STUB(sub_82CD5D68);
-GUEST_FUNCTION_STUB(sub_82558E00); // GUEST_FUNCTION_STUB(sub_82BE9B28);
-GUEST_FUNCTION_STUB(sub_82559928); // GUEST_FUNCTION_STUB(sub_82BEA018);
-GUEST_FUNCTION_STUB(sub_82559C18); // GUEST_FUNCTION_STUB(sub_82BEA7C0);
-GUEST_FUNCTION_STUB(sub_82700C18); // GUEST_FUNCTION_STUB(sub_82BFFF88); // D3DXFilterTexture
-GUEST_FUNCTION_STUB(sub_8253EAE0);// GUEST_FUNCTION_STUB(sub_82BD96D0);
+GUEST_FUNCTION_STUB(sub_82547278); // Set shader allocation
+GUEST_FUNCTION_STUB(sub_8272FAD0);
+GUEST_FUNCTION_STUB(sub_82558E00);
+GUEST_FUNCTION_STUB(sub_82559928);
+GUEST_FUNCTION_STUB(sub_82559C18);
+GUEST_FUNCTION_STUB(sub_82700C18); // D3DXFilterTexture
+GUEST_FUNCTION_STUB(sub_8253EAE0);
+GUEST_FUNCTION_STUB(sub_8254D598); // BeginConditional
+GUEST_FUNCTION_STUB(sub_8254D7B0); // BeginConditional
+GUEST_FUNCTION_STUB(sub_8254D9D0); // BeginConditional
+GUEST_FUNCTION_STUB(sub_8254DB90); // BeginConditional
+GUEST_FUNCTION_STUB(sub_8254DD40); // SetScreenExtentQueryMode
 
-// GUEST_FUNCTION_STUB(sub_8253E798); // flush
-// GUEST_FUNCTION_STUB(sub_825586B0); // swap
-
-// GUEST_FUNCTION_STUB(sub_8259ABE8);
-
-
-// GUEST_FUNCTION_STUB(sub_82592B70);
-
-// GUEST_FUNCTION_STUB(sub_826FE5C0);
-// GUEST_FUNCTION_STUB(sub_828FF2B8); // audio exeutemain
-// GUEST_FUNCTION_STUB(sub_829023B8); // audio exeutemain
-// GUEST_FUNCTION_STUB(sub_82731038); // something with textures causes memory error
-// GUEST_FUNCTION_STUB(sub_82730C68); // something with textures causes memory error
-// GUEST_FUNCTION_STUB(sub_8255A8A8); // something audio
-// GUEST_FUNCTION_STUB(sub_8255A4D0); // something something
-// GUEST_FUNCTION_STUB(sub_82743188); // something render
-// GUEST_FUNCTION_STUB(sub_82734C50);
-
-// GUEST_FUNCTION_STUB(sub_827344C0) // I don't know
-struct Rect {
+struct Rect
+{
     be<uint32_t> x1;
     be<uint32_t> y1;
     be<uint32_t> x2;
     be<uint32_t> y2;
 };
 
-struct RESOLVE_PARAMS {
+struct RESOLVE_PARAMS
+{
     be<uint32_t> format;
     be<uint32_t> unk;
     be<uint32_t> format2;
 };
 
-int D3DDevice_BeginTiling(GuestDevice* device, uint32_t flags, uint32_t count, Rect* pTileRects, be<float>* pClearColor, float clearZ, uint32_t clearStencil) {
-    // printf("D3DDevice_BeginTiling: %x %x %x %x %f %x\n", flags, count, pTileRects, pClearColor, clearZ, clearStencil);
-    // for (uint32_t i = 0; i < count; i++) {
-    //     printf("pTileRects: %d %d %d %d\n", pTileRects[i].x1.get(), pTileRects[i].y1.get(), pTileRects[i].x2.get(), pTileRects[i].y2.get());
-    // }
+int D3DDevice_BeginTiling(GuestDevice* device, uint32_t flags, uint32_t count, Rect* pTileRects, be<float>* pClearColor, float clearZ, uint32_t clearStencil)
+{
     Clear(device, 0x3F, 0, pClearColor, clearZ, clearStencil);
+
     return 0;
 }
 
 GUEST_FUNCTION_HOOK(sub_82558F88, D3DDevice_BeginTiling);
 
-int D3DDevice_EndTiling(GuestDevice* device, uint32_t flags, Rect* pResolveRects, GuestTexture* pDestTexture, be<float>* pClearColor, float clearZ, uint32_t clearStencil, RESOLVE_PARAMS* resolveParams) {
-    // printf("D3DDevice_EndTiling: %x %x %x %x %f %x %x\n", flags, pResolveRects, pDestTexture, pClearColor, clearZ, clearStencil, resolveParams);
-    // if (pResolveRects != nullptr) {
-    //     printf("pResolveRects: %x %x %x %x\n", pResolveRects->x1.get(), pResolveRects->y1.get(), pResolveRects->x2.get(), pResolveRects->y2.get());
-    // }
-    // printf("pDestTexture: %x\n", pDestTexture);
-    // if (resolveParams != nullptr) {
-    //     printf("pResolveParams: %x %x %x\n", resolveParams->format.get(), resolveParams->unk.get(), resolveParams->format2.get());
-    // }
-    if (pDestTexture) {
+int D3DDevice_EndTiling(GuestDevice* device, uint32_t flags, Rect* pResolveRects, GuestTexture* pDestTexture, be<float>* pClearColor, float clearZ, uint32_t clearStencil, RESOLVE_PARAMS* resolveParams)
+{
+    if (pDestTexture)
+    {
         StretchRect(device, flags, 0, pDestTexture, 0, 0, 0);
     }
+
     return 0;
 }
 
 GUEST_FUNCTION_HOOK(sub_82559480, D3DDevice_EndTiling);
 
-int D3DDevice_BeginShaderConstantF4(GuestDevice* device, uint32_t isPixelShader, uint32_t startRegister, be<uint32_t>* cachedConstantData, be<uint32_t>* writeCombinedConstantData, uint32_t vectorCount) {
+int D3DDevice_BeginShaderConstantF4(GuestDevice* device, uint32_t isPixelShader, uint32_t startRegister, be<uint32_t>* cachedConstantData, be<uint32_t>* writeCombinedConstantData, uint32_t vectorCount)
+{
     uint32_t* constants;
     be<uint64_t>* dirtyFlags;
-    if (isPixelShader) {
+
+    if (isPixelShader)
+    {
         constants = &device->pixelShaderFloatConstants[startRegister * 4];
         dirtyFlags = &device->dirtyFlags[1];
-    } else {
+    }
+    else
+    {
         constants = &device->vertexShaderFloatConstants[startRegister * 4];
         dirtyFlags = &device->dirtyFlags[0];
     }
@@ -8557,9 +8056,3 @@ int D3DDevice_BeginShaderConstantF4(GuestDevice* device, uint32_t isPixelShader,
 }
 
 GUEST_FUNCTION_HOOK(sub_825466E8, D3DDevice_BeginShaderConstantF4);
-
-GUEST_FUNCTION_STUB(sub_8254D598); // BeginConditional
-GUEST_FUNCTION_STUB(sub_8254D7B0); // BeginConditional
-GUEST_FUNCTION_STUB(sub_8254D9D0); // BeginConditional
-GUEST_FUNCTION_STUB(sub_8254DB90); // BeginConditional
-GUEST_FUNCTION_STUB(sub_8254DD40); // SetScreenExtentQueryMode
