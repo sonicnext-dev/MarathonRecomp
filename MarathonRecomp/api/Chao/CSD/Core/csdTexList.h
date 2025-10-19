@@ -1,7 +1,7 @@
 #pragma once
 
-#include <CSD/Manager/csdmBase.h>
-#include <CSD/Manager/csdmRCPtr.h>
+#include <Chao/CSD/Core/csdBase.h>
+#include <Chao/CSD/Core/csdRCPtr.h>
 
 namespace Chao::CSD
 {

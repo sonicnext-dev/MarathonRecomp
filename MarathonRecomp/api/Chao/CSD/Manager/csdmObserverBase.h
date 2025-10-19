@@ -14,6 +14,6 @@ namespace Chao::CSD
         };
 
         xpointer<Vftable> m_pVftable;
-        MARATHON_INSERT_PADDING(0x08);
+        MARATHON_INSERT_PADDING(0x0C);
     };
 }

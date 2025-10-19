@@ -19,127 +19,113 @@ void CommonMenu::Draw()
 
     auto borderMotionTime = PlayTransitions ? ComputeMotion(m_time, 0, 10, m_isClosing) : 1.0;
 
-    auto gradientTop = IM_COL32(0, 103, 255, 255);
-    auto gradientBottom = IM_COL32(0, 92, 229, 255);
-    auto gradientHeight = Scale(126, true);
-    auto gradientMotion = Lerp(min.y - gradientHeight, 0.0, borderMotionTime);
-
     if (!ReduceDraw)
     {
+        auto gradientTop = IM_COL32(0, 103, 255, 255);
+        auto gradientBottom = IM_COL32(0, 92, 229, 255);
+        auto gradientHeight = Scale(126, true);
+        auto gradientMotion = Lerp(min.y - gradientHeight, 0.0, borderMotionTime);
+
         // Draw gradient to fill gap between red strip and top metal plates.
         drawList->AddRectFilledMultiColor({ 0.0f, gradientMotion }, { res.x, gradientMotion + gradientHeight }, gradientTop, gradientTop, gradientBottom, gradientBottom);
-    }
 
-    auto redStripCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 301, 300, 50);
-    auto redStripLeftStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 301, 150, 50);
-    auto redStripRightStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 300, 301, 300, 50);
-    auto redStripColour = IM_COL32(168, 15, 15, 255);
-    auto redStripOffsetY = Scale(81.75, true);
-    auto redStripHeight = Scale(50, true);
-    auto redStripMotion = Lerp(min.y - redStripHeight, min.y + redStripOffsetY, borderMotionTime);
+        auto redStripCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 301, 300, 50);
+        auto redStripLeftStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 301, 150, 50);
+        auto redStripRightStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 300, 301, 300, 50);
+        auto redStripColour = IM_COL32(168, 15, 15, 255);
+        auto redStripOffsetY = Scale(81.75, true);
+        auto redStripHeight = Scale(50, true);
+        auto redStripMotion = Lerp(min.y - redStripHeight, min.y + redStripOffsetY, borderMotionTime);
 
-    // TODO: account for metal plate height in motion.
-    ImVec2 redStripCornerMin = { min.x - Scale(43, true), redStripMotion };
-    ImVec2 redStripCornerMax = { redStripCornerMin.x + Scale(300, true), redStripMotion + redStripHeight };
+        // TODO: account for metal plate height in motion.
+        ImVec2 redStripCornerMin = { min.x - Scale(43, true), redStripMotion };
+        ImVec2 redStripCornerMax = { redStripCornerMin.x + Scale(300, true), redStripMotion + redStripHeight };
 
-    if (ReduceDraw)
-    {
-        ImVec2 redStripClipMin = { redStripCornerMin.x + Scale(160, true), redStripCornerMin.y};
-        ImVec2 redStripClipMax = { res.x, redStripCornerMax.y - Scale(10, true) };
+        // Draw corner left red strip.
+        drawList->AddImage(g_upTexMainMenu1.get(), redStripCornerMin, redStripCornerMax, GET_UV_COORDS(redStripCornerUVs), redStripColour);
 
-        drawList->PushClipRect(redStripClipMin, redStripClipMax);
-    }
+        // Draw left stretched red strip.
+        drawList->AddImage(g_upTexMainMenu1.get(), { 0.0f, redStripCornerMin.y }, { redStripCornerMin.x, redStripCornerMax.y }, GET_UV_COORDS(redStripLeftStretchUVs), redStripColour);
 
-    // Draw corner left red strip.
-    drawList->AddImage(g_upTexMainMenu1.get(), redStripCornerMin, redStripCornerMax, GET_UV_COORDS(redStripCornerUVs), redStripColour);
+        // Draw right stretched red strip.
+        drawList->AddImage(g_upTexMainMenu1.get(), { redStripCornerMax.x, redStripCornerMin.y }, { res.x, redStripCornerMax.y }, GET_UV_COORDS(redStripRightStretchUVs), redStripColour);
 
-    // Draw left stretched red strip.
-    drawList->AddImage(g_upTexMainMenu1.get(), { 0.0f, redStripCornerMin.y }, { redStripCornerMin.x, redStripCornerMax.y }, GET_UV_COORDS(redStripLeftStretchUVs), redStripColour);
+        auto redStripHighlightWidth = Scale(270, true);
+        auto redStripHighlightHeight = Scale(48, true);
+        auto redStripHighlightY = redStripCornerMin.y - Scale(3, true);
 
-    // Draw right stretched red strip.
-    drawList->AddImage(g_upTexMainMenu1.get(), { redStripCornerMax.x, redStripCornerMin.y }, { res.x, redStripCornerMax.y }, GET_UV_COORDS(redStripRightStretchUVs), redStripColour);
+        auto drawRedStripHighlight = [&](ImVec2 redStripHighlightMin, uint32_t tlColour, uint32_t brColour)
+        {
+            auto redStripHighlightUVs = PIXELS_TO_UV_COORDS(1024, 1024, 201, 501, 264, 50);
 
-    if (ReduceDraw)
-        drawList->PopClipRect();
+            ImVec2 redStripHighlightMax = { redStripHighlightMin.x + redStripHighlightWidth, redStripHighlightMin.y + redStripHighlightHeight };
 
-    auto redStripHighlightWidth = Scale(270, true);
-    auto redStripHighlightHeight = Scale(48, true);
-    auto redStripHighlightY = redStripCornerMin.y - Scale(3, true);
+            SetAdditive(true);
+            SetHorizontalGradient(redStripHighlightMin, redStripHighlightMax, tlColour, brColour);
 
-    auto drawRedStripHighlight = [&](ImVec2 redStripHighlightMin, uint32_t tlColour, uint32_t brColour)
-    {
-        auto redStripHighlightUVs = PIXELS_TO_UV_COORDS(1024, 1024, 201, 501, 264, 50);
+            drawList->AddImage(g_upTexMainMenu1.get(), redStripHighlightMin, redStripHighlightMax, GET_UV_COORDS(redStripHighlightUVs));
 
-        ImVec2 redStripHighlightMax = { redStripHighlightMin.x + redStripHighlightWidth, redStripHighlightMin.y + redStripHighlightHeight };
+            ResetGradient();
+            ResetAdditive();
+        };
 
-        SetAdditive(true);
-        SetHorizontalGradient(redStripHighlightMin, redStripHighlightMax, tlColour, brColour);
+        // Draw fixed highlights for red strip.
+        drawRedStripHighlight({ redStripCornerMax.x + Scale(67, true), redStripHighlightY }, IM_COL32(255, 172, 0, 0), IM_COL32(255, 172, 0, 67));
+        drawRedStripHighlight({ redStripCornerMax.x + Scale(-43, true), redStripHighlightY }, IM_COL32(255, 89, 0, 0), IM_COL32(255, 89, 0, 20));
 
-        drawList->AddImage(g_upTexMainMenu1.get(), redStripHighlightMin, redStripHighlightMax, GET_UV_COORDS(redStripHighlightUVs));
+        auto redStripHighlightMotionOffsetX = Scale(63, true);
+        auto redStripHighlightMotionX1Time = ComputeMotion(m_titleTime, PlayTransitions ? 10 : 0, 10, m_isClosing);
+        auto redStripHighlightMotionX2Time = ComputeMotion(m_titleTime, PlayTransitions ? 12 : 2, 10, m_isClosing);
+        auto redStripHighlightMotionAlphaIn1Time = ComputeMotion(m_titleTime, PlayTransitions ? 10 : 0, 8, m_isClosing);
+        auto redStripHighlightMotionAlphaIn2Time = ComputeMotion(m_titleTime, PlayTransitions ? 12 : 2, 8, m_isClosing);
+        auto redStripHighlightMotionAlphaOut1Time = ComputeMotion(m_titleTime, PlayTransitions ? 18 : 8, 2, m_isClosing);
+        auto redStripHighlightMotionAlphaOut2Time = ComputeMotion(m_titleTime, PlayTransitions ? 20 : 2, 2, m_isClosing);
+        auto redStripHighlightMotionX1 = Lerp(res.x + redStripHighlightWidth, min.x + redStripHighlightMotionOffsetX, redStripHighlightMotionX1Time);
+        auto redStripHighlightMotionX2 = Lerp(res.x + redStripHighlightWidth, min.x + redStripHighlightMotionOffsetX, redStripHighlightMotionX2Time);
+        auto redStripHighlightMotionAlpha1 = Lerp(0.0, 100.0, redStripHighlightMotionAlphaIn1Time);
+        auto redStripHighlightMotionAlpha2 = Lerp(0.0, 100.0, redStripHighlightMotionAlphaIn2Time);
 
-        ResetGradient();
-        ResetAdditive();
-    };
+        if (redStripHighlightMotionAlphaIn1Time >= 1.0)
+            redStripHighlightMotionAlpha1 = Lerp(100.0, 0.0, redStripHighlightMotionAlphaOut1Time);
 
-    // Draw fixed highlights for red strip.
-    drawRedStripHighlight({ redStripCornerMax.x + Scale(67, true), redStripHighlightY }, IM_COL32(255, 172, 0, 0), IM_COL32(255, 172, 0, 67));
-    drawRedStripHighlight({ redStripCornerMax.x + Scale(-43, true), redStripHighlightY }, IM_COL32(255, 89, 0, 0), IM_COL32(255, 89, 0, 20));
+        if (redStripHighlightMotionAlphaIn2Time >= 1.0)
+            redStripHighlightMotionAlpha2 = Lerp(100.0, 0.0, redStripHighlightMotionAlphaOut2Time);
 
-    auto redStripHighlightMotionOffsetX = Scale(63, true);
-    auto redStripHighlightMotionX1Time = ComputeMotion(m_titleTime, PlayTransitions ? 10 : 0, 10, m_isClosing);
-    auto redStripHighlightMotionX2Time = ComputeMotion(m_titleTime, PlayTransitions ? 12 : 2, 10, m_isClosing);
-    auto redStripHighlightMotionAlphaIn1Time = ComputeMotion(m_titleTime, PlayTransitions ? 10 : 0, 8, m_isClosing);
-    auto redStripHighlightMotionAlphaIn2Time = ComputeMotion(m_titleTime, PlayTransitions ? 12 : 2, 8, m_isClosing);
-    auto redStripHighlightMotionAlphaOut1Time = ComputeMotion(m_titleTime, PlayTransitions ? 18 : 8, 2, m_isClosing);
-    auto redStripHighlightMotionAlphaOut2Time = ComputeMotion(m_titleTime, PlayTransitions ? 20 : 2, 2, m_isClosing);
-    auto redStripHighlightMotionX1 = Lerp(res.x + redStripHighlightWidth, min.x + redStripHighlightMotionOffsetX, redStripHighlightMotionX1Time);
-    auto redStripHighlightMotionX2 = Lerp(res.x + redStripHighlightWidth, min.x + redStripHighlightMotionOffsetX, redStripHighlightMotionX2Time);
-    auto redStripHighlightMotionAlpha1 = Lerp(0.0, 100.0, redStripHighlightMotionAlphaIn1Time);
-    auto redStripHighlightMotionAlpha2 = Lerp(0.0, 100.0, redStripHighlightMotionAlphaIn2Time);
+        // Draw animated highlights for title animation.
+        drawRedStripHighlight({ redStripHighlightMotionX1, redStripHighlightY }, IM_COL32(255, 172, 0, 0), IM_COL32(255, 172, 0, redStripHighlightMotionAlpha1));
+        drawRedStripHighlight({ redStripHighlightMotionX2, redStripHighlightY }, IM_COL32(255, 172, 0, 0), IM_COL32(255, 172, 0, redStripHighlightMotionAlpha2));
 
-    if (redStripHighlightMotionAlphaIn1Time >= 1.0)
-        redStripHighlightMotionAlpha1 = Lerp(100.0, 0.0, redStripHighlightMotionAlphaOut1Time);
+        auto titleText = Title.empty() ? "DUMMY" : Title.data();
+        auto titleFontSize = Scale(33, true);
+        auto titleSize = g_pFntNewRodin->CalcTextSizeA(titleFontSize, FLT_MAX, 0.0f, titleText);
+        auto titleOffsetX = redStripCornerMax.x - Scale(105, true);
+        auto titleOffsetY = redStripMotion + Scale(3.25, true);
+        auto titleOffsetXMotionTime = ComputeMotion(m_titleTime, PlayTransitions && !m_isClosing ? 10 : 0, 10, m_isClosing);
+        auto titleOffsetXMotion = Lerp(max.x + titleSize.x, titleOffsetX, titleOffsetXMotionTime);
 
-    if (redStripHighlightMotionAlphaIn2Time >= 1.0)
-        redStripHighlightMotionAlpha2 = Lerp(100.0, 0.0, redStripHighlightMotionAlphaOut2Time);
+        if (!m_previousTitle.empty())
+        {
+            auto prevTitleAlphaMotionTime = ComputeMotion(m_titleTime, PlayTransitions ? 10 : 0, 3, m_isClosing);
 
-    // Draw animated highlights for title animation.
-    drawRedStripHighlight({ redStripHighlightMotionX1, redStripHighlightY }, IM_COL32(255, 172, 0, 0), IM_COL32(255, 172, 0, redStripHighlightMotionAlpha1));
-    drawRedStripHighlight({ redStripHighlightMotionX2, redStripHighlightY }, IM_COL32(255, 172, 0, 0), IM_COL32(255, 172, 0, redStripHighlightMotionAlpha2));
+            // Draw previous title fading out.
+            drawList->AddText(g_pFntNewRodin, titleFontSize, { titleOffsetX, titleOffsetY }, IM_COL32(255, 255, 255, Lerp(255, 0, prevTitleAlphaMotionTime)), m_previousTitle.data());
+        }
 
-    auto titleText = Title.empty() ? "DUMMY" : Title.data();
-    auto titleFontSize = Scale(33, true);
-    auto titleSize = g_pFntNewRodin->CalcTextSizeA(titleFontSize, FLT_MAX, 0.0f, titleText);
-    auto titleOffsetX = redStripCornerMax.x - Scale(105, true);
-    auto titleOffsetY = redStripMotion + Scale(3.25, true);
-    auto titleOffsetXMotionTime = ComputeMotion(m_titleTime, PlayTransitions && !m_isClosing ? 10 : 0, 10, m_isClosing);
-    auto titleOffsetXMotion = Lerp(max.x + titleSize.x, titleOffsetX, titleOffsetXMotionTime);
+        // Draw title.
+        drawList->AddText(g_pFntNewRodin, titleFontSize, { titleOffsetXMotion, titleOffsetY }, IM_COL32(255, 255, 255, 255 * titleOffsetXMotionTime), titleText);
 
-    if (!m_previousTitle.empty())
-    {
-        auto prevTitleAlphaMotionTime = ComputeMotion(m_titleTime, PlayTransitions ? 10 : 0, 3, m_isClosing);
+        auto topPlateCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 150, 250, 145);
+        auto topPlateLeftStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 2, 150, 150, 145);
+        auto topPlateRightStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 250, 150, 750, 145);
+        auto topPlateOffsetY = Scale(3.5, true);
+        auto topPlateHeight = Scale(145, true);
+        auto topPlateMotion = Lerp(min.y - topPlateHeight, min.y - topPlateOffsetY, borderMotionTime);
 
-        // Draw previous title fading out.
-        drawList->AddText(g_pFntNewRodin, titleFontSize, { titleOffsetX, titleOffsetY }, IM_COL32(255, 255, 255, Lerp(255, 0, prevTitleAlphaMotionTime)), m_previousTitle.data());
-    }
+        ImVec2 topPlateCornerMin = { min.x - Scale(45, true), topPlateMotion };
+        ImVec2 topPlateCornerMax = { topPlateCornerMin.x + Scale(250, true), topPlateMotion + topPlateHeight };
+        ImVec2 topPlateStretchMin = { topPlateCornerMax.x, topPlateCornerMin.y };
+        ImVec2 topPlateStretchMax = { res.x, topPlateCornerMax.y };
 
-    // Draw title.
-    drawList->AddText(g_pFntNewRodin, titleFontSize, { titleOffsetXMotion, titleOffsetY }, IM_COL32(255, 255, 255, 255 * titleOffsetXMotionTime), titleText);
-
-    auto topPlateCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 150, 250, 145);
-    auto topPlateLeftStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 2, 150, 150, 145);
-    auto topPlateRightStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 250, 150, 750, 145);
-    auto topPlateOffsetY = Scale(3.5, true);
-    auto topPlateHeight = Scale(145, true);
-    auto topPlateMotion = Lerp(min.y - topPlateHeight, min.y - topPlateOffsetY, borderMotionTime);
-
-    ImVec2 topPlateCornerMin = { min.x - Scale(45, true), topPlateMotion };
-    ImVec2 topPlateCornerMax = { topPlateCornerMin.x + Scale(250, true), topPlateMotion + topPlateHeight };
-    ImVec2 topPlateStretchMin = { topPlateCornerMax.x, topPlateCornerMin.y };
-    ImVec2 topPlateStretchMax = { res.x, topPlateCornerMax.y };
-
-    if (!ReduceDraw)
-    {
         // Draw top left corner metal plate.
         drawList->AddImage(g_upTexMainMenu1.get(), topPlateCornerMin, topPlateCornerMax, GET_UV_COORDS(topPlateCornerUVs));
 

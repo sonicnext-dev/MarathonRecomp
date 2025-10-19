@@ -1,6 +1,6 @@
 #pragma once
 
-#include <CSD/Manager/csdmRCPtrAbs.h>
+#include <Chao/CSD/Core/csdRCPtrAbs.h>
 
 namespace Chao::CSD
 {
@@ -10,13 +10,13 @@ namespace Chao::CSD
         struct Vftable
         {
             be<uint32_t> fpDestroy;
-            be<uint32_t> fpDeallocate;
+            be<uint32_t> fpFree;
         };
 
         xpointer<Vftable> m_pVftable;
         xpointer<void> m_pMemory;
-        be<uint32_t> m_RefCount;
-        xpointer<void> m_pDealloctor;
-        be<uint32_t> m_eDealloctor;
+        be<uint32_t> m_ReferenceCount;
+        xpointer<void> m_Field0C;
+        be<uint32_t> m_Field10;
     };
 }

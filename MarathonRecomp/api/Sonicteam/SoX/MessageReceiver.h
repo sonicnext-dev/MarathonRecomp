@@ -16,9 +16,9 @@ namespace Sonicteam::SoX
 
         xpointer<Vftable> m_pVftable;
 
-        void Destroy(uint8_t flags = 1)
+        void* Destroy(uint8_t flags = 1)
         {
-            GuestToHostFunction<int>(m_pVftable->fpDestroy, this, flags);
+            return GuestToHostFunction<void*>(m_pVftable->fpDestroy, this, flags);
         }
 
         bool ProcessMessage(IMessage* pMessage)

@@ -2,6 +2,7 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/SoX/RefCountObject.h>
+#include <Sonicteam/CsdObject.h>
 #include <Sonicteam/TextCard.h>
 #include <Sonicteam/TextEntity.h>
 #include <stdx/string.h>

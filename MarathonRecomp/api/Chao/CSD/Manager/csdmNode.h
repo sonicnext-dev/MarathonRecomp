@@ -1,10 +1,10 @@
 #pragma once
 
 #include <Marathon.inl>
-#include <CSD/Manager/csdmBase.h>
-#include <CSD/Manager/csdmResourceBase.h>
-#include <CSD/Manager/csdmNodeObserver.h>
-#include <CSD/Manager/csdmSubjectBase.h>
+#include <Chao/CSD/Core/csdBase.h>
+#include <Chao/CSD/Manager/csdmResourceBase.h>
+#include <Chao/CSD/Manager/csdmNodeObserver.h>
+#include <Chao/CSD/Manager/csdmSubjectBase.h>
 
 namespace Chao::CSD
 {

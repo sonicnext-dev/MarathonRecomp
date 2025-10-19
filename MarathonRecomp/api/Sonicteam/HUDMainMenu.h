@@ -9,6 +9,8 @@ namespace Sonicteam
     public:
         enum HUDMainMenuState : uint32_t
         {
+            HUDMainMenuState_OptionsOutro = 5,
+            HUDMainMenuState_OptionsIntro = 90,
             HUDMainMenuState_MainCursorIntro = 98,
             HUDMainMenuState_MainCursorOutro = 99
         };

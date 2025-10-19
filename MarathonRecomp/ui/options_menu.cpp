@@ -15,6 +15,8 @@
 #include <decompressor.h>
 #include <exports.h>
 
+static constexpr double ANIMATION_DURATION = 5.0;
+
 static double g_stateTime{};
 static double g_flowStateTime{};
 static double g_categoryTime{};
@@ -962,11 +964,20 @@ void OptionsMenu::Draw()
 
         case OptionsMenuState::Closing:
         {
-            if (s_commonMenu.Close())
-            {
-                if (!s_isPause)
-                    ButtonGuide::Close();
+            auto isClosed = false;
 
+            if (s_isPause)
+            {
+                isClosed = s_commonMenu.Close();
+            }
+            else
+            {
+                isClosed = ComputeMotion(g_stateTime, 0, ANIMATION_DURATION) >= 1.0;
+            }
+
+            if (isClosed)
+            {
+                ButtonGuide::Close();
                 s_isVisible = false;
             }
 

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Marathon.inl>
-#include <CSD/Manager/csdmBase.h>
-#include <CSD/Manager/csdmResourceBase.h>
+#include <Chao/CSD/Core/csdBase.h>
+#include <Chao/CSD/Manager/csdmResourceBase.h>
 
 namespace Chao::CSD
 {

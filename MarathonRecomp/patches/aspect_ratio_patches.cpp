@@ -1616,10 +1616,6 @@ PPC_FUNC(sub_8262D868)
     pTextEntity->m_ScaleX = scale;
     pTextEntity->m_ScaleY = scale;
 
-    // Disable text rendering whilst options menu is visible.
-    if (OptionsMenu::s_isVisible)
-        pTextEntity->m_ScaleX = 0.0f;
-
     __imp__sub_8262D868(ctx, base);
 
     pTextEntity->m_X = x;
@@ -1661,9 +1657,9 @@ PPC_FUNC(sub_824E11D0)
     auto pHudTextRoot = pHUDMainMenu->m_pHudTextRoot->m_pNext;
 
     static bool s_preservedTextPositions{};
-    static float s_multiplayerTextOffsetX{};
-    static float s_tagTextOffsetX{};
-    static float s_battleTextOffsetX{};
+    static float s_multiplayerTextOffsetY{};
+    static float s_tagTextOffsetY{};
+    static float s_battleTextOffsetY{};
 
     auto isTrialSelect = MainMenuTaskPatches::State >= 12 && MainMenuTaskPatches::State <= 15;
     auto isTag = MainMenuTaskPatches::State == Sonicteam::MainMenuTask::MainMenuState_Tag;
@@ -1675,23 +1671,23 @@ PPC_FUNC(sub_824E11D0)
             if (pHudTextRoot->m_CastName == "multi_player")
             {
                 if (!s_preservedTextPositions)
-                    s_multiplayerTextOffsetX = pHudTextRoot->m_OffsetX;
+                    s_multiplayerTextOffsetY = pHudTextRoot->m_OffsetY;
 
-                pHudTextRoot->m_OffsetX = isTrialSelect ? -10000.0f : s_multiplayerTextOffsetX;
+                pHudTextRoot->m_OffsetY = isTrialSelect ? -100000.0f : s_multiplayerTextOffsetY;
             }
             else if (pHudTextRoot->m_CastName == "tag")
             {
                 if (!s_preservedTextPositions)
-                    s_tagTextOffsetX = pHudTextRoot->m_OffsetX;
+                    s_tagTextOffsetY = pHudTextRoot->m_OffsetY;
 
-                pHudTextRoot->m_OffsetX = (isTrialSelect || isTag) ? -10000.0f : s_tagTextOffsetX;
+                pHudTextRoot->m_OffsetY = (isTrialSelect || isTag) ? -100000.0f : s_tagTextOffsetY;
             }
             else if (pHudTextRoot->m_CastName == "battle")
             {
                 if (!s_preservedTextPositions)
-                    s_battleTextOffsetX = pHudTextRoot->m_OffsetX;
+                    s_battleTextOffsetY = pHudTextRoot->m_OffsetY;
 
-                pHudTextRoot->m_OffsetX = isTrialSelect ? -10000.0f : s_battleTextOffsetX;
+                pHudTextRoot->m_OffsetY = isTrialSelect ? -100000.0f : s_battleTextOffsetY;
             }
         }
 
