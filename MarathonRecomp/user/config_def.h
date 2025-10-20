@@ -90,6 +90,7 @@ CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreChaosBoostJump, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreChainJumpFlips, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreDemoCameraMode, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreSonicActionGauge, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, RestorePauseMissionText, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, TailsGauge, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, EnableDebugMode, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, MidairControlForMachSpeed, false);
