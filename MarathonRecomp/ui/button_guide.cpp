@@ -145,7 +145,7 @@ void ButtonGuide::Draw()
         windowWidth += btnWidth + textWidth + btnIconPadding + btnTextPadding;
     }
 
-    auto windowMotionTime = g_isAnimated ? ComputeMotion(g_time, 0, 200) : 1.0;
+    auto windowMotionTime = g_isAnimated ? ComputeLinearMotion(g_time, 0, 100) : 1.0;
     auto windowMotion = std::clamp(float(res.x - Scale(1088.4, true) * windowMotionTime), res.x - windowOffsetX - windowWidth, res.x - g_aspectRatioOffsetX);
 
     ImVec2 windowStretchMin = { windowMotion, res.y - windowOffsetY };
