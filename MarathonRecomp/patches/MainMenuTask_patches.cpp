@@ -10,8 +10,6 @@ PPC_FUNC(sub_824FFCF8)
 {
     auto pMainMenuTask = (Sonicteam::MainMenuTask*)(base + ctx.r3.u32);
 
-    static bool s_isReturningFromOptionsMenu{};
-
 #ifdef MARATHON_RECOMP_OPTIONS_MENU
     if (pMainMenuTask->m_State == Sonicteam::MainMenuTask::MainMenuState_MainMenu && pMainMenuTask->m_SelectedIndex == 3)
     {
@@ -44,6 +42,8 @@ PPC_FUNC(sub_824FFCF8)
     }
 #endif
 
+    static auto s_isReturningFromOptionsMenu = false;
+    static bool s_isProcessedExitMessages = false;
     auto& rButtonWindowTextOffsetY = pMainMenuTask->m_pButtonWindowTask->m_pHUDButtonWindow->m_pHudTextParts->m_OffsetY;
 
     if (OptionsMenu::s_isVisible)
@@ -60,6 +60,7 @@ PPC_FUNC(sub_824FFCF8)
 
             case OptionsMenuState::Closing:
                 s_isReturningFromOptionsMenu = true;
+                s_isProcessedExitMessages = false;
                 break;
         }
     }
@@ -67,27 +68,41 @@ PPC_FUNC(sub_824FFCF8)
     {
         if (s_isReturningFromOptionsMenu)
         {
-            // Restore original button window text offset.
-            rButtonWindowTextOffsetY = g_buttonWindowTextOffsetY;
+            if (!s_isProcessedExitMessages)
+            {
+                // Restore original button window text offset.
+                rButtonWindowTextOffsetY = g_buttonWindowTextOffsetY;
 
-            guest_stack_var<Sonicteam::Message::MsgHUDMainMenuSetCursor> msgHUDMainMenuSetCursor
-            (
-                Sonicteam::HUDMainMenu::HUDMainMenuState_MainCursorIntro,
-                pMainMenuTask->m_SelectedIndex
-            );
+                guest_stack_var<Sonicteam::Message::MsgHUDMainMenuSetCursor> msgHUDMainMenuSetCursor
+                (
+                    Sonicteam::HUDMainMenu::HUDMainMenuState_MainCursorIntro,
+                    pMainMenuTask->m_SelectedIndex
+                );
 
-            // Play cursor intro animation.
-            pMainMenuTask->m_pHUDMainMenu->ProcessMessage(msgHUDMainMenuSetCursor.get());
+                // Play cursor intro animation.
+                pMainMenuTask->m_pHUDMainMenu->ProcessMessage(msgHUDMainMenuSetCursor.get());
 
-            guest_stack_var<Sonicteam::Message::MsgHUDMainMenuTransition> msgHUDMainMenuTransition
-            (
-                Sonicteam::HUDMainMenu::HUDMainMenuState_OptionsIntro, 3
-            );
+                guest_stack_var<Sonicteam::Message::MsgHUDMainMenuTransition> msgHUDMainMenuTransition
+                (
+                    Sonicteam::HUDMainMenu::HUDMainMenuState_OptionsIntro, 3
+                );
 
-            // Play options -> main menu transition.
-            pMainMenuTask->m_pHUDMainMenu->ProcessMessage(msgHUDMainMenuTransition.get());
+                // Play options -> main menu transition.
+                pMainMenuTask->m_pHUDMainMenu->ProcessMessage(msgHUDMainMenuTransition.get());
 
-            s_isReturningFromOptionsMenu = false;
+                s_isProcessedExitMessages = true;
+            }
+
+            if ((pMainMenuTask->m_pHUDMainMenu->m_CursorFlags.get() & 2) != 0)
+            {
+                // Prevent inputs leaking from the
+                // options menu to the main menu.
+                pMainMenuTask->m_PressedButtons = 0;
+            }
+            else
+            {
+                s_isReturningFromOptionsMenu = false;
+            }
         }
     }
 
