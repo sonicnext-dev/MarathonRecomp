@@ -425,8 +425,6 @@ static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAcce
 
     if (isCurrent)
     {
-        static T s_oldValue;
-
         auto setValueDescription = [=]()
         {
             auto valueDescription = config->GetValueDescription(Config::Language);
@@ -443,6 +441,8 @@ static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAcce
 
         if (isAccessible)
         {
+            static T s_oldValue;
+
             if (CheckAndDiscard(g_isAccepted))
             {
                 Game_PlaySound("main_deside");
@@ -456,7 +456,9 @@ static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAcce
                     if (config->LockCallback)
                         config->LockCallback(config);
 
-                    OptionsMenu::s_flowState = OptionsMenuFlowState::OptionSelected;
+                    OptionsMenu::SetFlowState(OptionsMenuFlowState::OptionSelected);
+
+                    isSelected = true;
                 }
                 else
                 {
@@ -468,10 +470,10 @@ static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAcce
                             config->ApplyCallback(config);
                     }
 
-                    OptionsMenu::s_flowState = OptionsMenuFlowState::OptionCursor;
-                }
+                    OptionsMenu::SetFlowState(OptionsMenuFlowState::OptionCursor);
 
-                g_flowStateTime = ImGui::GetTime();
+                    isSelected = false;
+                }
             }
 
             if (CheckAndDiscard(g_isDeclined))
@@ -491,8 +493,9 @@ static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAcce
                         config->ApplyCallback(config);
                 }
 
-                OptionsMenu::s_flowState = OptionsMenuFlowState::OptionCursor;
-                g_flowStateTime = ImGui::GetTime();
+                OptionsMenu::SetFlowState(OptionsMenuFlowState::OptionCursor);
+
+                isSelected = false;
             }
 
             if (g_optionCanReset && CheckAndDiscard(g_isReset))
@@ -1044,10 +1047,10 @@ void OptionsMenu::Draw()
             {
                 Game_PlaySound("main_deside");
 
-                s_flowState = OptionsMenuFlowState::OptionCursor;
-                g_flowStateTime = ImGui::GetTime();
-                g_cursorArrowsTime = g_flowStateTime;
-                g_scrollArrowsTime = g_flowStateTime;
+                SetFlowState(OptionsMenuFlowState::OptionCursor);
+
+                g_cursorArrowsTime = ImGui::GetTime();
+                g_scrollArrowsTime = g_cursorArrowsTime;
             }
 
             if (CheckAndDiscard(g_isDeclined))
@@ -1081,9 +1084,9 @@ void OptionsMenu::Draw()
             {
                 Game_PlaySound("window_close");
 
-                s_flowState = OptionsMenuFlowState::CategoryCursor;
-                g_flowStateTime = ImGui::GetTime();
-                g_cursorArrowsTime = g_flowStateTime;
+                SetFlowState(OptionsMenuFlowState::CategoryCursor);
+
+                g_cursorArrowsTime = ImGui::GetTime();
 
                 s_commonMenu.SetDescription(GetCategoryDescription((OptionsMenuCategory)g_categoryIndex));
             }
@@ -1147,6 +1150,12 @@ void OptionsMenu::Open(bool isPause)
     };
 
     ButtonGuide::Open(buttons, s_isPause);
+}
+
+void OptionsMenu::SetFlowState(OptionsMenuFlowState flowState)
+{
+    s_flowState = flowState;
+    g_flowStateTime = ImGui::GetTime();
 }
 
 void OptionsMenu::Close()
