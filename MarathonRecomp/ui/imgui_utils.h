@@ -52,7 +52,7 @@ float Scale(float size, bool useGameplayScale = false);
 double ComputeLoopMotion(double time, double offset, double total);
 double ComputeLinearMotion(double time, double offset, double total, bool reverse = false);
 double ComputeMotion(double time, double offset, double total, bool reverse = false);
-void DrawArrows(ImVec2 min, ImVec2 max);
+void DrawArrows(ImVec2 min, ImVec2 max, double& time);
 void DrawArrowCursor(ImVec2 pos, double time, bool isIntroAnim = true, bool isBlinkingAnim = true, bool isReversed = false);
 double ImValueDebug(double& value, double increment = 1.0);
 void DrawContainerBox(ImVec2 min, ImVec2 max, float alpha = 1);

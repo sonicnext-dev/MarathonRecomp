@@ -72,6 +72,7 @@ static constexpr size_t GRID_SIZE = 9;
 
 static CommonMenu g_commonMenu;
 
+static double g_chevronTime = 0.0;
 static double g_appearTime = 0.0;
 static double g_disappearTime = DBL_MAX;
 static bool g_isDisappearing = false;
@@ -498,9 +499,9 @@ static void DrawBackground()
 
 static void DrawArrows()
 {
-    auto &res = ImGui::GetIO().DisplaySize;
+    auto& res = ImGui::GetIO().DisplaySize;
 
-    DrawArrows({ 0, res.y / 2 - Scale(10) }, res);
+    DrawArrows({ 0, 0 }, res, g_chevronTime);
 }
 
 static void DrawLeftImage()

@@ -19,6 +19,7 @@ static constexpr double ANIMATION_DURATION = 5.0;
 
 static double g_stateTime{};
 static double g_flowStateTime{};
+static double g_chevronTime{};
 static double g_categoryTime{};
 static double g_cursorArrowsTime{};
 static double g_scrollArrowsTime{};
@@ -980,6 +981,9 @@ void OptionsMenu::Draw()
                     g_isReset = true;
             }
 
+            if (s_isPause)
+                DrawArrows({ 0, 0 }, res, g_chevronTime);
+
             break;
         }
 
@@ -1095,9 +1099,6 @@ void OptionsMenu::Draw()
         }
     }
 
-    if (s_isPause)
-        DrawArrows({ 0, res.y / 2 - Scale(10) }, res);
-
     DrawCategories(min, max);
     DrawContainer(min, max);
 
@@ -1132,6 +1133,7 @@ void OptionsMenu::Open(bool isPause)
     s_commonMenu.ReduceDraw = !isPause;
 
     g_stateTime = ImGui::GetTime();
+    g_chevronTime = g_stateTime;
     g_categoryTime = g_stateTime;
     g_cursorArrowsTime = g_stateTime;
 

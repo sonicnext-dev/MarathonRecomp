@@ -232,82 +232,80 @@ double ComputeMotion(double time, double offset, double total, bool reverse)
     return sqrt(ComputeLinearMotion(time, offset, total, reverse));
 }
 
-void DrawArrows(ImVec2 min, ImVec2 max)
+void DrawArrows(ImVec2 min, ImVec2 max, double& time)
 {
     auto drawList = ImGui::GetBackgroundDrawList();
 
-    const float maxOpacity = 0.15f;
+    constexpr auto FADE_IN_DURATION = 5.0;
+    constexpr auto FADE_OUT_OFFSET = 59.0;
+    constexpr auto FADE_OUT_DURATION = 180.0;
+    constexpr auto LEFT_ARROWS_OFFSET = 27.0;
+    constexpr auto ARROWS_OFFSET = 3.0;
 
-    auto leftArrowSize = Scale(450);
-    auto leftArrowOffset = Scale(230);
-    auto rightArrowSize = Scale(180);
-    auto rightArrowOffset = Scale(120);
-    auto xOffset = Scale(10);
-
-    auto arrowUV = PIXELS_TO_UV_COORDS(512, 512, 0, 0, 500, 434);
-
-    auto elapsedTime = ImGui::GetTime();
-    const double totalTime = 5.0;
-
-    double cycleTime = fmod(elapsedTime, totalTime);
-    auto totalAnimOffset = (float)(xOffset * totalTime);
-
-    const uint32_t leftArrows = (uint32_t)((max.x + Scale(200) + totalAnimOffset) / leftArrowOffset) + 1;
-    const uint32_t rightArrows = (uint32_t)((max.x + Scale(20) + totalAnimOffset) / rightArrowOffset) + 1;
-
-    auto leftBaseY = min.y - (leftArrowSize / 2);
-    auto leftEndY = min.y + (leftArrowSize / 2);
-
-    auto computeArrowLoopMotion = [&](double time, double offset)
+    auto computeArrowLoopMotion = [&](double offset) -> double
     {
-        const double fadeInDuration = 0.1;
-        const double fadeOutDuration = 10.0;
+        auto motionTime = 0.0;
+        auto fadeOutStartMotionTime = ComputeMotion(time, 0, FADE_OUT_OFFSET);
 
-        double elapsedTime = time - offset;
-
-        if (elapsedTime < 0.0)
-            return 0.0;
-
-        double result;
-
-        if (elapsedTime < fadeInDuration)
+        if (fadeOutStartMotionTime < 1.0)
         {
-            double progress = elapsedTime / fadeInDuration;
-            result = 1.0 - pow(1.0 - progress, 2.0);
-        }
-        else if (elapsedTime < fadeInDuration + fadeOutDuration)
-        {
-            double fadeOutTime = elapsedTime - fadeInDuration;
-            double progress = fadeOutTime / fadeOutDuration;
-            result = pow(1.0 - progress, 10.0);
+            motionTime = ComputeMotion(time, offset, FADE_IN_DURATION);
         }
         else
         {
-            result = 0.0;
+            motionTime = ComputeMotion(time, FADE_OUT_OFFSET, FADE_OUT_DURATION, true);
+
+            if (motionTime <= 0.0)
+                time = ImGui::GetTime();
         }
 
-        return std::clamp(result, 0.0, 1.0);
+        return std::clamp(motionTime, 0.0, 1.0);
     };
 
-    for (uint32_t i = 0; i < leftArrows; i++)
-    {
-        auto baseX = min.x + (i * leftArrowOffset) - Scale(200) - totalAnimOffset;
-        auto endX = baseX + leftArrowSize;
-        auto opacity = (uint32_t)((maxOpacity * computeArrowLoopMotion(cycleTime, 1.0 + ((double)(leftArrows - i) / leftArrows))) * 255);
+    auto arrowUVs = PIXELS_TO_UV_COORDS(512, 512, 0, 0, 400, 434);
+    auto centre = ImVec2(min.x + ((max.x - min.x) / 2), min.y + ((max.y - min.y) / 2));
 
-        drawList->AddImage(g_upTexArrow.get(), { endX, leftBaseY }, { baseX, leftEndY }, GET_UV_COORDS(arrowUV), IM_COL32(255, 255, 255, opacity));
+    auto leftArrowWidth = Scale(400, true);
+    auto leftArrowHeight = Scale(434, true);
+    auto leftArrowNextOffset = Scale(230, true);
+
+    auto rightArrowWidth = Scale(200, true);
+    auto rightArrowHeight = Scale(217, true);
+    auto rightArrowNextOffset = Scale(150, true);
+
+    const auto leftArrowCount = int((max.x + leftArrowWidth) / leftArrowNextOffset) + 1;
+    const auto rightArrowCount = int((max.x + rightArrowWidth) / rightArrowNextOffset) + 1;
+
+    auto animDuration = ((FADE_IN_DURATION + FADE_OUT_DURATION) + (LEFT_ARROWS_OFFSET + (leftArrowCount * ARROWS_OFFSET))) + FADE_OUT_OFFSET;
+
+    auto leftArrowOffsetMotionTime = ComputeMotion(time, 0, animDuration);
+    auto leftArrowGlobalOffset = Scale(Lerp(318, 308, leftArrowOffsetMotionTime), true);
+
+    auto rightArrowOffsetMotionTime = ComputeMotion(time, 0, animDuration - 20.0);
+    auto rightArrowGlobalOffset = Scale(Lerp(73, 93, rightArrowOffsetMotionTime), true);
+
+    auto leftBaseY = centre.y - (leftArrowHeight / 2) - Scale(20, true);
+    auto leftEndY = leftBaseY + leftArrowHeight;
+    
+    for (int i = 0; i < leftArrowCount; i++)
+    {
+        auto baseX = min.x + (i * leftArrowNextOffset) - leftArrowWidth + leftArrowGlobalOffset;
+        auto endX = baseX + leftArrowWidth;
+        auto opacity = Lerp(45, 5, std::clamp(baseX / max.x, 0.0f, 1.0f)) * computeArrowLoopMotion(LEFT_ARROWS_OFFSET + (ARROWS_OFFSET * (leftArrowCount - i)));
+    
+        drawList->AddImage(g_upTexArrow.get(), { endX, leftBaseY }, { baseX, leftEndY }, GET_UV_COORDS(arrowUVs), IM_COL32(255, 255, 255, opacity));
     }
 
-    auto rightBaseY = min.y - (rightArrowSize / 2);
-    auto rightEndY = min.y + (rightArrowSize / 2);
-
-    for (uint32_t i = 0; i < rightArrows; i++)
+    auto rightBaseY = centre.y - (rightArrowHeight / 2) - Scale(19, true);
+    auto rightEndY = rightBaseY + rightArrowHeight;
+    
+    for (int i = 0; i < rightArrowCount; i++)
     {
-        auto baseX = max.x - (i * rightArrowOffset) - rightArrowSize + Scale(20) + totalAnimOffset;
-        auto endX = baseX + rightArrowSize;
-        auto opacity = (uint32_t)((maxOpacity * computeArrowLoopMotion(cycleTime, ((double)(rightArrows - i) / rightArrows))) * 255);
+        auto baseX = max.x - (i * rightArrowNextOffset) - rightArrowWidth + rightArrowGlobalOffset;
+        auto endX = baseX + rightArrowWidth;
+        auto opacity = Lerp(5, 45, std::clamp(baseX / max.x, 0.0f, 1.0f)) * computeArrowLoopMotion(ARROWS_OFFSET * (rightArrowCount - i));
 
-        drawList->AddImage(g_upTexArrow.get(), { baseX, rightBaseY }, { endX, rightEndY }, GET_UV_COORDS(arrowUV), IM_COL32(255, 255, 255, opacity));
+        drawList->AddImage(g_upTexArrow.get(), { baseX, rightBaseY }, { endX, rightEndY }, GET_UV_COORDS(arrowUVs), IM_COL32(255, 255, 255, opacity));
     }
 }
 
