@@ -691,49 +691,49 @@ CONFIG_DEFINE_ENUM_LOCALE(ERadialBlur)
     {
         ELanguage::English,
         {
-            { ERadialBlur::Off, { "Off", "" } },
+            { ERadialBlur::Off,      { "Off", "" } },
             { ERadialBlur::Original, { "Original", "" } },
-            { ERadialBlur::Enhanced, { "Enhanced", "" } }
+            { ERadialBlur::Enhanced, { "Enhanced", "Enhanced: uses more samples for smoother radial blur." } }
         }
     },
     {
         ELanguage::Japanese,
         {
-            { ERadialBlur::Off, { "オフ", "" } },
+            { ERadialBlur::Off,      { "オフ", "" } },
             { ERadialBlur::Original, { "オリジナル", "" } },
-            { ERadialBlur::Enhanced, { "エンハンスド", "" } }
+            { ERadialBlur::Enhanced, { "エンハンスド", "DUMMY" } }
         }
     },
     {
         ELanguage::German,
         {
-            { ERadialBlur::Off, { "Aus", "" } },
+            { ERadialBlur::Off,      { "Aus", "" } },
             { ERadialBlur::Original, { "Original", "" } },
-            { ERadialBlur::Enhanced, { "Verbessert", "" } }
+            { ERadialBlur::Enhanced, { "Verbessert", "DUMMY" } }
         }
     },
     {
         ELanguage::French,
         {
-            { ERadialBlur::Off, { "Non", "" } },
+            { ERadialBlur::Off,      { "Non", "" } },
             { ERadialBlur::Original, { "Original", "" } },
-            { ERadialBlur::Enhanced, { "Amélioré", "" } }
+            { ERadialBlur::Enhanced, { "Amélioré", "DUMMY" } }
         }
     },
     {
         ELanguage::Spanish,
         {
-            { ERadialBlur::Off, { "No", "" } },
+            { ERadialBlur::Off,      { "No", "" } },
             { ERadialBlur::Original, { "Original", "" } },
-            { ERadialBlur::Enhanced, { "Mejorado", "" } }
+            { ERadialBlur::Enhanced, { "Mejorado", "DUMMY" } }
         }
     },
     {
         ELanguage::Italian,
         {
-            { ERadialBlur::Off, { "No", "" } },
+            { ERadialBlur::Off,      { "No", "" } },
             { ERadialBlur::Original, { "Originale", "" } },
-            { ERadialBlur::Enhanced, { "Aumentato", "" } }
+            { ERadialBlur::Enhanced, { "Aumentato", "DUMMY" } }
         }
     }
 };

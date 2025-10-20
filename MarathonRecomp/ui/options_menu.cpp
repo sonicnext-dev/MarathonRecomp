@@ -427,6 +427,20 @@ static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAcce
     {
         static T s_oldValue;
 
+        auto setValueDescription = [=]()
+        {
+            auto valueDescription = config->GetValueDescription(Config::Language);
+
+            if (valueDescription.empty())
+            {
+                OptionsMenu::s_commonMenu.SetDescription(config->GetDescription(Config::Language));
+            }
+            else
+            {
+                OptionsMenu::s_commonMenu.SetDescription(valueDescription);
+            }
+        };
+
         if (isAccessible)
         {
             if (CheckAndDiscard(g_isAccepted))
@@ -435,6 +449,8 @@ static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAcce
 
                 if (OptionsMenu::s_flowState == OptionsMenuFlowState::OptionCursor)
                 {
+                    setValueDescription();
+
                     s_oldValue = config->Value;
 
                     if (config->LockCallback)
@@ -529,6 +545,8 @@ static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAcce
 
                     if (increment || decrement)
                     {
+                        setValueDescription();
+
                         Game_PlaySound("move");
 
                         if (config->Callback)
