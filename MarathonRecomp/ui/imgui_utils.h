@@ -73,6 +73,6 @@ float Cubic(float a, float b, float t);
 float Hermite(float a, float b, float t);
 ImVec2 Lerp(const ImVec2& a, const ImVec2& b, float t);
 ImU32 ColourLerp(ImU32 c0, ImU32 c1, float t);
-void DrawVersionString(const ImFont* font, const ImU32 col = IM_COL32(255, 255, 255, 70));
+void DrawVersionString(const ImU32 colour = IM_COL32(255, 255, 255, 70));
 void DrawToggleLight(ImVec2 pos, bool isEnabled, float alpha = 1.0f);
 const char* CalcWordWrapPositionA(const ImFont* font, float scale, const char* text, const char* text_end, float wrap_width);

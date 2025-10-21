@@ -1,5 +1,4 @@
 #include "common_menu.h"
-#include <os/logger.h>
 #include <patches/aspect_ratio_patches.h>
 #include <ui/imgui_utils.h>
 #include <app.h>
@@ -17,7 +16,7 @@ void CommonMenu::Draw()
     ImVec2 min = { g_horzCentre, g_vertCentre };
     ImVec2 max = { res.x - min.x, res.y - min.y };
 
-    auto borderMotionTime = PlayTransitions ? ComputeMotion(m_time, 0, 10, m_isClosing) : 1.0;
+    auto borderMotionTime = PlayTransitions ? ComputeLinearMotion(m_time, 0, 10, m_isClosing) : 1.0;
 
     if (!ReduceDraw)
     {
@@ -38,7 +37,7 @@ void CommonMenu::Draw()
         auto redStripMotion = Lerp(min.y - redStripHeight, min.y + redStripOffsetY, borderMotionTime);
 
         // TODO: account for metal plate height in motion.
-        ImVec2 redStripCornerMin = { min.x - Scale(43, true), redStripMotion };
+        ImVec2 redStripCornerMin = { min.x - Scale(44, true), redStripMotion };
         ImVec2 redStripCornerMax = { redStripCornerMin.x + Scale(300, true), redStripMotion + redStripHeight };
 
         // Draw corner left red strip.
@@ -114,14 +113,13 @@ void CommonMenu::Draw()
         // Draw title.
         drawList->AddText(g_pFntNewRodin, titleFontSize, { titleOffsetXMotion, titleOffsetY }, IM_COL32(255, 255, 255, 255 * titleOffsetXMotionTime), titleText);
 
-        auto topPlateCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 155, 250, 144);
-        auto topPlateLeftStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 2, 155, 150, 144);
-        auto topPlateRightStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 250, 155, 750, 144);
-        auto topPlateOffsetY = Scale(-0.3, true);
+        auto topPlateCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 154, 250, 144);
+        auto topPlateLeftStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 2, 154, 150, 144);
+        auto topPlateRightStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 250, 154, 750, 144);
         auto topPlateHeight = Scale(145, true);
-        auto topPlateMotion = Lerp(min.y - topPlateHeight, min.y - topPlateOffsetY, borderMotionTime);
+        auto topPlateMotion = Lerp(min.y - topPlateHeight, min.y - Scale(0.2, true), borderMotionTime);
 
-        ImVec2 topPlateCornerMin = { min.x - Scale(45, true), topPlateMotion };
+        ImVec2 topPlateCornerMin = { min.x - Scale(46, true), topPlateMotion };
         ImVec2 topPlateCornerMax = { topPlateCornerMin.x + Scale(250, true), topPlateMotion + topPlateHeight };
         ImVec2 topPlateStretchMin = { topPlateCornerMax.x, topPlateCornerMin.y };
         ImVec2 topPlateStretchMax = { res.x, topPlateCornerMax.y };
@@ -300,7 +298,7 @@ void CommonMenu::Draw()
     {
         auto bottomPlateUVs = PIXELS_TO_UV_COORDS(1024, 1024, 1, -17, 700, 145);
         auto bottomPlateStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 1, -17, 128, 145);
-        auto bottomPlateOffsetX = Scale(-59.5, true);
+        auto bottomPlateOffsetX = Scale(-60, true);
         auto bottomPlateOffsetY = Scale(12, true);
         auto bottomPlateWidth = Scale(700, true);
         auto bottomPlateHeight = Scale(145, true);
@@ -310,8 +308,6 @@ void CommonMenu::Draw()
         ImVec2 bottomPlateLeftMax = { bottomPlateLeftMin.x + bottomPlateWidth, bottomPlateMotion + bottomPlateHeight };
         ImVec2 bottomPlateRightMin = { max.x - bottomPlateWidth - bottomPlateOffsetX, bottomPlateLeftMin.y };
         ImVec2 bottomPlateRightMax = { bottomPlateRightMin.x + bottomPlateWidth, bottomPlateLeftMax.y };
-
-        // TODO: fix these overlapping in the middle at narrow aspect ratios.
         
         // Draw bottom left metal plate.
         drawList->AddImage(g_upTexMainMenu1.get(), bottomPlateLeftMin, bottomPlateLeftMax, GET_UV_COORDS(bottomPlateUVs));
@@ -349,7 +345,7 @@ void CommonMenu::Draw()
     {
         auto verAlphaMotionTime = PlayTransitions ? ComputeMotion(m_time, 0, m_isClosing ? 3 : 10, m_isClosing) : 1.0;
 
-        DrawVersionString(g_pFntNewRodin, IM_COL32(0, 0, 0, 70 * verAlphaMotionTime));
+        DrawVersionString(IM_COL32(0, 0, 0, 70 * verAlphaMotionTime));
     }
 }
 

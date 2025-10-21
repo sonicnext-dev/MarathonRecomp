@@ -703,18 +703,23 @@ ImU32 ColourLerp(ImU32 c0, ImU32 c1, float t)
     return ImGui::ColorConvertFloat4ToU32(result);
 }
 
-void DrawVersionString(const ImFont* font, const ImU32 col)
+void DrawVersionString(const ImU32 colour)
 {
     auto drawList = ImGui::GetBackgroundDrawList();
     auto& res = ImGui::GetIO().DisplaySize;
-    auto fontSize = Scale(12);
-    auto textMargin = Scale(2);
-    auto textSize = font->CalcTextSizeA(fontSize, FLT_MAX, 0, g_versionString);
-    auto textY = ((res.y - BlackBar::s_letterboxHeight) + BlackBar::s_margin) - textSize.y - textMargin;
+
+    auto fontSize = Scale(12, true);
+    auto textSize = g_pFntNewRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, g_versionString);
+
+    auto textMargin = Scale(2, true);
+    auto textY = res.y - textSize.y - textMargin;
+
+    if (g_aspectRatio < NARROW_ASPECT_RATIO)
+        textY -= BlackBar::s_letterboxHeight - BlackBar::s_margin;
 
     // TODO: remove this line after v1 release.
-    drawList->AddText(font, fontSize, { textMargin, textY }, col, "WORK IN PROGRESS");
-    drawList->AddText(font, fontSize, { res.x - textSize.x - textMargin, textY }, col, g_versionString);
+    drawList->AddText(g_pFntNewRodin, fontSize, { textMargin, textY }, colour, "WORK IN PROGRESS");
+    drawList->AddText(g_pFntNewRodin, fontSize, { res.x - textSize.x - textMargin, textY }, colour, g_versionString);
 }
 
 void DrawToggleLight(ImVec2 pos, bool isEnabled, float alpha)
