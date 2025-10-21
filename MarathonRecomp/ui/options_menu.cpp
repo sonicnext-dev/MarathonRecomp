@@ -851,7 +851,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
 
         auto scrollArrowColourMotion = IM_COL32(255, 255, 255, scrollArrowAlphaMotion);
 
-        ImVec2 scrollArrowTopMin = { max.x - scrollArrowScale - Scale(64, true) - g_pillarboxWidth, min.y + Scale(12, true) };
+        ImVec2 scrollArrowTopMin = { max.x - scrollArrowScale - Scale(64, true) - BlackBar::s_pillarboxWidth, min.y + Scale(12, true) };
         ImVec2 scrollArrowTopMax = { scrollArrowTopMin.x + scrollArrowScale, scrollArrowTopMin.y + scrollArrowScale };
         ImVec2 scrollArrowBottomMin = { scrollArrowTopMin.x, max.y - scrollArrowScale - Scale(16, true) };
         ImVec2 scrollArrowBottomMax = { scrollArrowTopMax.x, scrollArrowBottomMin.y + scrollArrowScale };

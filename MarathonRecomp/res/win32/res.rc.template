@@ -30,7 +30,7 @@ BEGIN
             VALUE "FileVersion",      MARATHON_RECOMP_VERSION_STR
             VALUE "ProductVersion",   MARATHON_RECOMP_VERSION_STR
             VALUE "InternalName",     "MarathonRecomp"
-            VALUE "OriginalFilename", "Marathon.exe"
+            VALUE "OriginalFilename", "marathon.exe"
         END
     END
     BLOCK "VarFileInfo"

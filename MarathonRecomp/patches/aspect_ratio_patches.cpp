@@ -182,8 +182,6 @@ void AspectRatioPatches::ComputeOffsets()
     g_aspectRatioNarrowScale = std::clamp((g_aspectRatio - NARROW_ASPECT_RATIO) / (WIDE_ASPECT_RATIO - NARROW_ASPECT_RATIO), 0.0f, 1.0f);
     g_horzCentre = g_aspectRatioOffsetX + 640.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
     g_vertCentre = g_aspectRatioOffsetY + 360.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
-    g_pillarboxWidth = std::max(0.0f, (width - (height * WIDE_ASPECT_RATIO)) / 2.0f);
-    g_letterboxHeight = std::max(0.0f, (height - (width / WIDE_ASPECT_RATIO)) / 2.0f);
     g_radarMapScale = 256 * g_aspectRatioScale * g_aspectRatioGameplayScale;
 }
 

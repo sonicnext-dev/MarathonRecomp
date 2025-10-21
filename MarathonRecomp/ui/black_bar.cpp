@@ -5,10 +5,12 @@
 
 static bool g_isVisible{};
 static bool g_isEdgeFade{};
-static float g_margin{};
 
 void BlackBar::Draw()
 {
+    s_pillarboxWidth = std::max(0.0f, (Video::s_viewportWidth - (Video::s_viewportHeight * WIDE_ASPECT_RATIO)) / 2.0f);
+    s_letterboxHeight = std::max(0.0f, (Video::s_viewportHeight - (Video::s_viewportWidth / WIDE_ASPECT_RATIO)) / 2.0f);
+
     if (!g_isVisible)
         return;
 
@@ -20,8 +22,8 @@ void BlackBar::Draw()
     if (g_aspectRatio > WIDE_ASPECT_RATIO)
     {
         ImVec2 leftPillarboxMin = { 0, 0 };
-        ImVec2 leftPillarboxMax = { g_pillarboxWidth - g_margin, res.y };
-        ImVec2 rightPillarboxMin = { (res.x - g_pillarboxWidth) + g_margin, 0 };
+        ImVec2 leftPillarboxMax = { s_pillarboxWidth - s_margin, res.y };
+        ImVec2 rightPillarboxMin = { (res.x - s_pillarboxWidth) + s_margin, 0 };
         ImVec2 rightPillarboxMax = { res.x, res.y };
 
         if (g_isEdgeFade)
@@ -37,8 +39,8 @@ void BlackBar::Draw()
     else if (WIDE_ASPECT_RATIO > g_aspectRatio)
     {
         ImVec2 topLetterboxMin = { 0, 0 };
-        ImVec2 topLetterboxMax = { res.x, g_letterboxHeight - g_margin };
-        ImVec2 bottomLetterboxMin = { 0, res.y - g_letterboxHeight + g_margin };
+        ImVec2 topLetterboxMax = { res.x, s_letterboxHeight - s_margin };
+        ImVec2 bottomLetterboxMin = { 0, res.y - s_letterboxHeight + s_margin };
         ImVec2 bottomLetterboxMax = { res.x, res.y };
 
         if (g_isEdgeFade)
@@ -60,7 +62,7 @@ void BlackBar::Draw()
 
     g_isVisible = false;
     g_isEdgeFade = false;
-    g_margin = 0.0f;
+    s_margin = 0.0f;
 }
 
 void BlackBar::Show(bool isEdgeFade)
@@ -76,7 +78,7 @@ void BlackBar::Hide()
 
 void BlackBar::SetBorderMargin(float margin)
 {
-    g_margin = margin;
+    s_margin = margin;
 }
 
 bool BlackBar::IsVisible()

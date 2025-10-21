@@ -1,6 +1,7 @@
 #include "imgui_utils.h"
 #include <gpu/imgui/imgui_snapshot.h>
 #include <patches/aspect_ratio_patches.h>
+#include <ui/black_bar.h>
 #include <app.h>
 #include <decompressor.h>
 #include <version.h>
@@ -709,10 +710,11 @@ void DrawVersionString(const ImFont* font, const ImU32 col)
     auto fontSize = Scale(12);
     auto textMargin = Scale(2);
     auto textSize = font->CalcTextSizeA(fontSize, FLT_MAX, 0, g_versionString);
+    auto textY = ((res.y - BlackBar::s_letterboxHeight) + BlackBar::s_margin) - textSize.y - textMargin;
 
     // TODO: remove this line after v1 release.
-    drawList->AddText(font, fontSize, { textMargin, res.y - textSize.y - textMargin }, col, "WORK IN PROGRESS");
-    drawList->AddText(font, fontSize, { res.x - textSize.x - textMargin, res.y - textSize.y - textMargin }, col, g_versionString);
+    drawList->AddText(font, fontSize, { textMargin, textY }, col, "WORK IN PROGRESS");
+    drawList->AddText(font, fontSize, { res.x - textSize.x - textMargin, textY }, col, g_versionString);
 }
 
 void DrawToggleLight(ImVec2 pos, bool isEnabled, float alpha)
