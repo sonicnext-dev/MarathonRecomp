@@ -124,8 +124,8 @@ void ButtonGuide::Draw()
 
     auto windowEdgeUVs = PIXELS_TO_UV_COORDS(64, 64, 1, 0, 40, 64);
     auto windowStretchUVs = PIXELS_TO_UV_COORDS(64, 64, 40, 0, 23, 64);
-    auto windowOffsetX = g_aspectRatioOffsetX + Scale(88, true);
-    auto windowOffsetY = g_aspectRatioOffsetY + Scale(114.5, true);
+    auto windowOffsetX = g_horzCentre + Scale(88, true);
+    auto windowOffsetY = g_vertCentre + Scale(114.5, true);
     auto windowEdgeWidth = Scale(40, true);
     auto windowWidth = 0.0f;
     auto windowHeight = Scale(64, true);
@@ -146,7 +146,7 @@ void ButtonGuide::Draw()
     }
 
     auto windowMotionTime = g_isAnimated ? ComputeLinearMotion(g_time, 0, 100) : 1.0;
-    auto windowMotion = std::clamp(float(res.x - Scale(1088.4, true) * windowMotionTime), res.x - windowOffsetX - windowWidth, res.x - g_aspectRatioOffsetX);
+    auto windowMotion = std::clamp(float(res.x - Scale(1088.4, true) * windowMotionTime), res.x - windowOffsetX - windowWidth, res.x - g_horzCentre);
 
     ImVec2 windowStretchMin = { windowMotion, res.y - windowOffsetY };
     ImVec2 windowStretchMax = { res.x, windowStretchMin.y + windowHeight };

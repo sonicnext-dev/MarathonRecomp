@@ -14,8 +14,8 @@ void CommonMenu::Draw()
     if (App::s_isInit)
         SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
 
-    ImVec2 min = { g_aspectRatioOffsetX, g_aspectRatioOffsetY };
-    ImVec2 max = { res.x - g_aspectRatioOffsetX, res.y - g_aspectRatioOffsetY };
+    ImVec2 min = { g_horzCentre, g_vertCentre };
+    ImVec2 max = { res.x - min.x, res.y - min.y };
 
     auto borderMotionTime = PlayTransitions ? ComputeMotion(m_time, 0, 10, m_isClosing) : 1.0;
 
@@ -24,7 +24,7 @@ void CommonMenu::Draw()
         auto gradientTop = IM_COL32(0, 103, 255, 255);
         auto gradientBottom = IM_COL32(0, 92, 229, 255);
         auto gradientHeight = Scale(126, true);
-        auto gradientMotion = Lerp(min.y - gradientHeight, 0.0, borderMotionTime);
+        auto gradientMotion = Lerp(min.y - gradientHeight, min.y, borderMotionTime);
 
         // Draw gradient to fill gap between red strip and top metal plates.
         drawList->AddRectFilledMultiColor({ 0.0f, gradientMotion }, { res.x, gradientMotion + gradientHeight }, gradientTop, gradientTop, gradientBottom, gradientBottom);
@@ -114,10 +114,10 @@ void CommonMenu::Draw()
         // Draw title.
         drawList->AddText(g_pFntNewRodin, titleFontSize, { titleOffsetXMotion, titleOffsetY }, IM_COL32(255, 255, 255, 255 * titleOffsetXMotionTime), titleText);
 
-        auto topPlateCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 150, 250, 145);
-        auto topPlateLeftStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 2, 150, 150, 145);
-        auto topPlateRightStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 250, 150, 750, 145);
-        auto topPlateOffsetY = Scale(3.5, true);
+        auto topPlateCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 155, 250, 144);
+        auto topPlateLeftStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 2, 155, 150, 144);
+        auto topPlateRightStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 250, 155, 750, 144);
+        auto topPlateOffsetY = Scale(-0.3, true);
         auto topPlateHeight = Scale(145, true);
         auto topPlateMotion = Lerp(min.y - topPlateHeight, min.y - topPlateOffsetY, borderMotionTime);
 
@@ -129,13 +129,28 @@ void CommonMenu::Draw()
         // Draw top left corner metal plate.
         drawList->AddImage(g_upTexMainMenu1.get(), topPlateCornerMin, topPlateCornerMax, GET_UV_COORDS(topPlateCornerUVs));
 
-        // Draw top left stretched metal plate.
-        AddImageFlipped(g_upTexMainMenu1.get(), { 0.0f, topPlateCornerMin.y }, { topPlateCornerMin.x + Scale(2, true), topPlateCornerMax.y }, GET_UV_COORDS(topPlateLeftStretchUVs), IM_COL32_WHITE, true);
-
         // Draw top right stretched metal plate.
         SetHorizontalGradient(topPlateStretchMin, topPlateStretchMax, IM_COL32_WHITE, IM_COL32(200, 200, 200, 255));
         drawList->AddImage(g_upTexMainMenu1.get(), topPlateStretchMin, topPlateStretchMax, GET_UV_COORDS(topPlateRightStretchUVs));
         ResetGradient();
+
+        // Draw top left stretched metal plate for ultrawide.
+        if (g_aspectRatio > WIDE_ASPECT_RATIO)
+            AddImageFlipped(g_upTexMainMenu1.get(), { 0.0f, topPlateCornerMin.y }, { topPlateCornerMin.x + Scale(2, true), topPlateCornerMax.y }, GET_UV_COORDS(topPlateLeftStretchUVs), IM_COL32_WHITE, true);
+
+        // Draw flipped metal plates for narrow aspect ratios.
+        if (g_aspectRatio < WIDE_ASPECT_RATIO)
+        {
+            ImVec2 topPlateCornerExtendMin = { topPlateCornerMin.x, topPlateCornerMin.y - topPlateHeight };
+            ImVec2 topPlateCornerExtendMax = { topPlateCornerMax.x, topPlateCornerMin.y };
+            ImVec2 topPlateStretchExtendMin = { topPlateStretchMin.x, topPlateStretchMin.y - topPlateHeight };
+            ImVec2 topPlateStretchExtendMax = { topPlateStretchMax.x, topPlateStretchMin.y };
+
+            AddImageFlipped(g_upTexMainMenu1.get(), topPlateCornerExtendMin, topPlateCornerExtendMax, GET_UV_COORDS(topPlateCornerUVs), IM_COL32_WHITE, false, true);
+            SetHorizontalGradient(topPlateStretchExtendMin, topPlateStretchExtendMax, IM_COL32_WHITE, IM_COL32(200, 200, 200, 255));
+            AddImageFlipped(g_upTexMainMenu1.get(), topPlateStretchExtendMin, topPlateStretchExtendMax, GET_UV_COORDS(topPlateRightStretchUVs), IM_COL32_WHITE, false, true);
+            ResetGradient();
+        }
     }
 
     auto textCoverCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 801, 400, 150, 150);
@@ -278,34 +293,53 @@ void CommonMenu::Draw()
     }
 
     if (ReduceDraw)
-        drawList->PopClipRect();
-
-    auto bottomPlateUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 0, 700, 145);
-    auto bottomPlateStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 1, 0, 128, 145);
-    auto bottomPlateOffsetX = Scale(-59.5, true);
-    auto bottomPlateOffsetY = Scale(28.5, true);
-    auto bottomPlateWidth = Scale(700, true);
-    auto bottomPlateHeight = Scale(145, true);
-    auto bottomPlateMotion = Lerp(max.y + bottomPlateHeight, (max.y + bottomPlateOffsetY) - bottomPlateHeight, borderMotionTime);
-
-    ImVec2 bottomPlateLeftMin = { min.x + bottomPlateOffsetX, bottomPlateMotion };
-    ImVec2 bottomPlateLeftMax = { bottomPlateLeftMin.x + bottomPlateWidth, bottomPlateMotion + bottomPlateHeight };
-    ImVec2 bottomPlateRightMin = { max.x - bottomPlateWidth - bottomPlateOffsetX, bottomPlateLeftMin.y };
-    ImVec2 bottomPlateRightMax = { bottomPlateRightMin.x + bottomPlateWidth, bottomPlateLeftMax.y };
-
-    if (!ReduceDraw)
     {
+        drawList->PopClipRect();
+    }
+    else
+    {
+        auto bottomPlateUVs = PIXELS_TO_UV_COORDS(1024, 1024, 1, -17, 700, 145);
+        auto bottomPlateStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 1, -17, 128, 145);
+        auto bottomPlateOffsetX = Scale(-59.5, true);
+        auto bottomPlateOffsetY = Scale(12, true);
+        auto bottomPlateWidth = Scale(700, true);
+        auto bottomPlateHeight = Scale(145, true);
+        auto bottomPlateMotion = Lerp(max.y + bottomPlateHeight, (max.y + bottomPlateOffsetY) - bottomPlateHeight, borderMotionTime);
+
+        ImVec2 bottomPlateLeftMin = { min.x + bottomPlateOffsetX, bottomPlateMotion };
+        ImVec2 bottomPlateLeftMax = { bottomPlateLeftMin.x + bottomPlateWidth, bottomPlateMotion + bottomPlateHeight };
+        ImVec2 bottomPlateRightMin = { max.x - bottomPlateWidth - bottomPlateOffsetX, bottomPlateLeftMin.y };
+        ImVec2 bottomPlateRightMax = { bottomPlateRightMin.x + bottomPlateWidth, bottomPlateLeftMax.y };
+
+        // TODO: fix these overlapping in the middle at narrow aspect ratios.
+        
         // Draw bottom left metal plate.
         drawList->AddImage(g_upTexMainMenu1.get(), bottomPlateLeftMin, bottomPlateLeftMax, GET_UV_COORDS(bottomPlateUVs));
-
-        // Draw bottom left stretched metal plate.
-        AddImageFlipped(g_upTexMainMenu1.get(), { 0.0f, bottomPlateLeftMin.y }, { bottomPlateLeftMin.x, bottomPlateLeftMax.y }, GET_UV_COORDS(bottomPlateStretchUVs), IM_COL32_WHITE, true);
 
         // Draw bottom right metal plate.
         AddImageFlipped(g_upTexMainMenu1.get(), bottomPlateRightMin, bottomPlateRightMax, GET_UV_COORDS(bottomPlateUVs), IM_COL32_WHITE, true);
 
-        // Draw bottom right stretched metal plate.
-        AddImageFlipped(g_upTexMainMenu1.get(), { bottomPlateRightMax.x, bottomPlateRightMin.y }, { res.x, bottomPlateRightMax.y }, GET_UV_COORDS(bottomPlateStretchUVs), IM_COL32_WHITE, true);
+        // Draw stretched metal plates for ultrawide.
+        if (g_aspectRatio > WIDE_ASPECT_RATIO)
+        {
+            // Draw bottom left stretched metal plate.
+            AddImageFlipped(g_upTexMainMenu1.get(), { 0.0f, bottomPlateLeftMin.y }, { bottomPlateLeftMin.x, bottomPlateLeftMax.y }, GET_UV_COORDS(bottomPlateStretchUVs), IM_COL32_WHITE, true);
+
+            // Draw bottom right stretched metal plate.
+            AddImageFlipped(g_upTexMainMenu1.get(), { bottomPlateRightMax.x, bottomPlateRightMin.y }, { res.x, bottomPlateRightMax.y }, GET_UV_COORDS(bottomPlateStretchUVs), IM_COL32_WHITE, true);
+        }
+
+        // Draw flipped metal plates for narrow aspect ratios.
+        if (g_aspectRatio < WIDE_ASPECT_RATIO)
+        {
+            ImVec2 bottomPlateLeftExtendMin = { bottomPlateLeftMin.x, bottomPlateLeftMax.y };
+            ImVec2 bottomPlateLeftExtendMax = { bottomPlateLeftMax.x, bottomPlateRightMax.y + bottomPlateHeight };
+            ImVec2 bottomPlateRightExtendMin = { bottomPlateRightMin.x, bottomPlateRightMax.y };
+            ImVec2 bottomPlateRightExtendMax = { bottomPlateRightMax.x, bottomPlateRightMax.y + bottomPlateHeight };
+
+            AddImageFlipped(g_upTexMainMenu1.get(), bottomPlateLeftExtendMin, bottomPlateLeftExtendMax, GET_UV_COORDS(bottomPlateUVs), IM_COL32_WHITE, false, true);
+            AddImageFlipped(g_upTexMainMenu1.get(), bottomPlateRightExtendMin, bottomPlateRightExtendMax, GET_UV_COORDS(bottomPlateUVs), IM_COL32_WHITE, true, true);
+        }
     }
 
     if (App::s_isInit)

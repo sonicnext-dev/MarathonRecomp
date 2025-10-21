@@ -841,7 +841,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Reset" },
             { ELanguage::Japanese, "リセット" },
-            { ELanguage::German,   "Zurücksetzen" },
+            { ELanguage::German,   "Zurücksetzen　" },
             { ELanguage::French,   "Par défaut" },
             { ELanguage::Spanish,  "Reiniciar" },
             { ELanguage::Italian,  "Ripristina" }

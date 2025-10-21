@@ -93,7 +93,7 @@ public:
     void Update(float deltaTime) override
     {
         if (g_aspectRatio > WIDE_ASPECT_RATIO)
-            BlackBar::g_isVisible = true;
+            BlackBar::Show();
     }
 }
 g_loadingPillarboxEvent{};
@@ -176,11 +176,14 @@ void AspectRatioPatches::ComputeOffsets()
         g_aspectRatioOffsetY = (height - width / NARROW_ASPECT_RATIO) / 2.0f;
         g_aspectRatioScale = width / 960.0f;
         g_aspectRatioGameplayScale = ComputeScale(NARROW_ASPECT_RATIO);
-    } 
+    }
 
     g_aspectRatioMultiplayerOffsetX = g_aspectRatioOffsetX / 2.0f;
-
     g_aspectRatioNarrowScale = std::clamp((g_aspectRatio - NARROW_ASPECT_RATIO) / (WIDE_ASPECT_RATIO - NARROW_ASPECT_RATIO), 0.0f, 1.0f);
+    g_horzCentre = g_aspectRatioOffsetX + 640.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
+    g_vertCentre = g_aspectRatioOffsetY + 360.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
+    g_pillarboxWidth = std::max(0.0f, (width - (height * WIDE_ASPECT_RATIO)) / 2.0f);
+    g_letterboxHeight = std::max(0.0f, (height - (width / WIDE_ASPECT_RATIO)) / 2.0f);
     g_radarMapScale = 256 * g_aspectRatioScale * g_aspectRatioGameplayScale;
 }
 
@@ -448,13 +451,13 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
     // Draw black bars if this cast is drawn.
     if ((modifier.Flags & CSD_BLACK_BAR) != 0)
-        BlackBar::g_isVisible = true;
+        BlackBar::Show();
 
     // Prohibit black bars from being drawn if this cast is drawn.
     if ((modifier.Flags & CSD_PROHIBIT_BLACK_BAR) != 0)
-        BlackBar::g_isVisible = false;
+        BlackBar::Hide();
 
-    if (Config::UIAlignmentMode == EUIAlignmentMode::Centre || BlackBar::g_isVisible)
+    if (Config::UIAlignmentMode == EUIAlignmentMode::Centre || BlackBar::IsVisible())
     {
         // Prevent chevron arrows from being unaligned by centred aspect ratio.
         if ((modifier.Flags & CSD_CHEVRON) == 0)
@@ -539,7 +542,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
                 if ((modifier.Flags & CSD_ALIGN_RIGHT) != 0)
                     offsetX += 1280.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
                 else if ((modifier.Flags & CSD_ALIGN_LEFT) == 0)
-                    offsetX += 640.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
+                    offsetX += g_horzCentre - g_aspectRatioOffsetX;
 
                 offsetX += pivotX * g_aspectRatioScale;
             }
@@ -566,7 +569,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             if ((modifier.Flags & CSD_ALIGN_BOTTOM) != 0)
                 offsetY += 720.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
             else if ((modifier.Flags & CSD_ALIGN_TOP) == 0)
-                offsetY += 360.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
+                offsetY += g_vertCentre - g_aspectRatioOffsetY;
 
             offsetY += pivotY * g_aspectRatioScale;
         }
@@ -1153,18 +1156,6 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             getVertex(0)->V = getVertex(0)->V + 0.005f;
             getVertex(2)->V = getVertex(2)->V + 0.005f;
 
-            if (g_aspectRatio < NARROW_ASPECT_RATIO)
-            {
-                // Extend to the top of the screen
-                // if the first clone no longer fits.
-                getVertex(1)->Y = 0.0f;
-                getVertex(3)->Y = 0.0f;
-
-                // Crop bottom UVs to remove metal notch.
-                getVertex(1)->V = getVertex(1)->V + -0.067f;
-                getVertex(3)->V = getVertex(3)->V + -0.067f;
-            }
-
             drawOriginal();
         }
 
@@ -1189,18 +1180,6 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             // Crop bottom UVs to reduce pattern repetition.
             getVertex(1)->V = getVertex(1)->V + -0.005f;
             getVertex(3)->V = getVertex(3)->V + -0.005f;
-
-            if (g_aspectRatio < NARROW_ASPECT_RATIO)
-            {
-                // Extend to the bottom of the screen
-                // if the first clone no longer fits.
-                getVertex(0)->Y = vpHeight;
-                getVertex(2)->Y = vpHeight;
-
-                // Crop top UVs to remove metal dip.
-                getVertex(0)->V = getVertex(0)->V + 0.065f;
-                getVertex(2)->V = getVertex(2)->V + 0.065f;
-            }
 
             drawOriginal();
         }
@@ -1246,7 +1225,7 @@ PPC_FUNC_IMPL(__imp__sub_8264AC48);
 PPC_FUNC(sub_8264AC48)
 {
     if (Config::CutsceneAspectRatio == ECutsceneAspectRatio::Original)
-        BlackBar::g_isVisible = true;
+        BlackBar::Show();
 
     __imp__sub_8264AC48(ctx, base);
 }
@@ -1255,16 +1234,19 @@ PPC_FUNC(sub_8264AC48)
 PPC_FUNC_IMPL(__imp__sub_824F4D80);
 PPC_FUNC(sub_824F4D80)
 {
-    BlackBar::g_isVisible = true;
+    BlackBar::Show();
 
     __imp__sub_824F4D80(ctx, base);
 }
 
-// Sonicteam::HUDBattleResult::Update
 PPC_FUNC_IMPL(__imp__sub_824D32C8);
 PPC_FUNC(sub_824D32C8)
 {
-    BlackBar::g_isVisible = true;
+    auto vftable = PPC_LOAD_U32(ctx.r3.u32);
+
+    // Sonicteam::HUDBattleResult
+    if (vftable == 0x820363E0)
+        BlackBar::Show();
 
     __imp__sub_824D32C8(ctx, base);
 }
@@ -1273,7 +1255,7 @@ PPC_FUNC(sub_824D32C8)
 PPC_FUNC_IMPL(__imp__sub_824A4A40);
 PPC_FUNC(sub_824A4A40)
 {
-    BlackBar::g_isVisible = true;
+    BlackBar::Show();
 
     __imp__sub_824A4A40(ctx, base);
 }
@@ -1574,7 +1556,7 @@ PPC_FUNC(sub_8262D868)
     auto offsetY = 0.0f;
     auto scale = g_aspectRatioScale;
 
-    if (Config::UIAlignmentMode == EUIAlignmentMode::Centre || BlackBar::g_isVisible)
+    if (Config::UIAlignmentMode == EUIAlignmentMode::Centre || BlackBar::IsVisible())
     {
         if (g_aspectRatio > WIDE_ASPECT_RATIO)
         {
@@ -1696,6 +1678,13 @@ PPC_FUNC(sub_824E11D0)
 
     s_preservedTextPositions = true;
 
+    // Draw faded letterbox at tall aspect ratios.
+    if (!OptionsMenu::s_isVisible && g_aspectRatio < NARROW_ASPECT_RATIO)
+    {
+        BlackBar::Show(true);
+        BlackBar::SetBorderMargin(Scale(BlackBar::ms_MenuBorderMargin, true));
+    }
+
     __imp__sub_824E11D0(ctx, base);
 }
 
@@ -1766,7 +1755,7 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/audio/audio/audio_cursor2"), { CSD_SCALE } },
 
     // background
-    { HashStr("sprite/background/background/mainmenu_back"), { CSD_STRETCH_HORIZONTAL | CSD_PROHIBIT_BLACK_BAR } },
+    { HashStr("sprite/background/background/mainmenu_back"), { CSD_MODIFIER_ULTRAWIDE_ONLY | CSD_STRETCH_HORIZONTAL | CSD_PROHIBIT_BLACK_BAR } },
     { HashStr("sprite/background/background/tag"), { CSD_SCALE } },
     { HashStr("sprite/background/background/movie"), { CSD_SCALE } },
     { HashStr("sprite/background/background/main_menu"), { CSD_SCENE_DISABLE_MOTION | CSD_MODIFIER_ULTRAWIDE_ONLY } },

@@ -5,6 +5,7 @@
 #include <res/images/common/main_menu7.dds.h>
 #include <res/images/common/main_menu8.dds.h>
 #include <res/images/common/main_menu9.dds.h>
+#include <ui/black_bar.h>
 #include <ui/button_guide.h>
 #include <ui/fader.h>
 #include <ui/game_window.h>
@@ -850,7 +851,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
 
         auto scrollArrowColourMotion = IM_COL32(255, 255, 255, scrollArrowAlphaMotion);
 
-        ImVec2 scrollArrowTopMin = { max.x - scrollArrowScale - Scale(64, true) - g_aspectRatioOffsetX, min.y + Scale(12, true) };
+        ImVec2 scrollArrowTopMin = { max.x - scrollArrowScale - Scale(64, true) - g_pillarboxWidth, min.y + Scale(12, true) };
         ImVec2 scrollArrowTopMax = { scrollArrowTopMin.x + scrollArrowScale, scrollArrowTopMin.y + scrollArrowScale };
         ImVec2 scrollArrowBottomMin = { scrollArrowTopMin.x, max.y - scrollArrowScale - Scale(16, true) };
         ImVec2 scrollArrowBottomMax = { scrollArrowTopMax.x, scrollArrowBottomMin.y + scrollArrowScale };
@@ -892,16 +893,21 @@ static void DrawContainer(ImVec2 min, ImVec2 max)
 
 void OptionsMenu::Draw()
 {
-    // s_isVisible = GetAsyncKeyState(VK_F5);
-
     if (!s_isVisible)
         return;
+
+    // Draw faded letterbox at tall aspect ratios.
+    if (g_aspectRatio < NARROW_ASPECT_RATIO)
+    {
+        BlackBar::Show(true);
+        BlackBar::SetBorderMargin(Scale(BlackBar::ms_MenuBorderMargin, true));
+    }
 
     auto* drawList = ImGui::GetBackgroundDrawList();
     auto& res = ImGui::GetIO().DisplaySize;
 
-    ImVec2 min = { g_aspectRatioOffsetX, g_aspectRatioOffsetY };
-    ImVec2 max = { res.x - g_aspectRatioOffsetX, res.y - g_aspectRatioOffsetY };
+    ImVec2 min = { g_horzCentre, g_vertCentre };
+    ImVec2 max = { res.x - min.x, res.y - min.y };
 
     auto alphaMotionTime = s_isPause ? ComputeMotion(g_stateTime, 0, 10, s_state == OptionsMenuState::Closing) : 0.0;
     auto alpha = s_isPause ? Lerp(0, 175, alphaMotionTime) : 255;
@@ -910,7 +916,7 @@ void OptionsMenu::Draw()
 
     auto drawBackground = [=]()
     {
-        drawList->AddRectFilledMultiColor({ 0.0f, g_aspectRatioOffsetY }, { res.x, res.y - g_aspectRatioOffsetY }, gradientTop, gradientTop, gradientBottom, gradientBottom);
+        drawList->AddRectFilledMultiColor({ 0.0f, g_vertCentre }, { res.x, res.y - g_vertCentre }, gradientTop, gradientTop, gradientBottom, gradientBottom);
     };
 
     if (s_isPause)
@@ -921,8 +927,8 @@ void OptionsMenu::Draw()
     {
         auto horzMargin = Scale(128, true);
 
-        ImVec2 footerClipMin = { g_aspectRatioOffsetX + horzMargin, res.y - g_aspectRatioOffsetY - Scale(152, true) };
-        ImVec2 footerClipMax = { res.x - g_aspectRatioOffsetX - horzMargin, res.y - g_aspectRatioOffsetY - Scale(107, true) };
+        ImVec2 footerClipMin = { min.x + horzMargin, res.y - min.y - Scale(152, true) };
+        ImVec2 footerClipMax = { res.x - min.x - horzMargin, res.y - min.y - Scale(107, true) };
 
         drawList->PushClipRect(footerClipMin, footerClipMax);
         drawBackground();

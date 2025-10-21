@@ -26,8 +26,6 @@ static bool g_isDeclined{};
 
 static double g_time{};
 
-static ImFont* g_rodinFont{};
-
 static std::string g_text{};
 static int g_result{};
 static std::vector<std::string> g_buttons{};
@@ -139,7 +137,7 @@ g_sdlEventListenerForMessageWindow;
 
 void DrawContainerArrow(const ImVec2 pos, float scale, float rotation, uint32_t colour)
 {
-    auto arrowRadius = Scale(63.0f * scale);
+    auto arrowRadius = Scale(63.0f * scale, true);
 
     std::array<ImVec2, 4> vertices =
     {
@@ -194,8 +192,8 @@ void DrawContainer(const ImVec2 min, const ImVec2 max)
     auto lineHorzUVs = PIXELS_TO_UV_COORDS(128, 128, 2, 0, 60, 5);
     auto lineVertUVs = PIXELS_TO_UV_COORDS(128, 128, 0, 66, 5, 60);
 
-    auto lineScale = Scale(1);
-    auto lineOffsetRight = Scale(3);
+    auto lineScale = Scale(1, true);
+    auto lineOffsetRight = Scale(3, true);
 
     // Top
     drawList->AddImage(g_upTexWindow.get(), min, { max.x, min.y + lineScale }, GET_UV_COORDS(lineHorzUVs));
@@ -216,7 +214,7 @@ void DrawContainer(const ImVec2 min, const ImVec2 max)
     constexpr auto arrowOuterScale = 0.225f;
     constexpr auto arrowOuterColour = IM_COL32(255, 255, 255, 45);
 
-    auto arrowOuterOffset = Scale(arrowPixelRadius * arrowOuterScale) / 2;
+    auto arrowOuterOffset = Scale(arrowPixelRadius * arrowOuterScale, true) / 2;
 
     // Top Left (Inner)
     DrawContainerArrow(min, arrowInnerScale, 0.0f, containerTopColour);
@@ -269,8 +267,8 @@ void DrawButton(int rowIndex, float yOffset, float yPadding, float width, float 
             DrawArrowCursor(min, g_time, false, true);
     }
 
-    auto fontSize = Scale(27);
-    auto textSize = g_rodinFont->CalcTextSizeA(fontSize, FLT_MAX, 0, text.c_str());
+    auto fontSize = Scale(27, true);
+    auto textSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, text.c_str());
 
     // Show low quality text in-game.
     if (App::s_isInit)
@@ -278,7 +276,7 @@ void DrawButton(int rowIndex, float yOffset, float yPadding, float width, float 
 
     DrawTextBasic
     (
-        g_rodinFont,
+        g_pFntRodin,
         fontSize,
         { /* X */ min.x + ((max.x - min.x) - textSize.x) / 2, /* Y */ min.y + ((max.y - min.y) - textSize.y) / 2 },
         textColour,
@@ -303,11 +301,6 @@ static void ResetSelection()
     g_joypadAxis = {};
     g_isAccepted = false;
     g_isDeclined = false;
-}
-
-void MessageWindow::Init()
-{
-    g_rodinFont = ImFontAtlasSnapshot::GetFont("FOT-RodinPro-DB.otf");
 }
 
 void MessageWindow::Draw()
@@ -352,8 +345,8 @@ void MessageWindow::Draw()
         }
     }
 
-    ImVec2 msgMin = { g_aspectRatioOffsetX + Scale(96), g_aspectRatioOffsetY + Scale(96) };
-    ImVec2 msgMax = { msgMin.x + Scale(1088), msgMin.y + Scale(384) };
+    ImVec2 msgMin = { g_horzCentre + Scale(96, true), g_vertCentre + Scale(96, true) };
+    ImVec2 msgMax = { msgMin.x + Scale(1088, true), msgMin.y + Scale(384, true) };
     ImVec2 msgCentre = { (msgMin.x / 2) + (msgMax.x / 2), (msgMin.y / 2) + (msgMax.y / 2) };
 
     DrawContainer(msgMin, msgMax);
@@ -362,10 +355,10 @@ void MessageWindow::Draw()
     if (App::s_isInit)
         SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
 
-    auto fontSize = Scale(27);
-    auto textSize = g_rodinFont->CalcTextSizeA(fontSize, FLT_MAX, 0, g_text.c_str());
+    auto fontSize = Scale(27, true);
+    auto textSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, g_text.c_str());
 
-    DrawTextBasic(g_rodinFont, fontSize, { msgCentre.x - textSize.x / 2, msgCentre.y - textSize.y / 2 }, IM_COL32_WHITE, g_text.c_str());
+    DrawTextBasic(g_pFntRodin, fontSize, { msgCentre.x - textSize.x / 2, msgCentre.y - textSize.y / 2 }, IM_COL32_WHITE, g_text.c_str());
 
     // Reset the shader modifier.
     if (App::s_isInit)
@@ -373,16 +366,16 @@ void MessageWindow::Draw()
 
     drawList->PopClipRect();
 
-    ImVec2 selMin = { msgMin.x, msgMax.y + ((msgMin.y - g_aspectRatioOffsetY) / 2) };
-    ImVec2 selMax = { msgMax.x, selMin.y + Scale(128) };
+    ImVec2 selMin = { msgMin.x, msgMax.y + ((msgMin.y - g_vertCentre) / 2) };
+    ImVec2 selMax = { msgMax.x, selMin.y + Scale(128, true) };
 
     DrawContainer(selMin, selMax);
 
     auto rowCount = 0;
-    auto windowMarginX = Scale(36);
+    auto windowMarginX = Scale(36, true);
     auto itemWidth = msgMax.x - msgMin.x - windowMarginX;
-    auto itemHeight = Scale(25);
-    auto itemPadding = Scale(18);
+    auto itemHeight = Scale(25, true);
+    auto itemPadding = Scale(18, true);
     auto windowMarginY = ((selMax.y - selMin.y) / 2) - (((itemHeight + itemPadding) / 2) * g_buttons.size());
 
     for (auto& button : g_buttons)

@@ -45,6 +45,11 @@ void SetHorizontalGradient(const ImVec2& min, const ImVec2& max, ImU32 left, ImU
     SetGradient(min, max, left, right, right, left);
 }
 
+void SetVerticalGradient(const ImVec2& min, const ImVec2& max, ImU32 top, ImU32 bottom)
+{
+    SetGradient(min, max, top, top, bottom, bottom);
+}
+
 void SetGradient(const ImVec2& min, const ImVec2& max, ImU32 topLeft, ImU32 topRight, ImU32 bottomRight, ImU32 bottomLeft)
 {
     auto callbackData = AddImGuiCallback(ImGuiCallback::SetGradient);

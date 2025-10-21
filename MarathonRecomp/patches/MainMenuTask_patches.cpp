@@ -52,11 +52,17 @@ PPC_FUNC(sub_824FFCF8)
 
         switch (OptionsMenu::s_state)
         {
-            // Move original button window text very far off screen to "hide" it.
             case OptionsMenuState::Opening:
+            {
+                if (rButtonWindowTextOffsetY == -100000.0f)
+                    break;
+
+                // Move original button window text very far off screen to hide it.
                 g_buttonWindowTextOffsetY = rButtonWindowTextOffsetY;
                 rButtonWindowTextOffsetY = -100000.0f;
+
                 break;
+            }
 
             case OptionsMenuState::Closing:
                 s_isReturningFromOptionsMenu = true;

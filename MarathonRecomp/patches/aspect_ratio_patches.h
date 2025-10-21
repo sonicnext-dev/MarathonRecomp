@@ -17,6 +17,10 @@ inline float g_aspectRatioMultiplayerOffsetX;
 inline float g_aspectRatioScale;
 inline float g_aspectRatioGameplayScale;
 inline float g_aspectRatioNarrowScale;
+inline float g_horzCentre;
+inline float g_vertCentre;
+inline float g_pillarboxWidth;
+inline float g_letterboxHeight;
 inline float g_radarMapScale;
 
 class AspectRatioPatches
