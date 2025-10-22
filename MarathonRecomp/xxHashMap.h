@@ -17,3 +17,14 @@ inline XXH64_hash_t HashStr(const std::string_view& value)
 {
     return XXH3_64bits(value.data(), value.size());
 }
+
+template <typename T>
+inline T FindHash(const xxHashMap<T>& map, const XXH64_hash_t hash)
+{
+    auto findResult = map.find(hash);
+
+    if (findResult != map.end())
+        return findResult->second;
+
+    return {};
+}

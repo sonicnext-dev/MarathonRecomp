@@ -761,7 +761,7 @@ void AchievementMenu::Open()
         return std::get<1>(a) > std::get<1>(b);
     });
 
-    ButtonGuide::Open(Button("Common_Back", EButtonIcon::B));
+    ButtonGuide::Open("ButtonGuide_Back");
 
     ResetSelection();
     Game_PlaySound("sys_actstg_pausewinopen");

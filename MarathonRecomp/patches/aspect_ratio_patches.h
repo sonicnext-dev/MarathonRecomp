@@ -141,21 +141,6 @@ extern const xxHashMap<CsdModifier> g_csdModifiers;
 
 std::optional<CsdModifier> FindCsdModifier(uint32_t data);
 
-// -------------- TEXT MODIFIERS -------------- //
-
-struct TextFontPictureModifier
-{
-    uint16_t X{};
-    uint16_t Y{};
-    uint16_t Width{};
-    uint16_t Height{};
-};
-
-extern const xxHashMap<TextFontPictureModifier> g_pftModifierXenon;
-extern const xxHashMap<TextFontPictureModifier> g_pftModifierPS3;
-
-TextFontPictureModifier FindFontPictureModifier(xxHashMap<TextFontPictureModifier> pftModifier, std::string_view& name);
-
 // ------------- MOVIE MODIFIERS -------------- //
 
 enum MovieFlags : uint32_t

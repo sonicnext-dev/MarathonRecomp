@@ -1,51 +1,11 @@
 #pragma once
 
-enum class EButtonIcon
-{
-    // Controller
-    A,
-    B,
-    X,
-    Y,
-    LB,
-    RB,
-    LBRB,
-    LT,
-    RT,
-    LTRT,
-    Start,
-    Back,
-
-    // Keyboard + Mouse (temporary) <-- lol
-    LMB,
-    Enter,
-    Escape
-};
-
-class Button
-{
-public:
-    std::string Name{};
-    EButtonIcon Icon{};
-    bool* Visibility{ nullptr };
-
-    Button(std::string name, EButtonIcon icon, bool* visibility = nullptr)
-        : Name(name), Icon(icon), Visibility(visibility) {}
-
-    bool operator==(Button& other)
-    {
-        return Name == other.Name && Icon == other.Icon;
-    }
-};
-
 class ButtonGuide
 {
 public:
     static inline bool s_isVisible = false;
 
-    static void Init();
     static void Draw();
-    static void Open(Button button, bool isAnimated = true);
-    static void Open(const std::span<Button> buttons, bool isAnimated = true);
+    static void Open(std::string key, bool isAnimated = true);
     static void Close();
 };

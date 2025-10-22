@@ -717,16 +717,30 @@ static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAcce
         isValueCentred = true;
     }
 
-    auto valueTextSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0.0f, valueText.data());
-
-    ImVec2 valuePos = { ctrlBgCentre.x - (valueTextSize.x / 2), ctrlBgCentre.y - (valueTextSize.y / 2) - Scale(2, true) };
-
-    // Align text to right side of the background.
-    if (!isValueCentred)
-        valuePos.x = ctrlBgRightEdgeMax.x + Scale(10, true);
-
     SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
-    drawList->AddText(g_pFntRodin, fontSize, valuePos, optionColourMotion, valueText.data());
+
+    if constexpr (std::is_same_v<T, EFaceButton>)
+    {
+        auto interpData = GetHidInterpTextData();
+        auto valueTextSize = MeasureInterpolatedText(g_pFntRodin, fontSize, valueText.c_str(), &interpData);
+
+        ImVec2 valuePos = { ctrlBgCentre.x - (valueTextSize.x / 2) + Scale(2, true), ctrlBgCentre.y - (valueTextSize.y / 2) - Scale(2, true) };
+
+        DrawInterpolatedText(g_pFntRodin, fontSize, valuePos, optionColourMotion, valueText.data(), &interpData);
+    }
+    else
+    {
+        auto valueTextSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0.0f, valueText.data());
+
+        ImVec2 valuePos = { ctrlBgCentre.x - (valueTextSize.x / 2), ctrlBgCentre.y - (valueTextSize.y / 2) - Scale(2, true) };
+
+        // Align text to right side of the background.
+        if (!isValueCentred)
+            valuePos.x = ctrlBgRightEdgeMax.x + Scale(10, true);
+
+        drawList->AddText(g_pFntRodin, fontSize, valuePos, optionColourMotion, valueText.data());
+    }
+
     SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
 }
 
@@ -755,8 +769,8 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
         case OptionsMenuCategory::Input:
             DrawOption(rowCount++, &Config::HorizontalCamera, true);
             DrawOption(rowCount++, &Config::VerticalCamera, true);
-            DrawOption(rowCount++, &Config::Antigravity, true);                                        // TODO: set up text draw calls to replace $ with button.
-            DrawOption(rowCount++, &Config::LightDash, true);                                          // TODO: set up text draw calls to replace $ with button.
+            DrawOption(rowCount++, &Config::Antigravity, true);
+            DrawOption(rowCount++, &Config::LightDash, true);
             DrawOption(rowCount++, &Config::AllowBackgroundInput, true);
             DrawOption(rowCount++, &Config::ControllerIcons, true);
             break;
@@ -990,6 +1004,9 @@ void OptionsMenu::Draw()
             if (s_isPause)
                 DrawArrows({ 0, 0 }, res, g_chevronTime);
 
+            if (s_flowState == OptionsMenuFlowState::OptionCursor)
+                ButtonGuide::Open(g_optionCanReset ? "ButtonGuide_ResetSelectBack" : "ButtonGuide_SelectBack", false);
+
             break;
         }
 
@@ -1096,6 +1113,8 @@ void OptionsMenu::Draw()
 
                 SetFlowState(OptionsMenuFlowState::CategoryCursor);
 
+                ButtonGuide::Open("ButtonGuide_SelectBack", false);
+
                 g_cursorArrowsTime = ImGui::GetTime();
 
                 s_commonMenu.SetDescription(GetCategoryDescription((OptionsMenuCategory)g_categoryIndex));
@@ -1150,14 +1169,7 @@ void OptionsMenu::Open(bool isPause)
 
     ResetSelection();
 
-    std::array<Button, 3> buttons =
-    {
-        Button("Common_Reset", EButtonIcon::X, &g_optionCanReset),
-        Button("Common_Select", EButtonIcon::A),
-        Button("Common_Back", EButtonIcon::B)
-    };
-
-    ButtonGuide::Open(buttons, s_isPause);
+    ButtonGuide::Open("ButtonGuide_SelectBack", s_isPause);
 }
 
 void OptionsMenu::SetFlowState(OptionsMenuFlowState flowState)
@@ -1181,9 +1193,7 @@ void OptionsMenu::Close()
         s_pBgmCue = nullptr;
     }
 
-    if (s_isPause)
-        ButtonGuide::Close();
-
+    ButtonGuide::Close();
     Config::Save();
 }
 

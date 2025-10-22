@@ -1340,7 +1340,7 @@ PPC_FUNC(sub_8264CC90)
         LOGFN_UTILITY("Movie: {} - {}x{}", pMovieObjectWmv->m_FilePath.c_str(), pMovieObjectWmv->m_Width.get(), pMovieObjectWmv->m_Height.get());
     }
 
-    auto movieModifier = FindMovieModifier(movieNameHash);
+    auto movieModifier = FindHash<MovieModifier>(g_movieModifiers, movieNameHash);
 
     g_aspectRatioMovie = (float)pMovieObjectWmv->m_Width / (float)pMovieObjectWmv->m_Height;
 
@@ -1456,11 +1456,12 @@ void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity)
                 isPlayStation = hid::g_inputDeviceController == hid::EInputDevice::PlayStation;
 
             auto& pftModifier = isPlayStation
-                ? g_pftModifierPS3
-                : g_pftModifierXenon;
+                ? g_buttonCropsPS3
+                : g_buttonCropsXenon;
 
-            auto baseParams = FindFontPictureModifier(g_pftModifierXenon, variable.second);
-            auto newParams = FindFontPictureModifier(pftModifier, variable.second);
+            auto hash = HashStr(variable.second);
+            auto baseParams = FindHash<ImGuiTextPictureCrop>(g_buttonCropsXenon, hash);
+            auto newParams = FindHash<ImGuiTextPictureCrop>(pftModifier, hash);
 
             auto  uv = PIXELS_TO_UV_COORDS(g_fontPictureWidth, g_fontPictureHeight, newParams.X, newParams.Y, newParams.Width, newParams.Height);
             auto& min = std::get<0>(uv);
@@ -2246,46 +2247,6 @@ std::optional<CsdModifier> FindCsdModifier(uint32_t data)
     return {};
 }
 
-// -------------- TEXT MODIFIERS -------------- //
-
-const xxHashMap<TextFontPictureModifier> g_pftModifierXenon =
-{
-    { HashStr("button_a"), { 0, 0, 28, 28 } },
-    { HashStr("button_b"), { 28, 0, 28, 28 } },
-    { HashStr("button_x"), { 56, 0, 28, 28 } },
-    { HashStr("button_y"), { 84, 0, 28, 28 } },
-    { HashStr("button_lb"), { 112, 0, 53, 28 } },
-    { HashStr("button_lt"), { 56, 28, 55, 28 } },
-    { HashStr("button_rb"), { 168, 0, 53, 28 } },
-    { HashStr("button_rt"), { 0, 28, 55, 28 } },
-    { HashStr("button_start"), { 112, 28, 28, 28 } },
-    { HashStr("button_back"), { 140, 28, 28, 28 } }
-};
-
-const xxHashMap<TextFontPictureModifier> g_pftModifierPS3 =
-{
-    { HashStr("button_a"), { 0, 56, 28, 28 } },
-    { HashStr("button_b"), { 28, 56, 28, 28 } },
-    { HashStr("button_x"), { 56, 56, 28, 28 } },
-    { HashStr("button_y"), { 84, 56, 28, 28 } },
-    { HashStr("button_lb"), { 112, 56, 48, 28 } },
-    { HashStr("button_lt"), { 168, 56, 48, 28 } },
-    { HashStr("button_rb"), { 0, 84, 48, 28 } },
-    { HashStr("button_rt"), { 56, 84, 48, 28 } },
-    { HashStr("button_start"), { 140, 84, 28, 28 } },
-    { HashStr("button_back"), { 112, 84, 28, 28 } }
-};
-
-TextFontPictureModifier FindFontPictureModifier(xxHashMap<TextFontPictureModifier> pftModifier, std::string_view& name)
-{
-    auto findResult = pftModifier.find(HashStr(name));
-
-    if (findResult != pftModifier.end())
-        return findResult->second;
-
-    return {};
-}
-
 // ------------- MOVIE MODIFIERS -------------- //
 
 const xxHashMap<MovieModifier> g_movieModifiers =
@@ -2293,12 +2254,3 @@ const xxHashMap<MovieModifier> g_movieModifiers =
     { HashStr("sound\\title_loop_GBn.wmv"), { MOVIE_CROP_NARROW } }
 };
 
-MovieModifier FindMovieModifier(XXH64_hash_t nameHash)
-{
-    auto findResult = g_movieModifiers.find(nameHash);
-
-    if (findResult != g_movieModifiers.end())
-        return findResult->second;
-
-    return {};
-}

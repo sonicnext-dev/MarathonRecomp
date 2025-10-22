@@ -1,14 +1,16 @@
 #include "imgui_utils.h"
 #include <gpu/imgui/imgui_snapshot.h>
+#include <hid/hid.h>
 #include <patches/aspect_ratio_patches.h>
 #include <ui/black_bar.h>
 #include <app.h>
 #include <decompressor.h>
 #include <version.h>
 
+#include <res/images/common/button_window.dds.h>
+#include <res/images/common/controller.dds.h>
+#include <res/images/common/kbm.dds.h>
 #include <res/images/common/window.dds.h>
-#include <res/images/common/light.dds.h>
-#include <res/images/common/select.dds.h>
 #include <res/images/common/select_arrow.dds.h>
 #include <res/images/common/main_menu1.dds.h>
 #include <res/images/common/arrow.dds.h>
@@ -16,9 +18,10 @@
 ImFont* g_pFntRodin;
 ImFont* g_pFntNewRodin;
 
+std::unique_ptr<GuestTexture> g_upTexButtonWindow;
+std::unique_ptr<GuestTexture> g_upTexController;
+std::unique_ptr<GuestTexture> g_upTexKbm;
 std::unique_ptr<GuestTexture> g_upTexWindow;
-std::unique_ptr<GuestTexture> g_upTexLight;
-std::unique_ptr<GuestTexture> g_upTexSelect;
 std::unique_ptr<GuestTexture> g_upTexSelectArrow;
 std::unique_ptr<GuestTexture> g_upTexMainMenu1;
 std::unique_ptr<GuestTexture> g_upTexArrow;
@@ -28,9 +31,10 @@ void InitImGuiUtils()
     g_pFntRodin = ImFontAtlasSnapshot::GetFont("FOT-RodinPro-DB.otf");
     g_pFntNewRodin = ImFontAtlasSnapshot::GetFont("FOT-NewRodinPro-UB.otf");
 
+    g_upTexButtonWindow = LOAD_ZSTD_TEXTURE(g_button_window);
+    g_upTexController = LOAD_ZSTD_TEXTURE(g_controller);
+    g_upTexKbm = LOAD_ZSTD_TEXTURE(g_kbm);
     g_upTexWindow = LOAD_ZSTD_TEXTURE(g_window);
-    g_upTexLight = LOAD_ZSTD_TEXTURE(g_light);
-    g_upTexSelect = LOAD_ZSTD_TEXTURE(g_select);
     g_upTexSelectArrow = LOAD_ZSTD_TEXTURE(g_select_arrow);
     g_upTexMainMenu1 = LOAD_ZSTD_TEXTURE(g_main_menu1);
     g_upTexArrow = LOAD_ZSTD_TEXTURE(g_arrow);
@@ -722,39 +726,6 @@ void DrawVersionString(const ImU32 colour)
     drawList->AddText(g_pFntNewRodin, fontSize, { res.x - textSize.x - textMargin, textY }, colour, g_versionString);
 }
 
-void DrawToggleLight(ImVec2 pos, bool isEnabled, float alpha)
-{
-    auto drawList = ImGui::GetBackgroundDrawList();
-    auto lightSize = Scale(14);
-    auto lightCol = IM_COL32(255, 255, 255, 255 * alpha);
-
-    ImVec2 min = { pos.x, pos.y };
-    ImVec2 max = { min.x + lightSize, min.y + lightSize };
-
-    if (isEnabled)
-    {
-        auto lightGlowSize = Scale(24);
-        auto lightGlowUVs = PIXELS_TO_UV_COORDS(64, 64, 31, 31, 32, 32);
-
-        ImVec2 lightGlowMin = { min.x - (lightGlowSize / 2) + Scale(2), min.y - lightGlowSize / 2 };
-        ImVec2 lightGlowMax = { min.x + lightGlowSize, min.y + lightGlowSize };
-
-        SetAdditive(true);
-        drawList->AddImage(g_upTexLight.get(), lightGlowMin, lightGlowMax, GET_UV_COORDS(lightGlowUVs), IM_COL32(255, 255, 0, 127 * alpha));
-        SetAdditive(false);
-
-        auto lightOnUVs = PIXELS_TO_UV_COORDS(64, 64, 14, 0, 14, 14);
-
-        drawList->AddImage(g_upTexLight.get(), min, max, GET_UV_COORDS(lightOnUVs), lightCol);
-    }
-    else
-    {
-        auto lightOffUVs = PIXELS_TO_UV_COORDS(64, 64, 0, 0, 14, 14);
-
-        drawList->AddImage(g_upTexLight.get(), min, max, GET_UV_COORDS(lightOffUVs), lightCol);
-    }
-}
-
 // Taken from ImGui because we need to modify to break for '\u200B\ too
 // Simple word-wrapping for English, not full-featured. Please submit failing cases!
 // This will return the next location to wrap from. If no wrapping if necessary, this will fast-forward to e.g. text_end.
@@ -854,5 +825,303 @@ const char* CalcWordWrapPositionA(const ImFont* font, float scale, const char* t
     // +1 may not be a character start point in UTF-8 but it's ok because caller loops use (text >= word_wrap_eol).
     if (s == text && text < text_end)
         return s + 1;
+
     return s;
 }
+
+static std::vector<std::string> ParseInterpolatedString(const char* str, bool includeTokens = true)
+{
+    std::vector<std::string> result;
+
+    // Skip nullptr or strings that cannot possibly
+    // contain variables (e.g. "${}" bare minimum).
+    if (!str || strlen(str) <= 3)
+        return result;
+
+    auto start = str;
+    auto ptr = str;
+
+    while (*ptr)
+    {
+        if (ptr[0] == '$' && ptr[1] == '{')
+        {
+            // Add leading text.
+            if (ptr > start)
+                result.emplace_back(start, ptr - start);
+
+            auto tokenStart = ptr;
+
+            // Skip "${".
+            ptr += 2;
+
+            // Seek to end token.
+            while (*ptr && *ptr != '}')
+                ++ptr;
+
+            if (*ptr == '}')
+            {
+                auto curStrStart = tokenStart;
+                auto curStrEnd = ++ptr;
+
+                if (!includeTokens)
+                {
+                    curStrStart += 2;
+                    --curStrEnd;
+                }
+
+                // Add variable.
+                result.emplace_back(curStrStart, curStrEnd - curStrStart);
+                start = ptr;
+            }
+            else
+            {
+                break;
+            }
+        }
+        else
+        {
+            ++ptr;
+        }
+    }
+
+    // Add trailing text.
+    if (ptr > start)
+        result.emplace_back(start, ptr - start);
+
+    return result;
+}
+
+static bool IsInterpolatedString(std::string_view str)
+{
+    return str.length() >= 3 && str[0] == '$' && str[1] == '{' && str.back() == '}';
+}
+
+ImVec2 MeasureInterpolatedText(const ImFont* pFont, float fontSize, const char* pText, ImGuiTextInterpData* pInterpData)
+{
+    ImVec2 result{};
+
+    auto parsed = ParseInterpolatedString(pText);
+    auto paddingX = Scale(2, true);
+
+    auto measureText = [&](std::string_view str)
+    {
+        auto textSize = pFont->CalcTextSizeA(fontSize, FLT_MAX, 0, str.data());
+
+        result.x += textSize.x + paddingX;
+        result.y = std::max(result.y, textSize.y);
+    };
+
+    for (auto& str : parsed)
+    {
+        if (IsInterpolatedString(str))
+        {
+            auto parsedSingleNoTokens = ParseInterpolatedString(str.data(), false);
+
+            if (!parsedSingleNoTokens.size())
+                continue;
+
+            auto variableMapSingle = MapTextVariables(parsedSingleNoTokens[0].data());
+
+            if (!variableMapSingle.size())
+                continue;
+
+            auto& variable = variableMapSingle[0];
+            auto& variableType = variable.first;
+            auto& variableValue = variable.second;
+
+            if (variableType == "picture")
+            {
+                auto& pictureName = variableValue;
+                auto  pictureNameHash = HashStr(pictureName);
+
+                if (!pInterpData || !pInterpData->Picture.pupTexture || !pInterpData->pPictureCrops || !pInterpData->pPictureCrops->contains(pictureNameHash))
+                {
+                    auto placeholderScale = Scale(28, true);
+
+                    result.x += placeholderScale;
+                    result.y = std::max(result.y, placeholderScale);
+
+                    continue;
+                }
+
+                auto pictureCrop = FindHash<ImGuiTextPictureCrop>(*pInterpData->pPictureCrops, pictureNameHash);
+                auto pictureWidth = Scale(pictureCrop.Width, true);
+                auto pictureHeight = Scale(pictureCrop.Height, true);
+
+                result.x += pictureWidth + paddingX;
+                result.y = std::max(result.y, pictureHeight);
+            }
+            else if (variableType == "locale")
+            {
+                auto& localeName = variableValue;
+
+                measureText(Localise(localeName));
+            }
+        }
+        else
+        {
+            measureText(str);
+        }
+    }
+
+    return result;
+}
+
+void DrawInterpolatedText(const ImFont* pFont, float fontSize, const ImVec2& pos, ImU32 colour, const char* pText, ImGuiTextInterpData* pInterpData)
+{
+    auto drawList = ImGui::GetBackgroundDrawList();
+    auto parsed = ParseInterpolatedString(pText);
+    auto advance = 0.0f;
+
+    auto paddingX = Scale(2, true);
+
+    auto drawText = [&](const ImVec2& pos, std::string_view str)
+    {
+        auto textSize = pFont->CalcTextSizeA(fontSize, FLT_MAX, 0, str.data());
+
+        drawList->AddText(pFont, fontSize, pos, colour, str.data());
+
+        advance += textSize.x + paddingX;
+    };
+
+    for (auto& str : parsed)
+    {
+        ImVec2 curPos = { pos.x + advance, pos.y };
+
+        if (IsInterpolatedString(str))
+        {
+            auto parsedSingleNoTokens = ParseInterpolatedString(str.data(), false);
+        
+            if (!parsedSingleNoTokens.size())
+                continue;
+
+            auto variableMapSingle = MapTextVariables(parsedSingleNoTokens[0].data());
+        
+            if (!variableMapSingle.size())
+                continue;
+        
+            auto& variable = variableMapSingle[0];
+            auto& variableType = variable.first;
+            auto& variableValue = variable.second;
+        
+            if (variableType == "picture")
+            {
+                auto& pictureName = variableValue;
+                auto  pictureNameHash = HashStr(pictureName);
+
+                if (!pInterpData || !pInterpData->Picture.pupTexture || !pInterpData->pPictureCrops || !pInterpData->pPictureCrops->contains(pictureNameHash))
+                {
+                    auto placeholderScale = Scale(28, true);
+
+                    ImVec2 placeholderMin = { pos.x + advance, pos.y };
+                    ImVec2 placeholderMax = { placeholderMin.x + placeholderScale, placeholderMin.y + placeholderScale };
+
+                    advance += placeholderScale;
+
+                    drawList->AddRectFilled(placeholderMin, placeholderMax, IM_COL32(255, 0, 0, 255));
+
+                    continue;
+                }
+
+                auto pictureCrop = FindHash<ImGuiTextPictureCrop>(*pInterpData->pPictureCrops, pictureNameHash);
+                auto pictureUVs = PIXELS_TO_UV_COORDS(pInterpData->Picture.Width, pInterpData->Picture.Height, pictureCrop.X, pictureCrop.Y, pictureCrop.Width, pictureCrop.Height);
+                auto pictureWidth = Scale(pictureCrop.Width, true);
+                auto pictureHeight = Scale(pictureCrop.Height, true);
+
+                ImVec2 pictureMin = { pos.x + advance, pos.y };
+                ImVec2 pictureMax = { pictureMin.x + pictureWidth, pictureMin.y + pictureHeight };
+
+                advance += pictureWidth + paddingX;
+
+                drawList->AddImage(pInterpData->Picture.pupTexture->get(), pictureMin, pictureMax, GET_UV_COORDS(pictureUVs), colour);
+            }
+            else if (variableType == "locale")
+            {
+                auto& localeName = variableValue;
+
+                drawText(curPos, Localise(localeName));
+            }
+        }
+        else
+        {
+            drawText(curPos, str);
+        }
+    }
+}
+
+ImGuiTextInterpData GetHidInterpTextData()
+{
+    auto buttonTexture = &g_upTexController;
+    auto buttonTextureWidth = uint16_t(256);
+    auto buttonTextureHeight = uint16_t(128);
+    auto buttonCrops = &g_buttonCropsXenon;
+
+    auto isPlayStation = Config::ControllerIcons == EControllerIcons::PlayStation;
+
+    if (Config::ControllerIcons == EControllerIcons::Auto)
+        isPlayStation = hid::g_inputDeviceController == hid::EInputDevice::PlayStation;
+
+    if (isPlayStation)
+        buttonCrops = &g_buttonCropsPS3;
+
+    if (!App::s_isInit)
+    {
+        if (hid::g_inputDevice == hid::EInputDevice::Keyboard ||
+            hid::g_inputDevice == hid::EInputDevice::Mouse)
+        {
+            buttonTexture = &g_upTexKbm;
+            buttonTextureWidth = uint16_t(384);
+        }
+
+        if (hid::g_inputDevice == hid::EInputDevice::Keyboard)
+        {
+            buttonCrops = &g_buttonCropsKeyboard;
+        }
+        else if (hid::g_inputDevice == hid::EInputDevice::Mouse)
+        {
+            buttonCrops = &g_buttonCropsMouse;
+        }
+    }
+
+    return { { buttonTexture, buttonTextureWidth, buttonTextureHeight }, buttonCrops };
+}
+
+const xxHashMap<ImGuiTextPictureCrop> g_buttonCropsXenon =
+{
+    { HashStr("button_a"),     { 0, 0, 28, 28 } },
+    { HashStr("button_b"),     { 28, 0, 28, 28 } },
+    { HashStr("button_x"),     { 56, 0, 28, 28 } },
+    { HashStr("button_y"),     { 84, 0, 28, 28 } },
+    { HashStr("button_lb"),    { 112, 0, 53, 28 } },
+    { HashStr("button_rb"),    { 168, 0, 53, 28 } },
+    { HashStr("button_lt"),    { 56, 28, 55, 28 } },
+    { HashStr("button_rt"),    { 0, 28, 55, 28 } },
+    { HashStr("button_start"), { 112, 28, 28, 28 } },
+    { HashStr("button_back"),  { 140, 28, 28, 28 } }
+};
+
+const xxHashMap<ImGuiTextPictureCrop> g_buttonCropsPS3 =
+{
+    { HashStr("button_a"),     { 0, 56, 28, 28 } },
+    { HashStr("button_b"),     { 28, 56, 28, 28 } },
+    { HashStr("button_x"),     { 56, 56, 28, 28 } },
+    { HashStr("button_y"),     { 84, 56, 28, 28 } },
+    { HashStr("button_lb"),    { 112, 56, 48, 28 } },
+    { HashStr("button_rb"),    { 0, 84, 48, 28 } },
+    { HashStr("button_lt"),    { 168, 56, 48, 28 } },
+    { HashStr("button_rt"),    { 56, 84, 48, 28 } },
+    { HashStr("button_start"), { 140, 84, 28, 28 } },
+    { HashStr("button_back"),  { 112, 84, 28, 28 } }
+};
+
+const xxHashMap<ImGuiTextPictureCrop> g_buttonCropsMouse =
+{
+    { HashStr("button_a"), { 128, 0, 128, 128 } },
+    { HashStr("button_b"), { 256, 0, 128, 128 } }
+};
+
+const xxHashMap<ImGuiTextPictureCrop> g_buttonCropsKeyboard =
+{
+    { HashStr("button_a"), { 0, 0, 128, 128 } },
+    { HashStr("button_b"), { 256, 0, 128, 128 } }
+};

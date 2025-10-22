@@ -249,10 +249,10 @@ CONFIG_DEFINE_ENUM_LOCALE(EFaceButton)
     {
         ELanguage::English,
         {
-            { EFaceButton::A, { "A", "" } },
-            { EFaceButton::B, { "B", "" } },
-            { EFaceButton::X, { "X", "" } },
-            { EFaceButton::Y, { "Y", "" } }
+            { EFaceButton::A, { "${picture(button_a)}", "" } },
+            { EFaceButton::B, { "${picture(button_b)}", "" } },
+            { EFaceButton::X, { "${picture(button_x)}", "" } },
+            { EFaceButton::Y, { "${picture(button_y)}", "" } }
         }
     }
 };

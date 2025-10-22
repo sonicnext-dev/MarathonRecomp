@@ -400,47 +400,22 @@ static void SetCurrentPage(WizardPage page)
 {
     g_currentPage = page;
 
-    EButtonIcon backIcon;
-    EButtonIcon selectIcon;
-
-    if (hid::IsInputDeviceController())
-    {
-        backIcon = EButtonIcon::B;
-        selectIcon = EButtonIcon::A;
-    }
-    else if (hid::g_inputDevice == hid::EInputDevice::Keyboard)
-    {
-        backIcon = EButtonIcon::Escape;
-        selectIcon = EButtonIcon::Enter;
-    }
-    else
-    {
-        backIcon = EButtonIcon::Escape;
-        selectIcon = EButtonIcon::LMB;
-    }
-
     if (g_currentPage == WizardPage::InstallSucceeded)
     {
-        ButtonGuide::Open(Button("Common_Select", selectIcon));
+        ButtonGuide::Open("ButtonGuide_Select");
     }
     else if (g_currentPage != WizardPage::Installing)
     {
-        const char* backKey = "Common_Back";
+        auto key = "ButtonGuide_SelectBack";
 
         if (g_currentPage == g_firstPage || g_currentPage == WizardPage::InstallFailed)
-            backKey = "Common_Quit";
+            key = "ButtonGuide_SelectQuit";
 
-        std::array<Button, 2> buttons =
-        {
-            Button("Common_Select", selectIcon),
-            Button(backKey, backIcon)
-        };
-
-        ButtonGuide::Open(buttons);
+        ButtonGuide::Open(key);
     }
     else if (g_currentPage == WizardPage::Installing)
     {
-        ButtonGuide::Open(Button("Common_Cancel", backIcon));
+        ButtonGuide::Open("ButtonGuide_Cancel");
     }
     else
     {
@@ -782,7 +757,6 @@ static void DrawSourceButton(ButtonColumn buttonColumn, float yRatio, const char
     auto lightSize = Scale(14);
 
     DrawButton(min, max, sourceText, true, sourceSet, buttonPressed, ((max.x - min.x) * 0.7) / g_aspectRatioScale);
-    DrawToggleLight({ min.x + lightSize, min.y + ((max.y - min.y) - lightSize) / 2 + Scale(1) }, sourceSet, (sourceSet ? 1.0f : 0.5f) * alphaMotion);
 }
 
 static void DrawProgressBar(float progressRatio)
@@ -990,7 +964,6 @@ static void DrawLanguagePicker()
             auto lightSize = Scale(14);
 
             DrawButton(min, max, LANGUAGE_TEXT[i], false, true, buttonPressed, FLT_MAX, LANGUAGE_ENUM[i] == ELanguage::English);
-            DrawToggleLight({ min.x + lightSize, min.y + ((max.y - min.y) - lightSize) / 2 + Scale(1) }, Config::Language == LANGUAGE_ENUM[i], alphaMotion);
 
             if (buttonPressed)
             {

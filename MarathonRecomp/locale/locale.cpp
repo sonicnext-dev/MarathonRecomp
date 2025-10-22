@@ -797,9 +797,9 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Select" },
             { ELanguage::Japanese, "決定" },
-            { ELanguage::German,   "Auswählen　" },
+            { ELanguage::German,   "Auswählen" },
             { ELanguage::French,   "Sélectionner" },
-            { ELanguage::Spanish,  " Seleccionar" },
+            { ELanguage::Spanish,  "Seleccionar" },
             { ELanguage::Italian,  "Seleziona" }
         }
     },
@@ -810,7 +810,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "戻る" },
             { ELanguage::German,   "Zurück" },
             { ELanguage::French,   "Retour" },
-            { ELanguage::Spanish,  " Atrás" },
+            { ELanguage::Spanish,  "Atrás" },
             { ELanguage::Italian,  "Indietro" }
         }
     },
@@ -821,7 +821,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "やめる" },
             { ELanguage::German,   "Abbrechen" },
             { ELanguage::French,   "Annuler" },
-            { ELanguage::Spanish,  " Cancelar" },
+            { ELanguage::Spanish,  "Cancelar" },
             { ELanguage::Italian,  "Annulla" }
         }
     },
@@ -841,7 +841,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Reset" },
             { ELanguage::Japanese, "リセット" },
-            { ELanguage::German,   "Zurücksetzen　" },
+            { ELanguage::German,   "Zurücksetzen" },
             { ELanguage::French,   "Par défaut" },
             { ELanguage::Spanish,  "Reiniciar" },
             { ELanguage::Italian,  "Ripristina" }
@@ -857,7 +857,52 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Spanish,  "Cambiar" },
             { ELanguage::Italian,  "Cambia" }
         }
-    }
+    },
+    {
+        "ButtonGuide_Cancel",
+        {
+            { ELanguage::English,  "${picture(button_b)}${locale(Common_Cancel)}" },
+            { ELanguage::Spanish,  "${picture(button_b)} ${locale(Common_Cancel)}" }
+        }
+    },
+    {
+        "ButtonGuide_Back",
+        {
+            { ELanguage::English,  "${picture(button_b)}${locale(Common_Back)}" },
+            { ELanguage::Spanish,  "${picture(button_b)} ${locale(Common_Back)}" }
+        }
+    },
+    {
+        "ButtonGuide_Select",
+        {
+            { ELanguage::English,  "${picture(button_a)}${locale(Common_Select)}" },
+            { ELanguage::Spanish,  "${picture(button_a)} ${locale(Common_Select)}" },
+        }
+    },
+    {
+        "ButtonGuide_SelectQuit",
+        {
+            { ELanguage::English,  "${picture(button_a)}${locale(Common_Select)}  ${picture(button_b)}${locale(Common_Quit)}" },
+            { ELanguage::German,   "${picture(button_a)}${locale(Common_Select)}　　${picture(button_b)}${locale(Common_Quit)}" },
+            { ELanguage::Spanish,  "${picture(button_a)} ${locale(Common_Select)}  ${picture(button_b)} ${locale(Common_Quit)}" },
+        }
+    },
+    {
+        "ButtonGuide_SelectBack",
+        {
+            { ELanguage::English,  "${picture(button_a)}${locale(Common_Select)}  ${picture(button_b)}${locale(Common_Back)}" },
+            { ELanguage::German,   "${picture(button_a)}${locale(Common_Select)}　　${picture(button_b)}${locale(Common_Back)}" },
+            { ELanguage::Spanish,  "${picture(button_a)} ${locale(Common_Select)}  ${picture(button_b)} ${locale(Common_Back)}" },
+        }
+    },
+    {
+        "ButtonGuide_ResetSelectBack",
+        {
+            { ELanguage::English,  "${picture(button_x)}${locale(Common_Reset)}  ${picture(button_a)}${locale(Common_Select)}  ${picture(button_b)}${locale(Common_Back)}" },
+            { ELanguage::German,   "${picture(button_x)}${locale(Common_Reset)}　　${picture(button_a)}${locale(Common_Select)}　　${picture(button_b)}${locale(Common_Back)}" },
+            { ELanguage::Spanish,  "${picture(button_x)} ${locale(Common_Reset)}  ${picture(button_a)} ${locale(Common_Select)}  ${picture(button_b)} ${locale(Common_Back)}" },
+        }
+    },
 };
 
 std::string& Localise(const std::string_view& key)

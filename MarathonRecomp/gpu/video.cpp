@@ -1586,7 +1586,6 @@ static void CreateImGuiBackend()
     InitImGuiUtils();
     AchievementMenu::Init();
     AchievementOverlay::Init();
-    ButtonGuide::Init();
     OptionsMenu::Init();
     InstallerWizard::Init();
 

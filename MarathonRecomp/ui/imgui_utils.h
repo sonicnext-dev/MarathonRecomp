@@ -2,6 +2,7 @@
 
 #include <gpu/imgui/imgui_common.h>
 #include <gpu/video.h>
+#include <xxHashMap.h>
 
 #define PIXELS_TO_UV_COORDS(textureWidth, textureHeight, x, y, width, height) \
     std::make_tuple(ImVec2((float)x / (float)textureWidth, (float)y / (float)textureHeight), \
@@ -19,11 +20,38 @@
 extern ImFont* g_pFntRodin;
 extern ImFont* g_pFntNewRodin;
 
+extern std::unique_ptr<GuestTexture> g_upTexButtonWindow;
+extern std::unique_ptr<GuestTexture> g_upTexController;
+extern std::unique_ptr<GuestTexture> g_upTexKbm;
 extern std::unique_ptr<GuestTexture> g_upTexWindow;
-extern std::unique_ptr<GuestTexture> g_upTexLight;
-extern std::unique_ptr<GuestTexture> g_upTexSelect;
 extern std::unique_ptr<GuestTexture> g_upTexSelectArrow;
 extern std::unique_ptr<GuestTexture> g_upTexMainMenu1;
+
+struct ImGuiTextPicture
+{
+    std::unique_ptr<GuestTexture>* pupTexture{};
+    uint16_t Width{};
+    uint16_t Height{};
+};
+
+struct ImGuiTextPictureCrop
+{
+    uint16_t X{};
+    uint16_t Y{};
+    uint16_t Width{};
+    uint16_t Height{};
+};
+
+extern const xxHashMap<ImGuiTextPictureCrop> g_buttonCropsXenon;
+extern const xxHashMap<ImGuiTextPictureCrop> g_buttonCropsPS3;
+extern const xxHashMap<ImGuiTextPictureCrop> g_buttonCropsMouse;
+extern const xxHashMap<ImGuiTextPictureCrop> g_buttonCropsKeyboard;
+
+struct ImGuiTextInterpData
+{
+    ImGuiTextPicture Picture{};
+    const xxHashMap<ImGuiTextPictureCrop>* pPictureCrops{};
+};
 
 void InitImGuiUtils();
 
@@ -74,5 +102,7 @@ float Hermite(float a, float b, float t);
 ImVec2 Lerp(const ImVec2& a, const ImVec2& b, float t);
 ImU32 ColourLerp(ImU32 c0, ImU32 c1, float t);
 void DrawVersionString(const ImU32 colour = IM_COL32(255, 255, 255, 70));
-void DrawToggleLight(ImVec2 pos, bool isEnabled, float alpha = 1.0f);
 const char* CalcWordWrapPositionA(const ImFont* font, float scale, const char* text, const char* text_end, float wrap_width);
+ImVec2 MeasureInterpolatedText(const ImFont* pFont, float fontSize, const char* pText, ImGuiTextInterpData* pInterpData = nullptr);
+void DrawInterpolatedText(const ImFont* pFont, float fontSize, const ImVec2& pos, ImU32 colour, const char* pText, ImGuiTextInterpData* pInterpData = nullptr);
+ImGuiTextInterpData GetHidInterpTextData();
