@@ -146,7 +146,7 @@ PPC_FUNC(sub_825126A0)
                     rPadState.IsDown(Sonicteam::SoX::Input::KeyState_A) &&
                     rPadState.IsDown(Sonicteam::SoX::Input::KeyState_Start))
                 {
-                    OptionsMenu::s_isCodesUnlocked = true;
+                    OptionsMenu::s_isDebugUnlocked = true;
                 }
             }
 

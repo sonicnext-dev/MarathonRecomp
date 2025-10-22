@@ -58,7 +58,7 @@ static std::string& GetCategoryName(OptionsMenuCategory category)
         case OptionsMenuCategory::Input: return Localise("Options_Category_Input");
         case OptionsMenuCategory::Audio: return Localise("Options_Category_Audio");
         case OptionsMenuCategory::Video: return Localise("Options_Category_Video");
-        case OptionsMenuCategory::Code: return Localise("Options_Category_Code");
+        case OptionsMenuCategory::Debug: return Localise("Options_Category_Debug");
     }
 
     return g_localeMissing;
@@ -72,7 +72,7 @@ static std::string& GetCategoryDescription(OptionsMenuCategory category)
         case OptionsMenuCategory::Input: return Localise("Options_Desc_Category_Input");
         case OptionsMenuCategory::Audio: return Localise("Options_Desc_Category_Audio");
         case OptionsMenuCategory::Video: return Localise("Options_Desc_Category_Video");
-        case OptionsMenuCategory::Code: return Localise("Options_Desc_Category_Code");
+        case OptionsMenuCategory::Debug: return Localise("Options_Desc_Category_Debug");
     }
 
     return g_localeMissing;
@@ -184,8 +184,8 @@ static void DrawCategories(ImVec2 min, ImVec2 max)
 
     for (size_t i = 0; i < (size_t)OptionsMenuCategory::Count; i++)
     {
-        // Don't show codes category if locked.
-        if (!OptionsMenu::s_isCodesUnlocked && (OptionsMenuCategory)i == OptionsMenuCategory::Code)
+        // Don't show debug category if locked.
+        if (!OptionsMenu::s_isDebugUnlocked && (OptionsMenuCategory)i == OptionsMenuCategory::Debug)
             continue;
 
         auto isCurrent = i == g_categoryIndex;
@@ -766,7 +766,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
 
     auto rowCount = 0;
     auto cmnReason = &Localise("Options_Desc_NotAvailable");
-    auto devReason = std::string("This option is not implemented yet."); // TODO: remove this.
+    auto devReason = &Localise("Options_Desc_NotImplemented");
 
 #define ENUM_VALUE(type) (type)0, (type)0, (type)0
 
@@ -779,7 +779,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
             DrawOption(rowCount++, &Config::Hints, true);
             DrawOption(rowCount++, &Config::ControlTutorial, true);
             DrawOption(rowCount++, &Config::Autosave, true);
-            DrawOption(rowCount++, &Config::AchievementNotifications, false, &devReason);              // TODO: implement achievements.
+            DrawOption(rowCount++, &Config::AchievementNotifications, false, devReason);               // TODO: implement achievements. DrawOption(rowCount++, &Config::AchievementNotifications, true);
             break;
 
         case OptionsMenuCategory::Input:
@@ -803,7 +803,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
         case OptionsMenuCategory::Video:
         {
             // TODO: implement buffer resize.
-            DrawOption(rowCount++, &Config::WindowSize, false, &devReason, 0, 0, 1, false);
+            DrawOption(rowCount++, &Config::WindowSize, false, devReason, 0, 0, 1, false);
 
             // DrawOption(rowCount++, &Config::WindowSize, !Config::Fullscreen,
             //     &Localise("Options_Desc_NotAvailableFullscreen"),
@@ -816,17 +816,17 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
             if (Config::Fullscreen && displayCount <= 1)
                 monitorReason = &Localise("Options_Desc_NotAvailableHardware");
 
-            DrawOption(rowCount++, &Config::Monitor, false, &devReason, 0, 0, 1, false);               // TODO: implement buffer resize. DrawOption(rowCount++, &Config::Monitor, canChangeMonitor, monitorReason, 0, 0, displayCount - 1, false);
-            DrawOption(rowCount++, &Config::AspectRatio, false, &devReason);                           // TODO: implement buffer resize.
-            DrawOption(rowCount++, &Config::ResolutionScale, false, &devReason);                       // TODO: implement buffer resize. DrawOption(rowCount++, &Config::ResolutionScale, true, nullptr, 0.25f, 1.0f, 2.0f);
-            DrawOption(rowCount++, &Config::Fullscreen, false, &devReason);                            // TODO: implement buffer resize.
+            DrawOption(rowCount++, &Config::Monitor, false, devReason, 0, 0, 1, false);                // TODO: implement buffer resize. DrawOption(rowCount++, &Config::Monitor, canChangeMonitor, monitorReason, 0, 0, displayCount - 1, false);
+            DrawOption(rowCount++, &Config::AspectRatio, false, devReason);                            // TODO: implement buffer resize. DrawOption(rowCount++, &Config::AspectRatio, true);
+            DrawOption(rowCount++, &Config::ResolutionScale, false, devReason);                        // TODO: implement buffer resize. DrawOption(rowCount++, &Config::ResolutionScale, true, nullptr, 0.25f, 1.0f, 2.0f);
+            DrawOption(rowCount++, &Config::Fullscreen, false, devReason);                             // TODO: implement buffer resize. DrawOption(rowCount++, &Config::Fullscreen, true);
             DrawOption(rowCount++, &Config::VSync, true);
             DrawOption(rowCount++, &Config::FPS, true, nullptr, FPS_MIN, 120, FPS_MAX);
             DrawOption(rowCount++, &Config::Brightness, true);
-            DrawOption(rowCount++, &Config::AntiAliasing, false, &devReason);                          // TODO: implement MSAA. DrawOption(rowCount++, &Config::AntiAliasing, Config::AntiAliasing.InaccessibleValues.size() != 3, &Localise("Options_Desc_NotAvailableHardware"));
-            DrawOption(rowCount++, &Config::TransparencyAntiAliasing, false, &devReason);              // TODO: implement MSAA. DrawOption(rowCount++, &Config::TransparencyAntiAliasing, Config::AntiAliasing != EAntiAliasing::Off, &Localise("Options_Desc_NotAvailableMSAA"));
-            DrawOption(rowCount++, &Config::ShadowResolution, !OptionsMenu::s_isPause, cmnReason);     // TODO: allow changes on demand.
-            DrawOption(rowCount++, &Config::ReflectionResolution, !OptionsMenu::s_isPause, cmnReason); // TODO: allow changes on demand.
+            DrawOption(rowCount++, &Config::AntiAliasing, false, devReason);                           // TODO: implement MSAA.          DrawOption(rowCount++, &Config::AntiAliasing, Config::AntiAliasing.InaccessibleValues.size() != 3, &Localise("Options_Desc_NotAvailableHardware"));
+            DrawOption(rowCount++, &Config::TransparencyAntiAliasing, false, devReason);               // TODO: implement MSAA.          DrawOption(rowCount++, &Config::TransparencyAntiAliasing, Config::AntiAliasing != EAntiAliasing::Off, &Localise("Options_Desc_NotAvailableMSAA"));
+            DrawOption(rowCount++, &Config::ShadowResolution, !OptionsMenu::s_isPause, cmnReason);     // TODO: allow changes on demand. DrawOption(rowCount++, &Config::ShadowResolution, true);    
+            DrawOption(rowCount++, &Config::ReflectionResolution, !OptionsMenu::s_isPause, cmnReason); // TODO: allow changes on demand. DrawOption(rowCount++, &Config::ReflectionResolution, true);
             DrawOption(rowCount++, &Config::RadialBlur, true);
             DrawOption(rowCount++, &Config::CutsceneAspectRatio, true);
             DrawOption(rowCount++, &Config::UIAlignmentMode, true);
@@ -834,7 +834,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
             break;
         }
 
-        case OptionsMenuCategory::Code:
+        case OptionsMenuCategory::Debug:
         {
             for (auto def : g_configDefinitions)
             {
@@ -1075,8 +1075,8 @@ void OptionsMenu::Draw()
         {
             auto categoryCount = (int)OptionsMenuCategory::Count;
 
-            // Remove codes category from cursor select.
-            if (!s_isCodesUnlocked)
+            // Remove debug category from cursor select.
+            if (!s_isDebugUnlocked)
                 categoryCount -= 1;
 
             MoveCursor(g_categoryIndex, g_flowStateTime, 0, categoryCount, []()

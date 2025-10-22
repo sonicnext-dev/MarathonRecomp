@@ -50,10 +50,10 @@ CONFIG_DEFINE_LOCALE(Language)
 {
     { ELanguage::English,  { "Language", "Change the language used for text." } },
     { ELanguage::Japanese, { "言語", "DUMMY" } },
-    { ELanguage::German,   { "Sprache", "Ändere die Sprache für Text." } },
-    { ELanguage::French,   { "Langue", "Modifie la langue utilisée pour le texte." } },
-    { ELanguage::Spanish,  { "Idioma", "Cambia el idioma utilizado para el texto." } },
-    { ELanguage::Italian,  { "Lingua", "Cambia la lingua utilizzata per i testi." } }
+    { ELanguage::German,   { "Sprache", "DUMMY" } },
+    { ELanguage::French,   { "Langue", "DUMMY" } },
+    { ELanguage::Spanish,  { "Idioma", "DUMMY" } },
+    { ELanguage::Italian,  { "Lingua", "DUMMY" } }
 };
 
 // Notes: do not localise this.
@@ -130,7 +130,7 @@ CONFIG_DEFINE_ENUM_LOCALE(EVoiceLanguage)
 
 CONFIG_DEFINE_LOCALE(Subtitles)
 {
-    { ELanguage::English, { "Subtitles", "Show subtitles during dialogue." } },
+    { ELanguage::English,  { "Subtitles", "Show subtitles during dialogue." } },
     { ELanguage::Japanese, { "字幕", "字幕の表示を選択できます" } },
     { ELanguage::German,   { "Untertitel", "Zeige Untertitel bei Dialogen." } },
     { ELanguage::French,   { "Sous-titres", "Affiche les sous-titres pendant les dialogues." } },
@@ -617,7 +617,7 @@ CONFIG_DEFINE_LOCALE(ResolutionScale)
     { ELanguage::German,   { "Rendering-Auflösung", "Passe die Auflösung der internen Darstellung an." } },
     { ELanguage::French,   { "Échelle de rendu", "Modifie la résolution interne du jeu." } },
     { ELanguage::Spanish,  { "Escala de resolución", "Ajusta la resolución interna del juego." } },
-    { ELanguage::Italian, { "Scala risoluzione", "Regola la risoluzione interna del gioco." } }
+    { ELanguage::Italian,  { "Scala risoluzione", "Regola la risoluzione interna del gioco." } }
 };
 
 CONFIG_DEFINE_LOCALE(Fullscreen)

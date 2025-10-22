@@ -154,9 +154,9 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         }
     },
     {
-        "Options_Category_Code",
+        "Options_Category_Debug",
         {
-            { ELanguage::English,  "Code settings" },
+            { ELanguage::English,  "Debug settings" },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "DUMMY" },
             { ELanguage::French,   "DUMMY" },
@@ -165,9 +165,9 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         }
     },
     {
-        "Options_Desc_Category_Code",
+        "Options_Desc_Category_Debug",
         {
-            { ELanguage::English,  "Adjust code settings." },
+            { ELanguage::English,  "Adjust debug settings." },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "DUMMY" },
             { ELanguage::French,   "DUMMY" },
@@ -214,6 +214,18 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Options_Desc_NotAvailable",
         {
             { ELanguage::English,  "This option is not available during gameplay." },
+            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::German,   "DUMMY" },
+            { ELanguage::French,   "DUMMY" },
+            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Italian,  "DUMMY" }
+        }
+    },
+    {
+        // Notes: description for options that are not implemented yet in development builds.
+        "Options_Desc_NotImplemented",
+        {
+            { ELanguage::English,  "This option is not implemented yet." },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "DUMMY" },
             { ELanguage::French,   "DUMMY" },
@@ -282,7 +294,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         }
     },
     {
-        // Notes: message appears when changing the Language option and backing out of the options menu.
+        // Notes: message appears when changing the Language or Channel Configuration options and backing out of the options menu.
         "Options_Message_Restart",
         {
             { ELanguage::English,  "The game will now restart." },
@@ -364,12 +376,12 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
     {
         "Installer_Page_Introduction",
         {
-            { ELanguage::English,  "Welcome to Marathon Recompiled!\n\nYou'll need an Xbox 360 copy\nof Sonic the Hedgehog (2006) in order to proceed with the installation." },
-            { ELanguage::Japanese, "Marathon Recompiledへようこそ！\nインストールにはXbox 360版の\n「ソニック・ザ・ヘッジホッグ (2006)」\nが必要です" },
-            { ELanguage::German,   "Willkommen zu Marathon Recompiled!\n\nEs wird eine Xbox 360 Kopie von\nSonic the Hedgehog (2006) benötigt um mit der Installation fortfahren zu können." },
-            { ELanguage::French,   "Bienvenue sur Marathon Recompiled !\n\nVous aurez besoin d'une copie de\nSonic the Hedgehog (2006) pour\nXbox 360 pour procéder à l'installation." },
-            { ELanguage::Spanish,  "¡Bienvenido a Marathon Recompiled!\n\nNecesitas una copia de\nSonic the Hedgehog (2006) de\nXbox 360 para continuar con la instalación." },
-            { ELanguage::Italian,  "Benvenuto a Marathon Recompiled!\n\nDovrai avere una copia di\nSonic the Hedgehog (2006) per la\nXbox 360 per proseguire con l'installazione." }
+            { ELanguage::English,  "Welcome to Marathon Recompiled!\n\nYou'll need an Xbox 360 copy of\nSONIC THE HEDGEHOG in order to proceed with the installation." },
+            { ELanguage::Japanese, "Marathon Recompiledへようこそ！\nインストールにはXbox 360版の\n「ソニック・ザ・ヘッジホッグ」\nが必要です" },
+            { ELanguage::German,   "Willkommen zu Marathon Recompiled!\n\nEs wird eine Xbox 360 Kopie von\nSONIC THE HEDGEHOG benötigt um mit der Installation fortfahren zu können." },
+            { ELanguage::French,   "Bienvenue sur Marathon Recompiled !\n\nVous aurez besoin d'une copie de\nSONIC THE HEDGEHOG pour\nXbox 360 pour procéder à l'installation." },
+            { ELanguage::Spanish,  "¡Bienvenido a Marathon Recompiled!\n\nNecesitas una copia de\nSONIC THE HEDGEHOG de\nXbox 360 para continuar con la instalación." },
+            { ELanguage::Italian,  "Benvenuto a Marathon Recompiled!\n\nDovrai avere una copia di\nSONIC THE HEDGEHOG per la\nXbox 360 per proseguire con l'installazione." }
         }
     },
     {
