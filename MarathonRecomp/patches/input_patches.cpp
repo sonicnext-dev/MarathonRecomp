@@ -26,7 +26,7 @@ void RemapAntigravityEnter(PPCRegister& r11, PPCRegister& r28)
 {
     auto state = 0x800;
 
-    if (Config::Antigravity == EFaceButton::B)
+    if (Config::Antigravity == EAntigravity::B)
         state = INPUT_LISTENER_B_DOWN;
 
     r11.u64 = (r28.u32 & state) != 0;
@@ -34,7 +34,7 @@ void RemapAntigravityEnter(PPCRegister& r11, PPCRegister& r28)
 
 void RemapAntigravityExit(PPCRegister& r11, PPCRegister& r30)
 {
-    if (Config::Antigravity == EFaceButton::X)
+    if (Config::Antigravity == EAntigravity::X)
         return;
 
     r11.u64 = (r30.u32 & INPUT_LISTENER_B_DOWN) == 0;
@@ -42,5 +42,5 @@ void RemapAntigravityExit(PPCRegister& r11, PPCRegister& r30)
 
 void RemapLightDash(PPCRegister& r3, PPCRegister& r11)
 {
-    r11.u64 = ((r3.u32 >> (Config::LightDash == EFaceButton::X ? 8 : 15)) & 1) != 0;
+    r11.u64 = ((r3.u32 >> (Config::LightDash == ELightDash::X ? 8 : 15)) & 1) != 0;
 }

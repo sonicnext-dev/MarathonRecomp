@@ -12,8 +12,8 @@ CONFIG_DEFINE("System", bool, ShowConsole, false);
 
 CONFIG_DEFINE_ENUM_LOCALISED("Input", ECameraRotationMode, HorizontalCamera, ECameraRotationMode::Reverse);
 CONFIG_DEFINE_ENUM_LOCALISED("Input", ECameraRotationMode, VerticalCamera, ECameraRotationMode::Normal);
-CONFIG_DEFINE_ENUM_LOCALISED("Input", EFaceButton, Antigravity, EFaceButton::X);
-CONFIG_DEFINE_ENUM_LOCALISED("Input", EFaceButton, LightDash, EFaceButton::X);
+CONFIG_DEFINE_ENUM_LOCALISED("Input", EAntigravity, Antigravity, EAntigravity::X);
+CONFIG_DEFINE_ENUM_LOCALISED("Input", ELightDash, LightDash, ELightDash::X);
 CONFIG_DEFINE_LOCALISED("Input", bool, AllowBackgroundInput, false);
 CONFIG_DEFINE_ENUM_LOCALISED("Input", EControllerIcons, ControllerIcons, EControllerIcons::Auto);
 

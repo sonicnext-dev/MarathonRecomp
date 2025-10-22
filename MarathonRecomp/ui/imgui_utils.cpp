@@ -901,9 +901,8 @@ ImVec2 MeasureInterpolatedText(const ImFont* pFont, float fontSize, const char* 
     ImVec2 result{};
 
     auto parsed = ParseInterpolatedString(pText);
-    auto paddingX = Scale(2, true);
 
-    auto measureText = [&](std::string_view str)
+    auto measureText = [&](float paddingX, std::string_view str)
     {
         auto textSize = pFont->CalcTextSizeA(fontSize, FLT_MAX, 0, str.data());
 
@@ -911,8 +910,11 @@ ImVec2 MeasureInterpolatedText(const ImFont* pFont, float fontSize, const char* 
         result.y = std::max(result.y, textSize.y);
     };
 
-    for (auto& str : parsed)
+    for (size_t i = 0; i < parsed.size(); i++)
     {
+        auto& str = parsed[i];
+        auto  paddingX = i == parsed.size() - 1 ? 0 : Scale(2, true);
+
         if (IsInterpolatedString(str))
         {
             auto parsedSingleNoTokens = ParseInterpolatedString(str.data(), false);
@@ -955,12 +957,12 @@ ImVec2 MeasureInterpolatedText(const ImFont* pFont, float fontSize, const char* 
             {
                 auto& localeName = variableValue;
 
-                measureText(Localise(localeName));
+                measureText(paddingX, Localise(localeName));
             }
         }
         else
         {
-            measureText(str);
+            measureText(paddingX, str);
         }
     }
 
@@ -973,9 +975,7 @@ void DrawInterpolatedText(const ImFont* pFont, float fontSize, const ImVec2& pos
     auto parsed = ParseInterpolatedString(pText);
     auto advance = 0.0f;
 
-    auto paddingX = Scale(2, true);
-
-    auto drawText = [&](const ImVec2& pos, std::string_view str)
+    auto drawText = [&](const ImVec2& pos, float paddingX, std::string_view str)
     {
         auto textSize = pFont->CalcTextSizeA(fontSize, FLT_MAX, 0, str.data());
 
@@ -984,9 +984,11 @@ void DrawInterpolatedText(const ImFont* pFont, float fontSize, const ImVec2& pos
         advance += textSize.x + paddingX;
     };
 
-    for (auto& str : parsed)
+    for (size_t i = 0; i < parsed.size(); i++)
     {
-        ImVec2 curPos = { pos.x + advance, pos.y };
+        auto& str = parsed[i];
+        auto  curPos = ImVec2{ pos.x + advance, pos.y };
+        auto  paddingX = i == parsed.size() - 1 ? 0 : Scale(2, true);
 
         if (IsInterpolatedString(str))
         {
@@ -1039,12 +1041,12 @@ void DrawInterpolatedText(const ImFont* pFont, float fontSize, const ImVec2& pos
             {
                 auto& localeName = variableValue;
 
-                drawText(curPos, Localise(localeName));
+                drawText(curPos, paddingX, Localise(localeName));
             }
         }
         else
         {
-            drawText(curPos, str);
+            drawText(curPos, paddingX, str);
         }
     }
 }

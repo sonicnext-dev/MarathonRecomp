@@ -271,7 +271,7 @@ bool RestoreChaosSpearFlips()
 
 bool UnlimitedAntigravity()
 {
-    if (Config::Antigravity == EFaceButton::B)
+    if (Config::Antigravity == EAntigravity::B)
         return true;
 
     return Config::UnlimitedAntigravity;

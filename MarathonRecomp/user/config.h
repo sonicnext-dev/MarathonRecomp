@@ -47,10 +47,14 @@ enum class ECameraRotationMode : uint32_t
     Reverse
 };
 
-enum class EFaceButton : uint32_t
+enum class EAntigravity : uint32_t
 {
-    A,
     B,
+    X
+};
+
+enum class ELightDash : uint32_t
+{
     X,
     Y
 };

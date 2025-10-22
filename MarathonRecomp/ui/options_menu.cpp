@@ -278,7 +278,17 @@ void DrawSelectionArrows(ImVec2 min, ImVec2 max, bool isSelected)
 };
 
 template <typename T, bool isHidden = false>
-static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAccessible, std::string* inaccessibleReason = nullptr, T valueMin = T(0), T valueCentre = T(0.5), T valueMax = T(1), bool isSlider = true)
+static void DrawOption
+(
+    int rowIndex,
+    ConfigDef<T, isHidden>* config,
+    bool isAccessible,
+    std::string* inaccessibleReason = nullptr,
+    T valueMin = T(0),
+    T valueCentre = T(0.5),
+    T valueMax = T(1),
+    bool isSlider = true,
+    bool isInterpolatedString = false)
 {
     auto drawList = ImGui::GetBackgroundDrawList();
     auto clipRectMin = drawList->GetClipRectMin();
@@ -719,12 +729,16 @@ static void DrawOption(int rowIndex, ConfigDef<T, isHidden>* config, bool isAcce
 
     SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
 
-    if constexpr (std::is_same_v<T, EFaceButton>)
+    if (isInterpolatedString)
     {
         auto interpData = GetHidInterpTextData();
         auto valueTextSize = MeasureInterpolatedText(g_pFntRodin, fontSize, valueText.c_str(), &interpData);
 
-        ImVec2 valuePos = { ctrlBgCentre.x - (valueTextSize.x / 2) + Scale(2, true), ctrlBgCentre.y - (valueTextSize.y / 2) - Scale(2, true) };
+        ImVec2 valuePos = { ctrlBgCentre.x - (valueTextSize.x / 2), ctrlBgCentre.y - (valueTextSize.y / 2) - Scale(2, true) };
+
+        // Align text to right side of the background.
+        if (!isValueCentred)
+            valuePos.x = ctrlBgRightEdgeMax.x + Scale(10, true);
 
         DrawInterpolatedText(g_pFntRodin, fontSize, valuePos, optionColourMotion, valueText.data(), &interpData);
     }
@@ -754,6 +768,8 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
     auto cmnReason = &Localise("Options_Desc_NotAvailable");
     auto devReason = std::string("This option is not implemented yet."); // TODO: remove this.
 
+#define ENUM_VALUE(type) (type)0, (type)0, (type)0
+
     switch ((OptionsMenuCategory)g_categoryIndex)
     {
         case OptionsMenuCategory::System:
@@ -769,8 +785,8 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
         case OptionsMenuCategory::Input:
             DrawOption(rowCount++, &Config::HorizontalCamera, true);
             DrawOption(rowCount++, &Config::VerticalCamera, true);
-            DrawOption(rowCount++, &Config::Antigravity, true);
-            DrawOption(rowCount++, &Config::LightDash, true);
+            DrawOption(rowCount++, &Config::Antigravity, true, nullptr, ENUM_VALUE(EAntigravity), false, true);
+            DrawOption(rowCount++, &Config::LightDash, true, nullptr, ENUM_VALUE(ELightDash), false, true);
             DrawOption(rowCount++, &Config::AllowBackgroundInput, true);
             DrawOption(rowCount++, &Config::ControllerIcons, true);
             break;
@@ -833,6 +849,8 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
             break;
         }
     }
+
+#undef ENUM_VALUE
 
     g_optionCount = rowCount;
 

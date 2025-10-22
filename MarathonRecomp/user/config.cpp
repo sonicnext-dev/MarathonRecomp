@@ -26,16 +26,16 @@ CONFIG_DEFINE_ENUM_TEMPLATE(ECameraRotationMode)
     { "Reverse", ECameraRotationMode::Reverse }
 };
 
-CONFIG_DEFINE_ENUM_TEMPLATE(EFaceButton)
+CONFIG_DEFINE_ENUM_TEMPLATE(EAntigravity)
 {
-    { "A", EFaceButton::A },
-    { "Cross", EFaceButton::A },
-    { "B", EFaceButton::B },
-    { "Circle", EFaceButton::B },
-    { "X", EFaceButton::X },
-    { "Square", EFaceButton::X },
-    { "Y", EFaceButton::Y },
-    { "Triangle", EFaceButton::Y }
+    { "B", EAntigravity::B },
+    { "X", EAntigravity::X }
+};
+
+CONFIG_DEFINE_ENUM_TEMPLATE(ELightDash)
+{
+    { "X", ELightDash::X },
+    { "Y", ELightDash::Y }
 };
 
 CONFIG_DEFINE_ENUM_TEMPLATE(EControllerIcons)
@@ -766,12 +766,6 @@ void Config::CreateCallbacks()
         OptionsMenu::s_commonMenu.SetTitle(Localise("Options_Header_Name"));
         OptionsMenu::s_commonMenu.SetDescription(def->GetDescription(def->Value));
     };
-
-    Config::Antigravity.InaccessibleValues.emplace(EFaceButton::A);
-    Config::Antigravity.InaccessibleValues.emplace(EFaceButton::Y);
-
-    Config::LightDash.InaccessibleValues.emplace(EFaceButton::A);
-    Config::LightDash.InaccessibleValues.emplace(EFaceButton::B);
 
     Config::WindowSize.LockCallback = [](ConfigDef<int32_t>* def)
     {

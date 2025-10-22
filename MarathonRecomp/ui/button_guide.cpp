@@ -22,7 +22,7 @@ void ButtonGuide::Draw()
 
     auto windowEdgeUVs = PIXELS_TO_UV_COORDS(64, 64, 1, 0, 40, 64);
     auto windowStretchUVs = PIXELS_TO_UV_COORDS(64, 64, 40, 0, 23, 64);
-    auto windowOffsetX = g_horzCentre + Scale(126, true);
+    auto windowOffsetX = g_horzCentre + Scale(128, true);
     auto windowOffsetY = g_vertCentre + Scale(114.5, true);
     auto windowEdgeWidth = Scale(40, true);
     auto windowWidth = MeasureInterpolatedText(g_pFntRodin, fontSize, buttonLocale->c_str(), &interpData).x;

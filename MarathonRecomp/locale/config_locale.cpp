@@ -244,19 +244,6 @@ CONFIG_DEFINE_ENUM_LOCALE(ECameraRotationMode)
     }
 };
 
-CONFIG_DEFINE_ENUM_LOCALE(EFaceButton)
-{
-    {
-        ELanguage::English,
-        {
-            { EFaceButton::A, { "${picture(button_a)}", "" } },
-            { EFaceButton::B, { "${picture(button_b)}", "" } },
-            { EFaceButton::X, { "${picture(button_x)}", "" } },
-            { EFaceButton::Y, { "${picture(button_y)}", "" } }
-        }
-    }
-};
-
 CONFIG_DEFINE_LOCALE(Antigravity)
 {
     { ELanguage::English,  { "Antigravity", "Change how Antigravity is activated." } },
@@ -267,6 +254,52 @@ CONFIG_DEFINE_LOCALE(Antigravity)
     { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
 };
 
+CONFIG_DEFINE_ENUM_LOCALE(EAntigravity)
+{
+    {
+        ELanguage::English,
+        {
+            { EAntigravity::B, { "Hold ${picture(button_b)}", "" } },
+            { EAntigravity::X, { "Release ${picture(button_x)}", "" } }
+        }
+    },
+    {
+        ELanguage::Japanese,
+        {
+            { EAntigravity::B, { "DUMMY", "" } },
+            { EAntigravity::X, { "DUMMY", "" } }
+        }
+    },
+    {
+        ELanguage::German,
+        {
+            { EAntigravity::B, { "DUMMY", "" } },
+            { EAntigravity::X, { "DUMMY", "" } }
+        }
+    },
+    {
+        ELanguage::French,
+        {
+            { EAntigravity::B, { "DUMMY", "" } },
+            { EAntigravity::X, { "DUMMY", "" } }
+        }
+    },
+    {
+        ELanguage::Spanish,
+        {
+            { EAntigravity::B, { "DUMMY", "" } },
+            { EAntigravity::X, { "DUMMY", "" } }
+        }
+    },
+    {
+        ELanguage::Italian,
+        {
+            { EAntigravity::B, { "DUMMY", "" } },
+            { EAntigravity::X, { "DUMMY", "" } }
+        }
+    }
+};
+
 CONFIG_DEFINE_LOCALE(LightDash)
 {
     { ELanguage::English,  { "Light Dash", "Change how Light Dash is activated." } },
@@ -275,6 +308,52 @@ CONFIG_DEFINE_LOCALE(LightDash)
     { ELanguage::French,   { "DUMMY", "DUMMY" } },
     { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
     { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
+};
+
+CONFIG_DEFINE_ENUM_LOCALE(ELightDash)
+{
+    {
+        ELanguage::English,
+        {
+            { ELightDash::X, { "Press ${picture(button_x)}", "" } },
+            { ELightDash::Y, { "Press ${picture(button_y)}", "" } }
+        }
+    },
+    {
+        ELanguage::Japanese,
+        {
+            { ELightDash::X, { "DUMMY", "" } },
+            { ELightDash::Y, { "DUMMY", "" } }
+        }
+    },
+    {
+        ELanguage::German,
+        {
+            { ELightDash::X, { "DUMMY", "" } },
+            { ELightDash::Y, { "DUMMY", "" } }
+        }
+    },
+    {
+        ELanguage::French,
+        {
+            { ELightDash::X, { "DUMMY", "" } },
+            { ELightDash::Y, { "DUMMY", "" } }
+        }
+    },
+    {
+        ELanguage::Spanish,
+        {
+            { ELightDash::X, { "DUMMY", "" } },
+            { ELightDash::Y, { "DUMMY", "" } }
+        }
+    },
+    {
+        ELanguage::Italian,
+        {
+            { ELightDash::X, { "DUMMY", "" } },
+            { ELightDash::Y, { "DUMMY", "" } }
+        }
+    }
 };
 
 CONFIG_DEFINE_LOCALE(AllowBackgroundInput)
