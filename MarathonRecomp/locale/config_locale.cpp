@@ -50,10 +50,10 @@ CONFIG_DEFINE_LOCALE(Language)
 {
     { ELanguage::English,  { "Language", "Change the language used for text." } },
     { ELanguage::Japanese, { "言語", "DUMMY" } },
-    { ELanguage::German,   { "Sprache", "DUMMY" } },
+    { ELanguage::German,   { "Sprache", "Ändere die Textsprache." } },
     { ELanguage::French,   { "Langue", "DUMMY" } },
     { ELanguage::Spanish,  { "Idioma", "DUMMY" } },
-    { ELanguage::Italian,  { "Lingua", "DUMMY" } }
+    { ELanguage::Italian,  { "Lingua", "Cambia la lingua utilizzata per il testo." } }
 };
 
 // Notes: do not localise this.
@@ -162,10 +162,10 @@ CONFIG_DEFINE_LOCALE(Autosave)
 {
     { ELanguage::English,  { "Autosave", "Save the game automatically at manual save points." } },
     { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
-    { ELanguage::German,   { "DUMMY", "DUMMY" } },
+    { ELanguage::German,   { "Automatisches Speichern", "Speichert das Spiel automatisch an manuellen Speicherpunkten." } },
     { ELanguage::French,   { "DUMMY", "DUMMY" } },
     { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
-    { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
+    { ELanguage::Italian,  { "Salvataggio automatico", "Salva automaticamente il gioco nei punti di salvataggio manuali." } }
 };
 
 CONFIG_DEFINE_LOCALE(AchievementNotifications)
@@ -248,10 +248,10 @@ CONFIG_DEFINE_LOCALE(Antigravity)
 {
     { ELanguage::English,  { "Antigravity", "Change how Antigravity is activated." } },
     { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
-    { ELanguage::German,   { "DUMMY", "DUMMY" } },
+    { ELanguage::German,   { "Anti-Schwerkraft", "Verändert wie Anti-Schwerkraft aktiviert wird." } },
     { ELanguage::French,   { "DUMMY", "DUMMY" } },
     { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
-    { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
+    { ELanguage::Italian,  { "Antigravità", "Cambia il modo in cui viene attivata l'Antigravità." } }
 };
 
 CONFIG_DEFINE_ENUM_LOCALE(EAntigravity)
@@ -273,8 +273,8 @@ CONFIG_DEFINE_ENUM_LOCALE(EAntigravity)
     {
         ELanguage::German,
         {
-            { EAntigravity::B, { "DUMMY", "" } },
-            { EAntigravity::X, { "DUMMY", "" } }
+            { EAntigravity::B, { "Halte ${picture(button_b)} gedrückt", "" } },
+            { EAntigravity::X, { "Lasse ${picture(button_x)} los", "" } }
         }
     },
     {
@@ -294,8 +294,8 @@ CONFIG_DEFINE_ENUM_LOCALE(EAntigravity)
     {
         ELanguage::Italian,
         {
-            { EAntigravity::B, { "DUMMY", "" } },
-            { EAntigravity::X, { "DUMMY", "" } }
+            { EAntigravity::B, { "Tieni premuto ${picture(button_b)}", "" } },
+            { EAntigravity::X, { "Rilascia ${picture(button_x)}", "" } }
         }
     }
 };
@@ -304,10 +304,10 @@ CONFIG_DEFINE_LOCALE(LightDash)
 {
     { ELanguage::English,  { "Light Dash", "Change how Light Dash is activated." } },
     { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
-    { ELanguage::German,   { "DUMMY", "DUMMY" } },
+    { ELanguage::German,   { "Lichtsprint", "Verändere wie der Lichtsprint aktiviert wird." } },
     { ELanguage::French,   { "DUMMY", "DUMMY" } },
     { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
-    { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
+    { ELanguage::Italian,  { "Super spinta", "Cambia il modo in cui viene attivato la Super spinta." } }
 };
 
 CONFIG_DEFINE_ENUM_LOCALE(ELightDash)
@@ -329,8 +329,8 @@ CONFIG_DEFINE_ENUM_LOCALE(ELightDash)
     {
         ELanguage::German,
         {
-            { ELightDash::X, { "DUMMY", "" } },
-            { ELightDash::Y, { "DUMMY", "" } }
+            { ELightDash::X, { "Drücke ${picture(button_x)}", "" } },
+            { ELightDash::Y, { "Drücke ${picture(button_y)}", "" } }
         }
     },
     {
@@ -350,8 +350,8 @@ CONFIG_DEFINE_ENUM_LOCALE(ELightDash)
     {
         ELanguage::Italian,
         {
-            { ELightDash::X, { "DUMMY", "" } },
-            { ELightDash::Y, { "DUMMY", "" } }
+            { ELightDash::X, { "Premi ${picture(button_x)}", "" } },
+            { ELightDash::Y, { "Premi ${picture(button_y)}", "" } }
         }
     }
 };
@@ -518,10 +518,10 @@ CONFIG_DEFINE_LOCALE(MuteOnFocusLost)
 {
     { ELanguage::English,  { "Mute on Focus Lost", "Mute the game's audio when the window is not in focus." } },
     { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
-    { ELanguage::German,   { "DUMMY", "DUMMY" } },
+    { ELanguage::German,   { "Stummstellen wenn nicht fokussiert", "Stellt das Audio des Spiels stumm solange das Fenster nicht im Fokus ist." } },
     { ELanguage::French,   { "DUMMY", "DUMMY" } },
     { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
-    { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
+    { ELanguage::Italian,  { "Audio muto con finestra inattiva", "Disattiva l'audio del gioco quando la finestra non è attiva." } }
 };
 
 CONFIG_DEFINE_LOCALE(MusicAttenuation)
@@ -644,20 +644,20 @@ CONFIG_DEFINE_LOCALE(FPS)
 {
     { ELanguage::English,  { "FPS", "Set the max frame rate the game can run at. WARNING: this may introduce glitches at frame rates other than 60 FPS." } },
     { ELanguage::Japanese, { "フレームレート上限", "DUMMY" } },
-    { ELanguage::German,   { "FPS", "DUMMY" } },
+    { ELanguage::German,   { "FPS", "Bestimmt die maximale Bildwiederholrate. WARNUNG: es können Fehler bei einer Bildwiederholrate über 60 FPS auftreten." } },
     { ELanguage::French,   { "IPS", "DUMMY" } },
     { ELanguage::Spanish,  { "FPS", "DUMMY" } },
-    { ELanguage::Italian,  { "FPS", "DUMMY" } }
+    { ELanguage::Italian,  { "FPS", "Imposta il framerate massimo del gioco. ATTENZIONE: questa opzione può causare problemi con dei framerate rate superiori a 60 FPS." } }
 };
 
 CONFIG_DEFINE_LOCALE(Brightness)
 {
     { ELanguage::English,  { "Brightness", "Adjust the brightness level." } },
     { ELanguage::Japanese, { "明るさの設定", "DUMMY" } },
-    { ELanguage::German,   { "Helligkeit", "DUMMY" } },
+    { ELanguage::German,   { "Helligkeit", "Stelle die Helligkeit ein." } },
     { ELanguage::French,   { "Luminosité", "DUMMY" } },
     { ELanguage::Spanish,  { "Brillo", "DUMMY" } },
-    { ELanguage::Italian,  { "Luminosità", "DUMMY" } }
+    { ELanguage::Italian,  { "Luminosità", "Regola il livello di luminosità." } }
 };
 
 CONFIG_DEFINE_LOCALE(AntiAliasing)
@@ -736,10 +736,10 @@ CONFIG_DEFINE_LOCALE(ReflectionResolution)
 {
     { ELanguage::English,  { "Reflection Resolution", "Set the resolution of real-time reflections." } },
     { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
-    { ELanguage::German,   { "DUMMY", "DUMMY" } },
+    { ELanguage::German,   { "Reflektionsauflösung", "Bestimmt die Auflösung der Echtzeitreflektionen." } },
     { ELanguage::French,   { "DUMMY", "DUMMY" } },
     { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
-    { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
+    { ELanguage::Italian,  { "Risoluzione riflessi", "Imposta la risoluzione dei riflessi in tempo reale." } }
 };
 
 CONFIG_DEFINE_ENUM_LOCALE(EReflectionResolution)
@@ -759,10 +759,10 @@ CONFIG_DEFINE_LOCALE(RadialBlur)
 {
     { ELanguage::English,  { "Radial Blur", "Change the quality of the radial blur." } },
     { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
-    { ELanguage::German,   { "DUMMY", "DUMMY" } },
+    { ELanguage::German,   { "Radiale Unschärfe", "Verändere die Qualität der radialen Unschärfe." } },
     { ELanguage::French,   { "DUMMY", "DUMMY" } },
     { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
-    { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
+    { ELanguage::Italian,  { "Sfocatura radiale", "Modifica la qualità della sfocatura radiale." } }
 };
 
 CONFIG_DEFINE_ENUM_LOCALE(ERadialBlur)
@@ -788,7 +788,7 @@ CONFIG_DEFINE_ENUM_LOCALE(ERadialBlur)
         {
             { ERadialBlur::Off,      { "Aus", "" } },
             { ERadialBlur::Original, { "Original", "" } },
-            { ERadialBlur::Enhanced, { "Verbessert", "DUMMY" } }
+            { ERadialBlur::Enhanced, { "Verbessert", "Verbessert: Benutzt mehr Samples um eine weichere radiale Unschärfe zu erzeugen." } }
         }
     },
     {
@@ -812,7 +812,7 @@ CONFIG_DEFINE_ENUM_LOCALE(ERadialBlur)
         {
             { ERadialBlur::Off,      { "No", "" } },
             { ERadialBlur::Original, { "Originale", "" } },
-            { ERadialBlur::Enhanced, { "Aumentato", "DUMMY" } }
+            { ERadialBlur::Enhanced, { "Migliorato", "Migliorato: utilizza più campioni per una sfocatura radiale più uniforme." } }
         }
     }
 };

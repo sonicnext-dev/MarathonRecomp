@@ -70,10 +70,10 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "System settings" },
             { ELanguage::Japanese, "DUMMY" },
-            { ELanguage::German,   "DUMMY" },
+            { ELanguage::German,   "System-Einstellungen" },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "Impostazioni sistema" }
         }
     },
     {
@@ -81,10 +81,10 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Adjust system settings." },
             { ELanguage::Japanese, "DUMMY" },
-            { ELanguage::German,   "DUMMY" },
+            { ELanguage::German,   "Verändere System-Einstellungen." },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "Modifica le impostazioni di sistema." }
         }
     },
     {
@@ -92,10 +92,10 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Input settings" },
             { ELanguage::Japanese, "DUMMY" },
-            { ELanguage::German,   "DUMMY" },
+            { ELanguage::German,   "Eingabe-Einstellungen" },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "Impostazioni input" }
         }
     },
     {
@@ -103,10 +103,10 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Adjust input settings." },
             { ELanguage::Japanese, "DUMMY" },
-            { ELanguage::German,   "DUMMY" },
+            { ELanguage::German,   "Verändere Eingabe-Einstellungen." },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "Modifica le impostazioni input." }
         }
     },
     {
@@ -114,10 +114,10 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Audio settings" },
             { ELanguage::Japanese, "DUMMY" },
-            { ELanguage::German,   "DUMMY" },
+            { ELanguage::German,   "Audio-Einstellungen" },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "Impostazioni audio" }
         }
     },
     {
@@ -125,10 +125,10 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Adjust audio settings." },
             { ELanguage::Japanese, "DUMMY" },
-            { ELanguage::German,   "DUMMY" },
+            { ELanguage::German,   "Verändere Audio-Einstellungen." },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "Modifica le impostazioni audio." }
         }
     },
     {
@@ -136,10 +136,10 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Video settings" },
             { ELanguage::Japanese, "DUMMY" },
-            { ELanguage::German,   "DUMMY" },
+            { ELanguage::German,   "Video-Einstellungen" },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "Impostazioni video" }
         }
     },
     {
@@ -147,10 +147,10 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Adjust video settings." },
             { ELanguage::Japanese, "DUMMY" },
-            { ELanguage::German,   "DUMMY" },
+            { ELanguage::German,   "Verändere Video-Einstellungen." },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "Modifica le impostazioni video." }
         }
     },
     {
@@ -158,10 +158,10 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Debug settings" },
             { ELanguage::Japanese, "DUMMY" },
-            { ELanguage::German,   "DUMMY" },
+            { ELanguage::German,   "Debug-Einstellungen" },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "Impostazioni debug" }
         }
     },
     {
@@ -169,10 +169,10 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Adjust debug settings." },
             { ELanguage::Japanese, "DUMMY" },
-            { ELanguage::German,   "DUMMY" },
+            { ELanguage::German,   "Verändere Debug-Einstellungen." },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "Modifica le impostazioni debug." }
         }
     },
     {
@@ -215,10 +215,10 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "This option is not available during gameplay." },
             { ELanguage::Japanese, "DUMMY" },
-            { ELanguage::German,   "DUMMY" },
+            { ELanguage::German,   "Diese Einstellung kann während des Spiels nicht verändert werden." },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "Questa opzione non è disponibile durante il gioco." }
         }
     },
     {
@@ -227,10 +227,10 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "This option is not implemented yet." },
             { ELanguage::Japanese, "DUMMY" },
-            { ELanguage::German,   "DUMMY" },
+            { ELanguage::German,   "Diese Einstellung wurde noch nicht implementiert." },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "Questa opzione non è ancora implementata." }
         }
     },
     {
@@ -616,10 +616,10 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Exit the installer.\nOK?" },
             { ELanguage::Japanese, "DUMMY" },
-            { ELanguage::German,   "DUMMY" },
+            { ELanguage::German,   "Die Installation verlassen.\nOK?" },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "Esci dall'installatore.\nOK?" }
         }
     },
     {
@@ -628,10 +628,10 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Cancel the installation.\nOK?" },
             { ELanguage::Japanese, "DUMMY" },
-            { ELanguage::German,   "DUMMY" },
+            { ELanguage::German,   "Die Installation abbrechen.\nOK?" },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "Annulla l'installazione.\nOK?" }
         }
     },
     {
@@ -640,10 +640,10 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Exit the game.\nOK?" },
             { ELanguage::Japanese, "DUMMY" },
-            { ELanguage::German,   "DUMMY" },
+            { ELanguage::German,   "Das Spiel verlassen.\nOK?" },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "Esci dal gioco.\nOK?" }
         }
     },
     {
@@ -873,46 +873,46 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
     {
         "ButtonGuide_Cancel",
         {
-            { ELanguage::English,  "${picture(button_b)}${locale(Common_Cancel)}" },
-            { ELanguage::Spanish,  "${picture(button_b)} ${locale(Common_Cancel)}" }
+            { ELanguage::English, "${picture(button_b)}${locale(Common_Cancel)}" },
+            { ELanguage::Spanish, "${picture(button_b)} ${locale(Common_Cancel)}" }
         }
     },
     {
         "ButtonGuide_Back",
         {
-            { ELanguage::English,  "${picture(button_b)}${locale(Common_Back)}" },
-            { ELanguage::Spanish,  "${picture(button_b)} ${locale(Common_Back)}" }
+            { ELanguage::English, "${picture(button_b)}${locale(Common_Back)}" },
+            { ELanguage::Spanish, "${picture(button_b)} ${locale(Common_Back)}" }
         }
     },
     {
         "ButtonGuide_Select",
         {
-            { ELanguage::English,  "${picture(button_a)}${locale(Common_Select)}" },
-            { ELanguage::Spanish,  "${picture(button_a)} ${locale(Common_Select)}" },
+            { ELanguage::English, "${picture(button_a)}${locale(Common_Select)}" },
+            { ELanguage::Spanish, "${picture(button_a)} ${locale(Common_Select)}" },
         }
     },
     {
         "ButtonGuide_SelectQuit",
         {
-            { ELanguage::English,  "${picture(button_a)}${locale(Common_Select)}  ${picture(button_b)}${locale(Common_Quit)}" },
-            { ELanguage::German,   "${picture(button_a)}${locale(Common_Select)}　　${picture(button_b)}${locale(Common_Quit)}" },
-            { ELanguage::Spanish,  "${picture(button_a)} ${locale(Common_Select)}  ${picture(button_b)} ${locale(Common_Quit)}" },
+            { ELanguage::English, "${picture(button_a)}${locale(Common_Select)}  ${picture(button_b)}${locale(Common_Quit)}" },
+            { ELanguage::German,  "${picture(button_a)}${locale(Common_Select)}　　${picture(button_b)}${locale(Common_Quit)}" },
+            { ELanguage::Spanish, "${picture(button_a)} ${locale(Common_Select)}  ${picture(button_b)} ${locale(Common_Quit)}" },
         }
     },
     {
         "ButtonGuide_SelectBack",
         {
-            { ELanguage::English,  "${picture(button_a)}${locale(Common_Select)}  ${picture(button_b)}${locale(Common_Back)}" },
-            { ELanguage::German,   "${picture(button_a)}${locale(Common_Select)}　　${picture(button_b)}${locale(Common_Back)}" },
-            { ELanguage::Spanish,  "${picture(button_a)} ${locale(Common_Select)}  ${picture(button_b)} ${locale(Common_Back)}" },
+            { ELanguage::English, "${picture(button_a)}${locale(Common_Select)}  ${picture(button_b)}${locale(Common_Back)}" },
+            { ELanguage::German,  "${picture(button_a)}${locale(Common_Select)}　　${picture(button_b)}${locale(Common_Back)}" },
+            { ELanguage::Spanish, "${picture(button_a)} ${locale(Common_Select)}  ${picture(button_b)} ${locale(Common_Back)}" },
         }
     },
     {
         "ButtonGuide_ResetSelectBack",
         {
-            { ELanguage::English,  "${picture(button_x)}${locale(Common_Reset)}  ${picture(button_a)}${locale(Common_Select)}  ${picture(button_b)}${locale(Common_Back)}" },
-            { ELanguage::German,   "${picture(button_x)}${locale(Common_Reset)}　　${picture(button_a)}${locale(Common_Select)}　　${picture(button_b)}${locale(Common_Back)}" },
-            { ELanguage::Spanish,  "${picture(button_x)} ${locale(Common_Reset)}  ${picture(button_a)} ${locale(Common_Select)}  ${picture(button_b)} ${locale(Common_Back)}" },
+            { ELanguage::English, "${picture(button_x)}${locale(Common_Reset)}  ${picture(button_a)}${locale(Common_Select)}  ${picture(button_b)}${locale(Common_Back)}" },
+            { ELanguage::German,  "${picture(button_x)}${locale(Common_Reset)}　　${picture(button_a)}${locale(Common_Select)}　　${picture(button_b)}${locale(Common_Back)}" },
+            { ELanguage::Spanish, "${picture(button_x)} ${locale(Common_Reset)}  ${picture(button_a)} ${locale(Common_Select)}  ${picture(button_b)} ${locale(Common_Back)}" },
         }
     },
 };
