@@ -255,15 +255,15 @@ void DrawArrows(ImVec2 min, ImVec2 max, double& time)
     auto computeArrowLoopMotion = [&](double offset) -> double
     {
         auto motionTime = 0.0;
-        auto fadeOutStartMotionTime = ComputeMotion(time, 0, FADE_OUT_OFFSET);
+        auto fadeOutStartMotionTime = ComputeLinearMotion(time, 0, FADE_OUT_OFFSET);
 
         if (fadeOutStartMotionTime < 1.0)
         {
-            motionTime = ComputeMotion(time, offset, FADE_IN_DURATION);
+            motionTime = ComputeLinearMotion(time, offset, FADE_IN_DURATION);
         }
         else
         {
-            motionTime = ComputeMotion(time, FADE_OUT_OFFSET, FADE_OUT_DURATION, true);
+            motionTime = ComputeLinearMotion(time, FADE_OUT_OFFSET, FADE_OUT_DURATION, true);
 
             if (motionTime <= 0.0)
                 time = ImGui::GetTime();
@@ -288,10 +288,10 @@ void DrawArrows(ImVec2 min, ImVec2 max, double& time)
 
     auto animDuration = ((FADE_IN_DURATION + FADE_OUT_DURATION) + (LEFT_ARROWS_OFFSET + (leftArrowCount * ARROWS_OFFSET))) + FADE_OUT_OFFSET;
 
-    auto leftArrowOffsetMotionTime = ComputeMotion(time, 0, animDuration);
+    auto leftArrowOffsetMotionTime = ComputeLinearMotion(time, 0, animDuration);
     auto leftArrowGlobalOffset = Scale(Lerp(318, 308, leftArrowOffsetMotionTime), true);
 
-    auto rightArrowOffsetMotionTime = ComputeMotion(time, 0, animDuration - 20.0);
+    auto rightArrowOffsetMotionTime = ComputeLinearMotion(time, 0, animDuration - 20.0);
     auto rightArrowGlobalOffset = Scale(Lerp(73, 93, rightArrowOffsetMotionTime), true);
 
     auto leftBaseY = centre.y - (leftArrowHeight / 2) - Scale(20, true);
@@ -328,12 +328,12 @@ void DrawArrowCursor(ImVec2 pos, double time, bool isIntroAnim, bool isBlinkingA
 
     for (int i = 0; i < 3; i++)
     {
-        auto cursorMotionTime = isIntroAnim ? ComputeMotion(time, i, 5, isReversed) : 1.0;
+        auto cursorMotionTime = isIntroAnim ? ComputeLinearMotion(time, i, 5, isReversed) : 1.0;
         auto cursorScaleYMotion = Lerp(Scale(37.5, true), Scale(24, true), cursorMotionTime);
         auto cursorOffsetXMotion = Lerp(0, Scale(8.5, true), cursorMotionTime);
         auto cursorOffsetYMotion = Lerp(pos.y - cursorScaleYMotion / 6, pos.y, cursorMotionTime);
         auto cursorRightMotion = (cursorOffsetXMotion * 3) - (cursorOffsetXMotion * i);
-        auto cursorAlphaMotionTime = isIntroAnim ? ComputeMotion(time, i, 2, isReversed) : 1.0;
+        auto cursorAlphaMotionTime = isIntroAnim ? ComputeLinearMotion(time, i, 2, isReversed) : 1.0;
         auto cursorAlphaMotion = (int)Lerp(0, 255, cursorAlphaMotionTime);
 
         if (isBlinkingAnim)

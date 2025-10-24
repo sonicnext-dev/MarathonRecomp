@@ -194,7 +194,7 @@ static void DrawCategories(ImVec2 min, ImVec2 max)
         ImVec2 categoryMin = { min.x + Scale(42, true), min.y + Scale(147, true) + categoryOffsetY };
         ImVec2 categoryMax = { categoryMin.x + categoryWidth, categoryMin.y + categoryHeight };
 
-        auto categoryMotionTime = ComputeMotion(g_stateTime, 0, 5, OptionsMenu::s_state != OptionsMenuState::Idle);
+        auto categoryMotionTime = ComputeLinearMotion(g_stateTime, 0, 5, OptionsMenu::s_state != OptionsMenuState::Idle);
         auto categoryMotion = IM_COL32(255, 255, 255, 255 * categoryMotionTime);
 
         SetHorizontalGradient(categoryMin, categoryMax, categoryMotion, IM_COL32_WHITE_TRANS);
@@ -230,7 +230,7 @@ void DrawSelectionArrows(ImVec2 min, ImVec2 max, bool isSelected)
     static bool s_isRightArrowMotion = false;
 
     auto motionTime = (s_isLeftArrowMotion || s_isRightArrowMotion)
-        ? ComputeMotion(g_lastTappedTime, 0, 15)
+        ? ComputeLinearMotion(g_lastTappedTime, 0, 15)
         : 0;
 
     if (g_left)
@@ -295,7 +295,7 @@ static void DrawOption
     auto clipRectMax = drawList->GetClipRectMax();
 
     auto fontSize = Scale(27, true);
-    auto optionMotionTime = ComputeMotion(g_categoryTime, 0, 5, OptionsMenu::s_state != OptionsMenuState::Idle);
+    auto optionMotionTime = ComputeLinearMotion(g_categoryTime, 0, 5, OptionsMenu::s_state != OptionsMenuState::Idle);
     auto optionColourMotion = ColourLerp(IM_COL32_WHITE_TRANS, isAccessible ? IM_COL32_WHITE : IM_COL32(137, 137, 137, 255), optionMotionTime);
     auto optionHeight = Scale(106, true);
     auto offsetScroll = 0.0f;
@@ -860,10 +860,10 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
     {
         auto scrollArrowUVs = PIXELS_TO_UV_COORDS(1024, 1024, 500, 450, 50, 50);
         auto scrollArrowScale = Scale(20, true);
-        auto scrollArrowAlphaMotionInTime = ComputeMotion(g_scrollArrowsTime, 0, 3);
-        auto scrollArrowAlphaMotionPauseTime = ComputeMotion(g_scrollArrowsTime, 3, 11);
-        auto scrollArrowAlphaMotionOutTime = ComputeMotion(g_scrollArrowsTime, 11, 4, true);
-        auto scrollArrowAlphaMotionLoopTime = ComputeMotion(g_scrollArrowsTime, 15, 50);
+        auto scrollArrowAlphaMotionInTime = ComputeLinearMotion(g_scrollArrowsTime, 0, 3);
+        auto scrollArrowAlphaMotionPauseTime = ComputeLinearMotion(g_scrollArrowsTime, 3, 11);
+        auto scrollArrowAlphaMotionOutTime = ComputeLinearMotion(g_scrollArrowsTime, 11, 4, true);
+        auto scrollArrowAlphaMotionLoopTime = ComputeLinearMotion(g_scrollArrowsTime, 15, 50);
         auto scrollArrowAlphaMotion = 255;
 
         if (scrollArrowAlphaMotionPauseTime >= 1.0)
@@ -910,7 +910,7 @@ static void DrawContainer(ImVec2 min, ImVec2 max)
     ImVec2 containerMin = { max.x - containerWidth - containerOffsetX, min.y + containerOffsetY };
     ImVec2 containerMax = { containerMin.x + containerWidth, containerMin.y + containerHeight };
 
-    auto containerAlphaMotionTime = ComputeMotion(g_stateTime, 0, 5, OptionsMenu::s_state != OptionsMenuState::Idle);
+    auto containerAlphaMotionTime = ComputeLinearMotion(g_stateTime, 0, 5, OptionsMenu::s_state != OptionsMenuState::Idle);
     auto containerAlphaMotion = IM_COL32(255, 255, 255, 255 * containerAlphaMotionTime);
 
     SetGradient(containerMin, containerMax, containerAlphaMotion, containerAlphaMotion, IM_COL32_WHITE_TRANS, IM_COL32(255, 255, 255, 20 * containerAlphaMotionTime));
@@ -941,7 +941,7 @@ void OptionsMenu::Draw()
     ImVec2 min = { g_horzCentre, g_vertCentre };
     ImVec2 max = { res.x - min.x, res.y - min.y };
 
-    auto alphaMotionTime = s_isPause ? ComputeMotion(g_stateTime, 0, 10, s_state == OptionsMenuState::Closing) : 0.0;
+    auto alphaMotionTime = s_isPause ? ComputeLinearMotion(g_stateTime, 0, 10, s_state == OptionsMenuState::Closing) : 0.0;
     auto alpha = s_isPause ? Lerp(0, 175, alphaMotionTime) : 255;
     auto gradientTop = IM_COL32(0, 103, 255, alpha);
     auto gradientBottom = IM_COL32(0, 41, 100, alpha);
@@ -1038,7 +1038,7 @@ void OptionsMenu::Draw()
             }
             else
             {
-                isClosed = ComputeMotion(g_stateTime, 0, ANIMATION_DURATION) >= 1.0;
+                isClosed = ComputeLinearMotion(g_stateTime, 0, ANIMATION_DURATION) >= 1.0;
             }
 
             if (isClosed)

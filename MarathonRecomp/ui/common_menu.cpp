@@ -18,28 +18,29 @@ void CommonMenu::Draw()
 
     auto borderMotionTime = PlayTransitions ? ComputeLinearMotion(m_time, 0, 10, m_isClosing) : 1.0;
 
-    if (!ReduceDraw)
-    {
-        auto gradientTop = IM_COL32(0, 103, 255, 255);
-        auto gradientBottom = IM_COL32(0, 92, 229, 255);
-        auto gradientHeight = Scale(126, true);
-        auto gradientMotion = Lerp(min.y - gradientHeight, min.y, borderMotionTime);
+    auto gradientTop = IM_COL32(0, 103, 255, 255);
+    auto gradientBottom = IM_COL32(0, 92, 229, 255);
+    auto gradientHeight = Scale(126, true);
+    auto gradientMotion = Lerp(min.y - gradientHeight, min.y, borderMotionTime);
 
-        // Draw gradient to fill gap between red strip and top metal plates.
+    // Draw gradient to fill gap between red strip and top metal plates.
+    if (!ReduceDraw)
         drawList->AddRectFilledMultiColor({ 0.0f, gradientMotion }, { res.x, gradientMotion + gradientHeight }, gradientTop, gradientTop, gradientBottom, gradientBottom);
 
-        auto redStripCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 301, 300, 50);
-        auto redStripLeftStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 301, 150, 50);
-        auto redStripRightStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 300, 301, 300, 50);
-        auto redStripColour = IM_COL32(168, 15, 15, 255);
-        auto redStripOffsetY = Scale(81.75, true);
-        auto redStripHeight = Scale(50, true);
-        auto redStripMotion = Lerp(min.y - redStripHeight, min.y + redStripOffsetY, borderMotionTime);
+    auto redStripCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 301, 300, 50);
+    auto redStripLeftStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 301, 150, 50);
+    auto redStripRightStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 300, 301, 300, 50);
+    auto redStripColour = IM_COL32(168, 15, 15, 255);
+    auto redStripOffsetY = Scale(81.5, true);
+    auto redStripHeight = Scale(50, true);
+    auto redStripMotion = Lerp(min.y - redStripHeight, min.y + redStripOffsetY, borderMotionTime);
 
-        // TODO: account for metal plate height in motion.
-        ImVec2 redStripCornerMin = { min.x - Scale(44, true), redStripMotion };
-        ImVec2 redStripCornerMax = { redStripCornerMin.x + Scale(300, true), redStripMotion + redStripHeight };
+    // TODO: account for metal plate height in motion.
+    ImVec2 redStripCornerMin = { min.x - Scale(43.5, true), redStripMotion };
+    ImVec2 redStripCornerMax = { redStripCornerMin.x + Scale(300, true), redStripMotion + redStripHeight };
 
+    if (!ReduceDraw)
+    {
         // Draw corner left red strip.
         drawList->AddImage(g_upTexMainMenu1.get(), redStripCornerMin, redStripCornerMax, GET_UV_COORDS(redStripCornerUVs), redStripColour);
 
@@ -69,16 +70,16 @@ void CommonMenu::Draw()
         };
 
         // Draw fixed highlights for red strip.
-        drawRedStripHighlight({ redStripCornerMax.x + Scale(67, true), redStripHighlightY }, IM_COL32(255, 172, 0, 0), IM_COL32(255, 172, 0, 67));
-        drawRedStripHighlight({ redStripCornerMax.x + Scale(-43, true), redStripHighlightY }, IM_COL32(255, 89, 0, 0), IM_COL32(255, 89, 0, 20));
+        drawRedStripHighlight({ redStripCornerMax.x + Scale(68, true), redStripHighlightY }, IM_COL32(255, 172, 0, 0), IM_COL32(255, 172, 0, 67));
+        drawRedStripHighlight({ redStripCornerMax.x + Scale(-43.5, true), redStripHighlightY }, IM_COL32(255, 89, 0, 0), IM_COL32(255, 89, 0, 20));
 
         auto redStripHighlightMotionOffsetX = Scale(63, true);
-        auto redStripHighlightMotionX1Time = ComputeMotion(m_titleTime, PlayTransitions ? 10 : 0, 10, m_isClosing);
-        auto redStripHighlightMotionX2Time = ComputeMotion(m_titleTime, PlayTransitions ? 12 : 2, 10, m_isClosing);
-        auto redStripHighlightMotionAlphaIn1Time = ComputeMotion(m_titleTime, PlayTransitions ? 10 : 0, 8, m_isClosing);
-        auto redStripHighlightMotionAlphaIn2Time = ComputeMotion(m_titleTime, PlayTransitions ? 12 : 2, 8, m_isClosing);
-        auto redStripHighlightMotionAlphaOut1Time = ComputeMotion(m_titleTime, PlayTransitions ? 18 : 8, 2, m_isClosing);
-        auto redStripHighlightMotionAlphaOut2Time = ComputeMotion(m_titleTime, PlayTransitions ? 20 : 2, 2, m_isClosing);
+        auto redStripHighlightMotionX1Time = ComputeLinearMotion(m_titleTime, PlayTransitions ? 10 : 0, 10, m_isClosing);
+        auto redStripHighlightMotionX2Time = ComputeLinearMotion(m_titleTime, PlayTransitions ? 12 : 2, 10, m_isClosing);
+        auto redStripHighlightMotionAlphaIn1Time = ComputeLinearMotion(m_titleTime, PlayTransitions ? 10 : 0, 8, m_isClosing);
+        auto redStripHighlightMotionAlphaIn2Time = ComputeLinearMotion(m_titleTime, PlayTransitions ? 12 : 2, 8, m_isClosing);
+        auto redStripHighlightMotionAlphaOut1Time = ComputeLinearMotion(m_titleTime, PlayTransitions ? 18 : 8, 2, m_isClosing);
+        auto redStripHighlightMotionAlphaOut2Time = ComputeLinearMotion(m_titleTime, PlayTransitions ? 20 : 2, 2, m_isClosing);
         auto redStripHighlightMotionX1 = Lerp(res.x + redStripHighlightWidth, min.x + redStripHighlightMotionOffsetX, redStripHighlightMotionX1Time);
         auto redStripHighlightMotionX2 = Lerp(res.x + redStripHighlightWidth, min.x + redStripHighlightMotionOffsetX, redStripHighlightMotionX2Time);
         auto redStripHighlightMotionAlpha1 = Lerp(0.0, 100.0, redStripHighlightMotionAlphaIn1Time);
@@ -93,26 +94,29 @@ void CommonMenu::Draw()
         // Draw animated highlights for title animation.
         drawRedStripHighlight({ redStripHighlightMotionX1, redStripHighlightY }, IM_COL32(255, 172, 0, 0), IM_COL32(255, 172, 0, redStripHighlightMotionAlpha1));
         drawRedStripHighlight({ redStripHighlightMotionX2, redStripHighlightY }, IM_COL32(255, 172, 0, 0), IM_COL32(255, 172, 0, redStripHighlightMotionAlpha2));
+    }
 
-        auto titleText = Title.empty() ? "DUMMY" : Title.data();
-        auto titleFontSize = Scale(33, true);
-        auto titleSize = g_pFntNewRodin->CalcTextSizeA(titleFontSize, FLT_MAX, 0.0f, titleText);
-        auto titleOffsetX = redStripCornerMax.x - Scale(105, true);
-        auto titleOffsetY = redStripMotion + Scale(3.25, true);
-        auto titleOffsetXMotionTime = ComputeMotion(m_titleTime, PlayTransitions && !m_isClosing ? 10 : 0, 10, m_isClosing);
-        auto titleOffsetXMotion = Lerp(max.x + titleSize.x, titleOffsetX, titleOffsetXMotionTime);
+    auto titleText = Title.empty() ? "DUMMY" : Title.data();
+    auto titleFontSize = Scale(33, true);
+    auto titleSize = g_pFntNewRodin->CalcTextSizeA(titleFontSize, FLT_MAX, 0.0f, titleText);
+    auto titleOffsetX = redStripCornerMax.x - Scale(105, true);
+    auto titleOffsetY = redStripMotion + Scale(3.25, true);
+    auto titleOffsetXMotionTime = ComputeLinearMotion(m_titleTime, PlayTransitions && !m_isClosing ? 10 : 0, 10, m_isClosing);
+    auto titleOffsetXMotion = Lerp(max.x + titleSize.x, titleOffsetX, titleOffsetXMotionTime);
 
-        if (!m_previousTitle.empty())
-        {
-            auto prevTitleAlphaMotionTime = ComputeMotion(m_titleTime, PlayTransitions ? 10 : 0, 3, m_isClosing);
+    if (!ReduceDraw && !m_previousTitle.empty())
+    {
+        auto prevTitleAlphaMotionTime = ComputeLinearMotion(m_titleTime, PlayTransitions ? 10 : 0, 3, m_isClosing);
 
-            // Draw previous title fading out.
-            drawList->AddText(g_pFntNewRodin, titleFontSize, { titleOffsetX, titleOffsetY }, IM_COL32(255, 255, 255, Lerp(255, 0, prevTitleAlphaMotionTime)), m_previousTitle.data());
-        }
+        // Draw previous title fading out.
+        drawList->AddText(g_pFntNewRodin, titleFontSize, { titleOffsetX, titleOffsetY }, IM_COL32(255, 255, 255, Lerp(255, 0, prevTitleAlphaMotionTime)), m_previousTitle.data());
+    }
 
-        // Draw title.
-        drawList->AddText(g_pFntNewRodin, titleFontSize, { titleOffsetXMotion, titleOffsetY }, IM_COL32(255, 255, 255, 255 * titleOffsetXMotionTime), titleText);
+    // Draw title.
+    drawList->AddText(g_pFntNewRodin, titleFontSize, { titleOffsetXMotion, titleOffsetY }, IM_COL32(255, 255, 255, 255 * titleOffsetXMotionTime), titleText);
 
+    if (!ReduceDraw)
+    {
         auto topPlateCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 154, 250, 144);
         auto topPlateLeftStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 2, 154, 150, 144);
         auto topPlateRightStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 250, 154, 750, 144);
@@ -261,7 +265,7 @@ void CommonMenu::Draw()
             m_descPos.x = (descBoundsMin.x + descFadeScale) - m_descScrollOffset;
         }
 
-        auto descAlphaMotionTime = ComputeMotion(m_descTime, PlayTransitions ? 10 : 0, 15, m_isClosing);
+        auto descAlphaMotionTime = ComputeLinearMotion(m_descTime, PlayTransitions ? 10 : 0, 15, m_isClosing);
 
         // Draw text cover backdrop.
         drawList->AddRectFilled({ 0.0f, textCoverMotion }, { res.x, textCoverMotion + textCoverHeight }, IM_COL32(0, 0, 0, 65));
@@ -343,7 +347,7 @@ void CommonMenu::Draw()
 
     if (ShowVersionString)
     {
-        auto verAlphaMotionTime = PlayTransitions ? ComputeMotion(m_time, 0, m_isClosing ? 3 : 10, m_isClosing) : 1.0;
+        auto verAlphaMotionTime = PlayTransitions ? ComputeLinearMotion(m_time, 0, m_isClosing ? 3 : 10, m_isClosing) : 1.0;
 
         DrawVersionString(IM_COL32(0, 0, 0, 70 * verAlphaMotionTime));
     }
@@ -367,7 +371,7 @@ bool CommonMenu::Close(bool isAnimated)
         m_descTime = m_time;
     }
 
-    return isAnimated ? ComputeMotion(m_time, 0, ANIMATION_DURATION) >= 1.0 : true;
+    return isAnimated ? ComputeLinearMotion(m_time, 0, ANIMATION_DURATION) >= 1.0 : true;
 }
 
 void CommonMenu::SetTitle(std::string title, bool isAnimated)
