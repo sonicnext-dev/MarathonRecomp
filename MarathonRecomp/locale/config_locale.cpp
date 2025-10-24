@@ -52,7 +52,7 @@ CONFIG_DEFINE_LOCALE(Language)
     { ELanguage::Japanese, { "言語", "DUMMY" } },
     { ELanguage::German,   { "Sprache", "Ändere die Textsprache." } },
     { ELanguage::French,   { "Langue", "DUMMY" } },
-    { ELanguage::Spanish,  { "Idioma", "DUMMY" } },
+    { ELanguage::Spanish,  { "Idioma", "Cambia el idioma utilizado para los textos." } },
     { ELanguage::Italian,  { "Lingua", "Cambia la lingua utilizzata per il testo." } }
 };
 
@@ -164,7 +164,7 @@ CONFIG_DEFINE_LOCALE(Autosave)
     { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
     { ELanguage::German,   { "Automatisches Speichern", "Speichert das Spiel automatisch an manuellen Speicherpunkten." } },
     { ELanguage::French,   { "DUMMY", "DUMMY" } },
-    { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
+    { ELanguage::Spanish,  { "Autoguardado", "Guarda el juego automáticamente en los puntos de guardado manuales." } },
     { ELanguage::Italian,  { "Salvataggio automatico", "Salva automaticamente il gioco nei punti di salvataggio manuali." } }
 };
 
@@ -250,7 +250,7 @@ CONFIG_DEFINE_LOCALE(Antigravity)
     { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
     { ELanguage::German,   { "Anti-Schwerkraft", "Verändert wie Anti-Schwerkraft aktiviert wird." } },
     { ELanguage::French,   { "DUMMY", "DUMMY" } },
-    { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
+    { ELanguage::Spanish,  { "Antigravedad", "Cambia cómo se activa la Antigravedad." } },
     { ELanguage::Italian,  { "Antigravità", "Cambia il modo in cui viene attivata l'Antigravità." } }
 };
 
@@ -287,8 +287,8 @@ CONFIG_DEFINE_ENUM_LOCALE(EAntigravity)
     {
         ELanguage::Spanish,
         {
-            { EAntigravity::B, { "DUMMY", "" } },
-            { EAntigravity::X, { "DUMMY", "" } }
+            { EAntigravity::B, { "Mantener ${picture(button_b)}", "" } },
+            { EAntigravity::X, { "Soltar ${picture(button_x)}", "" } }
         }
     },
     {
@@ -306,7 +306,7 @@ CONFIG_DEFINE_LOCALE(LightDash)
     { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
     { ELanguage::German,   { "Lichtsprint", "Verändere wie der Lichtsprint aktiviert wird." } },
     { ELanguage::French,   { "DUMMY", "DUMMY" } },
-    { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
+    { ELanguage::Spanish,  { "Acelerón ligero", "Cambia cómo se activa el Acelerón ligero." } },
     { ELanguage::Italian,  { "Super spinta", "Cambia il modo in cui viene attivato la Super spinta." } }
 };
 
@@ -343,8 +343,8 @@ CONFIG_DEFINE_ENUM_LOCALE(ELightDash)
     {
         ELanguage::Spanish,
         {
-            { ELightDash::X, { "DUMMY", "" } },
-            { ELightDash::Y, { "DUMMY", "" } }
+            { ELightDash::X, { "Pulsar ${picture(button_x)}", "" } },
+            { ELightDash::Y, { "Pulsar ${picture(button_y)}", "" } }
         }
     },
     {
@@ -520,7 +520,7 @@ CONFIG_DEFINE_LOCALE(MuteOnFocusLost)
     { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
     { ELanguage::German,   { "Stummstellen wenn nicht fokussiert", "Stellt das Audio des Spiels stumm solange das Fenster nicht im Fokus ist." } },
     { ELanguage::French,   { "DUMMY", "DUMMY" } },
-    { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
+    { ELanguage::Spanish,  { "Silenciar al perder el foco", "Silencia el audio del juego cuando la ventana no esté en primer plano." } },
     { ELanguage::Italian,  { "Audio muto con finestra inattiva", "Disattiva l'audio del gioco quando la finestra non è attiva." } }
 };
 
@@ -646,7 +646,7 @@ CONFIG_DEFINE_LOCALE(FPS)
     { ELanguage::Japanese, { "フレームレート上限", "DUMMY" } },
     { ELanguage::German,   { "FPS", "Bestimmt die maximale Bildwiederholrate. WARNUNG: es können Fehler bei einer Bildwiederholrate über 60 FPS auftreten." } },
     { ELanguage::French,   { "IPS", "DUMMY" } },
-    { ELanguage::Spanish,  { "FPS", "DUMMY" } },
+    { ELanguage::Spanish,  { "FPS", "Establece la tasa máxima de fotogramas a la que puede ejecutarse el juego. ADVERTENCIA: esto puede provocar fallos en velocidades distintas a 60 FPS." } },
     { ELanguage::Italian,  { "FPS", "Imposta il framerate massimo del gioco. ATTENZIONE: questa opzione può causare problemi con dei framerate rate superiori a 60 FPS." } }
 };
 
@@ -656,7 +656,7 @@ CONFIG_DEFINE_LOCALE(Brightness)
     { ELanguage::Japanese, { "明るさの設定", "DUMMY" } },
     { ELanguage::German,   { "Helligkeit", "Stelle die Helligkeit ein." } },
     { ELanguage::French,   { "Luminosité", "DUMMY" } },
-    { ELanguage::Spanish,  { "Brillo", "DUMMY" } },
+    { ELanguage::Spanish,  { "Brillo", "Ajusta el nivel de brillo." } },
     { ELanguage::Italian,  { "Luminosità", "Regola il livello di luminosità." } }
 };
 
@@ -726,7 +726,7 @@ CONFIG_DEFINE_LOCALE(ShadowResolution)
     { ELanguage::Japanese, { "影の解像度", "影の解像度を設定できます" } },
     { ELanguage::German,   { "Schattenauflösung", "Stelle die Auflösung der Echtzeit-Schatten ein." } },
     { ELanguage::French,   { "Résolution des ombres", "Définit la résolution des ombres en temps réel." } },
-    { ELanguage::Spanish,  { "Resolución de sombras", "Establece la resolución de las sombras de tiempo real." } },
+    { ELanguage::Spanish,  { "Resolución de sombras", "Establece la resolución de las sombras en tiempo real." } },
     { ELanguage::Italian,  { "Risoluzione ombre", "Imposta la risoluzioni delle ombre in tempo reale." } }
 };
 
@@ -738,7 +738,7 @@ CONFIG_DEFINE_LOCALE(ReflectionResolution)
     { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
     { ELanguage::German,   { "Reflektionsauflösung", "Bestimmt die Auflösung der Echtzeitreflektionen." } },
     { ELanguage::French,   { "DUMMY", "DUMMY" } },
-    { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
+    { ELanguage::Spanish,  { "Resolución de reflejos", "Establece la resolución de los reflejos en tiempo real." } },
     { ELanguage::Italian,  { "Risoluzione riflessi", "Imposta la risoluzione dei riflessi in tempo reale." } }
 };
 
@@ -761,7 +761,7 @@ CONFIG_DEFINE_LOCALE(RadialBlur)
     { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
     { ELanguage::German,   { "Radiale Unschärfe", "Verändere die Qualität der radialen Unschärfe." } },
     { ELanguage::French,   { "DUMMY", "DUMMY" } },
-    { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
+    { ELanguage::Spanish,  { "Desenfoque radial", "Cambia la calidad del desenfoque radial." } },
     { ELanguage::Italian,  { "Sfocatura radiale", "Modifica la qualità della sfocatura radiale." } }
 };
 
@@ -804,7 +804,7 @@ CONFIG_DEFINE_ENUM_LOCALE(ERadialBlur)
         {
             { ERadialBlur::Off,      { "No", "" } },
             { ERadialBlur::Original, { "Original", "" } },
-            { ERadialBlur::Enhanced, { "Mejorado", "DUMMY" } }
+            { ERadialBlur::Enhanced, { "Mejorado", "Mejorado: utiliza más muestras para un desenfoque radial más suave." } }
         }
     },
     {
@@ -823,7 +823,7 @@ CONFIG_DEFINE_LOCALE(CutsceneAspectRatio)
     { ELanguage::Japanese, { "アスペクト比のカットシーン", "リアルタイムカットシーンのアスペクト比を変更できます" } },
     { ELanguage::German,   { "Zwischensequenz-Seitenverhältnis", "Verändere das Seitenverhältnis der Echtzeit-Zwischensequenzen." } },
     { ELanguage::French,   { "Format des cinématiques", "Modifie le format d'image des cinématiques en temps réel." } },
-    { ELanguage::Spanish,  { "Relación de aspecto de cinemáticas", "Cambia la relación de aspecto de las cinemáticas de tiempo real." } },
+    { ELanguage::Spanish,  { "Relación de aspecto de cinemáticas", "Cambia la relación de aspecto de las cinemáticas en tiempo real." } },
     { ELanguage::Italian,  { "Rapporto d'aspetto dei filmati", "Cambia il rapporto d'aspetto dei filmati in tempo reale." } }
 };
 

@@ -72,7 +72,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "System-Einstellungen" },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "Configuración del sistema" },
             { ELanguage::Italian,  "Impostazioni sistema" }
         }
     },
@@ -83,7 +83,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Verändere System-Einstellungen." },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "Ajustar la configuración del sistema." },
             { ELanguage::Italian,  "Modifica le impostazioni di sistema." }
         }
     },
@@ -94,7 +94,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Eingabe-Einstellungen" },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "Configuración de entrada" },
             { ELanguage::Italian,  "Impostazioni input" }
         }
     },
@@ -105,7 +105,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Verändere Eingabe-Einstellungen." },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "Ajustar la configuración de entrada." },
             { ELanguage::Italian,  "Modifica le impostazioni input." }
         }
     },
@@ -116,7 +116,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Audio-Einstellungen" },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "Configuración de audio" },
             { ELanguage::Italian,  "Impostazioni audio" }
         }
     },
@@ -127,7 +127,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Verändere Audio-Einstellungen." },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "Ajustar la configuración de audio." },
             { ELanguage::Italian,  "Modifica le impostazioni audio." }
         }
     },
@@ -138,7 +138,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Video-Einstellungen" },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "Configuración de vídeo" },
             { ELanguage::Italian,  "Impostazioni video" }
         }
     },
@@ -149,7 +149,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Verändere Video-Einstellungen." },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "Ajustar la configuración de vídeo." },
             { ELanguage::Italian,  "Modifica le impostazioni video." }
         }
     },
@@ -160,7 +160,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Debug-Einstellungen" },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "Configuración de depuración" },
             { ELanguage::Italian,  "Impostazioni debug" }
         }
     },
@@ -171,7 +171,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Verändere Debug-Einstellungen." },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "Ajustar la configuración de depuración." },
             { ELanguage::Italian,  "Modifica le impostazioni debug." }
         }
     },
@@ -217,7 +217,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Diese Einstellung kann während des Spiels nicht verändert werden." },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "Esta opción no está disponible durante la partida." },
             { ELanguage::Italian,  "Questa opzione non è disponibile durante il gioco." }
         }
     },
@@ -229,7 +229,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Diese Einstellung wurde noch nicht implementiert." },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "Esta opción aún no está implementada." },
             { ELanguage::Italian,  "Questa opzione non è ancora implementata." }
         }
     },
@@ -289,7 +289,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "このオプションは現在のOSで変更できません" },
             { ELanguage::German,   "Diese Option wird von diesem Betriebssystem nicht unterstützt." },
             { ELanguage::French,   "Cette option n'est pas prise en charge par votre système d'exploitation." },
-            { ELanguage::Spanish,  "Esta opción no está soportada por tu sistema operativo." },
+            { ELanguage::Spanish,  "Esta opción no es compatible con tu sistema operativo." },
             { ELanguage::Italian,  "Questa opzione non è disponibile con il tuo sistema operativo." }
         }
     },
@@ -618,7 +618,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Die Installation verlassen.\nOK?" },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "¿Salir del instalador?" },
             { ELanguage::Italian,  "Esci dall'installatore.\nOK?" }
         }
     },
@@ -630,7 +630,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Die Installation abbrechen.\nOK?" },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "¿Cancelar la instalación?" },
             { ELanguage::Italian,  "Annulla l'installazione.\nOK?" }
         }
     },
@@ -642,7 +642,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Das Spiel verlassen.\nOK?" },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "¿Salir del juego?" },
             { ELanguage::Italian,  "Esci dal gioco.\nOK?" }
         }
     },
@@ -754,9 +754,9 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "On" },
             { ELanguage::Japanese, "オン" },
-            { ELanguage::German,   "Ein" },
+            { ELanguage::German,   "An" },
             { ELanguage::French,   "Oui" },
-            { ELanguage::Spanish,  "Sí" },
+            { ELanguage::Spanish,  "Act." },
             { ELanguage::Italian,  "Sì" }
         }
     },
@@ -767,7 +767,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "オフ" },
             { ELanguage::German,   "Aus" },
             { ELanguage::French,   "Non" },
-            { ELanguage::Spanish,  "No" },
+            { ELanguage::Spanish,  "Desact." },
             { ELanguage::Italian,  "No" }
         }
     },
@@ -855,7 +855,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "リセット" },
             { ELanguage::German,   "Zurücksetzen" },
             { ELanguage::French,   "Par défaut" },
-            { ELanguage::Spanish,  "Reiniciar" },
+            { ELanguage::Spanish,  "Restablecer" },
             { ELanguage::Italian,  "Ripristina" }
         }
     },
