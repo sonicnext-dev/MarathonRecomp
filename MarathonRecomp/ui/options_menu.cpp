@@ -44,7 +44,6 @@ static int g_optionIndex{};
 static int g_optionCount{};
 static IConfigDef* g_optionCurrent{};
 static bool g_optionCanReset{};
-static EChannelConfiguration g_optionCurrentChannelConfiguration{};
 
 static std::unique_ptr<GuestTexture> g_upTexMainMenu7{};
 static std::unique_ptr<GuestTexture> g_upTexMainMenu8{};
@@ -1053,17 +1052,41 @@ void OptionsMenu::Draw()
         case OptionsMenuState::Restarting:
         {
             static bool s_restartPromptOpened = false;
+            static bool s_restartFaderBegun = false;
             static int s_restartMessageResult = -1;
+
+            auto message = Localise("Options_Message_Restart");
+            std::array<std::string, 2> options = { Localise("Common_Yes"), Localise("Common_No") };
 
             if (!s_restartPromptOpened)
             {
                 // Fade out description.
                 s_commonMenu.SetDescription(" ");
+
+                for (auto& def : g_configDefinitions)
+                {
+                    if (def->RequiresRestart() && def->IsValueChanged())
+                        message += "\n- " + def->GetNameLocalised(Config::Language);
+                }
+
                 s_restartPromptOpened = true;
             }
 
-            if (MessageWindow::Open(Localise("Options_Message_Restart"), &s_restartMessageResult) == MSG_CLOSED)
-                Fader::FadeOut(1, []() { App::Restart({ "--use-cwd" }); });
+            if (!s_restartFaderBegun && MessageWindow::Open(message, &s_restartMessageResult, options) == MSG_CLOSED)
+            {
+                if (s_restartMessageResult == 0)
+                {
+                    Fader::FadeOut(1, []() { App::Restart({ "--use-cwd --skip-logos" }); });
+                    s_restartFaderBegun = true;
+                }
+                else
+                {
+                    s_state = OptionsMenuState::Opening;
+                }
+
+                s_restartPromptOpened = false;
+                s_restartMessageResult = -1;
+            }
 
             break;
         }
@@ -1105,7 +1128,7 @@ void OptionsMenu::Draw()
                 g_stateTime = ImGui::GetTime();
                 g_categoryTime = g_stateTime;
 
-                if (s_isRestartRequired)
+                if (IsRestartRequired())
                 {
                     s_state = OptionsMenuState::Restarting;
                 }
@@ -1158,8 +1181,6 @@ void OptionsMenu::Draw()
     g_isAccepted = false;
     g_isDeclined = false;
     g_isReset = false;
-
-    s_isRestartRequired = Config::Language != App::s_language || Config::ChannelConfiguration != g_optionCurrentChannelConfiguration;
 }
 
 void OptionsMenu::Init()
@@ -1183,17 +1204,15 @@ void OptionsMenu::Open(bool isPause)
     s_state = OptionsMenuState::Opening;
     s_isVisible = true;
     s_isPause = isPause;
-    g_optionCurrentChannelConfiguration = Config::ChannelConfiguration;
+
+    // Update stored values for config definitions
+    // to check if their values have changed later.
+    for (auto& def : g_configDefinitions)
+        def->UpdateStore();
 
     ResetSelection();
 
     ButtonGuide::Open("ButtonGuide_SelectBack", s_isPause);
-}
-
-void OptionsMenu::SetFlowState(OptionsMenuFlowState flowState)
-{
-    s_flowState = flowState;
-    g_flowStateTime = ImGui::GetTime();
 }
 
 void OptionsMenu::Close()
@@ -1218,4 +1237,24 @@ void OptionsMenu::Close()
 bool OptionsMenu::CanClose()
 {
     return OptionsMenu::s_flowState == OptionsMenuFlowState::CategoryCursor;
+}
+
+bool OptionsMenu::IsRestartRequired()
+{
+    if (!s_isVisible)
+        return false;
+
+    for (auto& def : g_configDefinitions)
+    {
+        if (def->RequiresRestart() && def->IsValueChanged())
+            return true;
+    }
+
+    return false;
+}
+
+void OptionsMenu::SetFlowState(OptionsMenuFlowState flowState)
+{
+    s_flowState = flowState;
+    g_flowStateTime = ImGui::GetTime();
 }

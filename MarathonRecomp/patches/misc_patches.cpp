@@ -157,7 +157,7 @@ bool Super3_DisableChangeRequestHint()
 PPC_FUNC_IMPL(__imp__sub_824A6EA8);
 PPC_FUNC(sub_824A6EA8)
 {
-    if (Config::SkipIntroLogos && ctx.r4.u32 == 1)
+    if ((App::s_isSkipLogos || Config::SkipIntroLogos) && ctx.r4.u32 == 1)
         ctx.r4.u32 = 4;
 
     __imp__sub_824A6EA8(ctx, base);

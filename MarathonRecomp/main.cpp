@@ -29,6 +29,7 @@
 #include <mod/mod_loader.h>
 #include <preload_executable.h>
 #include <iostream>
+#include <app.h>
 
 #ifdef _WIN32
 #include <timeapi.h>
@@ -190,6 +191,7 @@ int main(int argc, char *argv[])
         useDefaultWorkingDirectory = useDefaultWorkingDirectory || (strcmp(argv[i], "--use-cwd") == 0);
         forceInstallationCheck = forceInstallationCheck || (strcmp(argv[i], "--install-check") == 0);
         graphicsApiRetry = graphicsApiRetry || (strcmp(argv[i], "--graphics-api-retry") == 0);
+        App::s_isSkipLogos = App::s_isSkipLogos || (strcmp(argv[i], "--skip-logos") == 0);
 
         if (strcmp(argv[i], "--sdl-video-driver") == 0)
         {

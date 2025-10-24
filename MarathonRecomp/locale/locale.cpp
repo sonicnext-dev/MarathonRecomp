@@ -294,15 +294,14 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         }
     },
     {
-        // Notes: message appears when changing the Language or Channel Configuration options and backing out of the options menu.
         "Options_Message_Restart",
         {
-            { ELanguage::English,  "The game will now restart." },
-            { ELanguage::Japanese, "ゲームが再起動されます" },
-            { ELanguage::German,   "Das Spiel wird jetzt neu starten." },
-            { ELanguage::French,   "Le jeu va maintenant redémarrer." },
-            { ELanguage::Spanish,  "El juego se va a reiniciar." },
-            { ELanguage::Italian,  "Il gioco verrà riavviato." }
+            { ELanguage::English,  "The game needs to restart to apply\nthe following changes. OK?\n" },
+            { ELanguage::Japanese, "DUMMY\n" },
+            { ELanguage::German,   "DUMMY\n" },
+            { ELanguage::French,   "DUMMY\n" },
+            { ELanguage::Spanish,  "Se necesita reiniciar el juego para\naplicar los siguientes cambios. ¿OK?\n" },
+            { ELanguage::Italian,  "Il gioco deve essere riavviato per\napplicare le seguenti modifiche. OK?\n" }
         }
     },
     {

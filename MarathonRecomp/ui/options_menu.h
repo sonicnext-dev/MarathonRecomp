@@ -39,7 +39,6 @@ public:
     static inline Sonicteam::SoX::Audio::Cue* s_pBgmCue{};
     static inline bool s_isVisible{};
     static inline bool s_isPause{};
-    static inline bool s_isRestartRequired{};
     static inline bool s_isDebugUnlocked{};
 
     static void Init();
@@ -47,5 +46,6 @@ public:
     static void Open(bool isPause = false);
     static void Close();
     static bool CanClose();
+    static bool IsRestartRequired();
     static void SetFlowState(OptionsMenuFlowState flowState);
 };
