@@ -376,6 +376,9 @@ bool CommonMenu::Close(bool isAnimated)
 
 void CommonMenu::SetTitle(std::string title, bool isAnimated)
 {
+    if (Title == title)
+        return;
+
     m_previousTitle = Title;
     Title = title;
 
@@ -387,6 +390,9 @@ void CommonMenu::SetTitle(std::string title, bool isAnimated)
 
 void CommonMenu::SetDescription(std::string desc, bool isAnimated)
 {
+    if (Description == desc)
+        return;
+
     m_previousDesc = Description;
     m_previousDescPos = m_descPos;
     Description = desc;
