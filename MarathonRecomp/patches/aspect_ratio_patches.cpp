@@ -1126,7 +1126,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             drawOriginal();
         }
     }
-    else
+    else if (g_aspectRatio < WIDE_ASPECT_RATIO)
     {
         /////////////////////////////////////////////////
         // Scale metal borders to narrow aspect ratios //
@@ -1181,6 +1181,11 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
             drawOriginal();
         }
+    }
+    else
+    {
+        if (isMainMenuPanels)
+            drawOriginal();
     }
 
     ctx.r1.u32 += size;
