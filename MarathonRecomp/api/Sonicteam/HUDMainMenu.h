@@ -17,7 +17,9 @@ namespace Sonicteam
 
         MARATHON_INSERT_PADDING(0x1D4);
         be<uint32_t> m_CursorFlags;
-        MARATHON_INSERT_PADDING(0x324);
+        MARATHON_INSERT_PADDING(0x32C);
         xpointer<HudTextParts> m_pHudTextRoot;
     };
+
+    MARATHON_ASSERT_OFFSETOF(HUDMainMenu, m_pHudTextRoot, 0x558);
 }

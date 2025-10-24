@@ -2,8 +2,6 @@
 #include <ui/options_menu.h>
 #include <exports.h>
 
-static float g_buttonWindowTextOffsetY{};
-
 // Sonicteam::MainMenuTask::Update
 PPC_FUNC_IMPL(__imp__sub_824FFCF8);
 PPC_FUNC(sub_824FFCF8)
@@ -40,10 +38,11 @@ PPC_FUNC(sub_824FFCF8)
             pMainMenuTask->m_pHUDMainMenu->ProcessMessage(msgHUDMainMenuTransition.get());
         }
     }
-#endif
 
-    static auto s_isReturningFromOptionsMenu = false;
-    static bool s_isProcessedExitMessages = false;
+    static bool s_isReturningFromOptionsMenu{};
+    static bool s_isProcessedExitMessages{};
+    static float s_buttonWindowTextOffsetY{};
+
     auto& rButtonWindowTextOffsetY = pMainMenuTask->m_pButtonWindowTask->m_pHUDButtonWindow->m_pHudTextParts->m_OffsetY;
 
     if (OptionsMenu::s_isVisible)
@@ -54,12 +53,14 @@ PPC_FUNC(sub_824FFCF8)
         {
             case OptionsMenuState::Opening:
             {
-                if (rButtonWindowTextOffsetY == -100000.0f)
+                static constexpr double HIDE_TEXT_OFFSET = -100000.0f;
+
+                if (rButtonWindowTextOffsetY == HIDE_TEXT_OFFSET)
                     break;
 
                 // Move original button window text very far off screen to hide it.
-                g_buttonWindowTextOffsetY = rButtonWindowTextOffsetY;
-                rButtonWindowTextOffsetY = -100000.0f;
+                s_buttonWindowTextOffsetY = rButtonWindowTextOffsetY;
+                rButtonWindowTextOffsetY = HIDE_TEXT_OFFSET;
 
                 break;
             }
@@ -77,7 +78,7 @@ PPC_FUNC(sub_824FFCF8)
             if (!s_isProcessedExitMessages)
             {
                 // Restore original button window text offset.
-                rButtonWindowTextOffsetY = g_buttonWindowTextOffsetY;
+                rButtonWindowTextOffsetY = s_buttonWindowTextOffsetY;
 
                 guest_stack_var<Sonicteam::Message::MsgHUDMainMenuSetCursor> msgHUDMainMenuSetCursor
                 (
@@ -111,6 +112,7 @@ PPC_FUNC(sub_824FFCF8)
             }
         }
     }
+#endif
 
     MainMenuTaskPatches::State = (Sonicteam::MainMenuTask::MainMenuState)pMainMenuTask->m_State.get();
 

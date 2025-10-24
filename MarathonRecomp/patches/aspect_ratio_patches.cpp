@@ -1639,13 +1639,15 @@ PPC_FUNC(sub_824E2978)
 PPC_FUNC_IMPL(__imp__sub_824E11D0);
 PPC_FUNC(sub_824E11D0)
 {
-    auto pHUDMainMenu = (Sonicteam::HUDMainMenu*)(base + ctx.r3.u32);
-    auto pHudTextRoot = pHUDMainMenu->m_pHudTextRoot->m_pNext;
+    auto pHUDMainMenu = (Sonicteam::HUDMainMenu*)(base + ctx.r3.u32 - 8);
+    auto pHudTextRoot = pHUDMainMenu->m_pHudTextRoot;
 
-    static bool s_preservedTextPositions{};
+    static bool s_preservedTextParams{};
     static float s_multiplayerTextOffsetY{};
     static float s_tagTextOffsetY{};
     static float s_battleTextOffsetY{};
+
+    static constexpr double HIDE_TEXT_OFFSET = -100000.0f;
 
     auto isTrialSelect = MainMenuTaskPatches::State >= 12 && MainMenuTaskPatches::State <= 15;
     auto isTag = MainMenuTaskPatches::State == Sonicteam::MainMenuTask::MainMenuState_Tag;
@@ -1656,31 +1658,31 @@ PPC_FUNC(sub_824E11D0)
         {
             if (pHudTextRoot->m_CastName == "multi_player")
             {
-                if (!s_preservedTextPositions)
+                if (!s_preservedTextParams)
                     s_multiplayerTextOffsetY = pHudTextRoot->m_OffsetY;
 
-                pHudTextRoot->m_OffsetY = isTrialSelect ? -100000.0f : s_multiplayerTextOffsetY;
+                pHudTextRoot->m_OffsetY = isTrialSelect ? HIDE_TEXT_OFFSET : s_multiplayerTextOffsetY;
             }
             else if (pHudTextRoot->m_CastName == "tag")
             {
-                if (!s_preservedTextPositions)
+                if (!s_preservedTextParams)
                     s_tagTextOffsetY = pHudTextRoot->m_OffsetY;
 
-                pHudTextRoot->m_OffsetY = (isTrialSelect || isTag) ? -100000.0f : s_tagTextOffsetY;
+                pHudTextRoot->m_OffsetY = (isTrialSelect || isTag) ? HIDE_TEXT_OFFSET : s_tagTextOffsetY;
             }
             else if (pHudTextRoot->m_CastName == "battle")
             {
-                if (!s_preservedTextPositions)
+                if (!s_preservedTextParams)
                     s_battleTextOffsetY = pHudTextRoot->m_OffsetY;
 
-                pHudTextRoot->m_OffsetY = isTrialSelect ? -100000.0f : s_battleTextOffsetY;
+                pHudTextRoot->m_OffsetY = isTrialSelect ? HIDE_TEXT_OFFSET : s_battleTextOffsetY;
             }
         }
 
         pHudTextRoot = pHudTextRoot->m_pNext;
     }
 
-    s_preservedTextPositions = true;
+    s_preservedTextParams = true;
 
     // Draw faded letterbox at tall aspect ratios.
     if (!OptionsMenu::s_isVisible && g_aspectRatio < NARROW_ASPECT_RATIO)
