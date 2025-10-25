@@ -1649,7 +1649,7 @@ PPC_FUNC_IMPL(__imp__sub_824E11D0);
 PPC_FUNC(sub_824E11D0)
 {
     auto pHUDMainMenu = (Sonicteam::HUDMainMenu*)(base + ctx.r3.u32);
-    auto pHudTextRoot = pHUDMainMenu->m_pHudTextRoot->m_pNext;
+    auto pHudTextRoot = pHUDMainMenu->m_pHudTextRoot;
 
     static bool s_preservedTextPositions{};
     static float s_multiplayerTextOffsetX{};
@@ -1706,6 +1706,17 @@ PPC_FUNC(sub_824DCF40)
     SetTextEntityModifier(pHUDMainDisplay->m_spSavePointTimeText.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
 
     __imp__sub_824DCF40(ctx, base);
+}
+
+// Sonicteam::PauseTask::Update
+PPC_FUNC_IMPL(__imp__sub_82509870);
+PPC_FUNC(sub_82509870)
+{
+    auto pPauseTask = (Sonicteam::PauseTask*)(base + ctx.r3.u32);
+    
+    SetTextEntityModifier(pPauseTask->m_pMissionText.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
+
+    __imp__sub_82509870(ctx, base);
 }
 
 // Sonicteam::HintWindowTask::Update
@@ -1982,7 +1993,7 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     // pausemenu
     { HashStr("sprite/pausemenu/pausemenu/pause_menu"), { CSD_SCALE } },
     { HashStr("sprite/pausemenu/pausemenu/pause_menu_cursor"), { CSD_SCALE } },
-    { HashStr("sprite/pausemenu/pausemenu/mission"), { CSD_SCALE } },
+    { HashStr("sprite/pausemenu/pausemenu/mission"), { CSD_ALIGN_BOTTOM | CSD_SCALE } },
 
     // radarmap_cover
     { HashStr("sprite/radarmap_cover/radarmap_cover/Scene_0000"), { CSD_RADARMAP | CSD_ALIGN_TOP_RIGHT | CSD_SCALE } },
