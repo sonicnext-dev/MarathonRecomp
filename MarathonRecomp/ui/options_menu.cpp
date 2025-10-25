@@ -287,7 +287,8 @@ static void DrawOption
     T valueCentre = T(0.5),
     T valueMax = T(1),
     bool isSlider = true,
-    bool isInterpolatedString = false)
+    bool isInterpolatedString = false
+)
 {
     auto drawList = ImGui::GetBackgroundDrawList();
     auto clipRectMin = drawList->GetClipRectMin();
@@ -299,19 +300,28 @@ static void DrawOption
     auto optionHeight = Scale(106, true);
     auto offsetScroll = 0.0f;
 
+    auto isMiddleRow = false;
+
     // Only scroll if page has more than three items.
     if (g_optionCount > 3)
     {
+        isMiddleRow = ((rowIndex - std::max(g_optionIndex - 1, 0)) % 3) >= 1;
+
         if (g_optionIndex >= g_optionCount - 2)
         {
             // Stop scrolling near bottom to use cursor instead.
             offsetScroll = -(g_optionCount - 3) * optionHeight;
+            isMiddleRow = ((rowIndex - std::max(g_optionCount - 3, 0)) % 3) >= 1;
         }
         else if (g_optionIndex >= 1)
         {
             // Start scrolling from the middle item.
             offsetScroll = -(g_optionIndex - 1) * optionHeight;
         }
+    }
+    else
+    {
+        isMiddleRow = rowIndex >= 1;
     }
 
     auto offsetY = optionHeight * rowIndex + offsetScroll;
@@ -340,10 +350,26 @@ static void DrawOption
     ResetGradient();
 
     ImVec2 titlePos = { titleBgEdgeMin.x + Scale(51, true), titleBgEdgeMin.y + Scale(8, true) };
+    auto isTitleRightFade = !isMiddleRow && OptionsMenu::s_flowState == OptionsMenuFlowState::OptionCursor;
+
+    if (isTitleRightFade)
+    {
+        auto titleFadeRightScale = Scale(30, true);
+
+        ImVec2 titleSafeAreaMin = { titleBgEdgeMax.x, titleBgEdgeMin.y };
+        ImVec2 titleSafeAreaMax = { titleSafeAreaMin.x + Scale(480, true), titleBgEdgeMax.y };
+        ImVec2 titleFadeRightMin = { titleSafeAreaMax.x - titleFadeRightScale, titleSafeAreaMin.y };
+        ImVec2 titleFadeRightMax = { titleFadeRightMin.x + titleFadeRightScale, titleSafeAreaMax.y };
+
+        SetHorizontalGradient(titleFadeRightMin, titleFadeRightMax, IM_COL32_WHITE, IM_COL32_WHITE_TRANS);
+    }
 
     SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
     drawList->AddText(g_pFntRodin, fontSize, titlePos, optionColourMotion, config->GetNameLocalised(Config::Language).c_str());
     SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
+
+    if (isTitleRightFade)
+        ResetGradient();
 
     if (isCurrent)
     {
@@ -855,7 +881,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
 
     drawList->PopClipRect();
 
-    if (OptionsMenu::s_flowState == OptionsMenuFlowState::OptionCursor)
+    if (g_optionCount > 3 && OptionsMenu::s_flowState == OptionsMenuFlowState::OptionCursor)
     {
         auto scrollArrowUVs = PIXELS_TO_UV_COORDS(1024, 1024, 500, 450, 50, 50);
         auto scrollArrowScale = Scale(20, true);
