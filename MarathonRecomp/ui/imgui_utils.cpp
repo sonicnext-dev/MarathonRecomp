@@ -247,30 +247,8 @@ void DrawArrows(ImVec2 min, ImVec2 max, double& time)
     auto drawList = ImGui::GetBackgroundDrawList();
 
     constexpr auto FADE_IN_DURATION = 5.0;
-    constexpr auto FADE_OUT_OFFSET = 59.0;
-    constexpr auto FADE_OUT_DURATION = 180.0;
-    constexpr auto LEFT_ARROWS_OFFSET = 27.0;
-    constexpr auto ARROWS_OFFSET = 3.0;
-
-    auto computeArrowLoopMotion = [&](double offset) -> double
-    {
-        auto motionTime = 0.0;
-        auto fadeOutStartMotionTime = ComputeLinearMotion(time, 0, FADE_OUT_OFFSET);
-
-        if (fadeOutStartMotionTime < 1.0)
-        {
-            motionTime = ComputeLinearMotion(time, offset, FADE_IN_DURATION);
-        }
-        else
-        {
-            motionTime = ComputeLinearMotion(time, FADE_OUT_OFFSET, FADE_OUT_DURATION, true);
-
-            if (motionTime <= 0.0)
-                time = ImGui::GetTime();
-        }
-
-        return std::clamp(motionTime, 0.0, 1.0);
-    };
+    constexpr auto FADE_OUT_DURATION = 121.0;
+    constexpr auto ARROWS_OFFSET_FRAMES = 3.0;
 
     auto arrowUVs = PIXELS_TO_UV_COORDS(512, 512, 0, 0, 400, 434);
     auto centre = ImVec2(min.x + ((max.x - min.x) / 2), min.y + ((max.y - min.y) / 2));
@@ -285,26 +263,36 @@ void DrawArrows(ImVec2 min, ImVec2 max, double& time)
 
     const auto leftArrowCount = int((max.x + leftArrowWidth) / leftArrowNextOffset) + 1;
     const auto rightArrowCount = int((max.x + rightArrowWidth) / rightArrowNextOffset) + 1;
+    const auto fadeOutStartTime = (ARROWS_OFFSET_FRAMES * rightArrowCount) + (FADE_IN_DURATION * rightArrowCount) + 30.0;
 
-    auto animDuration = ((FADE_IN_DURATION + FADE_OUT_DURATION) + (LEFT_ARROWS_OFFSET + (leftArrowCount * ARROWS_OFFSET))) + FADE_OUT_OFFSET;
-
-    auto leftArrowOffsetMotionTime = ComputeLinearMotion(time, 0, animDuration);
-    auto leftArrowGlobalOffset = Scale(Lerp(318, 308, leftArrowOffsetMotionTime), true);
-
-    auto rightArrowOffsetMotionTime = ComputeLinearMotion(time, 0, animDuration - 20.0);
-    auto rightArrowGlobalOffset = Scale(Lerp(73, 93, rightArrowOffsetMotionTime), true);
-
-    auto leftBaseY = centre.y - (leftArrowHeight / 2) - Scale(20, true);
-    auto leftEndY = leftBaseY + leftArrowHeight;
-    
-    for (int i = 0; i < leftArrowCount; i++)
+    auto computeArrowLoopMotion = [&](double offset) -> double
     {
-        auto baseX = min.x + (i * leftArrowNextOffset) - leftArrowWidth + leftArrowGlobalOffset;
-        auto endX = baseX + leftArrowWidth;
-        auto opacity = Lerp(45, 5, std::clamp(baseX / max.x, 0.0f, 1.0f)) * computeArrowLoopMotion(LEFT_ARROWS_OFFSET + (ARROWS_OFFSET * (leftArrowCount - i)));
-    
-        drawList->AddImage(g_upTexArrow.get(), { endX, leftBaseY }, { baseX, leftEndY }, GET_UV_COORDS(arrowUVs), IM_COL32(255, 255, 255, opacity));
-    }
+        auto motionTime = 0.0;
+        auto fadeOutStartMotionTime = ComputeMotion(time, 0, fadeOutStartTime);
+
+        if (fadeOutStartMotionTime < 1.0)
+        {
+            motionTime = ComputeMotion(time, offset, FADE_IN_DURATION);
+        }
+        else
+        {
+            motionTime = ComputeMotion(time, fadeOutStartTime, FADE_OUT_DURATION, true);
+
+            if (motionTime <= 0.0)
+                time = ImGui::GetTime();
+        }
+
+        return std::clamp(motionTime, 0.0, 1.0);
+    };
+
+    auto leftArrowsOffsetFrames = ARROWS_OFFSET_FRAMES * (rightArrowCount - 1);
+    auto animDuration = ((FADE_IN_DURATION + FADE_OUT_DURATION) + (leftArrowsOffsetFrames + (ARROWS_OFFSET_FRAMES * leftArrowCount))) + fadeOutStartTime;
+
+    auto leftArrowOffsetMotionTime = ComputeMotion(time, 0, animDuration);
+    auto leftArrowGlobalOffset = Scale(Lerp(318, 298, leftArrowOffsetMotionTime), true);
+
+    auto rightArrowOffsetMotionTime = ComputeMotion(time, 0, animDuration - 20.0);
+    auto rightArrowGlobalOffset = Scale(Lerp(73, 103, rightArrowOffsetMotionTime), true);
 
     auto rightBaseY = centre.y - (rightArrowHeight / 2) - Scale(19, true);
     auto rightEndY = rightBaseY + rightArrowHeight;
@@ -313,9 +301,21 @@ void DrawArrows(ImVec2 min, ImVec2 max, double& time)
     {
         auto baseX = max.x - (i * rightArrowNextOffset) - rightArrowWidth + rightArrowGlobalOffset;
         auto endX = baseX + rightArrowWidth;
-        auto opacity = Lerp(5, 45, std::clamp(baseX / max.x, 0.0f, 1.0f)) * computeArrowLoopMotion(ARROWS_OFFSET * (rightArrowCount - i));
+        auto opacity = Lerp(5, 45, std::clamp(baseX / max.x, 0.0f, 1.0f)) * computeArrowLoopMotion(ARROWS_OFFSET_FRAMES * (rightArrowCount - i));
 
         drawList->AddImage(g_upTexArrow.get(), { baseX, rightBaseY }, { endX, rightEndY }, GET_UV_COORDS(arrowUVs), IM_COL32(255, 255, 255, opacity));
+    }
+
+    auto leftBaseY = centre.y - (leftArrowHeight / 2) - Scale(20, true);
+    auto leftEndY = leftBaseY + leftArrowHeight;
+
+    for (int i = 0; i < leftArrowCount; i++)
+    {
+        auto baseX = min.x + (i * leftArrowNextOffset) - leftArrowWidth + leftArrowGlobalOffset;
+        auto endX = baseX + leftArrowWidth;
+        auto opacity = Lerp(45, 5, std::clamp(baseX / max.x, 0.0f, 1.0f)) * computeArrowLoopMotion(leftArrowsOffsetFrames + (ARROWS_OFFSET_FRAMES * (leftArrowCount - i)));
+
+        drawList->AddImage(g_upTexArrow.get(), { endX, leftBaseY }, { baseX, leftEndY }, GET_UV_COORDS(arrowUVs), IM_COL32(255, 255, 255, opacity));
     }
 }
 
