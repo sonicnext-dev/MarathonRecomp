@@ -71,7 +71,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "System settings" },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "System-Einstellungen" },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "Paramètres système" },
             { ELanguage::Spanish,  "Configuración del sistema" },
             { ELanguage::Italian,  "Impostazioni sistema" }
         }
@@ -82,7 +82,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Adjust system settings." },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Verändere System-Einstellungen." },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "Modifier les paramètres système." },
             { ELanguage::Spanish,  "Ajustar la configuración del sistema." },
             { ELanguage::Italian,  "Modifica le impostazioni di sistema." }
         }
@@ -93,7 +93,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Input settings" },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Eingabe-Einstellungen" },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "Paramètres d'entrée" },
             { ELanguage::Spanish,  "Configuración de entrada" },
             { ELanguage::Italian,  "Impostazioni input" }
         }
@@ -104,7 +104,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Adjust input settings." },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Verändere Eingabe-Einstellungen." },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "Modifier les paramètres d'entrée." },
             { ELanguage::Spanish,  "Ajustar la configuración de entrada." },
             { ELanguage::Italian,  "Modifica le impostazioni input." }
         }
@@ -115,7 +115,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Audio settings" },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Audio-Einstellungen" },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "Paramètres audio" },
             { ELanguage::Spanish,  "Configuración de audio" },
             { ELanguage::Italian,  "Impostazioni audio" }
         }
@@ -126,7 +126,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Adjust audio settings." },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Verändere Audio-Einstellungen." },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "Modifier les paramètres audio." },
             { ELanguage::Spanish,  "Ajustar la configuración de audio." },
             { ELanguage::Italian,  "Modifica le impostazioni audio." }
         }
@@ -137,7 +137,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Video settings" },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Video-Einstellungen" },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "Paramètres vidéo" },
             { ELanguage::Spanish,  "Configuración de vídeo" },
             { ELanguage::Italian,  "Impostazioni video" }
         }
@@ -148,7 +148,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Adjust video settings." },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Verändere Video-Einstellungen." },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "Modifier les paramètres vidéo." },
             { ELanguage::Spanish,  "Ajustar la configuración de vídeo." },
             { ELanguage::Italian,  "Modifica le impostazioni video." }
         }
@@ -159,7 +159,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Debug settings" },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Debug-Einstellungen" },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "Paramètres de débogage" },
             { ELanguage::Spanish,  "Configuración de depuración" },
             { ELanguage::Italian,  "Impostazioni debug" }
         }
@@ -170,7 +170,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Adjust debug settings." },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Verändere Debug-Einstellungen." },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "Modifier les paramètres de débogage." },
             { ELanguage::Spanish,  "Ajustar la configuración de depuración." },
             { ELanguage::Italian,  "Modifica le impostazioni debug." }
         }
@@ -216,7 +216,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "This option is not available during gameplay." },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Diese Einstellung kann während des Spiels nicht verändert werden." },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "Cette option est indisponible en cours de jeu." },
             { ELanguage::Spanish,  "Esta opción no está disponible durante la partida." },
             { ELanguage::Italian,  "Questa opzione non è disponibile durante il gioco." }
         }
@@ -228,7 +228,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "This option is not implemented yet." },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Diese Einstellung wurde noch nicht implementiert." },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "Cette option n'est pas encore implémentée." },
             { ELanguage::Spanish,  "Esta opción aún no está implementada." },
             { ELanguage::Italian,  "Questa opzione non è ancora implementata." }
         }
@@ -299,7 +299,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "The game needs to restart to apply\nthe following changes. OK?\n" },
             { ELanguage::Japanese, "DUMMY\n" },
             { ELanguage::German,   "DUMMY\n" },
-            { ELanguage::French,   "DUMMY\n" },
+            { ELanguage::French,   "Le jeu doit redémarrer pour appliquer\nles modifications suivantes. OK ?\n" },
             { ELanguage::Spanish,  "Se necesita reiniciar el juego para\naplicar los siguientes cambios. ¿OK?\n" },
             { ELanguage::Italian,  "Il gioco deve essere riavviato per\napplicare le seguenti modifiche. OK?\n" }
         }
@@ -616,7 +616,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Exit the installer.\nOK?" },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Die Installation verlassen.\nOK?" },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "Quitter l'installateur.\nOK ?" },
             { ELanguage::Spanish,  "¿Salir del instalador?" },
             { ELanguage::Italian,  "Esci dall'installatore.\nOK?" }
         }
@@ -628,7 +628,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Cancel the installation.\nOK?" },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Die Installation abbrechen.\nOK?" },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "Annuler l'installation.\nOK ?" },
             { ELanguage::Spanish,  "¿Cancelar la instalación?" },
             { ELanguage::Italian,  "Annulla l'installazione.\nOK?" }
         }
@@ -640,7 +640,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Exit the game.\nOK?" },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Das Spiel verlassen.\nOK?" },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "Quitter le jeu.\nOK ?" },
             { ELanguage::Spanish,  "¿Salir del juego?" },
             { ELanguage::Italian,  "Esci dal gioco.\nOK?" }
         }
@@ -710,7 +710,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Failed to allocate game memory.\n\nPlease make sure that:\n\n- You meet the minimum system requirements (8 GB).\n- Your page file is configured with at least 4-8 GB of virtual memory." },
             { ELanguage::Japanese, "ゲームメモリの割り当てに失敗しました\n\n次の点を確認してください：\n\n※最小システム要件（8 GB）を満たしていること\n※ページファイルに少なくとも4～8 GBの仮想メモリが設定されていること" },
             { ELanguage::German,   "Fehler beim Zuweisen des Spielspeichers.\n\nBitte stelle sicher, dass:\n\n- Die Mindestanforderungen für das System erfüllt sind (8 GB).\n- Die Auslagerungsdatei mit mindestens 4-8 GB virtuellem Speicher konfiguriert ist." },
-            { ELanguage::French,   "Échec d'allocation de la mémoire du jeu.\n\nVeuillez vous assurer que :\n\n- Vous disposez de la configuration minimale requise (8 Go).\n- Votre fichier d’échange est configuré avec au moins 4 à 8 Go de mémoire virtuelle." },
+            { ELanguage::French,   "Échec d'allocation de la mémoire du jeu.\n\nVeuillez vous assurer que :\n\n- Vous disposez de la configuration minimale requise (8 Go).\n- Votre fichier d'échange est configuré avec au moins 4 à 8 Go de mémoire virtuelle." },
             { ELanguage::Spanish,  "Fallo al asignar memoria del juego.\n\nPor favor, asegúrate de que:\n\n- Cumples los requisitos mínimos del sistema (8 GB).\n- Tu archivo de páginación está configurado con al menos 4 u 8 GB de memoria virtual." },
             { ELanguage::Italian,  "Impossibile allocare la memoria per il gioco.\n\nAssicurati che:\n\n- Soddisfi i requisiti minimi di sistema (8 GB).\n- Il tuo file di paging sia configurato con almeno 4 o 8 GB di memoria virtuale." }
         }
