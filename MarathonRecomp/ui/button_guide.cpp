@@ -30,7 +30,7 @@ void ButtonGuide::Draw()
     auto windowColour = IM_COL32(255, 255, 255, 134);
 
     auto windowMotionTime = g_isAnimated ? ComputeLinearMotion(g_time, 0, 100) : 1.0;
-    auto windowMotion = std::clamp(float(res.x - Scale(1158.3, true) * windowMotionTime), res.x - windowOffsetX - windowWidth, res.x - g_horzCentre);
+    auto windowMotion = std::clamp(float(res.x - g_horzCentre - Scale(1158.3, true) * windowMotionTime), res.x - windowOffsetX - windowWidth, res.x - g_horzCentre);
 
     ImVec2 windowStretchMin = { windowMotion, res.y - windowOffsetY };
     ImVec2 windowStretchMax = { res.x, windowStretchMin.y + windowHeight };
