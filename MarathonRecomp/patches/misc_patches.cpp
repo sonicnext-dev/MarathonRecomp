@@ -118,7 +118,7 @@ PPC_FUNC(sub_822CE930)
         return;
     }
 
-    if (!Config::ControlTutorial || Config::Antigravity != EAntigravity::X)
+    if (!Config::ControlTutorial || Config::SlidingAttack != ESlidingAttack::X)
     {
         // Get global flag for Sonic's Antigravity being unlocked to remove "hint_all03_h26_so".
         guest_stack_var<Sonicteam::Message::MsgMissionGetGlobalFlag> msgGetSonicAntigravityFlag(6001);

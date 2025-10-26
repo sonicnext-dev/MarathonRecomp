@@ -810,10 +810,10 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
         case OptionsMenuCategory::Input:
             DrawOption(rowCount++, &Config::HorizontalCamera, true);
             DrawOption(rowCount++, &Config::VerticalCamera, true);
-            DrawOption(rowCount++, &Config::Antigravity, true, nullptr, ENUM_VALUE(EAntigravity), false, true);
-            DrawOption(rowCount++, &Config::LightDash, true, nullptr, ENUM_VALUE(ELightDash), false, true);
             DrawOption(rowCount++, &Config::AllowBackgroundInput, true);
             DrawOption(rowCount++, &Config::ControllerIcons, true);
+            DrawOption(rowCount++, &Config::LightDash, true, nullptr, ENUM_VALUE(ELightDash), false, true);
+            DrawOption(rowCount++, &Config::SlidingAttack, true, nullptr, ENUM_VALUE(ESlidingAttack), false, true);
             break;
 
         case OptionsMenuCategory::Audio:

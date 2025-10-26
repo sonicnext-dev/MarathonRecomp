@@ -244,70 +244,14 @@ CONFIG_DEFINE_ENUM_LOCALE(ECameraRotationMode)
     }
 };
 
-CONFIG_DEFINE_LOCALE(Antigravity)
-{
-    { ELanguage::English,  { "Antigravity", "Change how Antigravity is activated." } },
-    { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
-    { ELanguage::German,   { "Anti-Schwerkraft", "Verändert wie Anti-Schwerkraft aktiviert wird." } },
-    { ELanguage::French,   { "Anti-gravité", "Modifier la façon dont anti-gravité est activée." } },
-    { ELanguage::Spanish,  { "Antigravedad", "Cambia cómo se activa la Antigravedad." } },
-    { ELanguage::Italian,  { "Antigravità", "Cambia il modo in cui viene attivata l'Antigravità." } }
-};
-
-CONFIG_DEFINE_ENUM_LOCALE(EAntigravity)
-{
-    {
-        ELanguage::English,
-        {
-            { EAntigravity::B, { "Hold ${picture(button_b)}", "" } },
-            { EAntigravity::X, { "Release ${picture(button_x)}", "" } }
-        }
-    },
-    {
-        ELanguage::Japanese,
-        {
-            { EAntigravity::B, { "DUMMY", "" } },
-            { EAntigravity::X, { "DUMMY", "" } }
-        }
-    },
-    {
-        ELanguage::German,
-        {
-            { EAntigravity::B, { "Halte ${picture(button_b)} gedrückt", "" } },
-            { EAntigravity::X, { "Lasse ${picture(button_x)} los", "" } }
-        }
-    },
-    {
-        ELanguage::French,
-        {
-            { EAntigravity::B, { "Maintenir ${picture(button_b)}", "" } },
-            { EAntigravity::X, { "Relâcher ${picture(button_x)}", "" } }
-        }
-    },
-    {
-        ELanguage::Spanish,
-        {
-            { EAntigravity::B, { "Mantener ${picture(button_b)}", "" } },
-            { EAntigravity::X, { "Soltar ${picture(button_x)}", "" } }
-        }
-    },
-    {
-        ELanguage::Italian,
-        {
-            { EAntigravity::B, { "Tieni premuto ${picture(button_b)}", "" } },
-            { EAntigravity::X, { "Rilascia ${picture(button_x)}", "" } }
-        }
-    }
-};
-
 CONFIG_DEFINE_LOCALE(LightDash)
 {
-    { ELanguage::English,  { "Light Dash", "Change how Light Dash is activated." } },
+    { ELanguage::English,  { "Light Dash", "Change how Light Dash is activated for Sonic and Shadow." } },
     { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
-    { ELanguage::German,   { "Lichtsprint", "Verändere wie der Lichtsprint aktiviert wird." } },
-    { ELanguage::French,   { "Light Dash", "Modifier la façon dont Light Dash est activée." } },
-    { ELanguage::Spanish,  { "Acelerón ligero", "Cambia cómo se activa el Acelerón ligero." } },
-    { ELanguage::Italian,  { "Super spinta", "Cambia il modo in cui viene attivato la Super spinta." } }
+    { ELanguage::German,   { "Lichtsprint", "DUMMY" } },
+    { ELanguage::French,   { "Light Dash", "DUMMY" } },
+    { ELanguage::Spanish,  { "Acelerón ligero", "DUMMY" } },
+    { ELanguage::Italian,  { "Super spinta", "DUMMY" } }
 };
 
 CONFIG_DEFINE_ENUM_LOCALE(ELightDash)
@@ -356,6 +300,62 @@ CONFIG_DEFINE_ENUM_LOCALE(ELightDash)
     }
 };
 
+CONFIG_DEFINE_LOCALE(SlidingAttack)
+{
+    { ELanguage::English,  { "Sliding Attack", "Change how the Sliding Attack is activated for Sonic." } },
+    { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
+    { ELanguage::German,   { "DUMMY", "DUMMY" } },
+    { ELanguage::French,   { "DUMMY", "DUMMY" } },
+    { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
+    { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
+};
+
+CONFIG_DEFINE_ENUM_LOCALE(ESlidingAttack)
+{
+    {
+        ELanguage::English,
+        {
+            { ESlidingAttack::B, { "Hold ${picture(button_b)}", "" } },
+            { ESlidingAttack::X, { "Release ${picture(button_x)}", "" } }
+        }
+    },
+    {
+        ELanguage::Japanese,
+        {
+            { ESlidingAttack::B, { "DUMMY", "" } },
+            { ESlidingAttack::X, { "DUMMY", "" } }
+        }
+    },
+    {
+        ELanguage::German,
+        {
+            { ESlidingAttack::B, { "Halte ${picture(button_b)} gedrückt", "" } },
+            { ESlidingAttack::X, { "Lasse ${picture(button_x)} los", "" } }
+        }
+    },
+    {
+        ELanguage::French,
+        {
+            { ESlidingAttack::B, { "Maintenir ${picture(button_b)}", "" } },
+            { ESlidingAttack::X, { "Relâcher ${picture(button_x)}", "" } }
+        }
+    },
+    {
+        ELanguage::Spanish,
+        {
+            { ESlidingAttack::B, { "Mantener ${picture(button_b)}", "" } },
+            { ESlidingAttack::X, { "Soltar ${picture(button_x)}", "" } }
+        }
+    },
+    {
+        ELanguage::Italian,
+        {
+            { ESlidingAttack::B, { "Tieni premuto ${picture(button_b)}", "" } },
+            { ESlidingAttack::X, { "Rilascia ${picture(button_x)}", "" } }
+        }
+    }
+};
+
 CONFIG_DEFINE_LOCALE(AllowBackgroundInput)
 {
     { ELanguage::English,  { "Allow Background Input", "Allow controller input whilst the game window is unfocused." } },
@@ -368,7 +368,7 @@ CONFIG_DEFINE_LOCALE(AllowBackgroundInput)
 
 CONFIG_DEFINE_LOCALE(ControllerIcons)
 {
-    { ELanguage::English, { "Controller Icons", "Change the icons to match your controller." } },
+    { ELanguage::English,  { "Controller Icons", "Change the icons to match your controller." } },
     { ELanguage::Japanese, { "コントローラーアイコン", "ゲーム内のコントローラーアイコンを変更できます" } },
     { ELanguage::German,   { "Controllersymbole", "Ändere die Controllersymbole, um sie auf dein Modell anzupassen." } },
     { ELanguage::French,   { "Icône des boutons", "Modifie les icônes pour les faire correspondre à votre manette." } },

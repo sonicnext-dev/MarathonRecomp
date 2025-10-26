@@ -26,7 +26,7 @@ void RemapAntigravityEnter(PPCRegister& r11, PPCRegister& r28)
 {
     auto state = 0x800;
 
-    if (Config::Antigravity == EAntigravity::B)
+    if (Config::SlidingAttack == ESlidingAttack::B)
         state = INPUT_LISTENER_B_DOWN;
 
     r11.u64 = (r28.u32 & state) != 0;
@@ -34,7 +34,7 @@ void RemapAntigravityEnter(PPCRegister& r11, PPCRegister& r28)
 
 void RemapAntigravityExit(PPCRegister& r11, PPCRegister& r30)
 {
-    if (Config::Antigravity == EAntigravity::X)
+    if (Config::SlidingAttack == ESlidingAttack::X)
         return;
 
     r11.u64 = (r30.u32 & INPUT_LISTENER_B_DOWN) == 0;

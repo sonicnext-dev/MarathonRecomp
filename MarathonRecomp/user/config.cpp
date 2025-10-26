@@ -26,16 +26,16 @@ CONFIG_DEFINE_ENUM_TEMPLATE(ECameraRotationMode)
     { "Reverse", ECameraRotationMode::Reverse }
 };
 
-CONFIG_DEFINE_ENUM_TEMPLATE(EAntigravity)
-{
-    { "B", EAntigravity::B },
-    { "X", EAntigravity::X }
-};
-
 CONFIG_DEFINE_ENUM_TEMPLATE(ELightDash)
 {
     { "X", ELightDash::X },
     { "Y", ELightDash::Y }
+};
+
+CONFIG_DEFINE_ENUM_TEMPLATE(ESlidingAttack)
+{
+    { "B", ESlidingAttack::B },
+    { "X", ESlidingAttack::X }
 };
 
 CONFIG_DEFINE_ENUM_TEMPLATE(EControllerIcons)

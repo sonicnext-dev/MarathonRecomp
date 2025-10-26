@@ -50,16 +50,16 @@ enum class ECameraRotationMode : uint32_t
     Reverse
 };
 
-enum class EAntigravity : uint32_t
-{
-    B,
-    X
-};
-
 enum class ELightDash : uint32_t
 {
     X,
     Y
+};
+
+enum class ESlidingAttack : uint32_t
+{
+    B,
+    X
 };
 
 enum class EControllerIcons : uint32_t
