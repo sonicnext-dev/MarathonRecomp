@@ -1218,7 +1218,6 @@ void OptionsMenu::Init()
 
 void OptionsMenu::Open(bool isPause)
 {
-    // TODO: open with main menu options description text to fade into category description.
     s_commonMenu = CommonMenu(Localise("Options_Header_Name"), "", isPause);
     s_commonMenu.ReduceDraw = !isPause;
 

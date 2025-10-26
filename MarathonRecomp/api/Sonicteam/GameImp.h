@@ -2,6 +2,7 @@
 
 #include <Marathon.inl>
 #include <boost/smart_ptr/shared_ptr.h>
+#include <Sonicteam/Mission/Core.h>
 #include <Sonicteam/SoX/Audio/Cue.h>
 #include <Sonicteam/SoX/Physics/World.h>
 #include <Sonicteam/SoX/Scenery/Camera.h>
@@ -81,7 +82,9 @@ namespace Sonicteam
         xpointer<SoX::Audio::Cue> m_pBgmCue;
         MARATHON_INSERT_PADDING(0x36C);
         xpointer<TextBook> m_pHintTextBook;
-        MARATHON_INSERT_PADDING(0x2AC);
+        MARATHON_INSERT_PADDING(4);
+        xpointer<Mission::Core> m_pMissionCore;
+        MARATHON_INSERT_PADDING(0x2A4);
         SoX::RefSharedPointer<SoX::Physics::World> m_spPhysicsWorld;
         xpointer<void> m_pMyCollisionFilter;
 

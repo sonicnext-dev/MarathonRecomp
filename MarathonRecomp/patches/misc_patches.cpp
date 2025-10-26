@@ -108,7 +108,9 @@ void PedestrianAnimationLOD(PPCRegister& val)
 PPC_FUNC_IMPL(__imp__sub_822CE930);
 PPC_FUNC(sub_822CE930)
 {
-    auto pCommonObjectHint = (Sonicteam::CommonObjectHint*)(base + ctx.r3.u32);
+    auto* pCommonObjectHint = (Sonicteam::CommonObjectHint*)(base + ctx.r3.u32);
+    auto* pGame = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->GetGame();
+    auto& rMessageName = pCommonObjectHint->m_MessageName;
 
     if (!Config::Hints && pCommonObjectHint->m_Type == Sonicteam::CommonObjectHint::CommonObjectHintType_HintRing)
     {
@@ -116,12 +118,47 @@ PPC_FUNC(sub_822CE930)
         return;
     }
 
+    if (!Config::ControlTutorial || Config::Antigravity != EAntigravity::X)
+    {
+        // Get global flag for Sonic's Antigravity being unlocked to remove "hint_all03_h26_so".
+        guest_stack_var<Sonicteam::Message::MsgMissionGetGlobalFlag> msgGetSonicAntigravityFlag(6001);
+        pGame->m_pMissionCore->ProcessMessage(msgGetSonicAntigravityFlag.get());
+
+        if (msgGetSonicAntigravityFlag->FlagValue != 0 && strcmp(rMessageName, "hint_twn01_e02_tl") == 0)
+        {
+            pCommonObjectHint->Destroy();
+            return;
+        }
+    }
+
+    if (!Config::ControlTutorial || Config::LightDash != ELightDash::X)
+    {
+        // Get global flag for Sonic's Light Dash being unlocked to remove "hint_twn01_e01_tl".
+        guest_stack_var<Sonicteam::Message::MsgMissionGetGlobalFlag> msgGetSonicLightDashFlag(6000);
+        pGame->m_pMissionCore->ProcessMessage(msgGetSonicLightDashFlag.get());
+
+        // Get global flag for Shadow's Light Dash being unlocked to remove "hint_twn01_e44_rg".
+        guest_stack_var<Sonicteam::Message::MsgMissionGetGlobalFlag> msgGetShadowLightDashFlag(6012);
+        pGame->m_pMissionCore->ProcessMessage(msgGetShadowLightDashFlag.get());
+
+        auto isSonicLightDashHint = msgGetSonicLightDashFlag->FlagValue != 0 && strcmp(rMessageName, "hint_twn01_e00_tl") == 0;
+        auto isShadowLightDashHint = msgGetShadowLightDashFlag->FlagValue != 0 && strcmp(rMessageName, "hint_twn01_e43_rg") == 0;
+
+        if (isSonicLightDashHint || isShadowLightDashHint ||
+            strcmp(rMessageName, "hint_all03_h00_so") == 0 ||
+            strcmp(rMessageName, "hint_all03_h31_so") == 0)
+        {
+            pCommonObjectHint->Destroy();
+            return;
+        }
+    }
+
     if (!Config::ControlTutorial)
     {
         guest_stack_var<int> stack{};
 
         auto pspTextCard = GuestToHostFunction<boost::shared_ptr<Sonicteam::TextCard>*>(sub_825ECB48,
-            stack.get(), App::s_pApp->GetGame()->m_pHintTextBook.get(), (const char*)&pCommonObjectHint->m_MessageName);
+            stack.get(), App::s_pApp->GetGame()->m_pHintTextBook.get(), (const char*)rMessageName);
 
         if (auto pTextCard = pspTextCard->get())
         {
