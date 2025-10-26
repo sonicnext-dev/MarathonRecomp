@@ -847,28 +847,28 @@ CONFIG_DEFINE_ENUM_LOCALE(ECutsceneAspectRatio)
         ELanguage::German,
         {
             { ECutsceneAspectRatio::Original, { "Original", "Original: Behält die Zwischensequenzen in ihrem originalen 16:9 Seitenverhältnis." } },
-            { ECutsceneAspectRatio::Unlocked, { "Entsperrt", "Entsperrt: Erlaubt Zwischensequenzen ihr Seitenverhältnis der Fenstergröße anzupassen.\n\nWARNUNG: Diese Option kann zu visuellen Fehlern außerhalb der Grenzen des ursprünglichen Seitenverhältnisses führen." } }
+            { ECutsceneAspectRatio::Unlocked, { "Entsperrt", "Entsperrt: Erlaubt Zwischensequenzen ihr Seitenverhältnis der Fenstergröße anzupassen. WARNUNG: Diese Option kann zu visuellen Fehlern außerhalb der Grenzen des ursprünglichen Seitenverhältnisses führen." } }
         }
     },
     {
         ELanguage::French,
         {
             { ECutsceneAspectRatio::Original, { "Original", "Original : force les cinématiques dans leur format 16:9 d'origine." } },
-            { ECutsceneAspectRatio::Unlocked, { "Libre", "Libre : permet aux cinématiques d'adapter leur format d'image à la taille de la fenêtre.\n\nATTENTION : au delà du format 16:9 d'origine, des bugs visuels apparaitront." } },
+            { ECutsceneAspectRatio::Unlocked, { "Libre", "Libre : permet aux cinématiques d'adapter leur format d'image à la taille de la fenêtre. ATTENTION : au delà du format 16:9 d'origine, des bugs visuels apparaitront." } },
         }
     },
     {
         ELanguage::Spanish,
         {
             { ECutsceneAspectRatio::Original, { "Original", "Original: muestra las cinemáticas en su relación de aspecto original de 16:9." } },
-            { ECutsceneAspectRatio::Unlocked, { "Desbloqueado", "Desbloqueado: permite que las cinemáticas ajusten su relación de aspecto al tamaño de la ventana.\n\nADVERTENCIA: esto introducirá rarezas visuales más allá de la relación de aspecto original de 16:9." } },
+            { ECutsceneAspectRatio::Unlocked, { "Desbloqueado", "Desbloqueado: permite que las cinemáticas ajusten su relación de aspecto al tamaño de la ventana. ADVERTENCIA: esto introducirá rarezas visuales más allá de la relación de aspecto original de 16:9." } },
         }
     },
     {
         ELanguage::Italian,
         {
             { ECutsceneAspectRatio::Original, { "Originale", "Originale: blocca il rapporto d'aspetto dei filmati a 16:9." } },
-            { ECutsceneAspectRatio::Unlocked, { "Sbloccato", "Sbloccato: il rapporto d'aspetto verrà regolato in base alle dimensioni della finestra.\n\nATTENZIONE: questa opzione potrebbe causare dei problemi visivi se il rapporto d'aspetto è oltre 16:9." } }
+            { ECutsceneAspectRatio::Unlocked, { "Sbloccato", "Sbloccato: il rapporto d'aspetto verrà regolato in base alle dimensioni della finestra. ATTENZIONE: questa opzione potrebbe causare dei problemi visivi se il rapporto d'aspetto è oltre 16:9." } }
         }
     }
 };

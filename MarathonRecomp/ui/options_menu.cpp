@@ -349,15 +349,25 @@ static void DrawOption
     drawList->AddImage(g_upTexMainMenu8.get(), titleBgStretchMin, titleBgStretchMax, GET_UV_COORDS(bgStretchUVs), bgColour);
     ResetGradient();
 
+    auto titleText = config->GetNameLocalised(Config::Language).c_str();
+    auto titleTextSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, titleText);
+
+    auto titleFadeRightScale = Scale(40, true);
+    auto titleFadeRightOffsetX = Scale(15, true);
+    auto scrollArrowOffsetX = clipRectMax.x - Scale(84, true) - BlackBar::s_pillarboxWidth;
+
     ImVec2 titlePos = { titleBgEdgeMin.x + Scale(51, true), titleBgEdgeMin.y + Scale(8, true) };
+    ImVec2 titleSafeAreaMin = { titleBgEdgeMax.x, titleBgEdgeMin.y };
+    ImVec2 titleSafeAreaMax = { scrollArrowOffsetX - titleFadeRightOffsetX, titleBgEdgeMax.y };
+
     auto isTitleRightFade = !isMiddleRow && OptionsMenu::s_flowState == OptionsMenuFlowState::OptionCursor;
+
+    // Don't fade right side of title if it fits within the safe area.
+    if (titleSafeAreaMax.x - titleSafeAreaMin.x >= titleTextSize.x)
+        isTitleRightFade = false;
 
     if (isTitleRightFade)
     {
-        auto titleFadeRightScale = Scale(30, true);
-
-        ImVec2 titleSafeAreaMin = { titleBgEdgeMax.x, titleBgEdgeMin.y };
-        ImVec2 titleSafeAreaMax = { titleSafeAreaMin.x + Scale(480, true), titleBgEdgeMax.y };
         ImVec2 titleFadeRightMin = { titleSafeAreaMax.x - titleFadeRightScale, titleSafeAreaMin.y };
         ImVec2 titleFadeRightMax = { titleFadeRightMin.x + titleFadeRightScale, titleSafeAreaMax.y };
 
@@ -365,7 +375,7 @@ static void DrawOption
     }
 
     SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
-    drawList->AddText(g_pFntRodin, fontSize, titlePos, optionColourMotion, config->GetNameLocalised(Config::Language).c_str());
+    drawList->AddText(g_pFntRodin, fontSize, titlePos, optionColourMotion, titleText);
     SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
 
     if (isTitleRightFade)
@@ -884,6 +894,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
     if (g_optionCount > 3 && OptionsMenu::s_flowState == OptionsMenuFlowState::OptionCursor)
     {
         auto scrollArrowUVs = PIXELS_TO_UV_COORDS(1024, 1024, 500, 450, 50, 50);
+        auto scrollArrowOffsetX = Scale(64, true);
         auto scrollArrowScale = Scale(20, true);
         auto scrollArrowAlphaMotionInTime = ComputeLinearMotion(g_scrollArrowsTime, 0, 3);
         auto scrollArrowAlphaMotionPauseTime = ComputeLinearMotion(g_scrollArrowsTime, 3, 11);
@@ -908,7 +919,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
 
         auto scrollArrowColourMotion = IM_COL32(255, 255, 255, scrollArrowAlphaMotion);
 
-        ImVec2 scrollArrowTopMin = { max.x - scrollArrowScale - Scale(64, true) - BlackBar::s_pillarboxWidth, min.y + Scale(12, true) };
+        ImVec2 scrollArrowTopMin = { max.x - scrollArrowScale - scrollArrowOffsetX - BlackBar::s_pillarboxWidth, min.y + Scale(12, true) };
         ImVec2 scrollArrowTopMax = { scrollArrowTopMin.x + scrollArrowScale, scrollArrowTopMin.y + scrollArrowScale };
         ImVec2 scrollArrowBottomMin = { scrollArrowTopMin.x, max.y - scrollArrowScale - Scale(16, true) };
         ImVec2 scrollArrowBottomMax = { scrollArrowTopMax.x, scrollArrowBottomMin.y + scrollArrowScale };
@@ -963,7 +974,7 @@ void OptionsMenu::Draw()
     auto* drawList = ImGui::GetBackgroundDrawList();
     auto& res = ImGui::GetIO().DisplaySize;
 
-    ImVec2 min = { g_horzCentre, g_vertCentre };
+    ImVec2 min = { g_horzCentre + g_aspectRatioNarrowMargin, g_vertCentre };
     ImVec2 max = { res.x - min.x, res.y - min.y };
 
     auto alphaMotionTime = s_isPause ? ComputeLinearMotion(g_stateTime, 0, 10, s_state == OptionsMenuState::Closing) : 0.0;
@@ -984,8 +995,8 @@ void OptionsMenu::Draw()
     {
         auto horzMargin = Scale(128, true);
 
-        ImVec2 footerClipMin = { min.x + horzMargin, res.y - min.y - Scale(152, true) };
-        ImVec2 footerClipMax = { res.x - min.x - horzMargin, res.y - min.y - Scale(107, true) };
+        ImVec2 footerClipMin = { g_horzCentre + horzMargin, res.y - g_vertCentre - Scale(152, true) };
+        ImVec2 footerClipMax = { res.x - g_horzCentre - horzMargin, res.y - g_vertCentre - Scale(107, true) };
 
         drawList->PushClipRect(footerClipMin, footerClipMax);
         drawBackground();
