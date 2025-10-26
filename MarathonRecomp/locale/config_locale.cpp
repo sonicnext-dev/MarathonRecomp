@@ -249,9 +249,9 @@ CONFIG_DEFINE_LOCALE(LightDash)
     { ELanguage::English,  { "Light Dash", "Change how Light Dash is activated for Sonic and Shadow." } },
     { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
     { ELanguage::German,   { "Lichtsprint", "DUMMY" } },
-    { ELanguage::French,   { "Light Dash", "DUMMY" } },
-    { ELanguage::Spanish,  { "Acelerón ligero", "DUMMY" } },
-    { ELanguage::Italian,  { "Super spinta", "DUMMY" } }
+    { ELanguage::French,   { "Course éclair", "Modifier la façon dont Course éclair est activée pour Sonic et Shadow." } },
+    { ELanguage::Spanish,  { "Acelerón ligero", "Cambia cómo se activa el acelerón ligero para Sonic y Shadow." } },
+    { ELanguage::Italian,  { "Super spinta", "Cambia il modo in cui viene attivata la Super spinta per Sonic e Shadow." } }
 };
 
 CONFIG_DEFINE_ENUM_LOCALE(ELightDash)
@@ -305,9 +305,9 @@ CONFIG_DEFINE_LOCALE(SlidingAttack)
     { ELanguage::English,  { "Sliding Attack", "Change how the Sliding Attack is activated for Sonic." } },
     { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
     { ELanguage::German,   { "DUMMY", "DUMMY" } },
-    { ELanguage::French,   { "DUMMY", "DUMMY" } },
-    { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
-    { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
+    { ELanguage::French,   { "Attaque-dérapage", "Modifier la façon dont l'Attaque-dérapage est activée pour Sonic." } },
+    { ELanguage::Spanish,  { "Ataque derrape", "Cambia cómo se activa el ataque derrape para Sonic." } },
+    { ELanguage::Italian,  { "Scivolata", "Cambia il modo in cui viene attivata la Scivolata per Sonic." } }
 };
 
 CONFIG_DEFINE_ENUM_LOCALE(ESlidingAttack)
