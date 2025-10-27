@@ -1066,10 +1066,45 @@ void OptionsMenu::Draw()
 
         case OptionsMenuState::Closing:
         {
-            if (s_commonMenu.Close())
+            auto closingTime = s_commonMenu.Close();
+
+            static bool s_isProcessedMessages{};
+
+            if (closingTime >= 0.5)
             {
-                ButtonGuide::Close();
-                s_isVisible = false;
+                if (closingTime >= 1.0)
+                {
+                    ButtonGuide::Close();
+
+                    s_isProcessedMessages = false;
+
+                    s_pMainMenuTask = nullptr;
+                    s_isVisible = false;
+
+                    break;
+                }
+
+                if (!s_isProcessedMessages && s_pMainMenuTask)
+                {
+                    guest_stack_var<Sonicteam::Message::MsgHUDMainMenuSetCursor> msgHUDMainMenuSetCursor
+                    (
+                        Sonicteam::HUDMainMenu::HUDMainMenuState_MainCursorIntro,
+                        s_pMainMenuTask->m_SelectedIndex
+                    );
+
+                    // Play cursor intro animation.
+                    s_pMainMenuTask->m_pHUDMainMenu->ProcessMessage(msgHUDMainMenuSetCursor.get());
+
+                    guest_stack_var<Sonicteam::Message::MsgHUDMainMenuTransition> msgHUDMainMenuTransition
+                    (
+                        Sonicteam::HUDMainMenu::HUDMainMenuState_OptionsIntro, 3
+                    );
+
+                    // Play options -> main menu transition.
+                    s_pMainMenuTask->m_pHUDMainMenu->ProcessMessage(msgHUDMainMenuTransition.get());
+
+                    s_isProcessedMessages = true;
+                }
             }
 
             break;
@@ -1256,7 +1291,9 @@ void OptionsMenu::Close()
         s_pBgmCue = nullptr;
     }
 
-    ButtonGuide::Close();
+    if (s_isPause)
+        ButtonGuide::Close();
+
     Config::Save();
 }
 

@@ -361,7 +361,7 @@ void CommonMenu::Open()
     m_descTime = m_time;
 }
 
-bool CommonMenu::Close(bool isAnimated)
+double CommonMenu::Close(bool isAnimated)
 {
     if (!m_isClosing)
     {
@@ -371,7 +371,7 @@ bool CommonMenu::Close(bool isAnimated)
         m_descTime = m_time;
     }
 
-    return isAnimated ? ComputeLinearMotion(m_time, 0, ANIMATION_DURATION) >= 1.0 : true;
+    return isAnimated ? ComputeLinearMotion(m_time, 0, ANIMATION_DURATION) : 1.0;
 }
 
 void CommonMenu::SetTitle(std::string title, bool isAnimated)

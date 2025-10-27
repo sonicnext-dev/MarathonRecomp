@@ -7,12 +7,14 @@ PPC_FUNC_IMPL(__imp__sub_824FFCF8);
 PPC_FUNC(sub_824FFCF8)
 {
     auto pMainMenuTask = (Sonicteam::MainMenuTask*)(base + ctx.r3.u32);
+    auto pHUDMainMenu = pMainMenuTask->m_pHUDMainMenu;
 
 #ifdef MARATHON_RECOMP_OPTIONS_MENU
     if (pMainMenuTask->m_State == Sonicteam::MainMenuTask::MainMenuState_MainMenu && pMainMenuTask->m_SelectedIndex == 3)
     {
         if (!OptionsMenu::s_isVisible && (pMainMenuTask->m_PressedButtons.get() & 0x10) != 0)
         {
+            OptionsMenu::s_pMainMenuTask = pMainMenuTask;
             OptionsMenu::Open();
     
             Game_PlaySound("main_deside");
@@ -27,7 +29,7 @@ PPC_FUNC(sub_824FFCF8)
             );
 
             // Play cursor outro animation.
-            pMainMenuTask->m_pHUDMainMenu->ProcessMessage(msgHUDMainMenuSetCursor.get());
+            pHUDMainMenu->ProcessMessage(msgHUDMainMenuSetCursor.get());
 
             guest_stack_var<Sonicteam::Message::MsgHUDMainMenuTransition> msgHUDMainMenuTransition
             (
@@ -35,19 +37,21 @@ PPC_FUNC(sub_824FFCF8)
             );
 
             // Play main menu -> options transition.
-            pMainMenuTask->m_pHUDMainMenu->ProcessMessage(msgHUDMainMenuTransition.get());
+            pHUDMainMenu->ProcessMessage(msgHUDMainMenuTransition.get());
         }
     }
 
     static bool s_isReturningFromOptionsMenu{};
-    static bool s_isProcessedExitMessages{};
     static float s_buttonWindowTextOffsetY{};
 
     auto& rButtonWindowTextOffsetY = pMainMenuTask->m_pButtonWindowTask->m_pHUDButtonWindow->m_pHudTextParts->m_OffsetY;
 
-    // Hide original "OPTIONS" title.
-    if (auto pOptionsSelect = pMainMenuTask->m_pHUDMainMenu->m_pHudTextRoot->Find("options_select", "options"))
-        pOptionsSelect->m_Priority = -1.0f;
+    if (pHUDMainMenu)
+    {
+        // Hide original "OPTIONS" title.
+        if (auto pOptionsSelect = pHUDMainMenu->m_pHudTextRoot->Find("options_select", "options"))
+            pOptionsSelect->m_Priority = -1.0f;
+    }
 
     if (OptionsMenu::s_isVisible)
     {
@@ -71,49 +75,23 @@ PPC_FUNC(sub_824FFCF8)
 
             case OptionsMenuState::Closing:
                 s_isReturningFromOptionsMenu = true;
-                s_isProcessedExitMessages = false;
                 break;
         }
     }
-    else
+    else if (s_isReturningFromOptionsMenu)
     {
-        if (s_isReturningFromOptionsMenu)
+        // Restore original button window text offset.
+        rButtonWindowTextOffsetY = s_buttonWindowTextOffsetY;
+
+        if ((pHUDMainMenu->m_CursorFlags.get() & 2) != 0)
         {
-            if (!s_isProcessedExitMessages)
-            {
-                // Restore original button window text offset.
-                rButtonWindowTextOffsetY = s_buttonWindowTextOffsetY;
-
-                guest_stack_var<Sonicteam::Message::MsgHUDMainMenuSetCursor> msgHUDMainMenuSetCursor
-                (
-                    Sonicteam::HUDMainMenu::HUDMainMenuState_MainCursorIntro,
-                    pMainMenuTask->m_SelectedIndex
-                );
-
-                // Play cursor intro animation.
-                pMainMenuTask->m_pHUDMainMenu->ProcessMessage(msgHUDMainMenuSetCursor.get());
-
-                guest_stack_var<Sonicteam::Message::MsgHUDMainMenuTransition> msgHUDMainMenuTransition
-                (
-                    Sonicteam::HUDMainMenu::HUDMainMenuState_OptionsIntro, 3
-                );
-
-                // Play options -> main menu transition.
-                pMainMenuTask->m_pHUDMainMenu->ProcessMessage(msgHUDMainMenuTransition.get());
-
-                s_isProcessedExitMessages = true;
-            }
-
-            if ((pMainMenuTask->m_pHUDMainMenu->m_CursorFlags.get() & 2) != 0)
-            {
-                // Prevent inputs leaking from the
-                // options menu to the main menu.
-                pMainMenuTask->m_PressedButtons = 0;
-            }
-            else
-            {
-                s_isReturningFromOptionsMenu = false;
-            }
+            // Prevent inputs leaking from the
+            // options menu to the main menu.
+            pMainMenuTask->m_PressedButtons = 0;
+        }
+        else
+        {
+            s_isReturningFromOptionsMenu = false;
         }
     }
 #endif

@@ -58,7 +58,7 @@ public:
 
     void Draw();
     void Open();
-    bool Close(bool isAnimated = true);
+    double Close(bool isAnimated = true);
     void SetTitle(std::string title, bool isAnimated = true);
     void SetDescription(std::string desc, bool isAnimated = true);
 };
