@@ -1107,6 +1107,7 @@ void OptionsMenu::Draw()
                 }
                 else
                 {
+                    s_commonMenu.SetDescription(GetCategoryDescription((OptionsMenuCategory)g_categoryIndex));
                     s_state = OptionsMenuState::Opening;
                 }
 
