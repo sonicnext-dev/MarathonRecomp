@@ -18,14 +18,16 @@ void CommonMenu::Draw()
 
     auto borderMotionTime = PlayTransitions ? ComputeLinearMotion(m_time, 0, 10, m_isClosing) : 1.0;
 
-    auto gradientTop = IM_COL32(0, 103, 255, 255);
-    auto gradientBottom = IM_COL32(0, 92, 229, 255);
-    auto gradientHeight = Scale(126, true);
-    auto gradientMotion = Lerp(min.y - gradientHeight, min.y, borderMotionTime);
+    auto topPlateCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 154, 250, 144);
+    auto topPlateLeftStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 2, 154, 150, 144);
+    auto topPlateRightStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 250, 154, 750, 144);
+    auto topPlateHeight = Scale(145, true);
+    auto topPlateMotion = Lerp(min.y - topPlateHeight, min.y - Scale(0.2, true), borderMotionTime);
 
-    // Draw gradient to fill gap between red strip and top metal plates.
-    if (!ReduceDraw)
-        drawList->AddRectFilledMultiColor({ 0.0f, gradientMotion }, { res.x, gradientMotion + gradientHeight }, gradientTop, gradientTop, gradientBottom, gradientBottom);
+    ImVec2 topPlateCornerMin = { min.x - Scale(46, true), topPlateMotion };
+    ImVec2 topPlateCornerMax = { topPlateCornerMin.x + Scale(250, true), topPlateMotion + topPlateHeight };
+    ImVec2 topPlateStretchMin = { topPlateCornerMax.x, topPlateCornerMin.y };
+    ImVec2 topPlateStretchMax = { res.x, topPlateCornerMax.y };
 
     auto redStripCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 301, 300, 50);
     auto redStripLeftStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 301, 150, 50);
@@ -33,11 +35,19 @@ void CommonMenu::Draw()
     auto redStripColour = IM_COL32(168, 15, 15, 255);
     auto redStripOffsetY = Scale(81.5, true);
     auto redStripHeight = Scale(50, true);
-    auto redStripMotion = Lerp(min.y - redStripHeight, min.y + redStripOffsetY, borderMotionTime);
+    auto redStripMotion = topPlateMotion + redStripOffsetY;
 
     // TODO: account for metal plate height in motion.
     ImVec2 redStripCornerMin = { min.x - Scale(43.5, true), redStripMotion };
     ImVec2 redStripCornerMax = { redStripCornerMin.x + Scale(300, true), redStripMotion + redStripHeight };
+
+    auto gradientTop = IM_COL32(0, 103, 255, 255);
+    auto gradientBottom = IM_COL32(0, 92, 229, 255);
+    auto gradientHeight = Scale(120, true);
+
+    // Draw gradient to fill gap between red strip and top metal plates.
+    if (!ReduceDraw)
+        drawList->AddRectFilledMultiColor({ 0.0f, topPlateMotion }, { res.x, topPlateMotion + gradientHeight }, gradientTop, gradientTop, gradientBottom, gradientBottom);
 
     if (!ReduceDraw)
     {
@@ -117,17 +127,6 @@ void CommonMenu::Draw()
 
     if (!ReduceDraw)
     {
-        auto topPlateCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 0, 154, 250, 144);
-        auto topPlateLeftStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 2, 154, 150, 144);
-        auto topPlateRightStretchUVs = PIXELS_TO_UV_COORDS(1024, 1024, 250, 154, 750, 144);
-        auto topPlateHeight = Scale(145, true);
-        auto topPlateMotion = Lerp(min.y - topPlateHeight, min.y - Scale(0.2, true), borderMotionTime);
-
-        ImVec2 topPlateCornerMin = { min.x - Scale(46, true), topPlateMotion };
-        ImVec2 topPlateCornerMax = { topPlateCornerMin.x + Scale(250, true), topPlateMotion + topPlateHeight };
-        ImVec2 topPlateStretchMin = { topPlateCornerMax.x, topPlateCornerMin.y };
-        ImVec2 topPlateStretchMax = { res.x, topPlateCornerMax.y };
-
         // Draw top left corner metal plate.
         drawList->AddImage(g_upTexMainMenu1.get(), topPlateCornerMin, topPlateCornerMax, GET_UV_COORDS(topPlateCornerUVs));
 
