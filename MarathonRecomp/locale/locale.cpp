@@ -55,21 +55,10 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         }
     },
     {
-        "Options_MainMenu_Description",
-        {
-            { ELanguage::English,  "Options: Adjust various game settings" },
-            { ELanguage::Japanese, "オプション：各種ゲームの設定を行います" },
-            { ELanguage::German,   "Optionen: Spieleinstellungen ändern" },
-            { ELanguage::French,   "Options : effectuer divers paramétrages" },
-            { ELanguage::Spanish,  "Opciones: cambiar opciones de juego. " },
-            { ELanguage::Italian,  "Opzioni: regola impostazioni di gioco." }
-        }
-    },
-    {
         "Options_Category_System",
         {
             { ELanguage::English,  "System settings" },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "システム設定" },
             { ELanguage::German,   "System-Einstellungen" },
             { ELanguage::French,   "Paramètres système" },
             { ELanguage::Spanish,  "Configuración del sistema" },
@@ -80,7 +69,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Options_Desc_Category_System",
         {
             { ELanguage::English,  "Adjust system settings." },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "システムの設定変更します" },
             { ELanguage::German,   "Verändere System-Einstellungen." },
             { ELanguage::French,   "Modifier les paramètres système." },
             { ELanguage::Spanish,  "Ajustar la configuración del sistema." },
@@ -91,7 +80,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Options_Category_Input",
         {
             { ELanguage::English,  "Input settings" },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "入力設定" },
             { ELanguage::German,   "Eingabe-Einstellungen" },
             { ELanguage::French,   "Paramètres d'entrée" },
             { ELanguage::Spanish,  "Configuración de entrada" },
@@ -102,7 +91,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Options_Desc_Category_Input",
         {
             { ELanguage::English,  "Adjust input settings." },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "入力の設定変更します" },
             { ELanguage::German,   "Verändere Eingabe-Einstellungen." },
             { ELanguage::French,   "Modifier les paramètres d'entrée." },
             { ELanguage::Spanish,  "Ajustar la configuración de entrada." },
@@ -113,7 +102,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Options_Category_Audio",
         {
             { ELanguage::English,  "Audio settings" },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "オーディオ設定" },
             { ELanguage::German,   "Audio-Einstellungen" },
             { ELanguage::French,   "Paramètres audio" },
             { ELanguage::Spanish,  "Configuración de audio" },
@@ -124,7 +113,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Options_Desc_Category_Audio",
         {
             { ELanguage::English,  "Adjust audio settings." },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "オーディオの設定を変更します" },
             { ELanguage::German,   "Verändere Audio-Einstellungen." },
             { ELanguage::French,   "Modifier les paramètres audio." },
             { ELanguage::Spanish,  "Ajustar la configuración de audio." },
@@ -135,7 +124,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Options_Category_Video",
         {
             { ELanguage::English,  "Video settings" },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "ビデオ設定" },
             { ELanguage::German,   "Video-Einstellungen" },
             { ELanguage::French,   "Paramètres vidéo" },
             { ELanguage::Spanish,  "Configuración de vídeo" },
@@ -146,7 +135,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Options_Desc_Category_Video",
         {
             { ELanguage::English,  "Adjust video settings." },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "ビデオの設定を変更します" },
             { ELanguage::German,   "Verändere Video-Einstellungen." },
             { ELanguage::French,   "Modifier les paramètres vidéo." },
             { ELanguage::Spanish,  "Ajustar la configuración de vídeo." },
@@ -157,7 +146,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Options_Category_Debug",
         {
             { ELanguage::English,  "Debug settings" },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "デバッグ設定" },
             { ELanguage::German,   "Debug-Einstellungen" },
             { ELanguage::French,   "Paramètres de débogage" },
             { ELanguage::Spanish,  "Configuración de depuración" },
@@ -168,7 +157,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Options_Desc_Category_Debug",
         {
             { ELanguage::English,  "Adjust debug settings." },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "デバッグの設定を変更します" },
             { ELanguage::German,   "Verändere Debug-Einstellungen." },
             { ELanguage::French,   "Modifier les paramètres de débogage." },
             { ELanguage::Spanish,  "Ajustar la configuración de depuración." },
@@ -214,7 +203,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Options_Desc_NotAvailable",
         {
             { ELanguage::English,  "This option is not available during gameplay." },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "このオプションはゲームプレイ中は使用できません" },
             { ELanguage::German,   "Diese Einstellung kann während des Spiels nicht verändert werden." },
             { ELanguage::French,   "Cette option est indisponible en cours de jeu." },
             { ELanguage::Spanish,  "Esta opción no está disponible durante la partida." },
@@ -226,7 +215,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Options_Desc_NotImplemented",
         {
             { ELanguage::English,  "This option is not implemented yet." },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "このオプションはまだ実装されていません" },
             { ELanguage::German,   "Diese Einstellung wurde noch nicht implementiert." },
             { ELanguage::French,   "Cette option n'est pas encore implémentée." },
             { ELanguage::Spanish,  "Esta opción aún no está implementada." },
@@ -297,7 +286,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Options_Message_Restart",
         {
             { ELanguage::English,  "The game needs to restart to apply\nthe following changes. OK?\n" },
-            { ELanguage::Japanese, "DUMMY\n" },
+            { ELanguage::Japanese, "以下の変更を適用するには\nゲームを再起動する必要があります\nよろしいですか？\n" },
             { ELanguage::German,   "DUMMY\n" },
             { ELanguage::French,   "Le jeu doit redémarrer pour appliquer\nles modifications suivantes. OK ?\n" },
             { ELanguage::Spanish,  "Se necesita reiniciar el juego para\naplicar los siguientes cambios. ¿OK?\n" },
@@ -614,7 +603,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Installer_Message_Quit",
         {
             { ELanguage::English,  "Exit the installer.\nOK?" },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "インストーラーを終了します\nよろしいですか？" },
             { ELanguage::German,   "Die Installation verlassen.\nOK?" },
             { ELanguage::French,   "Quitter l'installateur.\nOK ?" },
             { ELanguage::Spanish,  "¿Salir del instalador?" },
@@ -626,7 +615,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Installer_Message_Cancel",
         {
             { ELanguage::English,  "Cancel the installation.\nOK?" },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "インストールをキャンセルします\nよろしいですか？" },
             { ELanguage::German,   "Die Installation abbrechen.\nOK?" },
             { ELanguage::French,   "Annuler l'installation.\nOK ?" },
             { ELanguage::Spanish,  "¿Cancelar la instalación?" },
@@ -638,7 +627,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Title_Message_Quit",
         {
             { ELanguage::English,  "Exit the game.\nOK?" },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "ゲームを終了します\nよろしいですか？" },
             { ELanguage::German,   "Das Spiel verlassen.\nOK?" },
             { ELanguage::French,   "Quitter le jeu.\nOK ?" },
             { ELanguage::Spanish,  "¿Salir del juego?" },

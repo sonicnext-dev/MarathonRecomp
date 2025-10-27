@@ -49,7 +49,7 @@
 CONFIG_DEFINE_LOCALE(Language)
 {
     { ELanguage::English,  { "Language", "Change the language used for text." } },
-    { ELanguage::Japanese, { "言語", "DUMMY" } },
+    { ELanguage::Japanese, { "言語", "ゲーム内の表示言語を変更できます" } },
     { ELanguage::German,   { "Sprache", "Ändere die Textsprache." } },
     { ELanguage::French,   { "Langue", "Modifier la langue utilisée pour le texte." } },
     { ELanguage::Spanish,  { "Idioma", "Cambia el idioma utilizado para los textos." } },
@@ -161,7 +161,7 @@ CONFIG_DEFINE_LOCALE(ControlTutorial)
 CONFIG_DEFINE_LOCALE(Autosave)
 {
     { ELanguage::English,  { "Autosave", "Save the game automatically at manual save points." } },
-    { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
+    { ELanguage::Japanese, { "オートセーブ", "手動セーブポイントでゲームを自動的にセーブします" } },
     { ELanguage::German,   { "Automatisches Speichern", "Speichert das Spiel automatisch an manuellen Speicherpunkten." } },
     { ELanguage::French,   { "Sauvegarde Auto", "Sauvegarder automatiquement la partie lorsque le jeu propose une sauvegarde." } },
     { ELanguage::Spanish,  { "Autoguardado", "Guarda el juego automáticamente en los puntos de guardado manuales." } },
@@ -247,7 +247,7 @@ CONFIG_DEFINE_ENUM_LOCALE(ECameraRotationMode)
 CONFIG_DEFINE_LOCALE(LightDash)
 {
     { ELanguage::English,  { "Light Dash", "Change how Light Dash is activated for Sonic and Shadow." } },
-    { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
+    { ELanguage::Japanese, { "ライトダッシュ", "ソニックとシャドウのライトダッシュの発動方法を変更します" } },
     { ELanguage::German,   { "Lichtsprint", "DUMMY" } },
     { ELanguage::French,   { "Course éclair", "Modifier la façon dont Course éclair est activée pour Sonic et Shadow." } },
     { ELanguage::Spanish,  { "Acelerón ligero", "Cambia cómo se activa el acelerón ligero para Sonic y Shadow." } },
@@ -266,8 +266,8 @@ CONFIG_DEFINE_ENUM_LOCALE(ELightDash)
     {
         ELanguage::Japanese,
         {
-            { ELightDash::X, { "DUMMY", "" } },
-            { ELightDash::Y, { "DUMMY", "" } }
+            { ELightDash::X, { "${picture(button_x)}を押す", "" } },
+            { ELightDash::Y, { "${picture(button_y)}を押す", "" } }
         }
     },
     {
@@ -303,7 +303,7 @@ CONFIG_DEFINE_ENUM_LOCALE(ELightDash)
 CONFIG_DEFINE_LOCALE(SlidingAttack)
 {
     { ELanguage::English,  { "Sliding Attack", "Change how the Sliding Attack is activated for Sonic." } },
-    { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
+    { ELanguage::Japanese, { "スライディングアタック", "ソニックのスライディングアタックの発動方法を変更します" } },
     { ELanguage::German,   { "DUMMY", "DUMMY" } },
     { ELanguage::French,   { "Attaque-dérapage", "Modifier la façon dont l'Attaque-dérapage est activée pour Sonic." } },
     { ELanguage::Spanish,  { "Ataque derrape", "Cambia cómo se activa el ataque derrape para Sonic." } },
@@ -322,8 +322,8 @@ CONFIG_DEFINE_ENUM_LOCALE(ESlidingAttack)
     {
         ELanguage::Japanese,
         {
-            { ESlidingAttack::B, { "DUMMY", "" } },
-            { ESlidingAttack::X, { "DUMMY", "" } }
+            { ESlidingAttack::B, { "${picture(button_b)}を押し続ける", "" } },
+            { ESlidingAttack::X, { "${picture(button_x)}を離す", "" } }
         }
     },
     {
@@ -517,7 +517,7 @@ CONFIG_DEFINE_ENUM_LOCALE(EChannelConfiguration)
 CONFIG_DEFINE_LOCALE(MuteOnFocusLost)
 {
     { ELanguage::English,  { "Mute on Focus Lost", "Mute the game's audio when the window is not in focus." } },
-    { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
+    { ELanguage::Japanese, { "フォーカスロストミュート", "ウィンドウがフォーカスされていないときにゲームのオーディオをミュートします" } },
     { ELanguage::German,   { "Stummstellen wenn nicht fokussiert", "Stellt das Audio des Spiels stumm solange das Fenster nicht im Fokus ist." } },
     { ELanguage::French,   { "Muet si fenêtre inactive", "Coupe le son du jeu lorsque la fenêtre n'est pas active." } },
     { ELanguage::Spanish,  { "Silenciar al perder el foco", "Silencia el audio del juego cuando la ventana no esté en primer plano." } },
@@ -643,7 +643,7 @@ CONFIG_DEFINE_LOCALE(VSync)
 CONFIG_DEFINE_LOCALE(FPS)
 {
     { ELanguage::English,  { "FPS", "Set the max frame rate the game can run at. WARNING: this may introduce glitches at frame rates other than 60 FPS." } },
-    { ELanguage::Japanese, { "フレームレート上限", "DUMMY" } },
+    { ELanguage::Japanese, { "フレームレート上限", "ゲームが実行できる最大フレームレートを設定します　警告:60FPS以外のフレームレートでは不具合が発生する可能性があります" } },
     { ELanguage::German,   { "FPS", "Bestimmt die maximale Bildwiederholrate. WARNUNG: es können Fehler bei einer Bildwiederholrate über 60 FPS auftreten." } },
     { ELanguage::French,   { "IPS", "Limiter le nombre d'images par seconde. ATTENTION : Cela peut provoquer des bugs à des fréquences autres que 60 IPS." } },
     { ELanguage::Spanish,  { "FPS", "Establece la tasa máxima de fotogramas a la que puede ejecutarse el juego. ADVERTENCIA: esto puede provocar fallos en velocidades distintas a 60 FPS." } },
@@ -653,7 +653,7 @@ CONFIG_DEFINE_LOCALE(FPS)
 CONFIG_DEFINE_LOCALE(Brightness)
 {
     { ELanguage::English,  { "Brightness", "Adjust the brightness level." } },
-    { ELanguage::Japanese, { "明るさの設定", "DUMMY" } },
+    { ELanguage::Japanese, { "明るさの設定", "明るさレベルを調整します" } },
     { ELanguage::German,   { "Helligkeit", "Stelle die Helligkeit ein." } },
     { ELanguage::French,   { "Luminosité", "Modifier le niveau de luminosité." } },
     { ELanguage::Spanish,  { "Brillo", "Ajusta el nivel de brillo." } },
@@ -735,7 +735,7 @@ CONFIG_DEFINE_ENUM_LOCALE(EShadowResolution) {};
 CONFIG_DEFINE_LOCALE(ReflectionResolution)
 {
     { ELanguage::English,  { "Reflection Resolution", "Set the resolution of real-time reflections." } },
-    { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
+    { ELanguage::Japanese, { "反射解像度", "リアルタイム反射の解像度を設定します" } },
     { ELanguage::German,   { "Reflektionsauflösung", "Bestimmt die Auflösung der Echtzeitreflektionen." } },
     { ELanguage::French,   { "Résolution des reflets", "Définir la résolution des reflets en temps réel." } },
     { ELanguage::Spanish,  { "Resolución de reflejos", "Establece la resolución de los reflejos en tiempo real." } },
@@ -758,7 +758,7 @@ CONFIG_DEFINE_ENUM_LOCALE(EReflectionResolution)
 CONFIG_DEFINE_LOCALE(RadialBlur)
 {
     { ELanguage::English,  { "Radial Blur", "Change the quality of the radial blur." } },
-    { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
+    { ELanguage::Japanese, { "放射状ぼかし", "放射状ぼかしの品質を変更します" } },
     { ELanguage::German,   { "Radiale Unschärfe", "Verändere die Qualität der radialen Unschärfe." } },
     { ELanguage::French,   { "Flou Radial", "Modifier la qualité du flou radial." } },
     { ELanguage::Spanish,  { "Desenfoque radial", "Cambia la calidad del desenfoque radial." } },
@@ -780,7 +780,7 @@ CONFIG_DEFINE_ENUM_LOCALE(ERadialBlur)
         {
             { ERadialBlur::Off,      { "オフ", "" } },
             { ERadialBlur::Original, { "オリジナル", "" } },
-            { ERadialBlur::Enhanced, { "エンハンスド", "DUMMY" } }
+            { ERadialBlur::Enhanced, { "エンハンスド", "エンハンスド：より多くのサンプルを使用してよりスムーズな放射状ぼかしを実現します" } }
         }
     },
     {
