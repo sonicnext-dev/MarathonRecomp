@@ -628,9 +628,9 @@ static void DrawDescriptionContainer()
 
         drawList->AddImage(g_upSonicNextDev.get(), imageMin, imageMax, { 0, 0 }, { 1, 1 }, colWhite);
 
-        SetHorizontalMarqueeFade(marqueeTextMin, marqueeTextMax, Scale(32));
-        DrawTextWithMarquee(g_pFntRodin, fontSize, marqueeTextPos, marqueeTextMin, marqueeTextMax, colWhite, g_creditsStr.c_str(), g_installerEndTime, 0.9, Scale(200));
-        ResetMarqueeFade();
+        // SetHorizontalMarqueeFade(marqueeTextMin, marqueeTextMax, Scale(32));
+        // DrawTextWithMarquee(g_pFntRodin, fontSize, marqueeTextPos, marqueeTextMin, marqueeTextMax, colWhite, g_creditsStr.c_str(), g_installerEndTime, 0.9, Scale(200));
+        // ResetMarqueeFade();
     }
 
     ImVec2 sideMin = { descriptionMax.x, descriptionMin.y };
