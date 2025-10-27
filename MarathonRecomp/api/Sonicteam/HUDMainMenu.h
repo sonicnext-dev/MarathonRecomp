@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/CsdObject.h>
+#include <Sonicteam/HudTextParts.h>
 
 namespace Sonicteam
 {
@@ -15,7 +17,9 @@ namespace Sonicteam
             HUDMainMenuState_MainCursorOutro = 99
         };
 
-        MARATHON_INSERT_PADDING(0x1D4);
+        MARATHON_INSERT_PADDING(0x20);
+        xpointer<CsdObject> m_pCsdObject;
+        MARATHON_INSERT_PADDING(0x1B0);
         be<uint32_t> m_CursorFlags;
         MARATHON_INSERT_PADDING(0x32C);
         xpointer<HudTextParts> m_pHudTextRoot;

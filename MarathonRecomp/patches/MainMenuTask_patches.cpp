@@ -45,6 +45,10 @@ PPC_FUNC(sub_824FFCF8)
 
     auto& rButtonWindowTextOffsetY = pMainMenuTask->m_pButtonWindowTask->m_pHUDButtonWindow->m_pHudTextParts->m_OffsetY;
 
+    // Hide original "OPTIONS" title.
+    if (auto pOptionsSelect = pMainMenuTask->m_pHUDMainMenu->m_pHudTextRoot->Find("options_select", "options"))
+        pOptionsSelect->m_Priority = -1.0f;
+
     if (OptionsMenu::s_isVisible)
     {
         pMainMenuTask->m_PressedButtons = 0;

@@ -16,7 +16,7 @@
 #include <decompressor.h>
 #include <exports.h>
 
-static constexpr double ANIMATION_DURATION = 5.0;
+static constexpr int MAX_VISIBLE_ROWS = 3;
 
 static double g_stateTime{};
 static double g_flowStateTime{};
@@ -303,15 +303,15 @@ static void DrawOption
     auto isMiddleRow = false;
 
     // Only scroll if page has more than three items.
-    if (g_optionCount > 3)
+    if (g_optionCount > MAX_VISIBLE_ROWS)
     {
-        isMiddleRow = ((rowIndex - std::max(g_optionIndex - 1, 0)) % 3) >= 1;
+        isMiddleRow = ((rowIndex - std::max(g_optionIndex - 1, 0)) % MAX_VISIBLE_ROWS) >= 1;
 
-        if (g_optionIndex >= g_optionCount - 2)
+        if (g_optionIndex >= g_optionCount - (MAX_VISIBLE_ROWS - 1))
         {
             // Stop scrolling near bottom to use cursor instead.
-            offsetScroll = -(g_optionCount - 3) * optionHeight;
-            isMiddleRow = ((rowIndex - std::max(g_optionCount - 3, 0)) % 3) >= 1;
+            offsetScroll = -(g_optionCount - MAX_VISIBLE_ROWS) * optionHeight;
+            isMiddleRow = ((rowIndex - std::max(g_optionCount - MAX_VISIBLE_ROWS, 0)) % MAX_VISIBLE_ROWS) >= 1;
         }
         else if (g_optionIndex >= 1)
         {
@@ -1066,18 +1066,7 @@ void OptionsMenu::Draw()
 
         case OptionsMenuState::Closing:
         {
-            auto isClosed = false;
-
-            if (s_isPause)
-            {
-                isClosed = s_commonMenu.Close();
-            }
-            else
-            {
-                isClosed = ComputeLinearMotion(g_stateTime, 0, ANIMATION_DURATION) >= 1.0;
-            }
-
-            if (isClosed)
+            if (s_commonMenu.Close())
             {
                 ButtonGuide::Close();
                 s_isVisible = false;

@@ -24,5 +24,35 @@ namespace Sonicteam
         be<float> m_OffsetY;
         MARATHON_INSERT_PADDING(4);
         be<uint32_t> m_AlignmentFlags;
+
+        HudTextParts* Find(const char* pSceneName)
+        {
+            auto pRoot = this;
+
+            while (pRoot)
+            {
+                if (pRoot->m_SceneName == pSceneName)
+                    return pRoot;
+
+                pRoot = pRoot->m_pNext;
+            }
+
+            return nullptr;
+        }
+
+        HudTextParts* Find(const char* pSceneName, const char* pCastName)
+        {
+            auto pRoot = this;
+
+            while (pRoot)
+            {
+                if (pRoot->m_SceneName == pSceneName && pRoot->m_CastName == pCastName)
+                    return pRoot;
+
+                pRoot = pRoot->m_pNext;
+            }
+
+            return nullptr;
+        }
     };
 }

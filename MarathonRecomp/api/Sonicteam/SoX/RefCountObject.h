@@ -15,7 +15,7 @@ namespace Sonicteam::SoX
         xpointer<Vftable> m_pVftable;
         be<uint32_t> m_ReferenceCount;
 
-        void* Destroy(uint32_t flag)
+        void* Destroy(uint32_t flag = 1)
         {
             return GuestToHostFunction<void*>(m_pVftable->fpDestroy, this, flag);
         }

@@ -101,8 +101,8 @@ void CommonMenu::Draw()
     auto titleSize = g_pFntNewRodin->CalcTextSizeA(titleFontSize, FLT_MAX, 0.0f, titleText);
     auto titleOffsetX = redStripCornerMax.x - Scale(105, true);
     auto titleOffsetY = redStripMotion + Scale(3.25, true);
-    auto titleOffsetXMotionTime = ComputeLinearMotion(m_titleTime, PlayTransitions && !m_isClosing ? 10 : 0, 10, m_isClosing);
-    auto titleOffsetXMotion = Lerp(max.x + titleSize.x, titleOffsetX, titleOffsetXMotionTime);
+    auto titleMotionTime = ComputeLinearMotion(m_titleTime, PlayTransitions && !m_isClosing ? 10 : 0, 10, m_isClosing);
+    auto titleOffsetXMotion = Lerp(max.x + titleSize.x, titleOffsetX, titleMotionTime);
 
     if (!ReduceDraw && !m_previousTitle.empty())
     {
@@ -113,7 +113,7 @@ void CommonMenu::Draw()
     }
 
     // Draw title.
-    drawList->AddText(g_pFntNewRodin, titleFontSize, { titleOffsetXMotion, titleOffsetY }, IM_COL32(255, 255, 255, 255 * titleOffsetXMotionTime), titleText);
+    drawList->AddText(g_pFntNewRodin, titleFontSize, { titleOffsetXMotion, titleOffsetY }, IM_COL32(255, 255, 255, 255 * titleMotionTime), titleText);
 
     if (!ReduceDraw)
     {
