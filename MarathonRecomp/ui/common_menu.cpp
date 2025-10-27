@@ -144,9 +144,9 @@ void CommonMenu::Draw()
         if (g_aspectRatio < WIDE_ASPECT_RATIO)
         {
             ImVec2 topPlateCornerExtendMin = { topPlateCornerMin.x, topPlateCornerMin.y - topPlateHeight };
-            ImVec2 topPlateCornerExtendMax = { topPlateCornerMax.x, topPlateCornerMin.y };
+            ImVec2 topPlateCornerExtendMax = { topPlateCornerMax.x, topPlateCornerMin.y + Scale(1, true) };
             ImVec2 topPlateStretchExtendMin = { topPlateStretchMin.x, topPlateStretchMin.y - topPlateHeight };
-            ImVec2 topPlateStretchExtendMax = { topPlateStretchMax.x, topPlateStretchMin.y };
+            ImVec2 topPlateStretchExtendMax = { topPlateStretchMax.x, topPlateStretchMin.y + Scale(1, true) };
 
             AddImageFlipped(g_upTexMainMenu1.get(), topPlateCornerExtendMin, topPlateCornerExtendMax, GET_UV_COORDS(topPlateCornerUVs), IM_COL32_WHITE, false, true);
             SetHorizontalGradient(topPlateStretchExtendMin, topPlateStretchExtendMax, IM_COL32_WHITE, IM_COL32(200, 200, 200, 255));
