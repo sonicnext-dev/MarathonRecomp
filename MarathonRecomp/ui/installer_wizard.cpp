@@ -968,7 +968,7 @@ static void DrawLanguagePicker()
             if (buttonPressed)
             {
                 Config::Language = LANGUAGE_ENUM[i];
-                g_commonMenu.SetTitle(Localise("Installer_Header_Installer"));
+                g_commonMenu.SetTitle(Localise("Installer_Header_Installer"), false);
             }
         }
     }
