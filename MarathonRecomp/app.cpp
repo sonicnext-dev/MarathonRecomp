@@ -65,6 +65,7 @@ PPC_FUNC(sub_8262A568)
 }
 
 // Sonicteam::DocMarathonState::Update
+// Sonicteam::DocMarathonState::Update
 PPC_FUNC_IMPL(__imp__sub_825EA610);
 PPC_FUNC(sub_825EA610)
 {
@@ -90,11 +91,16 @@ PPC_FUNC(sub_825EA610)
     {
         SDL_PumpEvents();
         SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+
+
+        if (GameWindow::m_isResizing)
+            GameWindow::m_ResizeRender = true;
+
         GameWindow::Update();
     }
 
     // Allow variable FPS when config is not 60 FPS.
-    App::s_pApp->m_pDoc->m_VFrame = Config::FPS != 60;
+    App::s_pApp->m_pDocState->m_VFrame = Config::FPS != 60;
 
     AudioPatches::Update(App::s_deltaTime);
 
