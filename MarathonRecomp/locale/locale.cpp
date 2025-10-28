@@ -287,7 +287,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "The game needs to restart to apply\nthe following changes. OK?\n" },
             { ELanguage::Japanese, "以下の変更を適用するには\nゲームを再起動する必要があります\nよろしいですか？\n" },
-            { ELanguage::German,   "DUMMY\n" },
+            { ELanguage::German,   "Das Spiel muss neu gestartet werden um die\nfolgenden Änderungen zu speichern. OK?\n" },
             { ELanguage::French,   "Le jeu doit redémarrer pour appliquer\nles modifications suivantes. OK ?\n" },
             { ELanguage::Spanish,  "Se necesita reiniciar el juego para\naplicar los siguientes cambios. ¿OK?\n" },
             { ELanguage::Italian,  "Il gioco deve essere riavviato per\napplicare le seguenti modifiche. OK?\n" }
