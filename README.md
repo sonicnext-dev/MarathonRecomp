@@ -155,43 +155,39 @@ This project does not plan to support any more platforms other than Windows, Lin
 ## Credits
 
 ### Marathon Recompiled
-- [ga2mer](https://github.com/ga2mer): Creator and Lead Developer of the recompilation.
+- [ga2mer](https://github.com/ga2mer): Creator of the recompilation, laying the initial foundation for the project. Other responsibilities include maintaining the audio backend and providing various patches for the game.
 
-- [IsaacMarovitz](https://github.com/IsaacMarovitz): Graphics & Installer Developer.
+- [IsaacMarovitz](https://github.com/IsaacMarovitz): Graphics Programmer for the recompilation. Other responsibilities include maintaining macOS support and aiding in porting mod manager patches to the recompilation.
 
-- [squidbus](https://github.com/squidbus): Graphics Developer.
+- [squidbus](https://github.com/squidbus): Graphics Programmer for the recompilation. Aided in researching the game's internals.
 
-- [Rei-san](https://github.com/ReimousTH): Game Internals Researcher and Patch Developer.
+- [Hyper](https://github.com/hyperbx): Developer of system level features, such as achievement support and the custom menus, alongside various other patches and features to make the game feel right at home on modern systems. Aided in researching the game's internals.
 
-- [Hyper](https://github.com/hyperbx): Custom Menus, Game Internals Researcher and Patch Developer.
+- [Rei-san](https://github.com/ReimousTH): Developer of quality of life patches and extensive amounts of research into the game's internals.
 
-- [Desko](https://github.com/FateForWindows): Game Internals Researcher and Patch Developer.
+- [Desko](https://github.com/FateForWindows): Aided in researching the game's internals and created many quality of life patches for the original game used by the recompilation.
 
-- [LJSTAR](https://github.com/LJSTARbird): Artist behind the project logo.
+- [LJSTAR](https://github.com/LJSTARbird): Artist behind the project logo. Provided French localization for the custom menus.
 
-- [Skyth](https://github.com/blueskythlikesclouds): Lead Developer of Unleashed Recompiled and endlessly helpful resource.
+- [brianuuuSonic](https://github.com/brianuuu): Provided Japanese localization for the custom menus.
 
-- [Darío](https://github.com/DarioSamo): Maintainer of [Plume](https://github.com/renderbag/plume) & Graphics Developer.
+- [Kitzuku](https://github.com/Kitzuku): Provided German localization for the custom menus.
 
-- [Hotline Sehwani](https://www.youtube.com/watch?v=8mfOSTcTQNs): Artist behind installer music.
+- [DaGuAr](https://x.com/TheDaguar): Provided Spanish localization for the custom menus.
 
-- [Syko](https://x.com/UltraSyko): Helped in identified fonts used in original SonicNext logo. 
+- [NextinHKRY](https://github.com/NextinMono): Provided Italian localization for the custom menus.
 
-### Unleashed Recompiled
-- [Skyth](https://github.com/blueskythlikesclouds)
-- [Sajid](https://github.com/Sajidur78)
-- [Hyper](https://github.com/hyperbx)
-- [Darío](https://github.com/DarioSamo)
-- [ĐeäTh](https://github.com/DeaTh-G)
-- [RadiantDerg](https://github.com/RadiantDerg)
-- [PTKay](https://github.com/PTKay)
-- [SuperSonic16](https://github.com/thesupersonic16)
-- [NextinHKRY](https://github.com/NextinMono)
-- [LadyLunanova](https://linktr.ee/ladylunanova)
-- [LJSTAR](https://github.com/LJSTARbird)
-- [saguinee](https://twitter.com/saguinee)
-- [Goalringmod27](https://linktr.ee/goalringmod27)
-- [M&M](https://github.com/ActualMandM)
-- [DaGuAr](https://twitter.com/TheDaguar)
-- [brianuuuSonic](https://github.com/brianuuu)
-- [Kitzuku](https://github.com/Kitzuku)
+- [Syko](https://x.com/UltraSyko): Aided in identifying fonts used by the original SonicNext logo.
+
+- [Hotline Sehwani](https://www.youtube.com/channel/UC9NBX5UPq4fYvbr7bzvRvOg) & SilverIceSound: Produced the [installer music](https://www.youtube.com/watch?v=8mfOSTcTQNs) ([original prod.](https://www.youtube.com/watch?v=k_mGNwrxR5M) by [Tomoya Ohtani](https://www.youtube.com/@TomoyaOhtaniChannel)).
+
+### Special Thanks
+- Unleashed Recompiled Development Team: Created much of the ground work that made all of this possible and sped up development time considerably.
+
+- [Skyth](https://github.com/blueskythlikesclouds): Provided graphics consultation and support for dynamic aspect ratio.
+
+- [Darío](https://github.com/DarioSamo): Creator of the graphics hardware abstraction layer [plume](https://github.com/renderbag/plume), used by the project's graphics backend.
+
+- [ocornut](https://github.com/ocornut): Creator of [Dear ImGui](https://github.com/ocornut/imgui), which is used as the backbone of the custom menus.
+
+- Raymond Chen: Useful resources on Windows application development with his blog ["The Old New Thing"](https://devblogs.microsoft.com/oldnewthing/).
