@@ -349,8 +349,8 @@ static void DrawOption
     drawList->AddImage(g_upTexMainMenu8.get(), titleBgStretchMin, titleBgStretchMax, GET_UV_COORDS(bgStretchUVs), bgColour);
     ResetGradient();
 
-    auto titleText = config->GetNameLocalised(Config::Language).c_str();
-    auto titleTextSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, titleText);
+    auto titleText = config->GetNameLocalised(Config::Language);
+    auto titleTextSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, titleText.c_str());
 
     auto titleFadeRightScale = Scale(40, true);
     auto titleFadeRightOffsetX = Scale(15, true);
@@ -375,7 +375,7 @@ static void DrawOption
     }
 
     SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
-    drawList->AddText(g_pFntRodin, fontSize, titlePos, optionColourMotion, titleText);
+    drawList->AddText(g_pFntRodin, fontSize, titlePos, optionColourMotion, titleText.c_str());
     SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
 
     if (isTitleRightFade)
