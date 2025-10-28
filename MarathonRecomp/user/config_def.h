@@ -87,6 +87,7 @@ CONFIG_DEFINE_HIDDEN("Codes", bool, DisableTitleInputDelay, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, EnableDebugMode, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, FixPowerUpJingleDuration, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, HUDToggleKey, false, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, InfiniteLives, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, MidairControlForMachSpeed, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, MidairControlForSnowboards, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreChainJumpFlips, false, false);

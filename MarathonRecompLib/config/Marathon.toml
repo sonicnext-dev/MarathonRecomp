@@ -726,3 +726,8 @@ jump_address_on_true = 0x8226B910
 name = "Super3_DisableChangeRequestHint"
 address = 0x8226AB4C
 jump_address_on_true = 0x8226AB70
+
+[[midasm_hook]]
+name = "InfiniteLives"
+address = 0x821857B0
+jump_address_on_true = 0x821857B4

@@ -505,3 +505,8 @@ void SonicGauge_FixFlags(PPCRegister& r3, PPCRegister& r31)
         }
     }
 }
+
+bool InfiniteLives()
+{
+    return Config::InfiniteLives;
+}
