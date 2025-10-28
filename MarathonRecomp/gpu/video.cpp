@@ -1749,6 +1749,7 @@ static void CheckSwapChain()
 
     g_backBuffer->width = Video::s_viewportWidth;
     g_backBuffer->height = Video::s_viewportHeight;
+
 }
 
 static void BeginCommandList()
@@ -3110,6 +3111,32 @@ void Video::WaitOnSwapChain()
 static bool g_shouldPrecompilePipelines;
 static std::atomic<bool> g_executedCommandList;
 
+void CreateTextureLocal(Sonicteam::SoX::Graphics::Xenon::TextureXenon* pTextureXenon, uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, uint32_t usage, uint32_t format, uint32_t pool, uint32_t type)
+{
+    // Save current reference count to preserve it
+    auto pGuestTexture = pTextureXenon->m_pTexture.get();
+    auto refCount = pGuestTexture->refCount;
+
+    // Destroy the existing texture
+    pGuestTexture->~GuestTexture();
+
+    // Create a new texture with the specified parameters
+    GuestTexture* pGuestTextureNew = CreateTexture(width, height, depth, levels, usage, format, pool, type);
+
+    // Copy the new texture data over the old texture memory
+    memcpy(pGuestTexture, pGuestTextureNew, sizeof(GuestTexture));
+
+    // Free the temporary texture buffer
+    g_userHeap.Free(pGuestTextureNew);
+
+    // Restore the original reference count to prevent issues with Release() calls
+    pGuestTexture->refCount = refCount;
+
+    // Update the XenonTexture dimensions
+    pTextureXenon->m_Width = width;
+    pTextureXenon->m_Height = height;
+}
+
 void Video::Present() 
 {
     g_readyForCommands = false;
@@ -3196,6 +3223,291 @@ void Video::Present()
         }
 
         s_next += 1000000000ns / Config::FPS;
+    }
+
+
+    if (g_swapChainValid && App::s_isInit && App::s_pApp &&
+        App::s_pApp->m_pDocState && App::s_pApp->m_pDocState->m_pMyGraphicDevice && GameWindow::m_ResizeRender)
+    {
+        GameWindow::m_ResizeRender = false;
+        auto* pApp = App::s_pApp;
+        auto* pDocState = pApp->m_pDocState.get();
+        auto* pResourceManager = Sonicteam::SoX::ResourceManager::GetInstance();
+        auto* pSurfaceManager = Sonicteam::SoX::Graphics::SurfaceMgr::GetInstance();
+        auto* pTextureManager = Sonicteam::SoX::Graphics::TextureMgr::GetInstance();
+        auto* pRenderTargetContainer = pDocState->m_pRenderTargetContainer.get();
+        auto* pMyGraphicDevice = pDocState->m_pMyGraphicDevice.get();
+
+        if (!pDocState || !pResourceManager || !pSurfaceManager || !pRenderTargetContainer || !pMyGraphicDevice) return;
+
+        int32_t width = static_cast<uint32_t>(GameWindow::s_width);
+        int32_t height = static_cast<uint32_t>(GameWindow::s_height);
+
+        struct _Size_ { int32_t width, height, r8, r10; };
+        static std::map<std::string, _Size_> _buffers_;
+
+        // Update Dimensions
+        _buffers_["framebuffer0"] = { width, height, 0, 4 };
+        _buffers_["framebuffer1"] = { width, height, 0, 0 };
+        _buffers_["framebuffer_1_4_0"] = { width >> 2, height >> 2, 3, 2 };
+        _buffers_["framebuffer_1_4_1"] = { width >> 2, height >> 2, 0, 2 };
+        _buffers_["framebuffer_1_8_0"] = { width >> 3, height >> 3, 3, 2 };
+        _buffers_["framebuffer_1_8_1"] = { width >> 3, height >> 3, 0, 2 };
+        _buffers_["framebuffer_1_16_0"] = { width >> 4, height >> 4, 3, 2 };
+        _buffers_["framebuffer_1_16_1"] = { width >> 4, height >> 4, 0, 2 };
+        _buffers_["framebuffer_1_32_0"] = { width >> 5, height >> 5, 3, 2 };
+        _buffers_["framebuffer_1_32_1"] = { width >> 5, height >> 5, 0, 2 };
+        _buffers_["depthstencil_1_4"] = { width >> 2, height >> 2, 6, 0 };
+        {
+            auto pCreationDeviceData = &pApp->m_GuestDeviceInfo;
+            struct GraphicsFormatConfig
+            {
+                be<GuestFormat> SurfaceFormat;
+                be<GuestFormat> TextureFormat;
+                be<uint32_t> usage;
+            };
+            auto pFormatConfig = (GraphicsFormatConfig*)(g_memory.base + 0x82B7BD20);
+
+            // Kill Auto Surfaces
+            if (g_backBuffer && g_backBuffer != pApp->m_pBackBufferSurface.get())
+                DestructResource(g_backBuffer);
+
+            if (g_depthStencil && g_depthStencil != pApp->m_pDepthStencilSurface.get())
+                DestructResource(g_depthStencil);
+
+            // Recreate main buffers
+            DestructResource(pApp->m_pFrontBufferTexture.get());
+            pApp->m_pFrontBufferTexture = CreateTexture(width, height, 1, 1, 1, D3DFMT_LE_X8R8G8B8, 0, 3);
+            pApp->m_pFrontBufferTexture->AddRef();
+
+            guest_stack_var<GuestSurfaceCreateParams> gsvSurfaceCreateParams = { 0,0,0 };
+            DestructResource(pApp->m_pBackBufferSurface.get());
+            pApp->m_pBackBufferSurface = CreateSurface(width, height, D3DFMT_A8R8G8B8, 0, gsvSurfaceCreateParams.get());
+            pApp->m_pBackBufferSurface->AddRef();
+            pCreationDeviceData->SurfaceParamA = *gsvSurfaceCreateParams;
+
+            uint32_t cSurfaceBase = height * 1.155555555555556;  //0x340 default (for 720 mb ?)
+
+            gsvSurfaceCreateParams->base = gsvSurfaceCreateParams->base + cSurfaceBase;
+            DestructResource(pApp->m_pDepthStencilSurface.get());
+            pApp->m_pDepthStencilSurface = CreateSurface(width, height, D3DFMT_D24FS8, 0, gsvSurfaceCreateParams.get());
+            pApp->m_pDepthStencilSurface->AddRef();
+            pCreationDeviceData->SurfaceParamB = *gsvSurfaceCreateParams;
+            pCreationDeviceData->SurfaceParamC = pCreationDeviceData->SurfaceParamB;
+            pCreationDeviceData->SurfaceParamC.base = pCreationDeviceData->SurfaceParamB.base + cSurfaceBase;
+
+            // Recreate sample buffers
+            gsvSurfaceCreateParams->base = 0;
+            DestructResource(pApp->m_pColorTile2X.get());
+            pApp->m_pColorTile2X = CreateSurface(width, height / 1.875, D3DFMT_A16B16G16R16F_2, 1, gsvSurfaceCreateParams.get());
+            pApp->m_pColorTile2X->AddRef();
+
+            gsvSurfaceCreateParams->base = gsvSurfaceCreateParams->base + pApp->m_pColorTile2X->height / 0x1400u;
+            DestructResource(pApp->m_pDepthTile2X.get());
+            pApp->m_pDepthTile2X = CreateSurface(width, height / 1.875, D3DFMT_D24FS8, 1, gsvSurfaceCreateParams.get());
+            pApp->m_pDepthTile2X->AddRef();
+
+            gsvSurfaceCreateParams->base = 0;
+            DestructResource(pApp->m_pColorTile4X.get());
+            pApp->m_pColorTile4X = CreateSurface(width, height / 2.8125, D3DFMT_A16B16G16R16F_2, 2, gsvSurfaceCreateParams.get());
+            pApp->m_pColorTile4X->AddRef();
+
+            gsvSurfaceCreateParams->base = gsvSurfaceCreateParams->base + pApp->m_pColorTile4X->height / 0x1400u;
+            DestructResource(pApp->m_pColorTile4X.get());
+            pApp->m_pDepthTile4X = CreateSurface(width, height / 2.8125, D3DFMT_D24FS8, 2, gsvSurfaceCreateParams.get());
+            pApp->m_pDepthTile4X->AddRef();
+
+            // Setup device
+            // Viewport is reset here because we're using the game's backbuffer directly (Auto mode disabled)
+            SetRenderTarget(pApp->m_GuestDevice.get(), 0, nullptr);
+            SetDepthStencilSurface(pApp->m_GuestDevice.get(), pApp->m_pDepthStencilSurface.get());
+            
+            g_backBuffer = pApp->m_pBackBufferSurface.get();
+            g_depthStencil = pApp->m_pDepthStencilSurface.get();
+
+            // Secondary reference only - no reference counting needed
+            pCreationDeviceData->GuestPresentParameters.BackBufferWidth = width;
+            pCreationDeviceData->GuestPresentParameters.BackBufferHeight = height;
+            pCreationDeviceData->pColorTile2X = pApp->m_pColorTile2X;
+            pCreationDeviceData->pDepthTile2X = pApp->m_pDepthTile2X;
+            pCreationDeviceData->pColorTile4X = pApp->m_pColorTile4X;
+            pCreationDeviceData->pDepthTile4X = pApp->m_pDepthTile4X;
+
+
+            /*
+            auto local = (CreationDeviceLocal*)g_userHeap.Alloc(sizeof(CreationDeviceLocal));
+            local->pGuestDevice = cdata->pGuestDevice;
+            local->SurfaceParamA = cdata->SurfaceParamA;
+            local->SurfaceParamB = cdata->SurfaceParamB;
+            local->SurfaceParamC = cdata->SurfaceParamC;
+            local->pColorTile2X = cdata->pColorTile2X;
+            local->pDepthTile2X = cdata->pDepthTile2X;
+            local->pColorTile4X = cdata->pColorTile4X;
+            local->pDepthTile4X = cdata->pDepthTile4X;
+            local->BackBufferWidth = cdata->GuestPresentParameters.BackBufferWidth;
+            local->BackBufferHeight = cdata->GuestPresentParameters.BackBufferHeight;
+            local->AtgFontFile = 0;
+            */
+
+            pMyGraphicDevice->m_SurfaceParamA = pCreationDeviceData->SurfaceParamA;
+            pMyGraphicDevice->m_SurfaceParamB = pCreationDeviceData->SurfaceParamB;
+            pMyGraphicDevice->m_SurfaceParamC = pCreationDeviceData->SurfaceParamC;
+
+            // Old Method (Fail)
+            // GuestToHostFunction<void>(sub_8289CF60, doc->m_pMyGraphicDevice.get(), local.get());
+       
+            auto setSurface = [&](Sonicteam::SoX::Graphics::Surface* surface,GuestSurface* guestSurface)
+                {
+                    if (surface)
+                    {
+                        GuestToHostFunction<void>(sub_82593038, surface, guestSurface); //Set
+                        printf("Surface : %s\n", surface->m_MgrResourceName.c_str());
+                        printf("Surface : %x\n", surface->m_pGuestSurface.get());
+                        printf("Surface Width : %d\n", surface->m_Width.get());
+                        printf("Surface Height : %d\n", surface->m_Height.get());
+                        printf("------------------------------------------------\n");
+                    }
+                };
+
+            setSurface(pMyGraphicDevice->m_spBackBuffer.get(), pApp->m_pBackBufferSurface.get());
+            setSurface(pMyGraphicDevice->m_spDepthStencil.get(), pApp->m_pDepthStencilSurface.get());
+            setSurface(pMyGraphicDevice->m_spDepthTile2X.get(), pApp->m_pDepthTile2X.get());
+            setSurface(pMyGraphicDevice->m_spDepthTile4X.get(), pApp->m_pDepthTile4X.get());
+            setSurface(pMyGraphicDevice->m_spColorTile2X.get(), pApp->m_pColorTile2X.get());
+            setSurface(pMyGraphicDevice->m_spColorTile4X.get(), pApp->m_pColorTile4X.get());
+
+            GuestToHostFunction<void>(sub_82637418, pDocState->m_pMyGraphicDevice.get());
+            GuestToHostFunction<void>(sub_825BAE48, pMyGraphicDevice->m_FrameBufferObject.get(), 0, &pMyGraphicDevice->m_spBackBuffer);
+            GuestToHostFunction<void>(sub_825BAEB8, pMyGraphicDevice->m_FrameBufferObject.get(), &pMyGraphicDevice->m_spDepthStencil);
+       
+
+            // Update surfaces and textures
+            for (auto& surface : pRenderTargetContainer->m_mspDepthStencill_1_4) {
+                printf("Buffer %s scaled \n", surface.first.c_str());
+                if (_buffers_.find(surface.first.c_str()) == _buffers_.end()) continue;
+                auto params = _buffers_[surface.first.c_str()];
+                GuestSurfaceCreateParams* surfaceparams = nullptr;
+
+                if (pFormatConfig[params.r8].usage != 1 || (params.r10 & 1) != 0) {
+                    surfaceparams = &pMyGraphicDevice->m_SurfaceParamB;
+                }
+                else {
+                    surfaceparams = (params.r10 & 2) == 0 ? &pMyGraphicDevice->m_SurfaceParamA : &pMyGraphicDevice->m_SurfaceParamC;
+                }
+
+                auto gSurface = CreateSurface(params.width, params.height, pFormatConfig[params.r8].SurfaceFormat, 0, surfaceparams);
+                GuestToHostFunction<void>(sub_82592E98, surface.second.get(), gSurface, params.width, params.height);
+            }
+
+       
+           
+            for (auto& texture : pRenderTargetContainer->m_mspFrameBuffer) {
+                const auto& textureName = texture.first;
+                auto& texturePtr = texture.second;
+                if (_buffers_.find(textureName.c_str()) == _buffers_.end()) continue;
+                auto params = _buffers_[textureName.c_str()];
+
+                CreateTextureLocal(texturePtr.get(),params.width, params.height, 1, 1, pFormatConfig[params.r8].usage, pFormatConfig[params.r8].TextureFormat, 0, 3);
+                //GuestToHostFunction<void>(sub_82592FD8, texturePtr.get(), tex, params.width, params.height);
+             
+                // Determine surface type
+                auto s2 = (params.r10 & 4) == 0 ? params.r8 : 3;
+                auto surface = texturePtr->m_aspSurface[0].get();
+
+                // Determine surface parameters
+                GuestSurfaceCreateParams* surfaceparams = nullptr;
+                if (pFormatConfig[s2].usage != 1 || (params.r10 & 1) != 0) {
+                    surfaceparams = &pMyGraphicDevice->m_SurfaceParamB;
+                }
+                else {
+                    surfaceparams = (params.r10 & 2) == 0 ? &pMyGraphicDevice->m_SurfaceParamA : &pMyGraphicDevice->m_SurfaceParamC;
+                }
+
+                // Create and configure guest surface
+                auto gSurface = CreateSurface(params.width, params.height, pFormatConfig[s2].SurfaceFormat, 0, surfaceparams);
+
+                GuestToHostFunction<void>(sub_82592E98, surface, gSurface, params.width, params.height);
+
+                printf("texture: %s\n", texturePtr->m_MgrResourceName.c_str());
+                printf("texture w: %d\n", texturePtr->m_Width.get());
+                printf("texture h: %d\n", texturePtr->m_Height.get());
+                printf("texture tex: %p\n", texturePtr->m_pTexture.get());
+                printf("texture surface: %p\n", surface);
+                printf("texture surface texture: %x\n", surface->m_spTexture.get());
+                printf("texture surface width: %d\n", surface->m_Width.get());
+                printf("texture surface height: %d\n", surface->m_Height.get());
+            }
+           
+            
+            printf("---------------------------------------------------------------\n");
+
+            printf("----------------------------[m_mspDepthStencill_256]-----------------------------------\n");
+            for (auto& surface : pRenderTargetContainer->m_mspDepthStencill_256)
+            {
+                const auto& surfaceName = surface.first;
+                auto& surfacePtr = surface.second;
+                //surfacePtr->m_Width = width;
+                //surfacePtr->m_Height = height;
+                printf("texture: %s\n", surfacePtr->m_MgrResourceName.c_str());
+                printf("texture: %x\n", surfacePtr.get());
+                printf("texture w: %d\n", surfacePtr->m_Width.get());
+                printf("texture h: %d\n", surfacePtr->m_Height.get());
+
+            }
+
+            printf("----------------------------[m_mspPostEffect]-----------------------------------\n");
+            for (auto& texture : pRenderTargetContainer->m_mspPostEffect)
+            {
+                const auto& textureName = texture.first;
+                auto& texturePtr = texture.second;
+                //texturePtr->m_Width = width;
+                //texturePtr->m_Height = height;
+                printf("texture: %s\n", texturePtr->m_MgrResourceName.c_str());
+                printf("texture: %x\n", texturePtr.get());
+                printf("texture w: %d\n", texturePtr->m_Width.get());
+                printf("texture h: %d\n", texturePtr->m_Height.get());
+
+            }
+
+            printf("----------------------------[m_mspPostEffectAfter]-----------------------------------\n");
+            for (auto& texture : pRenderTargetContainer->m_mspPostEffectAfter)
+            {
+                const auto& textureName = texture.first;
+                auto& texturePtr = texture.second;
+                //texturePtr->m_Width = width;
+                //texturePtr->m_Height = height;
+                printf("texture: %s\n", texturePtr->m_MgrResourceName.c_str());
+                printf("texture: %x\n", texturePtr.get());
+                printf("texture w: %d\n", texturePtr->m_Width.get());
+                printf("texture h: %d\n", texturePtr->m_Height.get());
+
+            }
+
+            // Clear Post Buffers
+            pRenderTargetContainer->m_mspDepthStencill_256.clear();
+            pRenderTargetContainer->m_mspPostEffect.clear();
+            pRenderTargetContainer->m_mspPostEffectAfter.clear();
+
+            // framebuffer_tile should properly reference framebuffer0's GuestTexture
+            // PROPER FIX OPTIONS:
+            // 1. Allocate new texture to the same pointer instead of this workaround
+            // 2. Set framebuffer_tile->m_pTexture to framebuffer0's GuestTexture with proper reference counting (AddRef())
+            // 3. Reset surface [0] to prevent framebuffer->m_pTexture from being set to null
+            if (auto it = pResourceManager->m_mResource[pTextureManager->m_MgrIndex].find("framebuffer_tile");
+                it != pResourceManager->m_mResource[pTextureManager->m_MgrIndex].end())
+            {
+                auto tex = (Sonicteam::SoX::Graphics::Xenon::TextureXenon*)it->second.get();
+                //tex->m_aspSurface[0].reset();
+                // but better like
+                //text->m_pTexture = ???
+
+            }
+    
+            // Refresh Lua Render
+            // 0x82B814F8 (stdx::string) gCurrentRenderScript
+            GuestToHostFunction<void>(sub_8260DF88, pDocState, 0x82B814F8, 1);
+      
+        }
     }
 
     g_presentProfiler.Reset();
@@ -3313,15 +3625,15 @@ static void ProcBeginCommandList(const RenderCommand& cmd)
     BeginCommandList();
 }
 
-static GuestSurface* GetBackBuffer() 
+GuestSurface* GetBackBuffer() 
 {
-    g_backBuffer->AddRef();
+    if (g_backBuffer) g_backBuffer->AddRef();
     return g_backBuffer;
 }
 
 static GuestSurface* GetDepthStencil() 
 {
-    g_depthStencil->AddRef();
+    if (g_depthStencil) g_depthStencil->AddRef();
     return g_depthStencil;
 }
 
@@ -3400,7 +3712,7 @@ static RenderFormat ConvertFormat(uint32_t format)
     }
 }
 
-static GuestTexture* CreateTexture(uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, uint32_t usage, uint32_t format, uint32_t pool, uint32_t type) 
+GuestTexture* CreateTexture(uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, uint32_t usage, uint32_t format, uint32_t pool, uint32_t type) 
 {
     ResourceType resourceType;
 
@@ -3688,7 +4000,7 @@ static void SetDefaultViewport(GuestDevice* device, GuestSurface* surface)
     }
 }
 
-static void SetRenderTarget(GuestDevice* device, uint32_t index, GuestSurface* renderTarget) 
+void SetRenderTarget(GuestDevice* device, uint32_t index, GuestSurface* renderTarget) 
 {
     if (index == 0)
     {
@@ -3717,7 +4029,7 @@ static void ProcSetRenderTarget(const RenderCommand& cmd)
     SetAlphaTestMode((g_pipelineState.specConstants & (SPEC_CONSTANT_ALPHA_TEST | SPEC_CONSTANT_ALPHA_TO_COVERAGE)) != 0);
 }
 
-static void SetDepthStencilSurface(GuestDevice* device, GuestSurface* depthStencil) 
+void SetDepthStencilSurface(GuestDevice* device, GuestSurface* depthStencil) 
 {
     RenderCommand cmd;
     cmd.type = RenderCommandType::SetDepthStencilSurface;
@@ -8136,3 +8448,5 @@ int D3DDevice_BeginShaderConstantF4(GuestDevice* device, uint32_t isPixelShader,
 }
 
 GUEST_FUNCTION_HOOK(sub_825466E8, D3DDevice_BeginShaderConstantF4);
+
+
