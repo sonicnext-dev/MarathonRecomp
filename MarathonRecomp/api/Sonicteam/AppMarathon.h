@@ -10,7 +10,7 @@ namespace Sonicteam
     class AppMarathon : public SoX::ApplicationXenon
     {
     public:
-        xpointer<DocMarathonState> m_pDoc;
+        xpointer<DocMarathonState> m_pDocState;
 
         static AppMarathon* GetInstance();
 
@@ -22,6 +22,10 @@ namespace Sonicteam
             return nullptr;
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(AppMarathon, m_pDocState, 0x180);
+
+
 }
 
 #include <Sonicteam/AppMarathon.inl>
