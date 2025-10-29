@@ -1,4 +1,5 @@
 #include <api/Marathon.h>
+#include <hid/hid.h>
 #include <ui/black_bar.h>
 #include <user/config.h>
 #include <user/achievement_manager.h>
@@ -153,7 +154,12 @@ PPC_FUNC(sub_822CE930)
         }
     }
 
-    if (!Config::ControlTutorial)
+    auto isPlayStation = Config::ControllerIcons == EControllerIcons::PlayStation;
+
+    if (Config::ControllerIcons == EControllerIcons::Auto)
+        isPlayStation = hid::g_inputDeviceController == hid::EInputDevice::PlayStation;
+
+    if (!Config::ControlTutorial || isPlayStation)
     {
         guest_stack_var<int> stack{};
 
@@ -162,10 +168,32 @@ PPC_FUNC(sub_822CE930)
 
         if (auto pTextCard = pspTextCard->get())
         {
-            if (pTextCard->m_pVariables && strstr(pTextCard->m_pVariables, "picture(button_"))
+            if (pTextCard->m_pVariables)
             {
-                pCommonObjectHint->Destroy();
-                return;
+                if (!Config::ControlTutorial)
+                {
+                    if (strstr(pTextCard->m_pVariables, "picture(button_"))
+                    {
+                        pCommonObjectHint->Destroy();
+                        return;
+                    }
+                }
+
+                if (isPlayStation)
+                {
+                    // L1/R1 and L2/R2 are flipped on PS3, leading
+                    // to the voice lines being wrong for the hints.
+                    // 
+                    // We'll provide an alternate control scheme to
+                    // address this later on, but for now these should
+                    // be hidden.
+
+                    if (strstr(pTextCard->m_pVariables, "button_lb") || strstr(pTextCard->m_pVariables, "button_rb"))
+                    {
+                        pCommonObjectHint->Destroy();
+                        return;
+                    }
+                }
             }
         }
     }

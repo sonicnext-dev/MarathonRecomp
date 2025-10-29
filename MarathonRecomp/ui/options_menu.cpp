@@ -821,7 +821,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
             DrawOption(rowCount++, &Config::HorizontalCamera, true);
             DrawOption(rowCount++, &Config::VerticalCamera, true);
             DrawOption(rowCount++, &Config::AllowBackgroundInput, true);
-            DrawOption(rowCount++, &Config::ControllerIcons, true);
+            DrawOption(rowCount++, &Config::ControllerIcons, !OptionsMenu::s_isPause, cmnReason);
             DrawOption(rowCount++, &Config::LightDash, true, nullptr, ENUM_VALUE(ELightDash), false, true);
             DrawOption(rowCount++, &Config::SlidingAttack, true, nullptr, ENUM_VALUE(ESlidingAttack), false, true);
             break;
