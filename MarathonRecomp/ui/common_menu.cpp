@@ -373,6 +373,11 @@ double CommonMenu::Close(bool isAnimated)
     return isAnimated ? ComputeLinearMotion(m_time, 0, ANIMATION_DURATION) : 1.0;
 }
 
+bool CommonMenu::IsOpen() const
+{
+    return !m_isClosing && ComputeLinearMotion(m_time, 0, ANIMATION_DURATION) >= 1.0;
+}
+
 void CommonMenu::SetTitle(std::string title, bool isAnimated)
 {
     if (Title == title)

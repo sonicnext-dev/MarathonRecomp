@@ -1017,42 +1017,45 @@ void OptionsMenu::Draw()
 
         case OptionsMenuState::Idle:
         {
-            for (auto& spInputManager : App::s_pApp->m_pDoc->m_vspInputManager)
+            if (s_commonMenu.IsOpen())
             {
-                auto& rPadState = spInputManager->m_PadState;
+                for (auto& spInputManager : App::s_pApp->m_pDoc->m_vspInputManager)
+                {
+                    auto& rPadState = spInputManager->m_PadState;
 
-                if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadUp) || -rPadState.LeftStickVertical > 0.5f)
-                    upIsHeld = true;
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadUp) || -rPadState.LeftStickVertical > 0.5f)
+                        upIsHeld = true;
 
-                if (!g_upWasHeld && upIsHeld)
-                    g_up = true;
+                    if (!g_upWasHeld && upIsHeld)
+                        g_up = true;
 
-                if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadDown) || -rPadState.LeftStickVertical < -0.5f)
-                    downIsHeld = true;
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadDown) || -rPadState.LeftStickVertical < -0.5f)
+                        downIsHeld = true;
 
-                if (!g_downWasHeld && downIsHeld)
-                    g_down = true;
+                    if (!g_downWasHeld && downIsHeld)
+                        g_down = true;
 
-                if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadLeft) || -rPadState.LeftStickHorizontal > 0.5f)
-                    leftIsHeld = true;
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadLeft) || -rPadState.LeftStickHorizontal > 0.5f)
+                        leftIsHeld = true;
 
-                if (!g_leftWasHeld && leftIsHeld)
-                    g_left = true;
+                    if (!g_leftWasHeld && leftIsHeld)
+                        g_left = true;
 
-                if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadRight) || -rPadState.LeftStickHorizontal < -0.5f)
-                    rightIsHeld = true;
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadRight) || -rPadState.LeftStickHorizontal < -0.5f)
+                        rightIsHeld = true;
 
-                if (!g_rightWasHeld && rightIsHeld)
-                    g_right = true;
+                    if (!g_rightWasHeld && rightIsHeld)
+                        g_right = true;
 
-                if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_A))
-                    g_isAccepted = true;
+                    if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_A))
+                        g_isAccepted = true;
 
-                if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_B))
-                    g_isDeclined = true;
+                    if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_B))
+                        g_isDeclined = true;
 
-                if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_X))
-                    g_isReset = true;
+                    if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_X))
+                        g_isReset = true;
+                }
             }
 
             if (s_isPause)
