@@ -1058,8 +1058,11 @@ void OptionsMenu::Draw()
             if (s_isPause)
                 DrawArrows({ 0, 0 }, res, g_chevronTime);
 
-            if (s_flowState == OptionsMenuFlowState::OptionCursor)
-                ButtonGuide::Open(g_optionCanReset ? "ButtonGuide_ResetSelectBack" : "ButtonGuide_SelectBack", false);
+            auto buttons = s_flowState == OptionsMenuFlowState::OptionCursor && g_optionCanReset
+                ? "ButtonGuide_ResetSelectBack"
+                : "ButtonGuide_SelectBack";
+
+            ButtonGuide::Open(buttons, false);
 
             break;
         }
@@ -1215,8 +1218,6 @@ void OptionsMenu::Draw()
                 Game_PlaySound("window_close");
 
                 SetFlowState(OptionsMenuFlowState::CategoryCursor);
-
-                ButtonGuide::Open("ButtonGuide_SelectBack", false);
 
                 g_cursorArrowsTime = ImGui::GetTime();
 
