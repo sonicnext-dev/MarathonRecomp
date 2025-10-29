@@ -39,7 +39,7 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(0x20);
         xpointer<ButtonWindowTask> m_pButtonWindowTask;
         MARATHON_INSERT_PADDING(4);
-        be<uint32_t> m_SelectedIndex;
+        be<uint32_t> m_MainMenuSelectedIndex;
         MARATHON_INSERT_PADDING(0x1D8);
         be<uint32_t> m_PressedButtons;
         MARATHON_INSERT_PADDING(0x18);

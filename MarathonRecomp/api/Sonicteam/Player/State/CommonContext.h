@@ -35,9 +35,7 @@ namespace Sonicteam::Player::State
             if (!m_spScore.get())
                 return nullptr;
 
-            auto pPlayer = m_spScore->m_pPlayer;
-            
-            return pPlayer->GetDoc<DocMarathonImp>()->m_vspInputManager[pPlayer->m_ControllerIndex].get();
+            return m_spScore->m_pPlayer->GetInputManager();
         }
     };
 }

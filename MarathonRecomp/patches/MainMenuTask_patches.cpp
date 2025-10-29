@@ -10,7 +10,7 @@ PPC_FUNC(sub_824FFCF8)
     auto pHUDMainMenu = pMainMenuTask->m_pHUDMainMenu;
 
 #ifdef MARATHON_RECOMP_OPTIONS_MENU
-    if (pMainMenuTask->m_State == Sonicteam::MainMenuTask::MainMenuState_MainMenu && pMainMenuTask->m_SelectedIndex == 3)
+    if (pMainMenuTask->m_State == Sonicteam::MainMenuTask::MainMenuState_MainMenu && pMainMenuTask->m_MainMenuSelectedIndex == 3)
     {
         if (!OptionsMenu::s_isVisible && (pMainMenuTask->m_PressedButtons.get() & 0x10) != 0)
         {
@@ -25,7 +25,7 @@ PPC_FUNC(sub_824FFCF8)
             guest_stack_var<Sonicteam::Message::MsgHUDMainMenuSetCursor> msgHUDMainMenuSetCursor
             (
                 Sonicteam::HUDMainMenu::HUDMainMenuState_MainCursorOutro,
-                pMainMenuTask->m_SelectedIndex
+                pMainMenuTask->m_MainMenuSelectedIndex
             );
 
             // Play cursor outro animation.

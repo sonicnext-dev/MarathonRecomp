@@ -1095,7 +1095,7 @@ void OptionsMenu::Draw()
                     guest_stack_var<Sonicteam::Message::MsgHUDMainMenuSetCursor> msgHUDMainMenuSetCursor
                     (
                         Sonicteam::HUDMainMenu::HUDMainMenuState_MainCursorIntro,
-                        s_pMainMenuTask->m_SelectedIndex
+                        s_pMainMenuTask->m_MainMenuSelectedIndex
                     );
 
                     // Play cursor intro animation.

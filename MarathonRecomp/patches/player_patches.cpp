@@ -8,12 +8,10 @@
 PPC_FUNC_IMPL(__imp__sub_82195500);
 PPC_FUNC(sub_82195500)
 {
-    auto* pPlayer = (Sonicteam::Player::Object*)(base + ctx.r3.u32);
-    auto* pDocMarathonImp = pPlayer->GetDoc<Sonicteam::DocMarathonImp>();
-    auto* pGame = pDocMarathonImp->GetDocMode<Sonicteam::GameMode>()->GetGame();
-    auto& spManager = pDocMarathonImp->m_vspInputManager[pPlayer->m_ControllerIndex];
+    auto pPlayer = (Sonicteam::Player::Object*)(base + ctx.r3.u32);
+    auto pInputManager = pPlayer->GetInputManager();
 
-    if (pPlayer->m_IsPlayer && spManager.get())
+    if (pPlayer->m_IsPlayer && pInputManager)
     {
         if (Config::EnableDebugMode)
         {
@@ -22,8 +20,12 @@ PPC_FUNC(sub_82195500)
                 case 1:
                 {
                     // Toggle debug posture on Select press.
-                    if (pPlayer->m_SetupModuleIndexPrefix == 1 && spManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_Select))
+                    if (pPlayer->m_SetupModuleIndexPrefix == 1 && pInputManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_Select))
+                    {
                         pPlayer->m_SetupModuleIndexPostfix = 2;
+
+                        LOGFN("Debug Mode: Enabled");
+                    }
 
                     break;
                 }
@@ -31,10 +33,13 @@ PPC_FUNC(sub_82195500)
                 case 2:
                 {
                     // Toggle camera volume collision on B press.
-                    if (spManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_B))
+                    if (pInputManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_B))
                     {
+                        auto pGame = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->GetGame();
                         auto pZock = pPlayer->GetPlugin<Sonicteam::Player::Zock>("zock");
                         auto collisionFilterInfo = pZock->m_spPhantomA->m_pRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo == 6 ? 0x383 : 6;
+
+                        LOGFN("Camera Volumes: {}", collisionFilterInfo != 6 ? "Enabled" : "Disabled");
 
                         pZock->m_spPhantomA->m_pRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo = collisionFilterInfo;
                         pGame->GetPhysicsWorld<Sonicteam::SoX::Physics::Havok::WorldHavok>()->m_pWorld->updateCollisionFilterOnWorld(1, 1);
@@ -46,16 +51,18 @@ PPC_FUNC(sub_82195500)
         }
 
         // Toggle demo camera on right stick press.
-        if (Config::RestoreDemoCameraMode && spManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_RightStick))
+        if (Config::RestoreDemoCameraMode && pInputManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_RightStick))
         {
             auto pCameraman = static_cast<Sonicteam::Camera::Cameraman*>(pPlayer->m_pCameraman.get());
 
             if (auto pCameraMode = pCameraman->m_spCameraModeManager->m_spCameraMode.get())
             {
                 guest_stack_var<Sonicteam::Message::MsgCameramanChangeMode> msgCameramanChangeMode;
-                msgCameramanChangeMode->ControllerIndex = spManager->m_ControllerIndex;
+                msgCameramanChangeMode->ControllerIndex = pInputManager->m_ControllerIndex;
                 msgCameramanChangeMode->TargetActorID = pPlayer->m_ActorID;
                 msgCameramanChangeMode->IsDemoCamera = pCameraMode->m_pVftable.ptr != 0x82002004;
+
+                LOGFN("Demo Camera: {}", msgCameramanChangeMode->IsDemoCamera ? "Enabled" : "Disabled");
 
                 pCameraman->ProcessMessage(msgCameramanChangeMode.get());
             }
@@ -160,7 +167,13 @@ bool PlayerDebugMode_RemapDebugExitButton(PPCRegister& r30)
 {
     auto pPadState = (Sonicteam::SoX::Input::PadState*)g_memory.Translate(r30.u32);
 
-    return pPadState->IsPressed(Sonicteam::SoX::Input::KeyState_Select);
+    if (pPadState->IsPressed(Sonicteam::SoX::Input::KeyState_Select))
+    {
+        LOGFN("Debug Mode: Disabled");
+        return true;
+    }
+
+    return false;
 }
 
 bool AntigravityRetainsMomentum()
