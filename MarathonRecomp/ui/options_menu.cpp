@@ -18,6 +18,8 @@
 
 static constexpr int MAX_VISIBLE_ROWS = 3;
 
+static bool g_isClosingButtonWindow{};
+
 static double g_stateTime{};
 static double g_flowStateTime{};
 static double g_chevronTime{};
@@ -962,7 +964,15 @@ static void DrawContainer(ImVec2 min, ImVec2 max)
 void OptionsMenu::Draw()
 {
     if (!s_isVisible)
+    {
+        if (g_isClosingButtonWindow)
+        {
+            ButtonWindow::Close();
+            g_isClosingButtonWindow = false;
+        }
+
         return;
+    }
 
     // Draw faded letterbox at tall aspect ratios.
     if (g_aspectRatio < NARROW_ASPECT_RATIO)
@@ -1080,13 +1090,10 @@ void OptionsMenu::Draw()
             {
                 if (closingTime >= 1.0)
                 {
-                    ButtonWindow::Close();
-
+                    g_isClosingButtonWindow = true;
                     s_isProcessedMessages = false;
-
                     s_pMainMenuTask = nullptr;
                     s_isVisible = false;
-
                     break;
                 }
 
