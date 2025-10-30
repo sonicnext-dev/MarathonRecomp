@@ -126,12 +126,12 @@ inline bool strcmpU16(const uint16_t* a, const uint16_t* b, bool endianSwapA = f
     return true;
 }
 
-inline void printU16(const uint16_t* str)
+inline void printU16(const uint16_t* str, bool endianSwap = false)
 {
     for (size_t i = 0; i < strlenU16(str); i++)
     {
-        auto c0 = str[i] >> 8;
-        auto c1 = str[i] & 0xFF;
+        auto c0 = endianSwap ? ByteSwap(str[i]) >> 8 : str[i] >> 8;
+        auto c1 = endianSwap ? ByteSwap(str[i]) & 0xFF : str[i] & 0xFF;
 
         printf("%c%c", c0, c1);
     }
