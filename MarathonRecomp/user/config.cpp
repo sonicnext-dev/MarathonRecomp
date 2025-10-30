@@ -33,6 +33,13 @@ CONFIG_DEFINE_ENUM_TEMPLATE(EControllerIcons)
     { "Xbox",        EControllerIcons::Xbox },
     { "PlayStation", EControllerIcons::PlayStation }
 };
+
+CONFIG_DEFINE_ENUM_TEMPLATE(EControllerLayout)
+{
+    { "Standard",  EControllerLayout::Standard },
+    { "Alternate", EControllerLayout::Alternate }
+};
+
 CONFIG_DEFINE_ENUM_TEMPLATE(ELightDash)
 {
     { "X", ELightDash::X },
@@ -915,3 +922,7 @@ bool Config::IsControllerIconsPS3()
     return result;
 }
 
+bool Config::IsControllerLayoutPS3()
+{
+    return Config::ControllerLayout == EControllerLayout::Alternate;
+}

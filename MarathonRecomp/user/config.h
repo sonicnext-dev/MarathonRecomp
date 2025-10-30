@@ -69,6 +69,12 @@ enum class EControllerIcons : uint32_t
     PlayStation
 };
 
+enum class EControllerLayout : uint32_t
+{
+    Standard,
+    Alternate
+};
+
 enum class EChannelConfiguration : uint32_t
 {
     Stereo,
@@ -256,4 +262,5 @@ public:
     static void Save();
 
     static bool IsControllerIconsPS3();
+    static bool IsControllerLayoutPS3();
 };

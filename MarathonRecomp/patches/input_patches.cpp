@@ -1,5 +1,7 @@
 #include <api/Marathon.h>
+#include <hid/hid.h>
 #include <user/config.h>
+#include <os/logger.h>
 
 static constexpr int INPUT_LISTENER_B_DOWN = 0x2000000;
 
@@ -9,6 +11,20 @@ PPC_FUNC(sub_82222428)
 {
     auto pListenerNormal = (Sonicteam::Player::Input::ListenerNormal*)(base + ctx.r3.u32);
     auto pInputManager = (Sonicteam::SoX::Input::Manager*)(base + ctx.r4.u32);
+
+    auto& rActionD = pListenerNormal->m_ActionD;
+    auto& rTimedAction = pListenerNormal->m_TimedAction;
+
+    if (Config::IsControllerLayoutPS3())
+    {
+        rActionD = Sonicteam::SoX::Input::KeyState_RightBumper;
+        rTimedAction.m_Action = Sonicteam::SoX::Input::KeyState_RightBumper;
+    }
+    else
+    {
+        rActionD = Sonicteam::SoX::Input::KeyState_RightTrigger;
+        rTimedAction.m_Action = Sonicteam::SoX::Input::KeyState_RightTrigger;
+    }
 
     __imp__sub_82222428(ctx, base);
 
@@ -20,6 +36,11 @@ PPC_FUNC(sub_82222428)
         if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_B))
             pListenerNormal->m_State = pListenerNormal->m_State.get() | INPUT_LISTENER_B_DOWN;
     }
+}
+
+void RemapLightDash(PPCRegister& r3, PPCRegister& r11)
+{
+    r11.u64 = ((r3.u32 >> (Config::LightDash == ELightDash::X ? 8 : 15)) & 1) != 0;
 }
 
 void RemapAntigravityEnter(PPCRegister& r11, PPCRegister& r28)
@@ -40,7 +61,23 @@ void RemapAntigravityExit(PPCRegister& r11, PPCRegister& r30)
     r11.u64 = (r30.u32 & INPUT_LISTENER_B_DOWN) == 0;
 }
 
-void RemapLightDash(PPCRegister& r3, PPCRegister& r11)
+bool RemapCameraReset(PPCRegister& r11)
 {
-    r11.u64 = ((r3.u32 >> (Config::LightDash == ELightDash::X ? 8 : 15)) & 1) != 0;
+    return Config::IsControllerLayoutPS3()
+        ? r11.u32 & Sonicteam::SoX::Input::KeyState_LeftBumper
+        : r11.u32 & Sonicteam::SoX::Input::KeyState_LeftTrigger;
+}
+
+bool RemapCameraLeft(PPCRegister& r11)
+{
+    return Config::IsControllerLayoutPS3()
+        ? r11.u32 & Sonicteam::SoX::Input::KeyState_LeftTrigger
+        : r11.u32 & Sonicteam::SoX::Input::KeyState_LeftBumper;
+}
+
+bool RemapCameraRight(PPCRegister& r11)
+{
+    return Config::IsControllerLayoutPS3()
+        ? r11.u32 & Sonicteam::SoX::Input::KeyState_RightTrigger
+        : r11.u32 & Sonicteam::SoX::Input::KeyState_RightBumper;
 }

@@ -315,6 +315,63 @@ CONFIG_DEFINE_ENUM_LOCALE(EControllerIcons)
         }
     }
 };
+
+CONFIG_DEFINE_LOCALE(ControllerLayout)
+{
+    { ELanguage::English,  { "Controller Layout", "Change the overall layout of the action buttons." } },
+    { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
+    { ELanguage::German,   { "DUMMY", "DUMMY" } },
+    { ELanguage::French,   { "DUMMY", "DUMMY" } },
+    { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
+    { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
+};
+
+CONFIG_DEFINE_ENUM_LOCALE(EControllerLayout)
+{
+    {
+        ELanguage::English,
+        {
+            { EControllerLayout::Standard,  { "Standard", "" } },
+            { EControllerLayout::Alternate, { "Alternate", "Alternate: ${picture(button_lb)}/${picture(button_lt)} and ${picture(button_rb)}/${picture(button_rt)} are swapped." } }
+        }
+    },
+    {
+        ELanguage::Japanese,
+        {
+            { EControllerLayout::Standard,  { "DUMMY", "" } },
+            { EControllerLayout::Alternate, { "DUMMY", "DUMMY" } }
+        }
+    },
+    {
+        ELanguage::German,
+        {
+            { EControllerLayout::Standard,  { "DUMMY", "" } },
+            { EControllerLayout::Alternate, { "DUMMY", "DUMMY" } }
+        }
+    },
+    {
+        ELanguage::French,
+        {
+            { EControllerLayout::Standard,  { "DUMMY", "" } },
+            { EControllerLayout::Alternate, { "DUMMY", "DUMMY" } }
+        }
+    },
+    {
+        ELanguage::Spanish,
+        {
+            { EControllerLayout::Standard,  { "DUMMY", "" } },
+            { EControllerLayout::Alternate, { "DUMMY", "DUMMY" } }
+        }
+    },
+    {
+        ELanguage::Italian,
+        {
+            { EControllerLayout::Standard,  { "DUMMY", "" } },
+            { EControllerLayout::Alternate, { "DUMMY", "DUMMY" } }
+        }
+    }
+};
+
 CONFIG_DEFINE_LOCALE(LightDash)
 {
     { ELanguage::English,  { "Light Dash", "Change how Light Dash is activated for Sonic and Shadow." } },

@@ -154,45 +154,41 @@ PPC_FUNC(sub_822CE930)
         }
     }
 
-    auto isPlayStation = Config::ControllerIcons == EControllerIcons::PlayStation;
+    guest_stack_var<int> stack{};
 
-    if (Config::ControllerIcons == EControllerIcons::Auto)
-        isPlayStation = hid::g_inputDeviceController == hid::EInputDevice::PlayStation;
+    auto pspTextCard = GuestToHostFunction<boost::shared_ptr<Sonicteam::TextCard>*>(sub_825ECB48,
+        stack.get(), App::s_pApp->GetGame()->m_pHintTextBook.get(), (const char*)rMessageName);
 
-    if (!Config::ControlTutorial || isPlayStation)
+    stack.~guest_stack_var();
+
+    if (auto pTextCard = pspTextCard->get())
     {
-        guest_stack_var<int> stack{};
-
-        auto pspTextCard = GuestToHostFunction<boost::shared_ptr<Sonicteam::TextCard>*>(sub_825ECB48,
-            stack.get(), App::s_pApp->GetGame()->m_pHintTextBook.get(), (const char*)rMessageName);
-
-        if (auto pTextCard = pspTextCard->get())
+        if (auto pVariables = pTextCard->m_pVariables.get())
         {
-            if (pTextCard->m_pVariables)
+            if (!Config::ControlTutorial)
             {
-                if (!Config::ControlTutorial)
+                if (strstr(pVariables, "picture(button_"))
                 {
-                    if (strstr(pTextCard->m_pVariables, "picture(button_"))
-                    {
-                        pCommonObjectHint->Destroy();
-                        return;
-                    }
+                    pCommonObjectHint->Destroy();
+                    return;
                 }
+            }
 
-                if (isPlayStation)
+            // Hide hints with remapped controls.
+            if (Config::IsControllerIconsPS3())
+            {
+                if (!Config::IsControllerLayoutPS3() && (strstr(pVariables, "button_lb") || strstr(pVariables, "button_rb")))
                 {
-                    // L1/R1 and L2/R2 are flipped on PS3, leading
-                    // to the voice lines being wrong for the hints.
-                    // 
-                    // We'll provide an alternate control scheme to
-                    // address this later on, but for now these should
-                    // be hidden.
-
-                    if (strstr(pTextCard->m_pVariables, "button_lb") || strstr(pTextCard->m_pVariables, "button_rb"))
-                    {
-                        pCommonObjectHint->Destroy();
-                        return;
-                    }
+                    pCommonObjectHint->Destroy();
+                    return;
+                }
+            }
+            else
+            {
+                if (Config::IsControllerLayoutPS3() && (strstr(pVariables, "button_lt") || strstr(pVariables, "button_rt")))
+                {
+                    pCommonObjectHint->Destroy();
+                    return;
                 }
             }
         }

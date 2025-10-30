@@ -691,6 +691,27 @@ address = 0x82217AB0
 registers = ["r11", "r30"]
 
 [[midasm_hook]]
+name = "RemapCameraReset"
+address = 0x824A0B54
+registers = ["r11"]
+jump_address_on_true = 0x824A0B60
+jump_address_on_false = 0x824A0B84
+
+[[midasm_hook]]
+name = "RemapCameraLeft"
+address = 0x824A0C20
+registers = ["r11"]
+jump_address_on_true = 0x824A0C2C
+jump_address_on_false = 0x824A0C54
+
+[[midasm_hook]]
+name = "RemapCameraRight"
+address = 0x824A0C58
+registers = ["r11"]
+jump_address_on_true = 0x824A0C64
+jump_address_on_false = 0x824A0C8C
+
+[[midasm_hook]]
 name = "AntigravityRetainsMomentum"
 address = 0x82217968
 jump_address_on_true = 0x8221796C
