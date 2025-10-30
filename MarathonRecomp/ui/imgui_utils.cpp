@@ -1056,15 +1056,10 @@ ImGuiTextInterpData GetHidInterpTextData()
     auto buttonTexture = &g_upTexController;
     auto buttonTextureWidth = uint16_t(256);
     auto buttonTextureHeight = uint16_t(128);
-    auto buttonCrops = &g_buttonCropsXenon;
 
-    auto isPlayStation = Config::ControllerIcons == EControllerIcons::PlayStation;
-
-    if (Config::ControllerIcons == EControllerIcons::Auto)
-        isPlayStation = hid::g_inputDeviceController == hid::EInputDevice::PlayStation;
-
-    if (isPlayStation)
-        buttonCrops = &g_buttonCropsPS3;
+    auto buttonCrops = Config::IsControllerIconsPS3() 
+        ? &g_buttonCropsPS3
+        : &g_buttonCropsXenon;
 
     if (!App::s_isInit)
     {
@@ -1096,8 +1091,8 @@ const xxHashMap<ImGuiTextPictureCrop> g_buttonCropsXenon =
     { HashStr("button_y"),     { 84, 0, 28, 28 } },
     { HashStr("button_lb"),    { 112, 0, 53, 28 } },
     { HashStr("button_rb"),    { 168, 0, 53, 28 } },
-    { HashStr("button_lt"),    { 56, 28, 55, 28 } },
-    { HashStr("button_rt"),    { 0, 28, 55, 28 } },
+    { HashStr("button_lt"),    { 56, 29, 55, 28 } },
+    { HashStr("button_rt"),    { 0, 29, 55, 28 } },
     { HashStr("button_start"), { 112, 28, 28, 28 } },
     { HashStr("button_back"),  { 140, 28, 28, 28 } }
 };

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/Player/Input/TimedAction.h>
 
 namespace Sonicteam::Player::Input
 {
@@ -14,5 +15,7 @@ namespace Sonicteam::Player::Input
         be<SoX::Input::KeyState> m_ActionA;
         be<SoX::Input::KeyState> m_ActionB;
         be<SoX::Input::KeyState> m_ActionC;
+        be<SoX::Input::KeyState> m_ActionD;
+        TimedAction m_TimedAction;
     };
 }

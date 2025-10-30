@@ -254,4 +254,6 @@ public:
     static void CreateCallbacks();
     static void Load();
     static void Save();
+
+    static bool IsControllerIconsPS3();
 };

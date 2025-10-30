@@ -35,7 +35,7 @@ PPC_FUNC(sub_82195500)
                     // Toggle camera volume collision on B press.
                     if (pInputManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_B))
                     {
-                        auto pGame = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->GetGame();
+                        auto pGame = App::s_pApp->GetGame();
                         auto pZock = pPlayer->GetPlugin<Sonicteam::Player::Zock>("zock");
                         auto collisionFilterInfo = pZock->m_spPhantomA->m_pRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo == 6 ? 0x383 : 6;
 
@@ -92,7 +92,7 @@ PPC_FUNC(sub_8221A7D8)
     }
 
     auto pTailsFlight = pPlayer->m_spStateMachine->GetBase()->GetState<Sonicteam::Player::State::TailsFlight>();
-    auto pGame = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->GetGame();
+    auto pGame = App::s_pApp->GetGame();
 
     auto maturityValue = 1.0f;
 

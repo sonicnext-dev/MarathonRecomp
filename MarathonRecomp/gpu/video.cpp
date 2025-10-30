@@ -4076,12 +4076,8 @@ static void ProcSetViewport(const RenderCommand& cmd)
 static void SetTexture(GuestDevice* device, uint32_t index, GuestTexture* texture) 
 {
     // printf("SetTexture: %x %d %x\n", device, index, texture);
-    auto isPlayStation = Config::ControllerIcons == EControllerIcons::PlayStation;
 
-    if (Config::ControllerIcons == EControllerIcons::Auto)
-        isPlayStation = hid::g_inputDeviceController == hid::EInputDevice::PlayStation;
-
-    if (isPlayStation && texture != nullptr && texture->patchedTexture != nullptr)
+    if (Config::IsControllerIconsPS3() && texture != nullptr && texture->patchedTexture != nullptr)
         texture = texture->patchedTexture.get();
 
     RenderCommand cmd;

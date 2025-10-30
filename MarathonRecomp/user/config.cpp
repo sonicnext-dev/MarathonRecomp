@@ -1,4 +1,5 @@
 #include "config.h"
+#include <hid/hid.h>
 #include <os/logger.h>
 #include <ui/game_window.h>
 #include <ui/options_menu.h>
@@ -26,6 +27,12 @@ CONFIG_DEFINE_ENUM_TEMPLATE(ECameraRotationMode)
     { "Reverse", ECameraRotationMode::Reverse }
 };
 
+CONFIG_DEFINE_ENUM_TEMPLATE(EControllerIcons)
+{
+    { "Auto",        EControllerIcons::Auto },
+    { "Xbox",        EControllerIcons::Xbox },
+    { "PlayStation", EControllerIcons::PlayStation }
+};
 CONFIG_DEFINE_ENUM_TEMPLATE(ELightDash)
 {
     { "X", ELightDash::X },
@@ -36,13 +43,6 @@ CONFIG_DEFINE_ENUM_TEMPLATE(ESlidingAttack)
 {
     { "B", ESlidingAttack::B },
     { "X", ESlidingAttack::X }
-};
-
-CONFIG_DEFINE_ENUM_TEMPLATE(EControllerIcons)
-{
-    { "Auto",        EControllerIcons::Auto },
-    { "Xbox",        EControllerIcons::Xbox },
-    { "PlayStation", EControllerIcons::PlayStation }
 };
 
 CONFIG_DEFINE_ENUM_TEMPLATE(SDL_Scancode)
@@ -904,3 +904,14 @@ void Config::Save()
         LOGN_ERROR("Failed to write configuration.");
     }
 }
+
+bool Config::IsControllerIconsPS3()
+{
+    auto result = Config::ControllerIcons == EControllerIcons::PlayStation;
+
+    if (Config::ControllerIcons == EControllerIcons::Auto)
+        result = hid::g_inputDeviceController == hid::EInputDevice::PlayStation;
+
+    return result;
+}
+

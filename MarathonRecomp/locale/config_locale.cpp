@@ -244,6 +244,77 @@ CONFIG_DEFINE_ENUM_LOCALE(ECameraRotationMode)
     }
 };
 
+CONFIG_DEFINE_LOCALE(AllowBackgroundInput)
+{
+    { ELanguage::English,  { "Allow Background Input", "Allow controller input whilst the game window is unfocused." } },
+    { ELanguage::Japanese, { "バックグラウンド入力", "フォーカスされていないゲームに入力できるか選択できます" } },
+    { ELanguage::German,   { "Erlaube Hintergrundeingaben", "Erlaube Eingaben deines Controllers auch wenn das Spielfenster nicht fokussiert ist." } },
+    { ELanguage::French,   { "Manette en arrière plan", "Permet d'utiliser la manette dans le jeu lorsque qu'il n'est pas au premier plan." } },
+    { ELanguage::Spanish,  { "Control en segundo plano", "Permite controlar el juego con un mando mientras la ventana esté en segundo plano." } },
+    { ELanguage::Italian,  { "Input con la finestra inattiva", "Attiva/disattiva i tasti del controller mentre la finestra è inattiva." } }
+};
+
+CONFIG_DEFINE_LOCALE(ControllerIcons)
+{
+    { ELanguage::English,  { "Controller Icons", "Change the icons to match your controller." } },
+    { ELanguage::Japanese, { "コントローラーアイコン", "ゲーム内のコントローラーアイコンを変更できます" } },
+    { ELanguage::German,   { "Controllersymbole", "Ändere die Controllersymbole, um sie auf dein Modell anzupassen." } },
+    { ELanguage::French,   { "Icône des boutons", "Modifie les icônes pour les faire correspondre à votre manette." } },
+    { ELanguage::Spanish,  { "Iconos del mando", "Cambia los iconos para que coincidan con tu mando." } },
+    { ELanguage::Italian,  { "Icone dei tasti", "Modifica le icone per farle corrispondere con il tuo controller." } }
+};
+
+CONFIG_DEFINE_ENUM_LOCALE(EControllerIcons)
+{
+    {
+        ELanguage::English,
+        {
+            { EControllerIcons::Auto,        { "Auto", "Auto: the game will determine which icons to use based on the current input device." } },
+            { EControllerIcons::Xbox,        { "Xbox", "" } },
+            { EControllerIcons::PlayStation, { "PlayStation", "" } }
+        }
+    },
+    {
+        ELanguage::Japanese,
+        {
+            { EControllerIcons::Auto,        { "自動検出", "自動検出: コントローラーアイコンを使用している入力デバイスに応じて自動的に決定します" } },
+            { EControllerIcons::Xbox,        { "Xbox", "" } },
+            { EControllerIcons::PlayStation, { "PlayStation", "" } }
+        }
+    },
+    {
+        ELanguage::German,
+        {
+            { EControllerIcons::Auto,        { "Auto", "Auto: Das Spiel erkennt automatisch deinen Controller um die Symbole dementsprechend anzupassen." } },
+            { EControllerIcons::Xbox,        { "Xbox", "" } },
+            { EControllerIcons::PlayStation, { "PlayStation", "" } }
+        }
+    },
+    {
+        ELanguage::French,
+        {
+            { EControllerIcons::Auto,        { "Auto", "Auto : le jeu déterminera automatiquement quelles icônes utiliser en fonction du périphérique d'entrée." } },
+            { EControllerIcons::Xbox,        { "Xbox", "" } },
+            { EControllerIcons::PlayStation, { "PlayStation", "" } }
+        }
+    },
+    {
+        ELanguage::Spanish,
+        {
+            { EControllerIcons::Auto,        { "Auto", "Auto: el juego determinará de forma automática qué iconos utilizar dependiendo del dispositivo de entrada actual." } },
+            { EControllerIcons::Xbox,        { "Xbox", "" } },
+            { EControllerIcons::PlayStation, { "PlayStation", "" } }
+        }
+    },
+    {
+        ELanguage::Italian,
+        {
+            { EControllerIcons::Auto,        { "Auto", "Auto: il gioco determinerà quali icone da utilizzare in base al dispositivo di input attuale." } },
+            { EControllerIcons::Xbox,        { "Xbox", "" } },
+            { EControllerIcons::PlayStation, { "PlayStation", "" } }
+        }
+    }
+};
 CONFIG_DEFINE_LOCALE(LightDash)
 {
     { ELanguage::English,  { "Light Dash", "Change how Light Dash is activated for Sonic and Shadow." } },
@@ -352,78 +423,6 @@ CONFIG_DEFINE_ENUM_LOCALE(ESlidingAttack)
         {
             { ESlidingAttack::B, { "Tieni premuto ${picture(button_b)}", "" } },
             { ESlidingAttack::X, { "Rilascia ${picture(button_x)}", "" } }
-        }
-    }
-};
-
-CONFIG_DEFINE_LOCALE(AllowBackgroundInput)
-{
-    { ELanguage::English,  { "Allow Background Input", "Allow controller input whilst the game window is unfocused." } },
-    { ELanguage::Japanese, { "バックグラウンド入力", "フォーカスされていないゲームに入力できるか選択できます" } },
-    { ELanguage::German,   { "Erlaube Hintergrundeingaben", "Erlaube Eingaben deines Controllers auch wenn das Spielfenster nicht fokussiert ist." } },
-    { ELanguage::French,   { "Manette en arrière plan", "Permet d'utiliser la manette dans le jeu lorsque qu'il n'est pas au premier plan." } },
-    { ELanguage::Spanish,  { "Control en segundo plano", "Permite controlar el juego con un mando mientras la ventana esté en segundo plano." } },
-    { ELanguage::Italian,  { "Input con la finestra inattiva", "Attiva/disattiva i tasti del controller mentre la finestra è inattiva." } }
-};
-
-CONFIG_DEFINE_LOCALE(ControllerIcons)
-{
-    { ELanguage::English,  { "Controller Icons", "Change the icons to match your controller." } },
-    { ELanguage::Japanese, { "コントローラーアイコン", "ゲーム内のコントローラーアイコンを変更できます" } },
-    { ELanguage::German,   { "Controllersymbole", "Ändere die Controllersymbole, um sie auf dein Modell anzupassen." } },
-    { ELanguage::French,   { "Icône des boutons", "Modifie les icônes pour les faire correspondre à votre manette." } },
-    { ELanguage::Spanish,  { "Iconos del mando", "Cambia los iconos para que coincidan con tu mando." } },
-    { ELanguage::Italian,  { "Icone dei tasti", "Modifica le icone per farle corrispondere con il tuo controller." } }
-};
-
-CONFIG_DEFINE_ENUM_LOCALE(EControllerIcons)
-{
-    {
-        ELanguage::English,
-        {
-            { EControllerIcons::Auto,        { "Auto", "Auto: the game will determine which icons to use based on the current input device." } },
-            { EControllerIcons::Xbox,        { "Xbox", "" } },
-            { EControllerIcons::PlayStation, { "PlayStation", "" } }
-        }
-    },
-    {
-        ELanguage::Japanese,
-        {
-            { EControllerIcons::Auto,        { "自動検出", "自動検出: コントローラーアイコンを使用している入力デバイスに応じて自動的に決定します" } },
-            { EControllerIcons::Xbox,        { "Xbox", "" } },
-            { EControllerIcons::PlayStation, { "PlayStation", "" } }
-        }
-    },
-    {
-        ELanguage::German,
-        {
-            { EControllerIcons::Auto,        { "Auto", "Auto: Das Spiel erkennt automatisch deinen Controller um die Symbole dementsprechend anzupassen." } },
-            { EControllerIcons::Xbox,        { "Xbox", "" } },
-            { EControllerIcons::PlayStation, { "PlayStation", "" } }
-        }
-    },
-    {
-        ELanguage::French,
-        {
-            { EControllerIcons::Auto,        { "Auto", "Auto : le jeu déterminera automatiquement quelles icônes utiliser en fonction du périphérique d'entrée." } },
-            { EControllerIcons::Xbox,        { "Xbox", "" } },
-            { EControllerIcons::PlayStation, { "PlayStation", "" } }
-        }
-    },
-    {
-        ELanguage::Spanish,
-        {
-            { EControllerIcons::Auto,        { "Auto", "Auto: el juego determinará de forma automática qué iconos utilizar dependiendo del dispositivo de entrada actual." } },
-            { EControllerIcons::Xbox,        { "Xbox", "" } },
-            { EControllerIcons::PlayStation, { "PlayStation", "" } }
-        }
-    },
-    {
-        ELanguage::Italian,
-        {
-            { EControllerIcons::Auto,        { "Auto", "Auto: il gioco determinerà quali icone da utilizzare in base al dispositivo di input attuale." } },
-            { EControllerIcons::Xbox,        { "Xbox", "" } },
-            { EControllerIcons::PlayStation, { "PlayStation", "" } }
         }
     }
 };

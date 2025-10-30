@@ -111,6 +111,7 @@
 #include "Sonicteam/Player/IZock.h"
 #include "Sonicteam/Player/Input/IListener.h"
 #include "Sonicteam/Player/Input/ListenerNormal.h"
+#include "Sonicteam/Player/Input/TimedAction.h"
 #include "Sonicteam/Player/Object.h"
 #include "Sonicteam/Player/PostureControl.h"
 #include "Sonicteam/Player/RootFrame.h"
