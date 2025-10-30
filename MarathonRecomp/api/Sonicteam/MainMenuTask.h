@@ -1,8 +1,9 @@
 #pragma once
 
 #include <Marathon.inl>
-#include <Sonicteam/Player/Object.h>
 #include <Sonicteam/SoX/Math/Vector.h>
+#include <Sonicteam/Player/Object.h>
+#include <Sonicteam/ButtonWindowTask.h>
 
 namespace Sonicteam
 {
@@ -23,6 +24,7 @@ namespace Sonicteam
             MainMenuState_Multiplayer = 0x17,
             MainMenuState_Extras = 0x1C,
             MainMenuState_Tag = 0x1E,
+            MainMenuState_Tag1PSelect = 0x1F,
             MainMenuState_Battle = 0x22,
             MainMenuState_GoldMedalResults = 0x26,
             MainMenuState_AudioRoom = 0x2F,
@@ -33,7 +35,15 @@ namespace Sonicteam
         };
 
         be<uint32_t> m_State;
-        MARATHON_INSERT_PADDING(0x248);
+        MARATHON_INSERT_PADDING(0x24);
+        xpointer<HUDMainMenu> m_pHUDMainMenu;
+        MARATHON_INSERT_PADDING(0x20);
+        xpointer<ButtonWindowTask> m_pButtonWindowTask;
+        MARATHON_INSERT_PADDING(4);
+        be<uint32_t> m_MainMenuSelectedIndex;
+        MARATHON_INSERT_PADDING(0x1D8);
+        be<uint32_t> m_PressedButtons;
+        MARATHON_INSERT_PADDING(0x18);
         xpointer<Actor> m_Field298;
         xpointer<Player::Object> m_SelectCharacters[9];
     };

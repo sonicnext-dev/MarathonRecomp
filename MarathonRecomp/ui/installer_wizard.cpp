@@ -10,14 +10,15 @@
 #include <locale/locale.h>
 #include <patches/aspect_ratio_patches.h>
 #include <ui/imgui_utils.h>
-#include <ui/button_guide.h>
+#include <ui/button_window.h>
+#include <ui/common_menu.h>
 #include <ui/message_window.h>
 #include <ui/game_window.h>
 #include <decompressor.h>
 #include <exports.h>
 #include <sdl_listener.h>
 
-#include <res/images/common/hedge-dev.dds.h>
+#include <res/images/common/sonicnext-dev.dds.h>
 #include <res/images/installer/install_001.dds.h>
 #include <res/images/installer/install_002.dds.h>
 #include <res/images/installer/install_003.dds.h>
@@ -69,9 +70,9 @@ constexpr float BORDER_OVERSHOOT = 36.0f;
 
 static constexpr size_t GRID_SIZE = 9;
 
-static ImFont *g_rodinFont;
-static ImFont *g_newRodinFont;
+static CommonMenu g_commonMenu;
 
+static double g_chevronTime = 0.0;
 static double g_appearTime = 0.0;
 static double g_disappearTime = DBL_MAX;
 static bool g_isDisappearing = false;
@@ -82,7 +83,7 @@ static std::filesystem::path g_gameSourcePath;
 static std::array<std::filesystem::path, int(DLC::Count)> g_dlcSourcePaths;
 static std::array<bool, int(DLC::Count)> g_dlcInstalled = {};
 static std::array<std::unique_ptr<GuestTexture>, 8> g_installTextures;
-static std::unique_ptr<GuestTexture> g_upHedgeDev;
+static std::unique_ptr<GuestTexture> g_upSonicNextDev;
 static Journal g_installerJournal;
 static Installer::Sources g_installerSources;
 static uint64_t g_installerAvailableSize = 0;
@@ -395,6 +396,33 @@ static int DLCIndex(DLC dlc)
     return (int)(dlc) - 1;
 }
 
+static void SetCurrentPage(WizardPage page)
+{
+    g_currentPage = page;
+
+    if (g_currentPage == WizardPage::InstallSucceeded)
+    {
+        ButtonWindow::Open("Button_Select");
+    }
+    else if (g_currentPage != WizardPage::Installing)
+    {
+        auto key = "Button_SelectBack";
+
+        if (g_currentPage == g_firstPage || g_currentPage == WizardPage::InstallFailed)
+            key = "Button_SelectQuit";
+
+        ButtonWindow::Open(key);
+    }
+    else if (g_currentPage == WizardPage::Installing)
+    {
+        ButtonWindow::Open("Button_Cancel");
+    }
+    else
+    {
+        ButtonWindow::Close();
+    }
+}
+
 static double ComputeMotionInstaller(double timeAppear, double timeDisappear, double offset, double total)
 {
     return ComputeMotion(timeAppear, offset, total) * (1.0 - ComputeMotion(timeDisappear, ALL_ANIMATIONS_FULL_DURATION - offset - total, total));
@@ -446,9 +474,9 @@ static void DrawBackground()
 
 static void DrawArrows()
 {
-    auto &res = ImGui::GetIO().DisplaySize;
+    auto& res = ImGui::GetIO().DisplaySize;
 
-    DrawArrows({ 0, res.y / 2 - Scale(10) }, res);
+    DrawArrows({ 0, 0 }, res, g_chevronTime);
 }
 
 static void DrawLeftImage()
@@ -471,19 +499,6 @@ static void DrawLeftImage()
     ImVec2 min = { g_aspectRatioOffsetX + Scale(pos.x), g_aspectRatioOffsetY + Scale(pos.y) };
     ImVec2 max = { min.x + Scale(IMAGE_WIDTH), min.y + Scale(IMAGE_HEIGHT) };
     drawList->AddImage(guestTexture, min, max, ImVec2(0, 0), ImVec2(1, 1), IM_COL32(255, 255, 255, a));
-}
-
-static void DrawHUD()
-{
-    auto &res = ImGui::GetIO().DisplaySize;
-
-    // Installer text
-    auto& headerText = Localise(g_currentPage == WizardPage::Installing ? "Installer_Header_Installing" : "Installer_Header_Installer");
-    auto alphaMotion = ComputeMotionInstaller(g_appearTime, g_disappearTime, TITLE_ANIMATION_TIME, TITLE_ANIMATION_DURATION);
-
-    DrawHUD({0, 0}, res, g_newRodinFont, headerText.c_str());
-
-    DrawVersionString(g_newRodinFont, IM_COL32(0, 0, 0, 70 * alphaMotion));
 }
 
 static void DrawContainer(ImVec2 min, ImVec2 max, bool isTextArea)
@@ -562,7 +577,7 @@ static void DrawDescriptionContainer()
 
     DrawTextParagraph
     (
-        g_rodinFont,
+        g_pFntRodin,
         fontSize,
         lineWidth,
         { textX, textY },
@@ -571,7 +586,7 @@ static void DrawDescriptionContainer()
 
         [=](const char* str, ImVec2 pos)
         {
-            DrawTextBasic(g_rodinFont, fontSize, pos, IM_COL32(255, 255, 255, 255 * textAlpha), str);
+            DrawTextBasic(g_pFntRodin, fontSize, pos, IM_COL32(255, 255, 255, 255 * textAlpha), str);
         }
     );
 
@@ -580,11 +595,7 @@ static void DrawDescriptionContainer()
 
     if (g_currentPage == WizardPage::InstallSucceeded)
     {
-        auto descTextSize = MeasureCentredParagraph(g_rodinFont, fontSize, lineWidth, lineMargin, descriptionText);
-
-        auto hedgeDevStr = "hedge-dev";
-        auto hedgeDevTextSize = g_rodinFont->CalcTextSizeA(fontSize, FLT_MAX, 0, hedgeDevStr);
-        auto hedgeDevTextMarginX = Scale(15);
+        auto descTextSize = MeasureCentredParagraph(g_pFntRodin, fontSize, lineWidth, lineMargin, descriptionText);
 
         auto colWhite = IM_COL32(255, 255, 255, 255 * textAlpha);
 
@@ -593,7 +604,7 @@ static void DrawDescriptionContainer()
         auto containerRight = containerLeft + Scale(CONTAINER_WIDTH);
         auto containerBottom = containerTop + Scale(CONTAINER_HEIGHT);
 
-        auto marqueeTextSize = g_rodinFont->CalcTextSizeA(fontSize, FLT_MAX, 0, g_creditsStr.c_str());
+        auto marqueeTextSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, g_creditsStr.c_str());
         auto marqueeTextMarginX = Scale(5);
         auto marqueeTextMarginY = Scale(15);
 
@@ -601,87 +612,33 @@ static void DrawDescriptionContainer()
         ImVec2 marqueeTextMin = { containerLeft, marqueeTextPos.y };
         ImVec2 marqueeTextMax = { containerRight, containerBottom };
 
-        auto imageScale = hedgeDevTextSize.x / 3;
-        auto imageMarginY = Scale(2);
+        auto imageWidth = Scale(524);
+        auto imageHeight = Scale(45);
 
         ImVec2 imageRegionMin = { containerLeft, textY + descTextSize.y };
         ImVec2 imageRegionMax = { containerRight, containerBottom - (marqueeTextMax.y - marqueeTextMin.y) };
 
         ImVec2 imageMin = 
         {
-            /* X */ imageRegionMin.x + ((imageRegionMax.x - imageRegionMin.x) / 2) - (imageScale / 2) - (hedgeDevTextSize.x / 2) - hedgeDevTextMarginX,
-            /* Y */ imageRegionMin.y + ((imageRegionMax.y - imageRegionMin.y) / 2) - (imageScale / 2) - imageMarginY
+            /* X */ imageRegionMin.x + ((imageRegionMax.x - imageRegionMin.x) / 2) - (imageWidth / 2),
+            /* Y */ imageRegionMin.y + ((imageRegionMax.y - imageRegionMin.y) / 2) - (imageHeight / 2)
         };
 
-        ImVec2 imageMax = { imageMin.x + imageScale, imageMin.y + imageScale };
+        ImVec2 imageMax = { imageMin.x + imageWidth, imageMin.y + imageHeight };
 
-        drawList->AddImage(g_upHedgeDev.get(), imageMin, imageMax, { 0, 0 }, { 1, 1 }, colWhite);
+        drawList->AddImage(g_upSonicNextDev.get(), imageMin, imageMax, { 0, 0 }, { 1, 1 }, colWhite);
 
-        drawList->AddText
-        (
-            g_rodinFont,
-            fontSize,
-            { /* X */ imageMax.x + hedgeDevTextMarginX, /* Y */ imageMin.y + (imageScale / 2) - (hedgeDevTextSize.y / 2) },
-            colWhite,
-            hedgeDevStr
-        );
-
-        SetHorizontalMarqueeFade(marqueeTextMin, marqueeTextMax, Scale(32));
-        DrawTextWithMarquee(g_rodinFont, fontSize, marqueeTextPos, marqueeTextMin, marqueeTextMax, colWhite, g_creditsStr.c_str(), g_installerEndTime, 0.9, Scale(200));
-        ResetMarqueeFade();
+        // SetHorizontalMarqueeFade(marqueeTextMin, marqueeTextMax, Scale(32));
+        // DrawTextWithMarquee(g_pFntRodin, fontSize, marqueeTextPos, marqueeTextMin, marqueeTextMax, colWhite, g_creditsStr.c_str(), g_installerEndTime, 0.9, Scale(200));
+        // ResetMarqueeFade();
     }
 
     ImVec2 sideMin = { descriptionMax.x, descriptionMin.y };
     ImVec2 sideMax = { res.x, descriptionMax.y };
+
     DrawContainer(sideMin, sideMax, false);
+
     drawList->PopClipRect();
-
-    EButtonIcon backIcon;
-    EButtonIcon selectIcon;
-    if (hid::IsInputDeviceController())
-    {
-        backIcon = EButtonIcon::B;
-        selectIcon = EButtonIcon::A;
-    }
-    else if (hid::g_inputDevice == hid::EInputDevice::Keyboard)
-    {
-        backIcon = EButtonIcon::Escape;
-        selectIcon = EButtonIcon::Enter;
-    }
-    else
-    {
-        backIcon = EButtonIcon::Escape;
-        selectIcon = EButtonIcon::LMB;
-    }
-
-    if (g_currentPage == WizardPage::InstallSucceeded && textAlpha >= 1.0)
-    {
-        ButtonGuide::Open(Button("Common_Select", 115.0f, selectIcon));
-    }
-    else if (g_currentPage != WizardPage::Installing && textAlpha >= 1.0)
-    {
-        const char *backKey = "Common_Back";
-        if ((g_currentPage == g_firstPage) || (g_currentPage == WizardPage::InstallFailed))
-        {
-            backKey = "Common_Quit";
-        }
-
-        std::array<Button, 2> buttons =
-        {
-            Button("Common_Select", 115.0f, selectIcon),
-            Button(backKey, FLT_MAX, backIcon)
-        };
-
-        ButtonGuide::Open(buttons);
-    }
-    else if (g_currentPage == WizardPage::Installing)
-    {
-        ButtonGuide::Open(Button("Common_Cancel", FLT_MAX, backIcon));
-    }
-    else
-    {
-        ButtonGuide::Close();
-    }
 
     ResetProceduralOrigin();
 }
@@ -737,7 +694,7 @@ static void DrawButton(ImVec2 min, ImVec2 max, const char *buttonText, bool sour
 
     DrawButtonContainer(min, max, baser, baseg, alpha);
 
-    ImFont *font = g_rodinFont;
+    ImFont *font = g_pFntRodin;
     float size = Scale(18.0f);
     float squashRatio;
     ImVec2 textSize = ComputeTextSize(font, buttonText, size, squashRatio, Scale(maxTextWidth));
@@ -800,7 +757,6 @@ static void DrawSourceButton(ButtonColumn buttonColumn, float yRatio, const char
     auto lightSize = Scale(14);
 
     DrawButton(min, max, sourceText, true, sourceSet, buttonPressed, ((max.x - min.x) * 0.7) / g_aspectRatioScale);
-    DrawToggleLight({ min.x + lightSize, min.y + ((max.y - min.y) - lightSize) / 2 + Scale(1) }, sourceSet, (sourceSet ? 1.0f : 0.5f) * alphaMotion);
 }
 
 static void DrawProgressBar(float progressRatio)
@@ -1008,10 +964,12 @@ static void DrawLanguagePicker()
             auto lightSize = Scale(14);
 
             DrawButton(min, max, LANGUAGE_TEXT[i], false, true, buttonPressed, FLT_MAX, LANGUAGE_ENUM[i] == ELanguage::English);
-            DrawToggleLight({ min.x + lightSize, min.y + ((max.y - min.y) - lightSize) / 2 + Scale(1) }, Config::Language == LANGUAGE_ENUM[i], alphaMotion);
 
             if (buttonPressed)
+            {
                 Config::Language = LANGUAGE_ENUM[i];
+                g_commonMenu.SetTitle(Localise("Installer_Header_Installer"), false);
+            }
         }
     }
 }
@@ -1025,7 +983,7 @@ static void DrawSourcePickers()
         constexpr float ADD_BUTTON_MAX_TEXT_WIDTH = 168.0f;
         const std::string &addFilesText = Localise("Installer_Button_AddFiles");
         float squashRatio;
-        ImVec2 textSize = ComputeTextSize(g_rodinFont, addFilesText.c_str(), 20.0f, squashRatio, ADD_BUTTON_MAX_TEXT_WIDTH);
+        ImVec2 textSize = ComputeTextSize(g_pFntRodin, addFilesText.c_str(), 20.0f, squashRatio, ADD_BUTTON_MAX_TEXT_WIDTH);
         ImVec2 min = { g_aspectRatioOffsetX + Scale(CONTAINER_X + BOTTOM_X_GAP), g_aspectRatioOffsetY + Scale(CONTAINER_Y + CONTAINER_HEIGHT + BOTTOM_Y_GAP) };
         ImVec2 max = { g_aspectRatioOffsetX + Scale(CONTAINER_X + BOTTOM_X_GAP + textSize.x * squashRatio + BUTTON_TEXT_GAP), g_aspectRatioOffsetY + Scale(CONTAINER_Y + CONTAINER_HEIGHT + BOTTOM_Y_GAP + BUTTON_HEIGHT) };
         DrawButton(min, max, addFilesText.c_str(), false, true, buttonPressed, ADD_BUTTON_MAX_TEXT_WIDTH);
@@ -1037,7 +995,7 @@ static void DrawSourcePickers()
         min.x += Scale(BOTTOM_X_GAP + textSize.x * squashRatio + BUTTON_TEXT_GAP);
 
         const std::string &addFolderText = Localise("Installer_Button_AddFolder");
-        textSize = ComputeTextSize(g_rodinFont, addFolderText.c_str(), 20.0f, squashRatio, ADD_BUTTON_MAX_TEXT_WIDTH);
+        textSize = ComputeTextSize(g_pFntRodin, addFolderText.c_str(), 20.0f, squashRatio, ADD_BUTTON_MAX_TEXT_WIDTH);
         max.x = min.x + Scale(textSize.x * squashRatio + BUTTON_TEXT_GAP);
         DrawButton(min, max, addFolderText.c_str(), false, true, buttonPressed, ADD_BUTTON_MAX_TEXT_WIDTH);
         if (buttonPressed)
@@ -1077,7 +1035,8 @@ static void DrawInstallingProgress()
             g_installerThread->join();
             g_installerThread.reset();
             g_installerEndTime = ImGui::GetTime();
-            g_currentPage = g_installerFailed ? WizardPage::InstallFailed : WizardPage::InstallSucceeded;
+            SetCurrentPage(g_installerFailed ? WizardPage::InstallFailed : WizardPage::InstallSucceeded);
+            g_commonMenu.SetTitle(Localise("Installer_Header_Installer"));
         }
     }
 }
@@ -1107,7 +1066,7 @@ static void InstallerThread()
 
 static void InstallerStart()
 {
-    g_currentPage = WizardPage::Installing;
+    SetCurrentPage(WizardPage::Installing);
     g_installerStartTime = ImGui::GetTime();
     g_installerEndTime = DBL_MAX;
     g_installerProgressRatioCurrent = 0.0f;
@@ -1115,6 +1074,7 @@ static void InstallerStart()
     g_installerFailed = false;
     g_installerFinished = false;
     g_installerThread = std::make_unique<std::thread>(InstallerThread);
+    g_commonMenu.SetTitle(Localise("Installer_Header_Installing"));
 }
 
 static bool InstallerParseSources(std::string &errorMessage)
@@ -1175,7 +1135,7 @@ static void DrawNavigationButton()
     }
 
     const std::string &nextButtonText = Localise(nextButtonKey);
-    ImVec2 nextTextSize = ComputeTextSize(g_newRodinFont, nextButtonText.c_str(), 20.0f, squashRatio, NAV_BUTTON_MAX_TEXT_WIDTH);
+    ImVec2 nextTextSize = ComputeTextSize(g_pFntRodin, nextButtonText.c_str(), 20.0f, squashRatio, NAV_BUTTON_MAX_TEXT_WIDTH);
     ImVec2 min = { g_aspectRatioOffsetX + Scale(CONTAINER_X + CONTAINER_WIDTH - nextTextSize.x * squashRatio - BOTTOM_X_GAP - BUTTON_TEXT_GAP), g_aspectRatioOffsetY + Scale(CONTAINER_Y + CONTAINER_HEIGHT + BOTTOM_Y_GAP) };
     ImVec2 max = { g_aspectRatioOffsetX + Scale(CONTAINER_X + CONTAINER_WIDTH - BOTTOM_X_GAP), g_aspectRatioOffsetY + Scale(CONTAINER_Y + CONTAINER_HEIGHT + BOTTOM_Y_GAP + BUTTON_HEIGHT) };
 
@@ -1199,7 +1159,7 @@ static void DrawNavigationButton()
 
                 g_currentMessagePrompt = stringStream.str();
                 g_currentMessagePromptConfirmation = false;
-                g_currentPage = dlcInstallerMode ? WizardPage::SelectDLC : WizardPage::SelectGame;
+                SetCurrentPage(dlcInstallerMode ? WizardPage::SelectDLC : WizardPage::SelectGame);
             }
             else if (skipButton && dlcInstallerMode)
             {
@@ -1209,7 +1169,7 @@ static void DrawNavigationButton()
             }
             else
             {
-                g_currentPage = WizardPage::CheckSpace;
+                SetCurrentPage(WizardPage::CheckSpace);
             }
         }
         else if (g_currentPage == WizardPage::CheckSpace)
@@ -1223,11 +1183,11 @@ static void DrawNavigationButton()
         }
         else if (g_currentPage == WizardPage::InstallFailed)
         {
-            g_currentPage = g_firstPage;
+            SetCurrentPage(g_firstPage);
         }
         else
         {
-            g_currentPage = WizardPage(int(g_currentPage) + 1);
+            SetCurrentPage(WizardPage(int(g_currentPage) + 1));
         }
     }
 }
@@ -1274,7 +1234,7 @@ static void CheckCancelAction()
     else if (int(g_currentPage) > 0)
     {
         // Just go back to the previous page.
-        g_currentPage = WizardPage(int(g_currentPage) - 1);
+        SetCurrentPage(WizardPage(int(g_currentPage) - 1));
     }
 }
 
@@ -1318,7 +1278,7 @@ static void DrawMessagePrompt()
             else if (g_currentPage == WizardPage::SelectDLC)
             {
                 // If user confirms the message prompt that they wish to skip installing the DLC, proceed to the next step.
-                g_currentPage = WizardPage::CheckSpace;
+                SetCurrentPage(WizardPage::CheckSpace);
             }
         }
 
@@ -1400,8 +1360,7 @@ void InstallerWizard::Init()
 {
     auto &io = ImGui::GetIO();
 
-    g_rodinFont = ImFontAtlasSnapshot::GetFont("FOT-RodinPro-DB.otf");
-    g_newRodinFont = ImFontAtlasSnapshot::GetFont("FOT-NewRodinPro-UB.otf");
+    g_commonMenu = CommonMenu(Localise("Installer_Header_Installer"), "", true);
     g_installTextures[0] = LOAD_ZSTD_TEXTURE(g_install_001);
     g_installTextures[1] = LOAD_ZSTD_TEXTURE(g_install_002);
     g_installTextures[2] = LOAD_ZSTD_TEXTURE(g_install_003);
@@ -1410,7 +1369,7 @@ void InstallerWizard::Init()
     g_installTextures[5] = LOAD_ZSTD_TEXTURE(g_install_006);
     g_installTextures[6] = LOAD_ZSTD_TEXTURE(g_install_007);
     g_installTextures[7] = LOAD_ZSTD_TEXTURE(g_install_008);
-    g_upHedgeDev = LOAD_ZSTD_TEXTURE(g_hedgedev);
+    g_upSonicNextDev = LOAD_ZSTD_TEXTURE(g_sonicnextdev);
 
     for (int i = 0; i < g_credits.size(); i++)
     {
@@ -1422,15 +1381,13 @@ void InstallerWizard::Init()
 void InstallerWizard::Draw()
 {
     if (!s_isVisible)
-    {
         return;
-    }
 
     ResetCursorRects();
     DrawBackground();
     DrawArrows();
     DrawLeftImage();
-    DrawHUD();
+    g_commonMenu.Draw();
     DrawDescriptionContainer();
     DrawLanguagePicker();
     DrawSourcePickers();
@@ -1507,8 +1464,9 @@ bool InstallerWizard::Run(std::filesystem::path installPath, bool skipGame)
         }
 
         g_firstPage = WizardPage::SelectDLC;
-        g_currentPage = g_firstPage;
     }
+
+    SetCurrentPage(g_firstPage);
 
     GameWindow::SetFullscreenCursorVisibility(true);
     s_isVisible = true;

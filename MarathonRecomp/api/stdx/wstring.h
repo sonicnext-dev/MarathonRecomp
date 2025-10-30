@@ -23,7 +23,7 @@ namespace stdx
 
         bool is_short() const
         {
-            return _Mysize <= 8;
+            return _Mysize < 8;
         }
 
     public:

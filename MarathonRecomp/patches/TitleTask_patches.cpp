@@ -1,6 +1,7 @@
 #include <api/Marathon.h>
 #include <ui/fader.h>
 #include <ui/message_window.h>
+#include <ui/options_menu.h>
 #include <user/config.h>
 #include <user/paths.h>
 #include <app.h>
@@ -15,6 +16,19 @@ static double g_titleExitOutroTime{};
 
 static bool g_quitMessageOpen{};
 static bool g_saveDataExists{};
+
+static bool g_isSecretDone{};
+static uint32_t g_secretFlags{};
+
+enum
+{
+    SECRET_NONE,
+    SECRET_UP = 1 << 0,
+    SECRET_DOWN = 1 << 1,
+    SECRET_LEFT = 1 << 2,
+    SECRET_RIGHT = 1 << 3,
+    SECRET_ALL = SECRET_UP | SECRET_DOWN | SECRET_LEFT | SECRET_RIGHT
+};
 
 bool ProcessQuitMessage(Sonicteam::TitleTask* pTitleTask)
 {
@@ -91,13 +105,50 @@ PPC_FUNC(sub_825126A0)
             break;
         }
 
-        case Sonicteam::TitleTask::TitleState_Proceed:
+        case Sonicteam::TitleTask::TitleState_Wait:
         {
-            g_saveDataExists = std::filesystem::exists(GetSaveFilePath(false));
+            if (g_isSecretDone)
+                break;
 
-            // Redirect PRESS START proceed to options open.
-            if (g_saveDataExists)
-                GuestToHostFunction<int>(sub_82511CA0, pTitleTask, (int)Sonicteam::TitleTask::TitleState_OptionsOpen);
+            if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManager[0])
+            {
+                auto& rPadState = spInputManager->m_PadState;
+
+                if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DpadUp))
+                    g_secretFlags = SECRET_UP;
+
+                if ((g_secretFlags & SECRET_UP) != 0 && rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DpadDown))
+                    g_secretFlags |= SECRET_DOWN;
+
+                if ((g_secretFlags & SECRET_DOWN) != 0 && rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DpadLeft))
+                    g_secretFlags |= SECRET_LEFT;
+
+                if ((g_secretFlags & SECRET_LEFT) != 0 && rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DpadRight))
+                    g_secretFlags |= SECRET_RIGHT;
+            }
+
+            if (g_secretFlags == SECRET_ALL)
+            {
+                Game_PlaySound("totalring_count");
+                g_isSecretDone = true;
+            }
+
+            break;
+        }
+
+        case Sonicteam::TitleTask::TitleState_OptionsWait:
+        {
+            if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManager[0])
+            {
+                auto& rPadState = spInputManager->m_PadState;
+
+                if (g_secretFlags == SECRET_ALL &&
+                    rPadState.IsDown(Sonicteam::SoX::Input::KeyState_A) &&
+                    rPadState.IsDown(Sonicteam::SoX::Input::KeyState_Start))
+                {
+                    OptionsMenu::s_isDebugUnlocked = true;
+                }
+            }
 
             break;
         }
@@ -112,6 +163,17 @@ PPC_FUNC(sub_825126A0)
             // Wait for outro animation to complete before entering menu.
             if (g_titleProceedOutroTime > TITLE_OPTION_OUTRO_TOTAL_FRAMES)
                 GuestToHostFunction<int>(sub_82511CA0, pTitleTask, 9);
+
+            break;
+        }
+
+        case Sonicteam::TitleTask::TitleState_Proceed:
+        {
+            g_saveDataExists = std::filesystem::exists(GetSaveFilePath(false));
+
+            // Redirect PRESS START proceed to options open.
+            if (g_saveDataExists)
+                GuestToHostFunction<int>(sub_82511CA0, pTitleTask, (int)Sonicteam::TitleTask::TitleState_OptionsOpen);
 
             break;
         }

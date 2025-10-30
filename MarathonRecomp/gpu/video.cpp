@@ -22,7 +22,7 @@
 #include <Marathon.h>
 #include <ui/achievement_menu.h>
 #include <ui/achievement_overlay.h>
-#include <ui/button_guide.h>
+#include <ui/button_window.h>
 #include <ui/fader.h>
 #include <ui/imgui_utils.h>
 #include <ui/installer_wizard.h>
@@ -1580,8 +1580,6 @@ static void CreateImGuiBackend()
     InitImGuiUtils();
     AchievementMenu::Init();
     AchievementOverlay::Init();
-    ButtonGuide::Init();
-    MessageWindow::Init();
     OptionsMenu::Init();
     InstallerWizard::Init();
 
@@ -2848,10 +2846,10 @@ static void DrawImGui()
 #endif
 
     AchievementMenu::Draw();
-//    OptionsMenu::Draw();
+    OptionsMenu::Draw();
     AchievementOverlay::Draw();
     InstallerWizard::Draw();
-    ButtonGuide::Draw();
+    ButtonWindow::Draw();
     MessageWindow::Draw();
     Fader::Draw();
     BlackBar::Draw();
@@ -3267,43 +3265,26 @@ void Video::ComputeViewportDimensions()
 
     switch (Config::AspectRatio)
     {
-    case EAspectRatio::Wide:
-    {
-        if (aspectRatio > WIDE_ASPECT_RATIO)
+        case EAspectRatio::Original:
         {
-            s_viewportWidth = height * 16 / 9;
-            s_viewportHeight = height;
+            if (aspectRatio > WIDE_ASPECT_RATIO)
+            {
+                s_viewportWidth = height * 16 / 9;
+                s_viewportHeight = height;
+            }
+            else
+            {
+                s_viewportWidth = width;
+                s_viewportHeight = width * 9 / 16;
+            }
+
+            break;
         }
-        else
-        {
+
+        default:
             s_viewportWidth = width;
-            s_viewportHeight = width * 9 / 16;
-        }
-
-        break;
-    }
-
-    case EAspectRatio::Narrow:
-    case EAspectRatio::OriginalNarrow:
-    {
-        if (aspectRatio > NARROW_ASPECT_RATIO)
-        {
-            s_viewportWidth = height * 4 / 3;
             s_viewportHeight = height;
-        }
-        else
-        {
-            s_viewportWidth = width;
-            s_viewportHeight = width * 3 / 4;
-        }
-
-        break;
-    }
-
-    default:
-        s_viewportWidth = width;
-        s_viewportHeight = height;
-        break;
+            break;
     }
 
     AspectRatioPatches::ComputeOffsets();
@@ -4095,12 +4076,8 @@ static void ProcSetViewport(const RenderCommand& cmd)
 static void SetTexture(GuestDevice* device, uint32_t index, GuestTexture* texture) 
 {
     // printf("SetTexture: %x %d %x\n", device, index, texture);
-    auto isPlayStation = Config::ControllerIcons == EControllerIcons::PlayStation;
 
-    if (Config::ControllerIcons == EControllerIcons::Auto)
-        isPlayStation = hid::g_inputDeviceController == hid::EInputDevice::PlayStation;
-
-    if (isPlayStation && texture != nullptr && texture->patchedTexture != nullptr)
+    if (Config::IsControllerIconsPS3() && texture != nullptr && texture->patchedTexture != nullptr)
         texture = texture->patchedTexture.get();
 
     RenderCommand cmd;
@@ -6198,15 +6175,17 @@ static void DiffPatchTexture(GuestTexture& texture, uint8_t* data, uint32_t data
     auto entries = reinterpret_cast<BlockCompressionDiffPatchEntry*>(g_buttonBcDiff.get() + header->entriesOffset);
     auto end = entries + header->entryCount;
     
-    XXH64_hash_t hash = XXH3_64bits(data, dataSize);
+    auto hash = XXH3_64bits(data, dataSize);
+
     auto findResult = std::lower_bound(entries, end, hash, [](BlockCompressionDiffPatchEntry& lhs, XXH64_hash_t rhs)
-        {
-            return lhs.hash < rhs;
-        });
+    {
+        return lhs.hash < rhs;
+    });
 
     if (findResult != end && findResult->hash == hash)
     {
         auto patch = reinterpret_cast<BlockCompressionDiffPatch*>(g_buttonBcDiff.get() + findResult->patchesOffset);
+
         for (size_t i = 0; i < findResult->patchCount; i++)
         {
             assert(patch->destinationOffset + patch->patchBytesSize <= dataSize);
@@ -6215,6 +6194,7 @@ static void DiffPatchTexture(GuestTexture& texture, uint8_t* data, uint32_t data
         }
 
         GuestTexture patchedTexture(ResourceType::Texture);
+
         if (LoadTexture(patchedTexture, data, dataSize, {}))
             texture.patchedTexture = std::make_unique<GuestTexture>(std::move(patchedTexture));
     }
@@ -6229,12 +6209,10 @@ static void MakePictureData(GuestMyTexture* pictureData, uint8_t* data, uint32_t
         if (LoadTexture(texture, data, dataSize, {}))
         {
 #ifdef _DEBUG
-            if (pictureData->str1.size.get() > 0) {
+            if (pictureData->str1.size.get() > 0)
                 texture.texture->setName(fmt::format("Texture {}", pictureData->str1.c_str()));
-            }
 #endif
-
-            // DiffPatchTexture(texture, data, dataSize);
+            DiffPatchTexture(texture, data, dataSize);
 
             pictureData->texture = g_memory.MapVirtual(g_userHeap.AllocPhysical<GuestTexture>(std::move(texture)));
             pictureData->width = texture.width;

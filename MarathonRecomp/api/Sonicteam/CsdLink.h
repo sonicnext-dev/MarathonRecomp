@@ -9,7 +9,8 @@ namespace Sonicteam
     public:
         struct Vftable
         {
-            MARATHON_INSERT_PADDING(8);
+            be<uint32_t> fpDestroy;
+            MARATHON_INSERT_PADDING(4);
             be<uint32_t> fpUpdate;
         };
 
@@ -18,6 +19,11 @@ namespace Sonicteam
         xpointer<CsdLink> m_pPrevious;
         be<float> m_Priority;
         MARATHON_INSERT_PADDING(8);
+
+        void* Destroy(uint32_t flags = 1)
+        {
+            return GuestToHostFunction<void*>(m_pVftable->fpDestroy.get(), this, flags);
+        }
 
         int Update(double deltaTime = 0.0)
         {

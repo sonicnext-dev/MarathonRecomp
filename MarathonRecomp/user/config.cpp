@@ -1,7 +1,10 @@
 #include "config.h"
+#include <hid/hid.h>
 #include <os/logger.h>
 #include <ui/game_window.h>
+#include <ui/options_menu.h>
 #include <user/paths.h>
+#include <app.h>
 
 std::vector<IConfigDef*> g_configDefinitions;
 
@@ -21,7 +24,7 @@ CONFIG_DEFINE_ENUM_TEMPLATE(ELanguage)
 CONFIG_DEFINE_ENUM_TEMPLATE(ECameraRotationMode)
 {
     { "Normal",  ECameraRotationMode::Normal },
-    { "Reverse", ECameraRotationMode::Reverse },
+    { "Reverse", ECameraRotationMode::Reverse }
 };
 
 CONFIG_DEFINE_ENUM_TEMPLATE(EControllerIcons)
@@ -29,6 +32,17 @@ CONFIG_DEFINE_ENUM_TEMPLATE(EControllerIcons)
     { "Auto",        EControllerIcons::Auto },
     { "Xbox",        EControllerIcons::Xbox },
     { "PlayStation", EControllerIcons::PlayStation }
+};
+CONFIG_DEFINE_ENUM_TEMPLATE(ELightDash)
+{
+    { "X", ELightDash::X },
+    { "Y", ELightDash::Y }
+};
+
+CONFIG_DEFINE_ENUM_TEMPLATE(ESlidingAttack)
+{
+    { "B", ESlidingAttack::B },
+    { "X", ESlidingAttack::X }
 };
 
 CONFIG_DEFINE_ENUM_TEMPLATE(SDL_Scancode)
@@ -313,19 +327,10 @@ CONFIG_DEFINE_ENUM_TEMPLATE(EWindowState)
     { "Maximized", EWindowState::Maximised }
 };
 
-CONFIG_DEFINE_ENUM_TEMPLATE(ERadialBlur)
-{
-    { "Off",      ERadialBlur::Off },
-    { "Original", ERadialBlur::Original },
-    { "Enhanced", ERadialBlur::Enhanced }
-};
-
 CONFIG_DEFINE_ENUM_TEMPLATE(EAspectRatio)
 {
-    { "Auto", EAspectRatio::Auto },
-    { "16:9", EAspectRatio::Wide },
-    { "4:3",  EAspectRatio::Narrow },
-    { "Original 4:3",  EAspectRatio::OriginalNarrow },
+    { "Auto",     EAspectRatio::Auto },
+    { "Original", EAspectRatio::Original }
 };
 
 CONFIG_DEFINE_ENUM_TEMPLATE(ETripleBuffering)
@@ -337,7 +342,7 @@ CONFIG_DEFINE_ENUM_TEMPLATE(ETripleBuffering)
 
 CONFIG_DEFINE_ENUM_TEMPLATE(EAntiAliasing)
 {
-    { "None",    EAntiAliasing::None },
+    { "Off",    EAntiAliasing::Off },
     { "2x MSAA", EAntiAliasing::MSAA2x },
     { "4x MSAA", EAntiAliasing::MSAA4x },
     { "8x MSAA", EAntiAliasing::MSAA8x }
@@ -360,6 +365,13 @@ CONFIG_DEFINE_ENUM_TEMPLATE(EReflectionResolution)
     { "Eighth",  EReflectionResolution::Eighth },
 };
 
+CONFIG_DEFINE_ENUM_TEMPLATE(ERadialBlur)
+{
+    { "Off",      ERadialBlur::Off },
+    { "Original", ERadialBlur::Original },
+    { "Enhanced", ERadialBlur::Enhanced }
+};
+
 CONFIG_DEFINE_ENUM_TEMPLATE(ECutsceneAspectRatio)
 {
     { "Original", ECutsceneAspectRatio::Original },
@@ -374,47 +386,47 @@ CONFIG_DEFINE_ENUM_TEMPLATE(EUIAlignmentMode)
 };
 
 #undef  CONFIG_DEFINE
-#define CONFIG_DEFINE(section, type, name, defaultValue) \
-    ConfigDef<type> Config::name{section, #name, defaultValue};
+#define CONFIG_DEFINE(section, type, name, defaultValue, requiresRestart) \
+    ConfigDef<type> Config::name{section, #name, defaultValue, requiresRestart};
 
 #undef  CONFIG_DEFINE_HIDDEN
-#define CONFIG_DEFINE_HIDDEN(section, type, name, defaultValue) \
-    ConfigDef<type, true> Config::name{section, #name, defaultValue};
+#define CONFIG_DEFINE_HIDDEN(section, type, name, defaultValue, requiresRestart) \
+    ConfigDef<type, true> Config::name{section, #name, defaultValue, requiresRestart};
 
 #undef  CONFIG_DEFINE_LOCALISED
-#define CONFIG_DEFINE_LOCALISED(section, type, name, defaultValue) \
+#define CONFIG_DEFINE_LOCALISED(section, type, name, defaultValue, requiresRestart) \
     extern CONFIG_LOCALE g_##name##_locale; \
-    ConfigDef<type> Config::name{section, #name, &g_##name##_locale, defaultValue};
+    ConfigDef<type> Config::name{section, #name, &g_##name##_locale, defaultValue, requiresRestart};
 
 #undef  CONFIG_DEFINE_ENUM
-#define CONFIG_DEFINE_ENUM(section, type, name, defaultValue) \
-    ConfigDef<type> Config::name{section, #name, defaultValue, &g_##type##_template};
+#define CONFIG_DEFINE_ENUM(section, type, name, defaultValue, requiresRestart) \
+    ConfigDef<type> Config::name{section, #name, defaultValue, requiresRestart, &g_##type##_template};
 
 #undef  CONFIG_DEFINE_ENUM_LOCALISED
-#define CONFIG_DEFINE_ENUM_LOCALISED(section, type, name, defaultValue) \
+#define CONFIG_DEFINE_ENUM_LOCALISED(section, type, name, defaultValue, requiresRestart) \
     extern CONFIG_LOCALE g_##name##_locale; \
     extern CONFIG_ENUM_LOCALE(type) g_##type##_locale; \
-    ConfigDef<type> Config::name{section, #name, &g_##name##_locale, defaultValue, &g_##type##_template, &g_##type##_locale};
+    ConfigDef<type> Config::name{section, #name, &g_##name##_locale, defaultValue, requiresRestart, &g_##type##_template, &g_##type##_locale};
 
 #include "config_def.h"
 
 // CONFIG_DEFINE
 template<typename T, bool isHidden>
-ConfigDef<T, isHidden>::ConfigDef(std::string section, std::string name, T defaultValue) : Section(section), Name(name), DefaultValue(defaultValue)
+ConfigDef<T, isHidden>::ConfigDef(std::string section, std::string name, T defaultValue, bool requiresRestart) : Section(section), Name(name), DefaultValue(defaultValue), IsRestartRequired(requiresRestart)
 {
     g_configDefinitions.emplace_back(this);
 }
 
 // CONFIG_DEFINE_LOCALISED
 template<typename T, bool isHidden>
-ConfigDef<T, isHidden>::ConfigDef(std::string section, std::string name, CONFIG_LOCALE* nameLocale, T defaultValue) : Section(section), Name(name), Locale(nameLocale), DefaultValue(defaultValue)
+ConfigDef<T, isHidden>::ConfigDef(std::string section, std::string name, CONFIG_LOCALE* nameLocale, T defaultValue, bool requiresRestart) : Section(section), Name(name), Locale(nameLocale), DefaultValue(defaultValue), IsRestartRequired(requiresRestart)
 {
     g_configDefinitions.emplace_back(this);
 }
 
 // CONFIG_DEFINE_ENUM
 template<typename T, bool isHidden>
-ConfigDef<T, isHidden>::ConfigDef(std::string section, std::string name, T defaultValue, std::unordered_map<std::string, T>* enumTemplate) : Section(section), Name(name), DefaultValue(defaultValue), EnumTemplate(enumTemplate)
+ConfigDef<T, isHidden>::ConfigDef(std::string section, std::string name, T defaultValue, bool requiresRestart, std::unordered_map<std::string, T>* enumTemplate) : Section(section), Name(name), DefaultValue(defaultValue), IsRestartRequired(requiresRestart), EnumTemplate(enumTemplate)
 {
     for (const auto& pair : *EnumTemplate)
         EnumTemplateReverse[pair.second] = pair.first;
@@ -424,7 +436,7 @@ ConfigDef<T, isHidden>::ConfigDef(std::string section, std::string name, T defau
 
 // CONFIG_DEFINE_ENUM_LOCALISED
 template<typename T, bool isHidden>
-ConfigDef<T, isHidden>::ConfigDef(std::string section, std::string name, CONFIG_LOCALE* nameLocale, T defaultValue, std::unordered_map<std::string, T>* enumTemplate, CONFIG_ENUM_LOCALE(T)* enumLocale) : Section(section), Name(name), Locale(nameLocale), DefaultValue(defaultValue), EnumTemplate(enumTemplate), EnumLocale(enumLocale)
+ConfigDef<T, isHidden>::ConfigDef(std::string section, std::string name, CONFIG_LOCALE* nameLocale, T defaultValue, bool requiresRestart, std::unordered_map<std::string, T>* enumTemplate, CONFIG_ENUM_LOCALE(T)* enumLocale) : Section(section), Name(name), Locale(nameLocale), DefaultValue(defaultValue), IsRestartRequired(requiresRestart), EnumTemplate(enumTemplate), EnumLocale(enumLocale)
 {
     for (const auto& pair : *EnumTemplate)
         EnumTemplateReverse[pair.second] = pair.first;
@@ -439,6 +451,12 @@ template<typename T, bool isHidden>
 bool ConfigDef<T, isHidden>::IsHidden()
 {
     return isHidden && !IsLoadedFromConfig;
+}
+
+template<typename T, bool isHidden>
+void ConfigDef<T, isHidden>::SetHidden(bool hidden)
+{
+    IsLoadedFromConfig = !hidden;
 }
 
 template<typename T, bool isHidden>
@@ -733,6 +751,24 @@ void ConfigDef<T, isHidden>::SnapToNearestAccessibleValue(bool searchUp)
     }
 }
 
+template<typename T, bool isHidden>
+bool ConfigDef<T, isHidden>::RequiresRestart()
+{
+    return IsRestartRequired;
+}
+
+template<typename T, bool isHidden>
+void ConfigDef<T, isHidden>::UpdateStore()
+{
+    m_storedValue = Value;
+}
+
+template<typename T, bool isHidden>
+bool ConfigDef<T, isHidden>::IsValueChanged()
+{
+    return m_storedValue != Value;
+}
+
 std::filesystem::path Config::GetConfigPath()
 {
     return GetUserPath() / "config.toml";
@@ -740,6 +776,15 @@ std::filesystem::path Config::GetConfigPath()
 
 void Config::CreateCallbacks()
 {
+    Config::Language.Callback = [](ConfigDef<ELanguage>* def)
+    {
+        if (!App::s_isInit)
+            return;
+
+        OptionsMenu::s_commonMenu.SetTitle(Localise("Options_Header_Name"), false);
+        OptionsMenu::s_commonMenu.SetDescription(def->GetDescription(def->Value));
+    };
+
     Config::WindowSize.LockCallback = [](ConfigDef<int32_t>* def)
     {
         // Try matching the current window size with a known configuration.
@@ -859,3 +904,14 @@ void Config::Save()
         LOGN_ERROR("Failed to write configuration.");
     }
 }
+
+bool Config::IsControllerIconsPS3()
+{
+    auto result = Config::ControllerIcons == EControllerIcons::PlayStation;
+
+    if (Config::ControllerIcons == EControllerIcons::Auto)
+        result = hid::g_inputDeviceController == hid::EInputDevice::PlayStation;
+
+    return result;
+}
+

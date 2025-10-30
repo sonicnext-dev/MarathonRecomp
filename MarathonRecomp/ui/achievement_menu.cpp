@@ -6,7 +6,7 @@
 #include <kernel/xdbf.h>
 #include <locale/locale.h>
 #include <patches/aspect_ratio_patches.h>
-#include <ui/button_guide.h>
+#include <ui/button_window.h>
 #include <ui/imgui_utils.h>
 #include <user/achievement_manager.h>
 #include <user/config.h>
@@ -761,7 +761,7 @@ void AchievementMenu::Open()
         return std::get<1>(a) > std::get<1>(b);
     });
 
-    ButtonGuide::Open(Button("Common_Back", FLT_MAX, EButtonIcon::B, EFontQuality::Low));
+    ButtonWindow::Open("Button_Back");
 
     ResetSelection();
     Game_PlaySound("sys_actstg_pausewinopen");
@@ -779,7 +779,7 @@ void AchievementMenu::Close()
         hid::SetProhibitedInputs();
     }
 
-    ButtonGuide::Close();
+    ButtonWindow::Close();
 
     Game_PlaySound("sys_actstg_pausewinclose");
     Game_PlaySound("sys_actstg_pausecansel");

@@ -2,23 +2,23 @@
 
 #include <Marathon.inl>
 #include <boost/smart_ptr/shared_ptr.h>
-#include <api/stdx/vector.h>
+#include <Sonicteam/Camera/Cameraman.h>
+#include <Sonicteam/Camera/CameraMode.h>
 
 namespace Sonicteam::Camera
 {
-    class Cameraman;
-    class CameraMode;
     class CameraModeManager
     {
-        // TODO: figure out all these, 8218C100
-        struct _vector_struct_
+    public:
+        // TODO: research these fields (processed by 0x8218C100).
+        struct UnknownStruct
         {
             MARATHON_INSERT_PADDING(0x14);
         };
-    public:
+
         xpointer<Cameraman> m_pCameraman;
         boost::shared_ptr<CameraMode> m_spCameraMode;
-        MARATHON_INSERT_PADDING(0x8);
-        stdx::vector<_vector_struct_> m_vVector;
+        MARATHON_INSERT_PADDING(8);
+        stdx::vector<UnknownStruct> m_vUnkStructs;
     };
 }

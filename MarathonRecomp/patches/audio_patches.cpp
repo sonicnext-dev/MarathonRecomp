@@ -52,6 +52,8 @@ void AudioPatches::Update(float deltaTime)
     {
         pAudioEngine->m_MusicVolume = musicVolume;
     }
+
+    pAudioEngine->m_EffectsVolume = Config::EffectsVolume * Config::MasterVolume;
 }
 
 // Update function for CRI cues.

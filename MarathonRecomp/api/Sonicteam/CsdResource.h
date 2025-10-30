@@ -2,6 +2,7 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/SoX/IResource2.h>
+#include <Sonicteam/CsdManager.h>
 
 namespace Sonicteam
 {

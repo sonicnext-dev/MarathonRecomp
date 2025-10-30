@@ -1,31 +1,43 @@
 #include "imgui_utils.h"
+#include <gpu/imgui/imgui_snapshot.h>
+#include <hid/hid.h>
 #include <patches/aspect_ratio_patches.h>
+#include <ui/black_bar.h>
 #include <app.h>
 #include <decompressor.h>
 #include <version.h>
 
+#include <res/images/common/button_window.dds.h>
+#include <res/images/common/controller.dds.h>
+#include <res/images/common/kbm.dds.h>
 #include <res/images/common/window.dds.h>
-#include <res/images/common/light.dds.h>
-#include <res/images/common/select.dds.h>
 #include <res/images/common/select_arrow.dds.h>
 #include <res/images/common/main_menu1.dds.h>
 #include <res/images/common/arrow.dds.h>
 
-std::unique_ptr<GuestTexture> g_texWindow;
-std::unique_ptr<GuestTexture> g_texLight;
-std::unique_ptr<GuestTexture> g_texSelect;
-std::unique_ptr<GuestTexture> g_texSelectArrow;
-std::unique_ptr<GuestTexture> g_texMainMenu1;
-std::unique_ptr<GuestTexture> g_texArrow;
+ImFont* g_pFntRodin;
+ImFont* g_pFntNewRodin;
+
+std::unique_ptr<GuestTexture> g_upTexButtonWindow;
+std::unique_ptr<GuestTexture> g_upTexController;
+std::unique_ptr<GuestTexture> g_upTexKbm;
+std::unique_ptr<GuestTexture> g_upTexWindow;
+std::unique_ptr<GuestTexture> g_upTexSelectArrow;
+std::unique_ptr<GuestTexture> g_upTexMainMenu1;
+std::unique_ptr<GuestTexture> g_upTexArrow;
 
 void InitImGuiUtils()
 {
-    g_texWindow = LOAD_ZSTD_TEXTURE(g_window);
-    g_texLight = LOAD_ZSTD_TEXTURE(g_light);
-    g_texSelect = LOAD_ZSTD_TEXTURE(g_select);
-    g_texSelectArrow = LOAD_ZSTD_TEXTURE(g_select_arrow);
-    g_texMainMenu1 = LOAD_ZSTD_TEXTURE(g_main_menu1);
-    g_texArrow = LOAD_ZSTD_TEXTURE(g_arrow);
+    g_pFntRodin = ImFontAtlasSnapshot::GetFont("FOT-RodinPro-DB.otf");
+    g_pFntNewRodin = ImFontAtlasSnapshot::GetFont("FOT-NewRodinPro-UB.otf");
+
+    g_upTexButtonWindow = LOAD_ZSTD_TEXTURE(g_button_window);
+    g_upTexController = LOAD_ZSTD_TEXTURE(g_controller);
+    g_upTexKbm = LOAD_ZSTD_TEXTURE(g_kbm);
+    g_upTexWindow = LOAD_ZSTD_TEXTURE(g_window);
+    g_upTexSelectArrow = LOAD_ZSTD_TEXTURE(g_select_arrow);
+    g_upTexMainMenu1 = LOAD_ZSTD_TEXTURE(g_main_menu1);
+    g_upTexArrow = LOAD_ZSTD_TEXTURE(g_arrow);
 }
 
 void SetGradient(const ImVec2& min, const ImVec2& max, ImU32 top, ImU32 bottom)
@@ -36,6 +48,11 @@ void SetGradient(const ImVec2& min, const ImVec2& max, ImU32 top, ImU32 bottom)
 void SetHorizontalGradient(const ImVec2& min, const ImVec2& max, ImU32 left, ImU32 right)
 {
     SetGradient(min, max, left, right, right, left);
+}
+
+void SetVerticalGradient(const ImVec2& min, const ImVec2& max, ImU32 top, ImU32 bottom)
+{
+    SetGradient(min, max, top, top, bottom, bottom);
 }
 
 void SetGradient(const ImVec2& min, const ImVec2& max, ImU32 topLeft, ImU32 topRight, ImU32 bottomRight, ImU32 bottomLeft)
@@ -169,9 +186,43 @@ void ResetAdditive()
     SetAdditive(false);
 }
 
-float Scale(float size)
+void AddImageFlipped(ImTextureID texture, const ImVec2& min, const ImVec2& max, const ImVec2& uvMin, const ImVec2& uvMax, ImU32 col, bool flipHorz, bool flipVert)
 {
-    return size * g_aspectRatioScale;
+    auto drawList = ImGui::GetBackgroundDrawList();
+
+    ImVec2 uv0 = uvMin;
+    ImVec2 uv1 = { uvMax.x, uvMin.y };
+    ImVec2 uv2 = uvMax;
+    ImVec2 uv3 = { uvMin.x, uvMax.y };
+
+    if (flipHorz)
+    {
+        std::swap(uv0.x, uv1.x);
+        std::swap(uv2.x, uv3.x);
+    }
+
+    if (flipVert)
+    {
+        std::swap(uv0.y, uv3.y);
+        std::swap(uv1.y, uv2.y);
+    }
+
+    ImVec2 p0 = min;
+    ImVec2 p1 = { max.x, min.y };
+    ImVec2 p2 = max;
+    ImVec2 p3 = { min.x, max.y };
+
+    drawList->AddImageQuad(texture, p0, p1, p2, p3, uv0, uv1, uv2, uv3, col);
+}
+
+float Scale(float size, bool useGameplayScale)
+{
+    auto result = size * g_aspectRatioScale;
+
+    if (useGameplayScale)
+        result *= g_aspectRatioGameplayScale;
+
+    return result;
 }
 
 double ComputeLoopMotion(double time, double offset, double total)
@@ -179,170 +230,146 @@ double ComputeLoopMotion(double time, double offset, double total)
     return std::clamp(fmod((ImGui::GetTime() - time - (offset / 60.0)) / (total / 60.0), 1.0 + (total / 60.0)), 0.0, 1.0) / 1.0;
 }
 
-double ComputeLinearMotion(double time, double offset, double total)
+double ComputeLinearMotion(double time, double offset, double total, bool reverse)
 {
-    return std::clamp((ImGui::GetTime() - time - offset / 60.0) / total * 60.0, 0.0, 1.0);
+    auto result = std::clamp((ImGui::GetTime() - time - offset / 60.0) / total * 60.0, 0.0, 1.0);
+
+    return reverse ? 1.0f - result : result;
 }
 
-double ComputeMotion(double time, double offset, double total)
+double ComputeMotion(double time, double offset, double total, bool reverse)
 {
-    return sqrt(ComputeLinearMotion(time, offset, total));
+    return sqrt(ComputeLinearMotion(time, offset, total, reverse));
 }
 
-void DrawArrows(ImVec2 min, ImVec2 max)
+void DrawArrows(ImVec2 min, ImVec2 max, double& time)
 {
     auto drawList = ImGui::GetBackgroundDrawList();
 
-    const float maxOpacity = 0.15f;
+    constexpr auto FADE_IN_DURATION = 5.0;
+    constexpr auto FADE_OUT_DURATION = 121.0;
+    constexpr auto ARROWS_OFFSET_FRAMES = 3.0;
 
-    auto leftArrowSize = Scale(450);
-    auto leftArrowOffset = Scale(230);
-    auto rightArrowSize = Scale(180);
-    auto rightArrowOffset = Scale(120);
-    auto xOffset = Scale(10);
+    auto arrowUVs = PIXELS_TO_UV_COORDS(512, 512, 0, 0, 400, 434);
+    auto centre = ImVec2(min.x + ((max.x - min.x) / 2), min.y + ((max.y - min.y) / 2));
 
-    auto arrowUV = PIXELS_TO_UV_COORDS(512, 512, 0, 0, 500, 434);
+    auto leftArrowWidth = Scale(400, true);
+    auto leftArrowHeight = Scale(434, true);
+    auto leftArrowNextOffset = Scale(230, true);
 
-    auto elapsedTime = ImGui::GetTime();
-    const double totalTime = 5.0;
+    auto rightArrowWidth = Scale(200, true);
+    auto rightArrowHeight = Scale(217, true);
+    auto rightArrowNextOffset = Scale(150, true);
 
-    double cycleTime = fmod(elapsedTime, totalTime);
-    auto totalAnimOffset = (float)(xOffset * totalTime);
+    const auto leftArrowCount = int((max.x + leftArrowWidth) / leftArrowNextOffset) + 1;
+    const auto rightArrowCount = int((max.x + rightArrowWidth) / rightArrowNextOffset) + 1;
+    const auto fadeOutStartTime = (ARROWS_OFFSET_FRAMES * rightArrowCount) + (FADE_IN_DURATION * rightArrowCount) + 30.0;
 
-    const uint32_t leftArrows = (uint32_t)((max.x + Scale(200) + totalAnimOffset) / leftArrowOffset) + 1;
-    const uint32_t rightArrows = (uint32_t)((max.x + Scale(20) + totalAnimOffset) / rightArrowOffset) + 1;
-
-    auto leftBaseY = min.y - (leftArrowSize / 2);
-    auto leftEndY = min.y + (leftArrowSize / 2);
-
-    auto computeArrowLoopMotion = [&](double time, double offset)
+    auto computeArrowLoopMotion = [&](double offset) -> double
     {
-        const double fadeInDuration = 0.1;
-        const double fadeOutDuration = 10.0;
+        auto motionTime = 0.0;
+        auto fadeOutStartMotionTime = ComputeMotion(time, 0, fadeOutStartTime);
 
-        double elapsedTime = time - offset;
-
-        if (elapsedTime < 0.0)
-            return 0.0;
-
-        double result;
-
-        if (elapsedTime < fadeInDuration)
+        if (fadeOutStartMotionTime < 1.0)
         {
-            double progress = elapsedTime / fadeInDuration;
-            result = 1.0 - pow(1.0 - progress, 2.0);
-        }
-        else if (elapsedTime < fadeInDuration + fadeOutDuration)
-        {
-            double fadeOutTime = elapsedTime - fadeInDuration;
-            double progress = fadeOutTime / fadeOutDuration;
-            result = pow(1.0 - progress, 10.0);
+            motionTime = ComputeMotion(time, offset, FADE_IN_DURATION);
         }
         else
         {
-            result = 0.0;
+            motionTime = ComputeMotion(time, fadeOutStartTime, FADE_OUT_DURATION, true);
+
+            if (motionTime <= 0.0)
+                time = ImGui::GetTime();
         }
 
-        return std::clamp(result, 0.0, 1.0);
+        return std::clamp(motionTime, 0.0, 1.0);
     };
 
-    for (uint32_t i = 0; i < leftArrows; i++)
-    {
-        auto baseX = min.x + (i * leftArrowOffset) - Scale(200) - totalAnimOffset;
-        auto endX = baseX + leftArrowSize;
-        auto opacity = (uint32_t)((maxOpacity * computeArrowLoopMotion(cycleTime, 1.0 + ((double)(leftArrows - i) / leftArrows))) * 255);
+    auto leftArrowsOffsetFrames = ARROWS_OFFSET_FRAMES * (rightArrowCount - 1);
+    auto animDuration = ((FADE_IN_DURATION + FADE_OUT_DURATION) + (leftArrowsOffsetFrames + (ARROWS_OFFSET_FRAMES * leftArrowCount))) + fadeOutStartTime;
 
-        drawList->AddImage(g_texArrow.get(), { endX, leftBaseY }, { baseX, leftEndY }, GET_UV_COORDS(arrowUV), IM_COL32(255, 255, 255, opacity));
+    auto leftArrowOffsetMotionTime = ComputeMotion(time, 0, animDuration);
+    auto leftArrowGlobalOffset = Scale(Lerp(318, 298, leftArrowOffsetMotionTime), true);
+
+    auto rightArrowOffsetMotionTime = ComputeMotion(time, 0, animDuration - 20.0);
+    auto rightArrowGlobalOffset = Scale(Lerp(73, 103, rightArrowOffsetMotionTime), true);
+
+    auto rightBaseY = centre.y - (rightArrowHeight / 2) - Scale(19, true);
+    auto rightEndY = rightBaseY + rightArrowHeight;
+    
+    for (int i = 0; i < rightArrowCount; i++)
+    {
+        auto baseX = max.x - (i * rightArrowNextOffset) - rightArrowWidth + rightArrowGlobalOffset;
+        auto endX = baseX + rightArrowWidth;
+        auto opacity = Lerp(5, 45, std::clamp(baseX / max.x, 0.0f, 1.0f)) * computeArrowLoopMotion(ARROWS_OFFSET_FRAMES * (rightArrowCount - i));
+
+        drawList->AddImage(g_upTexArrow.get(), { baseX, rightBaseY }, { endX, rightEndY }, GET_UV_COORDS(arrowUVs), IM_COL32(255, 255, 255, opacity));
     }
 
-    auto rightBaseY = min.y - (rightArrowSize / 2);
-    auto rightEndY = min.y + (rightArrowSize / 2);
+    auto leftBaseY = centre.y - (leftArrowHeight / 2) - Scale(20, true);
+    auto leftEndY = leftBaseY + leftArrowHeight;
 
-    for (uint32_t i = 0; i < rightArrows; i++)
+    for (int i = 0; i < leftArrowCount; i++)
     {
-        auto baseX = max.x - (i * rightArrowOffset) - rightArrowSize + Scale(20) + totalAnimOffset;
-        auto endX = baseX + rightArrowSize;
-        auto opacity = (uint32_t)((maxOpacity * computeArrowLoopMotion(cycleTime, ((double)(rightArrows - i) / rightArrows))) * 255);
+        auto baseX = min.x + (i * leftArrowNextOffset) - leftArrowWidth + leftArrowGlobalOffset;
+        auto endX = baseX + leftArrowWidth;
+        auto opacity = Lerp(45, 5, std::clamp(baseX / max.x, 0.0f, 1.0f)) * computeArrowLoopMotion(leftArrowsOffsetFrames + (ARROWS_OFFSET_FRAMES * (leftArrowCount - i)));
 
-        drawList->AddImage(g_texArrow.get(), { baseX, rightBaseY }, { endX, rightEndY }, GET_UV_COORDS(arrowUV), IM_COL32(255, 255, 255, opacity));
+        drawList->AddImage(g_upTexArrow.get(), { endX, leftBaseY }, { baseX, leftEndY }, GET_UV_COORDS(arrowUVs), IM_COL32(255, 255, 255, opacity));
     }
 }
 
-void DrawHUD(ImVec2 min, ImVec2 max, const ImFont* font, const char* text)
+void DrawArrowCursor(ImVec2 pos, double time, bool isIntroAnim, bool isBlinkingAnim, bool isReversed)
 {
     auto drawList = ImGui::GetBackgroundDrawList();
 
-    auto leftWidth = Scale(200);
-    auto stripeHeight = Scale(50);
-    auto offset = Scale(81);
+    auto cursorUVs = PIXELS_TO_UV_COORDS(50, 50, 0, 0, 27, 50);
+    auto cursorScaleX = Scale(14, true);
 
-    auto leftStripe = PIXELS_TO_UV_COORDS(1024, 1024, 0, 300, 200, 50);
-    auto centerStripe = PIXELS_TO_UV_COORDS(1024, 1024, 200, 300, 824, 50);
+    for (int i = 0; i < 3; i++)
+    {
+        auto cursorMotionTime = isIntroAnim ? ComputeLinearMotion(time, i, 5, isReversed) : 1.0;
+        auto cursorScaleYMotion = Lerp(Scale(37.5, true), Scale(24, true), cursorMotionTime);
+        auto cursorOffsetXMotion = Lerp(0, Scale(8.5, true), cursorMotionTime);
+        auto cursorOffsetYMotion = Lerp(pos.y - cursorScaleYMotion / 6, pos.y, cursorMotionTime);
+        auto cursorRightMotion = (cursorOffsetXMotion * 3) - (cursorOffsetXMotion * i);
+        auto cursorAlphaMotionTime = isIntroAnim ? ComputeLinearMotion(time, i, 2, isReversed) : 1.0;
+        auto cursorAlphaMotion = (int)Lerp(0, 255, cursorAlphaMotionTime);
 
-    auto stripeColor = IM_COL32(168, 15, 15, 255);
+        if (isBlinkingAnim)
+        {
+            auto cursorAlphaMotionInTime = ComputeLoopMotion(time, 3.0 * i, 12.0);
+            auto cursorAlphaMotionOutTime = ComputeLoopMotion(time, 3.0 * (i + 1), 12.0);
 
-    drawList->AddImage(g_texMainMenu1.get(), { min.x, min.y + offset }, { min.x + leftWidth, min.y + offset + stripeHeight }, GET_UV_COORDS(leftStripe), stripeColor);
-    drawList->AddImage(g_texMainMenu1.get(), { min.x + leftWidth , min.y + offset }, { max.x, min.y + offset + stripeHeight }, GET_UV_COORDS(centerStripe), stripeColor);
+            // horrible
+            cursorAlphaMotionTime = cursorAlphaMotionInTime >= 1.0
+                ? cursorAlphaMotionOutTime >= 1.0
+                    ? cursorAlphaMotionInTime
+                    : cursorAlphaMotionOutTime
+                : cursorAlphaMotionInTime;
 
-    auto stripOffset = Scale(78);
-    auto stripUV = PIXELS_TO_UV_COORDS(1024, 1024, 201, 501, 264, 50);
+            cursorAlphaMotion = (int)Lerp(50 * (i + 1), 255, cursorAlphaMotionTime);
+        }
 
-    auto strip1LeftOffset = leftWidth + Scale(180);
+        ImVec2 cursorMin = { pos.x + cursorRightMotion, cursorOffsetYMotion };
+        ImVec2 cursorMax = { pos.x + cursorRightMotion + cursorScaleX, cursorMin.y + cursorScaleYMotion };
 
-    auto tlStrip1Color = IM_COL32(255, 172, 0, 0);
-    auto brStrip1Color = IM_COL32(255, 172, 0, 67);
+        drawList->AddImage(g_upTexSelectArrow.get(), cursorMin, cursorMax, GET_UV_COORDS(cursorUVs), IM_COL32(255, 255, 255, cursorAlphaMotion));
+    }
+}
 
-    ImVec2 strip1Min = { min.x + strip1LeftOffset, min.y + stripOffset };
-    ImVec2 strip1Max = { min.x + strip1LeftOffset + Scale(270), min.y + stripOffset + stripeHeight };
+double ImValueDebug(double& value, double increment)
+{
+#ifdef _WIN32
+    if (GetAsyncKeyState(VK_OEM_PLUS) & 1)
+        value += increment;
+    if (GetAsyncKeyState(VK_OEM_MINUS) & 1)
+        value -= increment;
+#endif
 
-    SetHorizontalGradient(strip1Min, strip1Max, tlStrip1Color, brStrip1Color);
+    LOGF_UTILITY("{}", value);
 
-    drawList->AddImage(g_texMainMenu1.get(), strip1Min, strip1Max, GET_UV_COORDS(stripUV), IM_COL32_WHITE);
-
-    ResetGradient();
-
-    auto strip2LeftOffset = leftWidth + Scale(40);
-
-    auto tlStrip2Color = IM_COL32(255, 116, 0, 0);
-    auto brStrip2Color = IM_COL32(255, 116, 0, 17);
-
-    ImVec2 strip2Min = { min.x + strip2LeftOffset, min.y + stripOffset };
-    ImVec2 strip2Max = { min.x + strip2LeftOffset + Scale(270), min.y + stripOffset + stripeHeight };
-
-    SetHorizontalGradient(strip2Min, strip2Max, tlStrip2Color, brStrip2Color);
-
-    drawList->AddImage(g_texMainMenu1.get(), strip2Min, strip2Max, GET_UV_COORDS(stripUV), IM_COL32_WHITE);
-
-    ResetGradient();
-
-    auto backBarHeight = Scale(150);
-    auto backBarColor = IM_COL32(0, 23, 57, 255);
-
-    drawList->AddRectFilled({ min.x, max.y - backBarHeight }, { max.x, max.y }, backBarColor);
-
-    auto leftSilver = PIXELS_TO_UV_COORDS(1024, 1024, 0, 154, 200, 116);
-    auto centerSilver = PIXELS_TO_UV_COORDS(1024, 1024, 200, 154, 824, 116);
-
-    auto silverHeight = Scale(116);
-
-    drawList->AddImage(g_texMainMenu1.get(), { min.x - Scale(1), min.y }, { min.x - Scale(1) + leftWidth, min.y + silverHeight }, GET_UV_COORDS(leftSilver), IM_COL32_WHITE);
-    drawList->AddImage(g_texMainMenu1.get(), { min.x - Scale(1) + leftWidth, min.y }, { max.x, min.y + silverHeight }, GET_UV_COORDS(centerSilver), IM_COL32_WHITE);
-
-    auto centerBottomBar = PIXELS_TO_UV_COORDS(1024, 1024, 180, 60, 844, 55);
-
-    auto bottomBarHeight = Scale(55);
-    auto bottomTabWidth = Scale(180);
-
-    drawList->AddImage(g_texMainMenu1.get(), { min.x + bottomTabWidth, max.y - bottomBarHeight }, { max.x - bottomTabWidth, max.y }, GET_UV_COORDS(centerBottomBar), IM_COL32_WHITE);
-
-    auto bottomTab = PIXELS_TO_UV_COORDS(1024, 1024, 0, 0, 180, 115);
-
-    auto bottomTabHeight = Scale(115);
-
-    drawList->AddImage(g_texMainMenu1.get(), { min.x, max.y - bottomTabHeight }, { min.x + bottomTabWidth, max.y }, GET_UV_COORDS(bottomTab), IM_COL32_WHITE);
-    drawList->AddImage(g_texMainMenu1.get(), { max.x, max.y - bottomTabHeight }, { max.x - bottomTabWidth, max.y }, GET_UV_COORDS(bottomTab), IM_COL32_WHITE);
-
-    drawList->AddText(font, Scale(32), { min.x + leftWidth + Scale(2), min.y + offset + Scale(5) }, IM_COL32_WHITE, text);
+    return value;
 }
 
 void DrawContainerBox(ImVec2 min, ImVec2 max, float alpha)
@@ -364,12 +391,12 @@ void DrawContainerBox(ImVec2 min, ImVec2 max, float alpha)
 
     SetHorizontalGradient({ max.x - commonWidth, min.y }, max, IM_COL32_WHITE, IM_COL32(255, 255, 255, 0));
 
-    drawList->AddImage(g_texMainMenu1.get(), min, { min.x + commonWidth, min.y + commonHeight }, GET_UV_COORDS(tl), color);
-    drawList->AddImage(g_texMainMenu1.get(), { min.x + commonWidth, min.y }, { max.x, min.y + commonHeight }, GET_UV_COORDS(tc), color);
-    drawList->AddImage(g_texMainMenu1.get(), { min.x, min.y + commonHeight }, { min.x + commonWidth, max.y - commonHeight }, GET_UV_COORDS(cl), color);
-    drawList->AddImage(g_texMainMenu1.get(), { min.x + commonWidth, min.y + commonHeight }, { max.x, max.y - commonHeight }, GET_UV_COORDS(cc), color);
-    drawList->AddImage(g_texMainMenu1.get(), { min.x, max.y - commonHeight }, { min.x + commonWidth, max.y + bottomHeight }, GET_UV_COORDS(bl), color);
-    drawList->AddImage(g_texMainMenu1.get(), { min.x + commonWidth, max.y - commonHeight }, { max.x, max.y + bottomHeight }, GET_UV_COORDS(bc), color);
+    drawList->AddImage(g_upTexMainMenu1.get(), min, { min.x + commonWidth, min.y + commonHeight }, GET_UV_COORDS(tl), color);
+    drawList->AddImage(g_upTexMainMenu1.get(), { min.x + commonWidth, min.y }, { max.x, min.y + commonHeight }, GET_UV_COORDS(tc), color);
+    drawList->AddImage(g_upTexMainMenu1.get(), { min.x, min.y + commonHeight }, { min.x + commonWidth, max.y - commonHeight }, GET_UV_COORDS(cl), color);
+    drawList->AddImage(g_upTexMainMenu1.get(), { min.x + commonWidth, min.y + commonHeight }, { max.x, max.y - commonHeight }, GET_UV_COORDS(cc), color);
+    drawList->AddImage(g_upTexMainMenu1.get(), { min.x, max.y - commonHeight }, { min.x + commonWidth, max.y + bottomHeight }, GET_UV_COORDS(bl), color);
+    drawList->AddImage(g_upTexMainMenu1.get(), { min.x + commonWidth, max.y - commonHeight }, { max.x, max.y + bottomHeight }, GET_UV_COORDS(bc), color);
 
     ResetGradient();
 }
@@ -439,12 +466,6 @@ void DrawTextWithShadow(const ImFont* font, float fontSize, const ImVec2& pos, I
     auto drawList = ImGui::GetBackgroundDrawList();
 
     offset = Scale(offset);
-
-    // Original 4:3 has thicker text shadows.
-    if (Config::AspectRatio == EAspectRatio::OriginalNarrow)
-    {
-        radius *= 1.5f;
-    }
 
     SetOutline(radius);
     drawList->AddText(font, fontSize, { pos.x + offset, pos.y + offset }, shadowColour, text);
@@ -686,48 +707,23 @@ ImU32 ColourLerp(ImU32 c0, ImU32 c1, float t)
     return ImGui::ColorConvertFloat4ToU32(result);
 }
 
-void DrawVersionString(const ImFont* font, const ImU32 col)
+void DrawVersionString(const ImU32 colour)
 {
     auto drawList = ImGui::GetBackgroundDrawList();
     auto& res = ImGui::GetIO().DisplaySize;
-    auto fontSize = Scale(12);
-    auto textMargin = Scale(2);
-    auto textSize = font->CalcTextSizeA(fontSize, FLT_MAX, 0, g_versionString);
 
-    drawList->AddText(font, fontSize, { res.x - textSize.x - textMargin, res.y - textSize.y - textMargin }, col, g_versionString);
-}
+    auto fontSize = Scale(12, true);
+    auto textSize = g_pFntNewRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, g_versionString);
 
-void DrawToggleLight(ImVec2 pos, bool isEnabled, float alpha)
-{
-    auto drawList = ImGui::GetBackgroundDrawList();
-    auto lightSize = Scale(14);
-    auto lightCol = IM_COL32(255, 255, 255, 255 * alpha);
+    auto textMargin = Scale(2, true);
+    auto textY = res.y - textSize.y - textMargin;
 
-    ImVec2 min = { pos.x, pos.y };
-    ImVec2 max = { min.x + lightSize, min.y + lightSize };
+    if (g_aspectRatio < NARROW_ASPECT_RATIO)
+        textY -= BlackBar::s_letterboxHeight - BlackBar::s_margin;
 
-    if (isEnabled)
-    {
-        auto lightGlowSize = Scale(24);
-        auto lightGlowUVs = PIXELS_TO_UV_COORDS(64, 64, 31, 31, 32, 32);
-
-        ImVec2 lightGlowMin = { min.x - (lightGlowSize / 2) + Scale(2), min.y - lightGlowSize / 2 };
-        ImVec2 lightGlowMax = { min.x + lightGlowSize, min.y + lightGlowSize };
-
-        SetAdditive(true);
-        drawList->AddImage(g_texLight.get(), lightGlowMin, lightGlowMax, GET_UV_COORDS(lightGlowUVs), IM_COL32(255, 255, 0, 127 * alpha));
-        SetAdditive(false);
-
-        auto lightOnUVs = PIXELS_TO_UV_COORDS(64, 64, 14, 0, 14, 14);
-
-        drawList->AddImage(g_texLight.get(), min, max, GET_UV_COORDS(lightOnUVs), lightCol);
-    }
-    else
-    {
-        auto lightOffUVs = PIXELS_TO_UV_COORDS(64, 64, 0, 0, 14, 14);
-
-        drawList->AddImage(g_texLight.get(), min, max, GET_UV_COORDS(lightOffUVs), lightCol);
-    }
+    // TODO: remove this line after v1 release.
+    drawList->AddText(g_pFntNewRodin, fontSize, { textMargin, textY }, colour, "WORK IN PROGRESS");
+    drawList->AddText(g_pFntNewRodin, fontSize, { res.x - textSize.x - textMargin, textY }, colour, g_versionString);
 }
 
 // Taken from ImGui because we need to modify to break for '\u200B\ too
@@ -829,5 +825,301 @@ const char* CalcWordWrapPositionA(const ImFont* font, float scale, const char* t
     // +1 may not be a character start point in UTF-8 but it's ok because caller loops use (text >= word_wrap_eol).
     if (s == text && text < text_end)
         return s + 1;
+
     return s;
 }
+
+static std::vector<std::string> ParseInterpolatedString(const char* str, bool includeTokens = true)
+{
+    std::vector<std::string> result;
+
+    // Skip nullptr or strings that cannot possibly
+    // contain variables (e.g. "${}" bare minimum).
+    if (!str || strlen(str) <= 3)
+        return result;
+
+    auto start = str;
+    auto ptr = str;
+
+    while (*ptr)
+    {
+        if (ptr[0] == '$' && ptr[1] == '{')
+        {
+            // Add leading text.
+            if (ptr > start)
+                result.emplace_back(start, ptr - start);
+
+            auto tokenStart = ptr;
+
+            // Skip "${".
+            ptr += 2;
+
+            // Seek to end token.
+            while (*ptr && *ptr != '}')
+                ++ptr;
+
+            if (*ptr == '}')
+            {
+                auto curStrStart = tokenStart;
+                auto curStrEnd = ++ptr;
+
+                if (!includeTokens)
+                {
+                    curStrStart += 2;
+                    --curStrEnd;
+                }
+
+                // Add variable.
+                result.emplace_back(curStrStart, curStrEnd - curStrStart);
+                start = ptr;
+            }
+            else
+            {
+                break;
+            }
+        }
+        else
+        {
+            ++ptr;
+        }
+    }
+
+    // Add trailing text.
+    if (ptr > start)
+        result.emplace_back(start, ptr - start);
+
+    return result;
+}
+
+static bool IsInterpolatedString(std::string_view str)
+{
+    return str.length() >= 3 && str[0] == '$' && str[1] == '{' && str.back() == '}';
+}
+
+ImVec2 MeasureInterpolatedText(const ImFont* pFont, float fontSize, const char* pText, ImGuiTextInterpData* pInterpData)
+{
+    ImVec2 result{};
+
+    auto parsed = ParseInterpolatedString(pText);
+
+    auto measureText = [&](float paddingX, std::string_view str)
+    {
+        auto textSize = pFont->CalcTextSizeA(fontSize, FLT_MAX, 0, str.data());
+
+        result.x += textSize.x + paddingX;
+        result.y = std::max(result.y, textSize.y);
+    };
+
+    for (size_t i = 0; i < parsed.size(); i++)
+    {
+        auto& str = parsed[i];
+        auto  paddingX = i == parsed.size() - 1 ? 0 : Scale(2, true);
+
+        if (IsInterpolatedString(str))
+        {
+            auto parsedSingleNoTokens = ParseInterpolatedString(str.data(), false);
+
+            if (!parsedSingleNoTokens.size())
+                continue;
+
+            auto variableMapSingle = MapTextVariables(parsedSingleNoTokens[0].data());
+
+            if (!variableMapSingle.size())
+                continue;
+
+            auto& variable = variableMapSingle[0];
+            auto& variableType = variable.first;
+            auto& variableValue = variable.second;
+
+            if (variableType == "picture")
+            {
+                auto& pictureName = variableValue;
+                auto  pictureNameHash = HashStr(pictureName);
+
+                if (!pInterpData || !pInterpData->Picture.pupTexture || !pInterpData->pPictureCrops || !pInterpData->pPictureCrops->contains(pictureNameHash))
+                {
+                    auto placeholderScale = Scale(28, true);
+
+                    result.x += placeholderScale;
+                    result.y = std::max(result.y, placeholderScale);
+
+                    continue;
+                }
+
+                auto pictureCrop = FindHash<ImGuiTextPictureCrop>(*pInterpData->pPictureCrops, pictureNameHash);
+                auto pictureWidth = Scale(pictureCrop.Width, true);
+                auto pictureHeight = Scale(pictureCrop.Height, true);
+
+                result.x += pictureWidth + paddingX;
+                result.y = std::max(result.y, pictureHeight);
+            }
+            else if (variableType == "locale")
+            {
+                auto& localeName = variableValue;
+
+                measureText(paddingX, Localise(localeName));
+            }
+        }
+        else
+        {
+            measureText(paddingX, str);
+        }
+    }
+
+    return result;
+}
+
+void DrawInterpolatedText(const ImFont* pFont, float fontSize, const ImVec2& pos, ImU32 colour, const char* pText, ImGuiTextInterpData* pInterpData)
+{
+    auto drawList = ImGui::GetBackgroundDrawList();
+    auto parsed = ParseInterpolatedString(pText);
+    auto advanceX = 0.0f;
+    auto marginY = Config::Language == ELanguage::Japanese ? 0 : Scale(1, true);
+
+    auto drawText = [&](const ImVec2& pos, float paddingX, std::string_view str)
+    {
+        auto textSize = pFont->CalcTextSizeA(fontSize, FLT_MAX, 0, str.data());
+
+        drawList->AddText(pFont, fontSize, pos, colour, str.data());
+
+        advanceX += textSize.x + paddingX;
+    };
+
+    for (size_t i = 0; i < parsed.size(); i++)
+    {
+        auto& str = parsed[i];
+        auto  curPos = ImVec2{ pos.x + advanceX, pos.y + marginY };
+        auto  paddingX = i == parsed.size() - 1 ? 0 : Scale(2, true);
+
+        if (IsInterpolatedString(str))
+        {
+            auto parsedSingleNoTokens = ParseInterpolatedString(str.data(), false);
+        
+            if (!parsedSingleNoTokens.size())
+                continue;
+
+            auto variableMapSingle = MapTextVariables(parsedSingleNoTokens[0].data());
+        
+            if (!variableMapSingle.size())
+                continue;
+        
+            auto& variable = variableMapSingle[0];
+            auto& variableType = variable.first;
+            auto& variableValue = variable.second;
+        
+            if (variableType == "picture")
+            {
+                auto& pictureName = variableValue;
+                auto  pictureNameHash = HashStr(pictureName);
+
+                if (!pInterpData || !pInterpData->Picture.pupTexture || !pInterpData->pPictureCrops || !pInterpData->pPictureCrops->contains(pictureNameHash))
+                {
+                    auto placeholderScale = Scale(28, true);
+
+                    ImVec2 placeholderMin = { pos.x + advanceX, pos.y };
+                    ImVec2 placeholderMax = { placeholderMin.x + placeholderScale, placeholderMin.y + placeholderScale };
+
+                    advanceX += placeholderScale;
+
+                    drawList->AddRectFilled(placeholderMin, placeholderMax, IM_COL32(255, 0, 0, 255));
+
+                    continue;
+                }
+
+                auto pictureCrop = FindHash<ImGuiTextPictureCrop>(*pInterpData->pPictureCrops, pictureNameHash);
+                auto pictureUVs = PIXELS_TO_UV_COORDS(pInterpData->Picture.Width, pInterpData->Picture.Height, pictureCrop.X, pictureCrop.Y, pictureCrop.Width, pictureCrop.Height);
+                auto pictureWidth = Scale(pictureCrop.Width, true);
+                auto pictureHeight = Scale(pictureCrop.Height, true);
+
+                ImVec2 pictureMin = { pos.x + advanceX, pos.y };
+                ImVec2 pictureMax = { pictureMin.x + pictureWidth, pictureMin.y + pictureHeight };
+
+                advanceX += pictureWidth + paddingX;
+
+                drawList->AddImage(pInterpData->Picture.pupTexture->get(), pictureMin, pictureMax, GET_UV_COORDS(pictureUVs), colour);
+            }
+            else if (variableType == "locale")
+            {
+                auto& localeName = variableValue;
+
+                drawText(curPos, paddingX, Localise(localeName));
+            }
+        }
+        else
+        {
+            drawText(curPos, paddingX, str);
+        }
+    }
+}
+
+ImGuiTextInterpData GetHidInterpTextData()
+{
+    auto buttonTexture = &g_upTexController;
+    auto buttonTextureWidth = uint16_t(256);
+    auto buttonTextureHeight = uint16_t(128);
+
+    auto buttonCrops = Config::IsControllerIconsPS3() 
+        ? &g_buttonCropsPS3
+        : &g_buttonCropsXenon;
+
+    if (!App::s_isInit)
+    {
+        if (hid::g_inputDevice == hid::EInputDevice::Keyboard ||
+            hid::g_inputDevice == hid::EInputDevice::Mouse)
+        {
+            buttonTexture = &g_upTexKbm;
+            buttonTextureWidth = uint16_t(384);
+        }
+
+        if (hid::g_inputDevice == hid::EInputDevice::Keyboard)
+        {
+            buttonCrops = &g_buttonCropsKeyboard;
+        }
+        else if (hid::g_inputDevice == hid::EInputDevice::Mouse)
+        {
+            buttonCrops = &g_buttonCropsMouse;
+        }
+    }
+
+    return { { buttonTexture, buttonTextureWidth, buttonTextureHeight }, buttonCrops };
+}
+
+const xxHashMap<ImGuiTextPictureCrop> g_buttonCropsXenon =
+{
+    { HashStr("button_a"),     { 0, 0, 28, 28 } },
+    { HashStr("button_b"),     { 28, 0, 28, 28 } },
+    { HashStr("button_x"),     { 56, 0, 28, 28 } },
+    { HashStr("button_y"),     { 84, 0, 28, 28 } },
+    { HashStr("button_lb"),    { 112, 0, 53, 28 } },
+    { HashStr("button_rb"),    { 168, 0, 53, 28 } },
+    { HashStr("button_lt"),    { 56, 29, 55, 28 } },
+    { HashStr("button_rt"),    { 0, 29, 55, 28 } },
+    { HashStr("button_start"), { 112, 28, 28, 28 } },
+    { HashStr("button_back"),  { 140, 28, 28, 28 } }
+};
+
+const xxHashMap<ImGuiTextPictureCrop> g_buttonCropsPS3 =
+{
+    { HashStr("button_a"),     { 0, 56, 28, 28 } },
+    { HashStr("button_b"),     { 28, 56, 28, 28 } },
+    { HashStr("button_x"),     { 56, 56, 28, 28 } },
+    { HashStr("button_y"),     { 84, 56, 28, 28 } },
+    { HashStr("button_lb"),    { 112, 56, 48, 28 } },
+    { HashStr("button_rb"),    { 0, 84, 48, 28 } },
+    { HashStr("button_lt"),    { 168, 56, 48, 28 } },
+    { HashStr("button_rt"),    { 56, 84, 48, 28 } },
+    { HashStr("button_start"), { 140, 84, 28, 28 } },
+    { HashStr("button_back"),  { 112, 84, 28, 28 } }
+};
+
+const xxHashMap<ImGuiTextPictureCrop> g_buttonCropsMouse =
+{
+    { HashStr("button_a"), { 128, 0, 128, 128 } },
+    { HashStr("button_b"), { 256, 0, 128, 128 } }
+};
+
+const xxHashMap<ImGuiTextPictureCrop> g_buttonCropsKeyboard =
+{
+    { HashStr("button_a"), { 0, 0, 128, 128 } },
+    { HashStr("button_b"), { 256, 0, 128, 128 } }
+};

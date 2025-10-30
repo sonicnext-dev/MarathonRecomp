@@ -2,6 +2,7 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/SoX/RefCountObject.h>
+#include <Sonicteam/CsdLink.h>
 #include <Sonicteam/CsdResource.h>
 
 namespace Sonicteam

@@ -11,14 +11,19 @@ namespace Sonicteam::SoX
         struct Vftable
         {
             be<uint32_t> fpDestroy;
-            be<uint32_t> fpOnMessageReceived;
+            be<uint32_t> fpProcessMessage;
         };
 
         xpointer<Vftable> m_pVftable;
 
-        bool OnMessageReceived(IMessage* pMessage)
+        void* Destroy(uint8_t flags = 1)
         {
-            return GuestToHostFunction<bool>(m_pVftable->fpOnMessageReceived, this, pMessage);
+            return GuestToHostFunction<void*>(m_pVftable->fpDestroy, this, flags);
+        }
+
+        bool ProcessMessage(IMessage* pMessage)
+        {
+            return GuestToHostFunction<bool>(m_pVftable->fpProcessMessage, this, pMessage);
         }
     };
 }

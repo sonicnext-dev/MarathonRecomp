@@ -3,6 +3,7 @@
 #include <Marathon.inl>
 #include <Sonicteam/SoX/ApplicationXenon.h>
 #include <Sonicteam/DocMarathonState.h>
+#include <Sonicteam/GameMode.h>
 
 namespace Sonicteam
 {
@@ -12,6 +13,14 @@ namespace Sonicteam
         xpointer<DocMarathonState> m_pDoc;
 
         static AppMarathon* GetInstance();
+
+        GameImp* GetGame() const
+        {
+            if (auto pGameMode = m_pDoc->GetDocMode<Sonicteam::GameMode>())
+                return pGameMode->GetGame();
+
+            return nullptr;
+        }
     };
 }
 

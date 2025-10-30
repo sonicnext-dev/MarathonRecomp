@@ -14,25 +14,52 @@ namespace Sonicteam::Player
     class PostureControl : public IPostureControl, public IPostureSupportSphere, public IPostureSupportOttoto, public IPostureSupportEdge, public IPostureSupportInput, public IPostureSupportRayTemplate<GroundRayListener>
     {
     public:
-        // Credit to Gordon Ramsay
         enum PostureFlag
         {
-            PostureFlag_Ground = 0x1,              // Detects Ground
-            PostureFlag_WallBrushing = 0x8,        // Detects brushing against a wall
-            PostureFlag_HeadOnWall = 0x10,         // Detects head-on wall collision (will always be enabled w/ WallBrushing)
-            PostureFlag_RailGrind = 0x40,          // Rail grinding
-            PostureFlag_BeforeFall = 0x100,        // Seems like Neutral or Pre-Fall? The moment before transitioning from the Jump to Fall animation
-            PostureFlag_Fall = 0x200,              // FALL
-            PostureFlag_WaterCollision = 0x800,    // Water collision (making you slide down an incline)? BeforeFall is often set with this
-            PostureFlag_LightDash = 0x4000,        // Light Dashing
-            PostureFlag_QuickRotate = 0x8000,      // Is moving the control stick in a non-forward direction (usually only active for a frame since the character instantly rotates)
-            PostureFlag_Tentative = 0x10000,       // Is Tentative collision
-            PostureFlag_WaterSlide = 0x20000,      // Water sliding
-            PostureFlag_Grass = 0x100000,          // Grass
-            PostureFlag_DirtClay = 0x200000,       // Dirt/clay
-            PostureFlag_Stone = 0x400000,          // Stone
-            PostureFlag_Shoreline = 0x1000000      // Shoreline? sand? Uncertain
+            // The player is grounded.
+            PostureFlag_Grounded = 0x01,
+
+            // The player is brushing against a wall.
+            PostureFlag_WallSide = 0x08,
+
+            // The player is head on against a wall.
+            PostureFlag_WallFront = 0x10,
+
+            // The player is grinding on a rail.
+            PostureFlag_RailGrind = 0x40,
+
+            // The player is in the intermediate state between jumping and falling.
+            PostureFlag_FallIntermediate = 0x100,
+
+            // The player is falling.
+            PostureFlag_Fall = 0x200,
+
+            // The player is on water collision.
+            PostureFlag_Water = 0x800,
+
+            // The player is light dashing.
+            PostureFlag_LightDash = 0x4000,
+
+            // The player is rotating in a non-forward direction.
+            PostureFlag_QuickRotate = 0x8000,
+
+            // The player is on tentative collision.
+            PostureFlag_Tentative = 0x10000,
+
+            // The player is water sliding.
+            PostureFlag_WaterSlide = 0x20000,
+
+            // The player is on grass collision.
+            PostureFlag_Grass = 0x100000,
+
+            // The player is on dirt collision.
+            PostureFlag_Dirt = 0x200000,
+
+            // The player is on stone collision.
+            PostureFlag_Stone = 0x400000,
+
+            // The player is on sand collision.
+            PostureFlag_Sand = 0x1000000
         };
-        // 0x314 ... 0x400
     };
 }

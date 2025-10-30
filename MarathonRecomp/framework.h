@@ -83,3 +83,27 @@ inline bool strcmpIgnoreCase(const char* a, const char* b)
 
     return true;
 }
+
+inline bool strcmpWildcard(const char* str, const char* pattern)
+{
+    // Match if both strings passed all
+    // comparisons and reached the end.
+    if (*pattern == '\0' && *str == '\0')
+        return true;
+
+    // Check if any number of chars matches.
+    if (*pattern == '*')
+    {
+        // Skip duplicates.
+        while (*(pattern + 1) == '*')
+            pattern++;
+
+        return strcmpWildcard(str, pattern + 1) || (*str && strcmpWildcard(str + 1, pattern));
+    }
+
+    // Check if current char matches.
+    if (*pattern == '?' || *pattern == *str)
+        return strcmpWildcard(str + 1, pattern + 1);
+
+    return false;
+}

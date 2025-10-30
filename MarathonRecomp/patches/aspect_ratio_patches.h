@@ -17,6 +17,9 @@ inline float g_aspectRatioMultiplayerOffsetX;
 inline float g_aspectRatioScale;
 inline float g_aspectRatioGameplayScale;
 inline float g_aspectRatioNarrowScale;
+inline float g_aspectRatioNarrowMargin;
+inline float g_horzCentre;
+inline float g_vertCentre;
 inline float g_radarMapScale;
 
 class AspectRatioPatches
@@ -99,7 +102,9 @@ enum CsdFlags : uint64_t
     CSD_MAIN_MENU_PARTS_CAST_0221 = MAKE_BITFLAG64(37),
     CSD_MAIN_MENU_PARTS_CAST_0222 = MAKE_BITFLAG64(38),
     CSD_MAIN_MENU_PARTS_CAST_0226 = MAKE_BITFLAG64(39),
-    CSD_MAIN_MENU_PARTS_CAST_0227 = MAKE_BITFLAG64(40)
+    CSD_MAIN_MENU_PARTS_CAST_0227 = MAKE_BITFLAG64(40),
+    
+    CSD_BUTTON_WINDOW = MAKE_BITFLAG64(41)
 };
 
 struct CsdUVs
@@ -136,21 +141,6 @@ struct CsdModifier
 extern const xxHashMap<CsdModifier> g_csdModifiers;
 
 std::optional<CsdModifier> FindCsdModifier(uint32_t data);
-
-// -------------- TEXT MODIFIERS -------------- //
-
-struct TextFontPictureModifier
-{
-    uint16_t X{};
-    uint16_t Y{};
-    uint16_t Width{};
-    uint16_t Height{};
-};
-
-extern const xxHashMap<TextFontPictureModifier> g_pftModifierXenon;
-extern const xxHashMap<TextFontPictureModifier> g_pftModifierPS3;
-
-TextFontPictureModifier FindFontPictureModifier(xxHashMap<TextFontPictureModifier> pftModifier, std::string_view& name);
 
 // ------------- MOVIE MODIFIERS -------------- //
 

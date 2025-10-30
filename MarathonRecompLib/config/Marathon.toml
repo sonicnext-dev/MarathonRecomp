@@ -139,39 +139,34 @@ registers = ["r29"]
 after_instruction = true
 
 [[midasm_hook]]
-name = "MidairMachSpeedControl"
+name = "MidairControlForMachSpeed"
 address = 0x82210380
 jump_address_on_true = 0x82210388
 
 [[midasm_hook]]
-name = "MidairMachSpeedControl"
+name = "MidairControlForMachSpeed"
 address = 0x822103B4
 jump_address_on_true = 0x822103BC
 
 [[midasm_hook]]
-name = "MidairSnowboardControl"
+name = "MidairControlForSnowboards"
 address = 0x82214710
 jump_address_on_true = 0x82214714
 
 [[midasm_hook]]
-name = "MidairSnowboardControl"
+name = "MidairControlForSnowboards"
 address = 0x8221487C
 jump_address_on_true = 0x82214880
 
 [[midasm_hook]]
-name = "MidairSnowboardControl"
+name = "MidairControlForSnowboards"
 address = 0x822145B8
 jump_address_on_true = 0x822145BC
 
 [[midasm_hook]]
-name = "MidairSnowboardControl"
+name = "MidairControlForSnowboards"
 address = 0x8221486C
 jump_address_on_true = 0x82214870
-
-[[midasm_hook]]
-name = "DisableHints"
-address = 0x82487AC4
-jump_address_on_true = 0x82487AC8
 
 [[midasm_hook]]
 name = "GetRenderWorldFBO"
@@ -191,7 +186,7 @@ registers = ["r5", "r27"]
 [[midasm_hook]]
 name = "PlayerDebugMode_RemapDebugExitButton"
 address = 0x82221CA8 
-registers = ["r30","r11"]
+registers = ["r30"]
 jump_address_on_true = 0x82221CAC
 jump_address_on_false = 0x82221CD8
 
@@ -420,7 +415,7 @@ registers = ["r10", "r11"]
 [[midasm_hook]]
 name = "RestoreChainJumpFlips"
 address = 0x82199654
-registers = ["r31","r30","r11","f1", "f2", "f3"]
+registers = ["r31", "r30", "r11", "f1", "f2", "f3"]
 
 [[midasm_hook]]
 name = "DisablePushState"
@@ -557,24 +552,180 @@ registers = ["r31"]
 jump_address_on_true = 0x822ADBC8
 
 [[midasm_hook]]
-name = "SonicGaugeRestorationGaugeFlagFix"
+name = "SonicGauge_FixFlags"
 address = 0x822196EC
-registers = ["r3","r31"]
+registers = ["r3", "r31"]
 
 [[midasm_hook]]
-name = "SonicGaugeRestorationGaugeGemSpriteResetFix"
+name = "SonicGauge_FixGemSprite"
 address = 0x82185768
 registers = ["r30"]
 
 [[midasm_hook]]
-name = "SonicGaugeRestorationGaugeGemSpriteResetFix"
+name = "SonicGauge_FixGemSprite"
 address = 0x821855A4
 registers = ["r29"]
 
 [[midasm_hook]]
-name = "SonicGaugeRestorationGaugeGemSpriteResetFix"
+name = "SonicGauge_FixGemSprite"
 address = 0x82177DFC
 registers = ["r31"]
+
+[[midasm_hook]]
+name = "GameImp_PauseMenu_AddQuitPrefix"
+address = 0x8217DF60
+registers = ["r1", "r30"]
+
+# Sonicteam::Player::State::SonicFall
+[[midasm_hook]]
+name = "RemapLightDash"
+address = 0x82216B4C
+registers = ["r3", "r11"]
+
+# Sonicteam::Player::State::SonicJump
+[[midasm_hook]]
+name = "RemapLightDash"
+address = 0x82216CC8
+registers = ["r3", "r11"]
+
+# Sonicteam::Player::State::SonicWideSpring
+[[midasm_hook]]
+name = "RemapLightDash"
+address = 0x82216F14
+registers = ["r3", "r11"]
+
+# Sonicteam::Player::State::SonicHomingAfter
+[[midasm_hook]]
+name = "RemapLightDash"
+address = 0x8221745C
+registers = ["r3", "r11"]
+
+# Sonicteam::Player::State::SonicBound
+[[midasm_hook]]
+name = "RemapLightDash"
+address = 0x82217CD4
+registers = ["r3", "r11"]
+
+# Sonicteam::Player::State::SonicWait
+[[midasm_hook]]
+name = "RemapLightDash"
+address = 0x82218B24
+registers = ["r3", "r11"]
+
+# Sonicteam::Player::State::SonicWalk
+[[midasm_hook]]
+name = "RemapLightDash"
+address = 0x82218DF8
+registers = ["r3", "r11"]
+
+# Sonicteam::Player::State::SonicRun
+[[midasm_hook]]
+name = "RemapLightDash"
+address = 0x822190D8
+registers = ["r3", "r11"]
+
+# Sonicteam::Player::State::FastRun
+[[midasm_hook]]
+name = "RemapLightDash"
+address = 0x82211660
+registers = ["r3", "r11"]
+
+# Sonicteam::Player::State::ShadowWait
+[[midasm_hook]]
+name = "RemapLightDash"
+address = 0x821A5504
+registers = ["r3", "r11"]
+
+# Sonicteam::Player::State::ShadowWalk
+[[midasm_hook]]
+name = "RemapLightDash"
+address = 0x821A57C8
+registers = ["r3", "r11"]
+
+# Sonicteam::Player::State::ShadowRun
+[[midasm_hook]]
+name = "RemapLightDash"
+address = 0x821A5A90
+registers = ["r3", "r11"]
+
+# Sonicteam::Player::State::ShadowFall
+[[midasm_hook]]
+name = "RemapLightDash"
+address = 0x821A5D58
+registers = ["r3", "r11"]
+
+# Sonicteam::Player::State::ShadowJump
+[[midasm_hook]]
+name = "RemapLightDash"
+address = 0x821A5F60
+registers = ["r3", "r11"]
+
+# Sonicteam::Player::State::ShadowWideSpring
+[[midasm_hook]]
+name = "RemapLightDash"
+address = 0x821A6270
+registers = ["r3", "r11"]
+
+# Sonicteam::Player::State::ShadowHomingAfter / Sonicteam::Player::State::ShadowChaosSpearAfter
+[[midasm_hook]]
+name = "RemapLightDash"
+address = 0x821A6794
+registers = ["r3", "r11"]
+
+# Sonicteam::Player::State::SonicWalk
+[[midasm_hook]]
+name = "RemapAntigravityEnter"
+address = 0x82218E5C
+registers = ["r11", "r28"]
+
+# Sonicteam::Player::State::SonicRun
+[[midasm_hook]]
+name = "RemapAntigravityEnter"
+address = 0x8221913C
+registers = ["r11", "r28"]
+
+# Sonicteam::Player::State::SonicSliding
+[[midasm_hook]]
+name = "RemapAntigravityExit"
+address = 0x82217AB0
+registers = ["r11", "r30"]
+
+[[midasm_hook]]
+name = "AntigravityRetainsMomentum"
+address = 0x82217968
+jump_address_on_true = 0x8221796C
+
+[[midasm_hook]]
+name = "AntigravityRetainsMomentum"
+address = 0x82217970
+jump_address_on_true = 0x82217974
+
+[[midasm_hook]]
+name = "UnlimitedAntigravity"
+address = 0x82217A94
+jump_address_on_true = 0x82217A98
+
+[[midasm_hook]]
+name = "DemoGMCamera_InvertHorizontal"
+address = 0x8218CC64
+registers = ["f0"]
+
+[[midasm_hook]]
+name = "DemoGMCamera_InvertVertical"
+address = 0x8218CC6C
+registers = ["f0"]
+
+# Sonicteam::Player::Sound::SuperSonic
+[[midasm_hook]]
+name = "Super3_DisableChangeRequestHint"
+address = 0x8226B8EC
+jump_address_on_true = 0x8226B910
+
+# Sonicteam::Player::Sound::SuperShadow / Sonicteam::Player::Sound::SuperSilver
+[[midasm_hook]]
+name = "Super3_DisableChangeRequestHint"
+address = 0x8226AB4C
+jump_address_on_true = 0x8226AB70
 
 [[midasm_hook]]
 name = "InfiniteLives"

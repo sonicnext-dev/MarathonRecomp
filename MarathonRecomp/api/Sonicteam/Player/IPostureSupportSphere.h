@@ -8,6 +8,6 @@ namespace Sonicteam::Player
     {
     public:
         xpointer<void> m_pVftable;
-        MARATHON_INSERT_PADDING(0xD0 - 4);
+        MARATHON_INSERT_PADDING(0xCC);
     };
 }

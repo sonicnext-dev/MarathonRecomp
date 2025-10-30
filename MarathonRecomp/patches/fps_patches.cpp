@@ -125,14 +125,14 @@ void ObjectInputWarp_ExtendMsgSuckPlayer(PPCRegister& phantom, PPCRegister& mess
     auto pPhantom = (Sonicteam::SoX::Physics::Phantom*)g_memory.Translate(phantom.u32);
     auto pMessage = (Sonicteam::Message::MsgSuckPlayer*)g_memory.Translate(message.u32);
 
-    auto pNewMessage = (MsgSuckPlayerEx*)g_userHeap.Alloc(sizeof(MsgSuckPlayerEx));
-    pNewMessage->ID = pMessage->ID;
-    pNewMessage->Point = pMessage->Point;
-    pNewMessage->DeltaTime = deltaTime.f64;
+    auto pMsgSuckPlayerEx = (MsgSuckPlayerEx*)g_userHeap.Alloc(sizeof(MsgSuckPlayerEx));
+    pMsgSuckPlayerEx->ID = pMessage->ID;
+    pMsgSuckPlayerEx->Point = pMessage->Point;
+    pMsgSuckPlayerEx->DeltaTime = deltaTime.f64;
 
-    pPhantom->OnMessageReceived(pNewMessage);
+    pPhantom->ProcessMessage(pMsgSuckPlayerEx);
 
-    g_userHeap.Free(pNewMessage);
+    g_userHeap.Free(pMsgSuckPlayerEx);
 }
 
 void PlayerObject_ProcessMsgSuckPlayer_FixForce(PPCRegister& message, PPCRegister& force)
@@ -259,7 +259,7 @@ bool ObjectVehicleBike_EnemyShot_DisableVehicleCollisionLayer(PPCRegister& r3)
     {
         if (auto pGameMode = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>())
         {
-            auto pWorldHavok = pGameMode->m_pGameImp->GetPhysicsWorld<Sonicteam::SoX::Physics::Havok::WorldHavok>();
+            auto pWorldHavok = pGameMode->GetGame()->GetPhysicsWorld<Sonicteam::SoX::Physics::Havok::WorldHavok>();
 
             if (auto pWorld = pWorldHavok->m_pWorld)
                 pWorld->updateCollisionFilterOnWorld(1, 1);

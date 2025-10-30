@@ -13,18 +13,29 @@ namespace Sonicteam::Player::State
     {
     public:
         xpointer<void> m_spComboAttackManager;
-        be<uint32_t> m_ContextIFFlag1;
-        be<uint32_t> m_ContextIFFlag2;
-        be<uint32_t> m_ContextIFFlag3;
-        be<uint32_t> m_ExportPostureRequestFlag;
-        be<uint32_t> m_ExportWeaponRequestFlag;
+        be<uint32_t> m_CommonContextIFFlags1;
+        be<uint32_t> m_CommonContextIFFlags2;
+        be<uint32_t> m_CommonContextIFFlags3;
+        be<uint32_t> m_ExportPostureRequestFlags;
+        be<uint32_t> m_ExportWeaponRequestFlags;
         MARATHON_INSERT_PADDING(0x14);
-        be<uint32_t> m_PostureFlag;
-        be<uint64_t> m_ExternalFlag;
-        be<uint32_t> m_VehicleFlag;
-        be<uint32_t> m_AmigoFlag;
+        be<uint32_t> m_PostureFlags;
+        be<uint64_t> m_ExternalFlags;
+        be<uint32_t> m_VehicleFlags;
+        be<uint32_t> m_AmigoFlags;
         MARATHON_INSERT_PADDING(0x50);
         boost::shared_ptr<Score> m_spScore;
-        MARATHON_INSERT_PADDING(0x100);
+        MARATHON_INSERT_PADDING(8);
+        boost::shared_ptr<Input::ListenerNormal> m_spInputListenerNormal;
+        boost::anonymous_shared_ptr m_spInputListenerAmigo;
+        MARATHON_INSERT_PADDING(0xE8);
+
+        SoX::Input::Manager* GetInputManager() const
+        {
+            if (!m_spScore.get())
+                return nullptr;
+
+            return m_spScore->m_pPlayer->GetInputManager();
+        }
     };
 }

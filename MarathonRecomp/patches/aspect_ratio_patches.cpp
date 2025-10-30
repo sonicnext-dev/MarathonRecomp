@@ -8,6 +8,7 @@
 #include <ui/black_bar.h>
 #include <ui/game_window.h>
 #include <ui/imgui_utils.h>
+#include <ui/options_menu.h>
 #include <user/config.h>
 #include <app.h>
 
@@ -92,7 +93,7 @@ public:
     void Update(float deltaTime) override
     {
         if (g_aspectRatio > WIDE_ASPECT_RATIO)
-            BlackBar::g_isVisible = true;
+            BlackBar::Show();
     }
 }
 g_loadingPillarboxEvent{};
@@ -175,11 +176,13 @@ void AspectRatioPatches::ComputeOffsets()
         g_aspectRatioOffsetY = (height - width / NARROW_ASPECT_RATIO) / 2.0f;
         g_aspectRatioScale = width / 960.0f;
         g_aspectRatioGameplayScale = ComputeScale(NARROW_ASPECT_RATIO);
-    } 
+    }
 
     g_aspectRatioMultiplayerOffsetX = g_aspectRatioOffsetX / 2.0f;
-
     g_aspectRatioNarrowScale = std::clamp((g_aspectRatio - NARROW_ASPECT_RATIO) / (WIDE_ASPECT_RATIO - NARROW_ASPECT_RATIO), 0.0f, 1.0f);
+    g_aspectRatioNarrowMargin = std::lerp(50.0f, 0.0f, g_aspectRatioNarrowScale);
+    g_horzCentre = g_aspectRatioOffsetX + 640.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
+    g_vertCentre = g_aspectRatioOffsetY + 360.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
     g_radarMapScale = 256 * g_aspectRatioScale * g_aspectRatioGameplayScale;
 }
 
@@ -407,6 +410,10 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
         modifier = g_sceneModifier.value();
     }
 
+    // Hide original button window whilst the options menu is visible.
+    if ((modifier.Flags & CSD_BUTTON_WINDOW) != 0 && OptionsMenu::s_isVisible)
+        return;
+
     // Remove all flags if the aspect ratio is above 16:9.
     if ((modifier.Flags & CSD_MODIFIER_ULTRAWIDE_ONLY) != 0 && g_aspectRatio <= WIDE_ASPECT_RATIO)
         modifier.Flags &= (~modifier.Flags) | CSD_MODIFIER_ULTRAWIDE_ONLY;
@@ -443,13 +450,13 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
     // Draw black bars if this cast is drawn.
     if ((modifier.Flags & CSD_BLACK_BAR) != 0)
-        BlackBar::g_isVisible = true;
+        BlackBar::Show();
 
     // Prohibit black bars from being drawn if this cast is drawn.
     if ((modifier.Flags & CSD_PROHIBIT_BLACK_BAR) != 0)
-        BlackBar::g_isVisible = false;
+        BlackBar::Hide();
 
-    if (Config::UIAlignmentMode == EUIAlignmentMode::Centre || BlackBar::g_isVisible)
+    if (Config::UIAlignmentMode == EUIAlignmentMode::Centre || BlackBar::IsVisible())
     {
         // Prevent chevron arrows from being unaligned by centred aspect ratio.
         if ((modifier.Flags & CSD_CHEVRON) == 0)
@@ -534,7 +541,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
                 if ((modifier.Flags & CSD_ALIGN_RIGHT) != 0)
                     offsetX += 1280.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
                 else if ((modifier.Flags & CSD_ALIGN_LEFT) == 0)
-                    offsetX += 640.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
+                    offsetX += g_horzCentre - g_aspectRatioOffsetX;
 
                 offsetX += pivotX * g_aspectRatioScale;
             }
@@ -561,7 +568,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             if ((modifier.Flags & CSD_ALIGN_BOTTOM) != 0)
                 offsetY += 720.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
             else if ((modifier.Flags & CSD_ALIGN_TOP) == 0)
-                offsetY += 360.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
+                offsetY += g_vertCentre - g_aspectRatioOffsetY;
 
             offsetY += pivotY * g_aspectRatioScale;
         }
@@ -1120,7 +1127,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             drawOriginal();
         }
     }
-    else
+    else if (g_aspectRatio < WIDE_ASPECT_RATIO)
     {
         /////////////////////////////////////////////////
         // Scale metal borders to narrow aspect ratios //
@@ -1148,18 +1155,6 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             getVertex(0)->V = getVertex(0)->V + 0.005f;
             getVertex(2)->V = getVertex(2)->V + 0.005f;
 
-            if (g_aspectRatio < NARROW_ASPECT_RATIO)
-            {
-                // Extend to the top of the screen
-                // if the first clone no longer fits.
-                getVertex(1)->Y = 0.0f;
-                getVertex(3)->Y = 0.0f;
-
-                // Crop bottom UVs to remove metal notch.
-                getVertex(1)->V = getVertex(1)->V + -0.067f;
-                getVertex(3)->V = getVertex(3)->V + -0.067f;
-            }
-
             drawOriginal();
         }
 
@@ -1185,20 +1180,13 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             getVertex(1)->V = getVertex(1)->V + -0.005f;
             getVertex(3)->V = getVertex(3)->V + -0.005f;
 
-            if (g_aspectRatio < NARROW_ASPECT_RATIO)
-            {
-                // Extend to the bottom of the screen
-                // if the first clone no longer fits.
-                getVertex(0)->Y = vpHeight;
-                getVertex(2)->Y = vpHeight;
-
-                // Crop top UVs to remove metal dip.
-                getVertex(0)->V = getVertex(0)->V + 0.065f;
-                getVertex(2)->V = getVertex(2)->V + 0.065f;
-            }
-
             drawOriginal();
         }
+    }
+    else
+    {
+        if (isMainMenuPanels)
+            drawOriginal();
     }
 
     ctx.r1.u32 += size;
@@ -1241,7 +1229,7 @@ PPC_FUNC_IMPL(__imp__sub_8264AC48);
 PPC_FUNC(sub_8264AC48)
 {
     if (Config::CutsceneAspectRatio == ECutsceneAspectRatio::Original)
-        BlackBar::g_isVisible = true;
+        BlackBar::Show();
 
     __imp__sub_8264AC48(ctx, base);
 }
@@ -1250,16 +1238,19 @@ PPC_FUNC(sub_8264AC48)
 PPC_FUNC_IMPL(__imp__sub_824F4D80);
 PPC_FUNC(sub_824F4D80)
 {
-    BlackBar::g_isVisible = true;
+    BlackBar::Show();
 
     __imp__sub_824F4D80(ctx, base);
 }
 
-// Sonicteam::HUDBattleResult::Update
 PPC_FUNC_IMPL(__imp__sub_824D32C8);
 PPC_FUNC(sub_824D32C8)
 {
-    BlackBar::g_isVisible = true;
+    auto vftable = PPC_LOAD_U32(ctx.r3.u32);
+
+    // Sonicteam::HUDBattleResult
+    if (vftable == 0x820363E0)
+        BlackBar::Show();
 
     __imp__sub_824D32C8(ctx, base);
 }
@@ -1268,7 +1259,7 @@ PPC_FUNC(sub_824D32C8)
 PPC_FUNC_IMPL(__imp__sub_824A4A40);
 PPC_FUNC(sub_824A4A40)
 {
-    BlackBar::g_isVisible = true;
+    BlackBar::Show();
 
     __imp__sub_824A4A40(ctx, base);
 }
@@ -1355,7 +1346,7 @@ PPC_FUNC(sub_8264CC90)
         LOGFN_UTILITY("Movie: {} - {}x{}", pMovieObjectWmv->m_FilePath.c_str(), pMovieObjectWmv->m_Width.get(), pMovieObjectWmv->m_Height.get());
     }
 
-    auto movieModifier = FindMovieModifier(movieNameHash);
+    auto movieModifier = FindHash<MovieModifier>(g_movieModifiers, movieNameHash);
 
     g_aspectRatioMovie = (float)pMovieObjectWmv->m_Width / (float)pMovieObjectWmv->m_Height;
 
@@ -1471,11 +1462,12 @@ void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity)
                 isPlayStation = hid::g_inputDeviceController == hid::EInputDevice::PlayStation;
 
             auto& pftModifier = isPlayStation
-                ? g_pftModifierPS3
-                : g_pftModifierXenon;
+                ? g_buttonCropsPS3
+                : g_buttonCropsXenon;
 
-            auto baseParams = FindFontPictureModifier(g_pftModifierXenon, variable.second);
-            auto newParams = FindFontPictureModifier(pftModifier, variable.second);
+            auto hash = HashStr(variable.second);
+            auto baseParams = FindHash<ImGuiTextPictureCrop>(g_buttonCropsXenon, hash);
+            auto newParams = FindHash<ImGuiTextPictureCrop>(pftModifier, hash);
 
             auto  uv = PIXELS_TO_UV_COORDS(g_fontPictureWidth, g_fontPictureHeight, newParams.X, newParams.Y, newParams.Width, newParams.Height);
             auto& min = std::get<0>(uv);
@@ -1569,7 +1561,7 @@ PPC_FUNC(sub_8262D868)
     auto offsetY = 0.0f;
     auto scale = g_aspectRatioScale;
 
-    if (Config::UIAlignmentMode == EUIAlignmentMode::Centre || BlackBar::g_isVisible)
+    if (Config::UIAlignmentMode == EUIAlignmentMode::Centre || BlackBar::IsVisible())
     {
         if (g_aspectRatio > WIDE_ASPECT_RATIO)
         {
@@ -1648,16 +1640,21 @@ PPC_FUNC(sub_824E2978)
 PPC_FUNC_IMPL(__imp__sub_824E11D0);
 PPC_FUNC(sub_824E11D0)
 {
-    auto pHUDMainMenu = (Sonicteam::HUDMainMenu*)(base + ctx.r3.u32);
-    auto pHudTextRoot = pHUDMainMenu->m_pHudTextRoot->m_pNext;
+    auto pHUDMainMenu = (Sonicteam::HUDMainMenu*)(base + ctx.r3.u32 - 8);
+    auto pHudTextRoot = pHUDMainMenu->m_pHudTextRoot;
 
-    static bool s_preservedTextPositions{};
-    static float s_multiplayerTextOffsetX{};
-    static float s_tagTextOffsetX{};
-    static float s_battleTextOffsetX{};
+    static bool s_preservedTextParams{};
+    static float s_multiplayerTextOffsetY{};
+    static float s_tagTextOffsetY{};
+    static float s_battleTextOffsetY{};
+
+    static constexpr double HIDE_TEXT_OFFSET = -100000.0f;
 
     auto isTrialSelect = MainMenuTaskPatches::State >= 12 && MainMenuTaskPatches::State <= 15;
-    auto isTag = MainMenuTaskPatches::State == Sonicteam::MainMenuTask::MainMenuState_Tag;
+
+    auto isTag = MainMenuTaskPatches::State == Sonicteam::MainMenuTask::MainMenuState_Tag ||
+                 MainMenuTaskPatches::State == Sonicteam::MainMenuTask::MainMenuState_Tag1PSelect ||
+                 MainMenuTaskPatches::State == Sonicteam::MainMenuTask::MainMenuState_MainMenuExitToStage;
 
     while (pHudTextRoot)
     {
@@ -1665,31 +1662,38 @@ PPC_FUNC(sub_824E11D0)
         {
             if (pHudTextRoot->m_CastName == "multi_player")
             {
-                if (!s_preservedTextPositions)
-                    s_multiplayerTextOffsetX = pHudTextRoot->m_OffsetX;
+                if (!s_preservedTextParams)
+                    s_multiplayerTextOffsetY = pHudTextRoot->m_OffsetY;
 
-                pHudTextRoot->m_OffsetX = isTrialSelect ? -10000.0f : s_multiplayerTextOffsetX;
+                pHudTextRoot->m_OffsetY = isTrialSelect ? HIDE_TEXT_OFFSET : s_multiplayerTextOffsetY;
             }
             else if (pHudTextRoot->m_CastName == "tag")
             {
-                if (!s_preservedTextPositions)
-                    s_tagTextOffsetX = pHudTextRoot->m_OffsetX;
+                if (!s_preservedTextParams)
+                    s_tagTextOffsetY = pHudTextRoot->m_OffsetY;
 
-                pHudTextRoot->m_OffsetX = (isTrialSelect || isTag) ? -10000.0f : s_tagTextOffsetX;
+                pHudTextRoot->m_OffsetY = (isTrialSelect || isTag) ? HIDE_TEXT_OFFSET : s_tagTextOffsetY;
             }
             else if (pHudTextRoot->m_CastName == "battle")
             {
-                if (!s_preservedTextPositions)
-                    s_battleTextOffsetX = pHudTextRoot->m_OffsetX;
+                if (!s_preservedTextParams)
+                    s_battleTextOffsetY = pHudTextRoot->m_OffsetY;
 
-                pHudTextRoot->m_OffsetX = isTrialSelect ? -10000.0f : s_battleTextOffsetX;
+                pHudTextRoot->m_OffsetY = isTrialSelect ? HIDE_TEXT_OFFSET : s_battleTextOffsetY;
             }
         }
 
         pHudTextRoot = pHudTextRoot->m_pNext;
     }
 
-    s_preservedTextPositions = true;
+    s_preservedTextParams = true;
+
+    // Draw faded letterbox at tall aspect ratios.
+    if (!OptionsMenu::s_isVisible && g_aspectRatio < NARROW_ASPECT_RATIO)
+    {
+        BlackBar::Show(true);
+        BlackBar::SetBorderMargin(Scale(BlackBar::ms_MenuBorderMargin, true));
+    }
 
     __imp__sub_824E11D0(ctx, base);
 }
@@ -1761,7 +1765,7 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/audio/audio/audio_cursor2"), { CSD_SCALE } },
 
     // background
-    { HashStr("sprite/background/background/mainmenu_back"), { CSD_STRETCH_HORIZONTAL | CSD_PROHIBIT_BLACK_BAR } },
+    { HashStr("sprite/background/background/mainmenu_back"), { CSD_MODIFIER_ULTRAWIDE_ONLY | CSD_STRETCH_HORIZONTAL | CSD_PROHIBIT_BLACK_BAR } },
     { HashStr("sprite/background/background/tag"), { CSD_SCALE } },
     { HashStr("sprite/background/background/movie"), { CSD_SCALE } },
     { HashStr("sprite/background/background/main_menu"), { CSD_SCENE_DISABLE_MOTION | CSD_MODIFIER_ULTRAWIDE_ONLY } },
@@ -1859,8 +1863,8 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("event/e1141/sonic_the_hedgehog/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
 
     // button_window
-    { HashStr("sprite/button_window/button_window/Scene_0000/Null_0000/Cast_0001"), { CSD_SCALE } },
-    { HashStr("sprite/button_window/button_window/Scene_0000/Null_0000/Cast_0002"), { CSD_SCALE | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/button_window/button_window/Scene_0000/Null_0000/Cast_0001"), { CSD_BUTTON_WINDOW | CSD_SCALE } },
+    { HashStr("sprite/button_window/button_window/Scene_0000/Null_0000/Cast_0002"), { CSD_BUTTON_WINDOW | CSD_SCALE | CSD_EXTEND_RIGHT } },
 
     // cri_logo
     { HashStr("sprite/logo/cri_logo/Scene_0000/Null_0002/bg"), { CSD_STRETCH } },
@@ -2254,46 +2258,6 @@ std::optional<CsdModifier> FindCsdModifier(uint32_t data)
     return {};
 }
 
-// -------------- TEXT MODIFIERS -------------- //
-
-const xxHashMap<TextFontPictureModifier> g_pftModifierXenon =
-{
-    { HashStr("button_a"), { 0, 0, 28, 28 } },
-    { HashStr("button_b"), { 28, 0, 28, 28 } },
-    { HashStr("button_x"), { 56, 0, 28, 28 } },
-    { HashStr("button_y"), { 84, 0, 28, 28 } },
-    { HashStr("button_lb"), { 112, 0, 53, 28 } },
-    { HashStr("button_lt"), { 56, 28, 55, 28 } },
-    { HashStr("button_rb"), { 168, 0, 53, 28 } },
-    { HashStr("button_rt"), { 0, 28, 55, 28 } },
-    { HashStr("button_start"), { 112, 28, 28, 28 } },
-    { HashStr("button_back"), { 140, 28, 28, 28 } }
-};
-
-const xxHashMap<TextFontPictureModifier> g_pftModifierPS3 =
-{
-    { HashStr("button_a"), { 0, 56, 28, 28 } },
-    { HashStr("button_b"), { 28, 56, 28, 28 } },
-    { HashStr("button_x"), { 56, 56, 28, 28 } },
-    { HashStr("button_y"), { 84, 56, 28, 28 } },
-    { HashStr("button_lb"), { 112, 56, 48, 28 } },
-    { HashStr("button_lt"), { 168, 56, 48, 28 } },
-    { HashStr("button_rb"), { 0, 84, 48, 28 } },
-    { HashStr("button_rt"), { 56, 84, 48, 28 } },
-    { HashStr("button_start"), { 140, 84, 28, 28 } },
-    { HashStr("button_back"), { 112, 84, 28, 28 } }
-};
-
-TextFontPictureModifier FindFontPictureModifier(xxHashMap<TextFontPictureModifier> pftModifier, std::string_view& name)
-{
-    auto findResult = pftModifier.find(HashStr(name));
-
-    if (findResult != pftModifier.end())
-        return findResult->second;
-
-    return {};
-}
-
 // ------------- MOVIE MODIFIERS -------------- //
 
 const xxHashMap<MovieModifier> g_movieModifiers =
@@ -2301,12 +2265,3 @@ const xxHashMap<MovieModifier> g_movieModifiers =
     { HashStr("sound\\title_loop_GBn.wmv"), { MOVIE_CROP_NARROW } }
 };
 
-MovieModifier FindMovieModifier(XXH64_hash_t nameHash)
-{
-    auto findResult = g_movieModifiers.find(nameHash);
-
-    if (findResult != g_movieModifiers.end())
-        return findResult->second;
-
-    return {};
-}

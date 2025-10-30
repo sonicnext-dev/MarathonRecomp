@@ -2,6 +2,7 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/SoX/IResource.h>
+#include <Sonicteam/SoX/IResourceMgr.h>
 
 namespace Sonicteam::SoX
 {
