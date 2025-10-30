@@ -1651,7 +1651,10 @@ PPC_FUNC(sub_824E11D0)
     static constexpr double HIDE_TEXT_OFFSET = -100000.0f;
 
     auto isTrialSelect = MainMenuTaskPatches::State >= 12 && MainMenuTaskPatches::State <= 15;
-    auto isTag = MainMenuTaskPatches::State == Sonicteam::MainMenuTask::MainMenuState_Tag;
+
+    auto isTag = MainMenuTaskPatches::State == Sonicteam::MainMenuTask::MainMenuState_Tag ||
+                 MainMenuTaskPatches::State == Sonicteam::MainMenuTask::MainMenuState_Tag1PSelect ||
+                 MainMenuTaskPatches::State == Sonicteam::MainMenuTask::MainMenuState_MainMenuExitToStage;
 
     while (pHudTextRoot)
     {
