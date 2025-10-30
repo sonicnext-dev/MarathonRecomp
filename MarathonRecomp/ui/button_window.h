@@ -1,6 +1,6 @@
 #pragma once
 
-class ButtonGuide
+class ButtonWindow
 {
 public:
     static inline bool s_isVisible = false;

@@ -22,7 +22,7 @@
 #include <Marathon.h>
 #include <ui/achievement_menu.h>
 #include <ui/achievement_overlay.h>
-#include <ui/button_guide.h>
+#include <ui/button_window.h>
 #include <ui/fader.h>
 #include <ui/imgui_utils.h>
 #include <ui/installer_wizard.h>
@@ -2849,7 +2849,7 @@ static void DrawImGui()
     OptionsMenu::Draw();
     AchievementOverlay::Draw();
     InstallerWizard::Draw();
-    ButtonGuide::Draw();
+    ButtonWindow::Draw();
     MessageWindow::Draw();
     Fader::Draw();
     BlackBar::Draw();

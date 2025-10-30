@@ -6,7 +6,7 @@
 #include <res/images/common/main_menu8.dds.h>
 #include <res/images/common/main_menu9.dds.h>
 #include <ui/black_bar.h>
-#include <ui/button_guide.h>
+#include <ui/button_window.h>
 #include <ui/fader.h>
 #include <ui/game_window.h>
 #include <ui/imgui_utils.h>
@@ -1062,10 +1062,10 @@ void OptionsMenu::Draw()
                 DrawArrows({ 0, 0 }, res, g_chevronTime);
 
             auto buttons = s_flowState == OptionsMenuFlowState::OptionCursor && g_optionCanReset
-                ? "ButtonGuide_ResetSelectBack"
-                : "ButtonGuide_SelectBack";
+                ? "Button_ResetSelectBack"
+                : "Button_SelectBack";
 
-            ButtonGuide::Open(buttons, false);
+            ButtonWindow::Open(buttons, false);
 
             break;
         }
@@ -1080,7 +1080,7 @@ void OptionsMenu::Draw()
             {
                 if (closingTime >= 1.0)
                 {
-                    ButtonGuide::Close();
+                    ButtonWindow::Close();
 
                     s_isProcessedMessages = false;
 
@@ -1277,7 +1277,7 @@ void OptionsMenu::Open(bool isPause)
 
     ResetSelection();
 
-    ButtonGuide::Open("ButtonGuide_SelectBack", s_isPause);
+    ButtonWindow::Open("Button_SelectBack", s_isPause);
 }
 
 void OptionsMenu::Close()
@@ -1296,7 +1296,7 @@ void OptionsMenu::Close()
     }
 
     if (s_isPause)
-        ButtonGuide::Close();
+        ButtonWindow::Close();
 
     Config::Save();
 }

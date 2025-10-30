@@ -1,4 +1,4 @@
-#include "button_guide.h"
+#include "button_window.h"
 #include <patches/aspect_ratio_patches.h>
 #include <ui/imgui_utils.h>
 #include <app.h>
@@ -7,7 +7,7 @@ static std::string g_buttonKey{};
 static double g_time{};
 static bool g_isAnimated{};
 
-void ButtonGuide::Draw()
+void ButtonWindow::Draw()
 {
     if (!s_isVisible || g_buttonKey.empty())
         return;
@@ -22,7 +22,7 @@ void ButtonGuide::Draw()
 
     auto windowEdgeUVs = PIXELS_TO_UV_COORDS(64, 64, 1, 0, 40, 64);
     auto windowStretchUVs = PIXELS_TO_UV_COORDS(64, 64, 40, 0, 23, 64);
-    auto windowOffsetX = g_horzCentre + Scale(122, true);
+    auto windowOffsetX = g_horzCentre + Scale(128, true);
     auto windowOffsetY = g_vertCentre + Scale(114.5, true);
     auto windowEdgeWidth = Scale(40, true);
     auto windowWidth = MeasureInterpolatedText(g_pFntRodin, fontSize, buttonLocale->c_str(), &interpData).x;
@@ -51,7 +51,7 @@ void ButtonGuide::Draw()
         SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
 }
 
-void ButtonGuide::Open(std::string key, bool isAnimated)
+void ButtonWindow::Open(std::string key, bool isAnimated)
 {
     s_isVisible = true;
 
@@ -63,7 +63,7 @@ void ButtonGuide::Open(std::string key, bool isAnimated)
     }
 }
 
-void ButtonGuide::Close()
+void ButtonWindow::Close()
 {
     s_isVisible = false;
     g_buttonKey.clear();

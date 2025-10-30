@@ -10,7 +10,7 @@
 #include <locale/locale.h>
 #include <patches/aspect_ratio_patches.h>
 #include <ui/imgui_utils.h>
-#include <ui/button_guide.h>
+#include <ui/button_window.h>
 #include <ui/common_menu.h>
 #include <ui/message_window.h>
 #include <ui/game_window.h>
@@ -402,24 +402,24 @@ static void SetCurrentPage(WizardPage page)
 
     if (g_currentPage == WizardPage::InstallSucceeded)
     {
-        ButtonGuide::Open("ButtonGuide_Select");
+        ButtonWindow::Open("Button_Select");
     }
     else if (g_currentPage != WizardPage::Installing)
     {
-        auto key = "ButtonGuide_SelectBack";
+        auto key = "Button_SelectBack";
 
         if (g_currentPage == g_firstPage || g_currentPage == WizardPage::InstallFailed)
-            key = "ButtonGuide_SelectQuit";
+            key = "Button_SelectQuit";
 
-        ButtonGuide::Open(key);
+        ButtonWindow::Open(key);
     }
     else if (g_currentPage == WizardPage::Installing)
     {
-        ButtonGuide::Open("ButtonGuide_Cancel");
+        ButtonWindow::Open("Button_Cancel");
     }
     else
     {
-        ButtonGuide::Close();
+        ButtonWindow::Close();
     }
 }
 

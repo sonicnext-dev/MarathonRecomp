@@ -859,28 +859,28 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         }
     },
     {
-        "ButtonGuide_Cancel",
+        "Button_Cancel",
         {
             { ELanguage::English, "${picture(button_b)}${locale(Common_Cancel)}" },
             { ELanguage::Spanish, "${picture(button_b)} ${locale(Common_Cancel)}" }
         }
     },
     {
-        "ButtonGuide_Back",
+        "Button_Back",
         {
             { ELanguage::English, "${picture(button_b)}${locale(Common_Back)}" },
             { ELanguage::Spanish, "${picture(button_b)} ${locale(Common_Back)}" }
         }
     },
     {
-        "ButtonGuide_Select",
+        "Button_Select",
         {
             { ELanguage::English, "${picture(button_a)}${locale(Common_Select)}" },
             { ELanguage::Spanish, "${picture(button_a)} ${locale(Common_Select)}" },
         }
     },
     {
-        "ButtonGuide_SelectQuit",
+        "Button_SelectQuit",
         {
             { ELanguage::English, "${picture(button_a)}${locale(Common_Select)}  ${picture(button_b)}${locale(Common_Quit)}" },
             { ELanguage::German,  "${picture(button_a)}${locale(Common_Select)}　　${picture(button_b)}${locale(Common_Quit)}" },
@@ -888,7 +888,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         }
     },
     {
-        "ButtonGuide_SelectBack",
+        "Button_SelectBack",
         {
             { ELanguage::English, "${picture(button_a)}${locale(Common_Select)}  ${picture(button_b)}${locale(Common_Back)}" },
             { ELanguage::German,  "${picture(button_a)}${locale(Common_Select)}　　${picture(button_b)}${locale(Common_Back)}" },
@@ -896,7 +896,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         }
     },
     {
-        "ButtonGuide_ResetSelectBack",
+        "Button_ResetSelectBack",
         {
             { ELanguage::English, "${picture(button_x)}${locale(Common_Reset)}  ${picture(button_a)}${locale(Common_Select)}  ${picture(button_b)}${locale(Common_Back)}" },
             { ELanguage::German,  "${picture(button_x)}${locale(Common_Reset)}　　${picture(button_a)}${locale(Common_Select)}　　${picture(button_b)}${locale(Common_Back)}" },
