@@ -24,7 +24,7 @@ PPC_FUNC(sub_82195500)
                     {
                         pPlayer->m_SetupModuleIndexPostfix = 2;
 
-                        LOGFN("Debug Mode: Enabled");
+                        LOGN("Debug Mode: Enabled");
                     }
 
                     break;
@@ -169,7 +169,7 @@ bool PlayerDebugMode_RemapDebugExitButton(PPCRegister& r30)
 
     if (pPadState->IsPressed(Sonicteam::SoX::Input::KeyState_Select))
     {
-        LOGFN("Debug Mode: Disabled");
+        LOGN("Debug Mode: Disabled");
         return true;
     }
 
