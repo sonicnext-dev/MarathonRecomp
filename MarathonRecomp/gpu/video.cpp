@@ -6175,15 +6175,17 @@ static void DiffPatchTexture(GuestTexture& texture, uint8_t* data, uint32_t data
     auto entries = reinterpret_cast<BlockCompressionDiffPatchEntry*>(g_buttonBcDiff.get() + header->entriesOffset);
     auto end = entries + header->entryCount;
     
-    XXH64_hash_t hash = XXH3_64bits(data, dataSize);
+    auto hash = XXH3_64bits(data, dataSize);
+
     auto findResult = std::lower_bound(entries, end, hash, [](BlockCompressionDiffPatchEntry& lhs, XXH64_hash_t rhs)
-        {
-            return lhs.hash < rhs;
-        });
+    {
+        return lhs.hash < rhs;
+    });
 
     if (findResult != end && findResult->hash == hash)
     {
         auto patch = reinterpret_cast<BlockCompressionDiffPatch*>(g_buttonBcDiff.get() + findResult->patchesOffset);
+
         for (size_t i = 0; i < findResult->patchCount; i++)
         {
             assert(patch->destinationOffset + patch->patchBytesSize <= dataSize);
@@ -6192,6 +6194,7 @@ static void DiffPatchTexture(GuestTexture& texture, uint8_t* data, uint32_t data
         }
 
         GuestTexture patchedTexture(ResourceType::Texture);
+
         if (LoadTexture(patchedTexture, data, dataSize, {}))
             texture.patchedTexture = std::make_unique<GuestTexture>(std::move(patchedTexture));
     }
@@ -6206,12 +6209,10 @@ static void MakePictureData(GuestMyTexture* pictureData, uint8_t* data, uint32_t
         if (LoadTexture(texture, data, dataSize, {}))
         {
 #ifdef _DEBUG
-            if (pictureData->str1.size.get() > 0) {
+            if (pictureData->str1.size.get() > 0)
                 texture.texture->setName(fmt::format("Texture {}", pictureData->str1.c_str()));
-            }
 #endif
-
-            // DiffPatchTexture(texture, data, dataSize);
+            DiffPatchTexture(texture, data, dataSize);
 
             pictureData->texture = g_memory.MapVirtual(g_userHeap.AllocPhysical<GuestTexture>(std::move(texture)));
             pictureData->width = texture.width;
