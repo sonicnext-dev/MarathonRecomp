@@ -16,7 +16,7 @@ void ButtonWindow::Draw()
     auto& res = ImGui::GetIO().DisplaySize;
 
     auto interpData = GetHidInterpTextData();
-    auto fontSize = Scale(27, true);
+    auto fontSize = Scale(Config::Language == ELanguage::Japanese ? 28 : 27, true);
 
     auto buttonLocale = &Localise(g_buttonKey);
 
@@ -40,7 +40,7 @@ void ButtonWindow::Draw()
     drawList->AddImage(g_upTexButtonWindow.get(), windowStretchMin, windowStretchMax, GET_UV_COORDS(windowStretchUVs), windowColour);
     drawList->AddImage(g_upTexButtonWindow.get(), windowEdgeMin, windowEdgeMax, GET_UV_COORDS(windowEdgeUVs), windowColour);
 
-    ImVec2 textPos = { windowEdgeMax.x - Scale(8, true), windowEdgeMin.y + Scale(12.5, true) };
+    ImVec2 textPos = { windowEdgeMax.x - Scale(7.5, true), windowEdgeMin.y + Scale(12.75, true) };
 
     if (App::s_isInit)
         SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);

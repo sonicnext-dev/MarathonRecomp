@@ -51,6 +51,8 @@ static std::unique_ptr<GuestTexture> g_upTexMainMenu7{};
 static std::unique_ptr<GuestTexture> g_upTexMainMenu8{};
 static std::unique_ptr<GuestTexture> g_upTexMainMenu9{};
 
+static float g_fntRodinSize{};
+
 static std::string& GetCategoryName(OptionsMenuCategory category)
 {
     switch (category)
@@ -210,12 +212,11 @@ static void DrawCategories(ImVec2 min, ImVec2 max)
             DrawArrowCursor({ categoryMin.x + cursorOffsetX, categoryMin.y + cursorOffsetY }, g_cursorArrowsTime, true, false, OptionsMenu::s_state != OptionsMenuState::Idle);
         }
 
-        auto fontSize = Scale(27, true);
         auto text = GetCategoryName((OptionsMenuCategory)i);
-        auto textSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0.0f, text.c_str());
+        auto textSize = g_pFntRodin->CalcTextSizeA(g_fntRodinSize, FLT_MAX, 0.0f, text.c_str());
 
         SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
-        drawList->AddText(g_pFntRodin, fontSize, { categoryMin.x + Scale(129, true), categoryMin.y + Scale(6, true) }, categoryMotion, text.c_str());
+        drawList->AddText(g_pFntRodin, g_fntRodinSize, { categoryMin.x + Scale(129, true), categoryMin.y + Scale(6, true) }, categoryMotion, text.c_str());
         SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
     }
 }
@@ -296,7 +297,6 @@ static void DrawOption
     auto clipRectMin = drawList->GetClipRectMin();
     auto clipRectMax = drawList->GetClipRectMax();
 
-    auto fontSize = Scale(27, true);
     auto optionMotionTime = ComputeLinearMotion(g_categoryTime, 0, 5, OptionsMenu::s_state != OptionsMenuState::Idle);
     auto optionColourMotion = ColourLerp(IM_COL32_WHITE_TRANS, isAccessible ? IM_COL32_WHITE : IM_COL32(137, 137, 137, 255), optionMotionTime);
     auto optionHeight = Scale(106, true);
@@ -352,7 +352,7 @@ static void DrawOption
     ResetGradient();
 
     auto titleText = config->GetNameLocalised(Config::Language);
-    auto titleTextSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, titleText.c_str());
+    auto titleTextSize = g_pFntRodin->CalcTextSizeA(g_fntRodinSize, FLT_MAX, 0, titleText.c_str());
 
     auto titleFadeRightScale = Scale(40, true);
     auto titleFadeRightOffsetX = Scale(15, true);
@@ -361,6 +361,10 @@ static void DrawOption
     ImVec2 titlePos = { titleBgEdgeMin.x + Scale(51, true), titleBgEdgeMin.y + Scale(8, true) };
     ImVec2 titleSafeAreaMin = { titleBgEdgeMax.x, titleBgEdgeMin.y };
     ImVec2 titleSafeAreaMax = { scrollArrowOffsetX - titleFadeRightOffsetX, titleBgEdgeMax.y };
+
+    // Recentre title vertically for larger Japanese font.
+    if (Config::Language == ELanguage::Japanese)
+        titlePos.y -= Scale(0.5, true);
 
     auto isTitleRightFade = !isMiddleRow && OptionsMenu::s_flowState == OptionsMenuFlowState::OptionCursor;
 
@@ -377,7 +381,7 @@ static void DrawOption
     }
 
     SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
-    drawList->AddText(g_pFntRodin, fontSize, titlePos, optionColourMotion, titleText.c_str());
+    drawList->AddText(g_pFntRodin, g_fntRodinSize, titlePos, optionColourMotion, titleText.c_str());
     SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
 
     if (isTitleRightFade)
@@ -769,7 +773,7 @@ static void DrawOption
     if (isInterpolatedString)
     {
         auto interpData = GetHidInterpTextData();
-        auto valueTextSize = MeasureInterpolatedText(g_pFntRodin, fontSize, valueText.c_str(), &interpData);
+        auto valueTextSize = MeasureInterpolatedText(g_pFntRodin, g_fntRodinSize, valueText.c_str(), &interpData);
 
         ImVec2 valuePos = { ctrlBgCentre.x - (valueTextSize.x / 2), ctrlBgCentre.y - (valueTextSize.y / 2) - Scale(2, true) };
 
@@ -777,11 +781,11 @@ static void DrawOption
         if (!isValueCentred)
             valuePos.x = ctrlBgRightEdgeMax.x + Scale(10, true);
 
-        DrawInterpolatedText(g_pFntRodin, fontSize, valuePos, optionColourMotion, valueText.data(), &interpData);
+        DrawInterpolatedText(g_pFntRodin, g_fntRodinSize, valuePos, optionColourMotion, valueText.data(), &interpData);
     }
     else
     {
-        auto valueTextSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0.0f, valueText.data());
+        auto valueTextSize = g_pFntRodin->CalcTextSizeA(g_fntRodinSize, FLT_MAX, 0.0f, valueText.data());
 
         ImVec2 valuePos = { ctrlBgCentre.x - (valueTextSize.x / 2), ctrlBgCentre.y - (valueTextSize.y / 2) - Scale(2, true) };
 
@@ -789,7 +793,7 @@ static void DrawOption
         if (!isValueCentred)
             valuePos.x = ctrlBgRightEdgeMax.x + Scale(10, true);
 
-        drawList->AddText(g_pFntRodin, fontSize, valuePos, optionColourMotion, valueText.data());
+        drawList->AddText(g_pFntRodin, g_fntRodinSize, valuePos, optionColourMotion, valueText.data());
     }
 
     SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
@@ -973,6 +977,8 @@ void OptionsMenu::Draw()
 
         return;
     }
+
+    g_fntRodinSize = Scale(Config::Language == ELanguage::Japanese ? 28 : 27, true);
 
     // Draw faded letterbox at tall aspect ratios.
     if (g_aspectRatio < NARROW_ASPECT_RATIO)

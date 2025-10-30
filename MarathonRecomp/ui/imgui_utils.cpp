@@ -973,7 +973,8 @@ void DrawInterpolatedText(const ImFont* pFont, float fontSize, const ImVec2& pos
 {
     auto drawList = ImGui::GetBackgroundDrawList();
     auto parsed = ParseInterpolatedString(pText);
-    auto advance = 0.0f;
+    auto advanceX = 0.0f;
+    auto marginY = Config::Language == ELanguage::Japanese ? 0 : Scale(1, true);
 
     auto drawText = [&](const ImVec2& pos, float paddingX, std::string_view str)
     {
@@ -981,13 +982,13 @@ void DrawInterpolatedText(const ImFont* pFont, float fontSize, const ImVec2& pos
 
         drawList->AddText(pFont, fontSize, pos, colour, str.data());
 
-        advance += textSize.x + paddingX;
+        advanceX += textSize.x + paddingX;
     };
 
     for (size_t i = 0; i < parsed.size(); i++)
     {
         auto& str = parsed[i];
-        auto  curPos = ImVec2{ pos.x + advance, pos.y };
+        auto  curPos = ImVec2{ pos.x + advanceX, pos.y + marginY };
         auto  paddingX = i == parsed.size() - 1 ? 0 : Scale(2, true);
 
         if (IsInterpolatedString(str))
@@ -1015,10 +1016,10 @@ void DrawInterpolatedText(const ImFont* pFont, float fontSize, const ImVec2& pos
                 {
                     auto placeholderScale = Scale(28, true);
 
-                    ImVec2 placeholderMin = { pos.x + advance, pos.y };
+                    ImVec2 placeholderMin = { pos.x + advanceX, pos.y };
                     ImVec2 placeholderMax = { placeholderMin.x + placeholderScale, placeholderMin.y + placeholderScale };
 
-                    advance += placeholderScale;
+                    advanceX += placeholderScale;
 
                     drawList->AddRectFilled(placeholderMin, placeholderMax, IM_COL32(255, 0, 0, 255));
 
@@ -1030,10 +1031,10 @@ void DrawInterpolatedText(const ImFont* pFont, float fontSize, const ImVec2& pos
                 auto pictureWidth = Scale(pictureCrop.Width, true);
                 auto pictureHeight = Scale(pictureCrop.Height, true);
 
-                ImVec2 pictureMin = { pos.x + advance, pos.y };
+                ImVec2 pictureMin = { pos.x + advanceX, pos.y };
                 ImVec2 pictureMax = { pictureMin.x + pictureWidth, pictureMin.y + pictureHeight };
 
-                advance += pictureWidth + paddingX;
+                advanceX += pictureWidth + paddingX;
 
                 drawList->AddImage(pInterpData->Picture.pupTexture->get(), pictureMin, pictureMax, GET_UV_COORDS(pictureUVs), colour);
             }

@@ -159,7 +159,7 @@ void CommonMenu::Draw()
     auto textCoverCentreUVs = PIXELS_TO_UV_COORDS(1024, 1024, 950, 400, 50, 150);
     auto textCoverCornerUVCompensation = Scale(2, true);
     auto textCoverOffsetY = Scale(16.4, true);
-    auto textCoverWidth = Scale(150, true);
+    auto textCoverWidth = Scale(149.5, true);
     auto textCoverHeight = Scale(150, true);
     auto textCoverMotion = Lerp(max.y + textCoverHeight, max.y - textCoverOffsetY - textCoverHeight, borderMotionTime);
     auto textCoverColour = IM_COL32(0, 23, 57, 255);
@@ -184,7 +184,7 @@ void CommonMenu::Draw()
     if (!Description.empty())
     {
         auto descFadeScale = Scale(20, true);
-        auto descFontSize = Scale(27, true);
+        auto descFontSize = Scale(Config::Language == ELanguage::Japanese ? 28 : 27, true);
         auto descSize = g_pFntRodin->CalcTextSizeA(descFontSize, FLT_MAX, 0.0f, Description.data());
 
         ImVec2 descBoundsMin = { textCoverCentreMin.x - Scale(18, true), textCoverCentreMin.y + Scale(20, true) };
