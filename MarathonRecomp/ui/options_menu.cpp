@@ -345,9 +345,8 @@ static void DrawOption
     ImVec2 titleBgFadeMin = { titleBgStretchMax.x - Scale(300, true), titleBgStretchMax.y };
     ImVec2 titleBgFadeMax = titleBgStretchMax;
 
-    drawList->AddImage(g_upTexMainMenu8.get(), titleBgEdgeMin, titleBgEdgeMax, GET_UV_COORDS(bgEdgeUVs), bgColour);
-
     SetHorizontalGradient(titleBgFadeMin, titleBgFadeMax, bgColour, bgFadeColour);
+    drawList->AddImage(g_upTexMainMenu8.get(), titleBgEdgeMin, titleBgEdgeMax, GET_UV_COORDS(bgEdgeUVs), bgColour);
     drawList->AddImage(g_upTexMainMenu8.get(), titleBgStretchMin, titleBgStretchMax, GET_UV_COORDS(bgStretchUVs), bgColour);
     ResetGradient();
 
