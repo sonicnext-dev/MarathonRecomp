@@ -3382,16 +3382,19 @@ void Video::Present()
        
 
             // Update surfaces and textures
-            for (auto& surface : pRenderTargetContainer->m_mspDepthStencill_1_4) {
+            for (auto& surface : pRenderTargetContainer->m_mspDepthStencill_1_4) 
+            {
                 printf("Buffer %s scaled \n", surface.first.c_str());
                 if (_buffers_.find(surface.first.c_str()) == _buffers_.end()) continue;
                 auto params = _buffers_[surface.first.c_str()];
                 GuestSurfaceCreateParams* surfaceparams = nullptr;
 
-                if (pFormatConfig[params.r8].usage != 1 || (params.r10 & 1) != 0) {
+                if (pFormatConfig[params.r8].usage != 1 || (params.r10 & 1) != 0)
+                {
                     surfaceparams = &pMyGraphicDevice->m_SurfaceParamB;
                 }
-                else {
+                else 
+                {
                     surfaceparams = (params.r10 & 2) == 0 ? &pMyGraphicDevice->m_SurfaceParamA : &pMyGraphicDevice->m_SurfaceParamC;
                 }
 
@@ -3401,7 +3404,8 @@ void Video::Present()
 
        
            
-            for (auto& texture : pRenderTargetContainer->m_mspFrameBuffer) {
+            for (auto& texture : pRenderTargetContainer->m_mspFrameBuffer) 
+            {
                 const auto& textureName = texture.first;
                 auto& texturePtr = texture.second;
                 if (_buffers_.find(textureName.c_str()) == _buffers_.end()) continue;
@@ -3416,10 +3420,12 @@ void Video::Present()
 
                 // Determine surface parameters
                 GuestSurfaceCreateParams* surfaceparams = nullptr;
-                if (pFormatConfig[s2].usage != 1 || (params.r10 & 1) != 0) {
+                if (pFormatConfig[s2].usage != 1 || (params.r10 & 1) != 0) 
+                {
                     surfaceparams = &pMyGraphicDevice->m_SurfaceParamB;
                 }
-                else {
+                else 
+                {
                     surfaceparams = (params.r10 & 2) == 0 ? &pMyGraphicDevice->m_SurfaceParamA : &pMyGraphicDevice->m_SurfaceParamC;
                 }
 
@@ -3506,6 +3512,8 @@ void Video::Present()
             // Refresh Lua Render
             // 0x82B814F8 (stdx::string) gCurrentRenderScript
             GuestToHostFunction<void>(sub_8260DF88, pDocState, 0x82B814F8, 1);
+
+            // TODO: Fix particle not updating position or disappearing after Lua refresh
       
         }
     }
