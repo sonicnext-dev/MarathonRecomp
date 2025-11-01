@@ -15,7 +15,8 @@
 #include <res/images/game_icon.bmp.h>
 
 bool m_isFullscreenKeyReleased = true;
-bool m_isResizing = false;
+bool GameWindow::m_isResizing = false;
+bool GameWindow::m_ResizeRender = false;
 
 int Window_OnSDLEvent(void*, SDL_Event* event)
 {
@@ -129,7 +130,7 @@ int Window_OnSDLEvent(void*, SDL_Event* event)
                     break;
 
                 case SDL_WINDOWEVENT_RESIZED:
-                    m_isResizing = true;
+                    GameWindow::m_isResizing = true;
                     Config::WindowSize = -1;
                     GameWindow::s_width = event->window.data1;
                     GameWindow::s_height = event->window.data2;
