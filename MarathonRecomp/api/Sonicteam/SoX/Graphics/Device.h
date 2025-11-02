@@ -11,10 +11,20 @@ namespace Sonicteam::SoX::Graphics
     {
     public:
         xpointer<void> m_pVftable;
-        MARATHON_INSERT_PADDING(0x3C);
+        MARATHON_INSERT_PADDING(0x14);
+        be<uint32_t> m_DBRFlag;
+        MARATHON_INSERT_PADDING(0x24);
         Math::Matrix4x4 m_Field40;
         be<float> m_Field80;
-        MARATHON_INSERT_PADDING(0x3C);
+        be<float> m_Field84; //viewport?
+        MARATHON_INSERT_PADDING(0x4);
+        be<uint32_t> m_Width1;
+        be<uint32_t> m_Height1;
+        be<uint32_t> m_Field94;
+        be<uint32_t> m_Field98;
+        be<uint32_t> m_Width2;
+        be<uint32_t> m_Height2;
+        MARATHON_INSERT_PADDING(0x1C);
         SoX::RefSharedPointer<SoX::RefCountObject> m_FrameBufferObject;
         MARATHON_INSERT_PADDING(0xC);
     };

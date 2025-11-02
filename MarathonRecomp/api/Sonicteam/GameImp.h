@@ -8,6 +8,8 @@
 #include <Sonicteam/SoX/Scenery/Camera.h>
 #include <Sonicteam/SoX/Scenery/CameraImp.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
+#include <Sonicteam/SoX/LinkNode.h>
+#include <Sonicteam/PopupScreenTask.h>
 #include <Sonicteam/Game.h>
 #include <Sonicteam/TextBook.h>
 #include <stdx/vector.h>
@@ -84,7 +86,9 @@ namespace Sonicteam
         xpointer<TextBook> m_pHintTextBook;
         MARATHON_INSERT_PADDING(4);
         xpointer<Mission::Core> m_pMissionCore;
-        MARATHON_INSERT_PADDING(0x2A4);
+        MARATHON_INSERT_PADDING(0x248);
+        SoX::LinkRef<Sonicteam::PopupScreenTask> m_lrPopulScreenTask;
+        MARATHON_INSERT_PADDING(0x4C);
         SoX::RefSharedPointer<SoX::Physics::World> m_spPhysicsWorld;
         xpointer<void> m_pMyCollisionFilter;
         MARATHON_INSERT_PADDING(0x0C);

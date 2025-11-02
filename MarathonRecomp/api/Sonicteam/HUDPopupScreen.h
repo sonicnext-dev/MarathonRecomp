@@ -3,11 +3,14 @@
 #include <Marathon.inl>
 #include <Sonicteam/SoX/Graphics/TechniqueFXL.h>
 #include <Sonicteam/MyTexture.h>
+#include <Sonicteam/SoX/RefSharedPointer.h>
+#include <Sonicteam/SoX/RefCountObject.h>
+#include <Sonicteam/CsdObject.h>
 #include <stdx/string.h>
 
 namespace Sonicteam
 {
-    class HUDPopupScreen : public SoX::Engine::Task
+    class HUDPopupScreen : public SoX::RefCountObject, public SoX::Engine::Task
     {
     public:
         enum HUDPopupScreenState : uint32_t
@@ -18,8 +21,8 @@ namespace Sonicteam
         };
 
         xpointer<CsdObject> m_pCsdObject;
-        xpointer<MyTexture> m_pMainTexture;
-        xpointer<MyTexture> m_pMaskTexture;
+        SoX::RefSharedPointer<MyTexture> m_pMainTexture;
+        SoX::RefSharedPointer<MyTexture> m_pMaskTexture;
         xpointer<SoX::Graphics::TechniqueFXL> m_pTechnique;
         stdx::string m_SceneName;
         stdx::string m_SpriteName;

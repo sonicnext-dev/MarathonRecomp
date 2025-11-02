@@ -119,7 +119,7 @@ namespace Sonicteam::SoX
 
         MARATHON_INSERT_PADDING(0x60);
 
-        static ApplicationXenon* GetInstance();
+        //static ApplicationXenon* GetInstance();
     };
 <<<<<<< HEAD
 
@@ -129,4 +129,4 @@ namespace Sonicteam::SoX
 >>>>>>> 4bdfb37 (Graphics Api & Resize Base)
 }
 
-#include <Sonicteam/SoX/ApplicationXenon.inl>
+//#include <Sonicteam/SoX/ApplicationXenon.inl>
