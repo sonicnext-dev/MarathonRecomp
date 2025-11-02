@@ -1287,7 +1287,8 @@ PPC_FUNC(sub_824D6E50)
 PPC_FUNC_IMPL(__imp__sub_824F1538);
 PPC_FUNC(sub_824F1538)
 {
-    auto pHUDRaderMap = (Sonicteam::HUDRaderMap*)(base + ctx.r3.u32);
+   
+    auto pHUDRaderMap = (Sonicteam::HUDRaderMap*)(base + ctx.r3.u32 - 8);
 
     __imp__sub_824F1538(ctx, base);
 

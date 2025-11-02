@@ -372,6 +372,7 @@ static std::unique_ptr<RenderCommandSemaphore> g_renderSemaphores[NUM_FRAMES];
 static uint32_t g_backBufferIndex;
 static std::unique_ptr<GuestSurface> g_backBufferHolder;
 static GuestSurface* g_backBuffer;
+static std::vector<std::pair<GuestSurface*, uint32_t>> g_surfaceCache;
 
 static std::unique_ptr<RenderTexture> g_intermediaryBackBufferTexture;
 static uint32_t g_intermediaryBackBufferTextureWidth;
@@ -3267,6 +3268,8 @@ void Video::Present()
             be<uint32_t> usage;
         };
 
+        g_surfaceCache.clear();
+
         auto pFormatConfig = (GraphicsFormatConfig*)(g_memory.base + 0x82B7BD20);
 
         // Kill Auto Surfaces
@@ -3373,8 +3376,9 @@ void Video::Present()
                 surfaceParams = (params.r10 & 2) == 0 ? &pMyGraphicDevice->m_SurfaceParamA : &pMyGraphicDevice->m_SurfaceParamC;
             }
 
-            auto gSurface = CreateSurface(params.width, params.height, pFormatConfig[params.r8].SurfaceFormat, 0, surfaceParams);
-            GuestToHostFunction<void>(sub_82592E98, surface.second.get(), gSurface, params.width, params.height);
+            //Until cache system is gone for good
+            //auto gSurface = CreateSurface(params.width, params.height, pFormatConfig[params.r8].SurfaceFormat, 0, surfaceParams);
+            //GuestToHostFunction<void>(sub_82592E98, surface.second.get(), gSurface, params.width, params.height);
         }
 
         printf("----------------------------[Textures]-----------------------------------\n");
@@ -3448,6 +3452,21 @@ void Video::Present()
         pRenderTargetContainer->m_mspPostEffect.clear();
         pRenderTargetContainer->m_mspPostEffectAfter.clear();
 
+       
+      
+        if (auto it = pResourceManager->m_mResource[pTextureManager->m_MgrIndex].find("radermap");
+            it != pResourceManager->m_mResource[pTextureManager->m_MgrIndex].end())
+        {
+            if (auto pPopup = pApp->GetGame()->m_lrPopulScreenTask.m_pElement)
+            {
+                auto pHUDRaderMap = pPopup->GetHUDPopupScreen<Sonicteam::HUDRaderMap>();
+                pHUDRaderMap->m_pMainTexture.reset();
+                pHUDRaderMap->m_pMaskTexture.reset();
+            }
+        }
+
+   
+
         // framebuffer_tile should properly reference framebuffer0's GuestTexture
         // PROPER FIX OPTIONS:
         // 1. Allocate new texture to the same pointer instead of this workaround
@@ -3464,8 +3483,25 @@ void Video::Present()
 
         // Refresh Lua Render
         // 0x82B814F8 (stdx::string) gCurrentRenderScript
-        GuestToHostFunction<void>(sub_8260DF88, pDocState, 0x82B814F8, 1);
 
+        GuestToHostFunction<void>(sub_8260DF88, pDocState, 0x82B814F8, 1);
+        auto SetResource = [&](auto* spTextureTo, const char* name) {
+            if (auto it = pResourceManager->m_mResource[pTextureManager->m_MgrIndex].find(name);
+                it != pResourceManager->m_mResource[pTextureManager->m_MgrIndex].end()) {
+                *spTextureTo = static_cast<Sonicteam::MyTexture*>(it->second.get());
+            }
+            };
+
+        if (pResourceManager->m_mResource[pTextureManager->m_MgrIndex].find("radermap") != pResourceManager->m_mResource[pTextureManager->m_MgrIndex].end()) 
+        {
+            if (auto pPopup = pApp->GetGame()->m_lrPopulScreenTask.m_pElement) {
+                auto pHUDRaderMap = pPopup->GetHUDPopupScreen<Sonicteam::HUDRaderMap>();
+                SetResource(&pHUDRaderMap->m_pMainTexture, "radermap");
+                SetResource(&pHUDRaderMap->m_pMaskTexture, "radermap_mask");
+            }
+        }
+
+      
         // TODO: Fix particle not updating position or disappearing after Lua refresh
     }
 
@@ -3782,7 +3818,6 @@ static GuestBuffer* CreateIndexBuffer(uint32_t length, uint32_t, uint32_t format
     return buffer;
 }
 
-static std::vector<std::pair<GuestSurface*, uint32_t>> g_surfaceCache;
 
 // TODO: Singleplayer (possibly) uses the same memory location in EDRAM for HDR and FB0 surfaces,
 // so we just remember who was created first and use that instead of creating a new one.

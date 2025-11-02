@@ -21,7 +21,9 @@ namespace Sonicteam
         bool m_VFrame;
         MARATHON_INSERT_PADDING(0x4);
         xpointer<RenderTargetContainer> m_pRenderTargetContainer;
-        MARATHON_INSERT_PADDING(0x55B50);
+        MARATHON_INSERT_PADDING(0x187C);
+        xpointer<void> m_pGameRaderMapManager;
+        MARATHON_INSERT_PADDING(0x542D0);
         be<uint32_t> m_aPadIDs[4];
     };
 
