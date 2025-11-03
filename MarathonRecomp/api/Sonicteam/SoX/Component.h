@@ -2,6 +2,7 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/SoX/Object.h>
+#include <Sonicteam/SoX/LinkNode.h>
 
 namespace Sonicteam::SoX
 {
@@ -13,13 +14,14 @@ namespace Sonicteam::SoX
     class Component : public Object
     {
     public:
-        xpointer<Engine::DocMode> m_pDocMode;
-        MARATHON_INSERT_PADDING(0x18);
+        xpointer<Component> m_pParent;
+        LinkNode<Component> m_lnComponent;
+        LinkedList<Component> m_llComponent;
 
         template <typename T = Engine::DocMode>
-        T* GetDocMode()
+        T* GetParent()
         {
-            return (T*)m_pDocMode.get();
+            return (T*)m_pParent.get();
         }
     };
 

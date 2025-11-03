@@ -119,6 +119,7 @@ namespace boost
     public:
         xpointer<T> px;
         xpointer<boost::detail::sp_counted_base> pn;
+    private:
 
         void add_ref()
         {
