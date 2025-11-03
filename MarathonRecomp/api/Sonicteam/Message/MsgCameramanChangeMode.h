@@ -12,4 +12,8 @@ namespace Sonicteam::Message
         be<uint32_t> TargetActorID;
         bool IsDemoCamera;
     };
+
+    MARATHON_ASSERT_OFFSETOF(MsgCameramanChangeMode, ControllerIndex, 0x04);
+    MARATHON_ASSERT_OFFSETOF(MsgCameramanChangeMode, TargetActorID, 0x08);
+    MARATHON_ASSERT_OFFSETOF(MsgCameramanChangeMode, IsDemoCamera, 0x0C);
 }

@@ -12,4 +12,7 @@ namespace Sonicteam::Message
         stdx::string PauseName;
         stdx::string SelectedName;
     };
+
+    MARATHON_ASSERT_OFFSETOF(MsgPauseAdapterText, PauseName, 0x04);
+    MARATHON_ASSERT_OFFSETOF(MsgPauseAdapterText, SelectedName, 0x20);
 }

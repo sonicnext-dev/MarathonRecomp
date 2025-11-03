@@ -11,4 +11,7 @@ namespace Sonicteam::Message
         Sonicteam::SoX::Math::Quaternion Rotation;
 		Sonicteam::SoX::Math::Vector Position;
     };
+
+    MARATHON_ASSERT_OFFSETOF(MsgObjJump123GetNextPoint, Rotation, 0x10);
+    MARATHON_ASSERT_OFFSETOF(MsgObjJump123GetNextPoint, Position, 0x20);
 }

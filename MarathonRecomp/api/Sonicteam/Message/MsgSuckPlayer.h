@@ -10,4 +10,6 @@ namespace Sonicteam::Message
     {
         Sonicteam::SoX::Math::Vector Point;
     };
+
+    MARATHON_ASSERT_OFFSETOF(MsgSuckPlayer, Point, 0x10);
 }
