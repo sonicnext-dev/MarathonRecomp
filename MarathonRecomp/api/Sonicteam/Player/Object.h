@@ -25,8 +25,8 @@ namespace Sonicteam::Player
 
         struct EquipFlags
         {
-            uint32_t GlobalFlag;
-            uint32_t EquipFlag;
+            be<uint32_t> GlobalFlag;
+            be<uint32_t> EquipFlag;
         };
 
         stdx::string m_LuaFile;
@@ -60,7 +60,7 @@ namespace Sonicteam::Player
         MARATHON_INSERT_PADDING(0x48);
         stdx::vector<EquipFlags> m_vEquipFlags;
         stdx::string m_Name;
-        MARATHON_INSERT_PADDING(0x134);
+        MARATHON_INSERT_PADDING(0x110);
 
         template <typename T = IGauge>
         T* GetGauge()
@@ -93,4 +93,39 @@ namespace Sonicteam::Player
             return pDoc->m_vspInputManager[controllerID].get();
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(Object::CreationParams, pPlayerLua, 0x00);
+    MARATHON_ASSERT_OFFSETOF(Object::CreationParams, Position, 0x30);
+
+    MARATHON_ASSERT_OFFSETOF(Object::EquipFlags, GlobalFlag, 0x00);
+    MARATHON_ASSERT_OFFSETOF(Object::EquipFlags, EquipFlag, 0x04);
+
+    MARATHON_ASSERT_OFFSETOF(Object, m_LuaFile, 0x58);
+    MARATHON_ASSERT_OFFSETOF(Object, m_PackageFile, 0x74);
+    MARATHON_ASSERT_OFFSETOF(Object, m_TargetCameraActorID, 0x90);
+    MARATHON_ASSERT_OFFSETOF(Object, m_pCameraman, 0x94);
+    MARATHON_ASSERT_OFFSETOF(Object, m_Index, 0x98);
+    MARATHON_ASSERT_OFFSETOF(Object, m_ControllerIndex, 0x9C);
+    MARATHON_ASSERT_OFFSETOF(Object, m_SpawnRotation, 0xA0);
+    MARATHON_ASSERT_OFFSETOF(Object, m_SpawnPosition, 0xB0);
+    MARATHON_ASSERT_OFFSETOF(Object, m_SpawnRingCount, 0xC0);
+    MARATHON_ASSERT_OFFSETOF(Object, m_spSpawnSource, 0xC4);
+    MARATHON_ASSERT_OFFSETOF(Object, m_IsPlayer, 0xC8);
+    MARATHON_ASSERT_OFFSETOF(Object, m_IsPosture, 0xC9);
+    MARATHON_ASSERT_OFFSETOF(Object, m_IsAmigo, 0xCA);
+    MARATHON_ASSERT_OFFSETOF(Object, m_spRootFrame, 0xCC);
+    MARATHON_ASSERT_OFFSETOF(Object, m_spPackageBinary, 0xD0);
+    MARATHON_ASSERT_OFFSETOF(Object, m_spModel, 0xD4);
+    MARATHON_ASSERT_OFFSETOF(Object, m_spPostureControl, 0xDC);
+    MARATHON_ASSERT_OFFSETOF(Object, m_spStateMachine, 0xE4);
+    MARATHON_ASSERT_OFFSETOF(Object, m_spGravity, 0xEC);
+    MARATHON_ASSERT_OFFSETOF(Object, m_spImpulse, 0xF4);
+    MARATHON_ASSERT_OFFSETOF(Object, m_SetupModuleIndexPrefix, 0xFC);
+    MARATHON_ASSERT_OFFSETOF(Object, m_SetupModuleIndexPostfix, 0x100);
+    MARATHON_ASSERT_OFFSETOF(Object, m_spGauge, 0x104);
+    MARATHON_ASSERT_OFFSETOF(Object, m_vspPlugins, 0x114);
+    MARATHON_ASSERT_OFFSETOF(Object, m_DeltaTime, 0x17C);
+    MARATHON_ASSERT_OFFSETOF(Object, m_vEquipFlags, 0x1C8);
+    MARATHON_ASSERT_OFFSETOF(Object, m_Name, 0x1D8);
+    MARATHON_ASSERT_SIZEOF(Object, 0x310);
 }

@@ -18,6 +18,12 @@ namespace Sonicteam::Player
         be<float> m_RayDistance;
         be<uint32_t> m_RayFlags;
         SoX::LinkRef<SoX::Physics::Entity> m_ContactEntity;
-        MARATHON_INSERT_PADDING(0x0C);
     };
+
+    MARATHON_ASSERT_OFFSETOF(GroundRayListener, m_ContactPosition, 0x40);
+    MARATHON_ASSERT_OFFSETOF(GroundRayListener, m_ContactNormal, 0x50);
+    MARATHON_ASSERT_OFFSETOF(GroundRayListener, m_RayDistance, 0x60);
+    MARATHON_ASSERT_OFFSETOF(GroundRayListener, m_RayFlags, 0x64);
+    MARATHON_ASSERT_OFFSETOF(GroundRayListener, m_ContactEntity, 0x68);
+    MARATHON_ASSERT_SIZEOF(GroundRayListener, 0x80);
 }

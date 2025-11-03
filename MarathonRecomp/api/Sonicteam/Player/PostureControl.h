@@ -61,5 +61,9 @@ namespace Sonicteam::Player
             // The player is on sand collision.
             PostureFlag_Sand = 0x1000000
         };
+
+        MARATHON_INSERT_PADDING(0xE0);
     };
+
+    MARATHON_ASSERT_SIZEOF(PostureControl, 0x400);
 }

@@ -10,4 +10,6 @@ namespace Sonicteam::Player::State
     public:
         MARATHON_INSERT_PADDING(8);
     };
+
+    MARATHON_ASSERT_SIZEOF(CommonFall, 0x14);
 }

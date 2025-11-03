@@ -20,4 +20,12 @@ namespace Sonicteam::Player
         MARATHON_INSERT_PADDING(0x30);
         be<uint64_t> m_ExternalFlag;
     };
+
+    MARATHON_ASSERT_OFFSETOF(RootFrame, m_Field70, 0x70);
+    MARATHON_ASSERT_OFFSETOF(RootFrame, m_FieldB0, 0xB0);
+    MARATHON_ASSERT_OFFSETOF(RootFrame, m_PositionF0, 0xF0);
+    MARATHON_ASSERT_OFFSETOF(RootFrame, m_Field100, 0x100);
+    MARATHON_ASSERT_OFFSETOF(RootFrame, m_Impulse, 0x110);
+    MARATHON_ASSERT_OFFSETOF(RootFrame, m_ExternalFlag, 0x150);
+    MARATHON_ASSERT_SIZEOF(RootFrame, 0x160);
 }

@@ -17,6 +17,9 @@ namespace Sonicteam::Player::Weapon
     public:
         MARATHON_INSERT_PADDING(0x4C);
         SoX::LinkRef<SoX::Engine::Task> m_GunDrive;
-        MARATHON_INSERT_PADDING(0x24);
+        MARATHON_INSERT_PADDING(0x28);
     };
+
+    MARATHON_ASSERT_OFFSETOF(SonicWeapons, m_GunDrive, 0x80);
+    MARATHON_ASSERT_SIZEOF(SonicWeapons, 0xB8);
 }

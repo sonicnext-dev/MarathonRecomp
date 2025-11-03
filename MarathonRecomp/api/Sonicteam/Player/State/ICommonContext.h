@@ -21,4 +21,14 @@ namespace Sonicteam::Player::State
 		be<uint32_t> m_AnimationState;
 		MARATHON_INSERT_PADDING(0x2C);
     };
+
+    MARATHON_ASSERT_OFFSETOF(ICommonContext, m_AnimationID, 0x40);
+    MARATHON_ASSERT_OFFSETOF(ICommonContext, m_LockButtons, 0x44);
+    MARATHON_ASSERT_OFFSETOF(ICommonContext, m_LastVelocityForward, 0x48);
+    MARATHON_ASSERT_OFFSETOF(ICommonContext, m_LastVelocityVertical, 0x4C);
+    MARATHON_ASSERT_OFFSETOF(ICommonContext, m_LastLockButtons, 0x50);
+    MARATHON_ASSERT_OFFSETOF(ICommonContext, m_Buttons, 0x54);
+    MARATHON_ASSERT_OFFSETOF(ICommonContext, m_CurrentStickBorder, 0x58);
+    MARATHON_ASSERT_OFFSETOF(ICommonContext, m_AnimationState, 0x60);
+    MARATHON_ASSERT_SIZEOF(ICommonContext, 0x90);
 }
