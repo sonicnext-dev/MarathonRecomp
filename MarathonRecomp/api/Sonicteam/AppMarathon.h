@@ -23,11 +23,7 @@ namespace Sonicteam
         }
     };
 
-
     MARATHON_ASSERT_OFFSETOF(AppMarathon, m_pDoc, 0x180);
-
-
-
 }
 
 #include <Sonicteam/AppMarathon.inl>

@@ -9,15 +9,11 @@
 #define MIN_WIDTH 640
 #define MIN_HEIGHT 480
 
-
 class GameWindow
 {
 public:
     static inline SDL_Window* s_pWindow = nullptr;
     static inline plume::RenderWindow s_renderWindow;
-
-    static bool m_isResizing;
-    static bool m_ResizeRender;
 
     static inline int s_x;
     static inline int s_y;

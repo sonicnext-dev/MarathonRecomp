@@ -6,26 +6,14 @@
 
 namespace Sonicteam::SoX
 {
-    struct MARATHON_STD_MAP_CONST_CHAR_COMPARE {
-        bool operator()(xpointer<const char> lhs, xpointer<const char> rhs) const {
-            return std::strcmp(lhs.get(), rhs.get()) < 0;
-        }
-    };
-
-    struct ResourceManagerMgrTemplate 
+    struct ResourceManagerMgrTemplate
     {
-        // void (*Unk0)(Sonicteam::SoX::IResourceMgr*);
-        be<uint32_t> fpUnk0; //mostly sub_82595818 (almost any IResourceMgr + 0xC, 0x10 just nullsub) no idea for what
-
-        // void (*Unk4)(Sonicteam::SoX::IResourceMgr*);
-        be<uint32_t> fpUnk4; //mostly sub_82631500 (almost any IResourceMgr + 0x10, 0x10 just nullsub) no idea for what
-
-        xpointer< Sonicteam::SoX::IResourceMgr> Mgr;
-
-        char Flag01; //01  (enabled??) ref to 82581FD4, 825BDB54  (when template is created, store or no idea wtf is it)
-
+        be<uint32_t> Field00; // Usually a function pointer to 0x82595818.
+        be<uint32_t> Field04; // Usually a function pointer to 0x82631500.
+        xpointer<Sonicteam::SoX::IResourceMgr> pManager;
+        char Flag01; // 01 (enabled?), referenced in 82581FD4 and 825BDB54 (when template is created).
         MARATHON_INSERT_PADDING(3);
-        char Flag02; // ref to 825BDB90, fpUnk4(Mgr) then set Flag02 to 0, for what?
+        char Flag02; // Referenced in 825BDB90 and *Field04, then set Flag02 to 0, for what?
     };
 
     class ResourceManager : public System::Singleton<ResourceManager, 0x82D3B264, System::CreateStatic<ResourceManager, 0x82581F00>>
@@ -35,13 +23,13 @@ namespace Sonicteam::SoX
         {
             be<uint32_t> fpDestroy;
         };
+
         xpointer<Vftable> m_pVftable;
-        //m_Resources[IResourceMgr-index][Resource-Name] -> IResource*
-        stdx::map<be<uint32_t>, stdx::map<stdx::string, xpointer<Sonicteam::SoX::IResource>>> m_mResource;
-        MARATHON_INSERT_PADDING(4); // unk
-        MARATHON_INSERT_PADDING(0xC); // std::list<SoX::RefSharedPointer<SoX::RefCountObject>)
-        stdx::map<be<uint32_t>, ResourceManagerMgrTemplate> m_mManager;
+        stdx::map<be<uint32_t>, stdx::map<stdx::string, xpointer<Sonicteam::SoX::IResource>>> m_mResources; // m_mResources[IResourceMgr->m_MgrIndex][Resource->m_Name] -> IResource*
         MARATHON_INSERT_PADDING(4);
-        stdx::map<xpointer<const char>, be<uint32_t>, MARATHON_STD_MAP_CONST_CHAR_COMPARE> m_mManagerIndex;
+        MARATHON_INSERT_PADDING(0x0C); // std::list<SoX::RefSharedPointer<SoX::RefCountObject>>
+        stdx::map<be<uint32_t>, ResourceManagerMgrTemplate> m_mManagers;
+        MARATHON_INSERT_PADDING(4);
+        stdx::map<xpointer<const char>, be<uint32_t>, MARATHON_STD_MAP_CONST_CHAR_COMPARE> m_mManagerIndices;
     };
 }

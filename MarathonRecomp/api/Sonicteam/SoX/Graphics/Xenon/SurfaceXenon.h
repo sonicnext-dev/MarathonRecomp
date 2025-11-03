@@ -5,9 +5,5 @@
 
 namespace Sonicteam::SoX::Graphics::Xenon
 {
-    class SurfaceXenon : public SoX::Graphics::Surface
-    {
-    public:
-      
-    };
+    class SurfaceXenon : public Surface {};
 }
