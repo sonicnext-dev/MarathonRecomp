@@ -474,11 +474,11 @@ enum GuestTextureAddress
 
 inline bool g_needsResize;
 
-extern GuestSurface* GetBackBuffer();
+static GuestSurface* GetBackBuffer();
 
-extern void SetRenderTarget(GuestDevice* device, uint32_t index, GuestSurface* renderTarget);
-extern void SetDepthStencilSurface(GuestDevice* device, GuestSurface* depthStencil);
-extern GuestTexture* CreateTexture(uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, uint32_t usage, uint32_t format, uint32_t pool, uint32_t type);
+static void SetRenderTarget(GuestDevice* device, uint32_t index, GuestSurface* renderTarget);
+static void SetDepthStencilSurface(GuestDevice* device, GuestSurface* depthStencil);
+static GuestTexture* CreateTexture(uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, uint32_t usage, uint32_t format, uint32_t pool, uint32_t type);
 static GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t format, uint32_t multiSample, GuestSurfaceCreateParams* params);
 
 extern std::unique_ptr<GuestTexture> LoadTexture(const uint8_t* data, size_t dataSize, RenderComponentMapping componentMapping = RenderComponentMapping());

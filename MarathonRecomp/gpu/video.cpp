@@ -3361,7 +3361,7 @@ void Video::Present()
             }
         };
 
-        LOGFN_UTILITY("----------------------------[Surfaces]-----------------------------------");
+        LOGN_UTILITY("----------------------------[Surfaces]-----------------------------------");
 
         SetSurface(pMyGraphicsDevice->m_spBackBuffer.get(), (GuestSurface*)pApp->m_pBackBufferSurface.get());
         SetSurface(pMyGraphicsDevice->m_spDepthStencil.get(), (GuestSurface*)pApp->m_pDepthStencilSurface.get());
@@ -3395,7 +3395,7 @@ void Video::Present()
             // GuestToHostFunction<void>(sub_82592E98, surface.second.get(), gSurface, params.width, params.height);
         }
 
-        LOGFN_UTILITY("----------------------------[Textures]-----------------------------------");
+        LOGN_UTILITY("----------------------------[Textures]-----------------------------------");
 
         for (auto& texture : pRenderTargetContainer->m_mspFrameBuffer)
         {
@@ -3434,7 +3434,7 @@ void Video::Present()
             LOGFN_UTILITY("  Surface ({:08X}) ({}x{}) {:08X}", (uint64_t)surface, surface->m_Width.get(), surface->m_Height.get(), (uint64_t)surface->m_spTexture.get());
         }
 
-        LOGFN_UTILITY("----------------------------[m_mspDepthStencil_256]-----------------------------------");
+        LOGN_UTILITY("----------------------------[m_mspDepthStencil_256]-----------------------------------");
 
         for (auto& surface : pRenderTargetContainer->m_mspDepthStencil_256)
         {
@@ -3444,7 +3444,7 @@ void Video::Present()
             LOGFN_UTILITY("- \"{}\" ({}x{}) ({:08X})", surfacePtr->m_MgrResourceName.c_str(), surfacePtr->m_Width.get(), surfacePtr->m_Height.get(), (uint64_t)surfacePtr.get());
         }
 
-        LOGFN_UTILITY("----------------------------[m_mspPostEffect]-----------------------------------");
+        LOGN_UTILITY("----------------------------[m_mspPostEffect]-----------------------------------");
 
         for (auto& texture : pRenderTargetContainer->m_mspPostEffect)
         {
@@ -3454,7 +3454,7 @@ void Video::Present()
             LOGFN_UTILITY("- \"{}\" ({}x{}) ({:08X})", texturePtr->m_MgrResourceName.c_str(), texturePtr->m_Width.get(), texturePtr->m_Height.get(), (uint64_t)texturePtr.get());
         }
 
-        LOGFN_UTILITY("----------------------------[m_mspPostEffectAfter]-----------------------------------");
+        LOGN_UTILITY("----------------------------[m_mspPostEffectAfter]-----------------------------------");
 
         for (auto& texture : pRenderTargetContainer->m_mspPostEffectAfter)
         {
@@ -3641,7 +3641,7 @@ static void ProcBeginCommandList(const RenderCommand& cmd)
     BeginCommandList();
 }
 
-static GuestSurface* GetBackBuffer() 
+static GuestSurface* GetBackBuffer()
 {
     if (g_backBuffer)
         g_backBuffer->AddRef();
