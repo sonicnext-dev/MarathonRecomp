@@ -12,11 +12,10 @@ namespace Sonicteam
     public:
         SoX::RefSharedPointer<HUDPopupScreen> m_spHUDPopupScreen;
         
-        template <typename HUDPopupType>
-        HUDPopupType* GetHUDPopupScreen()
+        template <typename T = HUDPopupScreen>
+        T* GetHUDPopupScreen()
         {
-            return static_cast<HUDPopupType*>(m_spHUDPopupScreen.get());
+            return static_cast<T*>(m_spHUDPopupScreen.get());
         }
     };
-
 }

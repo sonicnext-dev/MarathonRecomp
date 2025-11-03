@@ -12,7 +12,6 @@ namespace Sonicteam::SoX
         xpointer<T> m_ptr;
 
     public:
-
         RefSharedPointer()
         {
             m_ptr = nullptr;

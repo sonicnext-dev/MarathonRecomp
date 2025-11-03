@@ -127,18 +127,44 @@ namespace stdx
             return strcmp(c_str(), str) < 0;
         }
 
-        const char* begin() const { return c_str(); }
-        const char* end() const { return c_str() + size(); }
+        const char* begin() const
+        {
+            return c_str();
+        }
 
-        bool operator<(const string& other) const {
+        const char* end() const
+        {
+            return c_str() + size();
+        }
+
+        bool operator<(const string& other) const
+        {
             return std::lexicographical_compare(begin(), end(), other.begin(), other.end());
         }
-        bool operator>(const string& other) const { return other < *this; }
-        bool operator<=(const string& other) const { return !(other < *this); }
-        bool operator>=(const string& other) const { return !(*this < other); }
-        bool operator==(const string& other) const {
+
+        bool operator>(const string& other) const
+        {
+            return other < *this;
+        }
+
+        bool operator<=(const string& other) const
+        {
+            return !(other < *this);
+        }
+
+        bool operator>=(const string& other) const
+        {
+            return !(*this < other);
+        }
+
+        bool operator==(const string& other) const
+        {
             return size() == other.size() && std::equal(begin(), end(), other.begin());
         }
-        bool operator!=(const string& other) const { return !(*this == other); }
+
+        bool operator!=(const string& other) const
+        {
+            return !(*this == other);
+        }
     };
 };

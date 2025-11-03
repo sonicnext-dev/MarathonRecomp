@@ -1,28 +1,29 @@
 #pragma once
 
 #include <Marathon.inl>
-#include <Sonicteam/SoX/Engine/Doc.h>
-#include <Sonicteam/MyGraphicsDevice.h>
-#include <Sonicteam/SoX/Input/Manager.h>
 #include <boost/smart_ptr/shared_ptr.h>
-#include <api/stdx/vector.h>
+#include <Sonicteam/SoX/Engine/Doc.h>
+#include <Sonicteam/SoX/Input/Manager.h>
+#include <Sonicteam/MyGraphicsDevice.h>
+#include <Sonicteam/RaderMapManager.h>
 #include <Sonicteam/RenderTargetContainer.h>
+#include <stdx/vector.h>
 
 namespace Sonicteam
 {
     class DocMarathonImp : public SoX::Engine::Doc
     {
     public:
-        MARATHON_INSERT_PADDING(0x4);
-        xpointer<MyGraphicsDevice> m_pMyGraphicDevice;
+        MARATHON_INSERT_PADDING(4);
+        xpointer<MyGraphicsDevice> m_pMyGraphicsDevice;
         MARATHON_INSERT_PADDING(0x38);
         stdx::vector<boost::shared_ptr<SoX::Input::Manager>> m_vspInputManager;
         MARATHON_INSERT_PADDING(0x24);
         bool m_VFrame;
-        MARATHON_INSERT_PADDING(0x4);
+        MARATHON_INSERT_PADDING(4);
         xpointer<RenderTargetContainer> m_pRenderTargetContainer;
         MARATHON_INSERT_PADDING(0x187C);
-        xpointer<void> m_pGameRaderMapManager;
+        xpointer<RaderMapManager> m_pRaderMapManager;
         MARATHON_INSERT_PADDING(0x542D0);
         be<uint32_t> m_aPadIDs[4];
     };

@@ -138,6 +138,7 @@
 #include "Sonicteam/Player/Unit/ITestCase.h"
 #include "Sonicteam/Player/Weapon/SonicWeapons.h"
 #include "Sonicteam/Player/Zock.h"
+#include "Sonicteam/PopupScreenTask.h"
 #include "Sonicteam/PropFixture.h"
 #include "Sonicteam/RaderMapManager.h"
 #include "Sonicteam/RenderTargetContainer.h"

@@ -5,5 +5,5 @@
 
 namespace Sonicteam::SoX::Graphics::Xenon
 {
-    class TextureXenon : public Graphics::Texture {};
+    class TextureXenon : public Texture {};
 }

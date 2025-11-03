@@ -842,12 +842,9 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
 
         case OptionsMenuCategory::Video:
         {
-            // TODO: implement buffer resize.
-            DrawOption(rowCount++, &Config::WindowSize, false, devReason, 0, 0, 1, false);
-
-            // DrawOption(rowCount++, &Config::WindowSize, !Config::Fullscreen,
-            //     &Localise("Options_Desc_NotAvailableFullscreen"),
-            //     0, 0, (int)GameWindow::GetDisplayModes().size() - 1, false);
+            DrawOption(rowCount++, &Config::WindowSize, !Config::Fullscreen,
+                &Localise("Options_Desc_NotAvailableFullscreen"),
+                0, 0, (int)GameWindow::GetDisplayModes().size() - 1, false);
 
             auto displayCount = GameWindow::GetDisplayCount();
             auto canChangeMonitor = Config::Fullscreen && displayCount > 1;
@@ -856,10 +853,10 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
             if (Config::Fullscreen && displayCount <= 1)
                 monitorReason = &Localise("Options_Desc_NotAvailableHardware");
 
-            DrawOption(rowCount++, &Config::Monitor, false, devReason, 0, 0, 1, false);                // TODO: implement buffer resize. DrawOption(rowCount++, &Config::Monitor, canChangeMonitor, monitorReason, 0, 0, displayCount - 1, false);
-            DrawOption(rowCount++, &Config::AspectRatio, false, devReason);                            // TODO: implement buffer resize. DrawOption(rowCount++, &Config::AspectRatio, true);
+            DrawOption(rowCount++, &Config::Monitor, canChangeMonitor, monitorReason, 0, 0, displayCount - 1, false);
+            DrawOption(rowCount++, &Config::AspectRatio, true);
             DrawOption(rowCount++, &Config::ResolutionScale, false, devReason);                        // TODO: implement buffer resize. DrawOption(rowCount++, &Config::ResolutionScale, true, nullptr, 0.25f, 1.0f, 2.0f);
-            DrawOption(rowCount++, &Config::Fullscreen, false, devReason);                             // TODO: implement buffer resize. DrawOption(rowCount++, &Config::Fullscreen, true);
+            DrawOption(rowCount++, &Config::Fullscreen, true);
             DrawOption(rowCount++, &Config::VSync, true);
             DrawOption(rowCount++, &Config::FPS, true, nullptr, FPS_MIN, 120, FPS_MAX);
             DrawOption(rowCount++, &Config::Brightness, true);

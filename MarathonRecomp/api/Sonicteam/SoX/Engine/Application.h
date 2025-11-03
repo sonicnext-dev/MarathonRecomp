@@ -6,13 +6,12 @@
 
 namespace Sonicteam::SoX::Engine
 {
-    class Application: SoX::Object
+    class Application : Object
     {
     public:
         bool IsField4;
         xpointer<SoX::Engine::Doc> m_pParent;
     };
 
-    MARATHON_ASSERT_OFFSETOF(Application, m_pVftable, 0x00);
     MARATHON_ASSERT_SIZEOF(Application, 0x0C);
 }

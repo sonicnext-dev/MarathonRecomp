@@ -65,7 +65,6 @@ PPC_FUNC(sub_8262A568)
 }
 
 // Sonicteam::DocMarathonState::Update
-// Sonicteam::DocMarathonState::Update
 PPC_FUNC_IMPL(__imp__sub_825EA610);
 PPC_FUNC(sub_825EA610)
 {
@@ -91,10 +90,6 @@ PPC_FUNC(sub_825EA610)
     {
         SDL_PumpEvents();
         SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
-
-
-        if (GameWindow::m_isResizing)
-            GameWindow::m_ResizeRender = true;
 
         GameWindow::Update();
     }
