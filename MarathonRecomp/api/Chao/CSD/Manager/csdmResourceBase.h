@@ -18,4 +18,7 @@ namespace Chao::CSD
         MARATHON_INSERT_PADDING(4);
         xpointer<T> m_pResource;
     };
+
+    MARATHON_ASSERT_OFFSETOF(CResourceBase<void>, m_pVftable, 0x00);
+    MARATHON_ASSERT_OFFSETOF(CResourceBase<void>, m_pResource, 0x08);
 }

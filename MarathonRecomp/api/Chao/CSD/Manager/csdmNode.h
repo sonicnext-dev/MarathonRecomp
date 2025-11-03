@@ -17,4 +17,6 @@ namespace Chao::CSD
         xpointer<CMotionPattern> m_pMotionPattern;
         MARATHON_INSERT_PADDING(0x18);
     };
+
+    MARATHON_ASSERT_OFFSETOF(CNode, m_pMotionPattern, 0x50);
 }

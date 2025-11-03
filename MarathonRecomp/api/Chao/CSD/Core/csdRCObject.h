@@ -19,4 +19,10 @@ namespace Chao::CSD
         xpointer<void> m_Field0C;
         be<uint32_t> m_Field10;
     };
+
+    MARATHON_ASSERT_OFFSETOF(RCPtrAbs::RCObject, m_pVftable, 0x00);
+    MARATHON_ASSERT_OFFSETOF(RCPtrAbs::RCObject, m_pMemory, 0x04);
+    MARATHON_ASSERT_OFFSETOF(RCPtrAbs::RCObject, m_ReferenceCount, 0x08);
+    MARATHON_ASSERT_OFFSETOF(RCPtrAbs::RCObject, m_Field0C, 0x0C);
+    MARATHON_ASSERT_OFFSETOF(RCPtrAbs::RCObject, m_Field10, 0x10);
 }
