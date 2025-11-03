@@ -15,4 +15,6 @@ namespace hk330
 
         xpointer<Vftable> m_pVftable;
     };
+
+    MARATHON_ASSERT_OFFSETOF(hkpRayShapeCollectionFilter, m_pVftable, 0x00);
 }

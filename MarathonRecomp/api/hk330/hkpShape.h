@@ -11,4 +11,7 @@ namespace hk330
         be<uint32_t> m_userData;
         be<uint32_t> m_type;
     };
+
+    MARATHON_ASSERT_OFFSETOF(hkpShape, m_userData, 0x08);
+    MARATHON_ASSERT_OFFSETOF(hkpShape, m_type, 0x0C);
 }

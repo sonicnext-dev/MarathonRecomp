@@ -27,7 +27,7 @@ namespace hk330
     {
     public:
         xpointer<hkpSimulation> m_simulation;
-        MARATHON_INSERT_PADDING(20);
+        MARATHON_INSERT_PADDING(0x14);
         Sonicteam::SoX::Math::Vector m_gravity;
         xpointer<hkpSimulationIsland> m_fixedIsland;
         xpointer<hkpRigidBody> m_fixedRigidBody;
@@ -58,4 +58,29 @@ namespace hk330
             GuestToHostFunction<void>(sub_82832910, this, updateMode, updateShapeCollectionFilter);
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_simulation, 0x08);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_gravity, 0x20);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_fixedIsland, 0x30);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_fixedRigidBody, 0x34);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_activeSimulationIslands, 0x38);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_inactiveSimulationIslands, 0x44);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_dirtySimulationIslands, 0x50);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_maintenanceMgr, 0x5C);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_memoryWatchDog, 0x60);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_broadPhase, 0x64);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_broadPhaseDispatcher, 0x68);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_phantomBroadPhaseListener, 0x6C);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_entityEntityBroadPhaseListener, 0x70);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_broadPhaseBorderListener, 0x74);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_collisionInput, 0x78);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_collisionFilter, 0x7C);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_collisionDispatcher, 0x80);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_pendingOperations, 0x84);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_pendingOperationsCount, 0x88);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_criticalOperationsLockCount, 0x8C);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_criticalOperationsLockCountForPhantoms, 0x90);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_blockExecutingPendingOperations, 0x94);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_criticalOperationsAllowed, 0x95);
+    MARATHON_ASSERT_OFFSETOF(hkpWorld, m_phantoms, 0xC4);
 }
