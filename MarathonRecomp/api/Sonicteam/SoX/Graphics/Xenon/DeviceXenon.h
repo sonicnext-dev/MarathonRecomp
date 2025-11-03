@@ -5,6 +5,7 @@
 #include <Sonicteam/SoX/RefSharedPointer.h>
 #include <Sonicteam/SoX/RefCountObject.h>
 #include <Sonicteam/SoX/Graphics/Surface.h>
+#include <Sonicteam/SoX/Array.h>
 #include <d3dxb.h>
 
 namespace Sonicteam::SoX::Graphics::Xenon
@@ -14,7 +15,9 @@ namespace Sonicteam::SoX::Graphics::Xenon
     public:
         SoX::RefSharedPointer<Graphics::Surface> m_spBackBuffer;
         SoX::RefSharedPointer<Graphics::Surface> m_spDepthStencil;
-        MARATHON_INSERT_PADDING(0x80);
+        MARATHON_INSERT_PADDING(0x30);
+        SoX::Array<xpointer<void>, 10> m_apTexture;
+        MARATHON_INSERT_PADDING(0x28);
         D3DXBSURFACE_PARAMETERS m_SurfaceParamsA;
         D3DXBSURFACE_PARAMETERS m_SurfaceParamsB;
         D3DXBSURFACE_PARAMETERS m_SurfaceParamsC;

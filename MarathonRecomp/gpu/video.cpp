@@ -3137,6 +3137,11 @@ void CreateTextureLocal(Sonicteam::SoX::Graphics::Xenon::TextureXenon* pTextureX
     pTextureXenon->m_Height = height;
 }
 
+void Test(struct PPCContext& __restrict__ ctx, uint8_t* base)
+{
+    printf("Custom Function");
+}
+
 void Video::Present() 
 {
     g_readyForCommands = false;
@@ -3397,6 +3402,7 @@ void Video::Present()
 
         LOGN_UTILITY("----------------------------[Textures]-----------------------------------");
 
+        // Update textures
         for (auto& texture : pRenderTargetContainer->m_mspFrameBuffer)
         {
             const auto textureName = texture.first.c_str();
@@ -3469,9 +3475,9 @@ void Video::Present()
         pRenderTargetContainer->m_mspPostEffect.clear();
         pRenderTargetContainer->m_mspPostEffectAfter.clear();
 
+        //Reset radermap, textures
         auto& rmTextureResources = pResourceManager->m_mResources[pTextureMgr->m_MgrIndex];
         auto* pGame = pApp->GetGame();
-
         if (pGame)
         {
             if (auto it = rmTextureResources.find("radermap"); it != rmTextureResources.end())
@@ -3498,10 +3504,273 @@ void Video::Present()
             // text->m_pTexture = ???
         }
 
-        // Refresh Lua Render
-        // 0x82B814F8 (stdx::string) gCurrentRenderScript
-        GuestToHostFunction<void>(sub_8260DF88, pDocState, 0x82B814F8, 1);
 
+        /*
+        std::map<std::string, boost::shared_ptr<Sonicteam::SoX::Engine::RenderProcess>> savedProcesses;
+
+        if (auto pRenderSceduler = pDocState->m_pRenderScheduler.get())
+        {
+            // Print all processes before
+            for (auto& pair : pRenderSceduler->m_lpsspRenderProcess)
+            {
+                printf("m_lpsspRenderProcess[%s] = %p\n", pair.first.c_str(), pair.second.get());
+            }
+
+            // Save GE1Particle and Spanverse processes
+            for (auto& pair : pRenderSceduler->m_lpsspRenderProcess)
+            {
+                if (pair.first == "GE1Particle" || pair.first == "Spanverse")
+                {
+                    savedProcesses[pair.first.c_str()] = pair.second;
+                    printf("Saved %s: %p\n", pair.first.c_str(), pair.second.get());
+                }
+            }
+        }
+        */
+
+
+
+
+        /*
+        auto pManageParticle = Sonicteam::MyPE::CManageParticle::GetInstance();
+
+        if (auto pRenderSceduler = pDocState->m_pRenderScheduler.get())
+        {
+            // Restore all saved processes
+            for (auto& savedProcess : savedProcesses)
+            {
+                auto it = std::find_if(pRenderSceduler->m_lpsspRenderProcess.begin(),
+                    pRenderSceduler->m_lpsspRenderProcess.end(),
+                    [&savedProcess](const auto& pair) {
+                        return pair.first.c_str() == savedProcess.first;
+                    });
+
+                if (it != pRenderSceduler->m_lpsspRenderProcess.end())
+                {
+                    it->second = savedProcess.second;
+                    printf("Restored %s: %p\n", savedProcess.first.c_str(), savedProcess.second.get());
+
+                    // Print GTask components
+                    if (savedProcess.second && savedProcess.second->m_pGTask)
+                    {
+                        auto GTask = savedProcess.second->m_pGTask.get();
+                        for (auto& component : GTask->m_llComponent)
+                        {
+                            printf("%s[GTask] %s\n", savedProcess.first.c_str(), component.m_pThis->GetName());
+                        }
+                    }
+                }
+            }
+
+            // Print all processes after restoration
+            for (auto& pair : pRenderSceduler->m_lpsspRenderProcess)
+            {
+                printf("m_lpsspRenderProcess[%s] = %p\n", pair.first.c_str(), pair.second.get());
+            }
+        }
+
+
+        printf("--------------------------{EEEEEEEEEEEEEEEEEEE]------------------\n");
+        for (auto& it : pManageParticle->m_lContainer)
+        {
+            auto h = (int)g_userHeap.Size(&it);
+            auto p1 = it._1.get();
+            auto h1 = (uint32_t)g_userHeap.Size(p1);
+            printf("%x - %d , %x - %d\t\n", &it,h,p1,h1);
+        }
+        if (pDocState->m_pRootGTask.get())
+        {
+            for (auto& component : pDocState->m_pRootGTask->m_llComponent)
+            {
+                printf("component : %s\n", component.m_pThis->GetName());
+            }
+
+        }
+
+      */
+
+
+        auto pManageParticle = Sonicteam::MyPE::CManageParticle::GetInstance();
+        auto pRenderSceduler = pDocState->m_pRenderScheduler.get();
+
+        auto GetSchedureRenderProcess = [&](const char* name)
+            {
+                for (auto& it : pDocState->m_pRenderScheduler->m_lpsspRenderProcess)
+                {
+                    if (it.first == name)
+                        return it;
+                }
+                //ERROR
+            };
+
+        //Now we Need To Save Them First
+        auto psspSpanverse = GetSchedureRenderProcess("Spanverse");
+
+       
+        pRenderSceduler->m_lpsspRenderProcess.clear();
+        pMyGraphicsDevice->m_FrameBufferObject.reset(); 
+
+
+        //Reset Textures
+        for (auto i = 0; i < 0x10; ++i)
+        {
+            be<uint32_t>* v40 = g_userHeap.AllocPhysical<be<uint32_t>>(0);
+            GuestToHostFunction<void>(sub_8259A830, pMyGraphicsDevice, i, v40);
+            if (*v40)
+                GuestToHostFunction<void>(sub_82581E38, v40->get());
+        }
+
+ 
+
+        auto CreateAndPutToRenderChain = [&](const char* name, auto& func, size_t mem_size, int arg3)
+            {
+                Sonicteam::SoX::Engine::RenderProcess* pRenderProcess = GuestToHostFunction<Sonicteam::SoX::Engine::RenderProcess*>(
+                    func, g_userHeap.Alloc(mem_size), pDocState, arg3
+                );
+                pRenderProcess->m_pRenderScheduler = pDocState->m_pRenderScheduler;
+                pDocState->m_pRenderScheduler->m_lpsspRenderProcess.push_back(
+                    std::make_pair<stdx::string, boost::shared_ptr<Sonicteam::SoX::Engine::RenderProcess>>(
+                        name,
+                        boost::make_shared<Sonicteam::SoX::Engine::RenderProcess>(pRenderProcess,0x8204C700)
+                    )
+                );
+                printf("pRenderProcess %x\n", pRenderProcess);
+                return pRenderProcess;
+            };
+
+      
+        CreateAndPutToRenderChain("Render", sub_82649D38, 0x38, 2)->m_pVftable.ptr = 0x8204C688; //BlockHead
+        CreateAndPutToRenderChain("ResetCurrentScreen", sub_8263D710, 0x3C, 0);
+        CreateAndPutToRenderChain("ResetRenderStates", sub_8263D770, 0x38, 0);
+
+
+        //Call Lua (Render Function)
+        struct _custom_data_
+        {
+            xpointer<Sonicteam::DocMarathonImp> pDoc;
+            xpointer<Sonicteam::MyGraphicsDevice> pDevice;
+            xpointer<Sonicteam::RenderTargetContainer> pRenderTargetContainer;
+            xpointer<Sonicteam::SoX::Engine::RenderScheduler> pRenderScheduler;
+            Sonicteam::SoX::RefSharedPointer<Sonicteam::SoX::RefCountObject> Field4;
+            stdx::string customName;
+            be<uint32_t> field_30;
+            be<uint32_t> field_34;
+            be<uint32_t> field_38;
+            stdx::map<stdx::string, xpointer<void>> mMap; //?????
+
+            _custom_data_(
+                xpointer<Sonicteam::DocMarathonImp> doc,
+                xpointer<Sonicteam::MyGraphicsDevice> device,
+                xpointer<Sonicteam::RenderTargetContainer> renderTarget,
+                xpointer<Sonicteam::SoX::Engine::RenderScheduler> scheduler,
+                Sonicteam::SoX::RefSharedPointer<Sonicteam::SoX::RefCountObject> field4,
+                be<uint32_t> field_30,
+                be<uint32_t> field_34,
+                be<uint32_t> field_38,
+                const char* name
+            )
+                : pDoc(doc)
+                , pDevice(device)
+                , pRenderTargetContainer(renderTarget)
+                , pRenderScheduler(scheduler)
+                , Field4(field4)
+                , field_30(field_30)
+                , field_34(field_34)
+                , field_38(field_38)
+                , customName(name)
+                , mMap()
+            {
+
+            }
+
+        };
+
+        auto gspLuaResource = g_userHeap.AllocPhysical<Sonicteam::SoX::RefSharedPointer<Sonicteam::LuaSystem>>();
+        *gspLuaResource = NULL;
+        GuestToHostFunction<void>(sub_825ED168, gspLuaResource, Sonicteam::Globals::ms_CurrentRenderScript, 0x8204C3F8, 0x4F);
+        auto pLuaResource = static_cast<Sonicteam::LuaSystem*>(gspLuaResource->get());
+        printf("pLuaResource : %p\n", gspLuaResource->get());
+        printf("ms_CurrentRenderScript : %s\n", Sonicteam::Globals::ms_CurrentRenderScript->c_str());
+ 
+
+        _custom_data_* gCustomData = g_userHeap.AllocPhysical<_custom_data_>
+            (
+                pDocState,
+                pMyGraphicsDevice,
+                pDocState->m_pRenderTargetContainer,
+                pDocState->m_pRenderScheduler,
+                Sonicteam::SoX::RefSharedPointer(),
+                0,
+                1,
+                0,
+                "main"
+            );
+
+
+        g_memory.InsertFunction(0x88000000, &Test);
+
+
+        auto funcCount = 2;
+        lua50::luaL_reg* plFunctions = (lua50::luaL_reg*)g_userHeap.Alloc(sizeof(lua50::luaL_reg) * funcCount);
+        if (plFunctions) {
+
+            plFunctions[0] = 
+            {
+                Sonicteam::Globals::msg_ConstCharStringRenderSpanverse,
+                (lua50::lua_CFunction)0x88000000
+            };
+
+            plFunctions[1] = 
+            {
+                Sonicteam::Globals::msg_ConstCharStringRenderGE1Particle,
+                (lua50::lua_CFunction)0x82AD0700 
+            };
+
+            if (pLuaResource)
+            {
+                pLuaResource->RegisterFunctions(plFunctions, funcCount);
+                pLuaResource->CallFunction3(Sonicteam::Globals::msg_ConstCharStringBuild, gCustomData);
+            }
+
+            g_userHeap.Free(plFunctions);
+        }
+        printf("t %p\n", &gCustomData->mMap);
+        for (auto& t : gCustomData->mMap)
+        {
+            printf("t %s - %p\n", t.first.c_str());
+        }
+        gCustomData->~_custom_data_();
+
+        g_userHeap.Free(gCustomData);
+        gspLuaResource->reset();
+        g_userHeap.Free(gspLuaResource);
+        //End of Lua (Begin())
+
+        CreateAndPutToRenderChain("EndOfBlock", sub_82649D38, 0x38, 3)->m_pVftable.ptr = 0x8204C69C; //BlockTail
+
+        pDocState->m_pSFXAgent->Reload();
+
+
+   
+
+        // Quick Method, csm seems fine now
+        /*
+        auto sfx1 = pDocState->m_pSFXAgent->m_aSFXMatrices1;
+        auto sfx2 = pDocState->m_pSFXAgent->m_aSFXMatrices2;
+        pDocState->m_pSFXAgent->m_aSFXMatrices1 = 0;
+        pDocState->m_pSFXAgent->m_aSFXMatrices2 = 0;
+        auto spFrameBufferObject = pMyGraphicsDevice->m_FrameBufferObject;
+        auto _array_ = pMyGraphicsDevice->m_apTexture;
+        pMyGraphicsDevice->m_FrameBufferObject = 0;
+        GuestToHostFunction<void>(sub_8260DF88, pDocState, 0x82B814F8, 1);
+        pMyGraphicsDevice->m_apTexture = _array_;
+        pDocState->m_pSFXAgent->m_aSFXMatrices1 = sfx1;
+        pDocState->m_pSFXAgent->m_aSFXMatrices2 = sfx2;
+        pMyGraphicsDevice->m_FrameBufferObject = spFrameBufferObject;
+        //revert framebuffer
+        */
+        
+        
         auto SetResource = [&](auto* spTextureTo, const char* name)
         {
             if (auto it = rmTextureResources.find(name); it != rmTextureResources.end())
