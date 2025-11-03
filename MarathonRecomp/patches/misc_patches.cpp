@@ -233,7 +233,6 @@ PPC_FUNC(sub_82188460)
     ctx.r3.u64 = Config::Subtitles;
 }
 
-
 // Sonicteam::HUDPause::ProcessMessage
 PPC_FUNC_IMPL(__imp__sub_824EF788);
 PPC_FUNC(sub_824EF788)
