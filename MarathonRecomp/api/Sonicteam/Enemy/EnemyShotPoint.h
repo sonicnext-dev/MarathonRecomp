@@ -14,4 +14,7 @@ namespace Sonicteam::Enemy
         SoX::RefSharedPointer<MyPhantom> m_spPhantom;
         MARATHON_INSERT_PADDING(0xD4);
     };
+
+    MARATHON_ASSERT_OFFSETOF(EnemyShotPoint, m_spPhantom, 0x88);
+    MARATHON_ASSERT_SIZEOF(EnemyShotPoint, 0x160);
 }
