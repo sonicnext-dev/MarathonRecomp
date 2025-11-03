@@ -17,4 +17,7 @@ namespace Sonicteam::SoX
         xpointer<Vftable> m_pVftable;
         MARATHON_INSERT_PADDING(0x0C);
     };
+
+    MARATHON_ASSERT_OFFSETOF(IResourceMgr, m_pVftable, 0x00);
+    MARATHON_ASSERT_SIZEOF(IResourceMgr, 0x10);
 }

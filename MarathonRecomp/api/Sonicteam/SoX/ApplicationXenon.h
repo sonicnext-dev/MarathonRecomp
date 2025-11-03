@@ -12,6 +12,8 @@ namespace Sonicteam::SoX
 
         static ApplicationXenon* GetInstance();
     };
+
+    MARATHON_ASSERT_SIZEOF(ApplicationXenon, 0x180);
 }
 
 #include <Sonicteam/SoX/ApplicationXenon.inl>

@@ -8,6 +8,8 @@ namespace Sonicteam
     class MyGraphicsDevice : public SoX::Graphics::Xenon::DeviceXenon
     {
     public:
-        MARATHON_INSERT_PADDING(0x180);
+        MARATHON_INSERT_PADDING(0x1C0);
     };
+
+    MARATHON_ASSERT_SIZEOF(MyGraphicsDevice, 0x350);
 }

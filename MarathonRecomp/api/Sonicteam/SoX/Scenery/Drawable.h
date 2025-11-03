@@ -11,4 +11,6 @@ namespace Sonicteam::SoX::Scenery
     public:
         MARATHON_INSERT_PADDING(0x64);
     };
+
+    MARATHON_ASSERT_SIZEOF(Drawable, 0x70);
 }

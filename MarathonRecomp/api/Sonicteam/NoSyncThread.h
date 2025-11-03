@@ -5,5 +5,9 @@
 
 namespace Sonicteam
 {
-    class NoSyncThread : SoX::Thread {};
+    class NoSyncThread : SoX::Thread
+    {
+    public:
+        MARATHON_INSERT_PADDING(4);
+    };
 }

@@ -43,4 +43,27 @@ namespace Sonicteam::SoX::Scenery
         SoX::Math::Matrix4x4 m_FieldD0;
         frameObserver m_FrameObserver;
     };
+
+    MARATHON_ASSERT_OFFSETOF(CameraImp::frameObserver, m_pCameraImp, 0x14);
+    MARATHON_ASSERT_OFFSETOF(CameraImp::frameObserver, m_Field18, 0x18);
+    MARATHON_ASSERT_OFFSETOF(CameraImp::frameObserver, m_Field30, 0x30);
+    MARATHON_ASSERT_OFFSETOF(CameraImp::frameObserver, m_Field70, 0x70);
+    MARATHON_ASSERT_OFFSETOF(CameraImp::frameObserver, m_FieldB0, 0xB0);
+    MARATHON_ASSERT_OFFSETOF(CameraImp::frameObserver, m_FieldC0, 0xC0);
+    MARATHON_ASSERT_OFFSETOF(CameraImp::frameObserver, m_pWorldIntersectionStandard, 0xF0);
+    MARATHON_ASSERT_OFFSETOF(CameraImp::frameObserver, m_pMyTransforms, 0x104);
+    MARATHON_ASSERT_SIZEOF(CameraImp::frameObserver, 0x110);
+
+    MARATHON_ASSERT_OFFSETOF(CameraImp, m_Name, 0x04);
+    MARATHON_ASSERT_OFFSETOF(CameraImp, m_FOV, 0x20);
+    MARATHON_ASSERT_OFFSETOF(CameraImp, m_AspectRatioWidth, 0x24);
+    MARATHON_ASSERT_OFFSETOF(CameraImp, m_AspectRatioHeight, 0x28);
+    MARATHON_ASSERT_OFFSETOF(CameraImp, m_Near, 0x2C);
+    MARATHON_ASSERT_OFFSETOF(CameraImp, m_Far, 0x30);
+    MARATHON_ASSERT_OFFSETOF(CameraImp, m_pWorldImp, 0x34);
+    MARATHON_ASSERT_OFFSETOF(CameraImp, m_ViewMatrix, 0x50);
+    MARATHON_ASSERT_OFFSETOF(CameraImp, m_Field90, 0x90);
+    MARATHON_ASSERT_OFFSETOF(CameraImp, m_FieldD0, 0xD0);
+    MARATHON_ASSERT_OFFSETOF(CameraImp, m_FrameObserver, 0x110);
+    MARATHON_ASSERT_SIZEOF(CameraImp, 0x220);
 }

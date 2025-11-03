@@ -16,6 +16,6 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(0x24);
         bool m_VFrame;
         MARATHON_INSERT_PADDING(0x55B58);
-        be<uint32_t> m_PlayerControllerID[4];
+        be<uint32_t> m_aPadIDs[4];
     };
 }

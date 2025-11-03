@@ -58,7 +58,7 @@ PPC_FUNC(sub_82195500)
             if (auto pCameraMode = pCameraman->m_spCameraModeManager->m_spCameraMode.get())
             {
                 guest_stack_var<Sonicteam::Message::MsgCameramanChangeMode> msgCameramanChangeMode;
-                msgCameramanChangeMode->ControllerIndex = pInputManager->m_ControllerIndex;
+                msgCameramanChangeMode->PadID = pInputManager->m_PadID;
                 msgCameramanChangeMode->TargetActorID = pPlayer->m_ActorID;
                 msgCameramanChangeMode->IsDemoCamera = pCameraMode->m_pVftable.ptr != 0x82002004;
 

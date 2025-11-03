@@ -26,4 +26,7 @@ namespace Sonicteam::SoX
             return GuestToHostFunction<bool>(m_pVftable->fpProcessMessage, this, pMessage);
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(MessageReceiver, m_pVftable, 0x00);
+    MARATHON_ASSERT_SIZEOF(MessageReceiver, 4);
 }

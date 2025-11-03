@@ -34,7 +34,7 @@ namespace Sonicteam::Player
         be<uint32_t> m_TargetCameraActorID; 
         xpointer<SoX::MessageReceiver> m_pCameraman;
         be<uint32_t> m_Index;
-        be<uint32_t> m_ControllerIndex;
+        be<uint32_t> m_PadID;
         SoX::Math::Quaternion m_SpawnRotation;
         SoX::Math::Vector m_SpawnPosition;
         be<uint32_t> m_SpawnRingCount;
@@ -88,9 +88,9 @@ namespace Sonicteam::Player
             auto pDoc = GetDoc<DocMarathonState>();
             auto pGame = pDoc->GetDocMode<GameMode>()->GetGame();
             auto playerIndex = pGame->PlayerActorIDToIndex(m_ActorID);
-            auto controllerID = pDoc->m_PlayerControllerID[playerIndex];
+            auto padID = pDoc->m_aPadIDs[playerIndex];
 
-            return pDoc->m_vspInputManager[controllerID].get();
+            return pDoc->m_vspInputManager[padID].get();
         }
     };
 
@@ -105,7 +105,7 @@ namespace Sonicteam::Player
     MARATHON_ASSERT_OFFSETOF(Object, m_TargetCameraActorID, 0x90);
     MARATHON_ASSERT_OFFSETOF(Object, m_pCameraman, 0x94);
     MARATHON_ASSERT_OFFSETOF(Object, m_Index, 0x98);
-    MARATHON_ASSERT_OFFSETOF(Object, m_ControllerIndex, 0x9C);
+    MARATHON_ASSERT_OFFSETOF(Object, m_PadID, 0x9C);
     MARATHON_ASSERT_OFFSETOF(Object, m_SpawnRotation, 0xA0);
     MARATHON_ASSERT_OFFSETOF(Object, m_SpawnPosition, 0xB0);
     MARATHON_ASSERT_OFFSETOF(Object, m_SpawnRingCount, 0xC0);

@@ -19,4 +19,7 @@ namespace Sonicteam::SoX
             return GuestToHostFunction<const char*>(m_pVftable->fpGetName.get());
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(Object, m_pVftable, 0x00);
+    MARATHON_ASSERT_SIZEOF(Object, 4);
 }

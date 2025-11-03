@@ -14,4 +14,9 @@ namespace Sonicteam::SoX::Graphics
         MARATHON_INSERT_PADDING(4);
         stdx::string m_TechniqueName;
     };
+
+    MARATHON_ASSERT_OFFSETOF(TechniqueFXL, m_pShader, 0x0C);
+    MARATHON_ASSERT_OFFSETOF(TechniqueFXL, m_pParent, 0x20);
+    MARATHON_ASSERT_OFFSETOF(TechniqueFXL, m_TechniqueName, 0x28);
+    MARATHON_ASSERT_SIZEOF(TechniqueFXL, 0x44);
 }
