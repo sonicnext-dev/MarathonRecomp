@@ -325,8 +325,6 @@ struct Profiler
 static double g_applicationValues[PROFILER_VALUE_COUNT];
 static Profiler g_gpuFrameProfiler;
 static Profiler g_presentProfiler;
-static Profiler g_updateDirectorProfiler;
-static Profiler g_renderDirectorProfiler;
 static Profiler g_frameFenceProfiler;
 static Profiler g_presentWaitProfiler;
 static Profiler g_swapChainAcquireProfiler;
@@ -2622,6 +2620,12 @@ static void DrawProfiler()
     font->Scale = ImGui::GetDefaultFont()->FontSize / font->FontSize;
     ImGui::PushFont(font);
 
+#define IMGUI_GENERIC_ROW(name, value, ...) \
+    ImGui::TableNextColumn(); \
+    ImGui::Text(name); \
+    ImGui::TableNextColumn(); \
+    ImGui::Text(value, __VA_ARGS__);
+
     if (ImGui::Begin("Profiler", &g_profilerVisible))
     {
         g_applicationValues[g_profilerValueIndex] = App::s_deltaTime * 1000.0;
@@ -2629,127 +2633,191 @@ static void DrawProfiler()
         const double applicationAvg = std::accumulate(g_applicationValues, g_applicationValues + PROFILER_VALUE_COUNT, 0.0) / PROFILER_VALUE_COUNT;
         double gpuFrameAvg = g_gpuFrameProfiler.UpdateAndReturnAverage();
         double presentAvg = g_presentProfiler.UpdateAndReturnAverage();
-        double updateDirectorAvg = g_updateDirectorProfiler.UpdateAndReturnAverage();
-        double renderDirectorAvg = g_renderDirectorProfiler.UpdateAndReturnAverage();
         double frameFenceAvg = g_frameFenceProfiler.UpdateAndReturnAverage();
         double presentWaitAvg = g_presentWaitProfiler.UpdateAndReturnAverage();
         double swapChainAcquireAvg = g_swapChainAcquireProfiler.UpdateAndReturnAverage();
 
-        if (ImPlot::BeginPlot("Frame Time"))
+        if (ImGui::CollapsingHeader("Performance", ImGuiTreeNodeFlags_DefaultOpen))
         {
-            ImPlot::SetupAxisLimits(ImAxis_Y1, 0.0, 20.0);
-            ImPlot::SetupAxis(ImAxis_Y1, "ms", ImPlotAxisFlags_None);
-            ImPlot::PlotLine<double>("Application", g_applicationValues, PROFILER_VALUE_COUNT, 1.0, 0.0, ImPlotLineFlags_None, g_profilerValueIndex);
-            ImPlot::PlotLine<double>("GPU Frame", g_gpuFrameProfiler.values, PROFILER_VALUE_COUNT, 1.0, 0.0, ImPlotLineFlags_None, g_profilerValueIndex);
-            ImPlot::PlotLine<double>("Present", g_presentProfiler.values, PROFILER_VALUE_COUNT, 1.0, 0.0, ImPlotLineFlags_None, g_profilerValueIndex);
-            ImPlot::PlotLine<double>("Update Director", g_updateDirectorProfiler.values, PROFILER_VALUE_COUNT, 1.0, 0.0, ImPlotLineFlags_None, g_profilerValueIndex);
-            ImPlot::PlotLine<double>("Render Director", g_renderDirectorProfiler.values, PROFILER_VALUE_COUNT, 1.0, 0.0, ImPlotLineFlags_None, g_profilerValueIndex);
-            ImPlot::PlotLine<double>("Frame Fence", g_frameFenceProfiler.values, PROFILER_VALUE_COUNT, 1.0, 0.0, ImPlotLineFlags_None, g_profilerValueIndex);
-            ImPlot::PlotLine<double>("Present Wait", g_presentWaitProfiler.values, PROFILER_VALUE_COUNT, 1.0, 0.0, ImPlotLineFlags_None, g_profilerValueIndex);
-            ImPlot::PlotLine<double>("Swap Chain Acquire", g_swapChainAcquireProfiler.values, PROFILER_VALUE_COUNT, 1.0, 0.0, ImPlotLineFlags_None, g_profilerValueIndex);
-            ImPlot::EndPlot();
+            if (ImPlot::BeginPlot("Frame Time"))
+            {
+                ImPlot::SetupAxisLimits(ImAxis_Y1, 0.0, 20.0);
+                ImPlot::SetupAxis(ImAxis_Y1, "ms", ImPlotAxisFlags_None);
+                ImPlot::PlotLine<double>("Application", g_applicationValues, PROFILER_VALUE_COUNT, 1.0, 0.0, ImPlotLineFlags_None, g_profilerValueIndex);
+                ImPlot::PlotLine<double>("GPU Frame", g_gpuFrameProfiler.values, PROFILER_VALUE_COUNT, 1.0, 0.0, ImPlotLineFlags_None, g_profilerValueIndex);
+                ImPlot::PlotLine<double>("Present", g_presentProfiler.values, PROFILER_VALUE_COUNT, 1.0, 0.0, ImPlotLineFlags_None, g_profilerValueIndex);
+                ImPlot::PlotLine<double>("Present Wait", g_presentWaitProfiler.values, PROFILER_VALUE_COUNT, 1.0, 0.0, ImPlotLineFlags_None, g_profilerValueIndex);
+                ImPlot::PlotLine<double>("Frame Fence", g_frameFenceProfiler.values, PROFILER_VALUE_COUNT, 1.0, 0.0, ImPlotLineFlags_None, g_profilerValueIndex);
+                ImPlot::PlotLine<double>("Swap Chain Acquire", g_swapChainAcquireProfiler.values, PROFILER_VALUE_COUNT, 1.0, 0.0, ImPlotLineFlags_None, g_profilerValueIndex);
+                ImPlot::EndPlot();
+            }
+
+            g_profilerValueIndex = (g_profilerValueIndex + 1) % PROFILER_VALUE_COUNT;
+
+            if (ImGui::BeginTable("Performance", 5))
+            {
+                ImGui::TableSetupColumn("Name");
+                ImGui::TableSetupColumn("Current Time");
+                ImGui::TableSetupColumn("Average Time");
+                ImGui::TableSetupColumn("Current FPS");
+                ImGui::TableSetupColumn("Average FPS");
+                ImGui::TableHeadersRow();
+
+                auto drawPerfRow = [](const char* name, double ms, double msAvg, bool showFPS = false, double fps = 0, double fpsAvg = 0)
+                {
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%s", name);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%g ms", ms);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%g ms", msAvg);
+                    ImGui::TableNextColumn();
+
+                    if (showFPS)
+                        ImGui::Text("%g FPS", fps);
+
+                    ImGui::TableNextColumn();
+
+                    if (showFPS)
+                        ImGui::Text("%g FPS", fpsAvg);
+                };
+
+                // -------- Name ---------------- Current Time --------------------------- Average Time -------- Current FPS ----------------------------- Average FPS ---------- //
+                drawPerfRow("Application",        App::s_deltaTime * 1000.0,               applicationAvg, true, 1.0 / App::s_deltaTime,                   1000.0 / applicationAvg);
+                drawPerfRow("GPU Frame",          g_gpuFrameProfiler.value.load(),         gpuFrameAvg,    true, 1000.0 / g_gpuFrameProfiler.value.load(), 1000.0 / gpuFrameAvg   );
+                drawPerfRow("Present",            g_presentProfiler.value.load(),          presentAvg,     true, 1000.0 / g_presentProfiler.value.load(),  1000.0 / presentAvg    );
+                drawPerfRow("Present Wait",       g_presentWaitProfiler.value.load(),      presentWaitAvg                                                                         );
+                drawPerfRow("Frame Fence",        g_frameFenceProfiler.value.load(),       frameFenceAvg                                                                          );
+                drawPerfRow("Swap Chain Acquire", g_swapChainAcquireProfiler.value.load(), swapChainAcquireAvg                                                                    );
+
+                ImGui::EndTable();
+            }
+
+            ImGui::Separator();
+
+            ImGui::Checkbox("Show FPS", &Config::ShowFPS.Value);
         }
-
-        g_profilerValueIndex = (g_profilerValueIndex + 1) % PROFILER_VALUE_COUNT;
-
-        ImGui::Text("Current Application: %g ms (%g FPS)", App::s_deltaTime * 1000.0, 1.0 / App::s_deltaTime);
-        ImGui::Text("Current GPU Frame: %g ms (%g FPS)", g_gpuFrameProfiler.value.load(), 1000.0 / g_gpuFrameProfiler.value.load());
-        ImGui::Text("Current Present: %g ms (%g FPS)", g_presentProfiler.value.load(), 1000.0 / g_presentProfiler.value.load());
-        ImGui::Text("Current Update Director: %g ms (%g FPS)", g_updateDirectorProfiler.value.load(), 1000.0 / g_updateDirectorProfiler.value.load());
-        ImGui::Text("Current Render Director: %g ms (%g FPS)", g_renderDirectorProfiler.value.load(), 1000.0 / g_renderDirectorProfiler.value.load());
-        ImGui::Text("Current Frame Fence: %g ms", g_frameFenceProfiler.value.load());
-        ImGui::Text("Current Present Wait: %g ms", g_presentWaitProfiler.value.load());
-        ImGui::Text("Current Swap Chain Acquire: %g ms", g_swapChainAcquireProfiler.value.load());
-
-        ImGui::NewLine();
-
-        ImGui::Text("Average Application: %g ms (%g FPS)", applicationAvg, 1000.0 / applicationAvg);
-        ImGui::Text("Average GPU Frame: %g ms (%g FPS)", gpuFrameAvg, 1000.0 / gpuFrameAvg);
-        ImGui::Text("Average Present: %g ms (%g FPS)", presentAvg, 1000.0 / presentAvg);
-        ImGui::Text("Average Update Director: %g ms (%g FPS)", updateDirectorAvg, 1000.0 / updateDirectorAvg);
-        ImGui::Text("Average Render Director: %g ms (%g FPS)", renderDirectorAvg, 1000.0 / renderDirectorAvg);
-        ImGui::Text("Average Frame Fence: %g ms", frameFenceAvg);
-        ImGui::Text("Average Present Wait: %g ms", presentWaitAvg);
-        ImGui::Text("Average Swap Chain Acquire: %g ms", swapChainAcquireAvg);
-
-        ImGui::NewLine();
 
         if (g_userHeap.heap != nullptr && g_userHeap.physicalHeap != nullptr)
         {
-            O1HeapDiagnostics diagnostics, physicalDiagnostics;
+            if (ImGui::CollapsingHeader("Memory"))
             {
-                std::lock_guard lock(g_userHeap.mutex);
-                diagnostics = o1heapGetDiagnostics(g_userHeap.heap);
-            }
-            {
-                std::lock_guard lock(g_userHeap.physicalMutex);
-                physicalDiagnostics = o1heapGetDiagnostics(g_userHeap.physicalHeap);
-            }
+                O1HeapDiagnostics diagnostics, physicalDiagnostics;
+                {
+                    std::lock_guard lock(g_userHeap.mutex);
+                    diagnostics = o1heapGetDiagnostics(g_userHeap.heap);
+                }
+                {
+                    std::lock_guard lock(g_userHeap.physicalMutex);
+                    physicalDiagnostics = o1heapGetDiagnostics(g_userHeap.physicalHeap);
+                }
 
-            ImGui::Text("Heap Allocated: %d MB", int32_t(diagnostics.allocated / (1024 * 1024)));
-            ImGui::Text("Physical Heap Allocated: %d MB", int32_t(physicalDiagnostics.allocated / (1024 * 1024)));
+                if (ImGui::BeginTable("Memory", 2))
+                {
+                    IMGUI_GENERIC_ROW("Heap Allocated", "%d MB", int32_t(diagnostics.allocated / (1024 * 1024)));
+                    IMGUI_GENERIC_ROW("Physical Heap Allocated", "%d MB", int32_t(diagnostics.allocated / (1024 * 1024)));
+
+                    ImGui::EndTable();
+                }
+            }
         }
 
-        ImGui::Text("GPU Waits: %d", int32_t(g_waitForGPUCount));
-        ImGui::Text("Buffer Uploads: %d", int32_t(g_bufferUploadCount));
-        ImGui::NewLine();
-
-        ImGui::Text("Present Wait: %s", g_capabilities.presentWait ? "Supported" : "Unsupported");
-        ImGui::Text("Triangle Fan: %s", g_capabilities.triangleFan ? "Supported" : "Unsupported");
-        ImGui::Text("Dynamic Depth Bias: %s", g_capabilities.dynamicDepthBias ? "Supported" : "Unsupported");
-        ImGui::Text("Hardware Resolve Modes: %s", g_capabilities.resolveModes ? "Supported" : "Unsupported");
-        ImGui::Text("Triangle Strip Workaround: %s", g_triangleStripWorkaround ? "Enabled" : "Disabled");
-        ImGui::NewLine();
-
-        std::string backend;
-
-        switch (g_backend) {
-        case Backend::VULKAN:
-            backend = "Vulkan";
-            break;
-        case Backend::D3D12:
-            backend = "D3D12";
-            break;
-        case Backend::METAL:
-            backend = "Metal";
-            break;
-        }
-
-        ImGui::Text("API: %s", backend.c_str());
-        ImGui::Text("Device: %s", g_device->getDescription().name.c_str());
-        ImGui::Text("Device Type: %s", DeviceTypeName(g_device->getDescription().type));
-        ImGui::Text("VRAM: %.2f MiB", (double)(g_device->getDescription().dedicatedVideoMemory) / (1024.0 * 1024.0));
-        ImGui::Text("UMA: %s", g_capabilities.uma ? "Supported" : "Unsupported");
-        ImGui::Text("GPU Upload Heap: %s", g_capabilities.gpuUploadHeap ? "Supported" : "Unsupported");
-
-        const char* sdlVideoDriver = SDL_GetCurrentVideoDriver();
-        if (sdlVideoDriver != nullptr)
-            ImGui::Text("SDL Video Driver: %s", sdlVideoDriver);
-
-        ImGui::NewLine();
-        ImGui::Text("Output Resolution: %d x %d", Video::s_viewportWidth, Video::s_viewportHeight);
-
-        ImGui::NewLine();
-        ImGui::Checkbox("Show FPS", &Config::ShowFPS.Value);
-        ImGui::NewLine();
-
-        if (ImGui::TreeNode("Device Names"))
+        if (ImGui::CollapsingHeader("GPU"))
         {
-            ImGui::Indent();
+            std::string backend;
 
-            uint32_t deviceIndex = 0;
-            for (const std::string &deviceName : g_interface->getDeviceNames())
+            switch (g_backend)
             {
-                ImGui::Text("Option #%d: %s", deviceIndex++, deviceName.c_str());
+                case Backend::VULKAN:
+                    backend = "Vulkan";
+                    break;
+
+                case Backend::D3D12:
+                    backend = "D3D12";
+                    break;
+
+                case Backend::METAL:
+                    backend = "Metal";
+                    break;
             }
 
-            ImGui::Unindent();
-            ImGui::TreePop();
+            if (ImGui::BeginTable("GPU", 2))
+            {
+                IMGUI_GENERIC_ROW("API", "%s", backend.c_str());
+
+                if (auto pSDLVideoDriver = SDL_GetCurrentVideoDriver())
+                {
+                    IMGUI_GENERIC_ROW("SDL Video Driver", "%s", pSDLVideoDriver);
+                }
+
+                IMGUI_GENERIC_ROW("Device", "%s", g_device->getDescription().name.c_str());
+                IMGUI_GENERIC_ROW("Device Type", "%s", DeviceTypeName(g_device->getDescription().type));
+                IMGUI_GENERIC_ROW("VRAM", "%.2f MiB", (double)(g_device->getDescription().dedicatedVideoMemory) / (1024.0 * 1024.0));
+                IMGUI_GENERIC_ROW("GPU Waits", "%d", int32_t(g_waitForGPUCount));
+                IMGUI_GENERIC_ROW("Buffer Uploads", "%d", int32_t(g_bufferUploadCount));
+
+                IMGUI_GENERIC_ROW("Resolution", "%dx%d (%dx%d)",
+                    Video::s_viewportWidth, Video::s_viewportHeight,
+                    uint32_t(round(Video::s_viewportWidth * Config::ResolutionScale)),
+                    uint32_t(round(Video::s_viewportHeight * Config::ResolutionScale)));
+
+                ImGui::EndTable();
+            }
+
+            ImGui::Separator();
+
+            if (ImGui::TreeNode("Devices"))
+            {
+                ImGui::Indent();
+
+                if (ImGui::BeginTable("Devices", 2))
+                {
+                    auto deviceIndex = 0;
+
+                    for (const auto& deviceName : g_interface->getDeviceNames())
+                    {
+                        ImGui::TableNextColumn();
+                        ImGui::Text("Device #%d", deviceIndex++);
+                        ImGui::TableNextColumn();
+                        ImGui::Text("%s", deviceName.c_str());
+                        ImGui::SameLine();
+                    }
+
+                    ImGui::EndTable();
+                }
+
+                ImGui::Unindent();
+                ImGui::TreePop();
+            }
+
+            if (ImGui::TreeNode("Features"))
+            {
+                ImGui::Indent();
+
+                if (ImGui::BeginTable("Features", 2))
+                {
+                    IMGUI_GENERIC_ROW("Dynamic Depth Bias", "%s", g_capabilities.dynamicDepthBias ? "Supported" : "Unsupported");
+                    IMGUI_GENERIC_ROW("GPU Upload Heap", "%s", g_capabilities.gpuUploadHeap ? "Supported" : "Unsupported");
+                    IMGUI_GENERIC_ROW("Hardware Resolve Modes", "%s", g_capabilities.resolveModes ? "Supported" : "Unsupported");
+                    IMGUI_GENERIC_ROW("Present Wait", "%s", g_capabilities.presentWait ? "Supported" : "Unsupported");
+                    IMGUI_GENERIC_ROW("Triangle Fan", "%s", g_capabilities.triangleFan ? "Supported" : "Unsupported");
+                    IMGUI_GENERIC_ROW("Triangle Strip Workaround", "%s", g_triangleStripWorkaround ? "Enabled" : "Disabled");
+                    IMGUI_GENERIC_ROW("UMA", "%s", g_capabilities.uma ? "Supported" : "Unsupported");
+
+                    ImGui::EndTable();
+                }
+
+                ImGui::Unindent();
+                ImGui::TreePop();
+            }
         }
     }
-    ImGui::End();
 
+#undef IMGUI_GENERIC_ROW
+
+    ImGui::End();
     ImGui::PopFont();
+
     font->Scale = defaultScale;
 }
 
