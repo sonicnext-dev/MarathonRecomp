@@ -557,6 +557,11 @@ address = 0x822196EC
 registers = ["r3", "r31"]
 
 [[midasm_hook]]
+name = "PauseTask_SetMissionTextPriority"
+address = 0x82509AEC
+registers = ["f1"]
+
+[[midasm_hook]]
 name = "SonicGauge_FixGemSprite"
 address = 0x82185768
 registers = ["r30"]
