@@ -2700,7 +2700,7 @@ static void DrawProfiler()
 
         if (g_userHeap.heap != nullptr && g_userHeap.physicalHeap != nullptr)
         {
-            if (ImGui::CollapsingHeader("Memory"))
+            if (ImGui::CollapsingHeader("Memory", ImGuiTreeNodeFlags_DefaultOpen))
             {
                 O1HeapDiagnostics diagnostics, physicalDiagnostics;
                 {
@@ -2722,7 +2722,7 @@ static void DrawProfiler()
             }
         }
 
-        if (ImGui::CollapsingHeader("GPU"))
+        if (ImGui::CollapsingHeader("GPU", ImGuiTreeNodeFlags_DefaultOpen))
         {
             std::string backend;
 
