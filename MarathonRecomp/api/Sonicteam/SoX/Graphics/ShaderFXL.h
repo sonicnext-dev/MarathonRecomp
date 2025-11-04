@@ -20,3 +20,4 @@ namespace Sonicteam::SoX::Graphics
     MARATHON_ASSERT_OFFSETOF(ShaderFXL, m_pVftable, 0x70);
     MARATHON_ASSERT_SIZEOF(ShaderFXL, 0xB0);
 }
+
