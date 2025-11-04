@@ -6,6 +6,6 @@ namespace Sonicteam::SoX::Graphics
 {
     class ShaderPassFXL
     {
-    public:
+
     };
 }

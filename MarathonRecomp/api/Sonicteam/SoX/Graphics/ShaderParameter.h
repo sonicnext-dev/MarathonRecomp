@@ -7,5 +7,6 @@ namespace Sonicteam::SoX::Graphics
 {
     class ShaderParameter : public RefCountObject
     {
+
     };
 }

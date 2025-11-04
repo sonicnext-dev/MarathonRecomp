@@ -6,6 +6,6 @@ namespace Sonicteam::SoX::Graphics::DirectionLight
 {
     class DirectionalLight
     {
-    public:
+
     };
 }

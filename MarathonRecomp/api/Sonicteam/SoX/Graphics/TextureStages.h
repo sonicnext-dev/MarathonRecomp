@@ -2,6 +2,8 @@
 
 #include <Marathon.inl>
 
+class MyGraphicsDevice;
+
 namespace Sonicteam::SoX::Graphics
 {
     class TextureStages
