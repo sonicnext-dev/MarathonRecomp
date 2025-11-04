@@ -2,7 +2,9 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/SoX/Engine/DocMode.h>
-#include <Sonicteam/SoX/Engine/Task.h>
+#include <Sonicteam/SoX/Engine/RootTask.h>
+#include <Sonicteam/SoX/Engine/RootGTask.h>
+#include <Sonicteam/SoX/Engine/DocModeExecutor.h>
 
 namespace Sonicteam::SoX::Engine
 {
@@ -12,10 +14,11 @@ namespace Sonicteam::SoX::Engine
         xpointer<void> m_pVftable;
         MARATHON_INSERT_PADDING(4);
         xpointer<DocMode> m_pDocMode;
-        xpointer<Task> m_pRootTask;
-        xpointer<Task> m_pRootGTask;
-        MARATHON_INSERT_PADDING(8);
-        xpointer<Task> m_pDocModeExecutor;
+        xpointer<RootTask> m_pRootTask;
+        xpointer<RootGTask> m_pRootGTask;
+        xpointer<ApplicationXenon> m_pDocCurrentApplication;
+        MARATHON_INSERT_PADDING(0x4);
+        xpointer<DocModeExecutor> m_pDocModeExecutor;
         MARATHON_INSERT_PADDING(0x3C);
 
         template <typename T = DocMode>
