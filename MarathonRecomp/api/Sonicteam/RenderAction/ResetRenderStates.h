@@ -5,8 +5,7 @@
 
 namespace Sonicteam::RenderAction
 {
-    class ResetRenderStates : public MyRenderProcess
-    {
+    class ResetRenderStates : public MyRenderProcess {};
 
-    };
+    MARATHON_ASSERT_SIZEOF(ResetRenderStates, 0x38);
 }

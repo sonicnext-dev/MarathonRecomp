@@ -7,6 +7,9 @@ namespace Sonicteam::RenderAction
 {
     class SetScreen : public MyRenderProcess
     {
-
+    public:
+        MARATHON_INSERT_PADDING(0xC);
     };
+
+    MARATHON_ASSERT_SIZEOF(SetScreen, 0x44);
 }

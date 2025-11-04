@@ -7,6 +7,9 @@ namespace Sonicteam::RenderAction
 {
     class LockBlendMode : public MyRenderProcess
     {
-
+    public:
+        MARATHON_INSERT_PADDING(0x4);
     };
+
+    MARATHON_ASSERT_SIZEOF(LockBlendMode, 0x3C);
 }

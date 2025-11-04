@@ -5,8 +5,7 @@
 
 namespace Sonicteam::RenderAction
 {
-    class ApplySceneParams : public MyRenderProcess
-    {
+    class ApplySceneParams : public MyRenderProcess {};
 
-    };
+    MARATHON_ASSERT_SIZEOF(ApplySceneParams, 0x38);
 }

@@ -5,8 +5,7 @@
 
 namespace Sonicteam::RenderAction
 {
-    class ResetScissorRect : public MyRenderProcess
-    {
+    class ResetScissorRect : public MyRenderProcess {};
 
-    };
+    MARATHON_ASSERT_SIZEOF(ResetScissorRect, 0x38);
 }

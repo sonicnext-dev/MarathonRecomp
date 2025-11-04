@@ -7,6 +7,9 @@ namespace Sonicteam::RenderAction
 {
     class SetUserClipPlaneEnable : public MyRenderProcess
     {
-
+    public:
+        MARATHON_INSERT_PADDING(0x8);
     };
+
+    MARATHON_ASSERT_SIZEOF(SetUserClipPlaneEnable, 0x40);
 }
