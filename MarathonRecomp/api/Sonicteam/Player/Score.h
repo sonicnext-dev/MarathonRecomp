@@ -8,7 +8,7 @@ namespace Sonicteam::Player
     {
     public:
         MARATHON_INSERT_PADDING(0x0C);
-        xpointer<Sonicteam::Player::Object> m_pPlayer;
+        xpointer<Object> m_pPlayer;
         MARATHON_INSERT_PADDING(0x38);
     };
     

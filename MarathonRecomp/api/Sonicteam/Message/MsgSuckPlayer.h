@@ -8,7 +8,7 @@ namespace Sonicteam::Message
 {
     struct MsgSuckPlayer : SoX::Message<0x11034A>
     {
-        Sonicteam::SoX::Math::Vector Point;
+        SoX::Math::Vector Point;
     };
 
     MARATHON_ASSERT_OFFSETOF(MsgSuckPlayer, Point, 0x10);

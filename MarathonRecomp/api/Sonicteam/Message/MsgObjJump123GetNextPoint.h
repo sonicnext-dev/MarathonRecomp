@@ -8,8 +8,8 @@ namespace Sonicteam::Message
 {
     struct MsgObjJump123GetNextPoint : SoX::Message<0x10007>
     {
-        Sonicteam::SoX::Math::Quaternion Rotation;
-		Sonicteam::SoX::Math::Vector Position;
+        SoX::Math::Quaternion Rotation;
+		SoX::Math::Vector Position;
     };
 
     MARATHON_ASSERT_OFFSETOF(MsgObjJump123GetNextPoint, Rotation, 0x10);
