@@ -9,7 +9,6 @@ namespace Sonicteam::SoX::Graphics::Xenon
     class SurfaceXenon : public Surface
     {
     public:
-        MARATHON_INSERT_PADDING(0x8);
         be<uint32_t> m_Width;
         be<uint32_t> m_Height;
         xpointer<void> m_pD3DDevice;
