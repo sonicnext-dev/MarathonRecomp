@@ -9,7 +9,7 @@ namespace Sonicteam
     {
     public:
         be<uint32_t> m_PassIndex;
-        xpointer<void> m_Camera;
+        be<uint32_t> m_CameraIndex;
         bool m_Sectors;
         bool m_Drawables;
         be<uint32_t> m_Flags;

@@ -8,7 +8,8 @@ namespace Sonicteam::RenderAction
     class RunCommandBuffer : public MyRenderProcess
     {
     public:
-        MARATHON_INSERT_PADDING(0x8);
+        be<uint32_t> m_CameraIndex;
+        MARATHON_INSERT_PADDING(0x4);
     };
 
     MARATHON_ASSERT_SIZEOF(RunCommandBuffer, 0x40);
