@@ -8,7 +8,7 @@ namespace Sonicteam
     class WorldRenderProcess : public MyRenderProcess
     {
     public:
-        xpointer<SoX::Graphics::Xenon::FrameBufferObjectXenon> m_pFBO;
+        be<uint32_t> m_PassIndex;
         MARATHON_INSERT_PADDING(0x4);
     };
 

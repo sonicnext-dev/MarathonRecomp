@@ -9,7 +9,7 @@ namespace Sonicteam
     class MyRenderProcess : public SoX::Engine::RenderProcess
     {
     public:
-        xpointer<RenderProcess> m_pRenderProcess;
+        xpointer<RenderProcess> m_pParentProcess;
         xpointer<MyGraphicsDevice> m_pMyGraphicsDevice;
     };
 

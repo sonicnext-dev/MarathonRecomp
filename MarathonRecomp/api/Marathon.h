@@ -281,6 +281,8 @@
 #include "Sonicteam/VehicleMissileCtrl.h"
 #include "Sonicteam/VehicleMissileCtrlAutomatic.h"
 #include "Sonicteam/VehicleMissileCtrlSingle.h"
+#include "Sonicteam/WorldRenderProcess.h"
+#include "Sonicteam/WorldRenderTask.h"
 #include "Sonicteam/sonicXmaPlayer.h"
 #include "boost/smart_ptr/make_shared_object.h"
 #include "boost/smart_ptr/shared_ptr.h"

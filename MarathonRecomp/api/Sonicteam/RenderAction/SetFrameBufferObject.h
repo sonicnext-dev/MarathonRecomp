@@ -13,5 +13,5 @@ namespace Sonicteam::RenderAction
     };
 
     MARATHON_ASSERT_SIZEOF(SetFrameBufferObject, 0x44);
-    MARATHON_ASSERT_OFFSETOF(SetFrameBufferObject, m_pRenderProcess, 0x30);
+    MARATHON_ASSERT_OFFSETOF(SetFrameBufferObject, m_pParentProcess, 0x30);
 }
