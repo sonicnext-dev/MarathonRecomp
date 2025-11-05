@@ -24,4 +24,11 @@ namespace Sonicteam::SoX::Engine
             return (T*)m_pDocMode.get();
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(Doc, m_pVftable, 0x00);
+    MARATHON_ASSERT_OFFSETOF(Doc, m_pDocMode, 0x08);
+    MARATHON_ASSERT_OFFSETOF(Doc, m_pRootTask, 0x0C);
+    MARATHON_ASSERT_OFFSETOF(Doc, m_pRootGTask, 0x10);
+    MARATHON_ASSERT_OFFSETOF(Doc, m_pDocModeExecutor, 0x1C);
+    MARATHON_ASSERT_SIZEOF(Doc, 0x5C);
 }

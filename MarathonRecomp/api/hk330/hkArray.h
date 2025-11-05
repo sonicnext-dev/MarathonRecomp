@@ -18,4 +18,8 @@ namespace hk330
             return (T*)(m_data.get() + ((int)i * sizeof(T)));
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(hkArray<void>, m_data, 0x00);
+    MARATHON_ASSERT_OFFSETOF(hkArray<void>, m_size, 0x04);
+    MARATHON_ASSERT_OFFSETOF(hkArray<void>, m_capacityAndFlags, 0x08);
 }

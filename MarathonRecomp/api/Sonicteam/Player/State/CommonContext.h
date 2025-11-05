@@ -38,4 +38,19 @@ namespace Sonicteam::Player::State
             return m_spScore->m_pPlayer->GetInputManager();
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(CommonContext, m_spComboAttackManager, 0x98);
+    MARATHON_ASSERT_OFFSETOF(CommonContext, m_CommonContextIFFlags1, 0x9C);
+    MARATHON_ASSERT_OFFSETOF(CommonContext, m_CommonContextIFFlags2, 0xA0);
+    MARATHON_ASSERT_OFFSETOF(CommonContext, m_CommonContextIFFlags3, 0xA4);
+    MARATHON_ASSERT_OFFSETOF(CommonContext, m_ExportPostureRequestFlags, 0xA8);
+    MARATHON_ASSERT_OFFSETOF(CommonContext, m_ExportWeaponRequestFlags, 0xAC);
+    MARATHON_ASSERT_OFFSETOF(CommonContext, m_PostureFlags, 0xC4);
+    MARATHON_ASSERT_OFFSETOF(CommonContext, m_ExternalFlags, 0xC8);
+    MARATHON_ASSERT_OFFSETOF(CommonContext, m_VehicleFlags, 0xD0);
+    MARATHON_ASSERT_OFFSETOF(CommonContext, m_AmigoFlags, 0xD4);
+    MARATHON_ASSERT_OFFSETOF(CommonContext, m_spScore, 0x128);
+    MARATHON_ASSERT_OFFSETOF(CommonContext, m_spInputListenerNormal, 0x138);
+    MARATHON_ASSERT_OFFSETOF(CommonContext, m_spInputListenerAmigo, 0x140);
+    MARATHON_ASSERT_SIZEOF(CommonContext, 0x230);
 }

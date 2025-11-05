@@ -12,4 +12,7 @@ namespace Sonicteam::SoX
         stdx::string m_FilePath;
         MARATHON_INSERT_PADDING(0x3C);
     };
+
+    MARATHON_ASSERT_OFFSETOF(IResource, m_FilePath, 0x0C);
+    MARATHON_ASSERT_SIZEOF(IResource, 0x64);
 }

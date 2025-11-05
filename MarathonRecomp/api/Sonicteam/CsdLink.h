@@ -30,4 +30,10 @@ namespace Sonicteam
             return GuestToHostFunction<int>(m_pVftable->fpUpdate.get(), this, deltaTime);
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(CsdLink, m_pVftable, 0x00);
+    MARATHON_ASSERT_OFFSETOF(CsdLink, m_pNext, 0x04);
+    MARATHON_ASSERT_OFFSETOF(CsdLink, m_pPrevious, 0x08);
+    MARATHON_ASSERT_OFFSETOF(CsdLink, m_Priority, 0x0C);
+    MARATHON_ASSERT_SIZEOF(CsdLink, 0x18);
 }

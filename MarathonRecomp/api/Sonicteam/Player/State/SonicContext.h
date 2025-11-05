@@ -68,4 +68,26 @@ namespace Sonicteam::Player::State
         be<Gem> m_CurrentGem;
         MARATHON_INSERT_PADDING(0x58);
     };
+
+    MARATHON_ASSERT_OFFSETOF(SonicContext, m_CurrentGemSprite, 0x230);
+    MARATHON_ASSERT_OFFSETOF(SonicContext, m_Gauge, 0x234);
+    MARATHON_ASSERT_OFFSETOF(SonicContext, m_HomingLockOn, 0x23C);
+    MARATHON_ASSERT_OFFSETOF(SonicContext, m_DisablePlayerMovement, 0x23D);
+    MARATHON_ASSERT_OFFSETOF(SonicContext, m_AntigravityHitBox, 0x23E);
+    MARATHON_ASSERT_OFFSETOF(SonicContext, m_Field23F, 0x23F);
+    MARATHON_ASSERT_OFFSETOF(SonicContext, m_BoundAttackHitBox, 0x240);
+    MARATHON_ASSERT_OFFSETOF(SonicContext, m_Field241, 0x241);
+    MARATHON_ASSERT_OFFSETOF(SonicContext, m_Shrink, 0x242);
+    MARATHON_ASSERT_OFFSETOF(SonicContext, m_ThunderGuard, 0x243);
+    MARATHON_ASSERT_OFFSETOF(SonicContext, m_Tornado, 0x244);
+    MARATHON_ASSERT_OFFSETOF(SonicContext, m_FPS, 0x245);
+    MARATHON_ASSERT_OFFSETOF(SonicContext, m_ThrowGem, 0x246);
+    MARATHON_ASSERT_OFFSETOF(SonicContext, m_SlowTime, 0x247);
+    MARATHON_ASSERT_OFFSETOF(SonicContext, m_MachAura, 0x248);
+    MARATHON_ASSERT_OFFSETOF(SonicContext, m_GemsEnabled, 0x249);
+    MARATHON_ASSERT_OFFSETOF(SonicContext, m_Field24A, 0x24A);
+    MARATHON_ASSERT_OFFSETOF(SonicContext, m_Field24B, 0x24B);
+    MARATHON_ASSERT_OFFSETOF(SonicContext, m_HomingFlip, 0x24C);
+    MARATHON_ASSERT_OFFSETOF(SonicContext, m_CurrentGem, 0x250);
+    MARATHON_ASSERT_SIZEOF(SonicContext, 0x2B0);
 }

@@ -11,4 +11,7 @@ namespace Sonicteam::System::Diagnostics
     public:
         be<uint64_t> m_LastFrequency;
     };
+
+    MARATHON_ASSERT_OFFSETOF(Performance, m_LastFrequency, 0x00);
+    MARATHON_ASSERT_SIZEOF(Performance, 8);
 }

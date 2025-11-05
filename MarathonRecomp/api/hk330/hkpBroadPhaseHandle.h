@@ -10,4 +10,6 @@ namespace hk330
     public:
         be<uint32_t> m_id;
     };
+
+    MARATHON_ASSERT_OFFSETOF(hkpBroadPhaseHandle, m_id, 0x00);
 }

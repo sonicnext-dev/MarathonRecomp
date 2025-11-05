@@ -22,4 +22,6 @@ namespace Sonicteam::Message
             Flags = flags;
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(MsgHUDMainMenuTransition, Flags, 0x08);
 }

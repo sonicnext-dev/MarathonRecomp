@@ -17,4 +17,7 @@ namespace Sonicteam
             return (GameImp*)m_pGame.get();
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(GameMode, m_pGame, 0x6C);
+    MARATHON_ASSERT_SIZEOF(GameMode, 0x8C);
 }

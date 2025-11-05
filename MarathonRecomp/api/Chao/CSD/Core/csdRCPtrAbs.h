@@ -18,4 +18,7 @@ namespace Chao::CSD
         xpointer<Vftable> m_pVftable;
         xpointer<RCObject> m_pObject;
     };
+
+    MARATHON_ASSERT_OFFSETOF(RCPtrAbs, m_pVftable, 0x00);
+    MARATHON_ASSERT_OFFSETOF(RCPtrAbs, m_pObject, 0x04);
 }

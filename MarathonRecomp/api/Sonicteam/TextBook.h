@@ -49,4 +49,18 @@ namespace Sonicteam
             return nullptr;
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(TextBook::Entry, Field00, 0x00);
+    MARATHON_ASSERT_OFFSETOF(TextBook::Entry, Previous, 0x04);
+    MARATHON_ASSERT_OFFSETOF(TextBook::Entry, Next, 0x08);
+    MARATHON_ASSERT_OFFSETOF(TextBook::Entry, Name, 0x0C);
+    MARATHON_ASSERT_OFFSETOF(TextBook::Entry, spTextCard, 0x28);
+    MARATHON_ASSERT_OFFSETOF(TextBook::Entry, Field31, 0x31);
+    MARATHON_ASSERT_SIZEOF(TextBook::Entry, 0x34);
+
+    MARATHON_ASSERT_OFFSETOF(TextBook, m_spResource, 0x68);
+    MARATHON_ASSERT_OFFSETOF(TextBook, m_Name, 0x70);
+    MARATHON_ASSERT_OFFSETOF(TextBook, m_pRootEntry, 0x90);
+    MARATHON_ASSERT_OFFSETOF(TextBook, m_EntryCount, 0x94);
+    MARATHON_ASSERT_SIZEOF(TextBook, 0x98);
 }

@@ -21,4 +21,10 @@ namespace Sonicteam::SoX::Physics::Havok
         Math::Vector m_Translation;
         MARATHON_INSERT_PADDING(0x0C);
     };
+
+    MARATHON_ASSERT_OFFSETOF(EntityHavok, m_pVftable, 0x00);
+    MARATHON_ASSERT_OFFSETOF(EntityHavok, m_pRigidBody, 0x10);
+    MARATHON_ASSERT_OFFSETOF(EntityHavok, m_spWorldHavok, 0x14);
+    MARATHON_ASSERT_OFFSETOF(EntityHavok, m_Rotation, 0x20);
+    MARATHON_ASSERT_OFFSETOF(EntityHavok, m_Translation, 0x30);
 }

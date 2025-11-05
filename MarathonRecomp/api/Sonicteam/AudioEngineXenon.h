@@ -14,6 +14,10 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(8);
         be<float> m_MusicVolume;
         be<float> m_EffectsVolume;
-        MARATHON_INSERT_PADDING(0x14);
+        MARATHON_INSERT_PADDING(0x18);
     };
+
+    MARATHON_ASSERT_OFFSETOF(AudioEngineXenon, m_MusicVolume, 0x0C);
+    MARATHON_ASSERT_OFFSETOF(AudioEngineXenon, m_EffectsVolume, 0x10);
+    MARATHON_ASSERT_SIZEOF(AudioEngineXenon, 0x2C);
 }   

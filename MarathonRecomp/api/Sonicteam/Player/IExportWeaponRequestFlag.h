@@ -9,4 +9,7 @@ namespace Sonicteam::Player
     public:
         xpointer<void> m_pVftable;
     };
+
+    MARATHON_ASSERT_OFFSETOF(IExportWeaponRequestFlag, m_pVftable, 0x00);
+    MARATHON_ASSERT_SIZEOF(IExportWeaponRequestFlag, 4);
 }

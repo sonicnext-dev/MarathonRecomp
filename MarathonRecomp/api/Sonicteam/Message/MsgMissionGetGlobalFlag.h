@@ -11,4 +11,7 @@ namespace Sonicteam::Message
 
         MsgMissionGetGlobalFlag(uint32_t flagId) : FlagID(flagId) {}
     };
+
+    MARATHON_ASSERT_OFFSETOF(MsgMissionGetGlobalFlag, FlagID, 0x04);
+    MARATHON_ASSERT_OFFSETOF(MsgMissionGetGlobalFlag, FlagValue, 0x08);
 }

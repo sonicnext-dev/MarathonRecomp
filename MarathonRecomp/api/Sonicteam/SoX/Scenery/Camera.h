@@ -56,4 +56,7 @@ namespace Sonicteam::SoX::Scenery
             return GuestToHostFunction<int>(m_pVftable->fpUpdate.get(), unknown.get(), this);
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(Camera, m_pVftable, 0x00);
+    MARATHON_ASSERT_SIZEOF(Camera, 4);
 }

@@ -17,4 +17,7 @@ namespace Sonicteam::SoX::Physics
         be<uint32_t> m_ShapeType;
         be<float> m_ShapeVolume; // w * h * ... * FLT_MIN
     };
+
+    MARATHON_ASSERT_OFFSETOF(Shape, m_ShapeType, 0x08);
+    MARATHON_ASSERT_OFFSETOF(Shape, m_ShapeVolume, 0x0C);
 }

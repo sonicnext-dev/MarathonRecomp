@@ -36,4 +36,18 @@ namespace Sonicteam
         be<float> m_Field98;
         bool m_IsIntroAnimStarted;
     };
+
+    MARATHON_ASSERT_OFFSETOF(HUDButtonWindowNextObserver, m_pHUDButtonWindow, 0x1C);
+    MARATHON_ASSERT_SIZEOF(HUDButtonWindowNextObserver, 0x24);
+
+    MARATHON_ASSERT_OFFSETOF(HUDButtonWindow, m_pTextBook, 0x54);
+    MARATHON_ASSERT_OFFSETOF(HUDButtonWindow, m_pCsdResource, 0x58);
+    MARATHON_ASSERT_OFFSETOF(HUDButtonWindow, m_NextObserver, 0x5C);
+    MARATHON_ASSERT_OFFSETOF(HUDButtonWindow, m_Field80, 0x80);
+    MARATHON_ASSERT_OFFSETOF(HUDButtonWindow, m_spTextCard, 0x84);
+    MARATHON_ASSERT_OFFSETOF(HUDButtonWindow, m_spTextEntity, 0x8C);
+    MARATHON_ASSERT_OFFSETOF(HUDButtonWindow, m_pHudTextParts, 0x94);
+    MARATHON_ASSERT_OFFSETOF(HUDButtonWindow, m_Field98, 0x98);
+    MARATHON_ASSERT_OFFSETOF(HUDButtonWindow, m_IsIntroAnimStarted, 0x9C);
+    MARATHON_ASSERT_SIZEOF(HUDButtonWindow, 0xA0);
 }

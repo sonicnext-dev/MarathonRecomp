@@ -27,4 +27,11 @@ namespace Sonicteam::Player
         SoX::RefSharedPointer<SoX::Physics::PhantomListener> m_spPhantomListener;
         MARATHON_INSERT_PADDING(0x3C);
     };
+
+    MARATHON_ASSERT_OFFSETOF(Zock, m_spWorld, 0x30);
+    MARATHON_ASSERT_OFFSETOF(Zock, m_spRootFrame, 0x34);
+    MARATHON_ASSERT_OFFSETOF(Zock, m_spPhantomA, 0x38);
+    MARATHON_ASSERT_OFFSETOF(Zock, m_spPhantomB, 0x5C);
+    MARATHON_ASSERT_OFFSETOF(Zock, m_spPhantomListener, 0xA0);
+    MARATHON_ASSERT_SIZEOF(Zock, 0xE0);
 }

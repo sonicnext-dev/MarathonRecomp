@@ -10,5 +10,9 @@ namespace Sonicteam
     public:
         MARATHON_INSERT_PADDING(0x188);
         xpointer<HudTextParts> m_pHudTextRoot;
+        MARATHON_INSERT_PADDING(8);
     };
+
+    MARATHON_ASSERT_OFFSETOF(HUDOption, m_pHudTextRoot, 0x1DC);
+    MARATHON_ASSERT_SIZEOF(HUDOption, 0x1E8);
 }

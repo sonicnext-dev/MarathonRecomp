@@ -119,4 +119,48 @@ namespace Chao::CSD
         be<MotionRepeatType> m_MotionRepeatType;
         MARATHON_INSERT_PADDING(0x2C);
     };
+
+    MARATHON_ASSERT_OFFSETOF(CastLink, ChildCastIndex, 0x00);
+    MARATHON_ASSERT_OFFSETOF(CastLink, SiblingCastIndex, 0x04);
+
+    MARATHON_ASSERT_OFFSETOF(CastNode, CastCount, 0x00);
+    MARATHON_ASSERT_OFFSETOF(CastNode, pCasts, 0x08);
+    MARATHON_ASSERT_OFFSETOF(CastNode, RootCastIndex, 0x10);
+    MARATHON_ASSERT_OFFSETOF(CastNode, pCastLinks, 0x18);
+
+    MARATHON_ASSERT_OFFSETOF(CastIndex, pCastName, 0x00);
+    MARATHON_ASSERT_OFFSETOF(CastIndex, CastNodeIndex, 0x08);
+    MARATHON_ASSERT_OFFSETOF(CastIndex, CastIndex, 0x0C);
+
+    MARATHON_ASSERT_OFFSETOF(Scene, FPS, 0x08);
+    MARATHON_ASSERT_OFFSETOF(Scene, CastNodeCount, 0x30);
+    MARATHON_ASSERT_OFFSETOF(Scene, pCastNodes, 0x38);
+    MARATHON_ASSERT_OFFSETOF(Scene, CastCount, 0x40);
+    MARATHON_ASSERT_OFFSETOF(Scene, pCastIndices, 0x48);
+    MARATHON_ASSERT_OFFSETOF(Scene, AnimationCount, 0x50);
+    MARATHON_ASSERT_OFFSETOF(Scene, pAnimationKeyFrameDataList, 0x58);
+    MARATHON_ASSERT_OFFSETOF(Scene, pAnimationDictionary, 0x60);
+    MARATHON_ASSERT_OFFSETOF(Scene, AspectRatio, 0x68);
+    MARATHON_ASSERT_OFFSETOF(Scene, pAnimationFrameDataList, 0x70);
+
+    MARATHON_ASSERT_OFFSETOF(SceneIndex, pSceneName, 0x00);
+    MARATHON_ASSERT_OFFSETOF(SceneIndex, SceneIndex, 0x08);
+
+    MARATHON_ASSERT_OFFSETOF(SceneNodeIndex, pSceneNodeName, 0x00);
+    MARATHON_ASSERT_OFFSETOF(SceneNodeIndex, SceneNodeIndex, 0x04);
+
+    MARATHON_ASSERT_OFFSETOF(SceneNode, SceneCount, 0x00);
+    MARATHON_ASSERT_OFFSETOF(SceneNode, pScenes, 0x08);
+    MARATHON_ASSERT_OFFSETOF(SceneNode, pSceneIndices, 0x10);
+    MARATHON_ASSERT_OFFSETOF(SceneNode, SceneNodeCount, 0x18);
+    MARATHON_ASSERT_OFFSETOF(SceneNode, pSceneNodes, 0x20);
+    MARATHON_ASSERT_OFFSETOF(SceneNode, pSceneNodeIndices, 0x28);
+
+    MARATHON_ASSERT_OFFSETOF(CScene, m_PrevMotionFrame, 0x7C);
+    MARATHON_ASSERT_OFFSETOF(CScene, m_MotionFrame, 0x80);
+    MARATHON_ASSERT_OFFSETOF(CScene, m_MotionSpeed, 0x84);
+    MARATHON_ASSERT_OFFSETOF(CScene, m_MotionStartFrame, 0x88);
+    MARATHON_ASSERT_OFFSETOF(CScene, m_MotionEndFrame, 0x8C);
+    MARATHON_ASSERT_OFFSETOF(CScene, m_MotionDisableFlag, 0x9C);
+    MARATHON_ASSERT_OFFSETOF(CScene, m_MotionRepeatType, 0xB0);
 }

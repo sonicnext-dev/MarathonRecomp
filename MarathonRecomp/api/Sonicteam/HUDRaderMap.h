@@ -5,4 +5,6 @@
 namespace Sonicteam
 {
     class HUDRaderMap : public HUDPopupScreen {};
+
+    MARATHON_ASSERT_SIZEOF(HUDRaderMap, 0xB0);
 }

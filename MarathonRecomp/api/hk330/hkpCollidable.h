@@ -14,4 +14,7 @@ namespace hk330
         MARATHON_INSERT_PADDING(0x28);
         be<float> m_allowedPenetrationDepth;
     };
+
+    MARATHON_ASSERT_OFFSETOF(hkpCollidable, m_broadPhaseHandle, 0x14);
+    MARATHON_ASSERT_OFFSETOF(hkpCollidable, m_allowedPenetrationDepth, 0x48);
 }

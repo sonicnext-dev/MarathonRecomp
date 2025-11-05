@@ -31,4 +31,8 @@ namespace Sonicteam::SoX::Audio
             GuestToHostFunction<int>(((Vftable*)m_pVftable.get())->fpSetPause, this, isPaused);
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(Cue, m_Field14, 0x14);
+    MARATHON_ASSERT_OFFSETOF(Cue, m_pPlayer, 0x28);
+    MARATHON_ASSERT_SIZEOF(Cue, 0x2C);
 }

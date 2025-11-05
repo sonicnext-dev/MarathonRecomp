@@ -33,4 +33,8 @@ namespace Sonicteam::SoX
             m_ReferenceCount = m_ReferenceCount + 1;
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(RefCountObject, m_pVftable, 0x00);
+    MARATHON_ASSERT_OFFSETOF(RefCountObject, m_ReferenceCount, 0x04);
+    MARATHON_ASSERT_SIZEOF(RefCountObject, 8);
 }

@@ -17,9 +17,9 @@ namespace Sonicteam::SoX::Physics
         struct Vftable : public MessageReceiver::Vftable
         {
             MARATHON_INSERT_PADDING(0x38);
-            be<uint32_t> InitializeToWorld;
+            be<uint32_t> fpInitializeToWorld;
             MARATHON_INSERT_PADDING(0x18);
-            be<uint32_t> SetPhantomListener;
+            be<uint32_t> fpSetPhantomListener;
         };
 
         MARATHON_INSERT_PADDING(0x10);
@@ -30,13 +30,18 @@ namespace Sonicteam::SoX::Physics
         void InitializeToWorld(RefSharedPointer<World>& world)
         {
             auto vft = static_cast<Vftable*>(MessageReceiver::m_pVftable.get());
-            GuestToHostFunction<void>(vft->InitializeToWorld, this, &world);
+            GuestToHostFunction<void>(vft->fpInitializeToWorld, this, &world);
         }
 
         void SetPhantomListener(RefSharedPointer<PhantomListener>& phantomListener)
         {
             auto vft = static_cast<Vftable*>(MessageReceiver::m_pVftable.get());
-            GuestToHostFunction<void>(vft->SetPhantomListener, this, &phantomListener);
+            GuestToHostFunction<void>(vft->fpSetPhantomListener, this, &phantomListener);
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(Entity, m_spPhantomListener, 0x1C);
+    MARATHON_ASSERT_OFFSETOF(Entity, m_pReceiver, 0x20);
+    MARATHON_ASSERT_OFFSETOF(Entity, m_spShape, 0x24);
+    MARATHON_ASSERT_SIZEOF(Entity, 0x28);
 }

@@ -1307,14 +1307,14 @@ PPC_FUNC(sub_82352220)
     if (g_aspectRatio > WIDE_ASPECT_RATIO)
         scale = g_aspectRatio / WIDE_ASPECT_RATIO;
 
-    pCObjBalloonIconDrawable->m_Vertices[0].X = -1.0f / scale;
-    pCObjBalloonIconDrawable->m_Vertices[0].Y = 0.0f;
-    pCObjBalloonIconDrawable->m_Vertices[1].X = -1.0f / scale;
-    pCObjBalloonIconDrawable->m_Vertices[1].Y = g_aspectRatio / scale;
-    pCObjBalloonIconDrawable->m_Vertices[2].X = 1.0f / scale;
-    pCObjBalloonIconDrawable->m_Vertices[2].Y = 0.0f;
-    pCObjBalloonIconDrawable->m_Vertices[3].X = 1.0f / scale;
-    pCObjBalloonIconDrawable->m_Vertices[3].Y = g_aspectRatio / scale;
+    pCObjBalloonIconDrawable->m_aVertices[0].X = -1.0f / scale;
+    pCObjBalloonIconDrawable->m_aVertices[0].Y = 0.0f;
+    pCObjBalloonIconDrawable->m_aVertices[1].X = -1.0f / scale;
+    pCObjBalloonIconDrawable->m_aVertices[1].Y = g_aspectRatio / scale;
+    pCObjBalloonIconDrawable->m_aVertices[2].X = 1.0f / scale;
+    pCObjBalloonIconDrawable->m_aVertices[2].Y = 0.0f;
+    pCObjBalloonIconDrawable->m_aVertices[3].X = 1.0f / scale;
+    pCObjBalloonIconDrawable->m_aVertices[3].Y = g_aspectRatio / scale;
 
     __imp__sub_82352220(ctx, base);
 }

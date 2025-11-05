@@ -17,4 +17,8 @@ namespace hk330
 
         hkArray<CollisionEntry> m_collisionEntries;
     };
+
+    MARATHON_ASSERT_OFFSETOF(hkpLinkedCollidable::CollisionEntry, m_partner, 0x04);
+
+    MARATHON_ASSERT_OFFSETOF(hkpLinkedCollidable, m_collisionEntries, 0x4C);
 }

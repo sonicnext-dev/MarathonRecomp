@@ -55,4 +55,17 @@ namespace Sonicteam
             return nullptr;
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(HudTextParts, m_pNext, 0x08);
+    MARATHON_ASSERT_OFFSETOF(HudTextParts, m_pDoc, 0x0C);
+    MARATHON_ASSERT_OFFSETOF(HudTextParts, m_spTextCard, 0x10);
+    MARATHON_ASSERT_OFFSETOF(HudTextParts, m_spTextEntity, 0x18);
+    MARATHON_ASSERT_OFFSETOF(HudTextParts, m_pCsdObject, 0x20);
+    MARATHON_ASSERT_OFFSETOF(HudTextParts, m_SceneName, 0x24);
+    MARATHON_ASSERT_OFFSETOF(HudTextParts, m_CastName, 0x40);
+    MARATHON_ASSERT_OFFSETOF(HudTextParts, m_Priority, 0x5C);
+    MARATHON_ASSERT_OFFSETOF(HudTextParts, m_OffsetX, 0x60);
+    MARATHON_ASSERT_OFFSETOF(HudTextParts, m_OffsetY, 0x64);
+    MARATHON_ASSERT_OFFSETOF(HudTextParts, m_AlignmentFlags, 0x6C);
+    MARATHON_ASSERT_SIZEOF(HudTextParts, 0x70);
 }

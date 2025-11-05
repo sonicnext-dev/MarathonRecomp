@@ -11,4 +11,6 @@ namespace Sonicteam::Message
 
         MsgHUDButtonWindowChangeButtons(uint32_t buttonType = 0) : ButtonType(buttonType) {}
     };
+
+    MARATHON_ASSERT_OFFSETOF(MsgHUDButtonWindowChangeButtons, ButtonType, 0x04);
 }

@@ -19,4 +19,8 @@ namespace Sonicteam::Camera
             return (GameImp*)m_spGame.get();
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(CameraMode, m_spGame, 0x04);
+    MARATHON_ASSERT_OFFSETOF(CameraMode, m_pCameraInputListener, 0x0C);
+    MARATHON_ASSERT_SIZEOF(CameraMode, 0x28);
 }

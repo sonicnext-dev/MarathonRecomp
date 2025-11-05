@@ -22,4 +22,7 @@ namespace Sonicteam::SoX
             return (T*)m_pDocMode.get();
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(Component, m_pDocMode, 0x04);
+    MARATHON_ASSERT_SIZEOF(Component, 0x20);
 }

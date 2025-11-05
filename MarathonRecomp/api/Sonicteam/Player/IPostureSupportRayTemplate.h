@@ -17,4 +17,10 @@ namespace Sonicteam::Player
         boost::shared_ptr<TCollisionListener> m_spCollisionListener;
         xpointer<Player::RootFrame> m_pRootFrame;
     };
+
+    MARATHON_ASSERT_OFFSETOF(IPostureSupportRayTemplate<void>, m_pVftable, 0x00);
+    MARATHON_ASSERT_OFFSETOF(IPostureSupportRayTemplate<void>, m_spWorld, 0x04);
+    MARATHON_ASSERT_OFFSETOF(IPostureSupportRayTemplate<void>, m_spCollisionListener, 0x08);
+    MARATHON_ASSERT_OFFSETOF(IPostureSupportRayTemplate<void>, m_pRootFrame, 0x10);
+    MARATHON_ASSERT_SIZEOF(IPostureSupportRayTemplate<void>, 0x14);
 }

@@ -32,4 +32,17 @@ namespace Sonicteam
         be<float> m_Y;
         MARATHON_INSERT_PADDING(8);
     };
+
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_pCsdObject, 0x4C);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_pMainTexture, 0x50);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_pMaskTexture, 0x54);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_pTechnique, 0x58);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_SceneName, 0x5C);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_SpriteName, 0x78);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_State, 0x94);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_IsClosing, 0x99);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_ClosingTime, 0x9C);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_X, 0xA0);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_Y, 0xA4);
+    MARATHON_ASSERT_SIZEOF(HUDPopupScreen, 0xB0);
 }

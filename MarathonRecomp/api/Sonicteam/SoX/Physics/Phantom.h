@@ -6,4 +6,6 @@
 namespace Sonicteam::SoX::Physics
 {
     class Phantom : public Entity {};
+
+    MARATHON_ASSERT_SIZEOF(Phantom, 0x28);
 }

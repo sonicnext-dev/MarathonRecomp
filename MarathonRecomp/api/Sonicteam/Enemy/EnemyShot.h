@@ -9,4 +9,6 @@ namespace Sonicteam::Enemy
     public:
         MARATHON_INSERT_PADDING(0x1C);
     };
+
+    MARATHON_ASSERT_SIZEOF(EnemyShot, 0x68);
 }

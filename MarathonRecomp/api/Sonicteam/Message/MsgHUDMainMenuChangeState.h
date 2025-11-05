@@ -9,4 +9,6 @@ namespace Sonicteam::Message
     {
         be<uint32_t> State;
     };
+
+    MARATHON_ASSERT_OFFSETOF(MsgHUDMainMenuChangeState, State, 0x04);
 }

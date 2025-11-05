@@ -11,4 +11,6 @@ namespace Sonicteam::SoX::Graphics
         MARATHON_INSERT_PADDING(0x18); // SimpleNode
         MARATHON_INSERT_PADDING(0x2C);
     };
+
+    MARATHON_ASSERT_SIZEOF(Frame, 0x4C);
 }

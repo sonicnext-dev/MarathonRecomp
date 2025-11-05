@@ -23,4 +23,8 @@ namespace Chao::CSD
         RCPtr<CTexList> m_rcTexList;
         MARATHON_INSERT_PADDING(0x1C);
     };
+
+    MARATHON_ASSERT_OFFSETOF(Project, pRootNode, 0x00);
+
+    MARATHON_ASSERT_OFFSETOF(CProject, m_rcTexList, 0x28);
 }

@@ -22,4 +22,6 @@ namespace Sonicteam::Message
             CursorIndex = cursorIndex;
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(MsgHUDMainMenuSetCursor, CursorIndex, 0x08);
 }

@@ -18,4 +18,6 @@ namespace hk330
         be<uint32_t> m_FilterType;
         MARATHON_INSERT_PADDING(0x0C);
     };
+
+    MARATHON_ASSERT_OFFSETOF(hkpCollisionFilter, m_FilterType, 0x18);
 }

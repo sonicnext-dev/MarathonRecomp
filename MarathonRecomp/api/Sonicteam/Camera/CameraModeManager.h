@@ -20,5 +20,11 @@ namespace Sonicteam::Camera
         boost::shared_ptr<CameraMode> m_spCameraMode;
         MARATHON_INSERT_PADDING(8);
         stdx::vector<UnknownStruct> m_vUnkStructs;
+        MARATHON_INSERT_PADDING(4);
     };
+
+    MARATHON_ASSERT_OFFSETOF(CameraModeManager, m_pCameraman, 0x00);
+    MARATHON_ASSERT_OFFSETOF(CameraModeManager, m_spCameraMode, 0x04);
+    MARATHON_ASSERT_OFFSETOF(CameraModeManager, m_vUnkStructs, 0x14);
+    MARATHON_ASSERT_SIZEOF(CameraModeManager, 0x28);
 }

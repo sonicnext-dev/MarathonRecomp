@@ -14,4 +14,9 @@ namespace Sonicteam::SoX::Graphics
         be<float> m_Field80;
         MARATHON_INSERT_PADDING(0x4C);
     };
+
+    MARATHON_ASSERT_OFFSETOF(Device, m_pVftable, 0x00);
+    MARATHON_ASSERT_OFFSETOF(Device, m_Field40, 0x40);
+    MARATHON_ASSERT_OFFSETOF(Device, m_Field80, 0x80);
+    MARATHON_ASSERT_SIZEOF(Device, 0xD0);
 }

@@ -16,4 +16,12 @@ namespace Sonicteam
         xpointer<void> m_Field78;
         be<uint32_t> m_CropCount;
     };
+
+    MARATHON_ASSERT_OFFSETOF(TextFontPicture, m_pResource, 0x64);
+    MARATHON_ASSERT_OFFSETOF(TextFontPicture, m_pTexture, 0x68);
+    MARATHON_ASSERT_OFFSETOF(TextFontPicture, m_TextureWidth, 0x6C);
+    MARATHON_ASSERT_OFFSETOF(TextFontPicture, m_TextureHeight, 0x70);
+    MARATHON_ASSERT_OFFSETOF(TextFontPicture, m_Field74, 0x74);
+    MARATHON_ASSERT_OFFSETOF(TextFontPicture, m_Field78, 0x78);
+    MARATHON_ASSERT_OFFSETOF(TextFontPicture, m_CropCount, 0x7C);
 }
