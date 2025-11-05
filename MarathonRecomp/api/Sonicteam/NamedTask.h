@@ -11,4 +11,7 @@ namespace Sonicteam
     public:
         stdx::string m_Name;
     };
+
+    MARATHON_ASSERT_OFFSETOF(NamedTask, m_Name, 0x4C);
+    MARATHON_ASSERT_SIZEOF(NamedTask, 0x68);
 }

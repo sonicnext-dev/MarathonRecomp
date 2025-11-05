@@ -12,4 +12,6 @@ namespace Sonicteam
     public:
         MARATHON_INSERT_PADDING(0x1C);
     };
+
+    MARATHON_ASSERT_SIZEOF(CsdManager, 0x2C);
 }

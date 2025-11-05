@@ -30,5 +30,13 @@ namespace Sonicteam
         be<uint32_t> m_SelectedIndex;
         MARATHON_INSERT_PADDING(0x20);
         be<uint32_t> m_CastIndex;
+        MARATHON_INSERT_PADDING(4);
     };
+
+    MARATHON_ASSERT_OFFSETOF(TitleTask, m_State, 0x4C);
+    MARATHON_ASSERT_OFFSETOF(TitleTask, m_MovieWaitTime, 0x5C);
+    MARATHON_ASSERT_OFFSETOF(TitleTask, m_Field60, 0x60);
+    MARATHON_ASSERT_OFFSETOF(TitleTask, m_SelectedIndex, 0x7C);
+    MARATHON_ASSERT_OFFSETOF(TitleTask, m_CastIndex, 0xA0);
+    MARATHON_ASSERT_SIZEOF(TitleTask, 0xA8);
 }

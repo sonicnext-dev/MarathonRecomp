@@ -16,4 +16,11 @@ namespace Sonicteam
         be<float> m_Time;
         bool m_IsAboveAlertThreshold;
     };
+
+    MARATHON_ASSERT_OFFSETOF(HUDLimitTime, m_pCsdObject, 0x54);
+    MARATHON_ASSERT_OFFSETOF(HUDLimitTime, m_X, 0x58);
+    MARATHON_ASSERT_OFFSETOF(HUDLimitTime, m_Y, 0x5C);
+    MARATHON_ASSERT_OFFSETOF(HUDLimitTime, m_Time, 0x90);
+    MARATHON_ASSERT_OFFSETOF(HUDLimitTime, m_IsAboveAlertThreshold, 0x94);
+    MARATHON_ASSERT_SIZEOF(HUDLimitTime, 0x98);
 }

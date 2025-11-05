@@ -45,6 +45,16 @@ namespace Sonicteam
         be<uint32_t> m_PressedButtons;
         MARATHON_INSERT_PADDING(0x18);
         xpointer<Actor> m_Field298;
-        xpointer<Player::Object> m_SelectCharacters[9];
+        xpointer<Player::Object> m_apSelectCharacters[9];
+        MARATHON_INSERT_PADDING(0x38);
     };
+
+    MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_State, 0x4C);
+    MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_pHUDMainMenu, 0x74);
+    MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_pButtonWindowTask, 0x98);
+    MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_MainMenuSelectedIndex, 0xA0);
+    MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_PressedButtons, 0x27C);
+    MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_Field298, 0x298);
+    MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_apSelectCharacters, 0x29C);
+    MARATHON_ASSERT_SIZEOF(MainMenuTask, 0x2F8);
 }

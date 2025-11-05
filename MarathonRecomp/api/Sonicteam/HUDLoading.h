@@ -18,4 +18,7 @@ namespace Sonicteam
         be<uint32_t> m_Flags;
         MARATHON_INSERT_PADDING(8);
     };
+
+    MARATHON_ASSERT_OFFSETOF(HUDLoading, m_Flags, 0xB0);
+    MARATHON_ASSERT_SIZEOF(HUDLoading, 0xBC);
 }

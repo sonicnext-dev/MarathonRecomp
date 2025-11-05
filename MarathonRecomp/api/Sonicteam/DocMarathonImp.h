@@ -17,5 +17,11 @@ namespace Sonicteam
         bool m_VFrame;
         MARATHON_INSERT_PADDING(0x55B58);
         be<uint32_t> m_aPadIDs[4];
+        MARATHON_INSERT_PADDING(0x2C);
     };
+
+    MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_vspInputManager, 0x9C);
+    MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_VFrame, 0xD0);
+    MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_aPadIDs, 0x55C2C);
+    MARATHON_ASSERT_SIZEOF(DocMarathonImp, 0x55C68);
 }

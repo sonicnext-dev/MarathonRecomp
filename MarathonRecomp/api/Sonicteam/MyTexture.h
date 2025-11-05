@@ -10,4 +10,6 @@ namespace Sonicteam
     public:
         MARATHON_INSERT_PADDING(4);
     };
+
+    MARATHON_ASSERT_SIZEOF(MyTexture, 0x90);
 }

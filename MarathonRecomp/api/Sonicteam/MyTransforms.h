@@ -10,4 +10,6 @@ namespace Sonicteam
     public:
         MARATHON_INSERT_PADDING(8);
     };
+
+    MARATHON_ASSERT_SIZEOF(MyTransforms, 0xF8);
 }

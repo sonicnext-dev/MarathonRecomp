@@ -22,6 +22,7 @@ namespace Sonicteam
         bool m_IsHitAnim;
         MARATHON_INSERT_PADDING(2);
         be<float> m_HitTime;
+        MARATHON_INSERT_PADDING(0x10);
     };
 
     MARATHON_ASSERT_OFFSETOF(CommonObjectHint, m_MessageName, 0x184);
@@ -29,4 +30,5 @@ namespace Sonicteam
     MARATHON_ASSERT_OFFSETOF(CommonObjectHint, m_IsFastAnim, 0x1DC);
     MARATHON_ASSERT_OFFSETOF(CommonObjectHint, m_IsHitAnim, 0x1DD);
     MARATHON_ASSERT_OFFSETOF(CommonObjectHint, m_HitTime, 0x1E0);
+    MARATHON_ASSERT_SIZEOF(CommonObjectHint, 0x200);
 }

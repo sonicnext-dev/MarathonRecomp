@@ -7,4 +7,6 @@
 namespace Sonicteam
 {
     class TextBookMgr : public SoX::IResourceMgr, public System::Singleton<TextBookMgr, 0x82D35ED8, System::CreateStatic<TextBookMgr, 0x82162D70>> {};
+
+    MARATHON_ASSERT_SIZEOF(TextBookMgr, 0x10);
 }

@@ -52,7 +52,7 @@ namespace Sonicteam
             be<float> AliveTime;
             be<float> Time;
             MARATHON_INSERT_PADDING(4);
-            be<float> SectionSaveTime;
+            be<float> SectionTime;
             be<float> GaugeValue;
             be<uint32_t> MaturityLevel;
             be<float> MaturityValue;
@@ -73,7 +73,7 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(0x0C);
         be<uint32_t> m_Field1180;
         xpointer<GameScript> m_pGameScript;
-        be<uint32_t> m_aObjPlayerActorID[0xF];
+        be<uint32_t> m_aObjPlayerActorID[0x0F];
         boost::shared_ptr<ActorManager> m_spActorManager;
         xpointer<TextBook> m_pSystemTextBook;
         MARATHON_INSERT_PADDING(8);
@@ -87,6 +87,7 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(0x2A4);
         SoX::RefSharedPointer<SoX::Physics::World> m_spPhysicsWorld;
         xpointer<void> m_pMyCollisionFilter;
+        MARATHON_INSERT_PADDING(0x0C);
 
         int PlayerActorIDToIndex(int32_t actorId) const
         {
@@ -127,4 +128,36 @@ namespace Sonicteam
             return (T*)m_spPhysicsWorld.get();
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, ActorID, 0x00);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, RingCount, 0x04);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, LifeCount, 0x0C);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, ScoreCount, 0x10);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, AliveTime, 0x14);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, Time, 0x18);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, SectionTime, 0x20);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, GaugeValue, 0x24);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, MaturityLevel, 0x28);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, MaturityValue, 0x2C);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, ExtendRingCount, 0x34);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, GemIndex, 0x38);
+    MARATHON_ASSERT_SIZEOF(GameImp::PlayerData, 0x4C);
+
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_State, 0x08);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_pDoc, 0x0C);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_Flags, 0x10);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_PlayerData, 0xE40);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_IsStage, 0x1170);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_Field1180, 0x1180);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_pGameScript, 0x1184);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_aObjPlayerActorID, 0x1188);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_spActorManager, 0x11C4);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_pSystemTextBook, 0x11CC);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_vvspCameras, 0x11D8);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_pBgmCue, 0x139C);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_pHintTextBook, 0x170C);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_pMissionCore, 0x1714);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_spPhysicsWorld, 0x19BC);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_pMyCollisionFilter, 0x19C0);
+    MARATHON_ASSERT_SIZEOF(GameImp, 0x19D0);
 }
