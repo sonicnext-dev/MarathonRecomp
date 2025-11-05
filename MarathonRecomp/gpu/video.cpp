@@ -1577,7 +1577,6 @@ static void CreateImGuiBackend()
 
     InitImGuiUtils();
     AchievementMenu::Init();
-    AchievementOverlay::Init();
     OptionsMenu::Init();
     InstallerWizard::Init();
 
@@ -2311,17 +2310,17 @@ static uint32_t getSetAddress(uint32_t base, int index) {
 static uint32_t CreateDevice(uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4, uint32_t a5, be<uint32_t>* a6)
 {
     LOGF_WARNING("{:p} {:p} {:p} {:p} {:p} {:p}\n", reinterpret_cast<void*>(a1), reinterpret_cast<void*>(a2), reinterpret_cast<void*>(a3), reinterpret_cast<void*>(a4), reinterpret_cast<void*>(a5), reinterpret_cast<void*>(a6));
-    g_xdbfTextureCache = std::unordered_map<uint16_t, GuestTexture *>();
+    
+    g_xdbfTextureCache = std::unordered_map<uint16_t, GuestTexture*>();
 
-    // for (auto &achievement : g_xdbfWrapper.GetAchievements(XDBF_LANGUAGE_ENGLISH))
-    // {
-    //     // huh?
-    //     if (!achievement.pImageBuffer || !achievement.ImageBufferSize)
-    //         continue;
+    for (auto &achievement : g_xdbfWrapper.GetAchievements(XDBF_LANGUAGE_ENGLISH))
+    {
+        if (!achievement.pImageBuffer || !achievement.ImageBufferSize)
+            continue;
 
-    //     g_xdbfTextureCache[achievement.ID] =
-    //         LoadTexture((uint8_t *)achievement.pImageBuffer, achievement.ImageBufferSize).release();
-    // }
+        g_xdbfTextureCache[achievement.ID] =
+            LoadTexture((uint8_t *)achievement.pImageBuffer, achievement.ImageBufferSize).release();
+    }
 
     // Move backbuffer to guest memory.
     assert(!g_memory.IsInMemoryRange(g_backBuffer) && g_backBufferHolder != nullptr);
@@ -4458,10 +4457,13 @@ static void SanitizePipelineState(PipelineState& pipelineState)
         pipelineState.blendOpAlpha = RenderBlendOperation::ADD;
     }
 
-    for (size_t i = 0; i < 16; i++)
+    if (pipelineState.vertexDeclaration)
     {
-        if (!pipelineState.vertexDeclaration->vertexStreams[i])
-            pipelineState.vertexStrides[i] = 0;
+        for (size_t i = 0; i < 16; i++)
+        {
+            if (!pipelineState.vertexDeclaration->vertexStreams[i])
+                pipelineState.vertexStrides[i] = 0;
+        }
     }
 
     uint32_t specConstantsMask = 0;

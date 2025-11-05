@@ -102,6 +102,7 @@ float Hermite(float a, float b, float t);
 ImVec2 Lerp(const ImVec2& a, const ImVec2& b, float t);
 ImU32 ColourLerp(ImU32 c0, ImU32 c1, float t);
 void DrawVersionString(const ImU32 colour = IM_COL32(255, 255, 255, 70));
+double DrawWindow(const ImVec2 min, const ImVec2 max, bool isAnimated = false, double time = 0.0, bool isClosing = false);
 const char* CalcWordWrapPositionA(const ImFont* font, float scale, const char* text, const char* text_end, float wrap_width);
 ImVec2 MeasureInterpolatedText(const ImFont* pFont, float fontSize, const char* pText, ImGuiTextInterpData* pInterpData = nullptr);
 void DrawInterpolatedText(const ImFont* pFont, float fontSize, const ImVec2& pos, ImU32 colour, const char* pText, ImGuiTextInterpData* pInterpData = nullptr);

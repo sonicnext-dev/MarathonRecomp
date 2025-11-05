@@ -5,8 +5,7 @@
 #include <user/achievement_manager.h>
 #include <app.h>
 
-// TODO (Hyper): implement achievements menu.
-void AchievementManagerUnlockMidAsmHook(PPCRegister& id)
+void UnlockAchievement(PPCRegister& id)
 {
     AchievementManager::Unlock(id.u32);
 }

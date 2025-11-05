@@ -32,7 +32,7 @@ enum
 
 bool ProcessQuitMessage(Sonicteam::TitleTask* pTitleTask)
 {
-    static int s_quitMessageResult = -1;
+    static auto s_quitMessageResult = -1;
     static std::atomic<bool> s_faderBegun = false;
 
     if (!g_quitMessageOpen)

@@ -731,3 +731,8 @@ jump_address_on_true = 0x8226AB70
 name = "InfiniteLives"
 address = 0x821857B0
 jump_address_on_true = 0x821857B4
+
+[[midasm_hook]]
+name = "UnlockAchievement"
+address = 0x825B0960
+registers = ["r29"]
