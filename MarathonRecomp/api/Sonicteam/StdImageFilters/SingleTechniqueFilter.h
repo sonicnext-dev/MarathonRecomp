@@ -9,4 +9,6 @@ namespace Sonicteam::StdImageFilters
     public:
         MARATHON_INSERT_PADDING(0x10);
     };
+
+    MARATHON_ASSERT_SIZEOF(SingleTechniqueFilter, 0x18);
 }
