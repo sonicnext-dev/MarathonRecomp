@@ -2,9 +2,10 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/SoX/Engine/DocMode.h>
-#include <Sonicteam/SoX/Engine/RootTask.h>
-#include <Sonicteam/SoX/Engine/RootGTask.h>
 #include <Sonicteam/SoX/Engine/DocModeExecutor.h>
+#include <Sonicteam/SoX/Engine/RenderScheduler.h>
+#include <Sonicteam/SoX/Engine/RootGTask.h>
+#include <Sonicteam/SoX/Engine/RootTask.h>
 
 namespace Sonicteam::SoX::Engine
 {
@@ -19,7 +20,8 @@ namespace Sonicteam::SoX::Engine
         xpointer<ApplicationXenon> m_pDocCurrentApplication;
         MARATHON_INSERT_PADDING(0x4);
         xpointer<DocModeExecutor> m_pDocModeExecutor;
-        MARATHON_INSERT_PADDING(0x3C);
+        xpointer<RenderScheduler> m_pRenderScheduler;
+        MARATHON_INSERT_PADDING(0x38);
 
         template <typename T = DocMode>
         inline T* GetDocMode()
