@@ -19,10 +19,10 @@ namespace Sonicteam::SoX::Scenery
             xpointer<CameraImp> m_pCameraImp;
             be<uint32_t> m_Field18;
             MARATHON_INSERT_PADDING(0x14);
-            SoX::Math::Matrix4x4 m_Field30;
-            SoX::Math::Matrix4x4 m_Field70;
-            SoX::Math::Quaternion m_FieldB0;
-            SoX::Math::Vector m_FieldC0;
+            Math::Matrix4x4 m_Field30;
+            Math::Matrix4x4 m_Field70;
+            Math::Quaternion m_FieldB0;
+            Math::Vector m_FieldC0;
             MARATHON_INSERT_PADDING(0x20);
             xpointer<void> m_pWorldIntersectionStandard;
             MARATHON_INSERT_PADDING(0x10);
@@ -38,9 +38,9 @@ namespace Sonicteam::SoX::Scenery
         be<float> m_Far;
         xpointer<void> m_pWorldImp;
         MARATHON_INSERT_PADDING(0x18);
-        SoX::Math::Matrix4x4 m_ViewMatrix;
-        SoX::Math::Matrix4x4 m_Field90;
-        SoX::Math::Matrix4x4 m_FieldD0;
+        Math::Matrix4x4 m_ViewMatrix;
+        Math::Matrix4x4 m_Field90;
+        Math::Matrix4x4 m_FieldD0;
         frameObserver m_FrameObserver;
     };
 
