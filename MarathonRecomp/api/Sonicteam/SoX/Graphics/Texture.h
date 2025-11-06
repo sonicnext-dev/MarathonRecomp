@@ -3,12 +3,12 @@
 #include <Marathon.inl>
 #include <Sonicteam/SoX/IResource.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
-#include <Sonicteam/SoX/Graphics/Surface.h>
 #include <Sonicteam/SoX/Array.h>
 #include <gpu/video.h>
 
 namespace Sonicteam::SoX::Graphics
 {
+    class Surface;
     class Device;
 
     class Texture : public IResource

@@ -94,7 +94,7 @@ PPC_FUNC(sub_825EA610)
     }
 
     // Allow variable FPS when config is not 60 FPS.
-    App::s_pApp->m_pDoc->m_VFrame = Config::FPS != 60;
+    App::s_pApp->m_pDocState->m_VFrame = Config::FPS != 60;
 
     AudioPatches::Update(App::s_deltaTime);
 

@@ -29,7 +29,7 @@ namespace Sonicteam::GE1PE
         stdx::vector<xpointer<TextureBank>> m_vpTextureBank;
         stdx::vector<xpointer<TextureBank>> m_vpMaterialBank;
         SoX::LinkNode<Manager> m_lnManager;
-        stdx::vector<void> m_vField6C;
+        stdx::vector<xpointer<void>> m_vField6C;
     };
 
     MARATHON_ASSERT_OFFSETOF(ParticleEngine, m_vpEffectBank, 0x30);
