@@ -5,7 +5,7 @@
 
 namespace Sonicteam
 {
-    class WorldIntersectionParticle : public SoX::Scenery::WorldIntersection
+    class WorldIntersectionSky : public SoX::Scenery::WorldIntersection
     {
 
     };
