@@ -19,13 +19,16 @@ namespace boost
                 be<uint32_t> get_deleter;
             };
 
+        public:
             xpointer<vftable_t> vftable_;
+
+        protected:
             be<uint32_t> use_count_;
             be<uint32_t> weak_count_;
 
         public:
             // TODO
-            sp_counted_base() = delete;
+            sp_counted_base() {};
 
             void add_ref()
             {
@@ -76,13 +79,31 @@ namespace boost
 
             uint32_t use_count() const
             {
-                return ByteSwap(static_cast<uint32_t const volatile &>(use_count_.value));
+                return ByteSwap(use_count_.value);
             }
 
             bool unique() const
             {
                 return use_count() == 1;
             }
+        };
+
+        template<typename T>
+            class sp_counted_impl_p : public sp_counted_base
+        {
+        public:
+            sp_counted_impl_p(T* p) : ptr_(p)
+            {
+                use_count_ = 1;
+                weak_count_ = 1;
+            }
+
+            ~sp_counted_impl_p()
+            {
+            }
+
+        private:
+            xpointer<T> ptr_;
         };
 
         template<class T> struct sp_dereference
@@ -99,10 +120,11 @@ namespace boost
     template<typename T>
     class shared_ptr
     {
-    private:
+    public:
         xpointer<T> px;
-        xpointer<boost::detail::sp_counted_base> pn;
+        xpointer<detail::sp_counted_base> pn;
 
+    private:
         void add_ref()
         {
             if (pn)

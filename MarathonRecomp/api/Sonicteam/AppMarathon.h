@@ -10,20 +10,20 @@ namespace Sonicteam
     class AppMarathon : public SoX::ApplicationXenon
     {
     public:
-        xpointer<DocMarathonState> m_pDoc;
+        xpointer<DocMarathonState> m_pDocState;
 
         static AppMarathon* GetInstance();
 
         GameImp* GetGame() const
         {
-            if (auto pGameMode = m_pDoc->GetDocMode<Sonicteam::GameMode>())
+            if (auto pGameMode = m_pDocState->GetDocMode<GameMode>())
                 return pGameMode->GetGame();
 
             return nullptr;
         }
     };
 
-    MARATHON_ASSERT_OFFSETOF(AppMarathon, m_pDoc, 0x180);
+    MARATHON_ASSERT_OFFSETOF(AppMarathon, m_pDocState, 0x180);
 }
 
 #include <Sonicteam/AppMarathon.inl>

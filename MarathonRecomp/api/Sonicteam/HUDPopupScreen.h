@@ -3,11 +3,14 @@
 #include <Marathon.inl>
 #include <Sonicteam/SoX/Graphics/TechniqueFXL.h>
 #include <Sonicteam/MyTexture.h>
+#include <Sonicteam/SoX/RefSharedPointer.h>
+#include <Sonicteam/SoX/RefCountObject.h>
+#include <Sonicteam/CsdObject.h>
 #include <stdx/string.h>
 
 namespace Sonicteam
 {
-    class HUDPopupScreen : public SoX::Engine::Task
+    class HUDPopupScreen : public SoX::RefCountObject, public SoX::Engine::Task
     {
     public:
         enum HUDPopupScreenState : uint32_t
@@ -18,8 +21,8 @@ namespace Sonicteam
         };
 
         xpointer<CsdObject> m_pCsdObject;
-        xpointer<MyTexture> m_pMainTexture;
-        xpointer<MyTexture> m_pMaskTexture;
+        SoX::RefSharedPointer<MyTexture> m_pMainTexture;
+        SoX::RefSharedPointer<MyTexture> m_pMaskTexture;
         xpointer<SoX::Graphics::TechniqueFXL> m_pTechnique;
         stdx::string m_SceneName;
         stdx::string m_SpriteName;
@@ -33,16 +36,16 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(8);
     };
 
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_pCsdObject, 0x4C);
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_pMainTexture, 0x50);
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_pMaskTexture, 0x54);
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_pTechnique, 0x58);
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_SceneName, 0x5C);
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_SpriteName, 0x78);
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_State, 0x94);
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_IsClosing, 0x99);
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_ClosingTime, 0x9C);
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_X, 0xA0);
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_Y, 0xA4);
-    MARATHON_ASSERT_SIZEOF(HUDPopupScreen, 0xB0);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_pCsdObject, 0x54);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_pMainTexture, 0x58);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_pMaskTexture, 0x5C);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_pTechnique, 0x60);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_SceneName, 0x64);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_SpriteName, 0x80);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_State, 0x9C);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_IsClosing, 0xA1);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_ClosingTime, 0xA4);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_X, 0xA8);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_Y, 0xAC);
+    MARATHON_ASSERT_SIZEOF(HUDPopupScreen, 0xB8);
 }

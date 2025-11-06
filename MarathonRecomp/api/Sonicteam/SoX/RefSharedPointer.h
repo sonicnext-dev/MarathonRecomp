@@ -12,6 +12,11 @@ namespace Sonicteam::SoX
         xpointer<T> m_ptr;
 
     public:
+        RefSharedPointer()
+        {
+            m_ptr = nullptr;
+        }
+
         explicit RefSharedPointer(T* value) : m_ptr(value)
         {
             if (m_ptr.get())

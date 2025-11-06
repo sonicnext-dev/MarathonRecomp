@@ -4,6 +4,8 @@
 
 namespace Sonicteam::SoX
 {
+    struct IResourceMgrCreationParams; // Different for each implementation.
+
     class IResourceMgr
     {
     public:
@@ -11,11 +13,31 @@ namespace Sonicteam::SoX
         {
             be<uint32_t> fpDestroy;
             be<uint32_t> fpMakeResource;
-            MARATHON_INSERT_PADDING(4);
+            be<uint32_t> fpCreateResource;
+            be<uint32_t> fpGetPath;
+            MARATHON_INSERT_PADDING(8);
         };
 
         xpointer<Vftable> m_pVftable;
-        MARATHON_INSERT_PADDING(0x0C);
+        be<uint32_t> m_MgrIndex;
+        MARATHON_INSERT_PADDING(8);
+
+        void* Destroy(uint32_t flag)
+        {
+            return GuestToHostFunction<void*>(m_pVftable->fpDestroy, this, flag);
+        }
+
+        IResource* CreateResource(IResourceMgrCreationParams& param)
+        {
+            return GuestToHostFunction<IResource*>(m_pVftable->fpCreateResource, this, &param);
+        }
+
+        stdx::string GetPath(stdx::string* filename)
+        {
+            auto return_value = guest_stack_var<stdx::string>();
+            GuestToHostFunction<void>(m_pVftable->fpGetPath, return_value.get(), this, filename);;
+            return *return_value;
+        }
     };
 
     MARATHON_ASSERT_OFFSETOF(IResourceMgr, m_pVftable, 0x00);
