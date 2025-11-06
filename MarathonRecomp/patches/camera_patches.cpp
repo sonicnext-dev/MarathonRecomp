@@ -9,7 +9,7 @@ static class MainMenuCameraUpdateEvent : public ContextHookEvent<Sonicteam::Main
 public:
     void Update(Sonicteam::MainMenuTask* pThis, float deltaTime) override
     {
-        auto pMainMode = pThis->GetDoc<Sonicteam::MainMode>();
+        auto pMainMode = pThis->GetParent<Sonicteam::MainMode>();
 
         if (!pMainMode)
             return;
