@@ -9,7 +9,7 @@ namespace Sonicteam::RenderAction
     {
     public:
         MARATHON_INSERT_PADDING(0x4);
-        xpointer<SoX::Graphics::Xenon::TextureXenon> m_pTexture;
+        xpointer<SoX::Graphics::Texture> m_pTexture;
         bool m_Flag;
     };
 

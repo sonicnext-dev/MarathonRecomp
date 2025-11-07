@@ -5,14 +5,15 @@
 namespace Sonicteam::SoX::Engine
 {
     class RenderScheduler;
+    
     class RenderProcess
     {
     public:
         struct Vftable
         {
             be<uint32_t> fpDestroy;
-            be<uint32_t> fpFunc4;
-            be<uint32_t> fpFunc8;
+            be<uint32_t> fpFunc04;
+            be<uint32_t> fpFunc08;
             be<uint32_t> fpPerformProcess;
         };
 
