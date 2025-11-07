@@ -8,8 +8,9 @@ namespace Sonicteam::RenderAction
     class SetAutoZPass : public MyRenderProcess
     {
     public:
-        MARATHON_INSERT_PADDING(0x4);
+        bool m_Enabled;
     };
 
     MARATHON_ASSERT_SIZEOF(SetAutoZPass, 0x3C);
+    MARATHON_ASSERT_OFFSETOF(SetAutoZPass, m_Enabled, 0x38);
 }

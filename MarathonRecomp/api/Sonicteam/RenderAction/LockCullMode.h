@@ -8,8 +8,9 @@ namespace Sonicteam::RenderAction
     class LockCullMode : public MyRenderProcess
     {
     public:
-        MARATHON_INSERT_PADDING(0x4);
+        bool m_Lock;
     };
 
     MARATHON_ASSERT_SIZEOF(LockCullMode, 0x3C);
+    MARATHON_ASSERT_OFFSETOF(LockCullMode, m_Lock, 0x38);
 }

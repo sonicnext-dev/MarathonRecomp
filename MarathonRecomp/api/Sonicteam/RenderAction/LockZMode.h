@@ -8,8 +8,9 @@ namespace Sonicteam::RenderAction
     class LockZMode : public MyRenderProcess
     {
     public:
-        MARATHON_INSERT_PADDING(0x4);
+        bool m_Lock;
     };
 
     MARATHON_ASSERT_SIZEOF(LockZMode, 0x3C);
+    MARATHON_ASSERT_OFFSETOF(LockZMode, m_Lock, 0x38);
 }

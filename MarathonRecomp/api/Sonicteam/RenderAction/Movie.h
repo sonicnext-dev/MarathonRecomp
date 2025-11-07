@@ -8,8 +8,9 @@ namespace Sonicteam::RenderAction
     class Movie : public MyRenderProcess
     {
     public:
-        MARATHON_INSERT_PADDING(0x4);
+        xpointer<MovieObject> m_pMovieObject;
     };
 
     MARATHON_ASSERT_SIZEOF(Movie, 0x3C);
+    MARATHON_ASSERT_OFFSETOF(Movie, m_pMovieObject, 0x38);
 }
