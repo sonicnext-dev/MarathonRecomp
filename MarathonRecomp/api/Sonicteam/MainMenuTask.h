@@ -4,6 +4,8 @@
 #include <Sonicteam/SoX/Math/Vector.h>
 #include <Sonicteam/Player/Object.h>
 #include <Sonicteam/ButtonWindowTask.h>
+#include <Sonicteam/MainMenuExpositionTask.h>
+#include <Sonicteam/SoX/RefSharedPointer.h>
 
 namespace Sonicteam
 {
@@ -39,7 +41,7 @@ namespace Sonicteam
         xpointer<HUDMainMenu> m_pHUDMainMenu;
         MARATHON_INSERT_PADDING(0x20);
         xpointer<ButtonWindowTask> m_pButtonWindowTask;
-        MARATHON_INSERT_PADDING(4);
+        SoX::RefSharedPointer<MainMenuExpositionTask> m_pMainMenuExpositionTask;
         be<uint32_t> m_MainMenuSelectedIndex;
         MARATHON_INSERT_PADDING(0x1D8);
         be<uint32_t> m_PressedButtons;
@@ -52,6 +54,7 @@ namespace Sonicteam
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_State, 0x4C);
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_pHUDMainMenu, 0x74);
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_pButtonWindowTask, 0x98);
+    MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_pMainMenuExpositionTask, 0x9C);
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_MainMenuSelectedIndex, 0xA0);
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_PressedButtons, 0x27C);
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_Field298, 0x298);

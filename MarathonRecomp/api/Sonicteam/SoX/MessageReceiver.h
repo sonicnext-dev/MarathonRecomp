@@ -25,6 +25,18 @@ namespace Sonicteam::SoX
         {
             return GuestToHostFunction<bool>(m_pVftable->fpProcessMessage, this, pMessage);
         }
+        
+        /*
+        template <typename T  = IMessage>
+        bool ProcessMessage(T& pMessage)
+        {
+            auto pIMessage = g_userHeap.AllocPhysical<T>();
+            *pIMessage = pMessage;
+            bool result = GuestToHostFunction<bool>(m_pVftable->fpProcessMessage, this, pIMessage);
+            pMessage = *pIMessage;
+            return result;
+        }
+        */
     };
 
     MARATHON_ASSERT_OFFSETOF(MessageReceiver, m_pVftable, 0x00);

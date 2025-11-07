@@ -64,7 +64,7 @@ PPC_FUNC(sub_8262A568)
     InitPatches();
 }
 
-std::array<const char*, 46> _pause_ignore_task_ =
+std::array<const char*, 46> g_PauseModeTaskList =
 {
     "root",
     "TL_Debug",
@@ -174,19 +174,18 @@ void UpateSpecificTasksPause(Sonicteam::SoX::Engine::Task* ttask)
 {
     for (auto& task : *ttask)
     {
-        std::string taskName = (&task)->GetName();
-        printf("task %p - %s \n", &task, (&task)->GetName());
+        const char* taskName = (&task)->GetName();
 
         if ((task.m_Flag1 & 4) == 0)
         {
 
-            auto shouldIgnore = std::find_if(_pause_ignore_task_.begin(), _pause_ignore_task_.end(),
-                [&taskName](const char* task) 
+            auto shouldIgnore = std::find_if(g_PauseModeTaskList.begin(), g_PauseModeTaskList.end(),
+                [taskName](const char* task) 
                 {
-                    return strcmp(task ? task : "", taskName.c_str()) == 0;
+                    return strcmp(task ? task : "", taskName) == 0;
                 });
 
-            if (shouldIgnore != _pause_ignore_task_.end())
+            if (shouldIgnore != g_PauseModeTaskList.end())
             {
                 (&task)->Update(0.0);
             }
@@ -236,12 +235,11 @@ PPC_FUNC(sub_825EA610)
     __imp__sub_825EA610(ctx, base);
 
 
-    //Always These Tasks in pause mode
+    //Always Do Specic Tasks during pause, to not 
     if (pDocState->m_PauseFlags.get() != 0)
     {
 
         GuestToHostFunction<void>(sub_825D49E0, &pDocState->m_CriticalSection1);
-        printf("Traverse Main\n");
         UpateSpecificTasksPause(pDocState->m_pRootTask.get());
         GuestToHostFunction<void>(sub_82580920, &pDocState->m_CriticalSection1);
     }

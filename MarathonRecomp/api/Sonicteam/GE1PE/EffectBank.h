@@ -38,6 +38,7 @@ namespace Sonicteam::GE1PE
         be<uint32_t> m_FieldC; //index ?
         xpointer<EffectBankData> m_pEffectBankA;
     };
+
     MARATHON_ASSERT_OFFSETOF(EffectBank,m_pParticleEngine, 8);
     MARATHON_ASSERT_OFFSETOF(EffectBank,m_FieldC, 0xC);
     MARATHON_ASSERT_OFFSETOF(EffectBank, m_pEffectBankA, 0x10);

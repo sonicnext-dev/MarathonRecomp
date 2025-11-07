@@ -31,6 +31,7 @@ namespace Sonicteam::GE1PE
         SoX::LinkNode<Manager> m_lnManager;
         stdx::vector<void> m_vField6C;
     };
+
     MARATHON_ASSERT_OFFSETOF(ParticleEngine, m_spPlugin, 4);
     MARATHON_ASSERT_OFFSETOF(ParticleEngine, m_mEffectIndicies, 0xC);
     MARATHON_ASSERT_OFFSETOF(ParticleEngine, m_mTextureIndicies, 0x18);

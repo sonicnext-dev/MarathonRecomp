@@ -2369,6 +2369,13 @@ static uint32_t CreateDevice(uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4,
     return 0;
 }
 
+static void DestructResourceIm(GuestResource* resource)
+{
+    resource->~GuestResource();
+    resource = 0;
+    g_userHeap.Free(resource);
+}
+
 static void DestructResource(GuestResource* resource) 
 {
     // Needed for hack in CreateSurface (remove if fix it)
@@ -3327,6 +3334,7 @@ void Video::Present()
         s_next += 1000000000ns / Config::FPS;
     }
 
+    //Please Do not use guest_stack_var, it mostly cause memory/stack corruption
     if (App::s_pApp && g_needsResize)
     {
         g_needsResize = false;
@@ -3381,47 +3389,66 @@ void Video::Present()
             be<uint32_t> Usage;
         };
 
-        g_surfaceCache.clear();
+        // Clear Cache, Experimental
+        auto it = g_surfaceCache.begin();
+        while (it != g_surfaceCache.end())
+        {
+          
+            printf("Cache Surface : %d\n", it->first->refCount.get(),it->first->format);
+            if (it->first->refCount.get() == 0 && it->first != g_depthStencil && it->first != g_backBuffer)
+            {
+                it->first->wasCached = false;
+                DestructResourceIm(it->first);
+                it = g_surfaceCache.erase(it);
+
+            }
+            else
+            {
+                ++it;
+            }
+        }
 
         auto pFormatConfig = (GraphicsFormatConfig*)(g_memory.base + 0x82B7BD20);
 
         // Kill Auto Surfaces
+
         if (g_backBuffer && g_backBuffer != pApp->m_pBackBufferSurface.get())
-            DestructResource(g_backBuffer);
+            DestructResourceIm(g_backBuffer);
 
         if (g_depthStencil && g_depthStencil != pApp->m_pDepthStencilSurface.get())
-            DestructResource(g_depthStencil);
+            DestructResourceIm(g_depthStencil);
 
         // Recreate main buffers
-        DestructResource((GuestTexture*)pApp->m_pFrontBufferTexture.get());
+        DestructResourceIm((GuestTexture*)pApp->m_pFrontBufferTexture.get());
         pApp->m_pFrontBufferTexture = CreateTexture(width, height, 1, 1, 1, D3DFMT_LE_X8R8G8B8, 0, 3);
-        ((GuestTexture*)pApp->m_pFrontBufferTexture.get())->AddRef();
+        //((GuestTexture*)pApp->m_pFrontBufferTexture.get())->AddRef();
 
-        guest_stack_var<GuestSurfaceCreateParams> surfaceParams = { 0, 0, 0 };
+        auto surfaceParams = g_userHeap.AllocPhysical<D3DXBSURFACE_PARAMETERS>(0, 0, 0);
 
-        DestructResource((GuestSurface*)pApp->m_pBackBufferSurface.get());
-        pApp->m_pBackBufferSurface = CreateSurface(width, height, D3DFMT_A8R8G8B8, 0, surfaceParams.get());
-        ((GuestSurface*)pApp->m_pBackBufferSurface.get())->AddRef();
+        DestructResourceIm((GuestSurface*)pApp->m_pBackBufferSurface.get());
+        pApp->m_pBackBufferSurface = CreateSurface(width, height, D3DFMT_A8R8G8B8, 0, (GuestSurfaceCreateParams*)surfaceParams);
+        //((GuestSurface*)pApp->m_pBackBufferSurface.get())->AddRef();
 
-        pCreationDeviceData->SurfaceParamsA = *(D3DXBSURFACE_PARAMETERS*)surfaceParams.get();
+        pCreationDeviceData->SurfaceParamsA = *(D3DXBSURFACE_PARAMETERS*)surfaceParams;
 
         // 0x340 default (for 720 mb?)
         uint32_t cSurfaceBase = height * 1.155555555555556;
 
-        surfaceParams->base = surfaceParams->base + cSurfaceBase;
+        surfaceParams->Base = surfaceParams->Base + cSurfaceBase;
 
-        DestructResource((GuestSurface*)pApp->m_pDepthStencilSurface.get());
-        pApp->m_pDepthStencilSurface = CreateSurface(width, height, D3DFMT_D24FS8, 0, surfaceParams.get());
-        ((GuestSurface*)pApp->m_pDepthStencilSurface.get())->AddRef();
+        DestructResourceIm((GuestSurface*)pApp->m_pDepthStencilSurface.get());
+        pApp->m_pDepthStencilSurface = CreateSurface(width, height, D3DFMT_D24FS8, 0, (GuestSurfaceCreateParams*)surfaceParams);
+        //((GuestSurface*)pApp->m_pDepthStencilSurface.get())->AddRef();
 
-        pCreationDeviceData->SurfaceParamsB = *(D3DXBSURFACE_PARAMETERS*)surfaceParams.get();
+        pCreationDeviceData->SurfaceParamsB = *(D3DXBSURFACE_PARAMETERS*)surfaceParams;
         pCreationDeviceData->SurfaceParamsC = pCreationDeviceData->SurfaceParamsB;
         pCreationDeviceData->SurfaceParamsC.Base = pCreationDeviceData->SurfaceParamsB.Base + cSurfaceBase;
+        g_userHeap.Free(surfaceParams);
 
-        // Setup device
         // Viewport is reset here because we're using the game's backbuffer directly (Auto mode disabled)
-        SetRenderTarget((GuestDevice*)pApp->m_pDevice.get(), 0, nullptr);
+        SetRenderTarget((GuestDevice*)pApp->m_pDevice.get(), 0, (GuestSurface*)pApp->m_pBackBufferSurface.get());
         SetDepthStencilSurface((GuestDevice*)pApp->m_pDevice.get(), (GuestSurface*)pApp->m_pDepthStencilSurface.get());
+
 
         g_backBuffer = (GuestSurface*)pApp->m_pBackBufferSurface.get();
         g_depthStencil = (GuestSurface*)pApp->m_pDepthStencilSurface.get();
@@ -3459,7 +3486,7 @@ void Video::Present()
             if (surface)
             {
                 GuestToHostFunction<void>(sub_82593038, surface, guestSurface);
-                LOGFN_UTILITY("- \"{}\" ({}x{}) ({:08X})", surface->m_MgrResourceName.c_str(), surface->m_Width.get(), surface->m_Height.get(), (uint64_t)surface->m_pGuestSurface.get());
+                LOGFN_UTILITY("- \"{}\" ({}x{}) ({:08X})", surface->m_MgrResourceName.c_str(), surface->m_Width.get(), surface->m_Height.get(), (uint64_t)surface->m_pSurface.get());
             }
         };
 
@@ -3529,6 +3556,7 @@ void Video::Present()
             }
 
             // Create and configure guest surface
+            auto PrevSuface = surface->m_pSurface;
             auto gSurface = CreateSurface(params.Width, params.Height, pFormatConfig[s2].SurfaceFormat, 0, (GuestSurfaceCreateParams*)surfaceParams);
 
             GuestToHostFunction<void>(sub_82592E98, surface, gSurface, params.Width, params.Height);
@@ -3588,103 +3616,6 @@ void Video::Present()
             }
         }
 
-        // framebuffer_tile should properly reference framebuffer0's GuestTexture
-        // PROPER FIX OPTIONS:
-        // 1. Allocate new texture to the same pointer instead of this workaround
-        // 2. Set framebuffer_tile->m_pTexture to framebuffer0's GuestTexture with proper reference counting (AddRef())
-        // 3. Reset surface [0] to prevent framebuffer->m_pTexture from being set to null
-        if (auto it = rmTextureResources.find("framebuffer_tile"); it != rmTextureResources.end())
-        {
-            auto tex = (Sonicteam::SoX::Graphics::Xenon::TextureXenon*)it->second.get();
-            // tex->m_aspSurface[0].reset();
-            // but better like
-            // text->m_pTexture = ???
-        }
-
-
-        /*
-        std::map<std::string, boost::shared_ptr<Sonicteam::SoX::Engine::RenderProcess>> savedProcesses;
-
-        if (auto pRenderSceduler = pDocState->m_pRenderScheduler.get())
-        {
-            // Print all processes before
-            for (auto& pair : pRenderSceduler->m_lpsspRenderProcess)
-            {
-                printf("m_lpsspRenderProcess[%s] = %p\n", pair.first.c_str(), pair.second.get());
-            }
-
-            // Save GE1Particle and Spanverse processes
-            for (auto& pair : pRenderSceduler->m_lpsspRenderProcess)
-            {
-                if (pair.first == "GE1Particle" || pair.first == "Spanverse")
-                {
-                    savedProcesses[pair.first.c_str()] = pair.second;
-                    printf("Saved %s: %p\n", pair.first.c_str(), pair.second.get());
-                }
-            }
-        }
-        */
-
-
-
-
-        /*
-        auto pManageParticle = Sonicteam::MyPE::CManageParticle::GetInstance();
-
-        if (auto pRenderSceduler = pDocState->m_pRenderScheduler.get())
-        {
-            // Restore all saved processes
-            for (auto& savedProcess : savedProcesses)
-            {
-                auto it = std::find_if(pRenderSceduler->m_lpsspRenderProcess.begin(),
-                    pRenderSceduler->m_lpsspRenderProcess.end(),
-                    [&savedProcess](const auto& pair) {
-                        return pair.first.c_str() == savedProcess.first;
-                    });
-
-                if (it != pRenderSceduler->m_lpsspRenderProcess.end())
-                {
-                    it->second = savedProcess.second;
-                    printf("Restored %s: %p\n", savedProcess.first.c_str(), savedProcess.second.get());
-
-                    // Print GTask components
-                    if (savedProcess.second && savedProcess.second->m_pGTask)
-                    {
-                        auto GTask = savedProcess.second->m_pGTask.get();
-                        for (auto& component : GTask->m_llComponent)
-                        {
-                            printf("%s[GTask] %s\n", savedProcess.first.c_str(), component.m_pThis->GetName());
-                        }
-                    }
-                }
-            }
-
-            // Print all processes after restoration
-            for (auto& pair : pRenderSceduler->m_lpsspRenderProcess)
-            {
-                printf("m_lpsspRenderProcess[%s] = %p\n", pair.first.c_str(), pair.second.get());
-            }
-        }
-
-
-        printf("--------------------------{EEEEEEEEEEEEEEEEEEE]------------------\n");
-        for (auto& it : pManageParticle->m_lContainer)
-        {
-            auto h = (int)g_userHeap.Size(&it);
-            auto p1 = it._1.get();
-            auto h1 = (uint32_t)g_userHeap.Size(p1);
-            printf("%x - %d , %x - %d\t\n", &it,h,p1,h1);
-        }
-        if (pDocState->m_pRootGTask.get())
-        {
-            for (auto& component : pDocState->m_pRootGTask->m_llComponent)
-            {
-                printf("component : %s\n", component.m_pThis->GetName());
-            }
-
-        }
-
-      */
         auto pManageParticle = Sonicteam::MyPE::CManageParticle::GetInstance();
         auto pRenderSceduler = pDocState->m_pRenderScheduler.get();
 
@@ -3712,11 +3643,9 @@ void Video::Present()
         auto sfx2 = pDocState->m_pSFXAgent->m_aSFXMatrices2;
         pDocState->m_pSFXAgent->m_aSFXMatrices1 = 0;
         pDocState->m_pSFXAgent->m_aSFXMatrices2 = 0;
-        auto spFrameBufferObject = pMyGraphicsDevice->m_FrameBufferObject;
-        auto _array_ = pMyGraphicsDevice->m_apTexture;
-        pMyGraphicsDevice->m_FrameBufferObject = 0;
+
         GuestToHostFunction<void>(sub_8260DF88, pDocState, 0x82B814F8, 1);
-        pMyGraphicsDevice->m_apTexture = _array_;
+        _cached_render_.clear();
 
         //Clear New Ones
         if (pDocState->m_pSFXAgent->m_aSFXMatrices1)
@@ -3727,55 +3656,8 @@ void Video::Present()
 
         pDocState->m_pSFXAgent->m_aSFXMatrices1 = sfx1;
         pDocState->m_pSFXAgent->m_aSFXMatrices2 = sfx2;
-        pMyGraphicsDevice->m_FrameBufferObject = spFrameBufferObject;
 
-
-        printf("pDocState->m_PauseFlag %x\n", pDocState->m_PauseFlags.get());
-        if (pDocState->m_PauseFlags.get() != 0)
-        {
-
-            /*
-            for (auto& thread : *pDocState->m_lnThread.get())
-            {
-
-                auto pThread = thread.m_pThis;
-                printf("pDocState->m_lnThread %p - %x\n", &thread, pThread->m_pVftable.get());
-                if (pThread->m_IsThreadReady)
-                {
-                    pThread->m_DeltaTime = 1.0;
-                    pThread->m_IsThreadReady = 0;
-                    GuestToHostFunction<void>(sub_826FD180, pThread->m_Handle.get()); //ResumeThread
-                }
-                GuestToHostFunction<void>(sub_826FD140, pThread->m_StartEvent);
-            }
-
-            for (auto& thread : *pDocState->m_lnThread.get())
-            {
-                auto pThread = thread.m_pThis;
-                pThread->Func4();
-            }
-            */
-    
-            //Always Update 
-            if (pDocState->m_PauseFlags.get() != 0)
-            {
-
-
-    
-
-               // GuestToHostFunction<void>(sub_825D49E0, &pDocState->m_CriticalSection1);
-             //   Traverse(pDocState->m_pRootTask.get());
-           //     GuestToHostFunction<void>(sub_82580920, &pDocState->m_CriticalSection1);
-            }
-       
-            //GuestToHostFunction<void>(sub_82581D50, pDocState, 1.0/60.0);
-        }
-
-
-
-
-
-
+        //Fix radermap
         auto SetResource = [&](auto* spTextureTo, const char* name)
         {
             if (auto it = rmTextureResources.find(name); it != rmTextureResources.end())
@@ -3796,7 +3678,19 @@ void Video::Present()
             }
         }
 
-        // TODO: Fix particle not updating position or disappearing after Lua refresh
+        //Maiu Menu MST 
+        auto pMainModeObject = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::MainMode>();
+        if (((Sonicteam::SoX::Object*)pMainModeObject)->m_pVftable.ptr == 0x82033570)
+        {
+            auto pMainTask = (Sonicteam::MainMenuTask*)pMainModeObject->m_pMainTask.get();
+            if (((Sonicteam::SoX::Object*)pMainTask)->m_pVftable.ptr == 0x82039C08)
+            {
+                auto pManTask = (Sonicteam::MainMenuTask*)App::s_pApp->m_pDoc->GetDocMode<Sonicteam::MainMode>()->m_pMainTask.get();
+                auto pExpoTask = pManTask->m_pMainMenuExpositionTask;
+                pExpoTask->m_MSTAnimateState = 1;
+            }
+        }
+
     }
 PostResize:
 
@@ -4133,6 +4027,7 @@ static GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t for
                 cachedSurface->guestFormat == format &&
                 cachedBase == baseValue) {
                 surface = cachedSurface;
+                surface->AddRef();
                 break;
             }
         }
