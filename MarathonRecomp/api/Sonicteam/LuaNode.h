@@ -16,4 +16,6 @@ namespace Sonicteam
         xpointer<Vftable> m_pVftable;
         lua50::lua_State m_pLuaState;
     };
+
+    MARATHON_ASSERT_SIZEOF(LuaNode, 8);
 }

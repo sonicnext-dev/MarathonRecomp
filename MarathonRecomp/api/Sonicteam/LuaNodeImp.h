@@ -63,4 +63,28 @@ namespace Sonicteam
 
         stdx::string m_LuaTable;
     };
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpGetTableString, 4);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpGetTableConstString, 8);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpGetTableConstStringFast, 0xC);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpGetRoot, 0x10);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpGetEmptyNode, 0x14);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpIsTableExist, 0x18);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpIsRoot, 0x1C);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpSetTablePath, 0x20);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpCallFunction, 0x24);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpCallFunction2, 0x28);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpCallFunction3, 0x2C);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpIsNumber, 0x30);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpGetNumber, 0x34);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpSetNumber, 0x38);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpGetNumberFloat, 0x3C);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpSetNumberFloat, 0x40);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpGetString, 0x44);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpSetString, 0x48);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpIsBoolean, 0x4C);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpGetBoolean, 0x50);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpSetBoolean, 0x54);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpSetNil, 0x58);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpRegisterFunctions, 0x5C);
+    MARATHON_ASSERT_OFFSETOF(LuaNodeImp::Vftable, fpFunc60, 0x60);
 }

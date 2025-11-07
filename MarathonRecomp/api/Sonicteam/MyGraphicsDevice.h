@@ -29,5 +29,5 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(0x180); 
     };
 
-    MARATHON_ASSERT_SIZEOF(MyGraphicsDevice, 0x350);
+    MARATHON_ASSERT_SIZEOF(MyGraphicsDevice, 0x30C);
 }

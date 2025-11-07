@@ -43,6 +43,6 @@ namespace Sonicteam::SoX
         }
     };
 
-    MARATHON_ASSERT_OFFSETOF(IResource, m_FilePath, 0x0C);
+    MARATHON_ASSERT_OFFSETOF(IResource, m_MgrResourceName, 0x0C);
     MARATHON_ASSERT_SIZEOF(IResource, 0x64);
 }

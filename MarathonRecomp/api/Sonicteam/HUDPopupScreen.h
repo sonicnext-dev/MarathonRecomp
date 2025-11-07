@@ -36,16 +36,16 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(8);
     };
 
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_pCsdObject, 0x4C);
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_pMainTexture, 0x50);
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_pMaskTexture, 0x54);
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_pTechnique, 0x58);
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_SceneName, 0x5C);
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_SpriteName, 0x78);
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_State, 0x94);
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_IsClosing, 0x99);
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_ClosingTime, 0x9C);
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_X, 0xA0);
-    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_Y, 0xA4);
-    MARATHON_ASSERT_SIZEOF(HUDPopupScreen, 0xB0);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_pCsdObject, 0x54);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_pMainTexture, 0x58);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_pMaskTexture, 0x5C);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_pTechnique, 0x60);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_SceneName, 0x64);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_SpriteName, 0x80);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_State, 0x9C);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_IsClosing, 0xA1);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_ClosingTime, 0xA4);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_X, 0xA8);
+    MARATHON_ASSERT_OFFSETOF(HUDPopupScreen, m_Y, 0xAC);
+    MARATHON_ASSERT_SIZEOF(HUDPopupScreen, 0xB8);
 }

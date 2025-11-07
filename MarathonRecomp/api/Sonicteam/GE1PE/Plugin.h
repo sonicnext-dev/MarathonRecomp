@@ -17,5 +17,5 @@ namespace Sonicteam::GE1PE
         xpointer<Vftable> m_pVftable;
         xpointer<SoX::Engine::Doc> m_pDoc;
     };
-    //size == 0x34 (but PE::MyPlugin no idea about this)
+
 }

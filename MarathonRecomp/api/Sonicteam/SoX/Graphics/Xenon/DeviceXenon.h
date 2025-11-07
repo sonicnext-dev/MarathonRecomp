@@ -26,6 +26,15 @@ namespace Sonicteam::SoX::Graphics::Xenon
         SoX::RefSharedPointer<Graphics::Surface> m_spColorTile4X;
         SoX::RefSharedPointer<Graphics::Surface> m_spDepthTile4X;
     };
-
-    MARATHON_ASSERT_SIZEOF(DeviceXenon, 0x190);
+    MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_spBackBuffer, 0xD0);
+    MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_spDepthStencil, 0xD4);
+    MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_apTexture, 0x108);
+    MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_SurfaceParamsA, 0x158);
+    MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_SurfaceParamsB, 0x164);
+    MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_SurfaceParamsC, 0x170);
+    MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_spColorTile2X, 0x17C);
+    MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_spDepthTile2X, 0x180);
+    MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_spColorTile4X, 0x184);
+    MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_spDepthTile4X, 0x188);
+    MARATHON_ASSERT_SIZEOF(DeviceXenon, 0x18C);
 }

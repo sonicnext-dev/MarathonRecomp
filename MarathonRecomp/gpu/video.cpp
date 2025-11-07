@@ -3142,6 +3142,103 @@ void Test(struct PPCContext& __restrict__ ctx, uint8_t* base)
     printf("Custom Function");
 }
 
+
+struct _custom_data_
+{
+    xpointer<Sonicteam::DocMarathonImp> pDoc;
+    xpointer<Sonicteam::MyGraphicsDevice> pDevice;
+    xpointer<Sonicteam::RenderTargetContainer> pRenderTargetContainer;
+    xpointer<Sonicteam::SoX::Engine::RenderScheduler> pRenderScheduler;
+    Sonicteam::SoX::RefSharedPointer<Sonicteam::SoX::RefCountObject> Field4;
+    stdx::string customName;
+    be<uint32_t> field_30;
+    be<uint32_t> field_34;
+    be<uint32_t> field_38;
+    stdx::map<stdx::string, xpointer<void>> mMap; //?????
+
+    _custom_data_(
+        xpointer<Sonicteam::DocMarathonImp> doc,
+        xpointer<Sonicteam::MyGraphicsDevice> device,
+        xpointer<Sonicteam::RenderTargetContainer> renderTarget,
+        xpointer<Sonicteam::SoX::Engine::RenderScheduler> scheduler,
+        Sonicteam::SoX::RefSharedPointer<Sonicteam::SoX::RefCountObject> field4,
+        be<uint32_t> field_30,
+        be<uint32_t> field_34,
+        be<uint32_t> field_38,
+        const char* name
+    )
+        : pDoc(doc)
+        , pDevice(device)
+        , pRenderTargetContainer(renderTarget)
+        , pRenderScheduler(scheduler)
+        , Field4(field4)
+        , field_30(field_30)
+        , field_34(field_34)
+        , field_38(field_38)
+        , customName(name)
+        , mMap()
+    {
+
+    }
+
+};
+
+static std::vector<std::pair<stdx::string, boost::shared_ptr<Sonicteam::SoX::Engine::RenderProcess>>> _cached_render_;
+
+PPC_FUNC_IMPL(__imp__sub_8260A9D0);
+PPC_FUNC(sub_8260A9D0)
+{
+    auto L = (lua50::lua_State*)(ctx.r3.u32 + base);
+    auto data = (_custom_data_*)lua50::lua_topointer(L, 1);
+
+    auto it = std::find_if(_cached_render_.begin(), _cached_render_.end(),
+        [](const auto& pair) {
+            return pair.first == "Spanverse";
+        });
+
+    if (it != _cached_render_.end())
+    {
+        data->pRenderScheduler->m_lpsspRenderProcess.push_back(*it);
+
+        _cached_render_.erase(it);
+
+        ctx.r3.u32 = 1;
+    }
+    else 
+    {
+        __imp__sub_8260A9D0(ctx, base);
+    }
+    return;
+}
+
+PPC_FUNC_IMPL(__imp__sub_8260AAB0);
+PPC_FUNC(sub_8260AAB0)
+{
+    auto L = (lua50::lua_State*)(ctx.r3.u32 + base);
+    auto data = (_custom_data_*)lua50::lua_topointer(L, 1);
+
+    auto it = std::find_if(_cached_render_.begin(), _cached_render_.end(),
+        [](const auto& pair) {
+            return pair.first == "GE1Particle";
+        });
+
+    if (it != _cached_render_.end())
+    {
+        data->pRenderScheduler->m_lpsspRenderProcess.push_back(*it);
+
+        _cached_render_.erase(it);
+
+        ctx.r3.u32 = 1;
+    }
+    else 
+    {
+        __imp__sub_8260AAB0(ctx, base);
+    }
+    return;
+}
+
+
+
 void Video::Present() 
 {
     g_readyForCommands = false;
@@ -3235,7 +3332,7 @@ void Video::Present()
         g_needsResize = false;
 
         auto pApp = App::s_pApp;
-        auto pDocState = pApp->m_pDocState.get();
+        auto pDocState = pApp->m_pDoc.get();
         auto pResourceManager = Sonicteam::SoX::ResourceManager::GetInstance();
         auto pSurfaceMgr = Sonicteam::SoX::Graphics::SurfaceMgr::GetInstance();
         auto pTextureMgr = Sonicteam::SoX::Graphics::TextureMgr::GetInstance();
@@ -3588,173 +3685,29 @@ void Video::Present()
         }
 
       */
-
-
         auto pManageParticle = Sonicteam::MyPE::CManageParticle::GetInstance();
         auto pRenderSceduler = pDocState->m_pRenderScheduler.get();
 
-        auto GetSchedureRenderProcess = [&](const char* name)
+
+        auto CacheRenderProcess = [&](const char* name)
             {
+                bool found = false;
                 for (auto& it : pDocState->m_pRenderScheduler->m_lpsspRenderProcess)
                 {
                     if (it.first == name)
-                        return it;
+                    {
+                        _cached_render_.push_back(it);
+                        found = true;
+                    }
                 }
-                //ERROR
+                return found;
             };
 
-        //Now we Need To Save Them First
-        auto psspSpanverse = GetSchedureRenderProcess("Spanverse");
+        //Cache Particles
+        CacheRenderProcess("Spanverse");
+        CacheRenderProcess("GE1Particle");
 
-       
-        pRenderSceduler->m_lpsspRenderProcess.clear();
-        pMyGraphicsDevice->m_FrameBufferObject.reset(); 
-
-
-        //Reset Textures
-        for (auto i = 0; i < 0x10; ++i)
-        {
-            be<uint32_t>* v40 = g_userHeap.AllocPhysical<be<uint32_t>>(0);
-            GuestToHostFunction<void>(sub_8259A830, pMyGraphicsDevice, i, v40);
-            if (*v40)
-                GuestToHostFunction<void>(sub_82581E38, v40->get());
-        }
-
- 
-
-        auto CreateAndPutToRenderChain = [&](const char* name, auto& func, size_t mem_size, int arg3)
-            {
-                Sonicteam::SoX::Engine::RenderProcess* pRenderProcess = GuestToHostFunction<Sonicteam::SoX::Engine::RenderProcess*>(
-                    func, g_userHeap.Alloc(mem_size), pDocState, arg3
-                );
-                pRenderProcess->m_pRenderScheduler = pDocState->m_pRenderScheduler;
-                pDocState->m_pRenderScheduler->m_lpsspRenderProcess.push_back(
-                    std::make_pair<stdx::string, boost::shared_ptr<Sonicteam::SoX::Engine::RenderProcess>>(
-                        name,
-                        boost::make_shared<Sonicteam::SoX::Engine::RenderProcess>(pRenderProcess,0x8204C700)
-                    )
-                );
-                printf("pRenderProcess %x\n", pRenderProcess);
-                return pRenderProcess;
-            };
-
-      
-        CreateAndPutToRenderChain("Render", sub_82649D38, 0x38, 2)->m_pVftable.ptr = 0x8204C688; //BlockHead
-        CreateAndPutToRenderChain("ResetCurrentScreen", sub_8263D710, 0x3C, 0);
-        CreateAndPutToRenderChain("ResetRenderStates", sub_8263D770, 0x38, 0);
-
-
-        //Call Lua (Render Function)
-        struct _custom_data_
-        {
-            xpointer<Sonicteam::DocMarathonImp> pDoc;
-            xpointer<Sonicteam::MyGraphicsDevice> pDevice;
-            xpointer<Sonicteam::RenderTargetContainer> pRenderTargetContainer;
-            xpointer<Sonicteam::SoX::Engine::RenderScheduler> pRenderScheduler;
-            Sonicteam::SoX::RefSharedPointer<Sonicteam::SoX::RefCountObject> Field4;
-            stdx::string customName;
-            be<uint32_t> field_30;
-            be<uint32_t> field_34;
-            be<uint32_t> field_38;
-            stdx::map<stdx::string, xpointer<void>> mMap; //?????
-
-            _custom_data_(
-                xpointer<Sonicteam::DocMarathonImp> doc,
-                xpointer<Sonicteam::MyGraphicsDevice> device,
-                xpointer<Sonicteam::RenderTargetContainer> renderTarget,
-                xpointer<Sonicteam::SoX::Engine::RenderScheduler> scheduler,
-                Sonicteam::SoX::RefSharedPointer<Sonicteam::SoX::RefCountObject> field4,
-                be<uint32_t> field_30,
-                be<uint32_t> field_34,
-                be<uint32_t> field_38,
-                const char* name
-            )
-                : pDoc(doc)
-                , pDevice(device)
-                , pRenderTargetContainer(renderTarget)
-                , pRenderScheduler(scheduler)
-                , Field4(field4)
-                , field_30(field_30)
-                , field_34(field_34)
-                , field_38(field_38)
-                , customName(name)
-                , mMap()
-            {
-
-            }
-
-        };
-
-        auto gspLuaResource = g_userHeap.AllocPhysical<Sonicteam::SoX::RefSharedPointer<Sonicteam::LuaSystem>>();
-        *gspLuaResource = NULL;
-        GuestToHostFunction<void>(sub_825ED168, gspLuaResource, Sonicteam::Globals::ms_CurrentRenderScript, 0x8204C3F8, 0x4F);
-        auto pLuaResource = static_cast<Sonicteam::LuaSystem*>(gspLuaResource->get());
-        printf("pLuaResource : %p\n", gspLuaResource->get());
-        printf("ms_CurrentRenderScript : %s\n", Sonicteam::Globals::ms_CurrentRenderScript->c_str());
- 
-
-        _custom_data_* gCustomData = g_userHeap.AllocPhysical<_custom_data_>
-            (
-                pDocState,
-                pMyGraphicsDevice,
-                pDocState->m_pRenderTargetContainer,
-                pDocState->m_pRenderScheduler,
-                Sonicteam::SoX::RefSharedPointer(),
-                0,
-                1,
-                0,
-                "main"
-            );
-
-
-        g_memory.InsertFunction(0x88000000, &Test);
-
-
-        auto funcCount = 2;
-        lua50::luaL_reg* plFunctions = (lua50::luaL_reg*)g_userHeap.Alloc(sizeof(lua50::luaL_reg) * funcCount);
-        if (plFunctions) {
-
-            plFunctions[0] = 
-            {
-                Sonicteam::Globals::msg_ConstCharStringRenderSpanverse,
-                (lua50::lua_CFunction)0x88000000
-            };
-
-            plFunctions[1] = 
-            {
-                Sonicteam::Globals::msg_ConstCharStringRenderGE1Particle,
-                (lua50::lua_CFunction)0x82AD0700 
-            };
-
-            if (pLuaResource)
-            {
-                pLuaResource->RegisterFunctions(plFunctions, funcCount);
-                pLuaResource->CallFunction3(Sonicteam::Globals::msg_ConstCharStringBuild, gCustomData);
-            }
-
-            g_userHeap.Free(plFunctions);
-        }
-        printf("t %p\n", &gCustomData->mMap);
-        for (auto& t : gCustomData->mMap)
-        {
-            printf("t %s - %p\n", t.first.c_str());
-        }
-        gCustomData->~_custom_data_();
-
-        g_userHeap.Free(gCustomData);
-        gspLuaResource->reset();
-        g_userHeap.Free(gspLuaResource);
-        //End of Lua (Begin())
-
-        CreateAndPutToRenderChain("EndOfBlock", sub_82649D38, 0x38, 3)->m_pVftable.ptr = 0x8204C69C; //BlockTail
-
-        pDocState->m_pSFXAgent->Reload();
-
-
-   
-
-        // Quick Method, csm seems fine now
-        /*
+  
         auto sfx1 = pDocState->m_pSFXAgent->m_aSFXMatrices1;
         auto sfx2 = pDocState->m_pSFXAgent->m_aSFXMatrices2;
         pDocState->m_pSFXAgent->m_aSFXMatrices1 = 0;
@@ -3764,13 +3717,65 @@ void Video::Present()
         pMyGraphicsDevice->m_FrameBufferObject = 0;
         GuestToHostFunction<void>(sub_8260DF88, pDocState, 0x82B814F8, 1);
         pMyGraphicsDevice->m_apTexture = _array_;
+
+        //Clear New Ones
+        if (pDocState->m_pSFXAgent->m_aSFXMatrices1)
+            g_userHeap.Free(pDocState->m_pSFXAgent->m_aSFXMatrices1->GetArray());
+
+        if (pDocState->m_pSFXAgent->m_aSFXMatrices2)
+            g_userHeap.Free(pDocState->m_pSFXAgent->m_aSFXMatrices2->GetArray());
+
         pDocState->m_pSFXAgent->m_aSFXMatrices1 = sfx1;
         pDocState->m_pSFXAgent->m_aSFXMatrices2 = sfx2;
         pMyGraphicsDevice->m_FrameBufferObject = spFrameBufferObject;
-        //revert framebuffer
-        */
-        
-        
+
+
+        printf("pDocState->m_PauseFlag %x\n", pDocState->m_PauseFlags.get());
+        if (pDocState->m_PauseFlags.get() != 0)
+        {
+
+            /*
+            for (auto& thread : *pDocState->m_lnThread.get())
+            {
+
+                auto pThread = thread.m_pThis;
+                printf("pDocState->m_lnThread %p - %x\n", &thread, pThread->m_pVftable.get());
+                if (pThread->m_IsThreadReady)
+                {
+                    pThread->m_DeltaTime = 1.0;
+                    pThread->m_IsThreadReady = 0;
+                    GuestToHostFunction<void>(sub_826FD180, pThread->m_Handle.get()); //ResumeThread
+                }
+                GuestToHostFunction<void>(sub_826FD140, pThread->m_StartEvent);
+            }
+
+            for (auto& thread : *pDocState->m_lnThread.get())
+            {
+                auto pThread = thread.m_pThis;
+                pThread->Func4();
+            }
+            */
+    
+            //Always Update 
+            if (pDocState->m_PauseFlags.get() != 0)
+            {
+
+
+    
+
+               // GuestToHostFunction<void>(sub_825D49E0, &pDocState->m_CriticalSection1);
+             //   Traverse(pDocState->m_pRootTask.get());
+           //     GuestToHostFunction<void>(sub_82580920, &pDocState->m_CriticalSection1);
+            }
+       
+            //GuestToHostFunction<void>(sub_82581D50, pDocState, 1.0/60.0);
+        }
+
+
+
+
+
+
         auto SetResource = [&](auto* spTextureTo, const char* name)
         {
             if (auto it = rmTextureResources.find(name); it != rmTextureResources.end())

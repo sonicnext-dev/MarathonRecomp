@@ -27,6 +27,16 @@ namespace Sonicteam::SoX
                 : m_pCurrent(start ? start->m_pNext.get() : nullptr)
                 , m_pStart(start)
             {
+
+                if (m_pStart && m_pStart->m_pNext.get() == m_pStart)
+                {
+                    m_pCurrent = nullptr;
+                }
+
+                else if (m_pStart)
+                {
+                    m_pCurrent = m_pStart->m_pNext.get();
+                }
             }
 
             reference operator*() const
@@ -39,7 +49,6 @@ namespace Sonicteam::SoX
                 return m_pCurrent;
             }
 
-            // Prefix increment - traverse to next node
             iterator& operator++()
             {
                 if (m_pCurrent && m_pCurrent->m_pNext)
@@ -58,7 +67,6 @@ namespace Sonicteam::SoX
                 return *this;
             }
 
-            // Postfix increment
             iterator operator++(int)
             {
                 iterator tmp = *this;
@@ -95,6 +103,14 @@ namespace Sonicteam::SoX
                 : m_pCurrent(start ? start->m_pNext.get() : nullptr)
                 , m_pStart(start)
             {
+                if (m_pStart && m_pStart->m_pNext.get() == m_pStart)
+                {
+                    m_pCurrent = nullptr;
+                }
+                else if (m_pStart)
+                {
+                    m_pCurrent = m_pStart->m_pNext.get();
+                }
             }
 
             const_iterator(const iterator& it)
