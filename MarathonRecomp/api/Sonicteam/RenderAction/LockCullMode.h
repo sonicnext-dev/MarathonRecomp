@@ -11,6 +11,6 @@ namespace Sonicteam::RenderAction
         bool m_Lock;
     };
 
-    MARATHON_ASSERT_SIZEOF(LockCullMode, 0x3C);
     MARATHON_ASSERT_OFFSETOF(LockCullMode, m_Lock, 0x38);
+    MARATHON_ASSERT_SIZEOF(LockCullMode, 0x3C);
 }

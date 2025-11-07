@@ -27,7 +27,7 @@ namespace Sonicteam::RenderAction
         xpointer<void> m_pShader;
     };
 
-    MARATHON_ASSERT_SIZEOF(SetConstantShader, 0x40);
     MARATHON_ASSERT_OFFSETOF(SetConstantShader, m_PassIndex, 0x38);
     MARATHON_ASSERT_OFFSETOF(SetConstantShader, m_pShader, 0x3C);
+    MARATHON_ASSERT_SIZEOF(SetConstantShader, 0x40);
 }

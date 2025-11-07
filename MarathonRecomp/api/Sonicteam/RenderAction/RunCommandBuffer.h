@@ -12,6 +12,6 @@ namespace Sonicteam::RenderAction
         MARATHON_INSERT_PADDING(0x4);
     };
 
-    MARATHON_ASSERT_SIZEOF(RunCommandBuffer, 0x40);
     MARATHON_ASSERT_OFFSETOF(RunCommandBuffer, m_CameraIndex, 0x38);
+    MARATHON_ASSERT_SIZEOF(RunCommandBuffer, 0x40);
 }

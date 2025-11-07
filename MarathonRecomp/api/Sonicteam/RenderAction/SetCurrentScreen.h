@@ -11,6 +11,6 @@ namespace Sonicteam::RenderAction
         be<uint32_t> m_ScreenIndex;
     };
 
-    MARATHON_ASSERT_SIZEOF(SetCurrentScreen, 0x3C);
     MARATHON_ASSERT_OFFSETOF(SetCurrentScreen, m_ScreenIndex, 0x38);
+    MARATHON_ASSERT_SIZEOF(SetCurrentScreen, 0x3C);
 }

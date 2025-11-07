@@ -21,6 +21,6 @@ namespace Sonicteam::RenderAction
         be<ZMode> m_ZMode;
     };
 
-    MARATHON_ASSERT_SIZEOF(SetZMode, 0x3C);
     MARATHON_ASSERT_OFFSETOF(SetZMode, m_ZMode, 0x38);
+    MARATHON_ASSERT_SIZEOF(SetZMode, 0x3C);
 }

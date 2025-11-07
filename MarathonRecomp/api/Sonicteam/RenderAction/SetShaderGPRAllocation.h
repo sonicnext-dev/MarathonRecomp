@@ -12,7 +12,7 @@ namespace Sonicteam::RenderAction
         be<uint32_t> m_PixelShaderCount;
     };
 
-    MARATHON_ASSERT_SIZEOF(SetShaderGPRAllocation, 0x40);
     MARATHON_ASSERT_OFFSETOF(SetShaderGPRAllocation, m_VertexShaderCount, 0x38);
     MARATHON_ASSERT_OFFSETOF(SetShaderGPRAllocation, m_PixelShaderCount, 0x3C);
+    MARATHON_ASSERT_SIZEOF(SetShaderGPRAllocation, 0x40);
 }

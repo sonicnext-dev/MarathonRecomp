@@ -1,11 +1,11 @@
 #pragma once
 
 #include <Marathon.inl>
-#include <Sonicteam/SoX/IResource.h>
+#include <Sonicteam/SoX/Graphics/Texture.h>
 
 namespace Sonicteam::SoX::Graphics::Xenon
 {
-    class TextureXenon : public IResource
+    class TextureXenon : public Texture
     {
     public:
         MARATHON_INSERT_PADDING(0x1C);

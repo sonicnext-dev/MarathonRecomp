@@ -9,10 +9,10 @@ namespace Sonicteam::RenderAction
     {
     public:
         bool m_Flag;
-        xpointer<void> m_pReflectionTexture;
+        xpointer<SoX::Graphics::Texture> m_pReflectionTexture;
     };
 
-    MARATHON_ASSERT_SIZEOF(SetReflectionTextures, 0x40);
     MARATHON_ASSERT_OFFSETOF(SetReflectionTextures, m_Flag, 0x38);
     MARATHON_ASSERT_OFFSETOF(SetReflectionTextures, m_pReflectionTexture, 0x3C);
+    MARATHON_ASSERT_SIZEOF(SetReflectionTextures, 0x40);
 }

@@ -11,6 +11,6 @@ namespace Sonicteam::RenderAction
         be<uint32_t> m_CameraIndex;
     };
 
-    MARATHON_ASSERT_SIZEOF(ApplyAutoAspect, 0x3C);
     MARATHON_ASSERT_OFFSETOF(ApplyAutoAspect, m_CameraIndex, 0x38);
+    MARATHON_ASSERT_SIZEOF(ApplyAutoAspect, 0x3C);
 }

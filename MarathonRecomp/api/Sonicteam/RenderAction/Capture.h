@@ -16,8 +16,8 @@ namespace Sonicteam::RenderAction
         xpointer<void> m_pFBO2;
     };
 
-    MARATHON_ASSERT_SIZEOF(Capture, 0x6C);
     MARATHON_ASSERT_OFFSETOF(Capture, m_pFramebufferHDR, 0x3C);
     MARATHON_ASSERT_OFFSETOF(Capture, m_pFBO1, 0x54);
     MARATHON_ASSERT_OFFSETOF(Capture, m_pFBO2, 0x68);
+    MARATHON_ASSERT_SIZEOF(Capture, 0x6C);
 }

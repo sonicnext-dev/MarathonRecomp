@@ -13,6 +13,6 @@ namespace Sonicteam::RenderAction
         MARATHON_INSERT_PADDING(0x4);
     };
 
-    MARATHON_ASSERT_SIZEOF(CopyTexture, 0x44);
     MARATHON_ASSERT_OFFSETOF(CopyTexture, m_pTexture, 0x3C);
+    MARATHON_ASSERT_SIZEOF(CopyTexture, 0x44);
 }

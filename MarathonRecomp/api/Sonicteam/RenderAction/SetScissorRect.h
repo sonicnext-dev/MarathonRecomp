@@ -14,9 +14,9 @@ namespace Sonicteam::RenderAction
         be<float> m_Height;
     };
 
-    MARATHON_ASSERT_SIZEOF(SetScissorRect, 0x48);
     MARATHON_ASSERT_OFFSETOF(SetScissorRect, m_X, 0x38);
     MARATHON_ASSERT_OFFSETOF(SetScissorRect, m_Y, 0x3C);
     MARATHON_ASSERT_OFFSETOF(SetScissorRect, m_Width, 0x40);
     MARATHON_ASSERT_OFFSETOF(SetScissorRect, m_Height, 0x44);
+    MARATHON_ASSERT_SIZEOF(SetScissorRect, 0x48);
 }

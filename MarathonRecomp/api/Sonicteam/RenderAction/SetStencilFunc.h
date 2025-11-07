@@ -14,8 +14,8 @@ namespace Sonicteam::RenderAction
         be<uint32_t> m_BackReference;
     };
 
-    MARATHON_ASSERT_SIZEOF(SetStencilFunc, 0x44);
     MARATHON_ASSERT_OFFSETOF(SetStencilFunc, m_StencilMode, 0x38);
     MARATHON_ASSERT_OFFSETOF(SetStencilFunc, m_FrontReference, 0x3C);
     MARATHON_ASSERT_OFFSETOF(SetStencilFunc, m_BackReference, 0x40);
+    MARATHON_ASSERT_SIZEOF(SetStencilFunc, 0x44);
 }

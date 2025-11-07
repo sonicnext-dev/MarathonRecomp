@@ -20,6 +20,6 @@ namespace Sonicteam::RenderAction
         be<ColorWrite> m_ColorWriteMask;
     };
 
-    MARATHON_ASSERT_SIZEOF(SetColorWriteEnable, 0x3C);
     MARATHON_ASSERT_OFFSETOF(SetColorWriteEnable, m_ColorWriteMask, 0x38);
+    MARATHON_ASSERT_SIZEOF(SetColorWriteEnable, 0x3C);
 }

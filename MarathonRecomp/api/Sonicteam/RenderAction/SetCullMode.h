@@ -18,6 +18,6 @@ namespace Sonicteam::RenderAction
         be<CullMode> m_CullMode;
     };
 
-    MARATHON_ASSERT_SIZEOF(SetCullMode, 0x3C);
     MARATHON_ASSERT_OFFSETOF(SetCullMode, m_CullMode, 0x38);
+    MARATHON_ASSERT_SIZEOF(SetCullMode, 0x3C);
 }

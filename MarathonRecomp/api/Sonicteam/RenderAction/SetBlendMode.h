@@ -18,6 +18,6 @@ namespace Sonicteam::RenderAction
         be<BlendMode> m_BlendMode;
     };
 
-    MARATHON_ASSERT_SIZEOF(SetBlendMode, 0x3C);
     MARATHON_ASSERT_OFFSETOF(SetBlendMode, m_BlendMode, 0x38);
+    MARATHON_ASSERT_SIZEOF(SetBlendMode, 0x3C);
 }

@@ -11,6 +11,6 @@ namespace Sonicteam::RenderAction
         xpointer<MovieObject> m_pMovieObject;
     };
 
-    MARATHON_ASSERT_SIZEOF(Movie, 0x3C);
     MARATHON_ASSERT_OFFSETOF(Movie, m_pMovieObject, 0x38);
+    MARATHON_ASSERT_SIZEOF(Movie, 0x3C);
 }

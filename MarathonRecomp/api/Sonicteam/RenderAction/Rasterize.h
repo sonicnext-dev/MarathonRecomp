@@ -13,7 +13,7 @@ namespace Sonicteam::RenderAction
         bool m_Flag;
     };
 
-    MARATHON_ASSERT_SIZEOF(Rasterize, 0x44);
     MARATHON_ASSERT_OFFSETOF(Rasterize, m_pTexture, 0x3C);
     MARATHON_ASSERT_OFFSETOF(Rasterize, m_Flag, 0x40);
+    MARATHON_ASSERT_SIZEOF(Rasterize, 0x44);
 }

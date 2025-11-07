@@ -11,6 +11,6 @@ namespace Sonicteam::RenderAction
         bool m_Enabled;
     };
 
-    MARATHON_ASSERT_SIZEOF(SetAutoZPass, 0x3C);
     MARATHON_ASSERT_OFFSETOF(SetAutoZPass, m_Enabled, 0x38);
+    MARATHON_ASSERT_SIZEOF(SetAutoZPass, 0x3C);
 }

@@ -12,6 +12,6 @@ namespace Sonicteam::RenderAction
         xpointer<void> m_pFBO;
     };
 
-    MARATHON_ASSERT_SIZEOF(Resolve, 0x44);
     MARATHON_ASSERT_OFFSETOF(Resolve, m_pFBO, 0x40);
+    MARATHON_ASSERT_SIZEOF(Resolve, 0x44);
 }

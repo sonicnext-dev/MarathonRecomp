@@ -27,16 +27,16 @@ namespace Sonicteam::RenderAction
         };
 
         be<uint32_t> m_Unknown;
-        xpointer<void> m_pTexture;
+        xpointer<SoX::Graphics::Texture> m_pTexture;
         be<AddressMode> m_XAddressMode;
         be<AddressMode> m_YAddressMode;
         be<FilterMode> m_FilterMode;
     };
 
-    MARATHON_ASSERT_SIZEOF(SetTexture, 0x4C);
     MARATHON_ASSERT_OFFSETOF(SetTexture, m_Unknown, 0x38);
     MARATHON_ASSERT_OFFSETOF(SetTexture, m_pTexture, 0x3C);
     MARATHON_ASSERT_OFFSETOF(SetTexture, m_XAddressMode, 0x40);
     MARATHON_ASSERT_OFFSETOF(SetTexture, m_YAddressMode, 0x44);
     MARATHON_ASSERT_OFFSETOF(SetTexture, m_FilterMode, 0x48);
+    MARATHON_ASSERT_SIZEOF(SetTexture, 0x4C);
 }
