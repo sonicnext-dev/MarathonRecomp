@@ -13,7 +13,7 @@ namespace Sonicteam::SoX::Engine
             be<uint32_t> fpDestroy;
             be<uint32_t> fpFunc4;
             be<uint32_t> fpFunc8;
-            be<uint32_t> fpFuncC;
+            be<uint32_t> fpPerformProcess;
         };
 
         xpointer<Vftable> m_pVftable;
