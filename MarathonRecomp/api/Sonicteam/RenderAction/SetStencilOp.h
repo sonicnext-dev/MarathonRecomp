@@ -9,11 +9,13 @@ namespace Sonicteam::RenderAction
     class SetStencilOp : public MyRenderProcess
     {
     public:
-        be<D3DXBSTENCILOP> m_FrontStencilOp;
-        be<D3DXBSTENCILOP> m_BackStencilOp;
+        be<D3DXBSTENCILOP> m_Field38;
+        be<D3DXBSTENCILOP> m_Field3C;
+        be<D3DXBSTENCILOP> m_Field40;
     };
 
-    MARATHON_INSERT_PADDING(0x44);
-    MARATHON_ASSERT_OFFSETOF(SetStencilOp, m_FrontStencilOp, 0x38);
-    MARATHON_ASSERT_OFFSETOF(SetStencilOp, m_BackStencilOp, 0x3C);
+    MARATHON_ASSERT_SIZEOF(SetStencilOp, 0x44);
+    MARATHON_ASSERT_OFFSETOF(SetStencilOp, m_Field38, 0x38);
+    MARATHON_ASSERT_OFFSETOF(SetStencilOp, m_Field3C, 0x3C);
+    MARATHON_ASSERT_OFFSETOF(SetStencilOp, m_Field40, 0x40);
 }
