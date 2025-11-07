@@ -259,6 +259,7 @@
 #include "Sonicteam/sonicXmaPlayer.h"
 #include "boost/smart_ptr/make_shared_object.h"
 #include "boost/smart_ptr/shared_ptr.h"
+#include "d3dxb.h"
 #include "hk330/hkArray.h"
 #include "hk330/hkReferencedObject.h"
 #include "hk330/hkpBroadPhaseHandle.h"

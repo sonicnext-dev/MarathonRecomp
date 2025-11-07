@@ -8,8 +8,16 @@ namespace Sonicteam::RenderAction
     class SetCullMode : public MyRenderProcess
     {
     public:
-        MARATHON_INSERT_PADDING(0x4);
+        enum CullMode
+        {
+            None,
+            CW,
+            CCW
+        };
+
+        be<CullMode> m_CullMode;
     };
 
     MARATHON_ASSERT_SIZEOF(SetCullMode, 0x3C);
+    MARATHON_ASSERT_OFFSETOF(SetCullMode, m_CullMode, 0x38);
 }

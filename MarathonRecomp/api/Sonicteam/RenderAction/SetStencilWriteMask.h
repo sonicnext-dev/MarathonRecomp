@@ -8,8 +8,9 @@ namespace Sonicteam::RenderAction
     class SetStencilWriteMask : public MyRenderProcess
     {
     public:
-        MARATHON_INSERT_PADDING(0x4);
+        be<uint32_t> m_WriteMask;
     };
 
     MARATHON_ASSERT_SIZEOF(SetStencilWriteMask, 0x3C);
+    MARATHON_ASSERT_OFFSETOF(SetStencilWriteMask, m_WriteMask, 0x38);
 }

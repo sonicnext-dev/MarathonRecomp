@@ -9,9 +9,13 @@ namespace Sonicteam::RenderAction
     {
     public:
         xpointer<void> m_pFrameBufferObject;
-        MARATHON_INSERT_PADDING(0x8);
+        MARATHON_INSERT_PADDING(0x4);
+        bool m_Once;
+        bool m_PostProcess;
     };
 
     MARATHON_ASSERT_SIZEOF(SetFrameBufferObject, 0x44);
-    MARATHON_ASSERT_OFFSETOF(SetFrameBufferObject, m_pParentProcess, 0x30);
+    MARATHON_ASSERT_OFFSETOF(SetFrameBufferObject, m_pFrameBufferObject, 0x38);
+    MARATHON_ASSERT_OFFSETOF(SetFrameBufferObject, m_Once, 0x40);
+    MARATHON_ASSERT_OFFSETOF(SetFrameBufferObject, m_PostProcess, 0x41);
 }

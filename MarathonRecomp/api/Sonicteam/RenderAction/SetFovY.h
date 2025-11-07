@@ -9,9 +9,10 @@ namespace Sonicteam::RenderAction
     {
     public:
         be<uint32_t> m_CameraIndex;
-        MARATHON_INSERT_PADDING(0x4);
+        be<float> m_FovY;
     };
 
     MARATHON_ASSERT_SIZEOF(SetFovY, 0x40);
     MARATHON_ASSERT_OFFSETOF(SetFovY, m_CameraIndex, 0x38);
+    MARATHON_ASSERT_OFFSETOF(SetFovY, m_FovY, 0x3C);
 }
