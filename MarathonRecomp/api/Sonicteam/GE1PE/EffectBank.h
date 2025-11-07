@@ -23,6 +23,11 @@ namespace Sonicteam::GE1PE
         xpointer<void> m_Data3;
         stdx::map<stdx::string, be<uint32_t>> m_EffectDataIndices; //barrier_g = 0x23
     };
+    MARATHON_ASSERT_OFFSETOF(EffectBankData, m_Field0, 0);
+    MARATHON_ASSERT_OFFSETOF(EffectBankData, m_DataName, 4);
+    MARATHON_ASSERT_OFFSETOF(EffectBankData, m_Data1, 0x20);
+    MARATHON_ASSERT_OFFSETOF(EffectBankData, m_Data2, 0x24);
+    MARATHON_ASSERT_OFFSETOF(EffectBankData, m_Data3, 0x28);
     MARATHON_ASSERT_OFFSETOF(EffectBankData, m_EffectDataIndices, 0x2C);
     MARATHON_ASSERT_SIZEOF(EffectBankData, 0x38);
 
@@ -33,5 +38,8 @@ namespace Sonicteam::GE1PE
         be<uint32_t> m_FieldC; //index ?
         xpointer<EffectBankData> m_pEffectBankA;
     };
+    MARATHON_ASSERT_OFFSETOF(EffectBank,m_pParticleEngine, 8);
+    MARATHON_ASSERT_OFFSETOF(EffectBank,m_FieldC, 0xC);
+    MARATHON_ASSERT_OFFSETOF(EffectBank, m_pEffectBankA, 0x10);
     MARATHON_ASSERT_SIZEOF(EffectBank, 0x14);
 }

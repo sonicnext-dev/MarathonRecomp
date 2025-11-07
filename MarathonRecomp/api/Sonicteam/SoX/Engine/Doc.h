@@ -19,7 +19,8 @@ namespace Sonicteam::SoX::Engine
         MARATHON_INSERT_PADDING(8);
         xpointer<Task> m_pDocModeExecutor;
         xpointer<RenderScheduler> m_pRenderScheduler;
-        MARATHON_INSERT_PADDING(0x38);
+        XRTL_CRITICAL_SECTION m_CriticalSection1;
+        XRTL_CRITICAL_SECTION m_CriticalSection2;
 
         template <typename T = DocMode>
         inline T* GetDocMode()
@@ -33,5 +34,8 @@ namespace Sonicteam::SoX::Engine
     MARATHON_ASSERT_OFFSETOF(Doc, m_pRootTask, 0x0C);
     MARATHON_ASSERT_OFFSETOF(Doc, m_pRootGTask, 0x10);
     MARATHON_ASSERT_OFFSETOF(Doc, m_pDocModeExecutor, 0x1C);
+    MARATHON_ASSERT_OFFSETOF(Doc, m_pRenderScheduler, 0x20);
+    MARATHON_ASSERT_OFFSETOF(Doc, m_CriticalSection1, 0x24);
+    MARATHON_ASSERT_OFFSETOF(Doc, m_CriticalSection2, 0x40);
     MARATHON_ASSERT_SIZEOF(Doc, 0x5C);
 }

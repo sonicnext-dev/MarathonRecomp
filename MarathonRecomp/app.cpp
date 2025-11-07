@@ -64,6 +64,139 @@ PPC_FUNC(sub_8262A568)
     InitPatches();
 }
 
+std::array<const char*, 46> _pause_ignore_task_ =
+{
+    "root",
+    "TL_Debug",
+    "TL_PrepareMain",
+    "TL_Main",
+    //"TL_Particle",
+    "TL_HeadUpDisplay",
+    "TL_PrepareRender",
+    "TL_NonStopTask",
+
+    "ResumeWorkerThreadTask",
+    "ThreadResumeTask",
+
+    //"Cameras",
+    "Cameraman",
+    //"DependCameras",
+    //"SystemDependCameras",
+
+    "PrepareShadowTask",
+    "GameRootTask",
+    //"SpkManageTask",
+    "Task",
+    "TaskAdapter",
+    "HUDMainDisplay",
+    "PostprocessControllerTask",
+    "PrepareRenderTask",
+    "PrepareFrameSynchronizerTask",
+    "FrameSynchronizerTask",
+    "BoundingBoxSynchronizerTask",
+    "FrustumCullingTask",
+    "UpdateResourceInFrustumTask",
+    "GameModeNonStop",
+
+    //AQA
+    "ObjectAqaMercurySmall",
+    "ObjectAqaPond",
+    "ObjectAqaPond", // Duplicate entry
+    "ReflectionManager",
+    "ReflectionArea",
+
+    //
+    "HintWindowTask",
+    "HUDMessageWindow"
+
+    //"DocModeExecutor",
+    //"GameMode",
+    //"DependGame",
+    //"PhysicsMaterialMgrRunner",
+    //"StageSetManagerRunner",
+    //"ActivationMgrRunner",
+    // 
+    //"ImpactManager",
+    //"Entities",
+    //"RadarMapIcon",
+    //"CTownsKeeper",
+    //"CTownsmanActor",
+    //"ObjParticle",
+    //"CommonPathObj",
+    //"BellObj",
+    //"WarpGateObj",
+    //"TownsDoorObj",
+    //"ObjSpring",
+    //"ObjectPhysicsSingle",
+    //"ObjRadarMapMark",
+    //"ObjectPointSample",
+    //"StartObj",
+    //"Townsman(townsman998)",
+    //"CObjBalloonIcon",
+    //"ObjWideSpring",
+    //"Townsman(townsman021)",
+    //"CObjBalloonIcon",
+    //"ObjEventCollision",
+    //"BellObj",
+    //"Townsman(townsman070)",
+    //"CObjBalloonIcon",
+    //"GondolaObj",
+    //"ObjectPointSample",
+    //"ObjCameraCollision",
+    //"ObjSpring",
+    //"Townsman(gondolaman31)",
+    //"CTownsmanEquipmentObject",
+    //"Townsman(gondolaman29)",
+    //"Townsman(gondolaman30)",
+    //"ObjSpring",
+    //"ObjectPointSample",
+    //"TownsDoorObj",
+    //"EnemyThread",
+    //"Players",
+    //"class Sonicteam::Player::Object",
+    //"KhronoController",
+    //"SceneParamManagerTask",
+    //"CommonObjectLensFlare",
+    //"KynapseRunnerTask",
+    //"KynapseMessenger",
+    //"RaderMapManager",
+    //"EnemyLifeTask",
+    //"MainDisplayTask",
+    //"HUDLimitTime",
+    //"InputListenTask",
+    //"AudioRunner",
+    //"PauseTask",
+    //"HUDPause"
+};
+
+
+void UpateSpecificTasksPause(Sonicteam::SoX::Engine::Task* ttask)
+{
+    for (auto& task : *ttask)
+    {
+        std::string taskName = (&task)->GetName();
+        printf("task %p - %s \n", &task, (&task)->GetName());
+
+        if ((task.m_Flag1 & 4) == 0)
+        {
+
+            auto shouldIgnore = std::find_if(_pause_ignore_task_.begin(), _pause_ignore_task_.end(),
+                [&taskName](const char* task) 
+                {
+                    return strcmp(task ? task : "", taskName.c_str()) == 0;
+                });
+
+            if (shouldIgnore != _pause_ignore_task_.end())
+            {
+                (&task)->Update(0.0);
+            }
+
+            if (task.m_pDependencies.get())
+                UpateSpecificTasksPause(task.m_pDependencies.get());
+        }
+    }
+}
+
 // Sonicteam::DocMarathonState::Update
 PPC_FUNC_IMPL(__imp__sub_825EA610);
 PPC_FUNC(sub_825EA610)
@@ -93,13 +226,26 @@ PPC_FUNC(sub_825EA610)
 
         GameWindow::Update();
     }
+    auto pDocState = App::s_pApp->m_pDoc;
 
     // Allow variable FPS when config is not 60 FPS.
-    App::s_pApp->m_pDocState->m_VFrame = Config::FPS != 60;
+    App::s_pApp->m_pDoc->m_VFrame = Config::FPS != 60;
 
     AudioPatches::Update(App::s_deltaTime);
 
     __imp__sub_825EA610(ctx, base);
+
+
+    //Always These Tasks in pause mode
+    if (pDocState->m_PauseFlags.get() != 0)
+    {
+
+        GuestToHostFunction<void>(sub_825D49E0, &pDocState->m_CriticalSection1);
+        printf("Traverse Main\n");
+        UpateSpecificTasksPause(pDocState->m_pRootTask.get());
+        GuestToHostFunction<void>(sub_82580920, &pDocState->m_CriticalSection1);
+    }
+
 }
 
 PPC_FUNC_IMPL(__imp__sub_82582648);

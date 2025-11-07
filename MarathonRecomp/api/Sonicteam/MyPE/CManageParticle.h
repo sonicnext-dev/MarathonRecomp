@@ -48,4 +48,8 @@ namespace Sonicteam::MyPE
     MARATHON_ASSERT_OFFSETOF(CManageParticle, m_lContainer, 0x24);
     MARATHON_ASSERT_OFFSETOF(CManageParticle, m_lnParticle, 0x30);
     MARATHON_ASSERT_OFFSETOF(CManageParticle, m_pManagerParticleTask, 0x3C);
+    MARATHON_ASSERT_OFFSETOF(CManageParticle, m_spManager, 0x44);
+    MARATHON_ASSERT_OFFSETOF(CManageParticle, m_spMyPlugin, 0x4C);
+    MARATHON_ASSERT_OFFSETOF(CManageParticle, m_MyEmitterListener, 0x54);
+    MARATHON_ASSERT_SIZEOF(CManageParticle, 0x84);
 }

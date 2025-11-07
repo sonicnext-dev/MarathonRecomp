@@ -9,6 +9,8 @@
 #include <Sonicteam/RaderMapManager.h>
 #include <Sonicteam/RenderTargetContainer.h>
 #include <Sonicteam/Particles/ParticleManager.h>
+#include <Sonicteam/SoX/LinkNode.h>
+#include <Sonicteam/SoX/Thread.h>
 #include <stdx/vector.h>
 
 namespace Sonicteam
@@ -25,7 +27,11 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(4);
         xpointer<RenderTargetContainer> m_pRenderTargetContainer;
         xpointer<SFXAgent> m_pSFXAgent;
-        MARATHON_INSERT_PADDING(0x2A4);
+        MARATHON_INSERT_PADDING(0xC);
+        be<uint32_t> m_PauseFlags;
+        MARATHON_INSERT_PADDING(0x8);
+        xpointer<SoX::LinkedList<SoX::Thread>> m_lnThread;
+        MARATHON_INSERT_PADDING(0x288);
         xpointer<Particles::ParticleManager> m_pParticleManager;
         MARATHON_INSERT_PADDING(0x15D0);
         xpointer<RaderMapManager> m_pRaderMapManager;
@@ -33,8 +39,10 @@ namespace Sonicteam
         be<uint32_t> m_aPadIDs[4];
     };
 
+    MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_PauseFlags, 0xEC);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_vspInputManager, 0x9C);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_VFrame, 0xD0);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_aPadIDs, 0x55C2C);
-    MARATHON_ASSERT_SIZEOF(DocMarathonImp, 0x55C68);
+    MARATHON_ASSERT_SIZEOF(DocMarathonImp, 0x55C3C);
+
 }

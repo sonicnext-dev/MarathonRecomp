@@ -39,5 +39,5 @@ namespace Sonicteam::GE1PE
     MARATHON_ASSERT_OFFSETOF(Manager, m_lnEmitter, 0x44);
     MARATHON_ASSERT_OFFSETOF(Manager, m_lnEffect, 0x50);
     MARATHON_ASSERT_OFFSETOF(Manager, m_lnField5C, 0x5C);
-    //size == 0x34 (but PE::MyPlugin no idea about this)
+
 }

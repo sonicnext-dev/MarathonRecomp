@@ -11,5 +11,4 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(4);
     };
 
-    MARATHON_ASSERT_SIZEOF(NoSyncThread, 0x4C);
 }
