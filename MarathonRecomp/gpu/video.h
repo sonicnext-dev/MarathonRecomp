@@ -240,7 +240,6 @@ struct GuestSurface : GuestBaseTexture
     ankerl::unordered_dense::map<const RenderTexture*, std::unique_ptr<RenderFramebuffer>> framebuffers;
     RenderSampleCounts sampleCount = RenderSampleCount::COUNT_1;
     ankerl::unordered_dense::map<GuestTexture*, uint32_t> destinationTextures;
-    bool wasCached = false;
 };
 
 enum GuestDeclType
