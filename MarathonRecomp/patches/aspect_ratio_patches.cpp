@@ -341,8 +341,7 @@ PPC_FUNC(sub_828C8F60)
         if ((g_sceneModifier->Flags & CSD_MODIFIER_ULTRAWIDE_ONLY) != 0 && g_aspectRatio <= WIDE_ASPECT_RATIO)
             g_sceneModifier->Flags &= (~g_sceneModifier->Flags) | CSD_MODIFIER_ULTRAWIDE_ONLY;
 
-        if ((g_sceneModifier->Flags & CSD_SCENE_DISABLE_MOTION) != 0)
-            pScene->FPS = 0;
+        pScene->FPS = ((g_sceneModifier->Flags & CSD_SCENE_DISABLE_MOTION) != 0) ? 0 : 60;
 
         if (g_aspectRatio > WIDE_ASPECT_RATIO)
         {
