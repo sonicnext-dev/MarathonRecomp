@@ -9,7 +9,6 @@
 #include <Sonicteam/SoX/LinkNode.h>
 #include <stdx/list.h>
 
-
 namespace Sonicteam::MyPE
 {
     class ManageParticleTask;
