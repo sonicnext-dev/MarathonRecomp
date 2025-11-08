@@ -39,12 +39,12 @@ PPC_FUNC_IMPL(__imp__sub_8216DA08);
 PPC_FUNC(sub_8216DA08)
 {
     auto pPauseAdapter = (Sonicteam::PauseAdapter*)(base + ctx.r3.u32);
-    auto pMsgPauseAdapterText = (Sonicteam::Message::MsgPauseAdapterText*)(base + ctx.r4.u32);
+    auto pMsgGetText = (Sonicteam::Message::PauseAdapter::MsgGetText*)(base + ctx.r4.u32);
 
     __imp__sub_8216DA08(ctx, base);
 
     // Set selected ID to unused slot.
-    if (pMsgPauseAdapterText->SelectedName == "options")
+    if (pMsgGetText->SelectedName == "options")
         pPauseAdapter->m_SelectedID = 6;
 }
 

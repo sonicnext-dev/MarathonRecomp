@@ -1,4 +1,5 @@
 #include "text_patches.h"
+#include <api/Marathon.h>
 #include <hid/hid.h>
 #include <kernel/heap.h>
 #include <kernel/memory.h>
@@ -25,6 +26,25 @@ PPC_FUNC(sub_825ECB48)
     }
 
     __imp__sub_825ECB48(ctx, base);
+
+    auto pTextCard = (boost::shared_ptr<Sonicteam::TextCard>*)(base + ctx.r3.u32);
+
+    for (auto& replacement : TextPatches::s_replacedMessages)
+    {
+        if (HashStr(pMessage) != replacement.first)
+            continue;
+
+        auto& message = Localise(replacement.second);
+        auto  wideMessage = std::wstring(message.begin(), message.end());
+        auto  wideMessageLen = (wideMessage.length() * 2) + 2;
+
+        auto pReplacedMessage = (uint16_t*)g_userHeap.Alloc(wideMessageLen);
+
+        for (size_t i = 0; i < wideMessageLen; i++)
+            pReplacedMessage[i] = ByteSwap(wideMessage.c_str()[i]);
+
+        pTextCard->get()->m_pText = (const uint16_t*)pReplacedMessage;
+    }
 
     if (!pNewMessage)
         return;

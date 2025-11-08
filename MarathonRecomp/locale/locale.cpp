@@ -294,8 +294,29 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         }
     },
     {
-        // Notes: used for the button guide at the pause menu.
-        "Achievements_Name",
+        "MainMenu_GoldMedalResults_Name",
+        {
+            { ELanguage::English,  "RESULTS" },
+            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::German,   "DUMMY" },
+            { ELanguage::French,   "DUMMY" },
+            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Italian,  "DUMMY" }
+        }
+    },
+    {
+        "MainMenu_GoldMedalResults_Description",
+        {
+            { ELanguage::English,  "Results: Displays lists of Gold Medals and Achievements" },
+            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::German,   "DUMMY" },
+            { ELanguage::French,   "DUMMY" },
+            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Italian,  "DUMMY" }
+        }
+    },
+    {
+        "Achievements_Title",
         {
             { ELanguage::English,  "Achievements" },
             { ELanguage::Japanese, "実績" },
@@ -306,8 +327,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         }
     },
     {
-        // Notes: used for the header in the achievements menu.
-        "Achievements_Name_Uppercase",
+        "Achievements_Title_Uppercase",
         {
             { ELanguage::English,  "ACHIEVEMENTS" },
             { ELanguage::Japanese, "実績" },
@@ -315,6 +335,28 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::French,   "SUCCÈS" },
             { ELanguage::Spanish,  "LOGROS" },
             { ELanguage::Italian,  "OBIETTIVI" }
+        }
+    },
+    {
+        "Achievements_GoldMedals",
+        {
+            { ELanguage::English,  "Gold Medals" },
+            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::German,   "DUMMY" },
+            { ELanguage::French,   "DUMMY" },
+            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Italian,  "DUMMY" }
+        }
+    },
+    {
+        "Achievements_GoldMedals_Uppercase",
+        {
+            { ELanguage::English,  "GOLD MEDALS" },
+            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::German,   "DUMMY" },
+            { ELanguage::French,   "DUMMY" },
+            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Italian,  "DUMMY" }
         }
     },
     {
@@ -326,6 +368,17 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::French,   "Succès déverrouillé !" },
             { ELanguage::Spanish,  "¡Logro desbloqueado!" },
             { ELanguage::Italian,  "Obiettivo sbloccato!" }
+        }
+    },
+    {
+        "Achievements_Progress",
+        {
+            { ELanguage::English,  "PROGRESS %d%%" },
+            { ELanguage::Japanese, "PROGRESS %d%%" },
+            { ELanguage::German,   "FORTSCHRITT %d%%" },
+            { ELanguage::French,   "PROGRESSION %d%%" },
+            { ELanguage::Spanish,  "PROGRESO %d%%" },
+            { ELanguage::Italian,  "PROGRESSI %d%%" }
         }
     },
     {
@@ -938,14 +991,32 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Spanish, "${picture(button_x)} ${locale(Common_Reset)}  ${picture(button_a)} ${locale(Common_Select)}  ${picture(button_b)} ${locale(Common_Back)}" },
         }
     },
+    {
+        "Button_GoldMedalsBack",
+        {
+            { ELanguage::English, "${picture(button_y)}${locale(Achievements_GoldMedals)}  ${picture(button_b)}${locale(Common_Back)}" },
+            { ELanguage::German,  "${picture(button_y)} ${locale(Achievements_GoldMedals)}　　${picture(button_b)} ${locale(Common_Back)}" },
+            { ELanguage::Spanish, "${picture(button_y)} ${locale(Achievements_GoldMedals)}  ${picture(button_b)} ${locale(Common_Back)}" }
+        }
+    },
+    {
+        "Button_AchievementsBack",
+        {
+            { ELanguage::English, "${picture(button_y)}${locale(Achievements_Title)}  ${picture(button_b)}${locale(Common_Back)}" },
+            { ELanguage::German,  "${picture(button_y)} ${locale(Achievements_Title)}　　${picture(button_b)} ${locale(Common_Back)}" },
+            { ELanguage::Spanish, "${picture(button_y)} ${locale(Achievements_Title)}  ${picture(button_b)} ${locale(Common_Back)}" }
+        }
+    }
 };
 
 std::string& Localise(const std::string_view& key)
 {
     auto localeFindResult = g_locale.find(key);
+
     if (localeFindResult != g_locale.end())
     {
         auto languageFindResult = localeFindResult->second.find(Config::Language);
+
         if (languageFindResult == localeFindResult->second.end())
             languageFindResult = localeFindResult->second.find(ELanguage::English);
 

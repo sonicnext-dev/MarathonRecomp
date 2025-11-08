@@ -736,3 +736,8 @@ jump_address_on_true = 0x821857B4
 name = "UnlockAchievement"
 address = 0x825B0960
 registers = ["r29"]
+
+[[midasm_hook]]
+name = "MainMenuTask_GoldMedalResults_SkipOutro"
+address = 0x82502E14
+jump_address_on_true = 0x82502E90

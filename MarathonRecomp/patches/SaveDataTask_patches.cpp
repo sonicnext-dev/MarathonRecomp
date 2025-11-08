@@ -3,8 +3,6 @@
 #include <user/achievement_manager.h>
 #include <user/config.h>
 
-#include <os/logger.h>
-
 enum
 {
     ACH_ERROR_SUCCESS,

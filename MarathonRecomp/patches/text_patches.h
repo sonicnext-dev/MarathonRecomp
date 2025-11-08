@@ -7,8 +7,14 @@ class TextPatches
 public:
     static inline xxHashMap<const char*> s_redirectedMessages
     {
-        { HashStr("msg_deviceselect"), "msg_retry" },           // Replace "Select storage device." text with "Retry" for alert windows.
+        { HashStr("msg_deviceselect"),     "msg_retry" },       // Replace "Select storage device." text with "Retry" for alert windows.
         { HashStr("msg_gamequitconfirm4"), "msg_backtotitle1" } // Replace "Exit the game." text with "Go back to the Title Screen."
+    };
+
+    static inline xxHashMap<const char*> s_replacedMessages
+    {
+        { HashStr("msg_goldmedalresults"),   "MainMenu_GoldMedalResults_Name" },
+        { HashStr("msg_goldmedalresults_c"), "MainMenu_GoldMedalResults_Description" }
     };
 
     static inline std::vector<const char*> s_hintPatterns =

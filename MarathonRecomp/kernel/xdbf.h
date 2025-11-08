@@ -12,12 +12,12 @@ namespace xdbf
     {
         static std::array<std::string_view, 1> invalidSequences =
         {
-            "\xE2\x80\x99"
+            "\n"
         };
 
         static std::array<std::string_view, 1> replaceSequences =
         {
-            "'"
+            " "
         };
 
         for (int i = 0; i < invalidSequences.size(); i++)

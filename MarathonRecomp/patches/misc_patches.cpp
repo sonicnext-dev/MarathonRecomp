@@ -121,7 +121,7 @@ PPC_FUNC(sub_822CE930)
     if (!Config::ControlTutorial || Config::SlidingAttack != ESlidingAttack::X)
     {
         // Get global flag for Sonic's Antigravity being unlocked to remove "hint_all03_h26_so".
-        guest_stack_var<Sonicteam::Message::MsgMissionGetGlobalFlag> msgGetSonicAntigravityFlag(6001);
+        guest_stack_var<Sonicteam::Message::Mission::MsgGetGlobalFlag> msgGetSonicAntigravityFlag(6001);
         pGame->m_pMissionCore->ProcessMessage(msgGetSonicAntigravityFlag.get());
 
         if (msgGetSonicAntigravityFlag->FlagValue != 0 && strcmp(rMessageName, "hint_twn01_e02_tl") == 0)
@@ -134,11 +134,11 @@ PPC_FUNC(sub_822CE930)
     if (!Config::ControlTutorial || Config::LightDash != ELightDash::X)
     {
         // Get global flag for Sonic's Light Dash being unlocked to remove "hint_twn01_e01_tl".
-        guest_stack_var<Sonicteam::Message::MsgMissionGetGlobalFlag> msgGetSonicLightDashFlag(6000);
+        guest_stack_var<Sonicteam::Message::Mission::MsgGetGlobalFlag> msgGetSonicLightDashFlag(6000);
         pGame->m_pMissionCore->ProcessMessage(msgGetSonicLightDashFlag.get());
 
         // Get global flag for Shadow's Light Dash being unlocked to remove "hint_twn01_e44_rg".
-        guest_stack_var<Sonicteam::Message::MsgMissionGetGlobalFlag> msgGetShadowLightDashFlag(6012);
+        guest_stack_var<Sonicteam::Message::Mission::MsgGetGlobalFlag> msgGetShadowLightDashFlag(6012);
         pGame->m_pMissionCore->ProcessMessage(msgGetShadowLightDashFlag.get());
 
         auto isSonicLightDashHint = msgGetSonicLightDashFlag->FlagValue != 0 && strcmp(rMessageName, "hint_twn01_e00_tl") == 0;

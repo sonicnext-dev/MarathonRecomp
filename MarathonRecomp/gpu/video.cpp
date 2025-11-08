@@ -1576,7 +1576,6 @@ static void CreateImGuiBackend()
 #endif
 
     InitImGuiUtils();
-    AchievementMenu::Init();
     OptionsMenu::Init();
     InstallerWizard::Init();
 
@@ -2914,10 +2913,10 @@ static void DrawImGui()
 
     AchievementMenu::Draw();
     OptionsMenu::Draw();
-    AchievementOverlay::Draw();
     InstallerWizard::Draw();
     ButtonWindow::Draw();
     MessageWindow::Draw();
+    AchievementOverlay::Draw();
     Fader::Draw();
     BlackBar::Draw();
 
@@ -4457,13 +4456,10 @@ static void SanitizePipelineState(PipelineState& pipelineState)
         pipelineState.blendOpAlpha = RenderBlendOperation::ADD;
     }
 
-    if (pipelineState.vertexDeclaration)
+    for (size_t i = 0; i < 16; i++)
     {
-        for (size_t i = 0; i < 16; i++)
-        {
-            if (!pipelineState.vertexDeclaration->vertexStreams[i])
-                pipelineState.vertexStrides[i] = 0;
-        }
+        if (!pipelineState.vertexDeclaration->vertexStreams[i])
+            pipelineState.vertexStrides[i] = 0;
     }
 
     uint32_t specConstantsMask = 0;

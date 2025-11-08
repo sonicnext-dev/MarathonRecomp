@@ -48,6 +48,7 @@ public:
     std::string Title{};
     std::string Description{};
     bool PlayTransitions{};
+    bool ShowDescription{ true };
     bool ShowVersionString{ true };
     bool ReduceDraw{};
 

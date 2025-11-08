@@ -221,10 +221,10 @@ void MessageWindow::Draw()
 
             g_joypadAxis.y = -rPadState.LeftStickVertical;
 
-            if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DpadUp))
+            if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DPadUp))
                 g_joypadAxis.y = 1.0f;
 
-            if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DpadDown))
+            if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DPadDown))
                 g_joypadAxis.y = -1.0f;
 
             g_isAccepted = rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_A);

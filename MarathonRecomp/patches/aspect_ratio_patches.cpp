@@ -411,7 +411,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
     }
 
     // Hide original button window whilst the options menu is visible.
-    if ((modifier.Flags & CSD_BUTTON_WINDOW) != 0 && OptionsMenu::s_isVisible)
+    if ((modifier.Flags & CSD_BUTTON_WINDOW) != 0 && MainMenuTaskPatches::HideButtonWindow)
         return;
 
     // Remove all flags if the aspect ratio is above 16:9.

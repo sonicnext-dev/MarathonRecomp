@@ -852,6 +852,47 @@ double DrawWindow(const ImVec2 min, const ImVec2 max, bool isAnimated, double ti
     return motionTime;
 }
 
+void DrawScrollArrows(ImVec2 min, ImVec2 max, float scale, double& time, bool top, bool bottom)
+{
+    auto drawList = ImGui::GetBackgroundDrawList();
+
+    auto scrollArrowUVs = PIXELS_TO_UV_COORDS(1024, 1024, 500, 450, 50, 50);
+    auto scrollArrowOffsetX = Scale(64, true);
+    auto scrollArrowAlphaMotionInTime = ComputeLinearMotion(time, 0, 3);
+    auto scrollArrowAlphaMotionPauseTime = ComputeLinearMotion(time, 3, 11);
+    auto scrollArrowAlphaMotionOutTime = ComputeLinearMotion(time, 11, 4, true);
+    auto scrollArrowAlphaMotionLoopTime = ComputeLinearMotion(time, 15, 50);
+    auto scrollArrowAlphaMotion = 255;
+
+    if (scrollArrowAlphaMotionPauseTime >= 1.0)
+    {
+        // Fade out arrows.
+        scrollArrowAlphaMotion = 255 * scrollArrowAlphaMotionOutTime;
+
+        // Reset loop.
+        if (scrollArrowAlphaMotionLoopTime >= 1.0)
+            time = ImGui::GetTime();
+    }
+    else
+    {
+        // Fade in arrows.
+        scrollArrowAlphaMotion = 255 * scrollArrowAlphaMotionInTime;
+    }
+
+    auto scrollArrowColourMotion = IM_COL32(255, 255, 255, scrollArrowAlphaMotion);
+
+    ImVec2 scrollArrowTopMin = min;
+    ImVec2 scrollArrowTopMax = { scrollArrowTopMin.x + scale, scrollArrowTopMin.y + scale };
+    ImVec2 scrollArrowBottomMin = { scrollArrowTopMin.x, max.y - scale };
+    ImVec2 scrollArrowBottomMax = { scrollArrowTopMax.x, scrollArrowBottomMin.y + scale };
+
+    if (top)
+        AddImageFlipped(g_upTexMainMenu1.get(), scrollArrowTopMin, scrollArrowTopMax, GET_UV_COORDS(scrollArrowUVs), scrollArrowColourMotion, false, true);
+
+    if (bottom)
+        drawList->AddImage(g_upTexMainMenu1.get(), scrollArrowBottomMin, scrollArrowBottomMax, GET_UV_COORDS(scrollArrowUVs), scrollArrowColourMotion);
+}
+
 // Taken from ImGui because we need to modify to break for '\u200B\ too
 // Simple word-wrapping for English, not full-featured. Please submit failing cases!
 // This will return the next location to wrap from. If no wrapping if necessary, this will fast-forward to e.g. text_end.

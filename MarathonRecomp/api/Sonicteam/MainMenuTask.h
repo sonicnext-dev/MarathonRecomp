@@ -26,7 +26,8 @@ namespace Sonicteam
             MainMenuState_Tag = 0x1E,
             MainMenuState_Tag1PSelect = 0x1F,
             MainMenuState_Battle = 0x22,
-            MainMenuState_GoldMedalResults = 0x26,
+            MainMenuState_GoldMedalResultsOpen = 0x26,
+            MainMenuState_GoldMedalResults = 0x27,
             MainMenuState_AudioRoom = 0x2F,
             MainMenuState_TheaterRoom = 0x31,
             MainMenuState_Options = 0x33,
@@ -37,11 +38,18 @@ namespace Sonicteam
         be<uint32_t> m_State;
         MARATHON_INSERT_PADDING(0x24);
         xpointer<HUDMainMenu> m_pHUDMainMenu;
-        MARATHON_INSERT_PADDING(0x20);
+        MARATHON_INSERT_PADDING(8);
+        xpointer<HUDGoldMedal> m_pHUDGoldMedal;
+        MARATHON_INSERT_PADDING(0x14);
         xpointer<ButtonWindowTask> m_pButtonWindowTask;
-        MARATHON_INSERT_PADDING(4);
+        xpointer<void> m_pMainMenuExpositionTask;
         be<uint32_t> m_MainMenuSelectedIndex;
-        MARATHON_INSERT_PADDING(0x1D8);
+        be<uint32_t> m_SinglePlayerSelectedIndex;
+        MARATHON_INSERT_PADDING(0x78);
+        be<uint32_t> m_GoldMedalEpisodeIndex;
+        MARATHON_INSERT_PADDING(0x14C);
+        be<uint32_t> m_IsChangingState;
+        MARATHON_INSERT_PADDING(8);
         be<uint32_t> m_PressedButtons;
         MARATHON_INSERT_PADDING(0x18);
         xpointer<Actor> m_Field298;
@@ -51,8 +59,13 @@ namespace Sonicteam
 
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_State, 0x4C);
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_pHUDMainMenu, 0x74);
+    MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_pHUDGoldMedal, 0x80);
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_pButtonWindowTask, 0x98);
+    MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_pMainMenuExpositionTask, 0x9C);
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_MainMenuSelectedIndex, 0xA0);
+    MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_SinglePlayerSelectedIndex, 0xA4);
+    MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_GoldMedalEpisodeIndex, 0x120);
+    MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_IsChangingState, 0x270);
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_PressedButtons, 0x27C);
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_Field298, 0x298);
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_apSelectCharacters, 0x29C);
