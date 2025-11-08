@@ -23,7 +23,7 @@ namespace Sonicteam::SoX::Engine
         XRTL_CRITICAL_SECTION m_CriticalSection2;
 
         template <typename T = DocMode>
-        inline T* GetDocMode()
+        T* GetDocMode()
         {
             return (T*)m_pDocMode.get();
         }

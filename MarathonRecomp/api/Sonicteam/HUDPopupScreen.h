@@ -2,10 +2,10 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/SoX/Graphics/TechniqueFXL.h>
-#include <Sonicteam/MyTexture.h>
-#include <Sonicteam/SoX/RefSharedPointer.h>
 #include <Sonicteam/SoX/RefCountObject.h>
+#include <Sonicteam/SoX/RefSharedPointer.h>
 #include <Sonicteam/CsdObject.h>
+#include <Sonicteam/MyTexture.h>
 #include <stdx/string.h>
 
 namespace Sonicteam

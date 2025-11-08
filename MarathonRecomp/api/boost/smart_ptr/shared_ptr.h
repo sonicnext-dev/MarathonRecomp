@@ -26,10 +26,7 @@ namespace boost
 
         public:
             // TODO
-            sp_counted_base()
-            {
-
-            }
+            sp_counted_base() {}
 
             void add_ref()
             {
@@ -99,9 +96,7 @@ namespace boost
                 weak_count_ = 1;
             }
 
-            ~sp_counted_impl_p()
-            {
-            };
+            ~sp_counted_impl_p() {}
 
         private:
             xpointer<T> ptr_;

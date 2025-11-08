@@ -2369,7 +2369,7 @@ static uint32_t CreateDevice(uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4,
     return 0;
 }
 
-static void DestructResourceIm(GuestResource* resource)
+static void DestructResourceImm(GuestResource* resource)
 {
     resource->~GuestResource();
     resource = 0;
@@ -3121,7 +3121,7 @@ static std::atomic<bool> g_executedCommandList;
 void CreateTextureLocal(Sonicteam::SoX::Graphics::Xenon::TextureXenon* pTextureXenon, uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, uint32_t usage, uint32_t format, uint32_t pool, uint32_t type)
 {
     // Save current reference count to preserve it
-    auto pGuestTexture = pTextureXenon->m_pTexture.get();
+    auto pGuestTexture = (GuestTexture*)pTextureXenon->m_pTexture.get();
     auto refCount = pGuestTexture->refCount;
 
     // Destroy the existing texture
@@ -3144,70 +3144,65 @@ void CreateTextureLocal(Sonicteam::SoX::Graphics::Xenon::TextureXenon* pTextureX
     pTextureXenon->m_Height = height;
 }
 
-void Test(struct PPCContext& __restrict__ ctx, uint8_t* base)
-{
-    printf("Custom Function");
-}
-
-
-struct _custom_data_
+struct CallbackData
 {
     xpointer<Sonicteam::DocMarathonImp> pDoc;
     xpointer<Sonicteam::MyGraphicsDevice> pDevice;
     xpointer<Sonicteam::RenderTargetContainer> pRenderTargetContainer;
     xpointer<Sonicteam::SoX::Engine::RenderScheduler> pRenderScheduler;
-    Sonicteam::SoX::RefSharedPointer<Sonicteam::SoX::RefCountObject> Field4;
+    Sonicteam::SoX::RefSharedPointer<Sonicteam::SoX::RefCountObject> Field04;
     stdx::string customName;
-    be<uint32_t> field_30;
-    be<uint32_t> field_34;
-    be<uint32_t> field_38;
+    be<uint32_t> Field30;
+    be<uint32_t> Field34;
+    be<uint32_t> Field38;
     stdx::map<stdx::string, xpointer<void>> mMap; //?????
 
-    _custom_data_(
+    CallbackData
+    (
         xpointer<Sonicteam::DocMarathonImp> doc,
         xpointer<Sonicteam::MyGraphicsDevice> device,
         xpointer<Sonicteam::RenderTargetContainer> renderTarget,
         xpointer<Sonicteam::SoX::Engine::RenderScheduler> scheduler,
-        Sonicteam::SoX::RefSharedPointer<Sonicteam::SoX::RefCountObject> field4,
-        be<uint32_t> field_30,
-        be<uint32_t> field_34,
-        be<uint32_t> field_38,
+        Sonicteam::SoX::RefSharedPointer<Sonicteam::SoX::RefCountObject> field04,
+        be<uint32_t> field30,
+        be<uint32_t> field34,
+        be<uint32_t> field38,
         const char* name
     )
-        : pDoc(doc)
-        , pDevice(device)
-        , pRenderTargetContainer(renderTarget)
-        , pRenderScheduler(scheduler)
-        , Field4(field4)
-        , field_30(field_30)
-        , field_34(field_34)
-        , field_38(field_38)
-        , customName(name)
-        , mMap()
+    : pDoc(doc),
+      pDevice(device),
+      pRenderTargetContainer(renderTarget),
+      pRenderScheduler(scheduler),
+      Field04(field04),
+      Field30(field30),
+      Field34(field34),
+      Field38(field38),
+      customName(name),
+      mMap()
     {
 
     }
 
 };
 
-static std::vector<std::pair<stdx::string, boost::shared_ptr<Sonicteam::SoX::Engine::RenderProcess>>> _cached_render_;
+static std::vector<std::pair<stdx::string, boost::shared_ptr<Sonicteam::SoX::Engine::RenderProcess>>> g_renderProcessCache;
 
 PPC_FUNC_IMPL(__imp__sub_8260A9D0);
 PPC_FUNC(sub_8260A9D0)
 {
     auto L = (lua50::lua_State*)(ctx.r3.u32 + base);
-    auto data = (_custom_data_*)lua50::lua_topointer(L, 1);
+    auto data = (CallbackData*)lua50::lua_topointer(L, 1);
 
-    auto it = std::find_if(_cached_render_.begin(), _cached_render_.end(),
-        [](const auto& pair) {
-            return pair.first == "Spanverse";
-        });
-
-    if (it != _cached_render_.end())
+    auto it = std::find_if(g_renderProcessCache.begin(), g_renderProcessCache.end(), [](const auto& pair)
     {
-        data->pRenderScheduler->m_lpsspRenderProcess.push_back(*it);
+        return pair.first == "Spanverse";
+    });
 
-        _cached_render_.erase(it);
+    if (it != g_renderProcessCache.end())
+    {
+        data->pRenderScheduler->m_lRenderProcesses.push_back(*it);
+
+        g_renderProcessCache.erase(it);
 
         ctx.r3.u32 = 1;
     }
@@ -3215,25 +3210,24 @@ PPC_FUNC(sub_8260A9D0)
     {
         __imp__sub_8260A9D0(ctx, base);
     }
-    return;
 }
 
 PPC_FUNC_IMPL(__imp__sub_8260AAB0);
 PPC_FUNC(sub_8260AAB0)
 {
     auto L = (lua50::lua_State*)(ctx.r3.u32 + base);
-    auto data = (_custom_data_*)lua50::lua_topointer(L, 1);
+    auto data = (CallbackData*)lua50::lua_topointer(L, 1);
 
-    auto it = std::find_if(_cached_render_.begin(), _cached_render_.end(),
-        [](const auto& pair) {
-            return pair.first == "GE1Particle";
-        });
-
-    if (it != _cached_render_.end())
+    auto it = std::find_if(g_renderProcessCache.begin(), g_renderProcessCache.end(), [](const auto& pair)
     {
-        data->pRenderScheduler->m_lpsspRenderProcess.push_back(*it);
+        return pair.first == "GE1Particle";
+    });
 
-        _cached_render_.erase(it);
+    if (it != g_renderProcessCache.end())
+    {
+        data->pRenderScheduler->m_lRenderProcesses.push_back(*it);
+
+        g_renderProcessCache.erase(it);
 
         ctx.r3.u32 = 1;
     }
@@ -3241,10 +3235,7 @@ PPC_FUNC(sub_8260AAB0)
     {
         __imp__sub_8260AAB0(ctx, base);
     }
-    return;
 }
-
-
 
 void Video::Present() 
 {
@@ -3334,7 +3325,7 @@ void Video::Present()
         s_next += 1000000000ns / Config::FPS;
     }
 
-    //Please Do not use guest_stack_var, it mostly cause memory/stack corruption
+    // NOTICE: guest_stack_var may cause stack corruption here.
     if (App::s_pApp && g_needsResize)
     {
         g_needsResize = false;
@@ -3367,7 +3358,7 @@ void Video::Present()
 
         static std::map<std::string, BufferSize> buffers;
 
-        // Update Dimensions
+        // Update dimensions.
         buffers["framebuffer0"] = { width, height, 0, 4 };
         buffers["framebuffer1"] = { width, height, 0, 0 };
         buffers["framebuffer_1_4_0"] = { width >> 2, height >> 2, 3, 2 };
@@ -3389,18 +3380,17 @@ void Video::Present()
             be<uint32_t> Usage;
         };
 
-        // Clear Cache, Experimental
+        // Clear cache (experimental).
         auto it = g_surfaceCache.begin();
         while (it != g_surfaceCache.end())
         {
-          
-            printf("Cache Surface : %d\n", it->first->refCount.get(),it->first->format);
+            printf("Cache Surface : %d\n", it->first->refCount.get());
+
             if (it->first->refCount.get() == 0 && it->first != g_depthStencil && it->first != g_backBuffer)
             {
                 it->first->wasCached = false;
-                DestructResourceIm(it->first);
+                DestructResourceImm(it->first);
                 it = g_surfaceCache.erase(it);
-
             }
             else
             {
@@ -3413,19 +3403,19 @@ void Video::Present()
         // Kill Auto Surfaces
 
         if (g_backBuffer && g_backBuffer != pApp->m_pBackBufferSurface.get())
-            DestructResourceIm(g_backBuffer);
+            DestructResourceImm(g_backBuffer);
 
         if (g_depthStencil && g_depthStencil != pApp->m_pDepthStencilSurface.get())
-            DestructResourceIm(g_depthStencil);
+            DestructResourceImm(g_depthStencil);
 
         // Recreate main buffers
-        DestructResourceIm((GuestTexture*)pApp->m_pFrontBufferTexture.get());
+        DestructResourceImm((GuestTexture*)pApp->m_pFrontBufferTexture.get());
         pApp->m_pFrontBufferTexture = CreateTexture(width, height, 1, 1, 1, D3DFMT_LE_X8R8G8B8, 0, 3);
         //((GuestTexture*)pApp->m_pFrontBufferTexture.get())->AddRef();
 
         auto surfaceParams = g_userHeap.AllocPhysical<D3DXBSURFACE_PARAMETERS>(0, 0, 0);
 
-        DestructResourceIm((GuestSurface*)pApp->m_pBackBufferSurface.get());
+        DestructResourceImm((GuestSurface*)pApp->m_pBackBufferSurface.get());
         pApp->m_pBackBufferSurface = CreateSurface(width, height, D3DFMT_A8R8G8B8, 0, (GuestSurfaceCreateParams*)surfaceParams);
         //((GuestSurface*)pApp->m_pBackBufferSurface.get())->AddRef();
 
@@ -3436,7 +3426,7 @@ void Video::Present()
 
         surfaceParams->Base = surfaceParams->Base + cSurfaceBase;
 
-        DestructResourceIm((GuestSurface*)pApp->m_pDepthStencilSurface.get());
+        DestructResourceImm((GuestSurface*)pApp->m_pDepthStencilSurface.get());
         pApp->m_pDepthStencilSurface = CreateSurface(width, height, D3DFMT_D24FS8, 0, (GuestSurfaceCreateParams*)surfaceParams);
         //((GuestSurface*)pApp->m_pDepthStencilSurface.get())->AddRef();
 
@@ -3542,7 +3532,7 @@ void Video::Present()
 
             // Determine surface type
             auto s2 = (params.R10 & 4) == 0 ? params.R8 : 3;
-            auto surface = texturePtr->m_aspSurface[0].get();
+            auto surface = texturePtr->m_aspSurfaces[0].get();
 
             // Determine surface parameters
             D3DXBSURFACE_PARAMETERS* surfaceParams = nullptr;
@@ -3617,37 +3607,34 @@ void Video::Present()
         }
 
         auto pManageParticle = Sonicteam::MyPE::CManageParticle::GetInstance();
-        auto pRenderSceduler = pDocState->m_pRenderScheduler.get();
-
+        auto pRenderScheduler = pDocState->m_pRenderScheduler.get();
 
         auto CacheRenderProcess = [&](const char* name)
             {
                 bool found = false;
-                for (auto& it : pDocState->m_pRenderScheduler->m_lpsspRenderProcess)
+                for (auto& it : pDocState->m_pRenderScheduler->m_lRenderProcesses)
                 {
                     if (it.first == name)
                     {
-                        _cached_render_.push_back(it);
+                        g_renderProcessCache.push_back(it);
                         found = true;
                     }
                 }
                 return found;
             };
 
-        //Cache Particles
+        // Cache particles.
         CacheRenderProcess("Spanverse");
         CacheRenderProcess("GE1Particle");
 
-  
         auto sfx1 = pDocState->m_pSFXAgent->m_aSFXMatrices1;
         auto sfx2 = pDocState->m_pSFXAgent->m_aSFXMatrices2;
         pDocState->m_pSFXAgent->m_aSFXMatrices1 = 0;
         pDocState->m_pSFXAgent->m_aSFXMatrices2 = 0;
 
         GuestToHostFunction<void>(sub_8260DF88, pDocState, 0x82B814F8, 1);
-        _cached_render_.clear();
+        g_renderProcessCache.clear();
 
-        //Clear New Ones
         if (pDocState->m_pSFXAgent->m_aSFXMatrices1)
             g_userHeap.Free(pDocState->m_pSFXAgent->m_aSFXMatrices1->GetArray());
 
@@ -3657,7 +3644,7 @@ void Video::Present()
         pDocState->m_pSFXAgent->m_aSFXMatrices1 = sfx1;
         pDocState->m_pSFXAgent->m_aSFXMatrices2 = sfx2;
 
-        //Fix radermap
+        // Fix radermap.
         auto SetResource = [&](auto* spTextureTo, const char* name)
         {
             if (auto it = rmTextureResources.find(name); it != rmTextureResources.end())
@@ -3678,19 +3665,13 @@ void Video::Present()
             }
         }
 
-        //Maiu Menu MST 
-        auto pMainModeObject = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::MainMode>();
-        if (((Sonicteam::SoX::Object*)pMainModeObject)->m_pVftable.ptr == 0x82033570)
+        if (auto pMainMode = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::MainMode>())
         {
-            auto pMainTask = (Sonicteam::MainMenuTask*)pMainModeObject->m_pMainTask.get();
-            if (((Sonicteam::SoX::Object*)pMainTask)->m_pVftable.ptr == 0x82039C08)
-            {
-                auto pManTask = (Sonicteam::MainMenuTask*)App::s_pApp->m_pDoc->GetDocMode<Sonicteam::MainMode>()->m_pMainTask.get();
-                auto pExpoTask = pManTask->m_pMainMenuExpositionTask;
-                pExpoTask->m_MSTAnimateState = 1;
-            }
-        }
+            auto pMainTask = (Sonicteam::MainMenuTask*)pMainMode->m_pMainTask.get();
 
+            if (pMainTask && strcmp(pMainTask->GetName(), "MainMenuTask") == 0)
+                pMainTask->m_spMainMenuExpositionTask->m_TextMotionState = 1;
+        }
     }
 PostResize:
 

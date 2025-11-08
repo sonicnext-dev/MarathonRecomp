@@ -1,16 +1,11 @@
 #pragma once
 
 #include <Marathon.inl>
-#include <Sonicteam/SoX/Object.h>
 #include <Sonicteam/SoX/LinkNode.h>
+#include <Sonicteam/SoX/Object.h>
 
 namespace Sonicteam::SoX
 {
-    namespace Engine
-    {
-        class DocMode;
-    }
-
     class Component : public Object
     {
     public:
@@ -24,16 +19,15 @@ namespace Sonicteam::SoX
         LinkNode<Component> m_lnComponent;
         LinkedList<Component> m_llComponent;
 
-        template <typename T = Engine::DocMode>
+        template <typename T = Component>
         T* GetParent()
         {
             return (T*)m_pParent.get();
         }
 
-        void Update(float delta)
+        void Update(float deltaTime)
         {
-            auto vft = (Vftable*)m_pVftable.get();
-            GuestToHostFunction<void>(vft->fpUpdate, this,delta);
+            GuestToHostFunction<void>(((Vftable*)m_pVftable.get())->fpUpdate, this, deltaTime);
         }
     };
 

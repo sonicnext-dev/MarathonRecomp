@@ -22,32 +22,46 @@ namespace Sonicteam::SoX::Engine
         xpointer<Doc> m_pDoc;
         LinkNode<Task> m_lnTask;
 
-        class Iterator
+        class iterator
         {
+            Task* m_pCurrent;
+
         public:
-            Iterator(Task* current = nullptr) : m_current(current) {}
+            iterator(Task* pCurrent = nullptr) : m_pCurrent(pCurrent) {}
 
-            Task& operator*() const { return *m_current; }
-            Task* operator->() const { return m_current; }
-
-            Iterator& operator++()
+            Task& operator*() const
             {
-                if (m_current)
-                    m_current = m_current->m_pPrevSibling.get();
+                return *m_pCurrent;
+            }
+
+            Task* operator->() const
+            {
+                return m_pCurrent;
+            }
+
+            iterator& operator++()
+            {
+                if (m_pCurrent)
+                    m_pCurrent = m_pCurrent->m_pPrevSibling.get();
+
                 return *this;
             }
 
-            bool operator!=(const Iterator& other) const
+            bool operator!=(const iterator& other) const
             {
-                return m_current != other.m_current;
+                return m_pCurrent != other.m_pCurrent;
             }
-
-        private:
-            Task* m_current;
         };
 
-        Iterator begin() { return Iterator(this); }
-        Iterator end() { return Iterator(nullptr); }
+        iterator begin()
+        {
+            return iterator(this);
+        }
+
+        iterator end()
+        {
+            return iterator(nullptr);
+        }
 
         Task* GetFirstDependency() const
         {

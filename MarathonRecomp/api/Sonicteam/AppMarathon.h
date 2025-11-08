@@ -12,7 +12,10 @@ namespace Sonicteam
     public:
         xpointer<DocMarathonState> m_pDoc;
 
-        static AppMarathon* GetInstance();
+        AppMarathon* GetInstance()
+        {
+            return *(xpointer<AppMarathon>*)MmGetHostAddress(0x82D3B348);
+        }
 
         GameImp* GetGame() const
         {
@@ -25,5 +28,3 @@ namespace Sonicteam
 
     MARATHON_ASSERT_OFFSETOF(AppMarathon, m_pDoc, 0x180);
 }
-
-#include <Sonicteam/AppMarathon.inl>

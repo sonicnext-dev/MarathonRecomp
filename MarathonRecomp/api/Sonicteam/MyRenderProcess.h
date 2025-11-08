@@ -5,13 +5,12 @@
 
 namespace Sonicteam
 {
-    class DocMarathonImp;
     class MyGraphicsDevice;
 
     class MyRenderProcess : public SoX::Engine::RenderProcess
     {
     public:
-        xpointer<DocMarathonImp> m_pDoc;
+        xpointer<SoX::Engine::Doc> m_pDoc;
         xpointer<MyGraphicsDevice> m_pMyGraphicsDevice;
     };
 

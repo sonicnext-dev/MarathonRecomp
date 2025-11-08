@@ -9,10 +9,8 @@ namespace Sonicteam::SoX
         xpointer<T> m_pPrev;
         xpointer<T> m_pNext;
 
-        // Iterator class
         class iterator
         {
-        private:
             T* m_pCurrent;
             T* m_pStart;
 
@@ -27,12 +25,10 @@ namespace Sonicteam::SoX
                 : m_pCurrent(start ? start->m_pNext.get() : nullptr)
                 , m_pStart(start)
             {
-
                 if (m_pStart && m_pStart->m_pNext.get() == m_pStart)
                 {
                     m_pCurrent = nullptr;
                 }
-
                 else if (m_pStart)
                 {
                     m_pCurrent = m_pStart->m_pNext.get();
@@ -54,16 +50,16 @@ namespace Sonicteam::SoX
                 if (m_pCurrent && m_pCurrent->m_pNext)
                 {
                     m_pCurrent = m_pCurrent->m_pNext.get();
-                    // Stop if we reach the start node again
+
+                    // Stop if we reach the start node again.
                     if (m_pCurrent == m_pStart)
-                    {
                         m_pCurrent = nullptr;
-                    }
                 }
                 else
                 {
                     m_pCurrent = nullptr;
                 }
+
                 return *this;
             }
 
@@ -85,10 +81,8 @@ namespace Sonicteam::SoX
             }
         };
 
-        // Const iterator
         class const_iterator
         {
-        private:
             const T* m_pCurrent;
             const T* m_pStart;
 
@@ -134,16 +128,16 @@ namespace Sonicteam::SoX
                 if (m_pCurrent && m_pCurrent->m_pNext)
                 {
                     m_pCurrent = m_pCurrent->m_pNext.get();
-                    // Stop if we reach the start node again
+
+                    // Stop if we reach the start node again.
                     if (m_pCurrent == m_pStart)
-                    {
                         m_pCurrent = nullptr;
-                    }
                 }
                 else
                 {
                     m_pCurrent = nullptr;
                 }
+
                 return *this;
             }
 
@@ -165,7 +159,6 @@ namespace Sonicteam::SoX
             }
         };
 
-        // Iteration support
         iterator begin()
         {
             return iterator(static_cast<T*>(this));

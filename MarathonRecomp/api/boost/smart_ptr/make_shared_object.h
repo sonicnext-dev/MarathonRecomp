@@ -11,7 +11,7 @@ namespace boost
     }
 
     template<typename T>
-    shared_ptr<T> make_shared(T* pointer,uint32_t vftable)
+    shared_ptr<T> make_shared(T* pointer, uint32_t vftable)
     {
         boost::shared_ptr<T> pointer_holder;
 

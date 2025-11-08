@@ -12,7 +12,6 @@ namespace Sonicteam::SoX::Engine
     {
     public:
         be<uint32_t> m_Flags;
-        //Not Used At All 
         xpointer<GTask> m_pPrevSibling;
         xpointer<GTask> m_pNextSibling;
         xpointer<GTask> m_pDependency;
@@ -35,7 +34,5 @@ namespace Sonicteam::SoX::Engine
         {
             return m_pDependencies.get();
         }
-
-
     };
 }

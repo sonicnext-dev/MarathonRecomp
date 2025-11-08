@@ -16,8 +16,8 @@ namespace Sonicteam::SoX::Graphics
         MARATHON_INSERT_PADDING(0x24);
         Math::Matrix4x4 m_Field40;
         be<float> m_Field80;
-        be<float> m_Field84; //viewport?
-        MARATHON_INSERT_PADDING(0x4);
+        be<float> m_Field84; // Viewport?
+        MARATHON_INSERT_PADDING(4);
         be<uint32_t> m_Width1;
         be<uint32_t> m_Height1;
         be<uint32_t> m_Field94;
@@ -25,8 +25,8 @@ namespace Sonicteam::SoX::Graphics
         be<uint32_t> m_Width2;
         be<uint32_t> m_Height2;
         MARATHON_INSERT_PADDING(0x1C);
-        SoX::RefSharedPointer<SoX::RefCountObject> m_FrameBufferObject;
-        MARATHON_INSERT_PADDING(0xC);
+        RefSharedPointer<RefCountObject> m_FrameBufferObject;
+        MARATHON_INSERT_PADDING(0x0C);
     };
 
     MARATHON_ASSERT_OFFSETOF(Device, m_DBRFlag, 0x18);

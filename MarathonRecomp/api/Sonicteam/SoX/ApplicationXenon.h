@@ -47,5 +47,4 @@ namespace Sonicteam::SoX
     };
 
     MARATHON_ASSERT_SIZEOF(ApplicationXenon, 0x180);
-
 }

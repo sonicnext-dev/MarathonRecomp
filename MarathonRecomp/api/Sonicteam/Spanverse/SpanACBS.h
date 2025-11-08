@@ -8,6 +8,6 @@ namespace Sonicteam::Spanverse
     class SpanACBS : public SpanBASE
     {
     public:
-        static const uint32_t Header = 0x41434253;
+        static constexpr uint32_t ms_Signature = 0x41434253; // ACBS
     };
 }

@@ -6,8 +6,8 @@
 #include <Sonicteam/SoX/Graphics/Device.h>
 #include <Sonicteam/SoX/RefCountObject.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
-#include <api/stdx/map.h>
-#include <api/stdx/string.h>
+#include <stdx/map.h>
+#include <stdx/string.h>
 
 namespace Sonicteam
 {

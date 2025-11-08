@@ -8,12 +8,13 @@
 namespace Sonicteam::MyPE
 {
     class EffectBankLoadManager;
-    class TextureBankLoad; //implement later
+    class TextureBankLoad;
 
     class EffectBankLoad : public SoX::IResource2<EffectBankLoad, EffectBankLoadManager>
     {
     public:
         SoX::RefSharedPointer<MyEffectBank> m_spMyEffectBank;
     };
+
     MARATHON_ASSERT_OFFSETOF(EffectBankLoad, m_spMyEffectBank, 0x64);
 }
