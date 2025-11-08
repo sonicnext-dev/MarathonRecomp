@@ -246,14 +246,15 @@ static void DrawAchievement(int rowIndex, Achievement& achievement, bool isUnloc
     char buffer[32];
 
 #ifdef _WIN32
-    tm timeStruct;
-    tm *timePtr = &timeStruct;
-    localtime_s(timePtr, &timestamp);
+    tm time{};
+    tm* pTime = &time;
+    localtime_s(pTime, &timestamp);
 #else
-    tm *timePtr = localtime(&timestamp);
+    tm* pTime = localtime(&timestamp);
 #endif
 
-    strftime(buffer, sizeof(buffer), "%Y/%m/%d %H:%M", timePtr);
+    snprintf(buffer, sizeof(buffer), "%d/%d/%d %02d:%02d",
+        pTime->tm_year + 1900, pTime->tm_mon + 1, pTime->tm_mday, pTime->tm_hour, pTime->tm_min);
     
     auto timestampOffsetX = Scale(60, true);
     auto timestampSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, buffer);
