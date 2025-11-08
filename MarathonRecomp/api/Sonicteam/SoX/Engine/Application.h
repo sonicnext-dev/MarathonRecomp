@@ -9,7 +9,7 @@ namespace Sonicteam::SoX::Engine
     class Application : Object
     {
     public:
-        bool IsField4;
+        bool IsField04;
         xpointer<SoX::Engine::Doc> m_pParent;
     };
 

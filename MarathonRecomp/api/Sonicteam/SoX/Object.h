@@ -16,7 +16,7 @@ namespace Sonicteam::SoX
 
         const char* GetName() const
         {
-            return GuestToHostFunction<const char*>(m_pVftable->fpGetName.get(),this);
+            return GuestToHostFunction<const char*>(m_pVftable->fpGetName.get(), this);
         }
     };
 

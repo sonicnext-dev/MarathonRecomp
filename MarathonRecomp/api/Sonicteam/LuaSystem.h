@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Marathon.inl>
-#include <Sonicteam/LuaNodeImp.h>
 #include <Sonicteam/SoX/IResource2.h>
+#include <Sonicteam/LuaNodeImp.h>
 
 namespace Sonicteam
 {

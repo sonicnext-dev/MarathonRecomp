@@ -11,11 +11,9 @@ namespace Sonicteam::GE1PE
         struct Vftable
         {
             be<uint32_t> fpDestroy;
-            //....
         };
 
         xpointer<Vftable> m_pVftable;
         xpointer<SoX::Engine::Doc> m_pDoc;
     };
-
 }

@@ -15,9 +15,10 @@ namespace Sonicteam::SoX::Engine
         struct Vftable
         {
             be<uint32_t> fpDestroy;
-            be<uint32_t> fpFunc4;
+            be<uint32_t> fpFunc04;
         };
+
         xpointer<Vftable> m_pVftable;
-        stdx::list<std::pair<stdx::string,boost::shared_ptr<RenderProcess>>> m_lpsspRenderProcess;
+        stdx::list<std::pair<stdx::string,boost::shared_ptr<RenderProcess>>> m_lRenderProcesses;
     };
 }

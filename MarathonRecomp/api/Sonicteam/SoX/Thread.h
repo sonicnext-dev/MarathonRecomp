@@ -11,9 +11,9 @@ namespace Sonicteam::SoX
         struct Vftable
         {
             be<uint32_t> fpDestroy;
-            be<uint32_t> fpFunc4;
-            be<uint32_t> fpFunc8;
-            be<uint32_t> fpFuncC;
+            be<uint32_t> fpFunc04;
+            be<uint32_t> fpFunc08;
+            be<uint32_t> fpFunc0C;
         };
 
         xpointer<Vftable> m_pVftable;
@@ -22,29 +22,28 @@ namespace Sonicteam::SoX
         be<uint32_t> m_EndEvent;
         be<uint32_t> m_ID;
         be<uint32_t> m_Handle;
-        bool m_IsExecutable; //  while ( a1->IsExecutable ) ref to 82586C00
+        bool m_IsExecutable;
         MARATHON_INSERT_PADDING(3);
         be<float> m_DeltaTime;
         MARATHON_INSERT_PADDING(4);
         be<uint32_t> m_StepCount;
         xpointer<const char> m_pName;
-        be<uint32_t> m_StepTime; //ref to 82586A08
+        be<uint32_t> m_StepTime;
         bool m_IsThreadReady;
-        bool m_IsWaitForStartEvent; //ref to 82586C00
+        bool m_IsWaitForStartEvent;
         MARATHON_INSERT_PADDING(2);
-        be<uint32_t> m_WaitForEndMicroSeconds; //82586AC0, BaseTimeAfter - BaseTime(Before WaitForEndEvent), then / 1000000 (TICK_PER_SEC )
+        be<uint32_t> m_WaitForEndMicroSeconds;
         xpointer<void> m_pContext;
         MARATHON_INSERT_PADDING(8);
 
-
-        void Func4()
+        void Func04()
         {
-            GuestToHostFunction<void>(m_pVftable->fpFunc4, this);
+            GuestToHostFunction<void>(m_pVftable->fpFunc04, this);
         }
 
-        void Func8(float delta)
+        void Func08(float deltaTime)
         {
-            GuestToHostFunction<void>(m_pVftable->fpFunc8, this, delta);
+            GuestToHostFunction<void>(m_pVftable->fpFunc08, this, deltaTime);
         }
 
         template <typename T>
@@ -53,7 +52,7 @@ namespace Sonicteam::SoX
             return (T*)m_pContext.get();
         }
     };
+
     MARATHON_ASSERT_OFFSETOF(Thread, m_StartEvent, 0x10);
     MARATHON_ASSERT_OFFSETOF(Thread, m_IsThreadReady, 0x38);
-
 }

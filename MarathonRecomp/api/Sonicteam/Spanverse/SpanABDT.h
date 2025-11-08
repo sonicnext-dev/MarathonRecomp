@@ -10,26 +10,28 @@ namespace Sonicteam::Spanverse
     class SpanABDT : public SpanACBS
     {
     public:
-        struct Vftable: SpanACBS::Vftable
+        struct Vftable : SpanACBS::Vftable
         {
-            be<uint32_t> fpInitializeResource; // (index argument)
-            be<uint32_t> fpDestroyResource; // (index argument)
+            be<uint32_t> fpInitResource;
+            be<uint32_t> fpDestroyResource;
         };
-        xpointer<void> m_SectionABDA;
-        xpointer<void> m_Node; // (version , then root node data, and others node)
+
+        xpointer<void> m_pABDAChunk;
+        xpointer<void> m_pNode;
         MARATHON_INSERT_PADDING(0xC);
-        xpointer<SpanBASE> m_pSpanNode; // first, current, ?
-        xpointer<xpointer<CustomEssenceTextureBase>> m_ppTexture;
+        xpointer<SpanBASE> m_pSpanNode;
+        xpointer<xpointer<CustomEssenceTextureBase>> m_ppEssenceTexture;
         xpointer<void> m_pResourceIndices;
         xpointer<void> m_pResourceTable2;
         xpointer<void> m_pResourceTable3;
-        be<uint32_t> m_ResourceCount; //ABRS
+        be<uint32_t> m_ResourceCount;
         be<uint32_t> m_InitializedResourceCount;
         be<uint32_t> m_Field40;
         be<uint32_t> m_InitializedResourceFlag;
     };
+
     MARATHON_ASSERT_OFFSETOF(SpanABDT, m_pSpanNode, 0x24);
-    MARATHON_ASSERT_OFFSETOF(SpanABDT, m_ppTexture, 0x28);
+    MARATHON_ASSERT_OFFSETOF(SpanABDT, m_ppEssenceTexture, 0x28);
     MARATHON_ASSERT_OFFSETOF(SpanABDT, m_pResourceIndices, 0x2C);
     MARATHON_ASSERT_OFFSETOF(SpanABDT, m_pResourceTable2, 0x30);
     MARATHON_ASSERT_OFFSETOF(SpanABDT, m_pResourceTable3, 0x34);

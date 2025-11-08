@@ -9,8 +9,8 @@ namespace Sonicteam::Particles
     {
         struct Vftable : ParticleRef::Vftable
         {
-            be<uint32_t> fpFunc8;
-            be<uint32_t> fpFuncC;
+            be<uint32_t> fpFunc08;
+            be<uint32_t> fpFunc0C;
             be<uint32_t> fpFunc10; // Hint: used before Release() with arg 0.
             be<uint32_t> fpFunc14;
             be<uint32_t> fpFunc18;

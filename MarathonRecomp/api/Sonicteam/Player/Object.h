@@ -90,7 +90,7 @@ namespace Sonicteam::Player
             auto playerIndex = pGame->PlayerActorIDToIndex(m_ActorID);
             auto padID = pDoc->m_aPadIDs[playerIndex];
 
-            return pDoc->m_vspInputManager[padID].get();
+            return pDoc->m_vspInputManagers[padID].get();
         }
     };
 

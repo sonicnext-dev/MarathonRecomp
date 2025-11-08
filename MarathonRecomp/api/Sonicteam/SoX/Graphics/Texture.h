@@ -1,22 +1,21 @@
 #pragma once
 
 #include <Marathon.inl>
-#include <Sonicteam/SoX/IResource.h>
-#include <Sonicteam/SoX/RefSharedPointer.h>
+#include <Sonicteam/SoX/Graphics/Device.h>
 #include <Sonicteam/SoX/Graphics/Surface.h>
 #include <Sonicteam/SoX/Array.h>
-#include <Sonicteam/SoX/Graphics/Device.h>
-#include <gpu/video.h>
+#include <Sonicteam/SoX/IResource.h>
+#include <Sonicteam/SoX/RefSharedPointer.h>
 
 namespace Sonicteam::SoX::Graphics
 {
     class Texture : public IResource
     {
     public:
-        xpointer<GuestTexture> m_pTexture;
-        SoX::Array<SoX::RefSharedPointer<SoX::Graphics::Surface>, 6> m_aspSurface;
+        xpointer<void> m_pTexture;
+        SoX::Array<SoX::RefSharedPointer<Surface>, 6> m_aspSurfaces;
         be<uint32_t> m_Width;
         be<uint32_t> m_Height;
-        xpointer<SoX::Graphics::Device> m_pDevice;
+        xpointer<Device> m_pDevice;
     };
 }

@@ -28,7 +28,7 @@ namespace Sonicteam::GE1PE
                 Destroy(flag);
         }
 
-        inline void AddReference()
+        void AddReference()
         {
             m_ReferenceCount = m_ReferenceCount + 1;
         }

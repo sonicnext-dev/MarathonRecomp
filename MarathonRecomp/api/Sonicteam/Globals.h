@@ -29,11 +29,9 @@ namespace Sonicteam
 
         static inline stdx::string* ms_CurrentRenderScript;
 
-        static inline const char* msg_ConstCharStringBuild; // Build
-
-        static inline const char* msg_ConstCharStringRenderSpanverse; // RenderSpanverse
-
-        static inline const char* msg_ConstCharStringRenderGE1Particle; // RenderGE1Particle
+        static inline const char* ms_strBuild;             // Build
+        static inline const char* ms_strRenderSpanverse;   // RenderSpanverse
+        static inline const char* ms_strRenderGE1Particle; // RenderGE1Particle
 
 
         static void Init()
@@ -45,11 +43,9 @@ namespace Sonicteam
 
             ms_CurrentRenderScript = (stdx::string*)MmGetHostAddress(0x82B814F8);
 
-            msg_ConstCharStringBuild = (const char*)MmGetHostAddress(0x82024000);
-
-            msg_ConstCharStringRenderSpanverse = (const char*)MmGetHostAddress(0x8204C0C8);
-
-            msg_ConstCharStringRenderGE1Particle = (const char*)MmGetHostAddress(0x8204C05C);
+            ms_strBuild = (const char*)MmGetHostAddress(0x82024000);
+            ms_strRenderSpanverse = (const char*)MmGetHostAddress(0x8204C0C8);
+            ms_strRenderGE1Particle = (const char*)MmGetHostAddress(0x8204C05C);
         }
     };
 }

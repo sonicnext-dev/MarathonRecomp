@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Marathon.inl>
-#include <Sonicteam/Particles/ParticleManagerUnit.h>
-#include <Sonicteam/Particles/Particle.h>
-#include <Sonicteam/MyPE/MyEmitterListener.h>
-#include <Sonicteam/GE1PE/Manager.h>
-#include <Sonicteam/SoX/LinkNode.h>
 #include <boost/smart_ptr/shared_ptr.h>
+#include <Sonicteam/Particles/Particle.h>
+#include <Sonicteam/Particles/ParticleManagerUnit.h>
+#include <Sonicteam/GE1PE/Manager.h>
+#include <Sonicteam/MyPE/MyEmitterListener.h>
+#include <Sonicteam/SoX/LinkNode.h>
 #include <stdx/list.h>
 
 
@@ -18,9 +18,9 @@ namespace Sonicteam::MyPE
 
     struct CManageParticleContainer
     {
-        xpointer<void> _1;
-        xpointer<void> _2;
-        xpointer<void> _3;
+        xpointer<void> Field00;
+        xpointer<void> Field04;
+        xpointer<void> Field08;
     };
 
     class CManageParticle : public Particles::ParticleManagerUnit
@@ -39,12 +39,12 @@ namespace Sonicteam::MyPE
 
         static CManageParticle* GetInstance()
         {
-            return  *(xpointer<CManageParticle>*)MmGetHostAddress(0x82D3C54C);
+            return *(xpointer<CManageParticle>*)MmGetHostAddress(0x82D3C54C);
         };
     };
 
-    MARATHON_ASSERT_OFFSETOF(CManageParticle, m_pDoc, 4);
-    MARATHON_ASSERT_OFFSETOF(CManageParticle, m_CriticalSection, 8);
+    MARATHON_ASSERT_OFFSETOF(CManageParticle, m_pDoc, 0x04);
+    MARATHON_ASSERT_OFFSETOF(CManageParticle, m_CriticalSection, 0x08);
     MARATHON_ASSERT_OFFSETOF(CManageParticle, m_lContainer, 0x24);
     MARATHON_ASSERT_OFFSETOF(CManageParticle, m_lnParticle, 0x30);
     MARATHON_ASSERT_OFFSETOF(CManageParticle, m_pManagerParticleTask, 0x3C);

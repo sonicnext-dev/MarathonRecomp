@@ -17,11 +17,11 @@ namespace Sonicteam::Player::Effect
         be<float> OffsetZ;
     };
 
-    MARATHON_ASSERT_OFFSETOF(ParticleLuaInfo, BankID, 0x0);
-    MARATHON_ASSERT_OFFSETOF(ParticleLuaInfo, IsAcroarts, 0x4);
-    MARATHON_ASSERT_OFFSETOF(ParticleLuaInfo, IsReverse, 0x5);
-    MARATHON_ASSERT_OFFSETOF(ParticleLuaInfo, Direction, 0x8);
-    MARATHON_ASSERT_OFFSETOF(ParticleLuaInfo, pNodeName, 0xC);
+    MARATHON_ASSERT_OFFSETOF(ParticleLuaInfo, BankID, 0x00);
+    MARATHON_ASSERT_OFFSETOF(ParticleLuaInfo, IsAcroarts, 0x04);
+    MARATHON_ASSERT_OFFSETOF(ParticleLuaInfo, IsReverse, 0x05);
+    MARATHON_ASSERT_OFFSETOF(ParticleLuaInfo, Direction, 0x08);
+    MARATHON_ASSERT_OFFSETOF(ParticleLuaInfo, pNodeName, 0x0C);
     MARATHON_ASSERT_OFFSETOF(ParticleLuaInfo, OffsetX, 0x10);
     MARATHON_ASSERT_OFFSETOF(ParticleLuaInfo, OffsetY, 0x14);
     MARATHON_ASSERT_OFFSETOF(ParticleLuaInfo, OffsetZ, 0x18);
