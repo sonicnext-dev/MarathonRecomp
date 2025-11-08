@@ -820,7 +820,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
             DrawOption(rowCount++, &Config::Hints, true);
             DrawOption(rowCount++, &Config::ControlTutorial, true);
             DrawOption(rowCount++, &Config::Autosave, true);
-            DrawOption(rowCount++, &Config::AchievementNotifications, false, devReason);               // TODO: implement achievements. DrawOption(rowCount++, &Config::AchievementNotifications, true);
+            DrawOption(rowCount++, &Config::AchievementNotifications, true);
             break;
 
         case OptionsMenuCategory::Input:
