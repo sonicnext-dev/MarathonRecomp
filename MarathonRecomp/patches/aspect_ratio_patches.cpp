@@ -341,8 +341,7 @@ PPC_FUNC(sub_828C8F60)
         if ((g_sceneModifier->Flags & CSD_MODIFIER_ULTRAWIDE_ONLY) != 0 && g_aspectRatio <= WIDE_ASPECT_RATIO)
             g_sceneModifier->Flags &= (~g_sceneModifier->Flags) | CSD_MODIFIER_ULTRAWIDE_ONLY;
 
-        if ((g_sceneModifier->Flags & CSD_SCENE_DISABLE_MOTION) != 0)
-            pScene->FPS = 0;
+        pScene->FPS = ((g_sceneModifier->Flags & CSD_SCENE_DISABLE_MOTION) != 0) ? 0 : 60;
 
         if (g_aspectRatio > WIDE_ASPECT_RATIO)
         {
@@ -1287,7 +1286,7 @@ PPC_FUNC(sub_824D6E50)
 PPC_FUNC_IMPL(__imp__sub_824F1538);
 PPC_FUNC(sub_824F1538)
 {
-    auto pHUDRaderMap = (Sonicteam::HUDRaderMap*)(base + ctx.r3.u32);
+    auto pHUDRaderMap = (Sonicteam::HUDRaderMap*)(base + ctx.r3.u32 - 8);
 
     __imp__sub_824F1538(ctx, base);
 

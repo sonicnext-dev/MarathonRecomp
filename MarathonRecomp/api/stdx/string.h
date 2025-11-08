@@ -2,6 +2,7 @@
 
 #include <kernel/heap.h>
 #include <kernel/function.h>
+#include <algorithm> 
 
 namespace stdx
 {
@@ -59,6 +60,14 @@ namespace stdx
             from_cstr(str);
         }
 
+        string(const string& other)
+        {
+            _Myres = 0xF;
+            _Mysize = 0;
+            _bx._buffer[0] = '\0';
+            from_cstr(other.c_str());
+        }
+
         ~string()
         {
             cleanup();
@@ -111,6 +120,51 @@ namespace stdx
         bool operator==(const char* str) const
         {
             return strcmp(c_str(), str) == 0;
+        }
+
+        bool operator<(const char* str) const
+        {
+            return strcmp(c_str(), str) < 0;
+        }
+
+        const char* begin() const
+        {
+            return c_str();
+        }
+
+        const char* end() const
+        {
+            return c_str() + size();
+        }
+
+        bool operator<(const string& other) const
+        {
+            return std::lexicographical_compare(begin(), end(), other.begin(), other.end());
+        }
+
+        bool operator>(const string& other) const
+        {
+            return other < *this;
+        }
+
+        bool operator<=(const string& other) const
+        {
+            return !(other < *this);
+        }
+
+        bool operator>=(const string& other) const
+        {
+            return !(*this < other);
+        }
+
+        bool operator==(const string& other) const
+        {
+            return size() == other.size() && std::equal(begin(), end(), other.begin());
+        }
+
+        bool operator!=(const string& other) const
+        {
+            return !(*this == other);
         }
     };
 };

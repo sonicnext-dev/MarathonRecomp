@@ -325,7 +325,7 @@ void MessageWindow::Draw()
         // Always assume keyboard to prevent mouse from blocking control in-game.
         isKeyboard = true;
 
-        if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManager[0])
+        if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManagers[0])
         {
             auto& rPadState = spInputManager->m_PadState;
 

@@ -14,8 +14,8 @@
 
 #include <res/images/game_icon.bmp.h>
 
-bool m_isFullscreenKeyReleased = true;
-bool m_isResizing = false;
+static bool g_isFullscreenKeyReleased = true;
+static bool g_isResizing = false;
 
 int Window_OnSDLEvent(void*, SDL_Event* event)
 {
@@ -49,7 +49,7 @@ int Window_OnSDLEvent(void*, SDL_Event* event)
                 // Toggle fullscreen on ALT+ENTER.
                 case SDLK_RETURN:
                 {
-                    if (!(event->key.keysym.mod & KMOD_ALT) || !m_isFullscreenKeyReleased)
+                    if (!(event->key.keysym.mod & KMOD_ALT) || !g_isFullscreenKeyReleased)
                         break;
 
                     Config::Fullscreen = GameWindow::SetFullscreen(!GameWindow::IsFullscreen());
@@ -64,7 +64,7 @@ int Window_OnSDLEvent(void*, SDL_Event* event)
                     }
 
                     // Block holding ALT+ENTER spamming window changes.
-                    m_isFullscreenKeyReleased = false;
+                    g_isFullscreenKeyReleased = false;
 
                     break;
                 }
@@ -96,7 +96,7 @@ int Window_OnSDLEvent(void*, SDL_Event* event)
             {
                 // Allow user to input ALT+ENTER again.
                 case SDLK_RETURN:
-                    m_isFullscreenKeyReleased = true;
+                    g_isFullscreenKeyReleased = true;
                     break;
             }
         }
@@ -129,7 +129,7 @@ int Window_OnSDLEvent(void*, SDL_Event* event)
                     break;
 
                 case SDL_WINDOWEVENT_RESIZED:
-                    m_isResizing = true;
+                    g_isResizing = true;
                     Config::WindowSize = -1;
                     GameWindow::s_width = event->window.data1;
                     GameWindow::s_height = event->window.data2;
@@ -238,10 +238,10 @@ void GameWindow::Update()
         Config::WindowHeight = GameWindow::s_height;
     }
 
-    if (m_isResizing)
+    if (g_isResizing)
     {
         SetTitle();
-        m_isResizing = false;
+        g_isResizing = false;
     }
 
     if (g_needsResize)

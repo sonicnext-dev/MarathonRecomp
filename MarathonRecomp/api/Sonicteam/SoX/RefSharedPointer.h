@@ -12,22 +12,27 @@ namespace Sonicteam::SoX
         xpointer<T> m_ptr;
 
     public:
-        explicit RefSharedPointer(T* value) : m_ptr(value)
+        RefSharedPointer()
+        {
+            m_ptr = nullptr;
+        }
+
+        RefSharedPointer(T* value) : m_ptr(value)
         {
             if (m_ptr.get())
-                m_ptr->AddRef();
+                m_ptr->AddReference();
         }
 
         explicit RefSharedPointer(xpointer<T> value) : m_ptr(value)
         {
             if (m_ptr.get())
-                m_ptr->AddRef();
+                m_ptr->AddReference();
         }
 
         RefSharedPointer(const RefSharedPointer& other) : m_ptr(other.m_ptr)
         {
             if (m_ptr.get())
-                m_ptr->AddRef();
+                m_ptr->AddReference();
         }
 
         RefSharedPointer(RefSharedPointer&& other) noexcept : m_ptr(std::move(other.m_ptr))
@@ -50,7 +55,7 @@ namespace Sonicteam::SoX
                 m_ptr = other.m_ptr;
 
                 if (m_ptr.get())
-                    m_ptr->AddRef();
+                    m_ptr->AddReference();
             }
 
             return *this;

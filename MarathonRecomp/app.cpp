@@ -64,6 +64,138 @@ PPC_FUNC(sub_8262A568)
     InitPatches();
 }
 
+std::array<const char*, 46> g_PauseModeTaskList =
+{
+    "root",
+    "TL_Debug",
+    "TL_PrepareMain",
+    "TL_Main",
+    //"TL_Particle",
+    "TL_HeadUpDisplay",
+    "TL_PrepareRender",
+    "TL_NonStopTask",
+
+    "ResumeWorkerThreadTask",
+    "ThreadResumeTask",
+
+    //"Cameras",
+    "Cameraman",
+    //"DependCameras",
+    //"SystemDependCameras",
+
+    "PrepareShadowTask",
+    "GameRootTask",
+    //"SpkManageTask",
+    "Task",
+    "TaskAdapter",
+    "HUDMainDisplay",
+    "PostprocessControllerTask",
+    "PrepareRenderTask",
+    "PrepareFrameSynchronizerTask",
+    "FrameSynchronizerTask",
+    "BoundingBoxSynchronizerTask",
+    "FrustumCullingTask",
+    "UpdateResourceInFrustumTask",
+    "GameModeNonStop",
+
+    //AQA
+    "ObjectAqaMercurySmall",
+    "ObjectAqaPond",
+    "ObjectAqaPond", // Duplicate entry
+    "ReflectionManager",
+    "ReflectionArea",
+
+    //
+    "HintWindowTask",
+    "HUDMessageWindow"
+
+    //"DocModeExecutor",
+    //"GameMode",
+    //"DependGame",
+    //"PhysicsMaterialMgrRunner",
+    //"StageSetManagerRunner",
+    //"ActivationMgrRunner",
+    // 
+    //"ImpactManager",
+    //"Entities",
+    //"RadarMapIcon",
+    //"CTownsKeeper",
+    //"CTownsmanActor",
+    //"ObjParticle",
+    //"CommonPathObj",
+    //"BellObj",
+    //"WarpGateObj",
+    //"TownsDoorObj",
+    //"ObjSpring",
+    //"ObjectPhysicsSingle",
+    //"ObjRadarMapMark",
+    //"ObjectPointSample",
+    //"StartObj",
+    //"Townsman(townsman998)",
+    //"CObjBalloonIcon",
+    //"ObjWideSpring",
+    //"Townsman(townsman021)",
+    //"CObjBalloonIcon",
+    //"ObjEventCollision",
+    //"BellObj",
+    //"Townsman(townsman070)",
+    //"CObjBalloonIcon",
+    //"GondolaObj",
+    //"ObjectPointSample",
+    //"ObjCameraCollision",
+    //"ObjSpring",
+    //"Townsman(gondolaman31)",
+    //"CTownsmanEquipmentObject",
+    //"Townsman(gondolaman29)",
+    //"Townsman(gondolaman30)",
+    //"ObjSpring",
+    //"ObjectPointSample",
+    //"TownsDoorObj",
+    //"EnemyThread",
+    //"Players",
+    //"class Sonicteam::Player::Object",
+    //"KhronoController",
+    //"SceneParamManagerTask",
+    //"CommonObjectLensFlare",
+    //"KynapseRunnerTask",
+    //"KynapseMessenger",
+    //"RaderMapManager",
+    //"EnemyLifeTask",
+    //"MainDisplayTask",
+    //"HUDLimitTime",
+    //"InputListenTask",
+    //"AudioRunner",
+    //"PauseTask",
+    //"HUDPause"
+};
+
+
+void UpateSpecificTasksPause(Sonicteam::SoX::Engine::Task* ttask)
+{
+    for (auto& task : *ttask)
+    {
+        const char* taskName = (&task)->GetName();
+
+        if ((task.m_Flag1 & 4) == 0)
+        {
+
+            auto shouldIgnore = std::find_if(g_PauseModeTaskList.begin(), g_PauseModeTaskList.end(),
+                [taskName](const char* task) 
+                {
+                    return strcmp(task ? task : "", taskName) == 0;
+                });
+
+            if (shouldIgnore != g_PauseModeTaskList.end())
+            {
+                (&task)->Update(0.0);
+            }
+
+            if (task.m_pDependencies.get())
+                UpateSpecificTasksPause(task.m_pDependencies.get());
+        }
+    }
+}
+
 // Sonicteam::DocMarathonState::Update
 PPC_FUNC_IMPL(__imp__sub_825EA610);
 PPC_FUNC(sub_825EA610)
@@ -90,8 +222,10 @@ PPC_FUNC(sub_825EA610)
     {
         SDL_PumpEvents();
         SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+
         GameWindow::Update();
     }
+    auto pDocState = App::s_pApp->m_pDoc;
 
     // Allow variable FPS when config is not 60 FPS.
     App::s_pApp->m_pDoc->m_VFrame = Config::FPS != 60;
@@ -99,6 +233,17 @@ PPC_FUNC(sub_825EA610)
     AudioPatches::Update(App::s_deltaTime);
 
     __imp__sub_825EA610(ctx, base);
+
+
+    //Always Do Specic Tasks during pause, to not 
+    if (pDocState->m_PauseFlags.get() != 0)
+    {
+
+        GuestToHostFunction<void>(sub_825D49E0, &pDocState->m_CriticalSection1);
+        UpateSpecificTasksPause(pDocState->m_pRootTask.get());
+        GuestToHostFunction<void>(sub_82580920, &pDocState->m_CriticalSection1);
+    }
+
 }
 
 PPC_FUNC_IMPL(__imp__sub_82582648);
