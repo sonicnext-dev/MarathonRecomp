@@ -373,12 +373,12 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
     {
         "Achievements_Progress",
         {
-            { ELanguage::English,  "PROGRESS %d%%" },
-            { ELanguage::Japanese, "PROGRESS %d%%" },
-            { ELanguage::German,   "FORTSCHRITT %d%%" },
-            { ELanguage::French,   "PROGRESSION %d%%" },
-            { ELanguage::Spanish,  "PROGRESO %d%%" },
-            { ELanguage::Italian,  "PROGRESSI %d%%" }
+            { ELanguage::English,  "PROGRESS %d/%d" },
+            { ELanguage::Japanese, "PROGRESS %d/%d" },
+            { ELanguage::German,   "FORTSCHRITT %d/%d" },
+            { ELanguage::French,   "PROGRESSION %d/%d" },
+            { ELanguage::Spanish,  "PROGRESO %d/%d" },
+            { ELanguage::Italian,  "PROGRESSI %d/%d" }
         }
     },
     {

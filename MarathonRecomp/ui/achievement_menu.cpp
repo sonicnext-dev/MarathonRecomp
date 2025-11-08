@@ -448,8 +448,7 @@ void AchievementMenu::Open()
 
     // Format achievement progress.
     char descriptionText[128];
-    snprintf(descriptionText, sizeof(descriptionText), Localise("Achievements_Progress").c_str(),
-        std::min(100, int(AchievementManager::GetTotalRecords()) / g_rowCount) * 100);
+    snprintf(descriptionText, sizeof(descriptionText), Localise("Achievements_Progress").c_str(), AchievementManager::GetTotalRecords(), g_rowCount);
 
     s_commonMenu = CommonMenu(Localise("Achievements_GoldMedals_Uppercase"), descriptionText, false);
     s_commonMenu.ShowDescription = false;
