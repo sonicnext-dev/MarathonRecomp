@@ -414,7 +414,8 @@ struct std::hash<SurfaceGroupKey> {
 struct SurfaceGroup
 {
     std::vector<GuestSurface*> surfaces;
-    std::unique_ptr<RenderTexture> sharedTexture;
+    GuestSurface* currentSurface = nullptr;
+    GuestSurface* currentDepthSurface = nullptr;
 };
 
 static ankerl::unordered_dense::map<SurfaceGroupKey, std::unique_ptr<SurfaceGroup>> g_surfaceGroups;
@@ -805,6 +806,13 @@ static void DestructTempResources()
                 if (surfIt != group->surfaces.end())
                 {
                     group->surfaces.erase(surfIt);
+
+                    // Clear current surface pointers if they match
+                    if (group->currentSurface == surface)
+                        group->currentSurface = nullptr;
+                    if (group->currentDepthSurface == surface)
+                        group->currentDepthSurface = nullptr;
+
                     ownedByGroup = true;
                     if (group->surfaces.empty())
                     {
@@ -3610,10 +3618,8 @@ static GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t for
 
         if (!group) {
             group = std::make_unique<SurfaceGroup>();
-            group->sharedTexture = g_device->createTexture(desc);
         }
 
-        surface->texture = group->sharedTexture.get();
         group->surfaces.push_back(surface);
     } else {
         surface->textureHolder = g_device->createTexture(desc);
@@ -3759,9 +3765,70 @@ static void SetRenderTarget(GuestDevice* device, uint32_t index, GuestSurface* r
     }
 }
 
+static void HandleSurfaceAliasing(GuestSurface* newSurface, bool isDepthSurface)
+{
+    if (newSurface == nullptr)
+        return;
+
+    for (auto& [key, group] : g_surfaceGroups) {
+        auto it = std::find(group->surfaces.begin(), group->surfaces.end(), newSurface);
+        if (it != group->surfaces.end()) {
+            // Determine which current surface to check based on type
+            GuestSurface*& currentSurface = isDepthSurface ?
+                group->currentDepthSurface :
+                group->currentSurface;
+
+            if (currentSurface != nullptr && currentSurface != newSurface) {
+                // Need to copy from previous surface to new surface
+                auto& commandList = g_commandLists[g_frame];
+
+                RenderTextureLayout srcLayout = isDepthSurface ?
+                    RenderTextureLayout::DEPTH_READ :
+                    RenderTextureLayout::SHADER_READ;
+                RenderTextureLayout dstLayout = isDepthSurface ?
+                    RenderTextureLayout::COPY_DEST :
+                    RenderTextureLayout::COPY_DEST;
+
+                commandList->barriers(RenderBarrierStage::COPY, {
+                    RenderTextureBarrier(currentSurface->texture, srcLayout),
+                    RenderTextureBarrier(newSurface->texture, dstLayout)
+                });
+
+                if (isDepthSurface) {
+                    // For depth, use copyTextureRegion or resolve if MSAA differs
+                    if (currentSurface->sampleCount == newSurface->sampleCount) {
+                        commandList->copyTexture(newSurface->texture, currentSurface->texture);
+                    } else {
+                        // If sample counts differ, need to resolve
+                        if (g_capabilities.resolveModes) {
+                            commandList->resolveTextureRegion(
+                                newSurface->texture, 0, 0,
+                                currentSurface->texture, nullptr,
+                                RenderResolveMode::MIN);
+                        }
+                    }
+                } else {
+                    // For color, simple copy or resolve
+                    if (currentSurface->sampleCount == newSurface->sampleCount) {
+                        commandList->copyTexture(newSurface->texture, currentSurface->texture);
+                    } else {
+                        commandList->resolveTexture(newSurface->texture, currentSurface->texture);
+                    }
+                }
+            }
+
+            currentSurface = newSurface;
+            break;
+        }
+    }
+}
+
 static void ProcSetRenderTarget(const RenderCommand& cmd)
 {
     const auto& args = cmd.setRenderTarget;
+
+    HandleSurfaceAliasing(args.renderTarget, false);
+
     SetDirtyValue(g_dirtyStates.renderTargetAndDepthStencil, g_renderTarget, args.renderTarget);
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.renderTargetFormat, args.renderTarget != nullptr ? args.renderTarget->format : RenderFormat::UNKNOWN);
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.sampleCount, args.renderTarget != nullptr ? args.renderTarget->sampleCount : RenderSampleCount::COUNT_1);
@@ -3783,6 +3850,8 @@ static void SetDepthStencilSurface(GuestDevice* device, GuestSurface* depthStenc
 static void ProcSetDepthStencilSurface(const RenderCommand& cmd)
 {
     const auto& args = cmd.setDepthStencilSurface;
+
+    HandleSurfaceAliasing(args.depthStencil, true);
 
     SetDirtyValue(g_dirtyStates.renderTargetAndDepthStencil, g_depthStencil, args.depthStencil);
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.depthStencilFormat, args.depthStencil != nullptr ? args.depthStencil->format : RenderFormat::UNKNOWN);
@@ -4110,6 +4179,25 @@ static void Clear(GuestDevice* device, uint32_t flags, uint32_t, be<float>* colo
 static void ProcClear(const RenderCommand& cmd)
 {
     const auto& args = cmd.clear;
+
+    // Clear invalidates aliased surface data, so update group tracking
+    if (args.flags & D3DCLEAR_TARGET) {
+        for (auto& [key, group] : g_surfaceGroups) {
+            if (std::find(group->surfaces.begin(), group->surfaces.end(), g_renderTarget) != group->surfaces.end()) {
+                group->currentSurface = g_renderTarget;
+                break;
+            }
+        }
+    }
+
+    if (args.flags & (D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL)) {
+        for (auto& [key, group] : g_surfaceGroups) {
+            if (std::find(group->surfaces.begin(), group->surfaces.end(), g_depthStencil) != group->surfaces.end()) {
+                group->currentDepthSurface = g_depthStencil;
+                break;
+            }
+        }
+    }
 
     if (PopulateBarriersForStretchRect(g_renderTarget, g_depthStencil))
     {

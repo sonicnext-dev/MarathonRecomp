@@ -117,6 +117,10 @@ PPC_FUNC(sub_82619B88)
             ReflectionScaleFactor(Config::ReflectionResolution));
         ctx.r6.u32 = static_cast<int>(static_cast<float>(ctx.r6.u32) *
             ReflectionScaleFactor(Config::ReflectionResolution));
+
+        // Bad hack to stop EDRAM cache from messing up
+        if (Config::ReflectionResolution == EReflectionResolution::Full)
+            ctx.r5.u32++;
     }
     
 #if _DEBUG
