@@ -14,6 +14,13 @@
 #include <app.h>
 #include <exports.h>
 
+static constexpr double CONTAINER_MOVE_OFFSET = 0;
+static constexpr double CONTAINER_MOVE_DURATION = 5;
+static constexpr double CONTAINER_FADE_OFFSET = CONTAINER_MOVE_OFFSET;
+static constexpr double CONTAINER_FADE_DURATION = 10;
+static constexpr double ROW_FADE_OFFSET = CONTAINER_FADE_DURATION;
+static constexpr double ROW_FADE_TIME = 5;
+
 static constexpr int MAX_VISIBLE_ROWS = 4;
 
 static double g_time{};
@@ -26,6 +33,7 @@ static bool g_up{};
 static bool g_upWasHeld{};
 static bool g_down{};
 static bool g_downWasHeld{};
+static bool g_hasSwitched{};
 
 static int g_rowCount{};
 static int g_selectedIndex{};
@@ -94,8 +102,8 @@ static bool DrawContainer(ImVec2 min, ImVec2 max)
     auto containerTopCentreUVs = PIXELS_TO_UV_COORDS(1024, 1024, 50, 400, 50, 50);
     auto containerSideUVs = PIXELS_TO_UV_COORDS(1024, 1024, 1, 450, 50, 50);
     auto containerCentreUVs = PIXELS_TO_UV_COORDS(1024, 1024, 50, 450, 50, 50);
-    auto containerColourMotion = AchievementMenu::IsClosing() ? 0 : ComputeLinearMotion(g_time, 0, 10);
-    auto containerColour = IM_COL32(255, 255, 255, 63 * containerColourMotion);
+    auto containerAlphaMotionTime = AchievementMenu::IsClosing() ? 0 : ComputeLinearMotion(g_time, CONTAINER_FADE_OFFSET, CONTAINER_FADE_DURATION);
+    auto containerColour = IM_COL32(255, 255, 255, AchievementMenu::s_state == AchievementMenuState::GoldMedals ? Lerp(63, 0, containerAlphaMotionTime) : 63);
     auto containerEdgeSize = Scale(50, true);
 
     ImVec2 containerTopLeftCornerMin = min;
@@ -127,7 +135,7 @@ static bool DrawContainer(ImVec2 min, ImVec2 max)
 
     drawList->PushClipRect(containerTopLeftCornerMin, containerRightMax);
 
-    return containerColourMotion >= 1.0;
+    return containerAlphaMotionTime >= 1.0;
 }
 
 static void DrawAchievement(int rowIndex, Achievement& achievement, bool isUnlocked)
@@ -175,8 +183,10 @@ static void DrawAchievement(int rowIndex, Achievement& achievement, bool isUnloc
     auto rowUVs = PIXELS_TO_UV_COORDS(1024, 1024, 605, 450, 10, 30);
     auto rowMarginX = Scale(2, true);
     auto rowMarginY = Scale(24, true);
-    auto rowColourMotion = BREATHE_MOTION(1.0f, 0.0f, g_rowSelectionTime, 0.9f);
-    auto rowColour = IM_COL32(255, 255, 255, isCurrent ? Lerp(165, 94, rowColourMotion) : 94);
+    auto rowColourBreatheMotionTime = BREATHE_MOTION(1.0f, 0.0f, g_rowSelectionTime, 0.9f);
+    auto rowColourTransitionMotionTime = ComputeLinearMotion(g_time, ROW_FADE_OFFSET, ROW_FADE_TIME);
+    auto rowColourAlpha = isCurrent ? Lerp(165, 94, rowColourBreatheMotionTime) * rowColourTransitionMotionTime : 94 * rowColourTransitionMotionTime;
+    auto rowColour = IM_COL32(255, 255, 255, rowColourAlpha);
     ImVec2 rowMin = { clipRectMin.x + rowMarginX, min.y + itemHeight - rowMarginY };
     ImVec2 rowMax = { clipRectMax.x - rowMarginX, rowMin.y + Scale(30, true) };
 
@@ -336,6 +346,7 @@ void AchievementMenu::Draw()
                         ButtonWindow::Open("Button_GoldMedalsBack");
                         SetGoldMedalResultsVisible(false);
                         Game_PlaySound("window_open");
+                        g_hasSwitched = true;
                     }
 
                     break;
@@ -361,24 +372,35 @@ void AchievementMenu::Draw()
         }
     }
 
+    auto containerMotionTime = ComputeLinearMotion(g_time, CONTAINER_MOVE_OFFSET, CONTAINER_MOVE_DURATION, s_state == AchievementMenuState::GoldMedals);
+    auto containerTop = Scale(Lerp(217, 148, containerMotionTime), true);
+    auto containerBottom = Scale(554, true);
+    auto containerWidth = Scale(1158, true);
+
+    ImVec2 min = { (res.x / 2) - containerWidth / 2, g_vertCentre + containerTop };
+    ImVec2 max = { min.x + containerWidth, g_vertCentre + containerBottom };
+
     switch (s_state)
     {
         case AchievementMenuState::GoldMedals:
+        {
             s_commonMenu.SetTitle(Localise("Achievements_GoldMedals_Uppercase"));
             s_commonMenu.ShowDescription = false;
+            
+            if (g_hasSwitched)
+            {
+                // For outro animation.
+                DrawContainer(min, max);
+                drawList->PopClipRect();
+            }
+
             break;
+        }
 
         case AchievementMenuState::Achievements:
         {
             s_commonMenu.SetTitle(Localise("Achievements_Title_Uppercase"));
             s_commonMenu.ShowDescription = true;
-
-            auto containerWidth = Scale(1158, true);
-            auto containerTop = Scale(148, true);
-            auto containerHeight = Scale(405, true);
-
-            ImVec2 min = { (res.x / 2) - containerWidth / 2, g_vertCentre + containerTop };
-            ImVec2 max = { min.x + containerWidth, min.y + containerHeight };
 
             if (DrawContainer(min, max))
             {
@@ -481,6 +503,7 @@ void AchievementMenu::Open(Sonicteam::MainMenuTask* pMainMenuTask)
     s_isVisible = true;
     s_state = AchievementMenuState::GoldMedals;
     g_time = ImGui::GetTime();
+    g_hasSwitched = false;
     g_selectedIndex = 0;
 
     ButtonWindow::Open("Button_AchievementsBack");
