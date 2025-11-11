@@ -775,8 +775,8 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Installation check has finished.\n\nAll files seem to be correct.\n\nThe game will now close. Remove the launch argument to play the game." },
             { ELanguage::Japanese, "インストールチェックが終了しました\n\nすべてのファイルは正しいようです\n\nゲームは終了します、ゲームをプレイするには起動引数を削除してください" },
-            { ELanguage::German,  "Die Installation wurde überprüft.\n\nAlle Dateien scheinen korrekt zu sein.\n\nDas Spiel wird nun geschlossen. Entferne die Startoption, um das Spiel zu spielen." },
-            { ELanguage::French,  "La vérification de l'installation est terminée.\n\nTous les fichiers semblent corrects.\n\nL'application va maintenant se fermer. Retirez l'argument de lancement pour pouvoir lancer le jeu." },
+            { ELanguage::German,   "Die Installation wurde überprüft.\n\nAlle Dateien scheinen korrekt zu sein.\n\nDas Spiel wird nun geschlossen. Entferne die Startoption, um das Spiel zu spielen." },
+            { ELanguage::French,   "La vérification de l'installation est terminée.\n\nTous les fichiers semblent corrects.\n\nL'application va maintenant se fermer. Retirez l'argument de lancement pour pouvoir lancer le jeu." },
             { ELanguage::Spanish,  "La verificación de la instalación ha terminado.\n\nTodos los archivos parecen correctos.\n\nEl juego se cerrará ahora. Elimina el argumento de lanzamiento para jugar al juego." },
             { ELanguage::Italian,  "La verifica dei file d'installazione è terminata.\n\nTutti i file sembrano corretti.\n\nIl gioco si chiuderà. Rimuovi l'argomento di avvio per poter giocare." }
         }
@@ -786,8 +786,8 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Installation check has failed.\n\nError: %s\n\nThe game will now close. Try reinstalling the game by using the --install launch argument." },
             { ELanguage::Japanese, "インストールチェックに失敗しました\n\nエラー：%s\n\nゲームは終了します、--install 起動引数を使用してゲームを再インストールしてください" },
-            { ELanguage::German,  "Die Installationsprüfung ist fehlgeschlagen.\n\nFehler: %s\n\nDas Spiel wird nun geschlossen. Versuche das Spiel durch Verwendung der Startoption --install neu zu installieren." },
-            { ELanguage::French,  "La vérification de l'installation a échoué.\n\nErreur : %s\n\nL'application va maintenant se fermer. Essayez de réinstaller le jeu en utilisant l'argument de lancement --install." },
+            { ELanguage::German,   "Die Installationsprüfung ist fehlgeschlagen.\n\nFehler: %s\n\nDas Spiel wird nun geschlossen. Versuche das Spiel durch Verwendung der Startoption --install neu zu installieren." },
+            { ELanguage::French,   "La vérification de l'installation a échoué.\n\nErreur : %s\n\nL'application va maintenant se fermer. Essayez de réinstaller le jeu en utilisant l'argument de lancement --install." },
             { ELanguage::Spanish,  "La verificación de la instalación ha fallado.\n\nError: %s\n\nEl juego se cerrará ahora. Intenta reinstalar el juego utilizando el argumento de lanzamiento --install." },
             { ELanguage::Italian,  "La verifica dei file d'installazione non è andata a buon fine.\n\nErrore: %s\n\nIl gioco si chiuderà. Prova a reinstallare il gioco utilizzando l'argomento di avvio --install." }
         }
@@ -928,22 +928,22 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Common_Retry",
         {
             { ELanguage::English,  "Retry" },
-            { ELanguage::Japanese, "DUMMY" },
-            { ELanguage::German,   "DUMMY" },
-            { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Japanese, "リトライ" },
+            { ELanguage::German,   "Wiederholen" },
+            { ELanguage::French,   "Réessayer" },
+            { ELanguage::Spanish,  "Reintentar" },
+            { ELanguage::Italian,  "Riprova" }
         }
     },
     {
         "Common_ContinueWithoutSaving",
         {
             { ELanguage::English,  "Continue without saving." },
-            { ELanguage::Japanese, "DUMMY" },
-            { ELanguage::German,   "DUMMY" },
-            { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Japanese, "セーブせずにゲームを続けます" },
+            { ELanguage::German,   "Fortsetzen ohne zu speichern." },
+            { ELanguage::French,   "Continuer sans sauvegarder." },
+            { ELanguage::Spanish,  "Continuar sin guardar." },
+            { ELanguage::Italian,  "Continua senza salvare." }
         }
     },
     {

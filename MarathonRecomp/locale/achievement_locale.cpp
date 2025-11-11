@@ -12,7 +12,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Sonic's Episode: Cleared",
                     "Clear Sonic's episode!",
-                    "You have cleared Sonic's episode."
+                    "Cleared Sonic's episode."
                 }
             },
             {
@@ -67,7 +67,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Shadow's Episode: Cleared",
                     "Clear Shadow's episode!",
-                    "You have cleared Shadow's episode."
+                    "Cleared Shadow's episode."
                 }
             },
             {
@@ -122,7 +122,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Silver's Episode: Cleared",
                     "Clear Silver's episode!",
-                    "You have cleared Silver's episode."
+                    "Cleared Silver's episode."
                 }
             },
             {
@@ -177,7 +177,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "One To Reach The End",
                     "Clear the last hidden episode!",
-                    "You have cleared the last episode."
+                    "Cleared the last episode."
                 }
             },
             {
@@ -232,7 +232,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Sonic's Episode: Completed",
                     "Clear all of Sonic's hard ACT missions.",
-                    "You have cleared all of Sonic's ACT missions."
+                    "Cleared all of Sonic's ACT missions."
                 }
             },
             {
@@ -287,7 +287,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Shadow's Episode: Completed",
                     "Clear all of Shadow's hard ACT missions.",
-                    "You have cleared all of Shadow's ACT missions."
+                    "Cleared all of Shadow's ACT missions."
                 }
             },
             {
@@ -342,7 +342,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Silver's Episode: Completed",
                     "Clear all of Silver's hard ACT missions.",
-                    "You have cleared all of Silver's ACT missions."
+                    "Cleared all of Silver's ACT missions."
                 }
             },
             {
@@ -397,7 +397,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Shadow's Episode: Mastered",
                     "Clear all of Shadow's ACT missions with Rank S.",
-                    "You have achieved Rank S on all of Shadow's ACT missions."
+                    "Achieved Rank S on all of Shadow's ACT missions."
                 }
             },
             {
@@ -452,7 +452,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Sonic's Episode: Mastered",
                     "Clear all of Sonic's ACT missions with Rank S.",
-                    "You have achieved Rank S on all of Sonic's ACT missions."
+                    "Achieved Rank S on all of Sonic's ACT missions."
                 }
             },
             {
@@ -507,7 +507,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Silver's Episode: Mastered",
                     "Clear all of Silver's ACT missions with Rank S.",
-                    "You have achieved Rank S on all of Silver's ACT missions."
+                    "Achieved Rank S on all of Silver's ACT missions."
                 }
             },
             {
@@ -562,7 +562,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Knights of Kronos",
                     "Clear the last hidden episode with Rank S.",
-                    "You have achieved Rank S on all of the last episode."
+                    "Achieved Rank S on all of the last episode."
                 }
             },
             {
@@ -617,7 +617,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Legend of Soleanna",
                     "Clear all ACT missions with Rank S.",
-                    "You have achieved Rank S on all ACT missions."
+                    "Achieved Rank S on all ACT missions."
                 }
             },
             {
@@ -672,7 +672,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Silver Medalist",
                     "Collect all of the Silver Medals scattered around Soleanna.",
-                    "You have collected all of the Silver Medals in Soleanna."
+                    "Collected all of the Silver Medals in Soleanna."
                 }
             },
             {
@@ -727,7 +727,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Gold Medalist",
                     "Collect all of the legendary Gold Medals of Soleanna.",
-                    "You have collected all of the Gold Medals of Soleanna."
+                    "Collected all of the Gold Medals of Soleanna."
                 }
             },
             {
@@ -782,7 +782,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Blue Phantom",
                     "Unlock all of Sonic's abilities.",
-                    "You have learned all of Sonic's abilities."
+                    "Learned all of Sonic's abilities."
                 }
             },
             {
@@ -837,7 +837,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Ultimate Life Form",
                     "Unlock all of Shadow's abilities.",
-                    "You have learned all of Shadow's abilities."
+                    "Learned all of Shadow's abilities."
                 }
             },
             {
@@ -892,7 +892,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Psychic Soldier",
                     "Unlock all of Silver's abilities.",
-                    "You have learned all of Silver's abilities."
+                    "Learned all of Silver's abilities."
                 }
             },
             {
@@ -947,7 +947,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Soleanna's Hero",
                     "Clear all of Sonic's TOWN missions.",
-                    "You have cleared all of Sonic's TOWN missions."
+                    "Cleared all of Sonic's TOWN missions."
                 }
             },
             {
@@ -1002,7 +1002,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Elite Agent",
                     "Clear all of Shadow's TOWN missions.",
-                    "You have cleared all of Shadow's TOWN missions."
+                    "Cleared all of Shadow's TOWN missions."
                 }
             },
             {
@@ -1057,7 +1057,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Silver the Liberator",
                     "Clear all of Silver's TOWN missions.",
-                    "You have cleared all of Silver's TOWN missions."
+                    "Cleared all of Silver's TOWN missions."
                 }
             },
             {
@@ -1112,7 +1112,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Soleanna's Blue Wind",
                     "Clear all of Sonic's TOWN missions with Rank S.",
-                    "You have achieved Rank S on all of Sonic's TOWN missions."
+                    "Achieved Rank S on all of Sonic's TOWN missions."
                 }
             },
             {
@@ -1167,7 +1167,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Dark Hero",
                     "Clear all of Shadow's TOWN missions with Rank S.",
-                    "You have achieved Rank S on all of Shadow's TOWN missions."
+                    "Achieved Rank S on all of Shadow's TOWN missions."
                 }
             },
             {
@@ -1222,7 +1222,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 {
                     "Silver the Savior",
                     "Clear all of Silver's TOWN missions with Rank S.",
-                    "You have achieved Rank S on all of Silver's TOWN missions."
+                    "Achieved Rank S on all of Silver's TOWN missions."
                 }
             },
             {

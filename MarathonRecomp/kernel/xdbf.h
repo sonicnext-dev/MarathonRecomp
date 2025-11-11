@@ -8,33 +8,36 @@ extern std::unordered_map<uint16_t, GuestTexture*> g_xdbfTextureCache;
 
 namespace xdbf
 {
-    inline std::string& FixInvalidSequences(std::string& str)
+    inline std::string FixInvalidSequences(std::string& str)
     {
-        static std::array<std::string_view, 1> s_invalidSequences =
+        std::string result;
+
+        result.reserve(str.size());
+
+        for (size_t i = 0; i < str.size(); ++i)
         {
-            "\n"
-        };
+            auto& c = str[i];
 
-        static std::array<std::string_view, 1> s_replaceSequences =
-        {
-            " "
-        };
-
-        for (int i = 0; i < s_invalidSequences.size(); i++)
-        {
-            size_t pos = 0;
-
-            auto& invalidSeq = s_invalidSequences[i];
-            auto& replaceSeq = s_replaceSequences[i];
-
-            while ((pos = str.find(s_invalidSequences[i], pos)) != std::string::npos)
+            if (c == '\r' || c == '\n')
             {
-                str = str.replace(pos, invalidSeq.length(), replaceSeq);
+                // Remove spaces before line breaks.
+                while (!result.empty() && result.back() == ' ')
+                    result.pop_back();
 
-                pos += replaceSeq.length();
+                // Skip duplicate line breaks.
+                while (i + 1 < str.size() && (str[i + 1] == '\r' || str[i + 1] == '\n'))
+                    ++i;
+
+                // Add a space if the next char isn't one.
+                if (i + 1 < str.size() && str[i + 1] != ' ')
+                    result += ' ';
+            }
+            else
+            {
+                result += c;
             }
         }
 
-        return str;
+        return result;
     }
 }
