@@ -295,7 +295,7 @@ void AchievementMenu::Draw()
 
     s_commonMenu.Draw();
 
-    if (s_pMainMenuTask->m_State == Sonicteam::MainMenuTask::MainMenuState_GoldMedalResults)
+    if (s_pMainMenuTask && s_pMainMenuTask->m_State == Sonicteam::MainMenuTask::MainMenuState_GoldMedalResults)
     {
         if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManager[0])
         {
@@ -315,7 +315,7 @@ void AchievementMenu::Draw()
                     {
                         AchievementMenu::SetState(AchievementMenuState::Achievements);
                         ButtonWindow::Open("Button_GoldMedalsBack");
-                        SetGoldMedalResultsVisible(s_pMainMenuTask, false);
+                        SetGoldMedalResultsVisible(false);
                         Game_PlaySound("window_open");
                     }
 
@@ -332,7 +332,7 @@ void AchievementMenu::Draw()
                     {
                         AchievementMenu::SetState(AchievementMenuState::GoldMedals);
                         ButtonWindow::Open("Button_AchievementsBack");
-                        SetGoldMedalResultsVisible(s_pMainMenuTask, true);
+                        SetGoldMedalResultsVisible(true);
                         Game_PlaySound("window_close");
                     }
 
@@ -426,8 +426,10 @@ void AchievementMenu::Draw()
     }
 }
 
-void AchievementMenu::Open()
+void AchievementMenu::Open(Sonicteam::MainMenuTask* pMainMenuTask)
 {
+    s_pMainMenuTask = pMainMenuTask;
+
     if (s_isVisible)
         return;
 
@@ -497,4 +499,38 @@ void AchievementMenu::SetState(AchievementMenuState state)
 bool AchievementMenu::IsClosing()
 {
     return s_state == AchievementMenuState::ClosingGoldMedals || s_state == AchievementMenuState::ClosingAchievements;
+}
+
+void AchievementMenu::SetGoldMedalResultsVisible(bool isVisible)
+{
+    if (!s_pMainMenuTask)
+        return;
+
+    std::vector<int> states;
+
+    if (isVisible)
+    {
+        states = { 0, 3, 5, 11 };
+    }
+    else
+    {
+        states = { 1, 4, 6, 12 };
+    }
+
+    for (auto& state : states)
+    {
+        guest_stack_var<Sonicteam::Message::HUDGoldMedal::MsgChangeState> msgChangeState(state, s_pMainMenuTask->m_GoldMedalEpisodeIndex);
+        s_pMainMenuTask->m_pHUDGoldMedal->ProcessMessage(msgChangeState.get());
+    }
+
+    for (int i = 0; i < 5; i++)
+    {
+        auto& spTextEntity = s_pMainMenuTask->m_pHUDGoldMedal->m_aspTextEntities[i];
+
+        if (auto pTextEntity = spTextEntity.get())
+        {
+            for (size_t i = 0; i < pTextEntity->m_CharacterVertexCount; i++)
+                pTextEntity->m_pCharacterVertices[i].Colour = isVisible ? 0xFFFFFFFF : 0x00FFFFFF;
+        }
+    }
 }

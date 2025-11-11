@@ -22,28 +22,9 @@ public:
     static inline bool s_isVisible = false;
 
     static void Draw();
-    static void Open();
+    static void Open(Sonicteam::MainMenuTask* pMainMenuTask);
     static void Close();
     static void SetState(AchievementMenuState state);
     static bool IsClosing();
-
-    static void SetGoldMedalResultsVisible(Sonicteam::MainMenuTask* pMainMenuTask, bool isVisible)
-    {
-        std::array<int, 4> states{};
-
-        if (isVisible)
-        {
-            states = { 0, 3, 5, 11 };
-        }
-        else
-        {
-            states = { 1, 4, 6, 12 };
-        }
-
-        for (auto& state : states)
-        {
-            guest_stack_var<Sonicteam::Message::HUDGoldMedal::MsgChangeState> msgChangeState(state, pMainMenuTask->m_GoldMedalEpisodeIndex);
-            pMainMenuTask->m_pHUDGoldMedal->ProcessMessage(msgChangeState.get());
-        }
-    }
+    static void SetGoldMedalResultsVisible(bool isVisible);
 };

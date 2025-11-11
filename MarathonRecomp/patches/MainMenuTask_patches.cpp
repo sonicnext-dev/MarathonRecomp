@@ -83,10 +83,7 @@ PPC_FUNC(sub_824FFCF8)
     }
 
     if (pMainMenuTask->m_State == Sonicteam::MainMenuTask::MainMenuState_GoldMedalResultsOpen)
-    {
-        AchievementMenu::s_pMainMenuTask = pMainMenuTask;
-        AchievementMenu::Open();
-    }
+        AchievementMenu::Open(pMainMenuTask);
 #endif
 
     static float s_buttonWindowTextOffsetY{};
@@ -115,6 +112,12 @@ PPC_FUNC(sub_824FFCF8)
         event->Update(pMainMenuTask, ctx.f1.f64);
 
     __imp__sub_824FFCF8(ctx, base);
+}
+
+bool HUDGoldMedal_ShouldDestroyTable()
+{
+    return AchievementMenu::s_state == AchievementMenuState::ClosingGoldMedals ||
+           AchievementMenu::s_state == AchievementMenuState::ClosingAchievements;
 }
 
 bool MainMenuTask_GoldMedalResults_SkipOutro()

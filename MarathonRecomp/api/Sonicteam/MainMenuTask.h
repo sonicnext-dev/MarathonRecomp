@@ -2,8 +2,10 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/SoX/Math/Vector.h>
+#include <Sonicteam/SoX/RefSharedPointer.h>
 #include <Sonicteam/Player/Object.h>
 #include <Sonicteam/ButtonWindowTask.h>
+#include <Sonicteam/MainMenuExpositionTask.h>
 
 namespace Sonicteam
 {
@@ -42,12 +44,16 @@ namespace Sonicteam
         xpointer<HUDGoldMedal> m_pHUDGoldMedal;
         MARATHON_INSERT_PADDING(0x14);
         xpointer<ButtonWindowTask> m_pButtonWindowTask;
-        xpointer<void> m_pMainMenuExpositionTask;
+        SoX::RefSharedPointer<MainMenuExpositionTask> m_spMainMenuExpositionTask;
         be<uint32_t> m_MainMenuSelectedIndex;
         be<uint32_t> m_SinglePlayerSelectedIndex;
-        MARATHON_INSERT_PADDING(0x78);
+        MARATHON_INSERT_PADDING(0x14);
+        be<uint32_t> m_FieldBC;
+        MARATHON_INSERT_PADDING(0x60);
         be<uint32_t> m_GoldMedalEpisodeIndex;
-        MARATHON_INSERT_PADDING(0x14C);
+        MARATHON_INSERT_PADDING(4);
+        be<uint32_t> m_GoldMedalScrollIndex;
+        MARATHON_INSERT_PADDING(0x144);
         be<uint32_t> m_IsChangingState;
         MARATHON_INSERT_PADDING(8);
         be<uint32_t> m_PressedButtons;
@@ -61,10 +67,12 @@ namespace Sonicteam
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_pHUDMainMenu, 0x74);
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_pHUDGoldMedal, 0x80);
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_pButtonWindowTask, 0x98);
-    MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_pMainMenuExpositionTask, 0x9C);
+    MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_spMainMenuExpositionTask, 0x9C);
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_MainMenuSelectedIndex, 0xA0);
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_SinglePlayerSelectedIndex, 0xA4);
+    MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_FieldBC, 0xBC);
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_GoldMedalEpisodeIndex, 0x120);
+    MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_GoldMedalScrollIndex, 0x128);
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_IsChangingState, 0x270);
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_PressedButtons, 0x27C);
     MARATHON_ASSERT_OFFSETOF(MainMenuTask, m_Field298, 0x298);
