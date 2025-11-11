@@ -3,6 +3,7 @@
 #include <gpu/video.h>
 #include <hid/hid.h>
 #include <kernel/xdbf.h>
+#include <locale/achievement_locale.h>
 #include <locale/locale.h>
 #include <patches/aspect_ratio_patches.h>
 #include <patches/MainMenuTask_patches.h>
@@ -203,17 +204,35 @@ static void DrawAchievement(int rowIndex, Achievement& achievement, bool isUnloc
     auto textX = imageMax.x + itemMarginX * 2;
     auto textColour = isUnlocked ? IM_COL32_WHITE : IM_COL32(137, 137, 137, 255);
 
-    auto descText = isUnlocked ? achievement.UnlockedDesc.c_str() : achievement.LockedDesc.c_str();
+    std::string name;
+    std::string lockedDesc;
+    std::string unlockedDesc;
+
+    if (Config::UseOfficialAchievementText)
+    {
+        name = achievement.Name;
+        lockedDesc = achievement.LockedDesc;
+        unlockedDesc = achievement.UnlockedDesc;
+    }
+    else
+    {
+        auto& newLocale = GetAchievementLocale(achievement.ID);
+
+        name = newLocale.Name;
+        lockedDesc = newLocale.LockedDesc;
+        unlockedDesc = newLocale.UnlockedDesc;
+    }
+
+    auto descText = isUnlocked ? unlockedDesc.c_str() : lockedDesc.c_str();
     auto descTextOffsetY = Scale(32, true);
     auto descSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, descText);
-
 
     ImVec2 namePos = { textX, imageMin.y + Scale(3, true) };
     ImVec2 descPos = { textX, namePos.y + descTextOffsetY };
 
     // Draw achievement name.
     SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
-    drawList->AddText(g_pFntRodin, fontSize, namePos, textColour, achievement.Name.c_str());
+    drawList->AddText(g_pFntRodin, fontSize, namePos, textColour, name.c_str());
     SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
 
     auto marqueeFadeScale = Scale(18, true);
@@ -465,7 +484,7 @@ void AchievementMenu::Open(Sonicteam::MainMenuTask* pMainMenuTask)
     g_selectedIndex = 0;
 
     ButtonWindow::Open("Button_AchievementsBack");
-    MainMenuTaskPatches::HideButtonWindow = true;
+    MainMenuTaskPatches::s_hideButtonWindow = true;
 }
 
 void AchievementMenu::Close()
@@ -487,7 +506,7 @@ void AchievementMenu::Close()
     g_time = ImGui::GetTime();
 
     ButtonWindow::Close();
-    MainMenuTaskPatches::HideButtonWindow = false;
+    MainMenuTaskPatches::s_hideButtonWindow = false;
 }
 
 void AchievementMenu::SetState(AchievementMenuState state)

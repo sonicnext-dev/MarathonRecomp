@@ -27,7 +27,7 @@ PPC_FUNC(sub_825ECB48)
 
     __imp__sub_825ECB48(ctx, base);
 
-    auto pTextCard = (boost::shared_ptr<Sonicteam::TextCard>*)(base + ctx.r3.u32);
+    auto pspTextCard = (boost::shared_ptr<Sonicteam::TextCard>*)(base + ctx.r3.u32);
 
     for (auto& replacement : TextPatches::s_replacedMessages)
     {
@@ -43,7 +43,7 @@ PPC_FUNC(sub_825ECB48)
         for (size_t i = 0; i < wideMessageLen; i++)
             pReplacedMessage[i] = ByteSwap(wideMessage.c_str()[i]);
 
-        pTextCard->get()->m_pText = (const uint16_t*)pReplacedMessage;
+        pspTextCard->get()->m_pText = (const uint16_t*)pReplacedMessage;
     }
 
     if (!pNewMessage)

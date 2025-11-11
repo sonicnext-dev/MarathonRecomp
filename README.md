@@ -177,8 +177,6 @@ This project does not plan to support any more platforms other than Windows, Lin
 
 - [NextinHKRY](https://github.com/NextinMono): Provided Italian localization for the custom menus.
 
-- [Syko](https://x.com/UltraSyko): Aided in identifying fonts used by the original SonicNext logo.
-
 - [Hotline Sehwani](https://www.youtube.com/channel/UC9NBX5UPq4fYvbr7bzvRvOg) & SilverIceSound: Produced the [installer music](https://www.youtube.com/watch?v=8mfOSTcTQNs) ([original prod.](https://www.youtube.com/watch?v=k_mGNwrxR5M) by [Tomoya Ohtani](https://www.youtube.com/@TomoyaOhtaniChannel)).
 
 ### Special Thanks
@@ -187,6 +185,8 @@ This project does not plan to support any more platforms other than Windows, Lin
 - [Skyth](https://github.com/blueskythlikesclouds): Provided graphics consultation and support for dynamic aspect ratio.
 
 - [Darío](https://github.com/DarioSamo): Creator of the graphics hardware abstraction layer [plume](https://github.com/renderbag/plume), used by the project's graphics backend.
+
+- [Syko](https://x.com/UltraSyko): Aided in identifying fonts used by the original SonicNext logo.
 
 - Ray Vassos: Aided with German localization for the custom menus.
 

@@ -1,6 +1,7 @@
 #include "achievement_overlay.h"
 #include <kernel/memory.h>
 #include <kernel/xdbf.h>
+#include <locale/achievement_locale.h>
 #include <locale/locale.h>
 #include <ui/imgui_utils.h>
 #include <user/achievement_data.h>
@@ -45,13 +46,16 @@ void AchievementOverlay::Draw()
     auto drawList = ImGui::GetBackgroundDrawList();
     auto& res = ImGui::GetIO().DisplaySize;
 
-    auto strAchievementUnlocked = Localise("Achievements_Unlock").c_str();
-    auto strAchievementName = g_achievement.Name.c_str();
+    auto& strAchievementUnlocked = Localise("Achievements_Unlock");
+    auto& strAchievementName = g_achievement.Name;
+
+    if (!Config::UseOfficialAchievementText)
+        strAchievementName = GetAchievementLocale(g_achievement.ID).Name;
 
     // Calculate text sizes.
     auto fontSize = Scale(Config::Language == ELanguage::Japanese ? 28 : 27, true);
-    auto headerSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, strAchievementUnlocked);
-    auto nameSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, strAchievementName);
+    auto headerSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, strAchievementUnlocked.c_str());
+    auto nameSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, strAchievementName.c_str());
     auto maxSize = std::max(headerSize.x, nameSize.x) + Scale(5);
 
     // Calculate image margins.
@@ -95,7 +99,7 @@ void AchievementOverlay::Draw()
             fontSize,
             { /* X */ min.x + textMarginX + (maxSize - headerSize.x) / 2, /* Y */ min.y + textMarginY },
             headerColour,
-            strAchievementUnlocked
+            strAchievementUnlocked.c_str()
         );
 
         // Draw achievement name.
@@ -105,7 +109,7 @@ void AchievementOverlay::Draw()
             fontSize,
             { /* X */ min.x + textMarginX + (maxSize - nameSize.x) / 2, /* Y */ min.y + textMarginY + nameSize.y + Scale(6) },
             IM_COL32(255, 255, 255, 255),
-            strAchievementName
+            strAchievementName.c_str()
         );
 
         SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);

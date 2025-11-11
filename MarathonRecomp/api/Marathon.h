@@ -57,6 +57,7 @@
 #include "Sonicteam/HudTextParts.h"
 #include "Sonicteam/ImageFilter.h"
 #include "Sonicteam/MainDisplayTask.h"
+#include "Sonicteam/MainMenuExpositionTask.h"
 #include "Sonicteam/MainMenuTask.h"
 #include "Sonicteam/MainMode.h"
 #include "Sonicteam/Message/Camera/Cameraman/MsgChangeMode.h"

@@ -16,7 +16,7 @@ namespace Sonicteam
         {
             MainMenuState_MainMenuBack = 1,
             MainMenuState_MainMenu = 2,
-            MainMenuState_MainMenuExitPrompt = 4,
+            MainMenuState_ExitPrompt = 4,
             MainMenuState_SinglePlayer = 6,
             MainMenuState_EpisodeSelect = 9,
             MainMenuState_TrialSelect = 0x0D,
@@ -33,8 +33,8 @@ namespace Sonicteam
             MainMenuState_AudioRoom = 0x2F,
             MainMenuState_TheaterRoom = 0x31,
             MainMenuState_Options = 0x33,
-            MainMenuState_MainMenuExitToStage = 0x3B,
-            MainMenuState_MainMenuExitToTitle = 0x3C
+            MainMenuState_ExitToStage = 0x3B,
+            MainMenuState_ExitToTitle = 0x3C
         };
 
         be<uint32_t> m_State;

@@ -81,6 +81,7 @@ set(MARATHON_RECOMP_KERNEL_CXX_SOURCES
 )
 
 set(MARATHON_RECOMP_LOCALE_CXX_SOURCES
+    "locale/achievement_locale.cpp"
     "locale/config_locale.cpp"
     "locale/locale.cpp"
 )

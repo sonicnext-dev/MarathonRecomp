@@ -141,7 +141,7 @@ float ComputeScale(float aspectRatio)
 void AspectRatioPatches::Init()
 {
     LoadingPatches::Events.push_back(&g_loadingPillarboxEvent);
-    MainMenuTaskPatches::Events.push_back(&g_chevronAnimResetEvent);
+    MainMenuTaskPatches::s_events.push_back(&g_chevronAnimResetEvent);
 }
 
 void AspectRatioPatches::ComputeOffsets()
@@ -411,7 +411,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
     }
 
     // Hide original button window whilst the options menu is visible.
-    if ((modifier.Flags & CSD_BUTTON_WINDOW) != 0 && MainMenuTaskPatches::HideButtonWindow)
+    if ((modifier.Flags & CSD_BUTTON_WINDOW) != 0 && MainMenuTaskPatches::s_hideButtonWindow)
         return;
 
     // Remove all flags if the aspect ratio is above 16:9.
@@ -1650,11 +1650,11 @@ PPC_FUNC(sub_824E11D0)
 
     static constexpr double HIDE_TEXT_OFFSET = -100000.0f;
 
-    auto isTrialSelect = MainMenuTaskPatches::State >= 12 && MainMenuTaskPatches::State <= 15;
+    auto isTrialSelect = MainMenuTaskPatches::s_state >= 12 && MainMenuTaskPatches::s_state <= 15;
 
-    auto isTag = MainMenuTaskPatches::State == Sonicteam::MainMenuTask::MainMenuState_Tag ||
-                 MainMenuTaskPatches::State == Sonicteam::MainMenuTask::MainMenuState_Tag1PSelect ||
-                 MainMenuTaskPatches::State == Sonicteam::MainMenuTask::MainMenuState_MainMenuExitToStage;
+    auto isTag = MainMenuTaskPatches::s_state == Sonicteam::MainMenuTask::MainMenuState_Tag ||
+                 MainMenuTaskPatches::s_state == Sonicteam::MainMenuTask::MainMenuState_Tag1PSelect ||
+                 MainMenuTaskPatches::s_state == Sonicteam::MainMenuTask::MainMenuState_ExitToStage;
 
     while (pHudTextRoot)
     {

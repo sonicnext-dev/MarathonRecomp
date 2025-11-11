@@ -10,24 +10,24 @@ namespace xdbf
 {
     inline std::string& FixInvalidSequences(std::string& str)
     {
-        static std::array<std::string_view, 1> invalidSequences =
+        static std::array<std::string_view, 1> s_invalidSequences =
         {
             "\n"
         };
 
-        static std::array<std::string_view, 1> replaceSequences =
+        static std::array<std::string_view, 1> s_replaceSequences =
         {
             " "
         };
 
-        for (int i = 0; i < invalidSequences.size(); i++)
+        for (int i = 0; i < s_invalidSequences.size(); i++)
         {
             size_t pos = 0;
 
-            auto& invalidSeq = invalidSequences[i];
-            auto& replaceSeq = replaceSequences[i];
+            auto& invalidSeq = s_invalidSequences[i];
+            auto& replaceSeq = s_replaceSequences[i];
 
-            while ((pos = str.find(invalidSequences[i], pos)) != std::string::npos)
+            while ((pos = str.find(s_invalidSequences[i], pos)) != std::string::npos)
             {
                 str = str.replace(pos, invalidSeq.length(), replaceSeq);
 

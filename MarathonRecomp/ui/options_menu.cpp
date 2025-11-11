@@ -1064,7 +1064,7 @@ void OptionsMenu::Draw()
             {
                 if (closingTime >= 1.0)
                 {
-                    MainMenuTaskPatches::HideButtonWindow = false;
+                    MainMenuTaskPatches::s_hideButtonWindow = false;
                     g_isClosingButtonWindow = true;
                     s_isProcessedMessages = false;
                     s_pMainMenuTask = nullptr;
@@ -1261,7 +1261,7 @@ void OptionsMenu::Open(bool isPause)
     ResetSelection();
 
     ButtonWindow::Open("Button_SelectBack", s_isPause);
-    MainMenuTaskPatches::HideButtonWindow = true;
+    MainMenuTaskPatches::s_hideButtonWindow = true;
 }
 
 void OptionsMenu::Close()

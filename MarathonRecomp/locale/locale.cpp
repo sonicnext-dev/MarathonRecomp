@@ -296,7 +296,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
     {
         "MainMenu_GoldMedalResults_Name",
         {
-            { ELanguage::English,  "RESULTS" },
+            { ELanguage::English,  "STATISTICS" },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "DUMMY" },
             { ELanguage::French,   "DUMMY" },
@@ -307,7 +307,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
     {
         "MainMenu_GoldMedalResults_Description",
         {
-            { ELanguage::English,  "Results: Displays lists of Gold Medals and Achievements" },
+            { ELanguage::English,  "Statistics: Displays lists of Gold Medals and Achievements" },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "DUMMY" },
             { ELanguage::French,   "DUMMY" },

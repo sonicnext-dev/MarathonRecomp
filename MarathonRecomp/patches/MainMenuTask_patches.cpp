@@ -89,7 +89,7 @@ PPC_FUNC(sub_824FFCF8)
     static float s_buttonWindowTextOffsetY{};
     auto& rButtonWindowTextOffsetY = pMainMenuTask->m_pButtonWindowTask->m_pHUDButtonWindow->m_pHudTextParts->m_OffsetY;
 
-    if (MainMenuTaskPatches::HideButtonWindow)
+    if (MainMenuTaskPatches::s_hideButtonWindow)
     {
         static constexpr double HIDE_TEXT_OFFSET = -100000.0f;
 
@@ -106,9 +106,9 @@ PPC_FUNC(sub_824FFCF8)
         rButtonWindowTextOffsetY = s_buttonWindowTextOffsetY;
     }
 
-    MainMenuTaskPatches::State = (Sonicteam::MainMenuTask::MainMenuState)pMainMenuTask->m_State.get();
+    MainMenuTaskPatches::s_state = (Sonicteam::MainMenuTask::MainMenuState)pMainMenuTask->m_State.get();
 
-    for (auto& event : MainMenuTaskPatches::Events)
+    for (auto& event : MainMenuTaskPatches::s_events)
         event->Update(pMainMenuTask, ctx.f1.f64);
 
     __imp__sub_824FFCF8(ctx, base);
