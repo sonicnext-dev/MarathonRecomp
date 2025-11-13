@@ -1,0 +1,37 @@
+#pragma once
+
+#include <Marathon.inl>
+
+namespace Sonicteam::SoX::Engine
+{
+    class RenderScheduler;
+    
+    class RenderProcess
+    {
+    public:
+        struct Vftable
+        {
+            be<uint32_t> fpDestroy;
+            be<uint32_t> fpFunc04;
+            be<uint32_t> fpFunc08;
+            be<uint32_t> fpPerformProcess;
+        };
+
+        xpointer<Vftable> m_pVftable;
+        xpointer<uint32_t> m_Flag1; // Or Type?
+        xpointer<void> m_pGTask;
+        be<uint32_t> m_Flag2;
+        MARATHON_INSERT_PADDING(0x8);
+        be<float> m_Field18;
+        MARATHON_INSERT_PADDING(0x4);
+        xpointer<RenderScheduler> m_pRenderScheduler;
+        MARATHON_INSERT_PADDING(0xC);
+    };
+
+    MARATHON_ASSERT_SIZEOF(RenderProcess, 0x30);
+    MARATHON_ASSERT_OFFSETOF(RenderProcess, m_Flag1, 4);
+    MARATHON_ASSERT_OFFSETOF(RenderProcess, m_pGTask, 8);
+    MARATHON_ASSERT_OFFSETOF(RenderProcess, m_Flag2, 0xC);
+    MARATHON_ASSERT_OFFSETOF(RenderProcess, m_Field18, 0x18);
+    MARATHON_ASSERT_OFFSETOF(RenderProcess, m_pRenderScheduler, 0x20);
+}
