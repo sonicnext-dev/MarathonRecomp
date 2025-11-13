@@ -10,20 +10,20 @@ namespace Sonicteam::RenderAction
     public:
         enum AddressMode : uint32_t
         {
-            Wrap = 1,
-            Clamp = 2,
-            Mirror = 3,
-            Border = 4,
+            AddressMode_Wrap = 1,
+            AddressMode_Clamp = 2,
+            AddressMode_Mirror = 3,
+            AddressMode_Border = 4,
         };
 
         enum FilterMode : uint32_t
         {
-            Point = 1,
-            Linear = 2,
-            LinearMipmap = 3,
-            Trilinear = 4,
-            Anisotropic = 5,
-            Gaussian = 5,
+            FilterMode_Point = 1,
+            FilterMode_Linear = 2,
+            FilterMode_LinearMipmap = 3,
+            FilterMode_Trilinear = 4,
+            FilterMode_Anisotropic = 5,
+            FilterMode_Gaussian = 5,
         };
 
         be<uint32_t> m_Unknown;

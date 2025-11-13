@@ -10,12 +10,12 @@ namespace Sonicteam::RenderAction
     public:
         enum ZMode : uint32_t
         {
-            LessEqualOn = 1,
-            LessEqualOff = 2,
-            LessOn = 3,
-            LessOff = 4,
-            AlwaysOn = 5,
-            AlwaysOff = 6,
+            SetZMode_LessEqualOn = 1,
+            SetZMode_LessEqualOff = 2,
+            SetZMode_LessOn = 3,
+            SetZMode_LessOff = 4,
+            SetZMode_AlwaysOn = 5,
+            SetZMode_AlwaysOff = 6,
         };
 
         be<ZMode> m_ZMode;

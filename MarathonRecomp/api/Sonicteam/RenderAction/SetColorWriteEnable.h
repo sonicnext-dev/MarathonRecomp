@@ -10,11 +10,11 @@ namespace Sonicteam::RenderAction
     public:
         enum ColorWrite : uint32_t
         {
-            None = 0,
-            Red = 1 << 0,
-            Green = 1 << 1,
-            Blue = 1 << 2,
-            Alpha = 1 << 3
+            ColorWrite_None = 0,
+            ColorWrite_Red = 1 << 0,
+            ColorWrite_Green = 1 << 1,
+            ColorWrite_Blue = 1 << 2,
+            ColorWrite_Alpha = 1 << 3
         };
 
         be<ColorWrite> m_ColorWriteMask;

@@ -10,17 +10,17 @@ namespace Sonicteam::RenderAction
     public:
         enum PassIndex
         {
-            Main,
-            Transparent,
-            Sky,
-            Shadowmap,
-            Psi,
-            Oc,
-            Glare,
-            AfterPp,
-            Radermap,
-            User0,
-            User1
+            PassIndex_Main,
+            PassIndex_Transparent,
+            PassIndex_Sky,
+            PassIndex_Shadowmap,
+            PassIndex_Psi,
+            PassIndex_Oc,
+            PassIndex_Glare,
+            PassIndex_AfterPp,
+            PassIndex_Radermap,
+            PassIndex_User0,
+            PassIndex_User1
         };
 
         be<PassIndex> m_PassIndex;

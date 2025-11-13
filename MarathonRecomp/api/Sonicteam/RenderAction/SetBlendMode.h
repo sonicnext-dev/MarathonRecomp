@@ -10,9 +10,9 @@ namespace Sonicteam::RenderAction
     public:
         enum BlendMode
         {
-            Opaque = 0,
-            Blend = 1,
-            Add = 2
+            BlendMode_Opaque = 0,
+            BlendMode_Blend = 1,
+            BlendMode_Add = 2
         };
 
         be<BlendMode> m_BlendMode;

@@ -10,9 +10,9 @@ namespace Sonicteam::RenderAction
     public:
         enum CullMode
         {
-            None,
-            CW,
-            CCW
+            CullMode_None,
+            CullMode_CW,
+            CullMode_CCW
         };
 
         be<CullMode> m_CullMode;
