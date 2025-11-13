@@ -22,7 +22,8 @@ namespace Sonicteam
         be<uint32_t> m_EpisodeIndex;
         be<uint32_t> m_ScrollIndex;
         be<uint32_t> m_MedalCount;
-        MARATHON_INSERT_PADDING(0x18);
+        boost::shared_ptr<TextCard> m_spMedalCountTextCard;
+        MARATHON_INSERT_PADDING(0x10);
         boost::shared_ptr<TextCard> m_aspTextCards[5];
         boost::shared_ptr<TextEntity> m_aspTextEntities[5];
     };
@@ -33,6 +34,7 @@ namespace Sonicteam
     MARATHON_ASSERT_OFFSETOF(HUDGoldMedal, m_EpisodeIndex, 0x9C);
     MARATHON_ASSERT_OFFSETOF(HUDGoldMedal, m_ScrollIndex, 0xA0);
     MARATHON_ASSERT_OFFSETOF(HUDGoldMedal, m_MedalCount, 0xA4);
+    MARATHON_ASSERT_OFFSETOF(HUDGoldMedal, m_spMedalCountTextCard, 0xA8);
     MARATHON_ASSERT_OFFSETOF(HUDGoldMedal, m_aspTextCards, 0xC0);
     MARATHON_ASSERT_OFFSETOF(HUDGoldMedal, m_aspTextEntities, 0xE8);
     MARATHON_ASSERT_SIZEOF(HUDGoldMedal, 0x110);

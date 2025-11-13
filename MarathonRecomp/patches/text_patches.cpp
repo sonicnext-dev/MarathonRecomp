@@ -27,30 +27,55 @@ PPC_FUNC(sub_825ECB48)
 
     __imp__sub_825ECB48(ctx, base);
 
-    // FIXME
-    // auto pspTextCard = (boost::shared_ptr<Sonicteam::TextCard>*)(base + ctx.r3.u32);
-    // 
-    // for (auto& replacement : TextPatches::s_replacedMessages)
-    // {
-    //     if (HashStr(pMessage) != replacement.first)
-    //         continue;
-    // 
-    //     auto& message = Localise(replacement.second);
-    //     auto  wideMessage = std::wstring(message.begin(), message.end());
-    //     auto  wideMessageLen = (wideMessage.length() * 2) + 2;
-    // 
-    //     auto pReplacedMessage = (uint16_t*)g_userHeap.Alloc(wideMessageLen);
-    // 
-    //     for (size_t i = 0; i < wideMessageLen; i++)
-    //         pReplacedMessage[i] = ByteSwap(wideMessage.c_str()[i]);
-    // 
-    //     pspTextCard->get()->m_pText = (const uint16_t*)pReplacedMessage;
-    // }
+    if (pNewMessage)
+        g_userHeap.Free(pNewMessage);
 
-    if (!pNewMessage)
-        return;
+    static uint16_t* s_replacementStringPool{};
+    static ELanguage s_replacementStringPoolLanguage{};
 
-    g_userHeap.Free(pNewMessage);
+    if (s_replacementStringPoolLanguage != Config::Language)
+    {
+        auto length = 0;
+
+        // Compute string pool length.
+        for (auto& replacement : TextPatches::s_replacedMessages)
+            length += (Localise(replacement.second.pKey).length() * 2) + 2;
+
+        if (s_replacementStringPool)
+            g_userHeap.Free(s_replacementStringPool);
+
+        s_replacementStringPool = (uint16_t*)g_userHeap.Alloc(length);
+        s_replacementStringPoolLanguage = Config::Language;
+
+        auto stringPoolPos = s_replacementStringPool;
+
+        for (auto& replacement : TextPatches::s_replacedMessages)
+        {
+            auto& message = Localise(replacement.second.pKey);
+            auto  wideMessage = std::wstring(message.begin(), message.end());
+            auto  wideMessageLen = wideMessage.length() + 1;
+
+            replacement.second.pGuestText = stringPoolPos;
+
+            for (size_t i = 0; i < wideMessageLen; i++)
+            {
+                *stringPoolPos = ByteSwap(wideMessage.c_str()[i]);
+                stringPoolPos++;
+            }
+        }
+    }
+
+    auto pspTextCard = (boost::shared_ptr<Sonicteam::TextCard>*)(base + ctx.r3.u32);
+    
+    for (auto& replacement : TextPatches::s_replacedMessages)
+    {
+        if (HashStr(pMessage) != replacement.first)
+            continue;
+
+        pspTextCard->get()->m_spResource = boost::make_shared<uint8_t>(0, 0x820334C4);
+        pspTextCard->get()->m_pText = replacement.second.pGuestText;
+        pspTextCard->get()->m_pVariables = (const char*)0x8200139C;
+    }
 }
 
 // Load text book.
