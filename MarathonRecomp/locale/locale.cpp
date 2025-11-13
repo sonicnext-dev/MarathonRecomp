@@ -300,7 +300,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "DUMMY" },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "ESTADÍSTICAS" },
             { ELanguage::Italian,  "STATISTICHE" }
         }
     },
@@ -311,7 +311,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "DUMMY" },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "Estadísticas: Muestra los listados de las medallas de oro y los logros" },
             { ELanguage::Italian,  "Statistiche: mostra gli elenchi delle medaglie d'oro e gli obiettivi" }
         }
     },
@@ -344,7 +344,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "DUMMY" },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "Medallas de oro" },
             { ELanguage::Italian,  "Medaglie d'oro" }
         }
     },
@@ -355,7 +355,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "DUMMY" },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "MEDALLAS DE ORO" },
             { ELanguage::Italian,  "MEDAGLIE D'ORO" }
         }
     },
@@ -696,7 +696,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "DUMMY" },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "Error al cargar. Los datos de los logros están\ndañados. Si continúas, se perderá el progreso\nde tus logros." },
             { ELanguage::Italian,  "Caricamento fallito. I dati degli obiettivi\nsono danneggiati. Se continui perderai tutti\ni tuoi obiettivi." }
         }
     },
@@ -709,7 +709,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "DUMMY" },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "Error al cargar. No se pueden cargar los datos\nde los logros. Si continúas, no podrás guardar\nel progreso de tus logros." },
             { ELanguage::Italian,  "Caricamento fallito. Impossibile caricare i dati\ndegli obiettivi. Se continui non potrai salvare\ni tuoi obiettivi." }
         }
     },
@@ -722,7 +722,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "DUMMY" },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
+            { ELanguage::Spanish,  "Error al guardar. No se pueden guardar los datos\nde los logros. Si continúas, no podrás guardar\ntu progreso en los logros." },
             { ELanguage::Italian,  "Salvataggio fallito. Impossibile salvare i dati\ndegli obiettivi. Se continui non potrai salvare\ni tuoi obiettivi." }
         }
     },
