@@ -301,7 +301,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::German,   "DUMMY" },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "STATISTICHE" }
         }
     },
     {
@@ -312,7 +312,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::German,   "DUMMY" },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "Statistiche: mostra gli elenchi delle medaglie d'oro e gli obiettivi" }
         }
     },
     {
@@ -345,7 +345,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::German,   "DUMMY" },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "Medaglie d'oro" }
         }
     },
     {
@@ -356,7 +356,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::German,   "DUMMY" },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "MEDAGLIE D'ORO" }
         }
     },
     {
@@ -697,7 +697,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::German,   "DUMMY" },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "Caricamento fallito. I dati degli obiettivi\nsono danneggiati. Se continui perderai tutti\ni tuoi obiettivi." }
         }
     },
     {
@@ -710,7 +710,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::German,   "DUMMY" },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "Caricamento fallito. Impossibile caricare i dati\ndegli obiettivi. Se continui non potrai salvare\ni tuoi obiettivi." }
         }
     },
     {
@@ -723,7 +723,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::German,   "DUMMY" },
             { ELanguage::French,   "DUMMY" },
             { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::Italian,  "Salvataggio fallito. Impossibile salvare i dati\ndegli obiettivi. Se continui non potrai salvare\ni tuoi obiettivi." }
         }
     },
     {

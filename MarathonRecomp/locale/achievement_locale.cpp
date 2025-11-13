@@ -50,9 +50,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Episodio di Sonic: completato",
+                    "Completa l'episodio di Sonic!",
+                    "Hai completato l'episodio di Sonic."
                 }
             },
         }
@@ -105,9 +105,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Episodio di Shadow: completato",
+                    "Completa l'episodio di Shadow!",
+                    "Hai completato l'episodio di Shadow."
                 }
             },
         }
@@ -160,9 +160,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Episodio di Silver: completato",
+                    "Completa l'episodio di Silver!",
+                    "Hai completato l'episodio di Silver."
                 }
             },
         }
@@ -215,9 +215,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Colui che giunse alla fine",
+                    "Concludi l'ultimo episodio nascosto!",
+                    "Hai completato l'ultimo episodio."
                 }
             },
         }
@@ -270,9 +270,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Episodio di Sonic: superato",
+                    "Completa tutte le missioni ATTO difficili di Sonic.",
+                    "Hai completato tutte le missioni ATTO difficili di Sonic."
                 }
             },
         }
@@ -325,9 +325,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Episodio di Shadow: superato",
+                    "Completa tutte le missioni ATTO difficili di Shadow.",
+                    "Hai completato tutte le missioni ATTO difficili di Shadow."
                 }
             },
         }
@@ -380,9 +380,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Episodio di Silver: superato",
+                    "Completa tutte le missioni ATTO difficili di Silver.",
+                    "Hai completato tutte le missioni ATTO difficili di Silver."
                 }
             },
         }
@@ -435,9 +435,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Episodio di Shadow: stravinto",
+                    "Completa tutte le missioni ATTO di Shadow in posizione S.",
+                    "Hai ottenuto la posizione S in tutte le missioni ATTO di Shadow."
                 }
             },
         }
@@ -490,9 +490,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Episodio di Sonic: stravinto",
+                    "Completa tutte le missioni ATTO di Sonic in posizione S.",
+                    "Hai ottenuto la posizione S in tutte le missioni ATTO di Sonic."
                 }
             },
         }
@@ -545,9 +545,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Episodio di Silver: stravinto",
+                    "Completa tutte le missioni ATTO di Silver in posizione S.",
+                    "Hai ottenuto la posizione S in tutte le missioni ATTO di Silver."
                 }
             },
         }
@@ -600,9 +600,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Cavalieri di Kronos",
+                    "Completa tutto l'ultimo episodio nascosto in posizione S.",
+                    "Hai ottenuto la posizione S in tutto l'ultimo episodio."
                 }
             },
         }
@@ -655,9 +655,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Leggenda di Soleanna",
+                    "Completa tutte le missioni ATTO in posizione S.",
+                    "Hai ottenuto la posizione S in tutte le missioni ATTO."
                 }
             },
         }
@@ -710,9 +710,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Medaglie d'argento",
+                    "Raccogli tutte le medaglie d'argento disseminate in giro per Soleanna.",
+                    "Hai raccolto tutte le medaglie d'argento di Soleanna."
                 }
             },
         }
@@ -765,9 +765,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Medaglie d'oro",
+                    "Raccogli tutte le medaglie d'oro di Soleanna.",
+                    "Hai raccolto tutte le medaglie d'oro di Soleanna."
                 }
             },
         }
@@ -820,9 +820,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Fantasma Blu",
+                    "Sblocca tutte le abilità di Sonic.",
+                    "Hai imparato tutte le abilità di Sonic."
                 }
             },
         }
@@ -875,9 +875,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Essere Supremo",
+                    "Sblocca tutte le abilità di Shadow.",
+                    "Hai imparato tutte le abilità di Shadow."
                 }
             },
         }
@@ -930,9 +930,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Soldato Psichico",
+                    "Sblocca tutte le abilità di Silver.",
+                    "Hai imparato tutte le abilità di Silver."
                 }
             },
         }
@@ -985,9 +985,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Eroe di Soleanna",
+                    "Completa tutte le missioni CITTÀ di Sonic.",
+                    "Hai completato tutte le missioni CITTÀ di Sonic."
                 }
             },
         }
@@ -1040,9 +1040,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Agente Scelto",
+                    "Completa tutte le missioni CITTÀ di Shadow.",
+                    "Hai completato tutte le missioni CITTÀ di Shadow."
                 }
             },
         }
@@ -1095,9 +1095,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Silver il Liberatore",
+                    "Completa tutte le missioni CITTÀ di Silver.",
+                    "Hai completato tutte le missioni CITTÀ di Silver."
                 }
             },
         }
@@ -1150,9 +1150,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Vento Blu di Soleanna",
+                    "Completa tutte le missioni CITTÀ di Sonic in posizione S.",
+                    "Hai ottenuto la posizione S in tutte le missioni CITTÀ di Sonic."
                 }
             },
         }
@@ -1205,9 +1205,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Eroe Oscuro",
+                    "Completa tutte le missioni CITTÀ di Shadow in posizione S.",
+                    "Hai ottenuto la posizione S in tutte le missioni CITTÀ di Shadow."
                 }
             },
         }
@@ -1260,9 +1260,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Italian,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Silver il Salvatore",
+                    "Completa tutte le missioni CITTÀ di Silver in posizione S.",
+                    "Hai ottenuto la posizione S in tutte le missioni CITTÀ di Silver."
                 }
             },
         }
