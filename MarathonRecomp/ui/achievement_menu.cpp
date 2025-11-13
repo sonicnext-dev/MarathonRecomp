@@ -245,11 +245,14 @@ static void DrawAchievement(int rowIndex, Achievement& achievement, bool isUnloc
     drawList->AddText(g_pFntRodin, fontSize, namePos, textColour, name.c_str());
     SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
 
-    auto marqueeFadeScale = Scale(18, true);
-    ImVec2 marqueeMin = { imageMax.x, min.y };
-    ImVec2 marqueeMax = { max.x - marqueeFadeScale, max.y };
+    auto timestampOffsetX = Scale(60, true);
 
-    if (isCurrent && textX + descSize.x >= max.x - marqueeFadeScale)
+    ImVec2 marqueeMin = { textX + Scale(2, true), min.y};
+    ImVec2 marqueeMax = { max.x - timestampOffsetX - Scale(1, true), max.y };
+
+    drawList->PushClipRect(marqueeMin, marqueeMax);
+
+    if (isCurrent && marqueeMin.x + descSize.x >= marqueeMax.x)
     {
         // Draw achievement description with marquee.
         SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
@@ -263,6 +266,8 @@ static void DrawAchievement(int rowIndex, Achievement& achievement, bool isUnloc
         drawList->AddText(g_pFntRodin, fontSize, descPos, textColour, descText);
         SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
     }
+
+    drawList->PopClipRect();
 
     if (!isUnlocked)
         return;
@@ -285,7 +290,6 @@ static void DrawAchievement(int rowIndex, Achievement& achievement, bool isUnloc
     snprintf(buffer, sizeof(buffer), "%d/%d/%d %02d:%02d",
         pTime->tm_year + 1900, pTime->tm_mon + 1, pTime->tm_mday, pTime->tm_hour, pTime->tm_min);
     
-    auto timestampOffsetX = Scale(60, true);
     auto timestampSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, buffer);
 
     // Draw timestamp text.
