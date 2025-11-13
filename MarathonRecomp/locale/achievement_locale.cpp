@@ -561,7 +561,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::English,
                 {
                     "Knights of Kronos",
-                    "Clear the last hidden episode with Rank S.",
+                    "Clear all of the last hidden episode with Rank S.",
                     "Achieved Rank S on all of the last episode."
                 }
             },
