@@ -18,8 +18,8 @@ static constexpr double CONTAINER_MOVE_OFFSET = 0;
 static constexpr double CONTAINER_MOVE_DURATION = 5;
 static constexpr double CONTAINER_FADE_OFFSET = CONTAINER_MOVE_OFFSET;
 static constexpr double CONTAINER_FADE_DURATION = 10;
-static constexpr double ROW_FADE_OFFSET = CONTAINER_FADE_DURATION;
-static constexpr double ROW_FADE_TIME = 5;
+static constexpr double ROW_FADE_OFFSET = CONTAINER_MOVE_DURATION;
+static constexpr double ROW_FADE_TIME = CONTAINER_MOVE_DURATION;
 
 static constexpr int MAX_VISIBLE_ROWS = 4;
 
@@ -50,7 +50,7 @@ static void MoveCursor(int& cursorIndex, int min = 0, int max = INT_MAX)
     if (scrollUp || scrollDown)
         g_lastTappedTime = time;
 
-    static constexpr auto FAST_SCROLL_THRESHOLD = 0.6;
+    static constexpr auto FAST_SCROLL_THRESHOLD = 0.3;
     static constexpr auto FAST_SCROLL_SPEED = 1.0 / 6.5;
 
     auto fastScroll = (time - g_lastTappedTime) > FAST_SCROLL_THRESHOLD;
@@ -94,7 +94,7 @@ static void MoveCursor(int& cursorIndex, int min = 0, int max = INT_MAX)
     }
 }
 
-static bool DrawContainer(ImVec2 min, ImVec2 max)
+static void DrawContainer(ImVec2 min, ImVec2 max)
 {
     auto drawList = ImGui::GetBackgroundDrawList();
 
@@ -134,8 +134,6 @@ static bool DrawContainer(ImVec2 min, ImVec2 max)
     ResetGradient();
 
     drawList->PushClipRect(containerTopLeftCornerMin, containerRightMax);
-
-    return containerAlphaMotionTime >= 1.0;
 }
 
 static void DrawAchievement(int rowIndex, Achievement& achievement, bool isUnlocked)
@@ -180,13 +178,22 @@ static void DrawAchievement(int rowIndex, Achievement& achievement, bool isUnloc
     ImVec2 min = { clipRectMin.x + itemMarginX, clipRectMin.y + offsetY };
     ImVec2 max = { clipRectMax.x + itemMarginX, min.y + itemHeight };
 
-    auto rowUVs = PIXELS_TO_UV_COORDS(1024, 1024, 605, 450, 10, 30);
+    auto rowUVs = PIXELS_TO_UV_COORDS(1024, 1024, 605, 449, 10, 30);
     auto rowMarginX = Scale(2, true);
     auto rowMarginY = Scale(24, true);
+
     auto rowColourBreatheMotionTime = BREATHE_MOTION(1.0f, 0.0f, g_rowSelectionTime, 0.9f);
     auto rowColourTransitionMotionTime = ComputeLinearMotion(g_time, ROW_FADE_OFFSET, ROW_FADE_TIME);
-    auto rowColourAlpha = isCurrent ? Lerp(165, 94, rowColourBreatheMotionTime) * rowColourTransitionMotionTime : 94 * rowColourTransitionMotionTime;
+
+    constexpr auto rowColourAlphaMax = 165;
+    constexpr auto rowColourAlphaMin = 115;
+
+    auto rowColourAlpha = isCurrent
+        ? Lerp(rowColourAlphaMax, rowColourAlphaMin, rowColourBreatheMotionTime) * rowColourTransitionMotionTime
+        : rowColourAlphaMin * rowColourTransitionMotionTime;
+
     auto rowColour = IM_COL32(255, 255, 255, rowColourAlpha);
+
     ImVec2 rowMin = { clipRectMin.x + rowMarginX, min.y + itemHeight - rowMarginY };
     ImVec2 rowMax = { clipRectMax.x - rowMarginX, rowMin.y + Scale(30, true) };
 
@@ -199,6 +206,9 @@ static void DrawAchievement(int rowIndex, Achievement& achievement, bool isUnloc
     auto image = g_xdbfTextureCache[achievement.ID];
     ImVec2 imageMin = { min.x + imageMarginX, min.y + imageMarginY };
     ImVec2 imageMax = { min.x + imageMarginX + imageSize, min.y + imageMarginY + imageSize };
+
+    if (isCurrent)
+        DrawArrowCursor({ rowMin.x + Scale(2, true), imageMin.y + ((imageMax.y - imageMin.y) / 3)}, g_time, false);
 
     if (!isUnlocked)
         SetShaderModifier(IMGUI_SHADER_MODIFIER_GRAYSCALE);
@@ -247,27 +257,22 @@ static void DrawAchievement(int rowIndex, Achievement& achievement, bool isUnloc
 
     auto timestampOffsetX = Scale(60, true);
 
-    ImVec2 marqueeMin = { textX + Scale(2, true), min.y};
-    ImVec2 marqueeMax = { max.x - timestampOffsetX - Scale(1, true), max.y };
+    ImVec2 marqueeMin = { textX, min.y };
+    ImVec2 marqueeMax = { max.x - timestampOffsetX, max.y };
+    constexpr auto marqueeDelay = 0.9;
+    auto shouldMarquee = isCurrent && marqueeMin.x + descSize.x >= marqueeMax.x;
 
-    drawList->PushClipRect(marqueeMin, marqueeMax);
-
-    if (isCurrent && marqueeMin.x + descSize.x >= marqueeMax.x)
+    // Reduce clip rect size when marquee starts to make the
+    // scrolling text align more with text above or below it.
+    if (shouldMarquee && ImGui::GetTime() - (g_rowSelectionTime + marqueeDelay) > 0.0)
     {
-        // Draw achievement description with marquee.
-        SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
-        DrawTextWithMarquee(g_pFntRodin, fontSize, descPos, marqueeMin, marqueeMax, textColour, descText, g_rowSelectionTime, 0.9, Scale(200, true));
-        SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
-    }
-    else
-    {
-        // Draw achievement description.
-        SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
-        drawList->AddText(g_pFntRodin, fontSize, descPos, textColour, descText);
-        SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
+        marqueeMin.x += Scale(2, true);
+        marqueeMax.x -= Scale(1, true);
     }
 
-    drawList->PopClipRect();
+    SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
+    DrawTextWithMarquee(g_pFntRodin, fontSize, descPos, marqueeMin, marqueeMax, textColour, descText, g_rowSelectionTime, marqueeDelay, shouldMarquee ? Scale(200, true) : 0);
+    SetShaderModifier(IMGUI_SHADER_MODIFIER_NONE);
 
     if (!isUnlocked)
         return;
@@ -406,7 +411,9 @@ void AchievementMenu::Draw()
             s_commonMenu.SetTitle(Localise("Achievements_Title_Uppercase"));
             s_commonMenu.ShowDescription = true;
 
-            if (DrawContainer(min, max))
+            DrawContainer(min, max);
+
+            if (containerMotionTime >= 1.0)
             {
                 auto rowIndex = 0;
 
@@ -540,6 +547,7 @@ void AchievementMenu::SetState(AchievementMenuState state)
 {
     s_state = state;
     g_time = ImGui::GetTime();
+    g_rowSelectionTime = g_time;
 }
 
 bool AchievementMenu::IsClosing()

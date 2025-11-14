@@ -125,7 +125,7 @@ static void MoveCursor(int& cursorIndex, double& cursorTime, int min = 0, int ma
     if (scrollUp || scrollDown)
         g_lastTappedTime = time;
 
-    static constexpr auto FAST_SCROLL_THRESHOLD = 0.6;
+    static constexpr auto FAST_SCROLL_THRESHOLD = 0.3;
     static constexpr auto FAST_SCROLL_SPEED = 1.0 / 6.5;
 
     auto fastScroll = (time - g_lastTappedTime) > FAST_SCROLL_THRESHOLD;
