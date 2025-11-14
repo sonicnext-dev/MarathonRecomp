@@ -52,7 +52,7 @@ PPC_FUNC(sub_825ECB48)
         for (auto& replacement : TextPatches::s_replacedMessages)
         {
             auto& message = Localise(replacement.second.pKey);
-            auto  wideMessage = std::wstring(message.begin(), message.end());
+            auto  wideMessage = TransformUTF8ToWString(message);
             auto  wideMessageLen = wideMessage.length() + 1;
 
             replacement.second.pGuestText = stringPoolPos;

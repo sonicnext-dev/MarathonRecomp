@@ -1,5 +1,7 @@
 #pragma once
 
+#include <codecvt>
+
 #define PROC_ADDRESS(libraryName, procName) \
     GetProcAddress(LoadLibrary(TEXT(libraryName)), procName)
 
@@ -106,4 +108,10 @@ inline bool strcmpWildcard(const char* str, const char* pattern)
         return strcmpWildcard(str + 1, pattern + 1);
 
     return false;
+}
+
+inline std::wstring TransformUTF8ToWString(const std::string& str)
+{
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+    return converter.from_bytes(str);
 }
