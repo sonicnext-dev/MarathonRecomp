@@ -593,7 +593,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Spanish,
                 {
                     "Caballeros de Kronos",
-                    "Supera el último episodio secreto con rango S.",
+                    "Supera todo el último episodio secreto con rango S.",
                     "Has conseguido el rango S en todo el último episodio."
                 }
             },
