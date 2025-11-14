@@ -481,14 +481,15 @@ static void DrawOption
         auto setValueDescription = [=]()
         {
             auto valueDescription = config->GetValueDescription(Config::Language);
+            auto isLanguageOption = (ConfigDef<ELanguage>*)config == &Config::Language;
 
             if (valueDescription.empty())
             {
-                OptionsMenu::s_commonMenu.SetDescription(config->GetDescription(Config::Language));
+                OptionsMenu::s_commonMenu.SetDescription(config->GetDescription(Config::Language), !isLanguageOption);
             }
             else
             {
-                OptionsMenu::s_commonMenu.SetDescription(valueDescription);
+                OptionsMenu::s_commonMenu.SetDescription(valueDescription, !isLanguageOption);
             }
         };
 

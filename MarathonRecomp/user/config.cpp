@@ -782,7 +782,6 @@ void Config::CreateCallbacks()
             return;
 
         OptionsMenu::s_commonMenu.SetTitle(Localise("Options_Header_Name"), false);
-        OptionsMenu::s_commonMenu.SetDescription(def->GetDescription(def->Value));
     };
 
     Config::WindowSize.LockCallback = [](ConfigDef<int32_t>* def)
