@@ -311,7 +311,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "DUMMY" },
             { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "Estadísticas: Muestra los listados de las medallas de oro y los logros" },
+            { ELanguage::Spanish,  "Estadísticas: Muestra los listados de las medallas de oro y logros" },
             { ELanguage::Italian,  "Statistiche: mostra gli elenchi delle medaglie d'oro e gli obiettivi" }
         }
     },
