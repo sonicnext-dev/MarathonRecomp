@@ -69,16 +69,8 @@ void AchievementManager::Unlock(uint16_t id)
 
 void AchievementManager::UnlockAll()
 {
-    for (uint16_t i = 24; i <= 83; i++)
-    {
-        if (i == 30)
-            i = 31;
-
-        if (i == 55)
-            i = 64;
-
+    for (uint16_t i = 1; i <= 23; i++)
         AchievementManager::Unlock(i);
-    }
 }
 
 void AchievementManager::Reset()
@@ -86,11 +78,11 @@ void AchievementManager::Reset()
     Data = {};
 }
 
-void AchievementManager::Load()
+bool AchievementManager::LoadBinary()
 {
     AchievementManager::Reset();
 
-    Status = EAchStatus::Success;
+    BinStatus = EAchBinStatus::Success;
 
     auto dataPath = GetDataPath(true);
 
@@ -100,7 +92,7 @@ void AchievementManager::Load()
         dataPath = GetDataPath(false);
 
         if (!std::filesystem::exists(dataPath))
-            return;
+            return true;
     }
 
     std::error_code ec;
@@ -109,16 +101,16 @@ void AchievementManager::Load()
 
     if (fileSize != dataSize)
     {
-        Status = EAchStatus::BadFileSize;
-        return;
+        BinStatus = EAchBinStatus::BadFileSize;
+        return false;
     }
 
     std::ifstream file(dataPath, std::ios::binary);
 
     if (!file)
     {
-        Status = EAchStatus::IOError;
-        return;
+        BinStatus = EAchBinStatus::IOError;
+        return false;
     }
 
     AchievementData data{};
@@ -127,19 +119,18 @@ void AchievementManager::Load()
 
     if (!data.VerifySignature())
     {
-        Status = EAchStatus::BadSignature;
+        BinStatus = EAchBinStatus::BadSignature;
         file.close();
-        return;
+        return false;
     }
 
     file.read((char*)&data.Version, sizeof(data.Version));
 
-    // TODO: upgrade in future if the version changes.
     if (!data.VerifyVersion())
     {
-        Status = EAchStatus::BadVersion;
+        BinStatus = EAchBinStatus::BadVersion;
         file.close();
-        return;
+        return false;
     }
 
     file.seekg(0);
@@ -147,22 +138,24 @@ void AchievementManager::Load()
 
     if (!data.VerifyChecksum())
     {
-        Status = EAchStatus::BadChecksum;
+        BinStatus = EAchBinStatus::BadChecksum;
         file.close();
-        return;
+        return false;
     }
 
     file.close();
 
     memcpy(&Data, &data, dataSize);
+
+    return true;
 }
 
-void AchievementManager::Save(bool ignoreStatus)
+bool AchievementManager::SaveBinary(bool ignoreStatus)
 {
-    if (!ignoreStatus && Status != EAchStatus::Success)
+    if (!ignoreStatus && BinStatus != EAchBinStatus::Success)
     {
         LOGN_WARNING("Achievement data will not be saved in this session!");
-        return;
+        return false;
     }
 
     LOGN("Saving achievements...");
@@ -172,7 +165,7 @@ void AchievementManager::Save(bool ignoreStatus)
     if (!file)
     {
         LOGN_ERROR("Failed to write achievement data.");
-        return;
+        return false;
     }
 
     Data.Checksum = Data.CalculateChecksum();
@@ -180,5 +173,7 @@ void AchievementManager::Save(bool ignoreStatus)
     file.write((const char*)&Data, sizeof(AchievementData));
     file.close();
 
-    Status = EAchStatus::Success;
+    BinStatus = EAchBinStatus::Success;
+
+    return true;
 }

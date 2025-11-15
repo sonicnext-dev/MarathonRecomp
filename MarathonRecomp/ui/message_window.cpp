@@ -135,116 +135,6 @@ public:
 }
 g_sdlEventListenerForMessageWindow;
 
-void DrawContainerArrow(const ImVec2 pos, float scale, float rotation, uint32_t colour)
-{
-    auto arrowRadius = Scale(63.0f * scale, true);
-
-    std::array<ImVec2, 4> vertices =
-    {
-        pos,                                          // Top Left
-        { pos.x + arrowRadius, pos.y },               // Top Right
-        { pos.x + arrowRadius, pos.y + arrowRadius }, // Bottom Right
-        { pos.x, pos.y + arrowRadius }                // Bottom Left
-    };
-
-    // Adjust base rotation, since the texture
-    // points the arrow to the bottom left.
-    auto adjRotation = rotation + 90.0f;
-
-    auto radians = adjRotation * (IM_PI / 180.0f);
-    auto c = cosf(radians);
-    auto s = sinf(radians);
-
-    auto& pivot = vertices[3];
-
-    // Rotate around bottom left.
-    for (auto& v : vertices)
-    {
-        float dx = v.x - pivot.x;
-        float dy = v.y - pivot.y;
-
-        v.x = pivot.x + dx * c - dy * s;
-        v.y = pivot.y + dx * s + dy * c;
-    }
-
-    // Adjust height to pivot.
-    for (auto& v : vertices)
-        v.y -= arrowRadius;
-
-    auto drawList = ImGui::GetBackgroundDrawList();
-    auto arrowUVs = PIXELS_TO_UV_COORDS(128, 128, 65, 0, 63, 63);
-
-    auto& uvMin = std::get<0>(arrowUVs);
-    auto& uvMax = std::get<1>(arrowUVs);
-
-    drawList->AddImageQuad(g_upTexWindow.get(), vertices[0], vertices[1], vertices[2], vertices[3], uvMin, { uvMax.x, uvMin.y }, { uvMax.x, uvMax.y }, { uvMin.x, uvMax.y }, colour);
-}
-
-void DrawContainer(const ImVec2 min, const ImVec2 max)
-{
-    auto drawList = ImGui::GetBackgroundDrawList();
-
-    constexpr auto containerTopColour = IM_COL32(20, 56, 130, 200);
-    constexpr auto containerBottomColour = IM_COL32(8, 22, 51, 200);
-
-    drawList->AddRectFilledMultiColor(min, max, containerTopColour, containerTopColour, containerBottomColour, containerBottomColour);
-
-    auto lineHorzUVs = PIXELS_TO_UV_COORDS(128, 128, 2, 0, 60, 5);
-    auto lineVertUVs = PIXELS_TO_UV_COORDS(128, 128, 0, 66, 5, 60);
-
-    auto lineScale = Scale(1, true);
-    auto lineOffsetRight = Scale(3, true);
-
-    // Top
-    drawList->AddImage(g_upTexWindow.get(), min, { max.x, min.y + lineScale }, GET_UV_COORDS(lineHorzUVs));
-
-    // Bottom
-    drawList->AddImage(g_upTexWindow.get(), { min.x, max.y - lineOffsetRight }, { max.x, (max.y - lineOffsetRight) + lineScale }, GET_UV_COORDS(lineHorzUVs));
-
-    // Left
-    drawList->AddImage(g_upTexWindow.get(), min, { min.x + lineScale, max.y }, GET_UV_COORDS(lineVertUVs));
-
-    // Right
-    drawList->AddImage(g_upTexWindow.get(), { max.x - lineOffsetRight, min.y }, { (max.x - lineOffsetRight) + lineScale, max.y }, GET_UV_COORDS(lineVertUVs));
-
-    SetAdditive(true);
-
-    constexpr auto arrowPixelRadius = 63.0f;
-    constexpr auto arrowInnerScale = 0.16f;
-    constexpr auto arrowOuterScale = 0.225f;
-    constexpr auto arrowOuterColour = IM_COL32(255, 255, 255, 45);
-
-    auto arrowOuterOffset = Scale(arrowPixelRadius * arrowOuterScale, true) / 2;
-
-    // Top Left (Inner)
-    DrawContainerArrow(min, arrowInnerScale, 0.0f, containerTopColour);
-
-    // Top Right (Inner)
-    DrawContainerArrow({ max.x, min.y }, arrowInnerScale, 90.0f, containerTopColour);
-
-    // Bottom Right (Inner)
-    DrawContainerArrow(max, arrowInnerScale, 180.0f, containerTopColour);
-
-    // Bottom Left (Inner)
-    DrawContainerArrow({ min.x, max.y }, arrowInnerScale, 270.0f, containerTopColour);
-
-    // Top Left (Outer)
-    DrawContainerArrow({ min.x - arrowOuterOffset, min.y - arrowOuterOffset }, arrowOuterScale, 0.0f, arrowOuterColour);
-    
-    // Top Right (Outer)
-    DrawContainerArrow({ max.x + arrowOuterOffset, min.y - arrowOuterOffset }, arrowOuterScale, 90.0f, arrowOuterColour);
-    
-    // Bottom Right (Outer)
-    DrawContainerArrow({ max.x + arrowOuterOffset, max.y + arrowOuterOffset }, arrowOuterScale, 180.0f, arrowOuterColour);
-    
-    // Bottom Left (Outer)
-    DrawContainerArrow({ min.x - arrowOuterOffset, max.y + arrowOuterOffset }, arrowOuterScale, 270.0f, arrowOuterColour);
-
-    ResetAdditive();
-
-    drawList->PushClipRect(min, max);
-}
-
 void DrawButton(int rowIndex, float yOffset, float yPadding, float width, float height, std::string& text)
 {
     auto drawList = ImGui::GetBackgroundDrawList();
@@ -331,10 +221,10 @@ void MessageWindow::Draw()
 
             g_joypadAxis.y = -rPadState.LeftStickVertical;
 
-            if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DpadUp))
+            if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DPadUp))
                 g_joypadAxis.y = 1.0f;
 
-            if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DpadDown))
+            if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DPadDown))
                 g_joypadAxis.y = -1.0f;
 
             g_isAccepted = rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_A);
@@ -349,7 +239,7 @@ void MessageWindow::Draw()
     ImVec2 msgMax = { msgMin.x + Scale(1088, true), msgMin.y + Scale(384, true) };
     ImVec2 msgCentre = { (msgMin.x / 2) + (msgMax.x / 2), (msgMin.y / 2) + (msgMax.y / 2) };
 
-    DrawContainer(msgMin, msgMax);
+    DrawWindow(msgMin, msgMax);
 
     // Use low quality text when the game is booted to not clash with existing UI.
     if (App::s_isInit)
@@ -369,7 +259,7 @@ void MessageWindow::Draw()
     ImVec2 selMin = { msgMin.x, msgMax.y + ((msgMin.y - g_vertCentre) / 2) };
     ImVec2 selMax = { msgMax.x, selMin.y + Scale(128, true) };
 
-    DrawContainer(selMin, selMax);
+    DrawWindow(selMin, selMax);
 
     auto rowCount = 0;
     auto windowMarginX = Scale(36, true);
