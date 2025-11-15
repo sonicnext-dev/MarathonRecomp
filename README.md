@@ -171,7 +171,9 @@ This project does not plan to support any more platforms other than Windows, Lin
 
 - [brianuuuSonic](https://github.com/brianuuu): Provided Japanese localization for the custom menus.
 
-- [Kitzuku](https://github.com/Kitzuku): Provided German localization for the custom menus.
+- [Kitzuku](https://github.com/Kitzuku): Provided German localization for the options menu.
+
+- Ray Vassos: Provided German localization for the achievements menu.
 
 - [DaGuAr](https://x.com/TheDaguar): Provided Spanish localization for the custom menus.
 
@@ -187,8 +189,6 @@ This project does not plan to support any more platforms other than Windows, Lin
 - [Darío](https://github.com/DarioSamo): Creator of the graphics hardware abstraction layer [plume](https://github.com/renderbag/plume), used by the project's graphics backend.
 
 - [Syko](https://x.com/UltraSyko): Aided in identifying fonts used by the original SonicNext logo.
-
-- Ray Vassos: Aided with German localization for the custom menus.
 
 - [ocornut](https://github.com/ocornut): Creator of [Dear ImGui](https://github.com/ocornut/imgui), which is used as the backbone of the custom menus.
 

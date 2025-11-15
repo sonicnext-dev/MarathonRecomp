@@ -26,9 +26,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Sonic's Episode: Abgeschlossen",
+                    "Schließe Sonic's Episode ab!",
+                    "Sonic's Episode abgeschlossen."
                 }
             },
             {
@@ -81,9 +81,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Shadow's Episode: Abgeschlossen",
+                    "Schließe Shadow's Episode ab!",
+                    "Shadow's Episode abgeschlossen."
                 }
             },
             {
@@ -136,9 +136,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Silver's Episode: Abgeschlossen",
+                    "Schließe Silver's Episode ab!",
+                    "Silver's Episode abgeschlossen."
                 }
             },
             {
@@ -191,9 +191,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Das Ende erreicht",
+                    "Schließe die letzte versteckte Episode ab!",
+                    "Die letzte Episode abgeschlossen."
                 }
             },
             {
@@ -246,9 +246,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Sonic's Episode: absolviert",
+                    "Absolviere alle von Sonic's AKT-Missionen auf der schwierigsten Stufe.",
+                    "Alle von Sonic's AKT-Missionen absolviert."
                 }
             },
             {
@@ -301,9 +301,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Shadow's Episode: absolviert",
+                    "Absolviere alle von Shadow's AKT-Missionen auf der schwierigsten Stufe.",
+                    "Alle von Shadow's AKT-Missionen absolviert."
                 }
             },
             {
@@ -356,9 +356,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Silver's Episode: absolviert",
+                    "Absolviere alle von Silver's AKT-Missionen auf der schwierigsten Stufe.",
+                    "Alle von Silver's AKT-Missionen absolviert."
                 }
             },
             {
@@ -411,9 +411,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Shadow's Episode: gemeistert",
+                    "Schließe alle von Shadow's AKT-Missionen mit einen S-Rang ab.",
+                    "Einen S-Rang bei allen AKT-Missionen von Shadow erreicht."
                 }
             },
             {
@@ -466,9 +466,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Sonic's Episode: gemeistert",
+                    "Schließe alle von Sonic's AKT-Missionen mit einen S-Rang ab.",
+                    "Einen S-Rang bei allen AKT-Missionen von Sonic erreicht."
                 }
             },
             {
@@ -521,9 +521,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Silver's Episode: gemeistert",
+                    "Schließe alle von Silver's AKT-Missionen mit einen S-Rang ab.",
+                    "Einen S-Rang bei allen AKT-Missionen von Silver erreicht."
                 }
             },
             {
@@ -576,9 +576,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Ritter von Kronos",
+                    "Schließe alles von der letzten versteckten Episode mit einem S-Rang ab.",
+                    "Einen S-Rang in der letzten Episode erreicht."
                 }
             },
             {
@@ -631,9 +631,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Legende von Soleanna",
+                    "Schließe alle AKT-Missionen mit einem S-Rang ab.",
+                    "Einen S-Rang bei allen AKT-Missionen erreicht."
                 }
             },
             {
@@ -686,9 +686,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Silbermedaillengewinner",
+                    "Sammel alle Silbermedaillen die um Soleanna verstreut sind.",
+                    "Alle Silbermedaillen in Soleanna gesammelt."
                 }
             },
             {
@@ -741,9 +741,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Goldmedaillengewinner",
+                    "Sammel alle legendäre Goldmedaillen in Soleanna.",
+                    "Alle Goldmedaillen in Soleanna gesammelt."
                 }
             },
             {
@@ -796,9 +796,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Blaues Phantom",
+                    "Schalte alle von Sonic's Fähigkeiten frei.",
+                    "Alle von Sonic's Fähigkeiten gelernt."
                 }
             },
             {
@@ -851,9 +851,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Ultimative Lebensform",
+                    "Schalte alle von Shadow's Fähigkeiten frei.",
+                    "Alle von Shadow's Fähigkeiten gelernt."
                 }
             },
             {
@@ -906,9 +906,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Übernatürlicher Soldat",
+                    "Schalte alle von Silver's Fähigkeiten frei.",
+                    "Alle von Silver's Fähigkeiten gelernt."
                 }
             },
             {
@@ -961,9 +961,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Soleanna's Held",
+                    "Schließe alle von Sonic's STADT-Missionen ab.",
+                    "Alle von Sonic's STADT-Missionen abgeschlossen."
                 }
             },
             {
@@ -1016,9 +1016,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Elite-Agent",
+                    "Schließe alle von Shadow's STADT-Missionen ab.",
+                    "Alle von Shadow's STADT-Missionen abgeschlossen."
                 }
             },
             {
@@ -1071,9 +1071,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Silver der Befreier",
+                    "Schließe alle von Silver's STADT-Missionen ab.",
+                    "Alle von Silver's STADT-Missionen abgeschlossen."
                 }
             },
             {
@@ -1126,9 +1126,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Soleanna's Blauer Wind",
+                    "Schließe alle von Sonic's STADT-Missionen mit einem S-Rang ab.",
+                    "Einen S-Rang in allen STADT-Missionen mit Sonic erreicht."
                 }
             },
             {
@@ -1181,9 +1181,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Dunkler Held",
+                    "Schließe alle von Shadow's STADT-Missionen mit einem S-Rang ab.",
+                    "Einen S-Rang in allen STADT-Missionen mit Shadow erreicht."
                 }
             },
             {
@@ -1236,9 +1236,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::German,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Silver der Retter",
+                    "Schließe alle von Silver's STADT-Missionen mit einem S-Rang ab.",
+                    "Einen S-Rang in allen STADT-Missionen mit Silver erreicht."
                 }
             },
             {

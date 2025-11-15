@@ -103,7 +103,8 @@ static void DrawContainer(ImVec2 min, ImVec2 max)
     auto containerSideUVs = PIXELS_TO_UV_COORDS(1024, 1024, 1, 450, 50, 50);
     auto containerCentreUVs = PIXELS_TO_UV_COORDS(1024, 1024, 50, 450, 50, 50);
     auto containerAlphaMotionTime = AchievementMenu::IsClosing() ? 0 : ComputeLinearMotion(g_time, CONTAINER_FADE_OFFSET, CONTAINER_FADE_DURATION);
-    auto containerColour = IM_COL32(255, 255, 255, AchievementMenu::s_state == AchievementMenuState::GoldMedals ? Lerp(63, 0, containerAlphaMotionTime) : 63);
+    auto containerAlphaMotion = AchievementMenu::s_state == AchievementMenuState::GoldMedals ? Lerp(63, 0, containerAlphaMotionTime) : 63;
+    auto containerColour = IM_COL32(255, 255, 255, containerAlphaMotion);
     auto containerEdgeSize = Scale(50, true);
 
     ImVec2 containerTopLeftCornerMin = min;
