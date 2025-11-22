@@ -51,7 +51,7 @@ You can also find the equivalent packages for your preferred distro.
 > This list may not be comprehensive for your particular distro and you may be required to install additional packages, should an error occur during configuration.
 
 ### macOS
-You will need to install the latest Xcode or Xcode Command Line Tools from Apple.
+You will need to install the latest Xcode from Apple.
 
 The following commands will install additional required dependencies, depending on which package manager you use.
 
