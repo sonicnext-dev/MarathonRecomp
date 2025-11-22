@@ -92,12 +92,10 @@ void Load2PDisplayMidAsmHook() {}
 
 void PostureDisableEdgeGrabLeftover(PPCRegister& posture)
 {
-    if (!Config::DisableEdgeGrabLeftover)
+    if (!Config::EnablePostureImprovements)
         return;
 
     auto base = g_memory.base;
-
-    *(volatile uint8_t*)(base + (posture.u32 + 0x3C0)) = 1;
 }
 
 void PedestrianAnimationLOD(PPCRegister& val)
