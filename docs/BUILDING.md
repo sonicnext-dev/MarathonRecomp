@@ -2,13 +2,23 @@
 
 ## 1. Clone the Repository
 
-Clone **MarathonRecomp** with submodules using [Git](https://git-scm.com/).
+Clone the **MarathonRecomp** repository with submodules using [Git](https://git-scm.com/) or [Github Desktop](https://github.com/apps/desktop/).
+
+Here is the [Git](https://git-scm.com/) command for cloning the repository with submodules.
 ```
 git clone --recurse-submodules https://github.com/sonicnext-dev/MarathonRecomp.git
 ```
+---
+For cloning with [Github Desktop](https://github.com/apps/desktop/), click **File**, then **Clone repository**.
+
+![](https://cdn.discordapp.com/attachments/1349761070394511382/1443321500966064218/image.png?ex=6928a565&is=692753e5&hm=59224cac24360f45e520892d52e27fb361476809760cc89f05fdb6ab1e6f54fc&)
+
+Select the **URL** tab, paste in `https://github.com/sonicnext-dev/MarathonRecomp.git` into the Repository URL, choose the directory you'd like to clone the repository into, then finally, click **Clone**.
+
+![](https://cdn.discordapp.com/attachments/1349761070394511382/1443322166602104974/image.png?ex=6928a604&is=69275484&hm=700ec8ef76361c337ca6255254d52703b793073a581c95f1459f7f0f1ad81768&)
 
 ### Windows
-If you skipped the `--recurse-submodules` argument during cloning, you can run `update_submodules.bat` to ensure the submodules are pulled.
+If you skipped the `--recurse-submodules` argument during cloning or if you cloned the repository with Github Desktop, you can run `update_submodules.bat` to ensure the submodules are pulled.
 
 ## 2. Add the Required Game Files
 
