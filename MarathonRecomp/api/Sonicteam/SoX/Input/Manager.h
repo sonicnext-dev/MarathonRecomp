@@ -6,10 +6,10 @@ namespace Sonicteam::SoX::Input
 {
     enum KeyState
     {
-        KeyState_DpadUp = 0x40,
-        KeyState_DpadDown = 0x80,
-        KeyState_DpadLeft = 0x100,
-        KeyState_DpadRight = 0x200,
+        KeyState_DPadUp = 0x40,
+        KeyState_DPadDown = 0x80,
+        KeyState_DPadLeft = 0x100,
+        KeyState_DPadRight = 0x200,
         KeyState_Start = 0x400,
         KeyState_Select = 0x800,
         KeyState_LeftStick = 0x10000,

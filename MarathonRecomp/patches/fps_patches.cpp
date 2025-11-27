@@ -115,7 +115,7 @@ void ObjEspSwing_DecayRateFix(PPCRegister& f0, PPCRegister& f13, PPCRegister& de
     f0.f64 = float(f13.f64 * pow(pow(f0.f64, 60.0), deltaTime.f64));
 }
 
-struct MsgSuckPlayerEx : public Sonicteam::Message::MsgSuckPlayer
+struct MsgSuckPlayerEx : public Sonicteam::Message::Player::MsgSuckPlayer
 {
     be<float> DeltaTime;
 };
@@ -123,7 +123,7 @@ struct MsgSuckPlayerEx : public Sonicteam::Message::MsgSuckPlayer
 void ObjectInputWarp_ExtendMsgSuckPlayer(PPCRegister& phantom, PPCRegister& message, PPCRegister& deltaTime)
 {
     auto pPhantom = (Sonicteam::SoX::Physics::Phantom*)g_memory.Translate(phantom.u32);
-    auto pMessage = (Sonicteam::Message::MsgSuckPlayer*)g_memory.Translate(message.u32);
+    auto pMessage = (Sonicteam::Message::Player::MsgSuckPlayer*)g_memory.Translate(message.u32);
 
     auto pMsgSuckPlayerEx = (MsgSuckPlayerEx*)g_userHeap.Alloc(sizeof(MsgSuckPlayerEx));
     pMsgSuckPlayerEx->ID = pMessage->ID;
