@@ -93,6 +93,71 @@ PPC_FUNC(sub_825EA610)
         GameWindow::Update();
     }
 
+    /*
+    auto shaderMGR = Sonicteam::SoX::Graphics::ShaderMgr::GetInstance();
+    if (manager->m_mResources.find(shaderMGR->m_MgrIndex) != manager->m_mResources.end())
+    {
+        auto& resources = manager->m_mResources[shaderMGR->m_MgrIndex];
+        printf("[\n");
+
+        for (auto it = resources.begin(); it != resources.end(); ++it)
+        {
+            auto& shader = *it;
+            auto RTTI = stdx::VftableToRTTI(shader.second->m_pVftable.get());
+            auto pShader = static_cast<Sonicteam::SoX::Graphics::ShaderFXL*>(shader.second.get());
+
+            printf("  {\n");
+            printf("    \"name\": \"%s\",\n", shader.first.c_str());
+            printf("    \"type\": \"%s\",\n", RTTI->typeDesc->name().c_str());
+            printf("    \"vftable\": \"%p\",\n", shader.second->m_pVftable.get());
+            printf("    \"pointer\": \"%p\",\n", shader.second.get());
+            printf("    \"m_FXLName\": \"%s\",\n", pShader->m_FXLName.c_str());
+
+            // Set the FXL name
+            pShader->m_FXLName = "CharacterFX";
+
+            printf("    \"m_mPassFXL\": [\n");
+
+            bool firstPass = true;
+            for (auto testIt = pShader->m_mvPassesFXL.begin(); testIt != pShader->m_mvPassesFXL.end(); ++testIt)
+            {
+                // Print the key and vector info
+                if (!firstPass) {
+                    printf(",\n");
+                }
+                printf("      {\n");
+                printf("        \"key\": \"0x%x\",\n", testIt->first.get());
+                printf("        \"passes\": [\n");
+
+                // Print each pass in the vector
+                bool firstVector = true;
+                for (auto& test2T : testIt->second)
+                {
+                    if (!firstVector) {
+                        printf(",\n");
+                    }
+                    auto passRTTI = stdx::VftableToRTTI(test2T.m_pVftable.get());
+                    printf("          {\n");
+                    printf("            \"pass_vftable\": \"%p\",\n", test2T.m_pVftable.get());
+                    printf("            \"pass_pointer\": \"%p\",\n", &test2T);
+                    printf("            \"pass_type\": \"%s\"\n", passRTTI->typeDesc->name().c_str());
+                    printf("          }");
+                    firstVector = false;
+                }
+
+                printf("\n        ]\n");
+                printf("      }");
+                firstPass = false;
+            }
+
+            printf("\n    ]\n");
+            printf("  }%s\n", ",");
+        }
+
+        printf("]\n");
+    }
+ 
+ */
     // Allow variable FPS when config is not 60 FPS.
     App::s_pApp->m_pDoc->m_VFrame = Config::FPS != 60;
 

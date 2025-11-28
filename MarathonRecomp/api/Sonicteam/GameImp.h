@@ -109,7 +109,7 @@ namespace Sonicteam
             {
                 auto pCameraImp = (SoX::Scenery::CameraImp*)spCamera.get();
 
-                if (pCameraImp->m_Name == pName)
+                if (pCameraImp->m_AttachPoint == pName)
                     return pCameraImp;
             }
 

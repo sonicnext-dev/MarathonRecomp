@@ -25,7 +25,7 @@ namespace Sonicteam
 
         MARATHON_INSERT_PADDING(4);
         boost::shared_ptr<uint8_t> m_spResource;
-        stdx::string m_Name;
+        stdx::string m_AttachPoint;
         MARATHON_INSERT_PADDING(4);
         xpointer<Entry> m_pRootEntry;
         be<uint32_t> m_EntryCount;
@@ -59,7 +59,7 @@ namespace Sonicteam
     MARATHON_ASSERT_SIZEOF(TextBook::Entry, 0x34);
 
     MARATHON_ASSERT_OFFSETOF(TextBook, m_spResource, 0x68);
-    MARATHON_ASSERT_OFFSETOF(TextBook, m_Name, 0x70);
+    MARATHON_ASSERT_OFFSETOF(TextBook, m_AttachPoint, 0x70);
     MARATHON_ASSERT_OFFSETOF(TextBook, m_pRootEntry, 0x90);
     MARATHON_ASSERT_OFFSETOF(TextBook, m_EntryCount, 0x94);
     MARATHON_ASSERT_SIZEOF(TextBook, 0x98);
