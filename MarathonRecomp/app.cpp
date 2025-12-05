@@ -10,6 +10,7 @@
 #include <user/config.h>
 #include <user/paths.h>
 #include <user/registry.h>
+#include <magic_enum/magic_enum.hpp>
 
 static std::thread::id g_mainThreadId = std::this_thread::get_id();
 
@@ -46,6 +47,7 @@ PPC_FUNC(sub_8262A568)
         be<uint32_t> Width;
         be<uint32_t> Height;
     };
+   
 
     auto pRenderConfig = reinterpret_cast<RenderConfig*>(g_memory.Translate(ctx.r4.u32));
     pRenderConfig->Width = Video::s_viewportWidth;
@@ -62,6 +64,15 @@ PPC_FUNC(sub_8262A568)
     App::s_pApp = (Sonicteam::AppMarathon*)g_memory.Translate(ctx.r3.u32);
 
     InitPatches();
+}
+
+// Extend range BEFORE using magic_enum
+namespace magic_enum::customize {
+    template<>
+    struct enum_range<Sonicteam::Spanverse::AckMomServer::MomBase> {
+        static constexpr int min = 0;      // Start from 0
+        static constexpr int max = 0x10000;   // Or 2000 to be safe
+    };
 }
 
 // Sonicteam::DocMarathonState::Update
@@ -93,6 +104,132 @@ PPC_FUNC(sub_825EA610)
         GameWindow::Update();
     }
 
+    auto pPM = App::s_pApp->GetInstance()->m_pDoc->m_pParticleManager.get();
+    if (!pPM || pPM->m_vspManagerUnits.empty()) return;
+
+    auto pAckMgr = static_cast<Sonicteam::Spanverse::AckManager*>(pPM->m_vspManagerUnits[0].get());
+    if (!pAckMgr) return;
+
+
+    printf("pAckMgr %p\n", pAckMgr);
+
+    auto& tags = pAckMgr->m_tlTrunks.m_tlTrunkTags;
+    auto current = tags.m_Prev;
+    auto size = tags.m_Size.get();
+
+    for (uint32_t i = 0; i < size && current; i++) {
+        auto pTag = static_cast<Sonicteam::Spanverse::AckAdminTrunkTag*>(current.get());
+        if (!pTag || !pTag->m_pObject) continue;
+
+        auto pObj = pTag->m_pObject.get();
+        auto pTrunk = pObj->m_pTrunk.get();
+        if (!pTrunk) continue;
+
+        printf("TrunkObj %p Trunk %p\n", pObj, pTrunk);
+        for (int y = 0; y < pTrunk->m_pRoot->BranchesCount; y++)
+        {
+            auto pBranch = pTrunk->m_pRoot->ppBranches[y].get();
+            printf("    pBranch[%d] = %p\n", y, pBranch);
+
+            for (int j = 0; j < pBranch->LeafsCount; j++)
+            {
+                auto pLeaf = pBranch->ppLeafs[j].get();
+                printf("        pLeaf[%d] = %p\n", j, pLeaf);
+                auto LeafType = magic_enum::enum_name(static_cast<Sonicteam::Spanverse::SpkSpangleServer::SpkSpangleBase>(pLeaf->SpkSpangleBaseType.get()));
+                printf("        Type[%d] = %s\n", j, LeafType.data());
+
+                for (int k = 0; k < pLeaf->MomRootCount; k++)
+                {
+                    auto pMomRoot = pLeaf->MomRoots[k].get();
+                    printf("            pMomRoot[%d - %d] = %p\n", k, pMomRoot->Index.get(),pMomRoot);
+
+                    for (int f = 0; f < pMomRoot->Count; f++)
+                    {
+                        auto pAcmMomNode = pMomRoot->Children[f].get();
+
+                        printf("                pAcmMomNode[%d - %s] = %p\n",
+                            f,
+                            magic_enum::enum_name(static_cast<Sonicteam::Spanverse::AckMomServer::MomBase>(pAcmMomNode->MomBaseID.get())).data(),
+                            pAcmMomNode); 
+                    }
+                   
+
+                }
+            }
+        }
+
+
+   
+
+        current = current->m_pNext;
+    }
+    printf("--------------------------------------------------------------\n");
+
+    /*
+    auto shaderMGR = Sonicteam::SoX::Graphics::ShaderMgr::GetInstance();
+    if (manager->m_mResources.find(shaderMGR->m_MgrIndex) != manager->m_mResources.end())
+    {
+        auto& resources = manager->m_mResources[shaderMGR->m_MgrIndex];
+        printf("[\n");
+
+        for (auto it = resources.begin(); it != resources.end(); ++it)
+        {
+            auto& shader = *it;
+            auto RTTI = stdx::VftableToRTTI(shader.second->m_pVftable.get());
+            auto pShader = static_cast<Sonicteam::SoX::Graphics::ShaderFXL*>(shader.second.get());
+
+            printf("  {\n");
+            printf("    \"name\": \"%s\",\n", shader.first.c_str());
+            printf("    \"type\": \"%s\",\n", RTTI->typeDesc->name().c_str());
+            printf("    \"vftable\": \"%p\",\n", shader.second->m_pVftable.get());
+            printf("    \"pointer\": \"%p\",\n", shader.second.get());
+            printf("    \"m_FXLName\": \"%s\",\n", pShader->m_FXLName.c_str());
+
+            // Set the FXL name
+            pShader->m_FXLName = "CharacterFX";
+
+            printf("    \"m_mPassFXL\": [\n");
+
+            bool firstPass = true;
+            for (auto testIt = pShader->m_mvPassesFXL.begin(); testIt != pShader->m_mvPassesFXL.end(); ++testIt)
+            {
+                // Print the key and vector info
+                if (!firstPass) {
+                    printf(",\n");
+                }
+                printf("      {\n");
+                printf("        \"key\": \"0x%x\",\n", testIt->first.get());
+                printf("        \"passes\": [\n");
+
+                // Print each pass in the vector
+                bool firstVector = true;
+                for (auto& test2T : testIt->second)
+                {
+                    if (!firstVector) {
+                        printf(",\n");
+                    }
+                    auto passRTTI = stdx::VftableToRTTI(test2T.m_pVftable.get());
+                    printf("          {\n");
+                    printf("            \"pass_vftable\": \"%p\",\n", test2T.m_pVftable.get());
+                    printf("            \"pass_pointer\": \"%p\",\n", &test2T);
+                    printf("            \"pass_type\": \"%s\"\n", passRTTI->typeDesc->name().c_str());
+                    printf("          }");
+                    firstVector = false;
+                }
+
+                printf("\n        ]\n");
+                printf("      }");
+                firstPass = false;
+            }
+
+            printf("\n    ]\n");
+            printf("  }%s\n", ",");
+        }
+
+        printf("]\n");
+    }
+ 
+ */
     // Allow variable FPS when config is not 60 FPS.
     App::s_pApp->m_pDoc->m_VFrame = Config::FPS != 60;
 
