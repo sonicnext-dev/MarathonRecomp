@@ -28,7 +28,7 @@ struct Video
     static inline uint32_t s_viewportWidth;
     static inline uint32_t s_viewportHeight;
 
-    static bool CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry);
+    static bool CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry);
     static void WaitOnSwapChain();
     static void Present();
     static void StartPipelinePrecompilation();
@@ -101,7 +101,7 @@ struct GuestResource
     be<uint32_t> refCount = 1;
     ResourceType type;
 
-    GuestResource(ResourceType type) : type(type) 
+    GuestResource(ResourceType type) : type(type)
     {
     }
 

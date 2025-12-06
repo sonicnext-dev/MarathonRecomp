@@ -8,7 +8,12 @@ namespace Sonicteam::Player
     class IPlugIn
     {
     public:
-        xpointer<void> m_pVftable;
+		struct Vftable
+		{
+			be<uint32_t> fpDestroy;
+		};
+
+        xpointer<Vftable> m_pVftable;
         stdx::string m_Name;
     };
 
