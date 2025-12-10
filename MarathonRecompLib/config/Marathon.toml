@@ -497,12 +497,6 @@ name = "Spanverse_GE1PE_DeltaTimeFix"
 address = 0x82670728
 registers = ["f1"]
 
-# Sonicteam::Spanverse::SpangleObject / Sonicteam::Spanverse::SpkCustomObject
-[[midasm_hook]]
-name = "Spanverse_GE1PE_DeltaTimeFix"
-address = 0x8266A580
-registers = ["f31"]
-
 # Sonicteam::Spanverse::SpangleParticle
 [[midasm_hook]]
 name = "Spanverse_GE1PE_DeltaTimeFix"
