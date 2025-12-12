@@ -1034,7 +1034,7 @@ void OptionsMenu::Draw()
         {
             if (s_commonMenu.IsOpen())
             {
-                for (auto& spInputManager : App::s_pApp->m_pDoc->m_vspInputManager)
+                for (auto& spInputManager : App::s_pApp->m_pDoc->m_vspInputManagers)
                 {
                     auto& rPadState = spInputManager->m_PadState;
 
