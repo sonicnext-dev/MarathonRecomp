@@ -1,9 +1,9 @@
 #pragma once
 
-#include <api/Marathon.h>
+#include <api/Liberty.h>
 #include <ui/common_menu.h>
 
-#define MARATHON_RECOMP_OPTIONS_MENU
+#define LIBERTY_RECOMP_OPTIONS_MENU
 
 enum class OptionsMenuState
 {

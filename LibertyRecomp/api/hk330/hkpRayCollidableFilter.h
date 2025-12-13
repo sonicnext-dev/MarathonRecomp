@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Marathon.inl>
+#include <Liberty.inl>
 
 namespace hk330
 {
@@ -16,5 +16,5 @@ namespace hk330
         xpointer<Vftable> m_pVftable;
     };
 
-    MARATHON_ASSERT_OFFSETOF(hkpRayCollidableFilter, m_pVftable, 0x00);
+    LIBERTY_ASSERT_OFFSETOF(hkpRayCollidableFilter, m_pVftable, 0x00);
 }

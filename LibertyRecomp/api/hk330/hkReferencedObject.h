@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Marathon.inl>
+#include <Liberty.inl>
 
 namespace hk330
 {
@@ -12,7 +12,7 @@ namespace hk330
         be<uint16_t> m_referenceCount;
     };
 
-    MARATHON_ASSERT_OFFSETOF(hkReferencedObject, m_pVftable, 0x00);
-    MARATHON_ASSERT_OFFSETOF(hkReferencedObject, m_memSizeAndFlags, 0x04);
-    MARATHON_ASSERT_OFFSETOF(hkReferencedObject, m_referenceCount, 0x06);
+    LIBERTY_ASSERT_OFFSETOF(hkReferencedObject, m_pVftable, 0x00);
+    LIBERTY_ASSERT_OFFSETOF(hkReferencedObject, m_memSizeAndFlags, 0x04);
+    LIBERTY_ASSERT_OFFSETOF(hkReferencedObject, m_referenceCount, 0x06);
 }

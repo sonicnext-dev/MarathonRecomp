@@ -15,9 +15,9 @@
 
 using json = nlohmann::json;
 
-static const char *CHECK_URL = "https://api.github.com/repos/sonicnext-dev/MarathonRecomp/releases/latest";
-static const char *VISIT_URL = "https://github.com/sonicnext-dev/MarathonRecomp/releases/latest";
-static const char *USER_AGENT = "MarathonRecomp-Agent";
+static const char *CHECK_URL = "https://api.github.com/repos/OZORDI/LibertyRecomp/releases/latest";
+static const char *VISIT_URL = "https://github.com/OZORDI/LibertyRecomp/releases/latest";
+static const char *USER_AGENT = "LibertyRecomp-Agent";
 
 static std::atomic<bool> g_updateCheckerInProgress = false;
 static std::atomic<bool> g_updateCheckerFinished = false;

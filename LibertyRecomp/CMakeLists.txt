@@ -528,7 +528,7 @@ endfunction()
 
 generate_aggregate_header(
     "${CMAKE_CURRENT_SOURCE_DIR}/api"
-    "${CMAKE_CURRENT_SOURCE_DIR}/api/Marathon.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/api/Liberty.h"
 )
 
 set(RESOURCES_SOURCE_PATH "${PROJECT_SOURCE_DIR}/../LibertyRecompResources")

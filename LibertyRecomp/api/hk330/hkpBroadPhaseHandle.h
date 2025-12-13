@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Marathon.inl>
+#include <Liberty.inl>
 #include <hk330/hkpShape.h>
 
 namespace hk330
@@ -11,5 +11,5 @@ namespace hk330
         be<uint32_t> m_id;
     };
 
-    MARATHON_ASSERT_OFFSETOF(hkpBroadPhaseHandle, m_id, 0x00);
+    LIBERTY_ASSERT_OFFSETOF(hkpBroadPhaseHandle, m_id, 0x00);
 }

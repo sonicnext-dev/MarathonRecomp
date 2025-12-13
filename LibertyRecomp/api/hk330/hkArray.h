@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Marathon.inl>
+#include <Liberty.inl>
 
 namespace hk330
 {
@@ -19,7 +19,7 @@ namespace hk330
         }
     };
 
-    MARATHON_ASSERT_OFFSETOF(hkArray<void>, m_data, 0x00);
-    MARATHON_ASSERT_OFFSETOF(hkArray<void>, m_size, 0x04);
-    MARATHON_ASSERT_OFFSETOF(hkArray<void>, m_capacityAndFlags, 0x08);
+    LIBERTY_ASSERT_OFFSETOF(hkArray<void>, m_data, 0x00);
+    LIBERTY_ASSERT_OFFSETOF(hkArray<void>, m_size, 0x04);
+    LIBERTY_ASSERT_OFFSETOF(hkArray<void>, m_capacityAndFlags, 0x08);
 }

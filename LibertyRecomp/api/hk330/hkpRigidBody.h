@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Marathon.inl>
+#include <Liberty.inl>
 #include <hk330/hkpEntity.h>
 
 namespace hk330

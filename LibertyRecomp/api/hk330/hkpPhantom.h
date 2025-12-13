@@ -12,6 +12,6 @@ namespace hk330
         hkArray<xpointer<void>> m_phantomListeners;
     };
 
-    MARATHON_ASSERT_OFFSETOF(hkpPhantom, m_overlapListeners, 0x8C);
-    MARATHON_ASSERT_OFFSETOF(hkpPhantom, m_phantomListeners, 0x98);
+    LIBERTY_ASSERT_OFFSETOF(hkpPhantom, m_overlapListeners, 0x8C);
+    LIBERTY_ASSERT_OFFSETOF(hkpPhantom, m_phantomListeners, 0x98);
 }

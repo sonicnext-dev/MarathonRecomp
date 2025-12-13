@@ -9,7 +9,7 @@ PPC_FUNC(sub_824FFCF8)
     auto pMainMenuTask = (Sonicteam::MainMenuTask*)(base + ctx.r3.u32);
     auto pHUDMainMenu = pMainMenuTask->m_pHUDMainMenu;
 
-#ifdef MARATHON_RECOMP_OPTIONS_MENU
+#ifdef LIBERTY_RECOMP_OPTIONS_MENU
     if (pMainMenuTask->m_State == Sonicteam::MainMenuTask::MainMenuState_MainMenu && pMainMenuTask->m_MainMenuSelectedIndex == 3)
     {
         if (!OptionsMenu::s_isVisible && (pMainMenuTask->m_PressedButtons.get() & 0x10) != 0)

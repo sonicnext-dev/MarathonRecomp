@@ -43,9 +43,10 @@
 [submodule "thirdparty/json"]
 	path = thirdparty/json
 	url = https://github.com/nlohmann/json
-[submodule "MarathonRecompResources"]
-	path = MarathonRecompResources
-	url = https://github.com/sonicnext-dev/MarathonRecompResources
+# TODO: Create LibertyRecompResources repo with GTA IV specific resources
+# [submodule "LibertyRecompResources"]
+# 	path = LibertyRecompResources
+# 	url = https://github.com/OZORDI/LibertyRecompResources
 [submodule "thirdparty/MoltenVK/MoltenVK"]
 	path = thirdparty/MoltenVK/MoltenVK
 	url = https://github.com/KhronosGroup/MoltenVK.git

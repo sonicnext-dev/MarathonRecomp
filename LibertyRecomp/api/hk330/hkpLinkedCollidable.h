@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Marathon.inl>
+#include <Liberty.inl>
 #include <hk330/hkArray.h>
 #include <hk330/hkpCollidable.h>
 
@@ -11,14 +11,14 @@ namespace hk330
     public:
         struct CollisionEntry
         {
-            MARATHON_INSERT_PADDING(4);
+            LIBERTY_INSERT_PADDING(4);
             xpointer<hkpLinkedCollidable> m_partner;
         };
 
         hkArray<CollisionEntry> m_collisionEntries;
     };
 
-    MARATHON_ASSERT_OFFSETOF(hkpLinkedCollidable::CollisionEntry, m_partner, 0x04);
+    LIBERTY_ASSERT_OFFSETOF(hkpLinkedCollidable::CollisionEntry, m_partner, 0x04);
 
-    MARATHON_ASSERT_OFFSETOF(hkpLinkedCollidable, m_collisionEntries, 0x4C);
+    LIBERTY_ASSERT_OFFSETOF(hkpLinkedCollidable, m_collisionEntries, 0x4C);
 }

@@ -1,4 +1,4 @@
-#include <api/Marathon.h>
+#include <api/Liberty.h>
 #include <user/config.h>
 #include <app.h>
 
@@ -91,9 +91,9 @@ PPC_FUNC(sub_8232D770)
 
     struct TarzanPoint
     {
-        MARATHON_INSERT_PADDING(0x4C);
+        LIBERTY_INSERT_PADDING(0x4C);
         be<float> m_Time;
-        MARATHON_INSERT_PADDING(0xB0);
+        LIBERTY_INSERT_PADDING(0xB0);
     };
 
     auto pTarzanPoint = (TarzanPoint*)(base + ctx.r3.u32);

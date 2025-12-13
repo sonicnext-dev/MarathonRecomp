@@ -1,5 +1,5 @@
 #include "aspect_ratio_patches.h"
-#include <api/Marathon.h>
+#include <api/Liberty.h>
 #include <gpu/video.h>
 #include <hid/hid.h>
 #include <patches/hook_event.h>
@@ -1192,22 +1192,22 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
     ctx.r1.u32 += size;
 }
 
-// Sonicteam::CPlatformMarathon::Draw
+// GTA4::CPlatform::Draw
 PPC_FUNC_IMPL(__imp__sub_826315C8);
 PPC_FUNC(sub_826315C8)
 {
-    // r3 = Sonicteam::CPlatformMarathon*
+    // r3 = GTA4::CPlatform*
     // r4 = Vertex[r5]
     // r5 = Vertex Count
 
     Draw(ctx, base, __imp__sub_826315C8, 0x14);
 }
 
-// Sonicteam::CPlatformMarathon::DrawNoTex
+// GTA4::CPlatform::DrawNoTex
 PPC_FUNC_IMPL(__imp__sub_82631718);
 PPC_FUNC(sub_82631718)
 {
-    // r3 = Sonicteam::CPlatformMarathon*
+    // r3 = GTA4::CPlatform*
     // r4 = Vertex[r5]
     // r5 = Vertex Count
 

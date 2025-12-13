@@ -19,7 +19,7 @@
 #include <res/bc_diff/button_bc_diff.bin.h>
 #include <res/font/im_font_atlas.dds.h>
 #include <shader/shader_cache.h>
-#include <Marathon.h>
+#include <Liberty.h>
 #include <ui/achievement_menu.h>
 #include <ui/achievement_overlay.h>
 #include <ui/button_window.h>
@@ -42,7 +42,7 @@
 
 #include "../../tools/XenosRecomp/XenosRecomp/shader_common.h"
 
-#ifdef MARATHON_RECOMP_D3D12
+#ifdef LIBERTY_RECOMP_D3D12
 #include "shader/hlsl/blend_color_alpha_ps.hlsl.dxil.h"
 #include "shader/hlsl/copy_vs.hlsl.dxil.h"
 #include "shader/hlsl/copy_color_ps.hlsl.dxil.h"
@@ -67,7 +67,7 @@
 #include "shader/hlsl/resolve_msaa_depth_8x.hlsl.dxil.h"
 #endif
 
-#ifdef MARATHON_RECOMP_METAL
+#ifdef LIBERTY_RECOMP_METAL
 #include "shader/msl/blend_color_alpha_ps.metal.metallib.h"
 #include "shader/msl/copy_vs.metal.metallib.h"
 #include "shader/msl/copy_color_ps.metal.metallib.h"
@@ -125,10 +125,10 @@ extern "C"
 
 namespace plume
 {
-#ifdef MARATHON_RECOMP_D3D12
+#ifdef LIBERTY_RECOMP_D3D12
     extern std::unique_ptr<RenderInterface> CreateD3D12Interface();
 #endif
-#ifdef MARATHON_RECOMP_METAL
+#ifdef LIBERTY_RECOMP_METAL
 extern std::unique_ptr<RenderInterface> CreateMetalInterface();
 #endif
 #ifdef SDL_VULKAN_ENABLED
@@ -332,7 +332,7 @@ static Profiler g_swapChainAcquireProfiler;
 static bool g_profilerVisible;
 static bool g_profilerWasToggled;
 
-#if !defined(MARATHON_RECOMP_D3D12) && !defined(MARATHON_RECOMP_METAL)
+#if !defined(LIBERTY_RECOMP_D3D12) && !defined(LIBERTY_RECOMP_METAL)
 static constexpr Backend g_backend = Backend::VULKAN;
 #else
 static Backend g_backend;
@@ -842,12 +842,12 @@ static void LoadEmbeddedResources()
         g_shaderCache = std::make_unique<uint8_t[]>(g_spirvCacheDecompressedSize);
         ZSTD_decompress(g_shaderCache.get(), g_spirvCacheDecompressedSize, g_compressedSpirvCache, g_spirvCacheCompressedSize);
         break;
-#if defined(MARATHON_RECOMP_D3D12)
+#if defined(LIBERTY_RECOMP_D3D12)
     case Backend::D3D12:
         g_shaderCache = std::make_unique<uint8_t[]>(g_dxilCacheDecompressedSize);
         ZSTD_decompress(g_shaderCache.get(), g_dxilCacheDecompressedSize, g_compressedDxilCache, g_dxilCacheCompressedSize);
         break;
-#elif defined(MARATHON_RECOMP_METAL)
+#elif defined(LIBERTY_RECOMP_METAL)
     case Backend::METAL:
         g_shaderCache = std::make_unique<uint8_t[]>(g_airCacheDecompressedSize);
         ZSTD_decompress(g_shaderCache.get(), g_airCacheDecompressedSize, g_compressedAirCache, g_airCacheCompressedSize);
@@ -1484,7 +1484,7 @@ static GuestShader* g_csdShader;
 static std::unique_ptr<GuestShader> g_enhancedBurnoutBlurVSShader;
 static std::unique_ptr<GuestShader> g_enhancedBurnoutBlurPSShader;
 
-#if defined(MARATHON_RECOMP_D3D12)
+#if defined(LIBERTY_RECOMP_D3D12)
 
 #define CREATE_SHADER(NAME) \
     g_device->createShader( \
@@ -1493,7 +1493,7 @@ static std::unique_ptr<GuestShader> g_enhancedBurnoutBlurPSShader;
         "shaderMain", \
         (g_backend == Backend::VULKAN) ? RenderShaderFormat::SPIRV : RenderShaderFormat::DXIL)
 
-#elif defined(MARATHON_RECOMP_METAL)
+#elif defined(LIBERTY_RECOMP_METAL)
 
 #define CREATE_SHADER(NAME) \
     g_device->createShader( \
@@ -1854,9 +1854,9 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
 
     GameWindow::Init(sdlVideoDriver);
 
-#if defined(MARATHON_RECOMP_D3D12)
+#if defined(LIBERTY_RECOMP_D3D12)
     g_backend = (DetectWine() || Config::GraphicsAPI == EGraphicsAPI::Vulkan) ? Backend::VULKAN : Backend::D3D12;
-#elif defined(MARATHON_RECOMP_METAL)
+#elif defined(LIBERTY_RECOMP_METAL)
     g_backend = Config::GraphicsAPI == EGraphicsAPI::Vulkan ? Backend::VULKAN : Backend::METAL;
 #endif
 
@@ -1864,7 +1864,7 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
     using RenderInterfaceFunction = std::unique_ptr<RenderInterface>(void);
     std::vector<RenderInterfaceFunction *> interfaceFunctions;
 
-#ifdef MARATHON_RECOMP_D3D12
+#ifdef LIBERTY_RECOMP_D3D12
     bool allowVulkanRedirection = true;
 
     if (graphicsApiRetry)
@@ -1879,7 +1879,7 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
 
     interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateVulkanInterfaceWrapper : CreateD3D12Interface);
     interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateD3D12Interface : CreateVulkanInterfaceWrapper);
-#elif defined(MARATHON_RECOMP_METAL)
+#elif defined(LIBERTY_RECOMP_METAL)
     interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateVulkanInterfaceWrapper : CreateMetalInterface);
     interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateMetalInterface : CreateVulkanInterfaceWrapper);
 #else
@@ -1890,7 +1890,7 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
     {
         RenderInterfaceFunction* interfaceFunction = interfaceFunctions[i];
 
-#ifdef MARATHON_RECOMP_D3D12
+#ifdef LIBERTY_RECOMP_D3D12
         // Wrap the device creation in __try/__except to survive from driver crashes.
         __try
 #endif
@@ -1906,7 +1906,7 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
             {
                 const RenderDeviceDescription &deviceDescription = g_device->getDescription();
                 
-#if defined(MARATHON_RECOMP_D3D12)
+#if defined(LIBERTY_RECOMP_D3D12)
                 if (interfaceFunction == CreateD3D12Interface)
                 {
                     if (allowVulkanRedirection)
@@ -1949,7 +1949,7 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
                 }
 
                 g_backend = (interfaceFunction == CreateVulkanInterfaceWrapper) ? Backend::VULKAN : Backend::D3D12;
-#elif defined(MARATHON_RECOMP_METAL)
+#elif defined(LIBERTY_RECOMP_METAL)
                 g_backend = (interfaceFunction == CreateVulkanInterfaceWrapper) ? Backend::VULKAN : Backend::METAL;
 #endif
                 // Enable triangle strip workaround if we are on AMD, as there is a bug where
@@ -1959,7 +1959,7 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
                 break;
             }
         }
-#ifdef MARATHON_RECOMP_D3D12
+#ifdef LIBERTY_RECOMP_D3D12
         __except (EXCEPTION_EXECUTE_HANDLER)
         {
             if (graphicsApiRetry)
@@ -1982,7 +1982,7 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
         return false;
     }
 
-#ifdef MARATHON_RECOMP_D3D12
+#ifdef LIBERTY_RECOMP_D3D12
     if (graphicsApiRetry)
     {
         // If we managed to create a device after retrying it in a reboot, remember the one we picked.
@@ -4283,7 +4283,7 @@ static RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specCons
         shader = guestShader->linkedShaders[specConstants].get();
     }
 
-#ifdef MARATHON_RECOMP_D3D12
+#ifdef LIBERTY_RECOMP_D3D12
     if (shader == nullptr)
     {
         static Mutex g_compiledSpecConstantLibraryBlobMutex;
@@ -7785,7 +7785,7 @@ static void ConvertToDegenerateTriangles(uint16_t* indices, uint32_t indexCount,
 
 struct MeshResource
 {
-    MARATHON_INSERT_PADDING(0x4);
+    LIBERTY_INSERT_PADDING(0x4);
     be<uint32_t> indexCount;
     be<uint32_t> indices;
 };
@@ -7850,7 +7850,7 @@ static std::vector<uint16_t*> g_newIndicesToFree;
 
 struct LightAndIndexBufferResourceV1
 {
-    MARATHON_INSERT_PADDING(0x4);
+    LIBERTY_INSERT_PADDING(0x4);
     be<uint32_t> indexCount;
     be<uint32_t> indices;
 };
@@ -7889,7 +7889,7 @@ struct LightAndIndexBufferResourceV1
 
 struct LightAndIndexBufferResourceV5
 {
-    MARATHON_INSERT_PADDING(0x8);
+    LIBERTY_INSERT_PADDING(0x8);
     be<uint32_t> indexCount;
     be<uint32_t> indices;
 };

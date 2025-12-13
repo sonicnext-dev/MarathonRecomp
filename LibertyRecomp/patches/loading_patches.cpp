@@ -1,5 +1,5 @@
 #include "loading_patches.h"
-#include <api/Marathon.h>
+#include <api/Liberty.h>
 
 // Sonicteam::HUDLoading::Update
 PPC_FUNC_IMPL(__imp__sub_824D7340);

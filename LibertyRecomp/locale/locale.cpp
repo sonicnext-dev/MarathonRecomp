@@ -9,7 +9,7 @@
       Correct:
       This is a string that contains a brand name like
       Xbox 360, which is one of the two consoles to have a port of
-      SONIC THE HEDGEHOG.
+      GRAND THEFT AUTO IV.
 
       Incorrect:
       This is a string that contains a brand name like Xbox
@@ -364,12 +364,12 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
     {
         "Installer_Page_Introduction",
         {
-            { ELanguage::English,  "Welcome to Marathon Recompiled!\n\nYou'll need an Xbox 360 copy of\nSONIC THE HEDGEHOG in order to proceed with the installation." },
-            { ELanguage::Japanese, "Marathon Recompiledへようこそ！\nインストールにはXbox 360版の\n「ソニック・ザ・ヘッジホッグ」\nが必要です" },
-            { ELanguage::German,   "Willkommen zu Marathon Recompiled!\n\nEs wird eine Xbox 360 Kopie von\nSONIC THE HEDGEHOG benötigt um mit der Installation fortfahren zu können." },
-            { ELanguage::French,   "Bienvenue sur Marathon Recompiled !\n\nVous aurez besoin d'une copie de\nSONIC THE HEDGEHOG pour\nXbox 360 pour procéder à l'installation." },
-            { ELanguage::Spanish,  "¡Bienvenido a Marathon Recompiled!\n\nNecesitas una copia de\nSONIC THE HEDGEHOG de\nXbox 360 para continuar con la instalación." },
-            { ELanguage::Italian,  "Benvenuto a Marathon Recompiled!\n\nDovrai avere una copia di\nSONIC THE HEDGEHOG per la\nXbox 360 per proseguire con l'installazione." }
+            { ELanguage::English,  "Welcome to Liberty Recompiled!\n\nYou'll need an Xbox 360 copy of\nGRAND THEFT AUTO IV in order to proceed with the installation." },
+            { ELanguage::Japanese, "Liberty Recompiledへようこそ！\nインストールにはXbox 360版の\n「グランド・セフト・オートIV」\nが必要です" },
+            { ELanguage::German,   "Willkommen zu Liberty Recompiled!\n\nEs wird eine Xbox 360 Kopie von\nGRAND THEFT AUTO IV benötigt um mit der Installation fortfahren zu können." },
+            { ELanguage::French,   "Bienvenue sur Liberty Recompiled !\n\nVous aurez besoin d'une copie de\nGRAND THEFT AUTO IV pour\nXbox 360 pour procéder à l'installation." },
+            { ELanguage::Spanish,  "¡Bienvenido a Liberty Recompiled!\n\nNecesitas una copia de\nGRAND THEFT AUTO IV de\nXbox 360 para continuar con la instalación." },
+            { ELanguage::Italian,  "Benvenuto a Liberty Recompiled!\n\nDovrai avere una copia di\nGRAND THEFT AUTO IV per la\nXbox 360 per proseguire con l'installazione." }
         }
     },
     {
@@ -685,12 +685,12 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
     {
         "System_Win32_MissingDLLs",
         {
-            { ELanguage::English,  "The module \"%s\" could not be found.\n\nPlease make sure that:\n\n- You extracted this copy of Marathon Recompiled fully and not just the *.exe file.\n- You are not running Marathon Recompiled from a *.zip file." },
-            { ELanguage::Japanese, "モジュール\"%s\"が見つかりませんでした\n\n次の点を確認してください：\n\n※Marathon Recompiledの*.exeファイルだけを抽出していなく、 コピーを完全に抽出してること\n※Marathon Recompiledを*.zipファイルから実行していないこと" },
-            { ELanguage::German,   "Das Modul \"%s\" konnte nicht gefunden werden.\n\nBitte stelle sicher, dass:\n\n- Diese Kopie von Marathon Recompiled vollständig entpackt wurde und nicht nur die *.exe-Datei.\n- Marathon Recompiled nicht direkt aus einer *.zip-Datei ausgeführt wird." },
-            { ELanguage::French,   "Le module \"%s\" n'a pas pu être trouvé.\n\nVeuillez vous assurer que :\n\n- Vous avez extrait Marathon Recompiled dans son entièreté et pas seulement le fichier *.exe.\n- Vous n'exécutez pas Marathon Recompiled à partir d'un fichier *.zip." },
-            { ELanguage::Spanish,  "No se pudo encontrar el módulo \"%s\".\n\nAsegúrese de que:\n\n- Ha extraido esta copia de Marathon Recompiled por completo y no solo el archivo *.exe.\n- No está ejecutando Marathon Recompiled desde un archivo *.zip." },
-            { ELanguage::Italian,  "Impossibile trovare il modulo \"%s\".\n\nAssicurati che:\n\n- Hai estratto questa copia di Marathon Recompiled correttamente e non solo il file *.exe.\n- Non stai eseguendo Marathon Recompiled da un file *.zip." }
+            { ELanguage::English,  "The module \"%s\" could not be found.\n\nPlease make sure that:\n\n- You extracted this copy of Liberty Recompiled fully and not just the *.exe file.\n- You are not running Liberty Recompiled from a *.zip file." },
+            { ELanguage::Japanese, "モジュール\"%s\"が見つかりませんでした\n\n次の点を確認してください：\n\n※Liberty Recompiledの*.exeファイルだけを抽出していなく、 コピーを完全に抽出してること\n※Liberty Recompiledを*.zipファイルから実行していないこと" },
+            { ELanguage::German,   "Das Modul \"%s\" konnte nicht gefunden werden.\n\nBitte stelle sicher, dass:\n\n- Diese Kopie von Liberty Recompiled vollständig entpackt wurde und nicht nur die *.exe-Datei.\n- Liberty Recompiled nicht direkt aus einer *.zip-Datei ausgeführt wird." },
+            { ELanguage::French,   "Le module \"%s\" n'a pas pu être trouvé.\n\nVeuillez vous assurer que :\n\n- Vous avez extrait Liberty Recompiled dans son entièreté et pas seulement le fichier *.exe.\n- Vous n'exécutez pas Liberty Recompiled à partir d'un fichier *.zip." },
+            { ELanguage::Spanish,  "No se pudo encontrar el módulo \"%s\".\n\nAsegúrese de que:\n\n- Ha extraido esta copia de Liberty Recompiled por completo y no solo el archivo *.exe.\n- No está ejecutando Liberty Recompiled desde un archivo *.zip." },
+            { ELanguage::Italian,  "Impossibile trovare il modulo \"%s\".\n\nAssicurati che:\n\n- Hai estratto questa copia di Liberty Recompiled correttamente e non solo il file *.exe.\n- Non stai eseguendo Liberty Recompiled da un file *.zip." }
         }
     },
     {

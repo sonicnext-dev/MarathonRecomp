@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Marathon.inl>
+#include <Liberty.inl>
 #include <hk330/hkArray.h>
 #include <hk330/hkpProperty.h>
 #include <hk330/hkpWorld.h>
@@ -14,16 +14,16 @@ namespace hk330
     public:
         xpointer<hkpWorld> m_world;
         be<uint32_t> m_userData;
-        MARATHON_INSERT_PADDING(0x0C);
+        LIBERTY_INSERT_PADDING(0x0C);
         hkpLinkedCollidable m_collidable;
-        MARATHON_INSERT_PADDING(8);
+        LIBERTY_INSERT_PADDING(8);
         xpointer<const char> m_name;
         hkArray<hkpProperty> m_properties;
     };
 
-    MARATHON_ASSERT_OFFSETOF(hkpWorldObject, m_world, 0x08);
-    MARATHON_ASSERT_OFFSETOF(hkpWorldObject, m_userData, 0x0C);
-    MARATHON_ASSERT_OFFSETOF(hkpWorldObject, m_collidable, 0x1C);
-    MARATHON_ASSERT_OFFSETOF(hkpWorldObject, m_name, 0x7C);
-    MARATHON_ASSERT_OFFSETOF(hkpWorldObject, m_properties, 0x80);
+    LIBERTY_ASSERT_OFFSETOF(hkpWorldObject, m_world, 0x08);
+    LIBERTY_ASSERT_OFFSETOF(hkpWorldObject, m_userData, 0x0C);
+    LIBERTY_ASSERT_OFFSETOF(hkpWorldObject, m_collidable, 0x1C);
+    LIBERTY_ASSERT_OFFSETOF(hkpWorldObject, m_name, 0x7C);
+    LIBERTY_ASSERT_OFFSETOF(hkpWorldObject, m_properties, 0x80);
 }

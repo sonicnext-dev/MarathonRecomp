@@ -1,6 +1,6 @@
 #pragma once
 
-#include <api/Marathon.h>
+#include <api/Liberty.h>
 #include <user/config.h>
 
 class App
@@ -13,7 +13,7 @@ public:
     static inline bool s_isSaving;
     static inline bool s_isSaveDataCorrupt;
 
-    static inline Sonicteam::AppMarathon* s_pApp;
+    static inline GTA4::CGame* s_pApp;
 
     static inline EPlayerCharacter s_playerCharacter;
     static inline ELanguage s_language;

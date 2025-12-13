@@ -30,7 +30,7 @@ void App::Exit()
     std::_Exit(0);
 }
 
-// Sonicteam::AppMarathon::AppMarathon
+// GTA4::CGame::CGame
 PPC_FUNC_IMPL(__imp__sub_8262A568);
 PPC_FUNC(sub_8262A568)
 {
@@ -59,12 +59,12 @@ PPC_FUNC(sub_8262A568)
 
     __imp__sub_8262A568(ctx, base);
 
-    App::s_pApp = (Sonicteam::AppMarathon*)g_memory.Translate(ctx.r3.u32);
+    App::s_pApp = (GTA4::CGame*)g_memory.Translate(ctx.r3.u32);
 
     InitPatches();
 }
 
-// Sonicteam::DocMarathonState::Update
+// GTA4::CGameState::Update
 PPC_FUNC_IMPL(__imp__sub_825EA610);
 PPC_FUNC(sub_825EA610)
 {
@@ -107,9 +107,9 @@ PPC_FUNC(sub_82582648)
     struct File
     {
     public:
-        MARATHON_INSERT_PADDING(4);
+        LIBERTY_INSERT_PADDING(4);
         xpointer<const char> pFilePath;
-        MARATHON_INSERT_PADDING(0x0C);
+        LIBERTY_INSERT_PADDING(0x0C);
         be<uint32_t> Length;
         be<uint32_t> Capacity;
     };

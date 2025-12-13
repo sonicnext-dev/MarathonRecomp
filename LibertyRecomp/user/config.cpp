@@ -311,10 +311,10 @@ CONFIG_DEFINE_ENUM_TEMPLATE(EVoiceLanguage)
 CONFIG_DEFINE_ENUM_TEMPLATE(EGraphicsAPI)
 {
     { "Auto", EGraphicsAPI::Auto },
-#ifdef MARATHON_RECOMP_D3D12
+#ifdef LIBERTY_RECOMP_D3D12
     { "D3D12",  EGraphicsAPI::D3D12 },
 #endif
-#ifdef MARATHON_RECOMP_METAL
+#ifdef LIBERTY_RECOMP_METAL
     { "Metal",  EGraphicsAPI::Metal },
 #endif
     { "Vulkan", EGraphicsAPI::Vulkan }

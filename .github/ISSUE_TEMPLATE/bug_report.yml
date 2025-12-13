@@ -1,5 +1,5 @@
 name: Bug Report
-description: Report a bug in Marathon Recompiled
+description: Report a bug in Liberty Recompiled
 type: "Bug"
 body:
   - type: checkboxes
@@ -7,7 +7,7 @@ body:
     attributes:
       label: Validation
       options:
-        - label: I have checked the [Issues](https://github.com/sonicnext-dev/MarathonRecomp/issues) page to see if my problem has already been reported
+        - label: I have checked the [Issues](https://github.com/OZORDI/LibertyRecomp/issues) page to see if my problem has already been reported
           required: true
         - label: I have confirmed that this bug does not occur in the original game running on original Xbox 360 hardware
           required: true
@@ -17,13 +17,8 @@ body:
       label: DLC
       description: If you have DLC installed, please specify which ones you have.
       options:
-        - label: Additional Episode "Sonic Boss Attack"
-        - label: Additional Episode "Shadow Boss Attack"
-        - label: Additional Episode "Silver Boss Attack"
-        - label: Additional Episode "Team Attack Amigo"
-        - label: Additional Mission Pack "Sonic/Very Hard"
-        - label: Additional Mission Pack "Shadow/Very Hard"
-        - label: Additional Mission Pack "Silver/Very Hard"
+        - label: The Lost and Damned (TLAD)
+        - label: The Ballad of Gay Tony (TBoGT)
   - type: textarea
     id: mods
     attributes:
