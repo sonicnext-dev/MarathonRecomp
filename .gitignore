@@ -11,6 +11,9 @@ gta4/
 *.iso
 *.xcp
 
+# Development Notes - Private
+NOTES.md
+
 # User-specific files
 *.rsuser
 *.suo
