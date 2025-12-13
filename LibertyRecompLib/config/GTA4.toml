@@ -1,0 +1,61 @@
+# LibertyRecomp - GTA IV Xbox 360 Recompilation Config
+# This is the main configuration file for XenonRecomp
+
+[main]
+file_path = "../../Grand Theft Auto IV (USA) (En,Fr,De,Es,It)/default.xex"
+out_directory_path = "../ppc"
+switch_table_file_path = "./gta4_switch_tables.toml"
+
+# Optimizations - disabled until we have a working build
+skip_lr = false
+skip_msr = false
+ctr_as_local = false
+xer_as_local = false
+reserved_as_local = false
+cr_as_local = false
+non_argument_as_local = false
+non_volatile_as_local = false
+
+# Register save/restore function addresses
+# These need to be found by searching for specific byte patterns in the XEX
+# TODO: Find actual addresses for GTA IV
+# Patterns to search for:
+#   restgprlr_14: e9 c1 ff 68 (ld r14, -0x98(r1))
+#   savegprlr_14: f9 c1 ff 68 (std r14, -0x98(r1))
+#   restfpr_14:   c9 cc ff 70 (lfd f14, -0x90(r12))
+#   savefpr_14:   d9 cc ff 70 (stfd r14, -0x90(r12))
+#   restvmx_14:   39 60 fe e0 7d cb 60 ce
+#   savevmx_14:   39 60 fe e0 7d cb 61 ce
+#   restvmx_64:   39 60 fc 00 10 0b 60 cb
+#   savevmx_64:   39 60 fc 00 10 0b 61 cb
+
+# Placeholder values - must be updated with actual GTA IV addresses
+# restgprlr_14_address = 0x00000000
+# savegprlr_14_address = 0x00000000
+# restfpr_14_address = 0x00000000
+# savefpr_14_address = 0x00000000
+# restvmx_14_address = 0x00000000
+# savevmx_14_address = 0x00000000
+# restvmx_64_address = 0x00000000
+# savevmx_64_address = 0x00000000
+
+# setjmp/longjmp addresses (if used by the game)
+# longjmp_address = 0x00000000
+# setjmp_address = 0x00000000
+
+# Explicit function boundaries for functions with jump tables
+# that XenonAnalyse couldn't detect correctly
+functions = [
+]
+
+# Invalid instruction patterns to skip
+invalid_instructions = [
+    { data = 0x00000000, size = 4 }, # Padding
+]
+
+# Mid-asm hooks for intercepting game functions
+# Example:
+# [[midasm_hook]]
+# name = "MyHookFunction"
+# address = 0x82XXXXXX
+# registers = ["r3", "r4"]
