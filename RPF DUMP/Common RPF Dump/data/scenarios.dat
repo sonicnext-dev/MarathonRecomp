@@ -1,0 +1,127 @@
+Version 2
+# ----------------------------------------------------------------------------------------------
+# SCENARIO SETUP
+# ----------------------------------------------------------------------------------------------
+#
+# FORMAT ScenarioName argument1 argument2 etc...
+#
+# arguments are any number of the format:
+#
+# StartEnd(time1, time2) scenario will only be spawned between these times
+# Prob(prob) Probability between 0 and 1 that this scenario is spawned each time the point is evaluated
+# Task(task) the task that will be run with this scenario, can be of:
+#		Stationary	- stands still and plays anims
+#		MoveBetween(time) - moves between nearby points playing anims, stands statinory for a max of time seconds
+#		Group		- Spawns on the point but also spawns other peds around in conversation
+#		Seated		- Spawns the ped sitting down
+#		Wandering	- The ped wanders as normal, playing anims
+# MaxInRange( maxNo, range ) will limit the number of peds in this scenario to maxno within range metres, 
+#							so if range were 10, even if 100 points were within a 10m radius only Maxno would spawn
+# Offset(x,y,z) additional offset for specific seating anims that differ from the placement node (steps and walls)
+# WillAttractPeds : scenario will attract new wandering peds to use it, as well as generating peds there
+# TimeTillPedLeaves(time) the ped will leave the scenario after the time specified
+# SetSpecificModel(model) : scenario will only spawn models of type model
+# SetSpecificPopcycleGroup(group) : scenario will only spawn models contained in group popcycle group
+# ForceModelLoad : scenario will force load the model if its not already loaded (to a maximum of 2 simultaneously loaded models)
+# BlockModel: Block a specific model from using the scenario, allowed up to 8
+
+Seat_Bench					StartEnd(7, 22)	Task(Seated) Offset(0.0, 0.0, 0.55) WillAttractPeds BlockModel(F_Y_TOURIST_01) BlockModel(F_M_Business_02) BlockModel(M_Y_Bronx_01) BlockModel(F_M_Business_01)
+Seat_StdChair					StartEnd(5, 22)		Task(Seated) Offset(0.0, 0.0, 0.55) BlockModel(F_M_Business_02) BlockModel(F_M_Business_01)
+Seat_StdCouch					StartEnd(9, 22)		Task(Seated) Offset(0.0, 0.0, 0.55) BlockModel(F_M_Business_02) BlockModel(F_M_Business_01)
+Seat_CafeChair					StartEnd(9, 24)		Task(Seated) Offset(0.0, 0.0, 0.55) WillAttractPeds BlockModel(M_O_PJersey_01) BlockModel(M_Y_Tough_05) BlockModel(M_Y_Streetpunk_05) BlockModel(F_M_Business_02)  BlockModel(M_M_FatMob_01) BlockModel(M_Y_GMAF_LO_02) BlockModel(M_Y_GMAF_HI_01) BlockModel(F_M_Business_01)
+Seat_RestaurantChair			StartEnd(9, 20)		Task(Seated) Offset(0.0, 0.0, 0.55) BlockModel(F_M_Business_02) BlockModel(F_M_Business_01)
+Seat_BarChair					StartEnd(11, 4)		Task(Seated) Offset(0.0, 0.0, 0.55) BlockModel(F_M_Business_02) BlockModel(F_M_Business_01)
+Seat_StripClubChair				StartEnd(12,11)		Task(Seated) Offset(0.0, 0.0, 0.55) BlockModel(F_M_Business_02) BlockModel(F_M_Business_01)
+Seat_StripClubStool				StartEnd(12,11)		Task(Seated) BlockModel(F_M_Business_02) BlockModel(F_M_Business_01)
+Seat_BoardGamePlayer			StartEnd(9, 17)		Task(Seated) BlockModel(F_M_Business_02) BlockModel(F_M_Business_01)
+Seat_OnCar						StartEnd(9, 17)		Task(Seated) BlockModel(F_M_Business_02) BlockModel(F_M_Business_01)
+Seat_Crate						StartEnd(9, 17)		Task(Seated) BlockModel(F_M_Business_02) BlockModel(F_M_Business_01)
+Seat_InternetCafe				StartEnd(0, 24)		Task(Seated) TimeTillPedLeaves(10) WillAttractPeds BlockModel(F_M_Business_02) BlockModel(F_M_Business_01)
+Seat_OnSteps					StartEnd(5, 24)		Task(Seated) Offset(0.0, 0.1, -0.526) WillAttractPeds BlockModel(M_O_HASID_01) BlockModel(F_M_Business_02) BlockModel(F_M_Business_01)
+Seat_OnStepsB					StartEnd(7, 24)		Task(Seated) Offset(0.0, 0.1, -0.526) WillAttractPeds BlockModel(M_O_HASID_01) BlockModel(F_M_Business_02) BlockModel(F_M_Business_01)
+Seat_OnWall						StartEnd(5, 24)		Task(Seated) Offset(0.0, -0.1, -0.65) WillAttractPeds BlockModel(F_M_Business_02) BlockModel(M_M_TRUCKER_01) BlockModel(F_M_Business_01)
+Seat_OnStepsHangOut				StartEnd(7, 22)		Task(Seated) Offset(0.0, 0.1, -0.526) BlockModel(F_M_Business_02) BlockModel(F_M_Business_01)
+Seat_OnWallHangOut				StartEnd(7, 22)		Task(Seated) Offset(0.0, -0.1, -0.65) BlockModel(F_M_Business_02) BlockModel(M_M_TRUCKER_01) BlockModel(F_M_Business_01)
+Seat_HospitalWaiting			StartEnd(8, 18)		Task(Seated) BlockModel(F_M_Business_02) BlockModel(F_M_Business_01)
+Seat_SlouchedDruggie			StartEnd(0, 24)		Task(Seated) BlockModel(F_M_Business_02) BlockModel(F_M_Business_01)
+
+HangOut_Street					StartEnd(0, 24)		Task(Group)
+HangOut_AlleyWay				StartEnd(0, 24)		Task(Group)
+HangOut_OutsideLiquorStore		StartEnd(7, 24)		Task(Group)
+HangOut_BaseballDiamonds		StartEnd(0, 24)		Task(Group) SetSpecificPopcycleGroup(PARK)
+HangOut_BoardGameWatcher		StartEnd(0, 24)		Task(Group)
+HangOut_ProjectCourtyard		StartEnd(0, 24)		Task(Group)
+HangOut_BasketballCourt			StartEnd(0, 24)		Task(Group) SetSpecificPopcycleGroup(PARK)
+HangOut_OutsideMassageParlours	StartEnd(20, 5)		Task(Group)
+HangOut_ClubHouse				StartEnd(19, 6)		Task(Group)
+HangOut_WatchBoardGame			StartEnd(06,17)  	Task(MoveBetween(4.0))
+
+Scenario_SecurityGuard			StartEnd(0, 24)		Task(MoveBetween(4.0)) MaxInRange(1, 30)				SetSpecificModel(M_M_SECURITYMAN) ForceModelLoad
+Scenario_TouristPhoto			StartEnd(8, 00)		Task(MoveBetween(4.0)) MaxInRange(2, 20)				SetSpecificPopcycleGroup(SCENARIO_TOURISTS) ForceModelLoad
+Scenario_Leaning			StartEnd(0, 23)		Task(Stationary) WillAttractPeds BlockModel(M_Y_Street_04) BlockModel(M_Y_GMAF_HI_01) BlockModel(M_Y_GMAF_LO_02) BlockModel(M_Y_GBIK_HI_02) BlockModel(F_M_BUSINESS_01)
+Scenario_Leaning			BlockModel(F_M_BUSINESS_02) BlockModel(M_M_PITALIAN_01) BlockModel(M_O_PJERSEY_01) BlockModel(M_M_PHARBRON_01)
+Scenario_SellingDrugs			StartEnd(0, 24)		Task(Stationary) SetSpecificModel(M_Y_Drug_01) ForceModelLoad
+Scenario_RoadWorkers			StartEnd(6, 21)		Task(Stationary) MaxInRange(6, 20) LinkedScenario(Scenario_DiggingRoadWorkers)			SetSpecificPopcycleGroup(SCENARIO_ROADWORKERS) ForceModelLoad
+Scenario_RoadWorkerWithSign		StartEnd(6, 21)		Task(Stationary) MaxInRange(1, 20)	SetSpecificPopcycleGroup(SCENARIO_ROADWORKERS) ForceModelLoad
+Scenario_DiggingRoadWorkers		StartEnd(6, 21)		Task(Stationary) MaxInRange(6, 20) LinkedScenario(Scenario_RoadWorkers)			SetSpecificPopcycleGroup(SCENARIO_ROADWORKERS) ForceModelLoad
+Scenario_DrillingRoadWorkers	StartEnd(6, 21)		Task(Stationary) MaxInRange(1, 20)	SetSpecificPopcycleGroup(SCENARIO_ROADWORKERS) ForceModelLoad
+Scenario_IndustrialWorkers		StartEnd(6, 22) 	Task(MoveBetween(4.0)) MaxInRange(1, 20)											SetSpecificPopcycleGroup(SCENARIO_INDUSTRIAL) ForceModelLoad
+Scenario_BuildingWorkers		StartEnd(6, 21) 	Task(Stationary) MaxInRange(6, 20) LinkedScenario(Scenario_DiggingBuildingWorkers)	SetSpecificPopcycleGroup(SCENARIO_BUILDERS) ForceModelLoad
+Scenario_DiggingBuildingWorkers	StartEnd(6, 21)		Task(Stationary) MaxInRange(6, 20) LinkedScenario(Scenario_BuildingWorkers)			SetSpecificPopcycleGroup(SCENARIO_BUILDERS) ForceModelLoad
+Scenario_DrillingBuildingWorkers StartEnd(6, 18)		Task(Stationary) MaxInRange(1, 20)	SetSpecificPopcycleGroup(SCENARIO_BUILDERS) ForceModelLoad
+Scenario_HeavilyArmedPolice		StartEnd(0, 24)		Task(Stationary) SetSpecificPopcycleGroup(COPS)
+Scenario_SmokingOutsideOffice	StartEnd(0, 24)		Task(Stationary) WillAttractPeds BlockModel(M_Y_Courier) BlockModel(M_Y_Swat) BlockModel(M_Y_Mechanic_02) BlockModel(F_M_BUSINESS_01) BlockModel(M_O_HASID_01) BlockModel(M_Y_GAFR_HI_02) BlockModel(M_Y_STROOPER)
+Scenario_PayPhone				StartEnd(0, 24)		Task(Stationary) MaxInRange(1, 10)
+Scenario_DancingNightclub		StartEnd(20,04)		Task(Stationary)
+Scenario_HospitalNurse			StartEnd(0, 24)		Task(MoveBetween(4.0))	ForceModelLoad				SetSpecificModel(F_Y_Nurse)
+Scenario_HospitalDoctor			StartEnd(0, 24)		Task(MoveBetween(4.0))	ForceModelLoad				SetSpecificModel(F_Y_Nurse)
+Scenario_AirWorkers				StartEnd(0, 24)		Task(MoveBetween(4.0)) MaxInRange(1, 10)			SetSpecificModel(M_Y_Airworker)
+Scenario_Homeless				StartEnd(0, 24)		Task(MoveBetween(4.0)) MaxInRange(2, 5)			SetSpecificPopcycleGroup(BUMS) ForceModelLoad
+Scenario_Brazier				StartEnd(0, 24)		Task(Stationary)									SetSpecificPopcycleGroup(BUMS) ForceModelLoad
+Scenario_Gardening				StartEnd(8, 20)		Task(MoveBetween(4.0)) MaxInRange(1, 20)
+Scenario_ParkGardeners			StartEnd(8, 20)		Task(MoveBetween(4.0)) MaxInRange(1, 20)			SetSpecificModel(M_M_SWEEPER) ForceModelLoad
+Scenario_Sweeper				StartEnd(5, 24)		Task(Wandering)	 MaxInRange(1, 40)					SetSpecificModel(M_M_SWEEPER) ForceModelLoad
+Scenario_NewspaperStand			StartEnd(5, 24)		Task(Stationary) TimeTillPedLeaves(5) WillAttractPeds MaxInRange(1, 10)
+Scenario_StationedCop			StartEnd(0, 24)		Task(Stationary) SetSpecificPopcycleGroup(COPS)
+Scenario_PostMan				StartEnd(7, 9)		Task(Stationary) MaxInRange(1, 60) SetSpawnInterval(60000)	TimeTillPedLeaves(10) WillAttractPeds	SetSpecificModel(M_M_Postal_01) ForceModelLoad
+Scenario_UpTelegraphPoles		StartEnd(13,14)		Task(Stationary) MaxInRange(1, 60) SetSpawnInterval(60000)	SetSpecificModel(M_M_Telephone) ForceModelLoad
+Scenario_ServiceWorker			StartEnd(15,17)		Task(Stationary) MaxInRange(1, 60) SetSpawnInterval(60000)	SetSpecificModel(M_M_Telephone) ForceModelLoad
+Scenario_Binoculars				StartEnd(8, 20)		Task(Stationary) MaxInRange(1, 60)
+Scenario_StreetPerformer		StartEnd(8, 21)		Task(Stationary) MaxInRange(1, 100) SetSpecificModel(M_M_Saxplayer_01) ForceModelLoad		
+Scenario_Prostitute				StartEnd(20,5)		Task(Stationary) SetSpecificPopcycleGroup(SCENARIO_PROSTITUTES) ForceModelLoad
+Scenario_StationarySweeper		StartEnd(6, 22)		Task(Stationary) BlockModel(M_Y_GAFR_HI_02)
+Scenario_WindowCleaner			StartEnd(8, 19)		Task(Stationary)
+Scenario_LeaningForwards		StartEnd(0, 24)		Task(Stationary) BlockModel(M_M_TRUCKER_01)
+Scenario_WatchingPoleDancer		StartEnd(0, 24)		Task(Stationary)
+Scenario_Bouncer				StartEnd(0, 24)		Task(Stationary)
+Scenario_WaitingForTaxi			StartEnd(0, 24)		Task(Stationary)
+Scenario_Preacher				StartEnd(6, 24)		Task(Stationary) SetSpecificPopcycleGroup(SCENARIO_PREACHERS) ForceModelLoad
+Scenario_Standing				StartEnd(0, 24)		Task(Stationary)
+Scenario_LayingDruggie			StartEnd(0, 24)		Task(Stationary) SetSpecificPopcycleGroup(BUMS) ForceModelLoad
+Scenario_HospitalBed			StartEnd(0, 24)		Task(Stationary)
+Scenario_InvestigatingCop		StartEnd(0, 24)		Task(Stationary) SetSpecificPopcycleGroup(COPS)
+Scenario_TaiChi					StartEnd(7, 20)		Task(Stationary) SetSpecificPopcycleGroup(SCENARIO_JOGGERS) ForceModelLoad  
+Scenario_JoggerSpawn			StartEnd(7, 24)		Task(Wandering)	 MaxInRange(2, 15) SetSpecificPopcycleGroup(SCENARIO_JOGGERS) ForceModelLoad
+Scenario_StripperDancing		StartEnd(0, 24)		Task(Stationary)
+Scenario_StripperLapdance		StartEnd(0, 24)		Task(Stationary)
+Scenario_DrinkingAtBar			StartEnd(17,24)		Task(Stationary)
+Scenario_PoliceSniper			StartEnd(0, 24)		Task(Stationary) SetSpecificPopcycleGroup(COPS)
+Scenario_PoliceSpotter			StartEnd(0, 24)		Task(Stationary) SetSpecificPopcycleGroup(COPS)
+
+Location_DropOffPoint			StartEnd(10,16)		Task(Stationary)
+Location_ShopBrowsing			StartEnd(0, 24)		Task(Stationary) TimeTillPedLeaves(7) WillAttractPeds MaxInRange(1, 3)
+
+#Vehicle scenarios, spawned with vehicles
+
+Vehicle_InspectingBrokenDownVehicle		StartEnd(0, 24) Prob(0.025)						 Task(Stationary)
+Vehicle_LookingInBoot					StartEnd(0, 24) Prob(0.05)						 Task(Stationary)
+Vehicle_Mechanic						StartEnd(0, 24) Task(Stationary) 
+Vehicle_DeliveryDriver					StartEnd(0, 24) Prob(1.0)		SetSpawnInterval(10000)				Task(Stationary)
+Vehicle_ParkDeliveryTruck				StartEnd(0, 24) Prob(0.1)						 Task(Stationary)
+Vehicle_DropPassengersOff				StartEnd(0, 24) Prob(0.25)						 Task(Stationary)
+Vehicle_LimoDropPassengerOff			StartEnd(0, 24) Task(Stationary)
+Vehicle_ParkedThenWander				StartEnd(0, 24) Task(Stationary)
+Vehicle_SmokeThenDriveAway				StartEnd(0, 24) Task(Stationary) TimeTillPedLeaves(30)
+
+Wander_MobileConversation		BlockModel(F_O_PEastEuro_02), BlockModel(F_O_PHARBRON_01)
+Wander_2WayConversation			BlockModel(m_m_trucker_01), BlockModel(F_O_PHARBRON_01)

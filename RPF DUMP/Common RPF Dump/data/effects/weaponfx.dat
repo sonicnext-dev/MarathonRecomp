@@ -1,0 +1,282 @@
+2.00
+
+#################################################################################################################################
+#																#
+#  The table below is used to look up what happens to a material when it collides with another					#
+#  To see what happens to a material we look up its row and then cross reference with the column of 				#
+#  the material it has collided with the resulting index is used in the list of infos below this table 				#
+#  to find out what to do to the material											#
+#																#
+#################################################################################################################################
+#																#			
+#			PUNCH_KICK		PISTOL_SMALL		SHOTGUN			ROCKET				#
+#			    MELEE_WOOD		    PISTOL_LARGE	    RIFLE_ASSAULT  	    GRENADE			#
+#				MELEE_METAL		PISTOL_SILENCED		RIFLE_SNIPER		MOLOTOV			#
+#				    MELEE_SHARP		    SMG	    	    		   		    FIRE		#
+#					MELEE_GENERIC								EXPLOSION	#
+#																#
+#################################################################################################################################
+
+WEAPONFX_TABLE_START
+
+VOID			0   0	0   0	0	0   0   0   0		0   0   0   		0   0   0   0   0   
+CONCRETE		0   420 420 420 420	110 111 110 111		202 112 111		903 903 930 820	903 
+STONE			0   420 420 420 420	110 111 110 111		202 112 111		903 903 930 820	903 
+PAVING_SLABS		0   420 420 420 420	110 111 110 111		202 112 111		903 903 930 820	903 
+							
+BRICK_COBBLE		0   420 420 420 420	110 111 110 111		202 112 111		903 903 930 820	903 
+GRAVEL			0   420 420 420 420	150 150 150 150		206 150 150		903 903 930 820	903 
+MUD_SOFT		0   0   0   0   0   	120 120 120 120		203 120 120		905 905 930 820	905 
+DIRT_DRY		0   0   0   0   0   	360 360 360 360		362 360 360 		905 905 930 820	905 
+							
+SAND			0   0   0   0   0   	165 165 165 166		208 166 165		902 902 930 820	902 
+SNOW			0   0	0   0	0	0   0   0   0  		0   0   0		908 908 930 820	908
+WOOD			0   440 440 440 440	160 161 160 161		162 162 161		906 906 930 820	906 
+METAL			0   450 450 450 450 	101 101 101 101		106 102 101		901 901 930 820	901 
+							
+CERAMICS		0   420 420 420 420	110 111 110 111		202 112 111		903 903 930 820	903 
+MARBLE			0   420 420 420 420	110 111 110 111		202 112 111		903 903 930 820	903 
+LAMINATE		0   440 440 440 440	160 161 160 161		162 162 161		906 906 930 820	906 
+CARPET_FABRIC		0   0   0   0   0	370 370 370 370		375 370 370		906 906 930 820	906 
+							
+LINOLEUM		0   0   0   0   0	170 171 170 171		207 171 171		906 906 930 820	906 
+RUBBER			0   0   0   0   0	130 130 130 130 	204 130 130 		906 906 930 820	906 
+PLASTIC			0   420 420 420 420	130 130 130 130 	204 130 130 		906 906 930 820	906 
+CARDBOARD		0   0   0   0   0	190 190 190 190 	212 190 190 		906 906 930 820	906 
+							
+PAPER			0   0   0   0	0	140 140 140 140 	213 140 140 		906 906 930 820	906 
+MATTRESS_FOAM		0   0   0   0	0	170 171 170 171		207 171 171		906 906 930 820	906 
+PILLOW_FEATHERS		0   175 175 175 175 	175 176 175 176		214 176 176		908 908 930 820	908
+GRASS			0   0	0   0	0	120 120 120 120		203 120 120		907 907 930 820	907 
+							
+BUSHES			0   320 320 320 320	320 320 320 320 	320 320 320 		907 907 930 907 907 
+TREE_BARK_DARK		0   440 440 440 440	160 161 160 161		162 162 161		906 906 930 820	906 
+TREE_BARK_MEDIUM	0   440 440 440 440	160 161 160 161		162 162 161		906 906 930 820	906 
+TREE_BARK_LIGHT		0   440 440 440 440	160 161 160 161		162 162 161		906 906 930 820	906 
+							
+FLOWERS			0   0	0   0   0   	120 120 120 120		203 120 120		907 907 930 820	907 
+LEAVES_PILE		0   320 320 320 320 	320 320 320 320 	320 320 320 		908 908 930 820	908
+GLASS			501 500 500 500 500	50  51  50  51		01  52  51		908 908 930 820	908
+WINDSCREEN		501 500 500 500 500	50  51  50  51		01  52  51		908 908 930 820	908
+							
+CAR_METAL		0   450 450 450 450 	601 601 601 601		666 602 601		901 901 930 820	901 
+CAR_PLASTIC		0   420 420 420 420	601 601 601 601		666 602 601		901 901 930 820	901 
+WATER			0   0	0   0	0	700 700 700 701		702 701 700		701 700 700 0	0
+GENERIC			0   420 420 420 420	180 180 180 180    	180 180 180		908 908 930 820	908
+
+PED_HEAD		0   0	0   0	0	0   0   0   0   	0   0   0   		0   0   0   0	0
+PED_TORSO		0   0	0   0	0	0   0   0   0   	0   0   0   		0   0   0   0	0
+PED_LIMB		0   0	0   0	0	0   0   0   0   	0   0   0   		0   0   0   0	0
+PED_FOOT		0   0	0   0	0	0   0   0   0   	0   0   0   		0   0   0   0	0
+
+TVSCREEN		0   300 300 300 300 	300 300 300 300   	300 300 300   		300 300 930 820	300 
+VIDEOWALL		0   400 400 400 400	400 400 400 400   	400 400 400   		400 400 930 820	400
+	
+WEAPONFX_TABLE_END
+
+
+WEAPONFX_INFO_START
+
+########################################################################################################################################################################################################################################
+# ID	DIFFUSE MAP			NORMAL MAP			TEXTURE INFO	 SPECULAR  	  PARALLAX   	   SIZE	 	   LIFE		FADEIN	FX_SYS				FX_EVO	COLN	SHOTGUN----v----OBJECT 									
+#									ROW COL ID	FALLOFF	INT	STEEP	SCALE	MIN	MAX	MIN	MAX							TYPE	TEXID	ROW COL ID  SCL
+########################################################################################################################################################################################################################################
+
+# BULLETS #
+
+# METAL
+101	sheet_01			sheet_01_normal			2   2	0	0100.0	0.4	1	0.12	0.08	0.1	-1.0	-1.0	0.0	imp_bullet_metal		0.4	2	-1	2   2   0   1.0
+101	sheet_01			sheet_01_normal			2   2	1	0100.0	0.4	1	0.12	0.065	0.075	-1.0	-1.0	0.0	imp_bullet_metal		0.4	2	-1	2   2   0   1.0
+101	sheet_01			sheet_01_normal			2   2	2	0100.0	0.4	1	0.12	0.065	0.075	-1.0	-1.0	0.0	imp_bullet_metal		0.4	2	-1	2   2   0   1.0
+102	sheet_01			sheet_01_normal			2   2	0	0100.0	0.4	1	0.12	0.08	0.11	-1.0	-1.0	0.0	imp_bullet_metal		0.7	2	-1	2   2   0   1.0
+102	sheet_01			sheet_01_normal			2   2	1	0100.0	0.4	1	0.12	0.075	0.085	-1.0	-1.0	0.0	imp_bullet_metal		0.7	2	-1	2   2   0   1.0
+102	sheet_01			sheet_01_normal			2   2	2	0100.0	0.4	1	0.12	0.075	0.085	-1.0	-1.0	0.0	imp_bullet_metal		0.7	2	-1	2   2   0   1.0
+106	sheet_01			sheet_01_normal			2   2	0	0100.0	0.4	1	0.08	0.09	0.13	-1.0	-1.0	0.0	imp_bullet_metal		0.9	2	0	2   2   2   3.8
+106	sheet_01			sheet_01_normal			2   2	1	0100.0	0.4	1	0.08	0.09	0.12	-1.0	-1.0	0.0	imp_bullet_metal		0.9	2	0	2   2   2   4.5
+106	sheet_01			sheet_01_normal			2   2	2	0100.0	0.4	1	0.08	0.1	0.13	-1.0	-1.0	0.0	imp_bullet_metal		0.9	2	0	2   2   2   4.6
+106	sheet_01			sheet_01_normal			2   2	3	0100.0	0.4	1	0.08	0.12	0.17	-1.0	-1.0	0.0	imp_bullet_metal		0.9	2	0	2   2   2   3.7
+
+# CONCRETE
+110	sheet_04			sheet_04_normal			2   2	0	0500.0	0.0	1	0.15	0.065	0.1	-1.0	-1.0	0.0	imp_bullet_concrete		0.0	2	-1	2   2   0   1.0
+110	sheet_04			sheet_04_normal			2   2	1	0500.0	0.0	1	0.15	0.065	0.1	-1.0	-1.0	0.0	imp_bullet_concrete		0.0	2	-1	2   2   0   1.0
+110	sheet_04			sheet_04_normal			2   2	2	0500.0	0.0	1	0.15	0.065	0.1	-1.0	-1.0	0.0	imp_bullet_concrete		0.0	2	-1	2   2   0   1.0
+111	sheet_04			sheet_04_normal			2   2	0	0500.0	0.0	1	0.16	0.08	0.13	-1.0	-1.0	0.0	imp_bullet_concrete		0.25	2	-1	2   2   0   1.0
+111	sheet_04			sheet_04_normal			2   2	1	0500.0	0.0	1	0.16	0.08	0.13	-1.0	-1.0	0.0	imp_bullet_concrete		0.25	2	-1	2   2   0   1.0
+111	sheet_04			sheet_04_normal			2   2	2	0500.0	0.0	1	0.16	0.08	0.13	-1.0	-1.0	0.0	imp_bullet_concrete		0.25	2	-1	2   2   0   1.0
+112	sheet_04			sheet_04_normal			2   2	0	0500.0	0.0	1	0.17	0.09	0.17	-1.0	-1.0	0.0	imp_bullet_concrete		0.4	2	-1	2   2   0   1.0
+112	sheet_04			sheet_04_normal			2   2	1	0500.0	0.0	1	0.17	0.09	0.17	-1.0	-1.0	0.0	imp_bullet_concrete		0.4	2	-1	2   2   0   1.0
+112	sheet_04			sheet_04_normal			2   2	2	0500.0	0.0	1	0.17	0.09	0.17	-1.0	-1.0	0.0	imp_bullet_concrete		0.4	2	-1	2   2   0   1.0
+202	sheet_04			sheet_04_normal			2   2	0	0500.0	0.0	1	0.16	0.12	0.22	-1.0	-1.0	0.0	imp_bullet_concrete		0.7	2	1	1   1   0   3.8
+202	sheet_04			sheet_04_normal			2   2	1	0500.0	0.0	1	0.16	0.13	0.23	-1.0	-1.0	0.0	imp_bullet_concrete		0.7	2	1	1   1   0   3.7
+202	sheet_04			sheet_04_normal			2   2	2	0500.0	0.0	1	0.16	0.14	0.24	-1.0	-1.0	0.0	imp_bullet_concrete		0.7	2	1	1   1   0   3.6
+202	sheet_04			sheet_04_normal			2   2	3	0500.0	0.0	1	0.16	0.29	0.36	-1.0	-1.0	0.0	imp_bullet_concrete		0.7	2	1	1   1   0   2.4
+
+# MUD
+120	sheet_05			sheet_05_normal			2   2	2	0500.0	0.0	1	0.12	0.16	0.22	-1.0	-1.0	0.0	imp_bullet_mud_soft		0.0	2	-1	2   2   0   1.0	
+120	sheet_05			sheet_05_normal			2   2	3	0500.0	0.0	1	0.12	0.12	0.18	-1.0	-1.0	0.0	imp_bullet_mud_soft		0.0	2	-1	2   2   0   1.0
+203	sheet_05			sheet_05_normal			2   2	2	0500.0	0.0	1	0.12	0.28	0.42	-1.0	-1.0	0.0	imp_bullet_mud_soft		0.5	2	-1	2   2   0   1.0
+203	sheet_05			sheet_05_normal			2   2	3	0500.0	0.0	1	0.12	0.2	0.3	-1.0	-1.0	0.0	imp_bullet_mud_soft		0.5	2	-1	2   2   0   1.0
+
+# CARDBOARD
+190	sheet_06			sheet_06_normal			2   2	0	0500.0	0.0	1	0.1	0.05	0.07	-1.0	-1.0	0.0	imp_bullet_cardboard		0.3	2	-1	2   2   0   1.0
+190	sheet_06			sheet_06_normal			2   2	1	0500.0	0.0	1	0.1	0.1	0.12	-1.0	-1.0	0.0	imp_bullet_cardboard		0.3	2	-1	2   2   0   1.0
+190	sheet_06			sheet_06_normal			2   2	2	0500.0	0.0	1	0.1	0.07	0.09	-1.0	-1.0	0.0	imp_bullet_cardboard		0.3	2	-1	2   2   0   1.0
+212	sheet_06			sheet_06_normal			2   2	3	0500.0	0.0	1	0.09	0.09	0.12	-1.0	-1.0	0.0	imp_bullet_cardboard		0.7	2	0	2   2   0   4.5
+212	sheet_06			sheet_06_normal			2   2	2	0500.0	0.0	1	0.09	0.065	0.1	-1.0	-1.0	0.0	imp_bullet_cardboard		0.7	2	0	2   2   0   5.2
+
+# PAPER
+140	sheet_06			sheet_06_normal			2   2	0	0500.0	0.0	1	0.1	0.05	0.07	-1.0	-1.0	0.0	imp_bullet_paper		0.3	2	-1	2   2   0   1.0
+140	sheet_06			sheet_06_normal			2   2	1	0500.0	0.0	1	0.1	0.1	0.12	-1.0	-1.0	0.0	imp_bullet_paper		0.3	2	-1	2   2   0   1.0
+140	sheet_06			sheet_06_normal			2   2	2	0500.0	0.0	1	0.1	0.07	0.09	-1.0	-1.0	0.0	imp_bullet_paper		0.3	2	-1	2   2   0   1.0
+213	sheet_06			sheet_06_normal			2   2	3	0500.0	0.0	1	0.09	0.09	0.12	-1.0	-1.0	0.0	imp_bullet_paper		0.7	2	0	2   2   0   4.5
+213	sheet_06			sheet_06_normal			2   2	2	0500.0	0.0	1	0.09	0.065	0.1	-1.0	-1.0	0.0	imp_bullet_paper		0.7	2	0	2   2   0   5.2
+
+# DEFAULT DECALS (DEFAULT/PLASTIC/RUBBER)
+130	sheet_06			sheet_06_normal			2   2	0	0500.0	0.0	1	0.1	0.05	0.07	-1.0	-1.0	0.0	imp_bullet_default		0.3	2	-1	2   2   0   1.0
+130	sheet_06			sheet_06_normal			2   2	1	0500.0	0.0	1	0.1	0.1	0.12	-1.0	-1.0	0.0	imp_bullet_default		0.3	2	-1	2   2   0   1.0
+130	sheet_06			sheet_06_normal			2   2	2	0500.0	0.0	1	0.1	0.07	0.09	-1.0	-1.0	0.0	imp_bullet_default		0.3	2	-1	2   2   0   1.0
+204	sheet_06			sheet_06_normal			2   2	0	0500.0	0.0	1	0.09	0.065	0.1	-1.0	-1.0	0.0	imp_bullet_default		0.7	2	0	2   2   0   5.0
+204	sheet_06			sheet_06_normal			2   2	1	0500.0	0.0	1	0.09	0.1	0.14	-1.0	-1.0	0.0	imp_bullet_default		0.7	2	0	2   2   0   4.4
+204	sheet_06			sheet_06_normal			2   2	2	0500.0	0.0	1	0.09	0.065	0.1	-1.0	-1.0	0.0	imp_bullet_default		0.7	2	0	2   2   0   5.2
+204	sheet_06			sheet_06_normal			2   2	3	0500.0	0.0	1	0.09	0.09	0.12	-1.0	-1.0	0.0	imp_bullet_default		0.7	2	0	2   2   0   4.5
+
+# GRAVEL
+150	-				-				1   1	0	0500.0	0.0	0	0.0	0.0	0.0	-1.0	-1.0	0.0	imp_bullet_gravel		0.3	2	-1	2   2   0   1.0
+206	-				-				1   1	0	0500.0	0.0	0	0.0	0.0	0.0	-1.0	-1.0	0.0	imp_bullet_gravel		0.8	2	-1	2   2   0   1.0
+
+# WOOD
+160	sheet_02			sheet_02_normal			2   2	0	0500.0	0.0	1	0.12	0.1	0.17	-1.0	-1.0	0.0	imp_bullet_wood			0.1	2	-1	2   2   0   1.0
+160	sheet_02			sheet_02_normal			2   2	1	0500.0	0.0	1	0.12	0.07	0.1	-1.0	-1.0	0.0	imp_bullet_wood			0.1	2	-1	2   2   0   1.0
+160	sheet_02			sheet_02_normal			2   2	2	0500.0	0.0	1	0.12	0.1	0.17	-1.0	-1.0	0.0	imp_bullet_wood			0.1	2	-1	2   2   0   1.0
+161	sheet_02			sheet_02_normal			2   2	0	0500.0	0.0	1	0.12	0.1	0.18	-1.0	-1.0	0.0	imp_bullet_wood			0.4	2	-1	2   2   0   1.0
+161	sheet_02			sheet_02_normal			2   2	1	0500.0	0.0	1	0.12	0.07	0.1	-1.0	-1.0	0.0	imp_bullet_wood			0.4	2	-1	2   2   0   1.0
+161	sheet_02			sheet_02_normal			2   2	2	0500.0	0.0	1	0.12	0.1	0.18	-1.0	-1.0	0.0	imp_bullet_wood			0.4	2	-1	2   2   0   1.0
+162	sheet_02			sheet_02_normal			2   2	0	0500.0	0.0	1	0.11	0.13	0.18	-1.0	-1.0	0.0	imp_bullet_wood			0.75	2	0	2   2   3   4.1
+162	sheet_02			sheet_02_normal			2   2	1	0500.0	0.0	1	0.11	0.09	0.12	-1.0	-1.0	0.0	imp_bullet_wood			0.75	2	0	2   2   3   4.8
+162	sheet_02			sheet_02_normal			2   2	2	0500.0	0.0	1	0.11	0.13	0.18	-1.0	-1.0	0.0	imp_bullet_wood			0.75	2	0	2   2   3   4.1
+
+# MATTRESS_FOAM
+170	sheet_05			sheet_05_normal			2   2	0	0500.0	0.0	1	0.14	0.06	0.1	-1.0	-1.0	0.0	imp_bullet_mattress_foam	0.2	2	-1	2   2   0   1.0
+170	sheet_05			sheet_05_normal			2   2	1	0500.0	0.0	1	0.14	0.06	0.1	-1.0	-1.0	0.0	imp_bullet_mattress_foam	0.2	2	-1	2   2   0   1.0
+171	sheet_05			sheet_05_normal			2   2	0	0500.0	0.0	1	0.14	0.07	0.12	-1.0	-1.0	0.0	imp_bullet_mattress_foam	0.5	2	-1	2   2   0   1.0
+171	sheet_05			sheet_05_normal			2   2	1	0500.0	0.0	1	0.14	0.07	0.12	-1.0	-1.0	0.0	imp_bullet_mattress_foam	0.5	2	-1	2   2   0   1.0
+207	sheet_05			sheet_05_normal			2   2	0	0500.0	0.0	1	0.11	0.22	0.3	-1.0	-1.0	0.0	imp_bullet_mattress_foam	0.75	2	0	2   2   1   1.8
+207	sheet_05			sheet_05_normal			2   2	1	0500.0	0.0	1	0.11	0.22	0.3	-1.0	-1.0	0.0	imp_bullet_mattress_foam	0.75	2	0	2   2   1   1.8
+
+# CARPET_FABRIC
+370	sheet_06			sheet_06_normal			2   2	0	0500.0	0.0	1	0.07	0.04	0.055	-1.0	-1.0	0.0	imp_bullet_carpet		0.2	2	-1	2   2   0   1.0
+370	sheet_06			sheet_06_normal			2   2	1	0500.0	0.0	1	0.07	0.075	0.09	-1.0	-1.0	0.0	imp_bullet_carpet		0.2	2	-1	2   2   0   1.0
+370	sheet_06			sheet_06_normal			2   2	2	0500.0	0.0	1	0.07	0.05	0.06	-1.0	-1.0	0.0	imp_bullet_carpet		0.2	2	-1	2   2   0   1.0
+375	sheet_06			sheet_06_normal			2   2	0	0500.0	0.0	1	0.06	0.05	0.6	-1.0	-1.0	0.0	imp_bullet_carpet		0.7	2	0	2   2   0   5.0
+375	sheet_06			sheet_06_normal			2   2	1	0500.0	0.0	1	0.06	0.07	0.08	-1.0	-1.0	0.0	imp_bullet_carpet		0.7	2	0	2   2   0   4.4
+375	sheet_06			sheet_06_normal			2   2	2	0500.0	0.0	1	0.06	0.05	0.06	-1.0	-1.0	0.0	imp_bullet_carpet		0.7	2	0	2   2   0   5.2
+375	sheet_06			sheet_06_normal			2   2	3	0500.0	0.0	1	0.06	0.055	0.075	-1.0	-1.0	0.0	imp_bullet_carpet		0.7	2	0	2   2   0   4.5
+
+# PILLOW_FEATHERS
+175	-				-				2   2	0	0500.0	0.0	0	0.0	0.0	0.0	-1.0	-1.0	0.0	imp_bullet_pillow_feathers	0.0	2	-1	2   2   0   1.0
+176	-				-				2   2	0	0500.0	0.0	0	0.0	0.0	0.0	-1.0	-1.0	0.0	imp_bullet_pillow_feathers	0.3	2	-1	2   2   0   1.0
+214	-				-				2   2	0	0500.0	0.0	0	0.0	0.0	0.0	-1.0	-1.0	0.0	imp_bullet_pillow_feathers	0.7	2	0	2   2   1   1.8
+
+# GENERIC
+180	-				-				1   1	0	0500.0	0.0	0	0.0	0.0	0.0	-1.0	-1.0	0.0	imp_bullet_default		0.3	2	-1	2   2   0   1.0
+
+# SAND
+165	sheet_02			sheet_05_normal			2   2	3	0500.0	0.0	1	0.08	0.1	0.15	-1.0	-1.0	0.0	imp_bullet_sand			0.0	0	-1	2   2   0   1.0
+166	sheet_02			sheet_05_normal			2   2	3	0500.0	0.0	1	0.08	0.1	0.15	-1.0	-1.0	0.0	imp_bullet_sand			0.3	0	-1	2   2   0   1.0
+208	sheet_02			sheet_05_normal			2   2	3	0500.0	0.0	1	0.08	0.22	0.38	-1.0	-1.0	0.0	imp_bullet_sand			0.7	0	-1	2   2   0   1.0
+
+# TVSCREEN
+300	-				-				1   1	0	0500.0	0.0	0	0.0	0.0	0.0	-1.0	-1.0	0.0	imp_bullet_tvscreen		0.0	2	-1	2   2   0   1.0
+
+# VIDEOWALL
+400	-				-				1   1	0	0500.0	0.0	0	0.0	0.0	0.0	-1.0	-1.0	0.0	imp_bullet_videowall		0.0	2	-1	2   2   0   1.0
+
+# LEAVES_PILE
+320	-				-				1   1	0	0500.0	0.0	0	0.0	0.0	0.0	-1.0	-1.0	0.0	imp_bullet_leaves		0.0	0	-1	2   2   0   1.0
+
+# DIRT_DRY
+360	sheet_05			sheet_05_normal			2   2	2	0500.0	0.0	1	0.12	0.16	0.22	-1.0	-1.0	0.0	imp_bullet_dirt_dry		0.0	2	-1	2   2   0   1.0	
+360	sheet_05			sheet_05_normal			2   2	3	0500.0	0.0	1	0.12	0.12	0.18	-1.0	-1.0	0.0	imp_bullet_dirt_dry		0.0	2	-1	2   2   0   1.0
+362	sheet_05			sheet_05_normal			2   2	2	0500.0	0.0	1	0.12	0.28	0.42	-1.0	-1.0	0.0	imp_bullet_dirt_dry		0.25	2	-1	2   2   0   1.0
+362	sheet_05			sheet_05_normal			2   2	3	0500.0	0.0	1	0.12	0.2	0.3	-1.0	-1.0	0.0	imp_bullet_dirt_dry		0.25	2	-1	2   2   0   1.0
+
+# CARMETAL
+601	sheet_01			sheet_01_normal			2   2	0	0100.0	0.4	1	0.14	0.12	0.17	-1.0	-1.0	0.0	imp_bullet_metal		0.4	2	-1	2   2   0   1.0
+601	sheet_01			sheet_01_normal			2   2	1	0100.0	0.4	1	0.14	0.1	0.15	-1.0	-1.0	0.0	imp_bullet_metal		0.4	2	-1	2   2   0   1.0
+601	sheet_01			sheet_01_normal			2   2	2	0100.0	0.4	1	0.14	0.11	0.16	-1.0	-1.0	0.0	imp_bullet_metal		0.4	2	-1	2   2   0   1.0
+602	sheet_01			sheet_01_normal			2   2	0	0100.0	0.4	1	0.14	0.13	0.2	-1.0	-1.0	0.0	imp_bullet_metal		0.7	2	-1	2   2   0   1.0
+602	sheet_01			sheet_01_normal			2   2	1	0100.0	0.4	1	0.14	0.11	0.17	-1.0	-1.0	0.0	imp_bullet_metal		0.7	2	-1	2   2   0   1.0
+602	sheet_01			sheet_01_normal			2   2	2	0100.0	0.4	1	0.14	0.12	0.17	-1.0	-1.0	0.0	imp_bullet_metal		0.7	2	-1	2   2   0   1.0
+666	sheet_07			sheet_07_normal			2   2	2	0100.0	0.4	1	0.08	0.48	0.61	-1.0	-1.0	0.0	imp_shotgun_full_metal		0.0	2	-1	2   2   0   1.0
+
+# WATER
+700	-				-				1   1	0	0500.0	0.0	0	0.0	0.0	0.0	-1.0	-1.0	0.0	imp_bullet_water		0.0	0	-1	2   2   0   1.0
+701	-				-				1   1	0	0500.0	0.0	0	0.0	0.0	0.0	-1.0	-1.0	0.0	imp_bullet_water		0.7	0	-1	2   2   0   1.0
+702	-				-				1   1	0	0500.0	0.0	0	0.0	0.0	0.0	-1.0	-1.0	0.0	imp_shotgun_water		0.8	0	-1	2   2   0   1.0
+
+# GLASS (FIRST HALF OF EACH IS THE NON BLOOD VARIANT - SECOND HALF OF EACH IS THE 'WITH BLOOD' VARIANT - MUST HAVE AN ID UNDER 100 TO WORK)
+50	materials_10			materials_10_normal		2   2	2	0500.0	0.0	1	0.03	0.4	0.8	-1.0	-1.0	0.0	imp_bullet_glass		0.2	2	-1	2   2   0   1.0
+50	materials_10			materials_10_normal		2   2	3	0500.0	0.0	1	0.03	0.4	0.65	-1.0	-1.0	0.0	imp_bullet_glass		0.2	2	-1	2   2   0   1.0
+50	materials_11			materials_10_normal		2   2	2	0500.0	0.0	1	0.02	0.45	0.7	-1.0	-1.0	0.0	imp_bullet_glass		0.2	2	-1	2   2   0   1.0
+50	materials_11			materials_10_normal		2   2	3	0500.0	0.0	1	0.02	0.45	0.7	-1.0	-1.0	0.0	imp_bullet_glass		0.2	2	-1	2   2   0   1.0
+51	materials_10			materials_10_normal		2   2	2	0500.0	0.0	1	0.03	0.4	0.8	-1.0	-1.0	0.0	imp_bullet_glass		0.5	2	-1	2   2   0   1.0
+51	materials_10			materials_10_normal		2   2	3	0500.0	0.0	1	0.03	0.4	0.65	-1.0	-1.0	0.0	imp_bullet_glass		0.5	2	-1	2   2   0   1.0
+51	materials_11			materials_10_normal		2   2	2	0500.0	0.0	1	0.02	0.45	0.7	-1.0	-1.0	0.0	imp_bullet_glass		0.5	2	-1	2   2   0   1.0
+51	materials_11			materials_10_normal		2   2	3	0500.0	0.0	1	0.02	0.45	0.7	-1.0	-1.0	0.0	imp_bullet_glass		0.5	2	-1	2   2   0   1.0
+52	materials_10			materials_10_normal		2   2	2	0500.0	0.0	1	0.03	0.4	0.8	-1.0	-1.0	0.0	imp_bullet_glass		0.9	2	-1	2   2   0   1.0
+52	materials_10			materials_10_normal		2   2	3	0500.0	0.0	1	0.03	0.4	0.65	-1.0	-1.0	0.0	imp_bullet_glass		0.9	2	-1	2   2   0   1.0
+52	materials_11			materials_10_normal		2   2	2	0500.0	0.0	1	0.02	0.45	0.7	-1.0	-1.0	0.0	imp_bullet_glass		0.9	2	-1	2   2   0   1.0
+52	materials_11			materials_10_normal		2   2	3	0500.0	0.0	1	0.02	0.45	0.7	-1.0	-1.0	0.0	imp_bullet_glass		0.9	2	-1	2   2   0   1.0
+01	glass_shotgun			glass_shotgun_normal		2   2	0	0500.0	0.0	1	0.027	1.0	1.15	-1.0	-1.0	0.1	imp_shotgun_glass		0.0	2	2	2   2   0   1.1
+01	glass_shotgun			glass_shotgun_normal		2   2	1	0500.0	0.0	1	0.027	0.78	0.85	-1.0	-1.0	0.1	imp_shotgun_glass		0.0	2	2	2   2   1   1.1
+01	glass_shotgun			glass_shotgun_normal		2   2	2	0500.0	0.0	1	0.025	1.0	1.15	-1.0	-1.0	0.1	imp_shotgun_glass		0.0	2	2	2   2   2   1.0
+01	glass_shotgun			glass_shotgun_normal		2   2	3	0500.0	0.0	1	0.025	0.95	1.1	-1.0	-1.0	0.1	imp_shotgun_glass		0.0	2	2	2   2   3   1.0
+
+########################################################################################################################################################################################################################################
+# ID	DIFFUSE MAP			NORMAL MAP			TEXTURE INFO	 SPECULAR  	  PARALLAX   	   SIZE	 	   LIFE		FADEIN	FX_SYS				FX_EVO	COLN	SHOTGUN -v- OBJECT 									
+#									ROW COL ID	FALLOFF	INT	STEEP	SCALE	MIN	MAX	MIN	MAX							TYPE	TEXID	ROW COL ID
+########################################################################################################################################################################################################################################
+
+# MELEE WEAPONS #
+
+# VS CONCRETE
+420	materials_01			materials_01_normal		2   2	0	0500.0	0.0	1	0.05	0.28	0.44	-1.0	-1.0	0.0	imp_melee_concrete		0.0	2	-1	2   2   0   1.0	
+420	materials_01			materials_01_normal		2   2	1	0500.0	0.0	1	0.05	0.18	0.3	-1.0	-1.0	0.0	imp_melee_concrete		0.0	2	-1	2   2   0   1.0	
+
+# VS WOOD
+440	materials_02			materials_02_normal		2   2	0	0500.0	0.0	1	0.06	0.2	0.3	-1.0	-1.0	0.0	imp_melee_wood			0.0	2	-1	2   2   0   1.0
+440	materials_02			materials_02_normal		2   2	1	0500.0	0.0	1	0.06	0.2	0.3	-1.0	-1.0	0.0	imp_melee_wood			0.0	2	-1	2   2   0   1.0
+
+# VS METAL
+450	materials_03			materials_03_normal		2   2	0	0100.0	0.4	1	0.07	0.09	0.18	-1.0	-1.0	0.0	-				0.0	0	-1	2   2   0   1.0
+450	materials_03			materials_03_normal		2   2	1	0100.0	0.4	1	0.07	0.09	0.18	-1.0	-1.0	0.0	-				0.0	0	-1	2   2   0   1.0
+
+# VS GLASS
+500	materials_10			materials_10_normal		2   2	0	0500.0	0.0	1	0.02	1.0	1.4	-1.0	-1.0	0.0	imp_melee_glass			0.0	2	-1	2   2   0   1.0
+500	materials_10			materials_10_normal		2   2	1	0500.0	0.0	1	0.02	1.0	1.4	-1.0	-1.0	0.0	imp_melee_glass			0.0	2	-1	2   2   0   1.0
+501	materials_10			materials_10_normal		2   2	0	0500.0	0.0	1	0.02	0.5	0.8	-1.0	-1.0	0.0	imp_melee_glass			0.0	2	-1	2   2   0   1.0
+501	materials_10			materials_10_normal		2   2	1	0500.0	0.0	1	0.02	0.5	0.8	-1.0	-1.0	0.0	imp_melee_glass			0.0	2	-1	2   2   0   1.0
+
+########################################################################################################################################################################################################################################
+# ID	DIFFUSE MAP			NORMAL MAP			TEXTURE INFO	 SPECULAR  	  PARALLAX   	   SIZE	 	   LIFE		FADEIN	FX_SYS				FX_EVO	COLN	SHOTGUN -v- OBJECT 									
+#									ROW COL ID	FALLOFF	INT	STEEP	SCALE	MIN	MAX	MIN	MAX							TYPE	TEXID	ROW COL ID
+########################################################################################################################################################################################################################################
+
+# FIRE #
+820	sheet_03			sheet_03_normal			2   2	0	0500.0	0.001	0	0.00	3.1	3.7	22.0	38.0	1.5	-				0.0	0	-1	2   2   0   1.0
+
+# ROCKETS
+901	sheet_03			sheet_03_normal			2   2   1	0500.0	0.001	1	0.02	3.0	4.2	22.0	32.0	0.5	imp_exp_metal			0.0	2	-1	2   2   0   1.0
+902	sheet_03			sheet_03_normal			2   2   3	0500.0	0.001	1	0.03	2.0	2.5	18.0	30.0	0.5	-				0.0	0	-1	2   2   0   1.0
+903	sheet_03			sheet_03_normal			2   2   1	0500.0	0.001	1	0.02	3.0	4.2	22.0	32.0	0.5	imp_exp_concrete		0.0	2	-1	2   2   0   1.0
+905	sheet_03			sheet_03_normal			2   2   1	0500.0	0.001	1	0.02	3.0	4.2	22.0	32.0	0.5	imp_exp_concrete		0.0	2	-1	2   2   0   1.0
+906	sheet_03			sheet_03_normal			2   2   1	0500.0	0.001	1	0.02	3.0	4.2	22.0	32.0	0.5	imp_exp_wood			0.0	2	-1	2   2   0   1.0
+907	sheet_03			sheet_03_normal			2   2   1	0500.0	0.001	1	0.02	3.0	4.2	22.0	32.0	0.5	imp_exp_concrete		0.0	2	-1	2   2   0   1.0
+908	sheet_03			sheet_03_normal			2   2   1	0500.0	0.001	1	0.02	3.0	4.2	22.0	32.0	0.5	-				0.0	0	-1	2   2   0   1.0
+
+# MOLOTOV EXPLOSIONS
+930	sheet_03			sheet_03_normal			2   2   1	0500.0	0.001	0	0.00	3.0	4.2	20.0	35.0	0.8	-				0.0	0	-1	2   2   0   1.0
+
+
+
+WEAPONFX_INFO_END

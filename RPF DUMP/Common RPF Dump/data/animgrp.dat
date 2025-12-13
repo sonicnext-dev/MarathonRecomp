@@ -1,0 +1,208 @@
+#
+# filename:  animgrp.dat
+#
+# format:
+# o MovementGroup( (Resident/Streaming),		groupname )
+# o WeaponGroup( (Resident/Streaming),			groupname )
+# o VehicleGroup( (Resident/Streaming),			groupname )
+# o VehicleDrivebyGroup( (Resident/Streaming),	groupname , FPSMin, FPSMax, RPSMin, RPSMax, FDSMin, FDSMax, additionalFlags )
+# o VehicleToDrivebyLink( (Resident/Streaming), groupname, drivebygroupName, optionalSpecificModel, additionalFlags)
+# additionalFlags can be made up of:
+#	DBF_AlternateFireFront		
+#	DBF_AlternateFireRear		
+#	DBF_IsVanFlagNeededForRear	
+#	DBF_NoRoofNeeded			
+#	DBF_RoofNeeded				
+#	DBF_AdjustVerticalHeightFS	
+#	DBF_HasRifle				
+#	DBF_HasGrenades
+#	DBF_AllSeatsUseFrontAnims	
+#	DBF_NoRearDrivebys			
+#	DBF_DisableFrontDrivebys	
+#	DBF_BackRightSeatUsesPassengerAnims
+#	DBF_NoDriverGrenadeDrivebys
+#	DBF_DriverNeedsIntoAnims
+#	DBF_PassengersDontNeedIntroAnims
+#	DBF_DampenRecoilAnim
+#	DBF_BackLeftSeatUsesDriverAnims
+#	DBF_JustPauseFiringForReload
+
+Version(3)
+
+#-------------------------------------------------------------------
+# Movement groups
+# o MovementGroup( (Resident/Streaming),		groupname )
+#-------------------------------------------------------------------
+MovementGroup(Streaming, move_cop)			
+MovementGroup(Streaming, move_cop_fat)		
+MovementGroup(Streaming, move_m@roman_inj)	
+MovementGroup(Streaming, move_m@bernie
+MovementGroup(Streaming, move_m@playboy)	
+
+MovementGroup(Streaming, move_f@bness_a)	
+MovementGroup(Streaming, move_f@bness_b)	
+MovementGroup(Streaming, move_f@bness_c)	
+MovementGroup(Streaming, move_f@bness_d)	
+MovementGroup(Streaming, move_f@bness_e)	
+MovementGroup(Streaming, move_f@casual)	
+MovementGroup(Streaming, move_f@casual_b)	
+MovementGroup(Streaming, move_f@casual_c)	
+MovementGroup(Streaming, move_f@sexy)		
+MovementGroup(Resident,  move_f@fat)		
+MovementGroup(Streaming, move_f@old_a)		
+MovementGroup(Streaming, move_f@old_b)		
+MovementGroup(Streaming, move_f@old_c)		
+MovementGroup(Streaming, move_f@old_d)		
+MovementGroup(Streaming, move_f@puffer)	
+MovementGroup(Streaming, move_f@michelle)	
+
+MovementGroup(Streaming, move_m@swat)
+MovementGroup(Streaming, move_m@cs_swat)	
+MovementGroup(Streaming, move_m@bness_a)	
+MovementGroup(Streaming, move_m@bness_b)	
+MovementGroup(Streaming, move_m@bness_c)	
+MovementGroup(Streaming, move_m@casual)	
+MovementGroup(Streaming, move_m@casual_b)	
+MovementGroup(Streaming, move_m@casual_c)	
+MovementGroup(Streaming, move_m@bum)		
+MovementGroup(Streaming, move_m@fat)		
+MovementGroup(Streaming, move_m@old_a)		
+MovementGroup(Streaming, move_m@old_b)		
+MovementGroup(Streaming, move_m@old_c)		
+MovementGroup(Streaming, move_m@tourist)	
+MovementGroup(Streaming, move_m@case)		
+MovementGroup(Streaming, move_m@h_cuffed)
+MovementGroup(Streaming, move_m@eddie)
+
+MovementGroup(Streaming, move_gng@afro_a)	
+MovementGroup(Streaming, move_gng@afro_b)	
+MovementGroup(Streaming, move_gng@afro_c)	
+MovementGroup(Streaming, move_gng@generic_a)
+MovementGroup(Streaming, move_gng@generic_b)
+MovementGroup(Streaming, move_gng@generic_c)
+MovementGroup(Streaming, move_gng@latino_a)
+MovementGroup(Streaming, move_gng@latino_b)
+MovementGroup(Streaming, move_gng@latino_c)
+MovementGroup(Streaming, move_gng@jam_a)	
+MovementGroup(Streaming, move_gng@jam_b)	
+MovementGroup(Streaming, move_gng@jam_c)	
+MovementGroup(Streaming, move_gng@jam_c)
+	
+
+#-------------------------------------------------------------------
+# Weapon groups
+# o WeaponGroup( (Resident/Streaming),			groupname )
+#-------------------------------------------------------------------
+WeaponGroup( Streaming, gun@ak47 )
+WeaponGroup( Streaming, gun@baretta )
+WeaponGroup( Streaming, gun@deagle )
+WeaponGroup( Streaming, gun@handgun )
+WeaponGroup( Streaming, gun@mp5k )
+WeaponGroup( Streaming, gun@rocket )
+WeaponGroup( Streaming, gun@shotgun )
+WeaponGroup( Streaming, gun@uzi )
+
+#-------------------------------------------------------------------
+# Gesture groups
+# o GestureGroup( (Resident/Streaming),			groupname )
+#-------------------------------------------------------------------
+GestureGroup( Streaming, gestures@m_seated)
+
+#-------------------------------------------------------------------
+# Vehicle driveby groups
+# o VehicleDrivebyGroup( (Resident/Streaming),	groupname , FDSMin, FDSMax, FPSMin, FPSMax, RPSMin, RPSMax, FDSMin, FDSMax, additionalFlags )
+#-------------------------------------------------------------------
+VehicleDrivebyGroup( Streaming, veh@drivebylow,			0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0,			DBF_AlternateFireFront DBF_RoofNeeded DBF_NoRearDrivebys DBF_HasGrenades DBF_DriverLimitsToSmashWindows(0.16, 0.29) )
+VehicleDrivebyGroup( Streaming, veh@drivebyvan,			0.0, 1.0, 0.0, 1.0, 0.625, 0.95,0.125, 0.625, 	DBF_IsVanFlagNeededForRear DBF_HasGrenades DBF_DriverLimitsToSmashWindows(0.16, 0.29) )
+VehicleDrivebyGroup( Streaming, veh@drivebylow_conv,	0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0,			DBF_NoRoofNeeded DBF_HasGrenades )
+VehicleDrivebyGroup( Streaming, veh@drivebybike_spt,	0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0,			DBF_HasGrenades )
+VehicleDrivebyGroup( Streaming, veh@drivebybike_dirt,	0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0,			DBF_HasGrenades )
+VehicleDrivebyGroup( Streaming, veh@drivebybike_free,	0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0,			DBF_HasGrenades )
+VehicleDrivebyGroup( Streaming, veh@drivebybike_chop,	0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0,			DBF_HasGrenades )
+VehicleDrivebyGroup( Streaming, veh@drivebybike_scot,	0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0,			DBF_HasGrenades )
+VehicleDrivebyGroup( Streaming, veh@drivebytruck,		0.0, 1.0, 0.0, 0.322, 0.625, 0.95,0.125, 0.625,	DBF_HasGrenades DBF_DriverLimitsToSmashWindows(0.24, 0.42) )
+VehicleDrivebyGroup( Streaming, veh@DRIVEBYHELI,		0.0, 1.0, 0.0, 0.5, 0.75, 0.25, 0.75, 0.25,		DBF_NoDriverDrivebys DBF_NoDriverGrenadeDrivebys DBF_HasRifle DBF_HasGrenades DBF_PassengersDontNeedIntroAnims DBF_DampenRecoilAnim DBF_JustPauseFiringForReload)
+VehicleDrivebyGroup( Streaming, veh@DRIVEBYboat_spee,	0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0,			DBF_NoDriverDrivebys DBF_NoDriverGrenadeDrivebys DBF_AllSeatsUseFrontAnims DBF_HasRifle DBF_HasGrenades DBF_PassengersDontNeedIntroAnims DBF_DampenRecoilAnim DBF_JustPauseFiringForReload)
+VehicleDrivebyGroup( Streaming, veh@DRIVEBYboat_stnd,	0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0,			DBF_NoDriverDrivebys DBF_DisableFrontDrivebys DBF_HasRifle DBF_HasGrenades DBF_DampenRecoilAnim DBF_JustPauseFiringForReload)
+VehicleDrivebyGroup( Streaming, veh@drivebystd,			0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0,			DBF_HasGrenades DBF_AdjustVerticalHeightFS DBF_AlternateFireRear DBF_DriverLimitsToSmashWindows(0.16, 0.29) )
+VehicleDrivebyGroup( Streaming, veh@drivebycop_std,		0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0,			DBF_NoDriverDrivebys DBF_NoRearDrivebys )
+VehicleDrivebyGroup( Streaming, veh@DRIVEBYBOAT_BIG,	0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0,			DBF_HasGrenades DBF_DampenRecoilAnim)
+VehicleDrivebyGroup( Streaming, veh@drivebyairtug, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0,				DBF_HasGrenades DBF_DampenRecoilAnim)
+VehicleDrivebyGroupV2( Streaming, veh@DRIVEBYHELI_1H,		veh@DRIVEBYHELI,		0.0, 1.0, 0.0, 0.5, 0.75, 0.25, 0.75, 0.25,	DBF_NoDriverGrenadeDrivebys DBF_NoDriverDrivebys DBF_HasGrenades DBF_PassengersDontNeedIntroAnims DBF_JustPauseFiringForReload)
+VehicleDrivebyGroupV2( Streaming, veh@DRIVEBYboat_spee_1H,	veh@DRIVEBYboat_spee,	0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0,			DBF_HasGrenades DBF_AllSeatsUseFrontAnims DBF_PassengersDontNeedIntroAnims DBF_JustPauseFiringForReload)
+VehicleDrivebyGroupV2( Streaming, veh@DRIVEBYboat_stnd_1H,	veh@DRIVEBYboat_stnd,	0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0,			DBF_HasGrenades)
+
+
+#-------------------------------------------------------------------
+# Vehicle groups
+# o VehicleGroup( (Resident/Streaming),			groupname )
+#-------------------------------------------------------------------
+VehicleGroup( Streaming, veh@boat_stand_big )
+VehicleGroup( Streaming, veh@boat_standing )
+
+
+#-------------------------------------------------------------------
+# Bike groups
+# o BikeGroup( (Resident/Streaming), groupname, leftHandleBarOffset x, y, and z, rightHandleBarOffset x, y, and z )
+#-------------------------------------------------------------------
+BikeGroup( Streaming, veh@bike_spt, 	 0.030, -0.063,  0.029, -0.027, -0.060,  0.029)
+BikeGroup( Streaming, veh@bike_dirt, 	 0.025, -0.060,  0.003, -0.030, -0.054,  0.005)
+BikeGroup( Streaming, veh@bike_chopper,  0.006, -0.070,  0.020, -0.009, -0.072,  0.016)
+BikeGroup( Streaming, veh@bike_freeway,  0.045, -0.063, -0.032,  0.020, -0.070, -0.032)
+BikeGroup( Streaming, veh@bike_scooter,	 0.038, -0.057,  0.026, -0.039, -0.057,  0.026)
+
+
+#-------------------------------------------------------------------
+# VehicleToDrivebyLink: Links between vehicles and which drivebys should be used
+# o VehicleToDrivebyLink( (Resident/Streaming), groupname, drivebygroupName, optionalSpecificModel, additionalFlags)
+#-------------------------------------------------------------------
+#std
+VehicleToDrivebyLink( - veh@std,					veh@drivebytruck, ripley, DBF_NoDriverDrivebys )
+VehicleToDrivebyLink( - veh@std,					veh@drivebystd, ripley )
+#police drivebys
+VehicleToDrivebyLink( - veh@std,					veh@drivebycop_std, police )
+VehicleToDrivebyLink( - veh@std,					veh@drivebycop_std, police2 )
+VehicleToDrivebyLink( - veh@std,					veh@drivebycop_std, fbi )
+VehicleToDrivebyLink( - veh@std,					veh@drivebystd, police )
+VehicleToDrivebyLink( - veh@std,					veh@drivebystd, police2 )
+VehicleToDrivebyLink( - veh@std,					veh@drivebystd, fbi )
+
+VehicleToDrivebyLink( - veh@std,					veh@drivebystd, - )
+#low
+VehicleToDrivebyLink( - veh@low,					veh@drivebystd, stratum, DBF_DisableFrontDrivebys DBF_NoDriverDrivebys )
+VehicleToDrivebyLink( - veh@low,					veh@drivebylow, stratum, DBF_NoRearDrivebys )
+VehicleToDrivebyLink( - veh@low,					veh@drivebylow_conv, stratum, DBF_NoRearDrivebys )
+VehicleToDrivebyLink( - veh@low,					veh@drivebystd, vincent, DBF_DisableFrontDrivebys DBF_NoDriverDrivebys)
+VehicleToDrivebyLink( - veh@low,					veh@drivebylow, vincent, DBF_NoRearDrivebys )
+VehicleToDrivebyLink( - veh@low,					veh@drivebylow_conv, vincent, DBF_NoRearDrivebys )
+
+VehicleToDrivebyLink( - veh@low,					veh@drivebylow, - )
+VehicleToDrivebyLink( - veh@low,					veh@drivebylow_conv, - )
+#van
+VehicleToDrivebyLink( - veh@van,					veh@drivebytruck, firetruk, DBF_BackLeftSeatUsesDriverAnims DBF_BackRightSeatUsesPassengerAnims )
+VehicleToDrivebyLink( - veh@van,					veh@drivebytruck, boxville )
+VehicleToDrivebyLink( - veh@van,					veh@drivebyairtug, airtug, - )
+VehicleToDrivebyLink( - veh@van,					veh@drivebytruck, trash )
+VehicleToDrivebyLink( - veh@van,					veh@drivebyvan, - )
+VehicleToDrivebyLink( - veh@van,					veh@drivebystd, - )
+#bikes
+VehicleToDrivebyLink( - veh@bike_spt,				veh@drivebybike_spt, - )
+VehicleToDrivebyLink( - veh@bike_dirt,				veh@drivebybike_dirt, - )
+VehicleToDrivebyLink( - veh@bike_chopper,			veh@drivebybike_chop, - )
+VehicleToDrivebyLink( - veh@bike_freeway,			veh@drivebybike_free, - )
+VehicleToDrivebyLink( - veh@bike_scooter,			veh@drivebybike_scot, - )
+#trucks
+VehicleToDrivebyLink( - veh@truck,				veh@drivebytruck, - )
+#helicopters
+VehicleToDrivebyLink( - veh@HELICOPTER,			veh@DRIVEBYHELI, - )
+VehicleToDrivebyLink( - veh@HELICOPTER,			veh@DRIVEBYHELI_1H, - )
+#speed boat
+VehicleToDrivebyLink( - veh@boat_speed,			veh@DRIVEBYboat_spee, - )
+VehicleToDrivebyLink( - veh@boat_speed,			veh@DRIVEBYboat_spee_1H, - )		
+VehicleToDrivebyLink( - veh@boat_stand_big,		veh@DRIVEBYBOAT_BIG, - )		
+VehicleToDrivebyLink( - veh@boat_standing,		veh@DRIVEBYboat_stnd, - )
+VehicleToDrivebyLink( - veh@boat_standing,		veh@DRIVEBYboat_stnd_1H, - )
+#bus
+VehicleToDrivebyLink( - veh@bus,				veh@drivebytruck, - , DBF_NoRearDrivebys DBF_DisableFrontDrivebys)
+VehicleToDrivebyLink( - veh@bus,				veh@drivebyairtug, - , DBF_NoDriverDrivebys DBF_AllSeatsUseFrontAnims)
+

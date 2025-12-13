@@ -1,0 +1,31 @@
+1.0
+
+# MAX END_RADIUS SHOULD BE 15.0
+# ANY NON DIRECTED EXPLOSION SHOULD HAVE A DIRECTED_WIDTH OF 0.0
+
+# COLN TYPE: 1-ground plane, 2-ground bound, 3-vehicle up
+
+
+#			DAMAGE		DAMAGE		NETWORK		NETWORK																									NUM FIRES	FIRE RANGE	CAM	WEAPON		INFINITE	LIGHTS ------------------------------------>	COLN					
+#TYPE			AT		AT		PLAYER		PED		END_RADIUS	INIT_SPEED	DECAY_FACTOR	FORCE_FACTOR	RAGDOLL_MODIFIER	DIRECTED_WIDTH	DIRECTED_LIFE	FX_NAME			FX_AIR_NAME		FX_SCALE	MIN	MAX	MIN	MAX	SHAKE	TYPE		SHOT EXP	R	G	B	INT	RANGE	TIME	TYPE
+#			CENTRE		EDGE		MODIFIER	MODIFIER
+
+EXPLOSIONFX_TABLE_START
+
+GRENADE			500.0		75.0		2.0		1.0		7.0		 50.0		-1.0		30.0		0.0016			0.0		0.0		exp_grenade		exp_grenade_air		1.0		0	0	0.0	0.0	0.6	GRENADE		0		1.0	0.3	0.0	250.0	24.0	0.3	2
+MOLOTOV			30.0		4.0		2.0		1.0		3.0		 50.0		-0.8		0.001		0.0035			0.0		0.0		exp_molotov		exp_molotov_air		1.0		3	4	0.25	1.1	0.0	MOLOTOV		0		1.0	0.4	0.0	40.0	12.0	0.8	2
+ROCKET			500.0		50.0		2.0		1.0		8.0		 50.0		-1.0		40.0		0.003			0.0		0.0		exp_rocket		exp_rocket_air		1.0		2	3	0.6	2.8	0.7	ROCKET		0		1.0	0.5	0.1	350.0	24.0	0.6	2
+HI_OCTANE		500.0		50.0		2.0		1.0		10.0		 100.0		-2.0		30.0		0.0004			0.0		0.0		exp_fireball		exp_fireball_air	1.0		1	1	0.2	0.6	0.5	EXPLOSION	0		1.0	0.5	0.1	250.0	24.0	0.6	2
+CAR			500.0		50.0		2.0		1.0		7.0		 60.0		-1.0		8.0		0.0035			0.0		0.0		exp_vehicle		exp_vehicle_air		1.05		2	3	0.2	0.8	0.4	EXPLOSION	0		1.0	0.5	0.1	200.0	15.0	0.6	2
+PLANE			500.0		50.0		2.0		1.0		8.0		 60.0		-1.0		8.0		0.0035			0.0		0.0		exp_vehicle		exp_vehicle_air		1.25		2	3	0.25	1.0	0.6	EXPLOSION	0		1.0	0.5	0.1	200.0	18.0	0.6	2
+PETROL_PUMP		500.0		50.0		2.0		1.0		8.0		 100.0		-1.2		28.0		0.0035			0.0		0.0		exp_petrol_pump		exp_petrol_pump		1.0		2	3	0.15	0.65	0.8	EXPLOSION	0		1.0	0.5	0.1	350.0	24.0	0.8	2
+BIKE			500.0		50.0		2.0		1.0		5.0		 50.0		-1.0		4.0		0.0035			0.0		0.0		exp_vehicle		exp_vehicle_air		0.75		2	2	0.1	0.4	0.3	EXPLOSION	0		1.0	0.6	0.2	120.0	12.0	0.6	2
+DIR_STEAM		30.0		4.0		2.0		1.0		2.0		 50.0		-0.12		4.0		0.0035			0.5		6.0		shot_directed_steam	shot_directed_steam	1.0		0	0	0.0	0.0	0.0	EXPLOSION	1		0.0	0.0	0.0	0.0	0.0	0.0	2
+DIR_FLAME		500.0		50.0		2.0		1.0		2.5		 50.0		-0.25		14.0		0.002			0.5		2.5		shot_directed_flame	shot_directed_flame	1.0		0	0	0.0	0.0	0.0	EXPLOSION	1		1.0	0.4	0.1	12.0	10.0	8.0	2
+DIR_WATER_HYDRANT	0.0		0.0		2.0		1.0		6.0		 15.0		-0.12		10.0		0.005			0.5		12.0		water_hydrant_top	water_hydrant_top	1.0		0	0	0.0	0.0	0.0	EXPLOSION	1		0.0	0.0	0.0	0.0	0.0	0.0	3
+DIR_GAS_CANISTER	500.0		50.0		2.0		1.0		2.5		 50.0		-0.25		6.0		0.0035			0.5		2.5		shot_gas_canister	shot_gas_canister	1.0		0	0	0.0	0.0	0.1	EXPLOSION	0		1.0	0.5	0.2	12.0	10.0	8.0	2
+BOAT			500.0		50.0		2.0		1.0		7.0		 50.0		-1.0		12.0		0.0035			0.0		0.0		exp_vehicle		exp_vehicle_air		1.25		0	0	0.0	0.0	0.4	EXPLOSION	0		1.0	0.5	0.1	200.0	18.0	0.6	2
+SHIP_DESTROY		500.0		200.0		2.0		1.0		8.0		 100.0		-1.2		60.0		0.0035			0.0		0.0		exp_ship_destroy	exp_ship_destroy	1.0		0	0	0.0	0.0	0.4	EXPLOSION	0		1.0	0.5	0.1	250.0	24.0	1.0	2
+TRUCK			500.0		50.0		2.0		1.0		8.0		 60.0		-1.0		8.0		0.0035			0.0		0.0		exp_vehicle		exp_vehicle_air		1.25		2	3	0.2	0.8	0.5	EXPLOSION	0		1.0	0.5	0.1	200.0	18.0	0.6	2
+
+EXPLOSIONFX_TABLE_END

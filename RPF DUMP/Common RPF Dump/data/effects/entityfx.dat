@@ -1,0 +1,235 @@
+5.00
+
+####################################################################################################################################################################################################################################################################################################
+#
+#										CREATION THRESHOLDS -------------------------------------------------------------->	EVOLUTION INFO ----------->	LIGHT INFO ------------------------------------------------------------->
+#								COLN	IGNORE								TEMPERATURE	TIME OF DAY			TEMPERATURE	USE	R	G	B	INTENSITY	RANGE	OFFSET			NIGHT_PROB
+# TAG				FX_NAME				TYPE	ROT	ALWAYS	RAIN_THRESH	MAX_WIND_EVO	WIND_THRESH	MIN	MAX	MIN	MAX	RAIN	WIND	MIN	MAX					MIN	MAX		X	Y	Z	MULT
+#
+####################################################################################################################################################################################################################################################################################################
+
+ENTITYFX_AMBIENT_START
+
+AMB_BUTTERFLIES			ambient_butterflies		0	1	0	-1.0		10.0		-1.0		-100	100	08	17	0	1	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0
+AMB_CIG_SMOKE_ASHTRAY		ambient_ashtray_smoke		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_CIG_SMOKE_ATTACHED		ambient_cig_smoke		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0
+AMB_CIG_SMOKE_CLOUDS		ambient_cig_clouds		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0
+AMB_COCKROACHES			ambient_cockroaches		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0
+AMB_DRIPS_WATER			ambient_water_drips		2	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0
+AMB_DRY_ICE			ambient_dry_ice			0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0
+AMB_DUST_LIT_WINDOWS		ambient_dust_lit_windows	0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0
+AMB_FIRE_GENERIC		ambient_fire_generic		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	1	1.0	0.35	0.0	11.0	16.0	4.0	0.0	0.0	0.65	1.0
+AMB_FLIES_CIRCLING		ambient_flies_circling		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	1	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0
+
+AMB_FLIES_ZAPPED		ambient_flies_zapped		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_FOUNTAIN_5TH_AVE		water_fountain_spray		3	1	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_FOUNTAIN_CITYHALL		water_fountain_cityhall		3	1	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_FOUNTAIN_GENERIC		water_fountain_spray		3	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_FOUNTAIN_ROCKEFELLER	water_fountain_rock		3	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_FOUNTAIN_UPPER_TIER		water_fountain_spray		3	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_FOUNTAIN_LOWER_TIER		water_fountain_spray		3	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_INDUST_PLUME_LG		ambient_tower_plume_large	0	1	1	-1.0		10.0		-1.0		-100	100	0	0	0	1	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_INDUST_PLUME_SM		ambient_tower_plume_small	0	1	1	-1.0		10.0		-1.0		-100	100	0	0	0	1	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_INDUST_GAS_CONSTANT		fire_gas_burner			0	1	1	-1.0		10.0		-1.0		-100	100	0	0	0	1	0.0	0.0	1	1.0	0.3	0.0	35.0	50.0	22.0	0.0	0.0	8.0	1.0	
+
+AMB_INDUST_GAS_INTERMITTENT	fire_gas_burner			0	1	1	-1.0		10.0		-1.0		-100	100	0	0	0	1	0.0	0.0	1	1.0	0.3	0.0	35.0	50.0	22.0	0.0	0.0	8.0	1.0	
+AMB_STEAM_CHIMNEY		ambient_steam_chimney		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	1	0.0	10.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.8	
+AMB_STEAM_COLD_FREEZERS		ambient_steam_cooking		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	1	0.0	10.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_STEAM_COOKING_APPS		ambient_steam_cooking		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	1	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_STEAM_HOTDOG		ambient_hotdogstand		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	1	0.0	10.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0
+AMB_STEAM_MANHOLE		ambient_steam_manhole		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	1	0.0	10.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_STEAM_STREET_EXHAUST	ambient_steam_exhaust		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	1	0.0	10.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_STEAM_WALL_VENT		ambient_steam_vent		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	1	0.0	10.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.6		
+AMB_STEAM_VENT_OBLONG		ambient_steam_vent_oblong	0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	1	0.0	10.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.6		
+AMB_WIND_ALLEY_LITTER		ambient_rubbish_windy		0	1	0	-1.0		10.0		0.5		-100	100	0	24	0	1	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+
+AMB_WIND_ALLEY_LEAVES		ambient_leaves_windy		0	1	0	-1.0		10.0		0.5		-100	100	0	24	0	1	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_WIND_DOCKS_DUST		ambient_dust_windy		0	1	0	-1.0		10.0		0.75		-100	100	0	24	0	1	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_WIND_LEAVES_AUTUMN		leaves_windy_autumnal		0	1	0	-1.0		10.0		0.4		-100	100	0	24	0	1	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_WIND_LEAVES_PALE		leaves_windy_autumnal		0	1	0	-1.0		10.0		0.4		-100	100	0	24	0	1	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_WIND_SAND			ambient_sand_windy		0	1	0	-1.0		10.0		0.75		-100	100	0	24	0	1	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_HORN_BLAST			ambient_horn_blast		0	0	0	-1.0		10.0		-1.0		-100	100	13	14	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_HORN_SMOKE			ambient_horn_steam		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_HOT_TUB			ambient_hot_tub			0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	10.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_ELECTRICAL_SPARKS		ambient_electrical_sparks	2	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_CASTLE_FOUNTAIN_UP		water_fountain_castle_up	3	1	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+
+AMB_CASTLE_FOUNTAIN_LOW		water_fountain_castle_low	0	1	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_FOUNTAIN_SPOUT		water_fountain_spout		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_FOUNTAIN_CORNERS		water_fountain_corners		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_FOUNTAIN_POUR		water_fountain_pour		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_FOUNTAIN_CENTRAL		water_fountain_central		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_WATER_PIPE_V1		water_pipe_flow			0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_WATER_PIPE_V2		water_pipe_casino		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0	
+AMB_HUGE_BLAZE			veh_wrecked_truck		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	1	1.0	0.3	0.0	14.0	18.0	9.0	0.0	0.0	2.5	1.0
+AMB_RESPRAY_CAN			ambient_respray_can		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0
+AMB_INTERIOR_SMOKE		CS_interior_smoke		0	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0
+AMB_DRIPS_WATER_INTERIOR	ambient_water_drips_int		2	0	1	-1.0		10.0		-1.0		-100	100	0	0	0	0	0.0	0.0	0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	0.0	1.0
+
+#COUNT=51
+ENTITYFX_AMBIENT_END
+
+
+#########################################################################################################
+#													#
+# TAG				FX_NAME			    COLN					#
+#							    TYPE					#
+#########################################################################################################
+
+FRAGMENTFX_BREAK_START
+
+BRK_CARDBOARD_BOXES		break_cardboard		    2
+BRK_CASH_REGISTER		break_metal		    2
+BRK_CERAMIC_OBJECTS		break_ceramic	    	    2
+BRK_DRUGS_BAG_BURST		break_ceramic	    	    0
+BRK_DRUGS_JAR_SMASH		break_ceramic	    	    0
+BRK_ELECTRICAL			break_electrical	    2
+BRK_ELECTRICAL_LARGE_FIRE	break_electrical_fire_lg    2
+BRK_ELECTRICAL_SMALL_FIRE	break_electrical_fire_sm    2
+BRK_LAUNDRY_BASKET		break_laundry_basket	    2
+BRK_METAL_OBJECTS		break_metal		    2
+
+BRK_SPARKS			break_sparks		    2
+BRK_STONE_OBJECTS		break_stone		    2
+BRK_WOOD_OBJECTS		break_wood		    2
+BRK_WOOD_PLANKS			break_wood_planks	    2
+BRK_WATER_BARRELS		break_water_barrel	    0
+BRK_SPARKING_WIRES		dest_sparking_wires	    2
+BRK_BIN_FASTFOOD		dest_bin_street		    2	
+BRK_BIN_HOUSEHOLD		dest_bin_household	    2	
+BRK_BIN_STREET			dest_bin_street		    2	
+BRK_BIN_DUMPSTERS		dest_dumpsters		    2	
+BRK_HYDRANT_TOP			water_hydrant_top	    3	
+
+#COUNT=21
+FRAGMENTFX_BREAK_END
+
+
+#########################################################################################################
+#													#
+# TAG				FX_NAME				COLL_PT	IMPETUS_THRESH	COLN		#				
+#									MIN	MAX	TYPE		#
+#########################################################################################################
+
+ENTITYFX_COLLISION_START
+
+COL_ELECTRICAL			col_electrical			0	4000	12000	2
+COL_FASTFOOD_NUTS		col_napkins			0	2000	12000	2
+COL_FISH			col_napkins			0	4000	12000	1
+COL_FRUITPILE_APPLES		col_fruitpile_mix		0	4000	12000	2
+COL_FRUITPILE_BANANAS		col_fruitpile_mix		0	4000	12000	2
+COL_FRUITPILE_MIX		col_fruitpile_mix		0	4000	25000	2
+COL_FRUITPILE_ORANGES		col_fruitpile_mix		0	4000	12000	2
+COL_LEAVES_PALE			col_leaves_pale			0	1800	7000	1
+COL_LEAVES_AUTUMN		col_leaves_autumnal		0	1800	7000	1
+COL_MAIL_BUNDLE			col_mail_bundle			0	4000	12000	1
+COL_NAPKINS			col_napkins			0	4000	12000	1
+
+#COUNT=11
+ENTITYFX_COLLISION_END
+
+
+#########################################################################################################
+#													#
+# TAG				FX_NAME				    COLN				#
+#								    TYPE				#
+#########################################################################################################
+
+FRAGMENTFX_DESTROY_START
+
+DST_BANKNOTE_PILE		dest_coin_pile			    2				
+DST_CERAMIC			dest_ceramic			    2	
+DST_CERAMIC_PLATE		dest_ceramic_plate		    2	
+DST_COIN_PILE			dest_coin_pile			    2	
+DST_CRISPBAG_FULL		dest_plastic			    0	
+DST_ELECTRICAL			dest_electrical			    2	
+DST_ELECTRICAL_LARGE_FIRE	dest_electrical			    2	
+DST_ELECTRICAL_SMALL_FIRE	dest_electrical			    2	
+DST_FISHPILE			col_napkins			    1	
+DST_FRUITPILE_APPLES		dest_fruitpile_mix		    2	
+
+DST_FRUITPILE_BANANAS		dest_fruitpile_mix		    2	
+DST_FRUITPILE_ORANGES		dest_fruitpile_mix		    2	
+DST_FRUITPILE_MIX		dest_fruitpile_mix		    2	
+DST_GLASS_CLEAR_EMPTY		dest_glass_clear_empty		    0	
+DST_GLASS_CLEAR_LAGER		dest_glass_clear_lager		    0	
+DST_HYDRANT_TOP			water_hydrant_top		    3	
+DST_LIGHTBULB_OFF		dest_lightbulb_off		    0	
+DST_LIGHTBULB_ON		dest_lightbulb_on		    2	
+DST_MAIL_BUNDLE			dest_mail_bundle		    1
+DST_METAL_OBJECTS		dest_metal_objects		    2	
+
+DST_MONEY_MIXED			dest_coin_pile			    1	
+DST_NEWSPAPER_BUNDLE		dest_newspaper_bundle		    1	
+DST_PAINT_POT			dest_paint_pot			    2	
+DST_PLASTIC			dest_plastic			    2
+DST_PLASTIC_CLEAR_EMPTY		dest_plastic_clear_water	    0	
+DST_PLASTIC_CLEAR_WATER		dest_plastic_clear_water	    0	
+DST_SODAPILE_ECOLA		dest_sodapile_ecola		    2	
+DST_SODAPILE_GINGER		dest_sodapile_mix		    2	
+DST_SODAPILE_LEMON		dest_sodapile_mix		    2	
+DST_SODAPILE_MIX		dest_sodapile_mix		    2	
+
+DST_SODAPILE_SPRUNK		dest_sodapile_sprunk		    2	
+DST_SPARKING_WIRES		dest_sparking_wires		    2							
+DST_STONE_OBJECTS		dest_stone_objects		    2	
+DST_WOODEN_OBJECTS		dest_wood			    2	
+DST_WOODEN_CRATE		dest_wood_crate			    2	
+DST_BIN_FASTFOOD		dest_bin_street			    2	
+DST_BIN_HOUSEHOLD		dest_bin_household		    2	
+DST_BIN_STREET			dest_bin_street			    2	
+DST_BIN_DUMPSTERS		dest_dumpsters			    2	
+DST_SWEETIES			dest_sweeties			    2	
+
+DST_FLOWER_PETALS		dest_flower_petals		    1	
+DST_FOOD_DEBRIS			dest_food_debris		    2	
+DST_NAPKIN_PIECES		dest_napkin_pieces		    2	
+DST_CHIPS			dest_chips			    2	
+DST_JUICE_CUPS			dest_juice_cups			    2	
+DST_SAUCE_BOTTLE		dest_sauce_bottle		    2	
+DST_CARDBOARD_BOXES		break_cardboard			    2
+DST_DINO_BONES			break_dino_bones		    2
+DST_STONE_PILLARS		dest_stone_pillars		    2	
+DST_GLASS_PANES			dest_glass_panes		    2
+
+#COUNT=50
+FRAGMENTFX_DESTROY_END
+
+
+#########################################################################################################
+#													#
+# TAG				FX_NAME				COLL_PT	COLN				#
+#									TYPE				#
+#########################################################################################################
+
+ENTITYFX_SHOT_START
+
+SHT_GAS_PIPE_FLAME		shot_directed_flame		1	2	
+SHT_WATER_PIPE			shot_directed_water		1	2
+SHT_WATER_BARREL_GLUG		shot_water_glug			1	2
+SHT_WATER_TOWER			shot_directed_water		1	2
+SHT_STEAM_PIPE			shot_directed_steam		1	2
+SHT_ELECTRICAL			break_electrical	    	1	2
+SHT_OIL_BARREL_GLUG		shot_oil_glug			1	2
+
+#COUNT=7
+ENTITYFX_SHOT_END
+
+
+#########################################################################################################
+#													#
+# TAG				FX_NAME			COLN						#
+#							TYPE						#
+#########################################################################################################
+
+ENTITYFX_ANIM_START
+
+ANIM_HAMMER			anim_hammer_debris	2	
+ANIM_PNEUMATIC			anim_pneumatic		2	
+ANIM_SWEEP_DUST			anim_sweep_dust		0
+ANIM_RAKE_LEAVES		anim_rake_leaves	0
+ANIM_WATERING_CAN		anim_watering_can	2
+
+#COUNT=5
+ENTITYFX_ANIM_END
+

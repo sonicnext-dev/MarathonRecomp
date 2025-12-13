@@ -135,21 +135,26 @@ set(LIBERTY_RECOMP_HID_CXX_SOURCES
 )
 
 set(LIBERTY_RECOMP_PATCHES_CXX_SOURCES
-    "patches/aspect_ratio_patches.cpp"
-    "patches/audio_patches.cpp"
-    "patches/camera_patches.cpp"
-    "patches/fps_patches.cpp"
-    "patches/frontend_listener.cpp"
-    "patches/input_patches.cpp"
-    "patches/loading_patches.cpp"
-    "patches/MainMenuTask_patches.cpp"
-    "patches/misc_patches.cpp"
-    "patches/pause_patches.cpp"
-    "patches/player_patches.cpp"
-    "patches/SaveDataTask_patches.cpp"
-    "patches/text_patches.cpp"
-    "patches/TitleTask_patches.cpp"
-    "patches/video_patches.cpp"
+    # GTA IV-specific patches (active)
+    "patches/gta4_patches.cpp"
+    "patches/gta4_aspect_ratio_patches.cpp"
+    
+    # Generic/stub patches needed for compilation
+    # "patches/aspect_ratio_patches.cpp"  # Has Sonicteam references - replaced by gta4_aspect_ratio_patches.cpp
+    # "patches/audio_patches.cpp"          # Has Sonicteam references - needs GTA IV version
+    # "patches/camera_patches.cpp"         # Has Sonicteam references - needs GTA IV version
+    # "patches/fps_patches.cpp"            # May need review
+    # "patches/frontend_listener.cpp"      # May need review
+    # "patches/input_patches.cpp"          # May need review
+    # "patches/loading_patches.cpp"        # Has Sonicteam references
+    # "patches/MainMenuTask_patches.cpp"   # Has Sonicteam references
+    # "patches/misc_patches.cpp"           # May need review
+    # "patches/pause_patches.cpp"          # Has Sonicteam references
+    # "patches/player_patches.cpp"         # Has Sonicteam references
+    # "patches/SaveDataTask_patches.cpp"   # Has Sonicteam references
+    # "patches/text_patches.cpp"           # Has Sonicteam references
+    # "patches/TitleTask_patches.cpp"      # Has Sonicteam references
+    # "patches/video_patches.cpp"          # May need review
 )
 
 set(LIBERTY_RECOMP_UI_CXX_SOURCES
@@ -162,8 +167,8 @@ set(LIBERTY_RECOMP_UI_CXX_SOURCES
     "ui/game_window.cpp"
     "ui/imgui_utils.cpp"
     "ui/installer_wizard.cpp"
-    "ui/message_window.cpp"
-    "ui/options_menu.cpp"
+    "ui/message_window_stub.cpp"   # Stub - GTA IV version needed
+    "ui/options_menu_stub.cpp"     # Stub - GTA IV version needed
 )
 
 set(LIBERTY_RECOMP_INSTALL_CXX_SOURCES

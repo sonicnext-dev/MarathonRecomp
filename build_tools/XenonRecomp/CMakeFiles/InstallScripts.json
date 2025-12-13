@@ -1,0 +1,17 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/Ozordi/Downloads/MarathonRecomp/build_tools/XenonRecomp/cmake_install.cmake",
+		"/Users/Ozordi/Downloads/MarathonRecomp/build_tools/XenonRecomp/thirdparty/cmake_install.cmake",
+		"/Users/Ozordi/Downloads/MarathonRecomp/build_tools/XenonRecomp/thirdparty/disasm/cmake_install.cmake",
+		"/Users/Ozordi/Downloads/MarathonRecomp/build_tools/XenonRecomp/thirdparty/fmt/cmake_install.cmake",
+		"/Users/Ozordi/Downloads/MarathonRecomp/build_tools/XenonRecomp/thirdparty/tomlplusplus/cmake_install.cmake",
+		"/Users/Ozordi/Downloads/MarathonRecomp/build_tools/XenonRecomp/thirdparty/xxHash/cmake_unofficial/cmake_install.cmake",
+		"/Users/Ozordi/Downloads/MarathonRecomp/build_tools/XenonRecomp/XenonAnalyse/cmake_install.cmake",
+		"/Users/Ozordi/Downloads/MarathonRecomp/build_tools/XenonRecomp/XenonRecomp/cmake_install.cmake",
+		"/Users/Ozordi/Downloads/MarathonRecomp/build_tools/XenonRecomp/XenonUtils/cmake_install.cmake",
+		"/Users/Ozordi/Downloads/MarathonRecomp/build_tools/XenonRecomp/FindPatterns/cmake_install.cmake",
+		"/Users/Ozordi/Downloads/MarathonRecomp/build_tools/XenonRecomp/XenonTests/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

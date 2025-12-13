@@ -1,0 +1,44 @@
+# LibertyRecomp - GTA IV Xbox 360 Recompilation Config (SMALL TEST)
+# This is a minimal config for quick pipeline validation.
+# Only recompiles register save/restore helper functions (~100 functions).
+
+[main]
+file_path = "../../Grand Theft Auto IV (USA) (En,Fr,De,Es,It)/default.xex"
+out_directory_path = "../ppc"
+# No switch table file - we're not auto-discovering functions
+# switch_table_file_path = "./gta4_switch_tables.toml"
+
+# Optimizations - disabled for testing
+skip_lr = false
+skip_msr = false
+ctr_as_local = false
+xer_as_local = false
+reserved_as_local = false
+cr_as_local = false
+non_argument_as_local = false
+non_volatile_as_local = false
+
+# Register save/restore function addresses
+# Found using FindPatterns tool on GTA IV XEX
+restgprlr_14_address = 0x8298EB30
+savegprlr_14_address = 0x8298EAE0
+restfpr_14_address = 0x8299015C
+savefpr_14_address = 0x82990110
+restvmx_14_address = 0x82990598
+savevmx_14_address = 0x82990300
+restvmx_64_address = 0x8299062C
+savevmx_64_address = 0x82990394
+
+# Debug/scaling options - configured for quick test
+verbose = true
+progress_every = 10
+skip_auto_discovery = true          # IMPORTANT: Skip .pdata and branch scanning
+cpp_chunk_functions = 100           # Small chunks for fast testing
+disable_identical_file_check = true # Skip file comparison to save RAM
+
+# No explicit functions needed - the save/restore addresses generate ~100 functions automatically
+
+# Invalid instruction patterns to skip
+invalid_instructions = [
+    { data = 0x00000000, size = 4 }, # Padding
+]

@@ -45,6 +45,7 @@
 #define ERROR_BAD_ARGUMENTS        0xA0
 #define ERROR_TOO_MANY_POSTS       0x12A
 #define ERROR_DEVICE_NOT_CONNECTED 0x48F
+#define ERROR_INVALID_HANDLE       0x6
 #define PAGE_READWRITE             0x04
 
 typedef union _LARGE_INTEGER {

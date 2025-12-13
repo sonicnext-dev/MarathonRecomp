@@ -1,0 +1,1 @@
+zsh: no such file or directory: rgb:1818/1818/1818/Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/build_find/XenonRecomp/XenonRecomp

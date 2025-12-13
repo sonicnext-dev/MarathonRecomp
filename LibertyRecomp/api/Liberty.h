@@ -1,23 +1,28 @@
 #pragma once
 
-// =============================================================================
-// Liberty Recompiled - GTA IV API Header
-// =============================================================================
-// This is the main API header for GTA IV recompilation.
-// Include this header to access all RAGE engine and GTA IV game structures.
-//
-// NOTE: This file needs to be populated with actual GTA IV RAGE engine
-// structures as reverse engineering progresses.
-// =============================================================================
-
-// RAGE Engine Headers
 #include "RAGE/RAGE.h"
-
-// Common utility headers (preserved from framework)
-#include "boost/boost.h"
-#include "stdx/stdx.h"
+#include "boost/smart_ptr/make_shared_object.h"
+#include "boost/smart_ptr/shared_ptr.h"
 #include "d3dxb.h"
-#include "hk330/hk330.h"
-
-// Include the implementation file
-#include "Liberty.inl"
+#include "hk330/hkArray.h"
+#include "hk330/hkReferencedObject.h"
+#include "hk330/hkpBroadPhaseHandle.h"
+#include "hk330/hkpCdBody.h"
+#include "hk330/hkpCollidable.h"
+#include "hk330/hkpCollidableCollidableFilter.h"
+#include "hk330/hkpCollisionFilter.h"
+#include "hk330/hkpEntity.h"
+#include "hk330/hkpLinkedCollidable.h"
+#include "hk330/hkpPhantom.h"
+#include "hk330/hkpProperty.h"
+#include "hk330/hkpRayCollidableFilter.h"
+#include "hk330/hkpRayShapeCollectionFilter.h"
+#include "hk330/hkpRigidBody.h"
+#include "hk330/hkpShape.h"
+#include "hk330/hkpShapeCollectionFilter.h"
+#include "hk330/hkpTypedBroadPhaseHandle.h"
+#include "hk330/hkpWorld.h"
+#include "hk330/hkpWorldObject.h"
+#include "stdx/string.h"
+#include "stdx/vector.h"
+#include "stdx/wstring.h"

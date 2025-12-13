@@ -1,0 +1,211 @@
+########################################################################################################
+#
+#  Name : Moveblend.dat - contains some parameters for blended ped animation.
+#  Author : James Broad
+#
+#  For each movement anim group in the game, we can specify a fallback group.  If any movement anims
+#  are missing from a movement group, then the game will look to this fallback group for the missing
+#  anims.  Currently only 1 level of fallback is supported - ie. it is not recursive.
+#  Not all movement groups are suitable for having a fallback group - if a cutdown movement group does
+#  not have a fully-featured fallback group, then the ped's motion will simply not blend the missing
+#  elements.  For example if we just have the forwards motion, then that ped will not lean as they take
+#  turns.
+#
+#  Simple file format as follows :
+#
+#  MOVEMENT_GROUP movement_group_name		FALLBACK_GROUP fallback_group_name
+#
+########################################################################################################
+
+
+##################################################################################
+#  Female ambient characters
+
+MOVEMENT_GROUP	move_f@armed			FALLBACK_GROUP	move_f@generic
+MOVEMENT_GROUP	move_f@bness_a			FALLBACK_GROUP	move_f@generic
+MOVEMENT_GROUP	move_f@bness_b			FALLBACK_GROUP	move_f@generic
+MOVEMENT_GROUP	move_f@bness_c			FALLBACK_GROUP	move_f@generic
+MOVEMENT_GROUP	move_f@bness_d			FALLBACK_GROUP	move_f@generic
+MOVEMENT_GROUP	move_f@bness_e			FALLBACK_GROUP	move_f@generic
+MOVEMENT_GROUP	move_f@casual			FALLBACK_GROUP	move_f@generic
+MOVEMENT_GROUP	move_f@casual_b			FALLBACK_GROUP	move_f@generic
+MOVEMENT_GROUP	move_f@casual_c			FALLBACK_GROUP	move_f@generic
+MOVEMENT_GROUP	move_f@cower			FALLBACK_GROUP	move_f@generic
+MOVEMENT_GROUP	move_f@fat			FALLBACK_GROUP	move_f@generic
+MOVEMENT_GROUP	move_f@old_a			FALLBACK_GROUP	move_f@generic
+MOVEMENT_GROUP	move_f@old_b			FALLBACK_GROUP	move_f@generic
+MOVEMENT_GROUP	move_f@old_c			FALLBACK_GROUP	move_f@generic
+MOVEMENT_GROUP	move_f@old_d			FALLBACK_GROUP	move_f@generic
+MOVEMENT_GROUP	move_f@sexy			FALLBACK_GROUP	move_f@generic
+MOVEMENT_GROUP	move_f@puffer			FALLBACK_GROUP	move_f@generic
+
+##################################################################################
+#  Male ambient characters
+
+MOVEMENT_GROUP	move_m@bness_a			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@bness_b			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@bness_c			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@bness_d			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@bness_e			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@bness_f			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@bness_g			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@bum			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@casual			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@casual_b			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@casual_c			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@cower			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@fat			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@gay_a			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@gay_b			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@old_a			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@old_b			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@old_c			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@pimp_a			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@pimp_b			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@pimp_c			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@pimp_d			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@tourist			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@case			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@cs_swat			FALLBACK_GROUP	move_m@generic
+
+##################################################################################
+#  Gang ambient characters
+
+MOVEMENT_GROUP	move_gng@afro_a			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_gng@afro_b			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_gng@afro_c			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_gng@generic_a		FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_gng@generic_b		FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_gng@generic_c		FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_gng@generic_d		FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_gng@jam_a			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_gng@jam_b			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_gng@jam_c			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_gng@jam_d			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_gng@jam_e			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_gng@jam_f			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_gng@latino_a		FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_gng@latino_b		FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_gng@latino_c		FALLBACK_GROUP	move_m@generic
+
+##################################################################################
+#  Mission-specific characters
+
+MOVEMENT_GROUP	move_m@eddie			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_m@bernie			FALLBACK_GROUP	move_f@generic
+MOVEMENT_GROUP	move_m@playboy			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_f@michelle			FALLBACK_GROUP	move_f@generic
+
+##################################################################################
+#  Cops
+
+MOVEMENT_GROUP	move_cop			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_cop_fat			FALLBACK_GROUP	move_m@generic
+MOVEMENT_GROUP	move_cop_search			FALLBACK_GROUP	move_m@generic
+
+##################################################################################
+#  Base game movement groups
+
+MOVEMENT_GROUP	move_crouch			FALLBACK_GROUP	move_combat_strafe_c
+MOVEMENT_GROUP	move_crouch_rifle		FALLBACK_GROUP	move_combat_strafe_c
+MOVEMENT_GROUP	crouch_aim_rifle		FALLBACK_GROUP	move_combat_strafe_c
+MOVEMENT_GROUP	move_combat_strafe		FALLBACK_GROUP	move_player
+MOVEMENT_GROUP	move_rpg			FALLBACK_GROUP	move_combat_strafe
+MOVEMENT_GROUP	move_rifle			FALLBACK_GROUP	move_combat_strafe
+MOVEMENT_GROUP	move_crouch_rpg			FALLBACK_GROUP	move_combat_strafe_c
+
+##################################################################################
+#  Base melee groups
+
+MOVEMENT_GROUP	firearm_core			FALLBACK_GROUP	move_melee
+MOVEMENT_GROUP	club_core			FALLBACK_GROUP	move_melee
+MOVEMENT_GROUP	blade_core			FALLBACK_GROUP	move_melee
+
+########################################################################################################
+#
+#  The following section describe sets of animations which can be randomly interchanged as a ped's
+#  movement group.  When a ped is created this list of anim groups is consulted, and if any others are
+#  in memory there is a random chance that one of these will be used instead of the anim group directly
+#  associated with that ped's model.  This will allow more movement variety throughout the game.
+#
+########################################################################################################
+
+SIMILAR_ANIMS
+{
+	move_f@bness_a
+	move_f@bness_b
+	move_f@bness_c
+	move_f@bness_d
+	move_f@bness_e
+}
+
+SIMILAR_ANIMS
+{
+	move_f@casual
+	move_f@casual_b
+	move_f@casual_c
+}
+
+
+SIMILAR_ANIMS
+{
+	move_f@old_a
+	move_f@old_b
+	move_f@old_c
+	move_f@old_d
+}
+
+SIMILAR_ANIMS
+{
+	move_m@bness_a
+	move_m@bness_b
+	move_m@bness_c
+}
+
+SIMILAR_ANIMS
+{
+	move_m@casual
+	move_m@casual_b
+	move_m@casual_c
+}
+
+SIMILAR_ANIMS
+{
+	move_m@old_a
+	move_m@old_b
+	move_m@old_c
+}
+
+SIMILAR_ANIMS
+{
+	move_gng@afro_a
+	move_gng@afro_b
+	move_gng@afro_c
+}
+
+SIMILAR_ANIMS
+{
+	move_gng@generic_a
+	move_gng@generic_b
+	move_gng@generic_c
+}
+
+SIMILAR_ANIMS
+{
+	move_gng@latino_a
+	move_gng@latino_b
+	move_gng@latino_c
+}
+
+SIMILAR_ANIMS
+{
+	move_gng@jam_a
+	move_gng@jam_b
+	move_gng@jam_c
+}
+
+
+
+
+
+

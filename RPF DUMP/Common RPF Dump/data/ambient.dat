@@ -1,0 +1,1318 @@
+# ----------------------------------------------------------------------------------------------
+# AMBIENT ANIMATION DESCRIPTIONS
+# ----------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------
+#	AI STATES:
+#
+#		Wander
+#		Flee
+#		Search
+#		Combat
+#		Defend
+#		Player
+#		InvestigateDeadPed
+#		Defend
+#		RoadCross
+#		InCarAsDriver(car type) -- car type should be one of: LOW, STD, VAN or TRUCK
+#		InCarAsPassenger(car type) -- car type should be one of: LOW, STD, VAN or TRUCK
+#		InCover - ped is in cover, hiding behind a wall etc.
+#		InInterior - ped is inside 
+#		WatchMelee - ped is stood around watching a fight take place
+#		Sitting(seat type) --seat type should be one of: CHAIR, COUCH or STOOL
+#		MinRangeToPlayer(float range) only used if outside range to player (e.g. stuff that would look shoddy up close)
+#		ShockEventHurryAway - player has weapon visible, ped walks away concerned
+#		ShockEventGoTo - ?
+#		ShockEventWatch - ?
+#
+# ----------------------------------------------------------------------------------------------
+# 	WEAPON STATES:
+#
+#   	IsUnarmed
+#		HasMelee
+#		Has1Handed
+#		Has2Handed
+#		HasRPG
+#
+# ----------------------------------------------------------------------------------------------
+#	WORLD STATES:
+#
+# 		IsRaining 
+#		IsSunny
+#		IsNight
+# 		IsSnowing
+#		IsWindy
+#
+# ----------------------------------------------------------------------------------------------
+#	MOVEMENT STATES:
+#
+#		StandingOnly - sets all anims in animgroup to be standing only
+#		MovingOnly - sets all anims in group to be moving only
+#
+# ----------------------------------------------------------------------------------------------
+# 	SetPriorityMultiplier(n) - this command alters how likely an anim group will be picked. Default is 1
+#
+#		e.g. SetPriorityMultiplier(3) - three times as likely to be picked
+#		e.g. SetPriorityMultiplier(0.5) - half as likely to be picked
+#
+# 		NOTE: SETTING n to Zero means the prop will be spawned off screen only and never happen on screen
+# ----------------------------------------------------------------------------------------------
+# 	LoopCount(n) - this command controls how many times an internal loop will iterate. Default is 1
+#
+#		e.g. LoopCount(3) - any anim with loop1 events will repeat 3 times
+#
+# ----------------------------------------------------------------------------------------------
+# 	SetTiming_'State'(time between idles, chance of stopping to play standing anim whilst moving, chance of spawning with a prop) - this command alters the time it takes for an ambient anim to kick in
+#	
+#		e.g. SetTiming_Wander(7,0.2, 0.33) - Any wander anim will play an ambient anim after 7 seconds. 1 in 5 anims will be a standing one. 33% chance of spawning with a prop.
+#
+# ----------------------------------------------------------------------------------------------
+#	CreatesProp(object) - this command associates an object with an animation folder. Any animation which uses the create_object event will create this object.
+#
+#		e.g. CreatesProp(CJ_CAMERA) - creates the object CJ_CAMERA when called with the create_object event.
+#
+# ----------------------------------------------------------------------------------------------
+#	PedHasProp(object) - this command creates a requirement for the ped to have the specified object for the flag to be true
+#
+#		e.g. PedHasProp(EC_CHAR_BROLLIE) - ped must have the object in its hand for the condition to be true
+#
+# ----------------------------------------------------------------------------------------------
+#	PROP_SETS: <DEFINITIONNAME> MODEL(Probability) MODEL2(Probability2) - this definition allows a group of objects to be associated under one def.
+#
+#		e.g. PROP_SETS:
+#		<UMBRELLAS> EC_CHAR_BROLLIE(1.0), EC_CHAR_BROLLIE2(3.0)   -  two different umbrella models are assigned the definition of <UMBRELLAS>. EC_CHAR_BROLLIE2 will appear 3 times as often as EC_CHAR_BROLLIE.
+#								
+# ----------------------------------------------------------------------------------------------
+# 	SpawnsPercentage(Probability)
+#		Means the prop associated with this group can be chosen to be given to a ped as it is created randomly.
+#		Probability is between 0 and 100
+#
+#		e.g. 
+#		AMB@UMBRELLA_OPEN IsRaining, CreatesProp(<UMBRELLAS>), LoopCount(5), SetPriorityMultiplier(4), SpawnsPercentage(100)
+# ----------------------------------------------------------------------------------------------
+#	AMBIENT_GROUP_SETS: <<DEFINITIONNAME>> AMBIENT_GROUP_A, AMBIENT_GROUP_B...  - this definition allows a group of ambient anims to be associated under one def.
+#
+#		e.g. AMBIENT_GROUP_SETS:
+#		<<UMBRELLA>> AMB@UMBRELLA_OPEN, AMB@UMBRELLA_IDLES, AMB@UMBRELLA_CLOSE - the three umbrella animation groups are grouped under the term <<UMBRELLA>>
+#								
+# ----------------------------------------------------------------------------------------------
+#	PlayerJacking(vehicleType) vehicleType either LOW, STD, VAN or TRUCK
+#
+#		e.g. VEH@STD_JACK_RIFLE PlayerJacking(LOW) Has2Handed
+#
+# ----------------------------------------------------------------------------------------------
+#	TimeRange(hourMin, HourMax)
+#	
+#		e.g. TimeRange(20, 9) Only used between 8pm and 9am
+#
+# ----------------------------------------------------------------------------------------------
+#	DefaultScenarioAnims
+#				- this command means the standard movement idles are overriden with this anim folder, allowing custom stands etc.
+#
+#		e.g. AMB@DRILL_DEFAULT Scenario(RoadWorkers), PedHasProp(AMB_JACKHAMMER), DefaultScenarioAnims
+#				- this would replace the standard idle for the roadworker with a jack hammer to this folder.
+#
+# ----------------------------------------------------------------------------------------------
+#     PlayingSpecificAnim(DictionaryName, AnimName)
+#
+#           - true if the anim specified is playing (is a default anim)
+#           
+#           e.g. AMB@DRILL_IDLES Scenario(RoadWorkers), PedHasProp(AMB_JACKHAMMER), PlayingSpecificAnim(AMB@DRILL_DEFAULT, STANDA)
+#                       - this would only be picked if the specified anim is playing
+#
+# ----------------------------------------------------------------------------------------------
+
+ 
+ANIM_GROUP_DEFINITIONS:
+# Format (group name to reference it by below) (dictinoary name) (anim name 1) (anim name 2) ... to a max of 8
+
+AMB@CAR_STD_F_DF_DS, AMB@DEFAULT, Driver_Flee_STD
+AMB@CAR_STD_F_DF_PS, AMB@DEFAULT, Pass_Flee_STD
+AMB@CAR_LOW_F_DF_DS, AMB@DEFAULT, Driver_Flee_LOW
+AMB@CAR_LOW_F_DF_PS, AMB@DEFAULT, Pass_Flee_LOW
+AMB@CAR_VAN_F_DF_DS, AMB@DEFAULT, Driver_Flee_VAN
+AMB@CAR_VAN_F_DF_PS, AMB@DEFAULT, Pass_Flee_VAN
+AMB@CAR_TRUCK_F_DF_DS, AMB@DEFAULT, Driver_Flee_TRUCK
+AMB@CAR_TRUCK_F_DF_PS, AMB@DEFAULT, Pass_Flee_TRUCK
+
+AMB@CAR_STD_Rear_Flee_DF, AMB@DEFAULT, Pass_Flee_Rear_STD
+
+AMB@SWEEP_FFOOD_DEF, AMB@DEFAULT, FF_Sweep_Default
+AMB@SWEEP_FFOOD_DEF_F, AMB@DEFAULT, FF_Sweep_Default_F
+AMB@SPADE_DEFAULT, AMB@DEFAULT, Spade_Default
+AMB@DRILL_DEFAULT, AMB@DEFAULT, Drill_Default
+AMB@SLEDGE_DEFAULT, AMB@DEFAULT, Sledge_Default
+AMB@SUPER_DEFAULT, AMB@DEFAULT, Super_Default
+AMB@STOP_DEFAULT, AMB@DEFAULT, Stop_Default
+AMB@LEAN_DEFAULT, AMB@DEFAULT, Lean_Default, Lean_Default_B
+AMB@LEAN_BALC_SMOKE_DEF, AMB@DEFAULT, Lean_Balc_Smoke_Def
+AMB@LEAN_BALC_STAND_DEF, AMB@DEFAULT, Lean_Balc_Stand_Def
+AMB@HANG_STR_DFT, AMB@DEFAULT, Hang_Str_Default
+AMB@HANG_STR_F_DFT, AMB@DEFAULT, Hang_Str_F_Default
+AMB@HANG_STR_FAT_DFT, AMB@DEFAULT, Hang_Str_Fat_Default
+AMB@HANG_STR_THIN_DFT, AMB@DEFAULT, Hang_Str_Thin_Default
+AMB@PAYPHONE_DEFAULT, AMB@DEFAULT, Payphone_Default
+AMB@RAKE_DEFAULT, AMB@DEFAULT, Rake_Default
+AMB@RAKE_F_DEFAULT, AMB@DEFAULT, Rake_F_Default
+AMB@WCAN_DEFAULT, AMB@DEFAULT, Wcan_Default
+AMB@BNCH_STD_DEF, AMB@DEFAULT, Bnch_Std_Default
+AMB@BNCH_EAT_DEF, AMB@DEFAULT, Bnch_Eat_Default
+AMB@BNCH_DNK_DEF, AMB@DEFAULT, Bnch_Dnk_Default
+AMB@BNCH_SMK_DEF, AMB@DEFAULT, Bnch_Smk_Default
+AMB@BNCH_READ_DEF, AMB@DEFAULT, Bnch_Read_Default
+AMB@BNCH_STD_DEF_F, AMB@DEFAULT, Bnch_Std_F_Default
+AMB@BNCH_DNK_DEF_F, AMB@DEFAULT, Bnch_Dnk_F_Default
+AMB@BNCH_EAT_DEF_F, AMB@DEFAULT, Bnch_Eat_F_Default
+AMB@BNCH_SMK_DEF_F, AMB@DEFAULT, Bnch_Smk_F_Default
+AMB@BNCH_READ_DEF_F, AMB@DEFAULT, Bnch_Read_F_Default
+AMB@BNCH_BUM_DEF, AMB@DEFAULT, Bnch_Bum_A_Default, Bnch_Bum_B_Default
+AMB@STEP_DEFAULT, AMB@DEFAULT, Step_Default
+AMB@WINSHOP_DEFAULT, AMB@DEFAULT, Winshop_Default
+AMB@CAFE_DEFAULT, AMB@DEFAULT, Cafe_Default
+AMB@CAFE_F_DEFAULT, AMB@DEFAULT, Cafe_F_Default
+AMB@CAFE_EMPTY_DEFAULT, AMB@DEFAULT, Cafe_Empty_Default
+AMB@CAFE_F_EMPTY_DEFAULT, AMB@DEFAULT, Cafe_F_Empty_Default
+AMB@CAFE_SMK_DEFAULT, AMB@DEFAULT, Cafe_Smk_Default
+AMB@CAFE_SMK_F_DEFAULT, AMB@DEFAULT, Cafe_Smk_F_Default
+AMB@CAFE_EAT_DEFAULT, AMB@DEFAULT, Cafe_Eat_Default
+AMB@CAFE_READ_DEF, AMB@DEFAULT, Cafe_Read_Default
+AMB@CAFE_READ_DEF_F, AMB@DEFAULT, Cafe_Read_F_Default
+AMB@BROKEN_D_DEF, AMB@DEFAULT, Broken_D_Default
+AMB@BOOT_DEFAULT, AMB@DEFAULT, Boot_Default
+AMB@WALL_DEFAULT, AMB@DEFAULT, Wall_Default
+AMB@WALL_READ_DEF, AMB@DEFAULT, Wall_Read_Default
+AMB@WALL_DEFAULT_F, AMB@DEFAULT, Wall_F_Default
+AMB@WALL_READ_DEF_F, AMB@DEFAULT, Wall_Read_F_Default
+AMB@INT_CAFE_DEFAULT, AMB@DEFAULT, Int_Cafe_Default
+AMB@POSTMAN_DEFAULT, AMB@DEFAULT, Postman_Default
+AMB@TELESCOPE_DFT, AMB@DEFAULT, Telescope_Default
+AMB@TELESCOPE_F_DFT, AMB@DEFAULT, Telescope_F_Default
+AMB@TELEGRAPH_DFT, AMB@DEFAULT, Telegraph_Default
+AMB@SERVICE_DEFAULT, AMB@DEFAULT, Service_Default
+AMB@STRIP_CHR_DEF, AMB@DEFAULT, Strip_Chr_Default
+AMB@STRIP_RAIL_DEF, AMB@DEFAULT, Strip_Rail_Default
+AMB@STRIP_STOOL_DEF, AMB@DEFAULT, Strip_Stool_Default
+AMB@BOUNCER_DEF, AMB@DEFAULT, Bouncer_Default
+AMB@WINCLEAN_DEF, AMB@DEFAULT, Winclean_Default
+AMB@HOSPITAL_DEFAULT, AMB@DEFAULT, Hospital_Sit_Def
+AMB@DANCE_FEMDFT, AMB@DEFAULT, Dance_F_Default
+AMB@DANCE_MALEDFT, AMB@DEFAULT, Dance_M_Default
+AMB@TAXI_WAIT_DEF_M, AMB@DEFAULT, Taxi_M_Default
+AMB@TAXI_WAIT_DEF_F, AMB@DEFAULT, Taxi_F_Default
+AMB@BEG_WASTED_DEF_A, AMB@DEFAULT, Wasted_A_Default
+AMB@BEG_WASTED_DEF_B, AMB@DEFAULT, Wasted_B_Default
+AMB@PREACH_DEF, AMB@DEFAULT, Preacher_Default
+AMB@DRUGD_DEF, AMB@DEFAULT, DrugD_Default
+AMB@HOSPITAL_BED, AMB@DEFAULT, Hospital_Lie_A_Def, Hospital_Lie_B_Def
+TAICHI_DEFAULT, AMB@DEFAULT, TaiChi_default
+AMB@STEP_DEFAULT_B, AMB@DEFAULT, Step_Default_b
+AMB@HOOKER_DEF, AMB@DEFAULT, Hooker_Def
+AMB@HOOKER_FAT_DEF, AMB@DEFAULT, Hooker_Fat_Def
+AMB@BUSKER_DEF, AMB@DEFAULT, Busker_Default
+AMB@STANDING_M_DEF, AMB@DEFAULT, Standing_M_Default
+AMB@STANDING_F_DEF, AMB@DEFAULT, Standing_F_Default
+AMB@GUARD_FAT_DEF, AMB@DEFAULT, guard_fat_default
+AMB@SMOKE_M_DEF, AMB@DEFAULT, smoke_m_def
+AMB@SMOKE_F_DEF, AMB@DEFAULT, smoke_f_def
+
+# ----------------------------------------------------------------------------------------------
+# Prop Set Definitions
+# ----------------------------------------------------------------------------------------------
+PROP_SETS:
+<UMBRELLAS> EC_CHAR_BROLLIE(1.0), EC_CHAR_BROLLIE02(1.0), EC_CHAR_BROLLIE03(1.0) 
+<MP3> AMB_MP3PLAYER(1.0)
+<BOTTLE> AMB_WINE(1.0), AMB_MILK(1.0), AMB_JUICE_BOT(4.0), AMB_BS_DRINK(3.0)
+<CAN> AMB_CAN_DRINK_1(1.0), AMB_CAN_DRINK_2(1.0)
+<MOBILE> AMB_MOBILE_1(1.0), AMB_MOBILE_2(1.0)
+<JUNK> AMB_BURG(1.0), AMB_HOTDOG(1.0)
+<BAG_A> AMB_CARRIERBAG01(1.0), AMB_CARRIERBAG02(1.0), AMB_CARRIERBAG03(1.0), AMB_CARRIERBAG04(1.0), AMB_PAPERBAG01(1.0), AMB_PAPERBAG02(1.0), AMB_PAPERBAG03(1.0),  AMB_PAPERBAG04(1.0),  AMB_PAPERBAG05(1.0),  AMB_PAPERBAG06(1.0)
+<BAG_B> AMB_GROCERYBAG(1.0)
+<BOOK> AMB_BOOKOPEN(1.0)
+<COMB> AMB_COMB(1.0)
+<ROAD_TOOLS> AMB_SLEDGEHAMMER(1.0), AMB_PICKAXE(1.0)
+<CONSTRUCTION_TOOLS> AMB_CLAWHAMMER(1.0), AMB_DRILL(1.0), AMB_NAILGUN(1.0), AMB_SPANNER(1.0), AMB_TOOLBOX(2.0)
+<RUBBISH> AMB_RUBBISH01(1.0), AMB_RUBBISH02(1.0), AMB_RUBBISH03(1.0), BM_CHAR_FAG(1.0)
+<SPANNER> AMB_SPANNER(1.0)
+<NEWSPAPERS> AMB_NEWSPAPER_1, AMB_NEWSPAPER_2
+
+# ----------------------------------------------------------------------------------------------
+# Anim Timings
+# ----------------------------------------------------------------------------------------------
+
+SetTiming_Wander(8.0,0.1,0.3)
+SetTiming_RoadCross(0.5,0.1,0.5)
+SetTiming_ShockEventHurryAway(0.5,0.1,0)
+SetTiming_ShockEventInquisitive(0.5,0.1,0)
+SetTiming_ShockEventWatch(0.5,0.1,0)
+SetTiming_ShockEventGoTo(0.5,0.1,0)
+SetTiming_Flee(0.25,0.2,0)
+SetTiming_Search(4,0.5,0.33)
+SetTiming_Combat(4,0.5,0.33)
+SetTiming_Defend(4,0.5,0.33)
+SetTiming_Player(1.5,0.5,0.33)
+SetTiming_WatchMelee(1.0, 1.0, 0)
+SetTiming_Scenario(2,0.2,1.0)
+
+
+# ----------------------------------------------------------------------------------------------
+# Anim Group definitions
+# ----------------------------------------------------------------------------------------------
+AMBIENT_GROUPS:
+
+AMB@INJURED_SIDE IsInjured, PlayingSpecificAnim(INJURED, INJ_RSide_Idle)
+AMB@INJURED_FRONT IsInjured, PlayingSpecificAnim(INJURED, INJ_Front_Idle)
+
+COP_SEARCH_IDLES Search
+COP_WANDER_IDLES Wander, Scenario(Scenario_StationedCop), SetPriorityMultiplier(10)
+COP_WANDER_RADIO Wander, Scenario(Scenario_StationedCop), CreatesProp(AMB_WALKIETALKIE), SetPriorityMultiplier(20)
+COP_WANDER_IDLES_FAT Wander, SetPriorityMultiplier(10), IsModel(M_M_FatCop_01)
+COP_WANDER_RADIO_FAT Wander, CreatesProp(AMB_WALKIETALKIE), SetPriorityMultiplier(20), IsModel(M_M_FatCop_01)
+
+DEFEND@GEN_1H Defend, IsUnarmed, HasMelee, Has1Handed
+DEFEND@GEN_2H Defend, Has2Handed
+AMB@PHONE_M_A Wander, !IsRaining, CreatesProp(<MOBILE>), LoopCount(3), SetPriorityMultiplier(1), !IsModel(F_Y_COP), !IsModel(M_M_TRUCKER_01)
+AMB@PHONE_M_B Wander, !IsRaining, CreatesProp(<MOBILE>), LoopCount(3), SetPriorityMultiplier(1), !IsModel(F_Y_COP), !IsModel(M_M_TRUCKER_01)
+AMB@PHONE_F Wander, !Player, !IsRaining, CreatesProp(<MOBILE>), LoopCount(3), SetPriorityMultiplier(1),!IsModel(F_Y_COP),!IsModel(F_O_PEastEuro_02)
+
+AMB@UMBRELLA_OPEN_A Wander, IsRaining, CreatesProp(<UMBRELLAS>), LoopCount(5), SetPriorityMultiplier(30), SpawnsPercentage(50)
+AMB@UMBRELLA_OPEN_A !IsModel(F_Y_COP),!IsModel(M_M_GBIK_LO_03),!IsModel(M_Y_GBIK_Hi_01),!IsModel(M_Y_GBIK_Hi_02),!IsModel(M_Y_GBIK_LO_01),!IsModel(M_Y_GBIK_LO_02),!IsModel(M_Y_GBIK02_LO_02),!IsModel(M_Y_Prison),!IsModel(M_Y_Fireman)
+AMB@UMBRELLA_OPEN_B Wander, IsRaining, CreatesProp(<UMBRELLAS>), LoopCount(5), SetPriorityMultiplier(30), SpawnsPercentage(50), !IsModel(F_Y_COP)
+AMB@UMBRELLA_OPEN_B !IsModel(F_Y_COP),!IsModel(M_M_GBIK_LO_03),!IsModel(M_Y_GBIK_Hi_01),!IsModel(M_Y_GBIK_Hi_02),!IsModel(M_Y_GBIK_LO_01),!IsModel(M_Y_GBIK_LO_02),!IsModel(M_Y_GBIK02_LO_02),!IsModel(M_Y_Prison),!IsModel(M_Y_Fireman)
+AMB@UMBRELLA_IDL_A Wander, IsRaining, PedHasProp(<UMBRELLAS>), !IsModel(F_Y_COP),!IsModel(M_Y_Fireman)
+AMB@UMBRELLA_IDL_B Wander, IsRaining, PedHasProp(<UMBRELLAS>), !IsModel(F_Y_COP),!IsModel(M_Y_Fireman)
+AMB@UMBRELLA_CLOSE Wander, !IsRaining, PedHasProp(<UMBRELLAS>) , !IsModel(F_Y_COP),!IsModel(M_Y_Fireman)
+
+AMB@RAIN_NEWSPAPER Wander, IsRaining, PedHasProp(<NEWSPAPERS>), LoopCount(30), SetPriorityMultiplier(30), SpawnsPercentage(30), !IsModel(F_Y_COP),!IsModel(M_Y_Fireman)
+AMB@RAIN_NEWSPAPER_B Wander, IsRaining, PedHasProp(<NEWSPAPERS>), LoopCount(100), SetPriorityMultiplier(20), SpawnsPercentage(30),!IsModel(M_Y_Fireman)
+
+AMB@MISC Wander, !Player, SetPriorityMultiplier(0.25), !IsModel(F_Y_COP)
+AMB@SHOES_A Wander, !Player, SetPriorityMultiplier(0.25), !IsModel(F_Y_COP)
+AMB@SHOES_B Wander, !Player, SetPriorityMultiplier(0.25), !IsModel(F_Y_COP)
+AMB@TRIPUP Wander, !Player, SetPriorityMultiplier(0.25), !IsModel(F_Y_COP)
+
+AMB@NEWSPAPER_CREATE Wander, !IsRaining, TimeRange(9, 20), CreatesProp(AMB_NEWSPAPER_2), SetPriorityMultiplier(0), SpawnsPercentage(20), MinRangeToPlayer(5),!IsModel(F_Y_COP),!IsModel(M_Y_Fireman)
+# (Note: phantom create folder)
+AMB@NEWSPAPER_CREATE_R Wander, IsRaining, CreatesProp(AMB_NEWSPAPER_1), SetPriorityMultiplier(0), SpawnsPercentage(100), !IsModel(F_Y_COP),!IsModel(M_Y_Fireman)
+AMB@NEWSPAPER_IDLES Wander, !IsRaining, PedHasProp(AMB_NEWSPAPER_2), SetPriorityMultiplier(3), !IsModel(F_Y_COP)
+AMB@NEWSPAPER_DESTRY Wander, !IsRaining, PedHasProp(<NEWSPAPERS>), SetPriorityMultiplier(1), !IsModel(F_Y_COP)
+
+AMB@COLD Wander, IsRaining, SetPriorityMultiplier(20), SpawnsPercentage(100)
+# AMB@HOT Wander, IsSunny, SetPriorityMultiplier(0.25)
+
+AMB@ROADCROSS RoadCross, !IsRaining, SetPriorityMultiplier(20)
+AMB@ROADCROSS_HEAD RoadCross, !IsRaining, AnyProp, SetPriorityMultiplier(20)
+AMB@ROADCROSS_RAIN RoadCross, IsRaining, AnyProp, SetPriorityMultiplier(20)
+AMB@ROADCROSS_RAIN_B RoadCross, IsRaining, SetPriorityMultiplier(20)
+
+AMB@ICECREAM_IDLES Wander, PedHasProp(AMB_ICECONE01), SetPriorityMultiplier(5)
+AMB@ICECREAM_DESTROY Wander, PedHasProp(AMB_ICECONE01), SetPriorityMultiplier(1)
+
+# Player Idles
+PLAYIDLES_COLD Player, !Tired, IsRaining, IsUnarmed, Has1Handed,!IsModel(F_Y_Multiplayer)
+PLAYIDLES_BAT Player, !Tired, HasMelee,!IsModel(F_Y_Multiplayer)
+PLAYIDLES_STD Player, !Tired, IsUnarmed, Has1Handed, !IsRaining,!IsModel(F_Y_Multiplayer)
+PLAYIDLES_RIFLE Player,!Tired, Has2Handed,!IsModel(F_Y_Multiplayer)
+PLAYIDLES_INJURED Player, !Tired, LowHealth, IsUnarmed, Has1Handed,!IsModel(F_Y_Multiplayer)
+PLAYIDLES_INJURED_R Player, !Tired, LowHealth, Has2Handed,!IsModel(F_Y_Multiplayer)
+PLAYIDLES_TIRED_1H Player, Tired, IsUnarmed, Has1Handed,!IsModel(F_Y_Multiplayer)
+PLAYIDLES_TIRED_2H Player, Tired, Has2Handed,!IsModel(F_Y_Multiplayer)
+PLAYIDLES_TIRED_RPG Player, Tired, HasRPG,!IsModel(F_Y_Multiplayer)
+PLAYIDLES_WET_1H Player, Wet, !Tired, IsUnarmed, Has1Handed,!IsModel(F_Y_Multiplayer)
+PLAYIDLES_WET_2H Player, Wet, !Tired, Has2Handed,!IsModel(F_Y_Multiplayer)
+
+# Female MultiPlayer Idles
+PLAYIDLES_F_STD IsModel(F_Y_Multiplayer), !Tired, IsUnarmed, Has1Handed, !IsRaining
+PLAYIDLES_F_RIFLE IsModel(F_Y_Multiplayer),!Tired, Has2Handed
+
+
+GUN@AIM_IDLES Player, Combat
+
+AMB@FLEE_A Flee
+# AMB@FLEE Flee
+
+AMB@HURRY_WALK ShockEventHurryAway
+AMB@HURRY_HEAD ShockEventHurryAway, PedHasProp(<BAG_A>), PedHasProp(<BAG_B>)
+
+AMB@INQUISITIVE ShockEventInquisitive
+
+AMB@SHOCK ShockEventGoTo, ShockEventWatch !IsModel(M_M_Fatcop_01)
+
+AMB@WALLET Wander, !IsModel(F_Y_COP)
+# AMB@BOOK Wander, CreatesProp(<BOOK>), SetPriorityMultiplier(1), LoopCount(4), MinRangeToPlayer(5)
+
+AMB@BOTTLE_CREATE Wander, !IsRaining, TimeRange(9, 20), CreatesProp(<BOTTLE>), SetPriorityMultiplier(3.0), MinRangeToPlayer(100), !IsModel(F_Y_COP)
+AMB@BOTTLE_DESTROY Wander, PedHasProp(<BOTTLE>), SetPriorityMultiplier(1.0), !IsModel(F_Y_COP)
+AMB@BOTTLE_IDLE Wander, !IsRaining, PedHasProp(<BOTTLE>), SetPriorityMultiplier(3.0), !IsModel(F_Y_COP)
+
+# (Note: phantom create folder)
+AMB@COFFEE_CREATE Wander, !Player, !IsRaining, CreatesProp(AMB_COFFEE), SetPriorityMultiplier(0), SpawnsPercentage(85), !IsModel(F_Y_COP)
+AMB@COFFEE_IDLE_M Wander, PedHasProp(AMB_COFFEE), !IsModel(F_Y_COP)
+AMB@COFFEE_IDLE_F Wander, PedHasProp(AMB_COFFEE), !IsModel(F_Y_COP)
+
+# Street vendor food anims
+AMB@BURGER_DESTROY Wander, PedHasProp(AMB_BURG), SetPriorityMultiplier(1.0), !IsModel(F_Y_COP)
+AMB@BURGER_IDLE Wander, !IsRaining, PedHasProp(AMB_BURG), SetPriorityMultiplier(3.0), !IsModel(F_Y_COP)
+
+AMB@NUTS_DESTROY Wander, PedHasProp(AMB_NUTS), SetPriorityMultiplier(1.0), !IsModel(F_Y_COP)
+AMB@NUTS_IDLE Wander, !IsRaining, PedHasProp(AMB_NUTS), SetPriorityMultiplier(3.0), !IsModel(F_Y_COP)
+
+AMB@HOTDOG_DESTROY Wander, PedHasProp(AMB_HOTDOG), SetPriorityMultiplier(1.0), !IsModel(F_Y_COP)
+AMB@HOTDOG_DESTROY_F Wander, PedHasProp(AMB_HOTDOG), SetPriorityMultiplier(1.0), !IsModel(F_Y_COP)
+AMB@HOTDOG_IDLE Wander, !IsRaining, PedHasProp(AMB_HOTDOG), SetPriorityMultiplier(3.0), !IsModel(F_Y_COP)
+AMB@HOTDOG_IDLE_F Wander, !IsRaining, PedHasProp(AMB_HOTDOG), SetPriorityMultiplier(3.0), !IsModel(F_Y_COP)
+
+AMB@EAT_FRUIT Wander, !IsRaining, CreatesProp(AMB_APPLE_1), TimeRange(9, 20), !IsModel(F_Y_COP)
+AMB@EAT_CHOCOLATE Wander, !IsRaining, TimeRange(9, 20), LoopCount(2), !IsModel(F_Y_COP)
+
+AMB@PREEN_BSNESS Wander, !IsModel(F_Y_COP)
+AMB@PREEN Wander, !Player, !IsRaining, CreatesProp(<COMB>), SetPriorityMultiplier(1), !IsModel(F_Y_COP)
+
+AMB@MUSIC_CREATE Wander, !Player, !IsRaining, TimeRange(9, 20), CreatesProp(<MP3>), SetPriorityMultiplier(2), !IsModel(F_Y_COP),!IsModel(F_M_BUSINESS_01)
+AMB@MUSIC_DESTROY Wander, PedHasProp(<MP3>), SetPriorityMultiplier(1), !IsModel(F_Y_COP),!IsModel(F_M_BUSINESS_01)
+AMB@MUSIC_IDLES Wander, !IsRaining, PedHasProp(<MP3>), SetPriorityMultiplier(10), !IsModel(F_Y_COP),!IsModel(F_M_BUSINESS_01)
+
+AMB@BAG_A_CREATE Wander, !Player, !IsRaining, TimeRange(9, 20), CreatesProp(<BAG_A>), SpawnsPercentage(60), SetPriorityMultiplier(0), !IsModel(F_Y_COP)
+AMB@BAG_A_IDLES Wander, PedHasProp(<BAG_A>), !IsModel(F_Y_COP)
+AMB@BAG_B_CREATE Wander, !Player, !IsRaining, TimeRange(9, 20), CreatesProp(<BAG_B>), SpawnsPercentage(30), SetPriorityMultiplier(0), !IsModel(F_Y_COP)
+AMB@BAG_B_IDLES Wander, PedHasProp(<BAG_B>), !IsModel(F_Y_COP)
+
+AMB@WATCH_MELEE WatchMelee, SetPriorityMultiplier(10.0)
+AMB@LOOK_DEAD_PED InvestigateDeadPed
+
+AMB@YAWN Wander, !Player
+
+ 
+AMB@CAR_STD_PS_B !Flee, InCarAsPassenger(STD), !IsModel(ig_Roman), !IsModel(ig_LilJacob), !IsModel(ig_LilJacobW), !IsModel(ig_Michelle)
+AMB@CAR_STD_PS_C !Flee, InCarAsPassenger(STD), !IsModel(ig_Roman), !IsModel(ig_LilJacob), !IsModel(ig_LilJacobW), !IsModel(ig_Michelle)
+AMB@CAR_STD_PS_D !Flee, InCarAsPassenger(STD), !IsModel(ig_Roman), !IsModel(ig_LilJacob), !IsModel(ig_LilJacobW), !IsModel(ig_Michelle)
+AMB@CAR_STD_PS_E !Flee, InCarAsPassenger(STD), !IsModel(ig_Roman), !IsModel(ig_LilJacob), !IsModel(ig_LilJacobW), !IsModel(ig_Michelle)
+AMB@CAR_STD_PS_LOOPS !Flee, InCarAsPassenger(STD), LoopCount(20), SetPriorityMultiplier(2.0), !IsModel(ig_Roman), !IsModel(ig_LilJacob), !IsModel(ig_LilJacobW), !IsModel(ig_Michelle)
+AMB@CAR_LOW_PS_LOOPS !Flee, InCarAsPassenger(LOW), LoopCount(10), SetPriorityMultiplier(1.0), !IsModel(ig_Roman), !IsModel(ig_LilJacob), !IsModel(ig_LilJacobW), !IsModel(ig_Michelle)
+
+AMB@CAR_STD_BK_SEAT !Flee InCarAsRearPassenger(STD), !IsModel(ig_Roman), !IsModel(ig_LilJacob), !IsModel(ig_LilJacobW), !IsModel(ig_Michelle)
+
+AMB@CAR_STD_DS_A !Flee, InCarAsDriver(STD), !IsModel(ig_Roman), !IsModel(ig_Michelle) 
+AMB@CAR_STD_DS_B !Flee, InCarAsDriver(STD), !IsModel(ig_Roman), !IsModel(ig_Michelle) 
+AMB@CAR_STD_DS_C !Flee, InCarAsDriver(STD), !IsModel(ig_Roman), !IsModel(ig_Michelle) 
+AMB@CAR_STD_DS_D !Flee, InCarAsDriver(STD), !IsModel(ig_Roman), !IsModel(ig_Michelle)
+
+AMB@CAR_STD_DS_TRASH !Flee, InCarAsDriver(STD), CreatesProp(<RUBBISH>), SetPriorityMultiplier(0.2), !IsModel(ig_Roman), !IsModel(ig_Michelle)
+AMB@CAR_STD_PS_TRASH !Flee, InCarAsPassenger(STD), CreatesProp(<RUBBISH>), SetPriorityMultiplier(0.2), !IsModel(ig_Roman), !IsModel(ig_Michelle)
+
+AMB@CAR_STD_F_ID_DS Flee, InCarAsDriver(STD)
+AMB@CAR_STD_F_ID_PS Flee, InCarAsPassenger(STD)
+
+AMB@CAR_STD_F_DF_DS Flee, InCarAsDriver(STD), DefaultScenarioAnims
+AMB@CAR_STD_F_DF_PS Flee, InCarAsPassenger(STD), DefaultScenarioAnims
+
+AMB@CAR_LOW_F_DF_DS Flee, InCarAsDriver(LOW), DefaultScenarioAnims
+AMB@CAR_LOW_F_DF_PS Flee, InCarAsPassenger(LOW), DefaultScenarioAnims
+
+AMB@CAR_VAN_F_DF_DS Flee, InCarAsDriver(VAN), DefaultScenarioAnims
+AMB@CAR_VAN_F_DF_PS Flee, InCarAsPassenger(VAN), InCarAsRearPassenger(VAN), DefaultScenarioAnims
+
+AMB@CAR_TRUCK_F_DF_DS Flee, InCarAsDriver(TRUCK), DefaultScenarioAnims
+AMB@CAR_TRUCK_F_DF_PS Flee, InCarAsPassenger(TRUCK), InCarAsRearPassenger(TRUCK), DefaultScenarioAnims
+
+AMB@CAR_STD_Rear_Flee_DF Flee, InCarAsRearPassenger(STD), InCarAsRearPassenger(LOW), DefaultScenarioAnims
+
+VEH@STD_JACK_RIFLE PlayerJacking(STD) Has2Handed
+VEH@STD_JACK_RIFLE_B PlayerJacking(STD) Has2Handed
+VEH@STD_JACK_RIFLE_C PlayerJacking(STD) Has2Handed
+
+VEH@STD_JACK_UNARMED PlayerJacking(STD) IsUnarmed
+VEH@STD_JACK_UNARMDB PlayerJacking(STD) IsUnarmed
+VEH@STD_JACK_UNARMDC PlayerJacking(STD) IsUnarmed
+VEH@STD_JACK_UNARMDD PlayerJacking(STD) IsUnarmed
+
+VEH@STD_JACK_PISTOL PlayerJacking(STD) Has1Handed
+VEH@STD_JACK_PISTOLB PlayerJacking(STD) Has1Handed
+
+VEH@STD_JACK_RPG PlayerJacking(STD) HasRPG
+VEH@LOW_JACK_RPG PlayerJacking(LOW) HasRPG
+
+VEH@LOW_JACK_RIFLE PlayerJacking(LOW) Has2Handed
+VEH@LOW_JACK_PISTOL PlayerJacking(LOW) Has1Handed
+
+VEH@VAN_JACK_PISTOL PlayerJacking(VAN) Has1Handed
+VEH@VAN_JACK_RIFLE PlayerJacking(VAN) Has2Handed
+VEH@VAN_JACK_UNARMED PlayerJacking(VAN) IsUnarmed
+
+VEH@TRU_JACK_PISTOL PlayerJacking(TRUCK) Has1Handed
+VEH@TRU_JACK_RIFLE PlayerJacking(TRUCK) Has2Handed
+
+# Scenarios #############################################################################################################
+
+# sweeper
+AMB@SWEEP_CREATE Scenario(Scenario_Sweeper), CreatesProp(AMB_BROOM), SpawnsPercentage(100), !IsModel(M_M_Trucker_01), !IsModel(M_Y_FIREMAN)
+AMB@SWEEP_IDLES Scenario(Scenario_Sweeper), PedHasProp(AMB_BROOM), !IsModel(M_M_Trucker_01), !IsModel(M_Y_FIREMAN)
+
+# Fast Food Sweeper - Male
+# (Note: phantom create folder)
+AMB@SWEEP_FFOOD_CRE Scenario(Scenario_StationarySweeper), CreatesProp(AMB_BROOM), SpawnsPercentage(100), SetPriorityMultiplier(0), !IsModel(M_M_Trucker_01), !IsModel(M_Y_FIREMAN)
+AMB@SWEEP_FFOOD_DEF Scenario(Scenario_StationarySweeper), PedHasProp(AMB_BROOM), DefaultScenarioAnims, !IsModel(M_M_Trucker_01), !IsModel(M_Y_FIREMAN)
+AMB@SWEEP_FFOOD_IDL Scenario(Scenario_StationarySweeper), PedHasProp(AMB_BROOM), !IsModel(M_M_Trucker_01), !IsModel(M_Y_FIREMAN)
+
+# Fast Food Sweeper - Female
+# (Note: phantom create folder)
+AMB@SWEEP_FFOOD_DEF_F Scenario(Scenario_StationarySweeper), PedHasProp(AMB_BROOM), DefaultScenarioAnims, !IsModel(M_M_Trucker_01), !IsModel(M_Y_FIREMAN)
+AMB@SWEEP_FFOOD_I_F Scenario(Scenario_StationarySweeper), PedHasProp(AMB_BROOM), !IsModel(M_M_Trucker_01), !IsModel(M_Y_FIREMAN)
+
+# road workers
+AMB@SPADE_CREATE Scenario(Scenario_DiggingRoadWorkers), CreatesProp(AMB_SPADE), SpawnsPercentage(100), SetPriorityMultiplier(0)
+AMB@SPADE_DEFAULT Scenario(Scenario_DiggingRoadWorkers), PedHasProp(AMB_SPADE), DefaultScenarioAnims
+AMB@SPADE_IDLES Scenario(Scenario_DiggingRoadWorkers), PedHasProp(AMB_SPADE)
+
+# Smoking - Male
+AMB@SMOKING !InInterior, !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02),!IsModel(F_M_BUSINESS_01), !IsModel(M_O_HASID_01)
+AMB@SMOKING Wander, !IsRaining, CreatesProp(BM_CHAR_FAG), SetPriorityMultiplier(1), !IsModel(F_Y_COP)
+
+AMB@SMOKING_CREATE Wander, !IsRaining, !InInterior, CreatesProp(BM_CHAR_FAG), SpawnsPercentage(20),!IsModel(M_Y_Courier),!IsModel(M_Y_Swat),!IsModel(M_Y_Mechanic_02)
+AMB@SMOKING_CREATE !IsModel(F_Y_COP),!IsModel(F_M_BUSINESS_01) !IsModel(M_O_HASID_01)
+AMB@SMOKING_IDLES Wander, !IsRaining, !InInterior, PedHasProp(BM_CHAR_FAG), SetPriorityMultiplier(3),!IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02),!IsModel(F_M_BUSINESS_01)
+AMB@SMOKING_IDLES !IsModel(F_Y_COP), !IsModel(M_O_HASID_01)
+AMB@SMOKING_DESTROY Wander, !InInterior, PedHasProp(BM_CHAR_FAG), SetPriorityMultiplier(1), !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02), !IsModel(F_Y_COP),!IsModel(F_M_BUSINESS_01) !IsModel(M_O_HASID_01)
+
+# Smoking - Female
+AMB@SMOKING_F Wander, !Player, !IsRaining, !InInterior, CreatesProp(BM_CHAR_FAG_F), SetPriorityMultiplier(1), !IsModel(F_Y_COP),!IsModel(F_M_BUSINESS_01)
+
+AMB@SMOKING_CREATE_F Wander, !Player, !IsRaining, !InInterior, CreatesProp(BM_CHAR_FAG_F), SpawnsPercentage(20), !IsModel(F_Y_COP),!IsModel(F_M_BUSINESS_01)
+AMB@SMOKING_IDLES_F Wander, !IsRaining, !InInterior, PedHasProp(BM_CHAR_FAG_F), SetPriorityMultiplier(3), !IsModel(F_Y_COP),!IsModel(F_M_BUSINESS_01)
+AMB@SMOKING_DEST_F Wander, !InInterior, PedHasProp(BM_CHAR_FAG_F), SetPriorityMultiplier(1), !IsModel(F_Y_COP),!IsModel(F_M_BUSINESS_01)
+
+# Smoking - Male Scenarios
+AMB@SMOKE_M_DEF !IsRaining,Scenario(Scenario_BuildingWorkers),Scenario(Scenario_SmokingOutsideOffice),Scenario(Scenario_DiggingRoadWorkers),Scenario(Scenario_RoadWorkers),PedHasProp(BM_CHAR_FAG),DefaultScenarioAnims
+AMB@SMK_SCN_CREATE !IsRaining, Scenario(Scenario_BuildingWorkers), Scenario(Scenario_SmokingOutsideOffice), CreatesProp(BM_CHAR_FAG), SpawnsPercentage(20),!IsModel(M_Y_Courier),!IsModel(M_Y_Swat),!IsModel(M_Y_Mechanic_02)
+AMB@SMK_SCN_CREATE Scenario(Scenario_DiggingRoadWorkers),Scenario(Scenario_RoadWorkers), !IsModel(F_Y_COP),!IsModel(F_M_BUSINESS_01) !IsModel(M_O_HASID_01)
+AMB@SMK_SCN_IDLES !IsRaining, Scenario(Scenario_BuildingWorkers), Scenario(Scenario_SmokingOutsideOffice), PedHasProp(BM_CHAR_FAG), SetPriorityMultiplier(3)
+AMB@SMK_SCN_IDLES Scenario(Scenario_DiggingRoadWorkers), Scenario(Scenario_RoadWorkers), !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02),!IsModel(F_M_BUSINESS_01),!IsModel(F_Y_COP),!IsModel(F_M_BUSINESS_01) !IsModel(M_O_HASID_01)
+AMB@SMK_SCN_DESTROY PedHasProp(BM_CHAR_FAG), SetPriorityMultiplier(1), !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02), !IsModel(F_Y_COP),!IsModel(F_M_BUSINESS_01) !IsModel(M_O_HASID_01)
+
+# Smoking - Female Scenarios
+AMB@SMOKE_F_DEF !IsRaining,Scenario(Scenario_BuildingWorkers),Scenario(Scenario_SmokingOutsideOffice),Scenario(Scenario_DiggingRoadWorkers),Scenario(Scenario_RoadWorkers),PedHasProp(BM_CHAR_FAG_F),DefaultScenarioAnims
+AMB@SMK_SCN_CREATE_F !IsRaining, Scenario(Scenario_BuildingWorkers), Scenario(Scenario_SmokingOutsideOffice), CreatesProp(BM_CHAR_FAG_F), SpawnsPercentage(20),!IsModel(M_Y_Courier),!IsModel(M_Y_Swat),!IsModel(M_Y_Mechanic_02)
+AMB@SMK_SCN_CREATE_F Scenario(Scenario_DiggingRoadWorkers),Scenario(Scenario_RoadWorkers), !IsModel(F_Y_COP),!IsModel(F_M_BUSINESS_01) !IsModel(M_O_HASID_01)
+AMB@SMK_SCN_IDLES_F !IsRaining, Scenario(Scenario_BuildingWorkers), Scenario(Scenario_SmokingOutsideOffice), PedHasProp(BM_CHAR_FAG_F), SetPriorityMultiplier(3)
+AMB@SMK_SCN_IDLES_F Scenario(Scenario_DiggingRoadWorkers), Scenario(Scenario_RoadWorkers), !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02),!IsModel(F_M_BUSINESS_01),!IsModel(F_Y_COP),!IsModel(F_M_BUSINESS_01) !IsModel(M_O_HASID_01)
+AMB@SMK_SCN_DEST_F PedHasProp(BM_CHAR_FAG_F), SetPriorityMultiplier(1), !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02), !IsModel(F_Y_COP),!IsModel(F_M_BUSINESS_01) !IsModel(M_O_HASID_01)
+
+AMB@DRILL_CREATE Scenario(Scenario_DrillingRoadWorkers), CreatesProp(AMB_JACKHAMMER), SpawnsPercentage(100), SetPriorityMultiplier(0)
+AMB@DRILL_DEFAULT Scenario(Scenario_DrillingRoadWorkers), PedHasProp(AMB_JACKHAMMER), DefaultScenarioAnims
+AMB@DRILL_IDLES Scenario(Scenario_DrillingRoadWorkers), PedHasProp(AMB_JACKHAMMER)
+
+AMB@SLEDGE_CREATE Scenario(Scenario_DiggingRoadWorkers), CreatesProp(<ROAD_TOOLS>), SpawnsPercentage(100), SetPriorityMultiplier(0)
+AMB@SLEDGE_DEFAULT Scenario(Scenario_DiggingRoadWorkers), PedHasProp(<ROAD_TOOLS>), DefaultScenarioAnims
+AMB@SLEDGE_IDLES Scenario(Scenario_DiggingRoadWorkers), PedHasProp(<ROAD_TOOLS>)
+
+AMB@SUPER_CREATE Scenario(Scenario_RoadWorkers), CreatesProp(AMB_CLIPBOARD), SpawnsPercentage(75), SetPriorityMultiplier(0)
+AMB@SUPER_DEFAULT Scenario(Scenario_RoadWorkers), PedHasProp(AMB_CLIPBOARD), DefaultScenarioAnims
+AMB@SUPER_IDLES_A Scenario(Scenario_RoadWorkers), PedHasProp(AMB_CLIPBOARD)
+AMB@SUPER_IDLES_B Scenario(Scenario_RoadWorkers), PedHasProp(AMB_CLIPBOARD)
+
+AMB@STOP_CREATE Scenario(Scenario_RoadWorkerWithSign), CreatesProp(AMB_STOPSIGN), SpawnsPercentage(100), SetPriorityMultiplier(0)
+AMB@STOP_DEFAULT Scenario(Scenario_RoadWorkerWithSign), PedHasProp(AMB_STOPSIGN), DefaultScenarioAnims
+
+AMB@CARRY_CREATE Scenario(Scenario_BuildingWorkers), CreatesProp(<CONSTRUCTION_TOOLS>), SpawnsPercentage(100), SetPriorityMultiplier(0)
+AMB@CARRY_IDLES Scenario(Scenario_BuildingWorkers), PedHasProp(<CONSTRUCTION_TOOLS>)
+
+AMB@SPADE_CREATE Scenario(Scenario_DiggingBuildingWorkers), CreatesProp(AMB_SPADE), SpawnsPercentage(100), SetPriorityMultiplier(0)
+AMB@SPADE_DEFAULT Scenario(Scenario_DiggingBuildingWorkers), PedHasProp(AMB_SPADE), DefaultScenarioAnims
+AMB@SPADE_IDLES Scenario(Scenario_DiggingBuildingWorkers), PedHasProp(AMB_SPADE)
+
+AMB@DRILL_CREATE Scenario(Scenario_DrillingBuildingWorkers), CreatesProp(AMB_JACKHAMMER), SpawnsPercentage(100), SetPriorityMultiplier(0)
+AMB@DRILL_DEFAULT Scenario(Scenario_DrillingBuildingWorkers), PedHasProp(AMB_JACKHAMMER), DefaultScenarioAnims
+AMB@DRILL_IDLES Scenario(Scenario_DrillingBuildingWorkers), PedHasProp(AMB_JACKHAMMER)
+
+AMB@SLEDGE_CREATE Scenario(Scenario_DiggingBuildingWorkers), CreatesProp(<ROAD_TOOLS>), SpawnsPercentage(100), SetPriorityMultiplier(0)
+AMB@SLEDGE_DEFAULT Scenario(Scenario_DiggingBuildingWorkers), PedHasProp(<ROAD_TOOLS>), DefaultScenarioAnims
+AMB@SLEDGE_IDLES Scenario(Scenario_DiggingBuildingWorkers), PedHasProp(<ROAD_TOOLS>)
+
+AMB@SUPER_CREATE Scenario(Scenario_BuildingWorkers), CreatesProp(AMB_CLIPBOARD), SpawnsPercentage(75), SetPriorityMultiplier(0)
+AMB@SUPER_DEFAULT Scenario(Scenario_BuildingWorkers), PedHasProp(AMB_CLIPBOARD), DefaultScenarioAnims
+AMB@SUPER_IDLES_A Scenario(Scenario_BuildingWorkers), PedHasProp(AMB_CLIPBOARD)
+AMB@SUPER_IDLES_B Scenario(Scenario_BuildingWorkers), PedHasProp(AMB_CLIPBOARD)
+
+# industrial workers
+AMB@SUPER_CREATE Scenario(Scenario_IndustrialWorkers), CreatesProp(AMB_CLIPBOARD), SpawnsPercentage(20), SetPriorityMultiplier(0)
+AMB@SUPER_DEFAULT Scenario(Scenario_IndustrialWorkers), PedHasProp(AMB_CLIPBOARD), DefaultScenarioAnims
+AMB@SUPER_IDLES_A Scenario(Scenario_IndustrialWorkers), PedHasProp(AMB_CLIPBOARD)
+AMB@SUPER_IDLES_B Scenario(Scenario_IndustrialWorkers), PedHasProp(AMB_CLIPBOARD)
+
+# delivery drivers:
+AMB@SUPER_CREATE Scenario(Vehicle_DeliveryDriver)
+AMB@SUPER_DEFAULT Scenario(Vehicle_DeliveryDriver)
+AMB@SUPER_IDLES_A Scenario(Vehicle_DeliveryDriver)
+AMB@SUPER_IDLES_B Scenario(Vehicle_DeliveryDriver)
+
+AMB@SMOKING !InInterior, Scenario(Vehicle_DeliveryDriver), !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02)
+AMB@SMOKING_CREATE !InInterior, Scenario(Vehicle_DeliveryDriver), !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02)
+AMB@SMOKING_IDLES !InInterior, Scenario(Vehicle_DeliveryDriver), !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02)
+
+# leaning
+AMB@LEAN_DEFAULT Scenario(Scenario_Leaning), DefaultScenarioAnims, SetPriorityMultiplier(1), !IsModel(M_Y_GLAT_Hi_01), !IsModel(M_Y_GLAT_Hi_02), !IsModel(M_M_Trucker_01) 
+AMB@LEAN_IDL_B Scenario(Scenario_Leaning), PlayingSpecificAnim(AMB@LEAN_DEFAULT, LEAN_DEFAULT_B), !IsModel(M_Y_GLAT_Hi_01), !IsModel(M_Y_GLAT_Hi_02), !IsModel(M_M_Trucker_01) 
+AMB@LEAN_SMOKE_IDLES !InInterior, Scenario(Scenario_Leaning), CreatesProp(BM_CHAR_FAG), PlayingSpecificAnim(AMB@LEAN_DEFAULT, LEAN_DEFAULT), !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02)
+AMB@LEAN_PHONE_IDLES Scenario(Scenario_Leaning), CreatesProp(<MOBILE>), PlayingSpecificAnim(AMB@LEAN_DEFAULT, LEAN_DEFAULT)
+AMB@LEAN_IDLES Scenario(Scenario_Leaning), PlayingSpecificAnim(AMB@LEAN_DEFAULT, LEAN_DEFAULT)
+
+# leaning - balcony version
+AMB@LEAN_BALC_SMOKE_DEF Scenario(Scenario_LeaningForwards), AnyProp, DefaultScenarioAnims, SetPriorityMultiplier(1)
+AMB@LEAN_BALC_STAND_DEF Scenario(Scenario_LeaningForwards), AnyProp, DefaultScenarioAnims, SetPriorityMultiplier(1)
+AMB@LEAN_BALC_I_A Scenario(Scenario_LeaningForwards), PlayingSpecificAnim(AMB@LEAN_BALC_STAND_DEF, Lean_Balc_Stand_Def)
+AMB@LEAN_BALC_I_B Scenario(Scenario_LeaningForwards), PlayingSpecificAnim(AMB@LEAN_BALC_STAND_DEF, Lean_Balc_Stand_Def)
+
+AMB@LEAN_BALC_CRE Scenario(Scenario_LeaningForwards),CreatesProp(BM_CHAR_FAG),PlayingSpecificAnim(AMB@LEAN_BALC_SMOKE_DEF,Lean_Balc_Smoke_Def),SpawnsPercentage(100),!IsModel(M_Y_Courier),!IsModel(M_Y_Swat),!IsModel(M_Y_Mechanic_02)
+AMB@LEAN_BALC_IDL_B Scenario(Scenario_LeaningForwards), PlayingSpecificAnim(AMB@LEAN_BALC_SMOKE_DEF, Lean_Balc_Smoke_Def), PedHasProp(BM_CHAR_FAG), !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02)
+AMB@LEAN_BALC_I_B_F Scenario(Scenario_LeaningForwards), PlayingSpecificAnim(AMB@LEAN_BALC_SMOKE_DEF, Lean_Balc_Smoke_Def), PedHasProp(BM_CHAR_FAG), !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02)
+
+# hangouts
+AMB@HANG_STR_DFT AnyProp Scenario(HangOut_Street), Scenario(HangOut_AlleyWay), Scenario(HangOut_OutsideLiquorStore), Scenario(HangOut_BaseballDiamonds), DefaultScenarioAnims
+AMB@HANG_STR_DFT Scenario(HangOut_ProjectCourtyard), Scenario(HangOut_BasketballCourt), Scenario(HangOut_OutsideMassageParlours), Scenario(HangOut_ClubHouse)
+AMB@HANG_STR_IDLS AnyProp MinRangeToPlayer(15), SetPriorityMultiplier(4), Scenario(HangOut_Street), Scenario(HangOut_AlleyWay), Scenario(HangOut_OutsideLiquorStore), Scenario(HangOut_BaseballDiamonds)
+AMB@HANG_STR_IDLS Scenario(HangOut_ProjectCourtyard), Scenario(HangOut_BasketballCourt), Scenario(HangOut_OutsideMassageParlours), Scenario(HangOut_ClubHouse)
+AMB@HANG_STR_I_CL_A AnyProp Scenario(HangOut_Street), Scenario(HangOut_AlleyWay), Scenario(HangOut_OutsideLiquorStore), Scenario(HangOut_BaseballDiamonds)
+AMB@HANG_STR_I_CL_A Scenario(HangOut_ProjectCourtyard), Scenario(HangOut_BasketballCourt), Scenario(HangOut_OutsideMassageParlours), Scenario(HangOut_ClubHouse)
+AMB@HANG_STR_I_CL_C AnyProp Scenario(HangOut_Street), Scenario(HangOut_AlleyWay), Scenario(HangOut_OutsideLiquorStore), Scenario(HangOut_BaseballDiamonds)
+AMB@HANG_STR_I_CL_C Scenario(HangOut_ProjectCourtyard), Scenario(HangOut_BasketballCourt), Scenario(HangOut_OutsideMassageParlours), Scenario(HangOut_ClubHouse)
+
+# hangouts - Female
+AMB@HANG_STR_F_DFT AnyProp Scenario(HangOut_Street), Scenario(HangOut_AlleyWay), Scenario(HangOut_OutsideLiquorStore), Scenario(HangOut_BaseballDiamonds), DefaultScenarioAnims
+AMB@HANG_STR_F_DFT Scenario(HangOut_ProjectCourtyard), Scenario(HangOut_BasketballCourt), Scenario(HangOut_OutsideMassageParlours), Scenario(HangOut_ClubHouse)
+AMB@HANG_STR_F_IDLS AnyProp MinRangeToPlayer(15), SetPriorityMultiplier(4), Scenario(HangOut_Street), Scenario(HangOut_AlleyWay), Scenario(HangOut_OutsideLiquorStore), Scenario(HangOut_BaseballDiamonds)
+AMB@HANG_STR_F_IDLS Scenario(HangOut_ProjectCourtyard), Scenario(HangOut_BasketballCourt), Scenario(HangOut_OutsideMassageParlours), Scenario(HangOut_ClubHouse)
+AMB@HANG_ST_I_F_CL_A AnyProp Scenario(HangOut_Street), Scenario(HangOut_AlleyWay), Scenario(HangOut_OutsideLiquorStore), Scenario(HangOut_BaseballDiamonds)
+AMB@HANG_ST_I_F_CL_A Scenario(HangOut_ProjectCourtyard), Scenario(HangOut_BasketballCourt), Scenario(HangOut_OutsideMassageParlours), Scenario(HangOut_ClubHouse)
+AMB@HANG_ST_I_F_CL_C AnyProp Scenario(HangOut_Street), Scenario(HangOut_AlleyWay), Scenario(HangOut_OutsideLiquorStore), Scenario(HangOut_BaseballDiamonds)
+AMB@HANG_ST_I_F_CL_C Scenario(HangOut_ProjectCourtyard), Scenario(HangOut_BasketballCourt), Scenario(HangOut_OutsideMassageParlours), Scenario(HangOut_ClubHouse)
+
+# hangouts - Fat
+AMB@HANG_STR_FAT_DFT AnyProp Scenario(HangOut_Street), Scenario(HangOut_AlleyWay), Scenario(HangOut_OutsideLiquorStore), Scenario(HangOut_BaseballDiamonds), DefaultScenarioAnims
+AMB@HANG_STR_FAT_DFT Scenario(HangOut_ProjectCourtyard), Scenario(HangOut_BasketballCourt), Scenario(HangOut_OutsideMassageParlours), Scenario(HangOut_ClubHouse)
+AMB@HANG_FAT_IDLS AnyProp MinRangeToPlayer(15), SetPriorityMultiplier(4), Scenario(HangOut_Street), Scenario(HangOut_AlleyWay), Scenario(HangOut_OutsideLiquorStore), Scenario(HangOut_BaseballDiamonds)
+AMB@HANG_FAT_IDLS Scenario(HangOut_ProjectCourtyard), Scenario(HangOut_BasketballCourt), Scenario(HangOut_OutsideMassageParlours), Scenario(HangOut_ClubHouse)
+AMB@HANG_FAT_CL_A AnyProp Scenario(HangOut_Street), Scenario(HangOut_AlleyWay), Scenario(HangOut_OutsideLiquorStore), Scenario(HangOut_BaseballDiamonds)
+AMB@HANG_FAT_CL_A Scenario(HangOut_ProjectCourtyard), Scenario(HangOut_BasketballCourt), Scenario(HangOut_OutsideMassageParlours), Scenario(HangOut_ClubHouse)
+AMB@HANG_FAT_CL_B AnyProp Scenario(HangOut_Street), Scenario(HangOut_AlleyWay), Scenario(HangOut_OutsideLiquorStore), Scenario(HangOut_BaseballDiamonds)
+AMB@HANG_FAT_CL_B Scenario(HangOut_ProjectCourtyard), Scenario(HangOut_BasketballCourt), Scenario(HangOut_OutsideMassageParlours), Scenario(HangOut_ClubHouse)
+
+# hangouts - Thin
+AMB@HANG_STR_THIN_DFT AnyProp Scenario(HangOut_Street), Scenario(HangOut_AlleyWay), Scenario(HangOut_OutsideLiquorStore), Scenario(HangOut_BaseballDiamonds), DefaultScenarioAnims
+AMB@HANG_STR_THIN_DFT Scenario(HangOut_ProjectCourtyard), Scenario(HangOut_BasketballCourt), Scenario(HangOut_OutsideMassageParlours), Scenario(HangOut_ClubHouse)
+AMB@HANG_THIN_IDLS AnyProp MinRangeToPlayer(15), SetPriorityMultiplier(4), Scenario(HangOut_Street), Scenario(HangOut_AlleyWay), Scenario(HangOut_OutsideLiquorStore), Scenario(HangOut_BaseballDiamonds)
+AMB@HANG_THIN_IDLS Scenario(HangOut_ProjectCourtyard), Scenario(HangOut_BasketballCourt), Scenario(HangOut_OutsideMassageParlours), Scenario(HangOut_ClubHouse)
+AMB@HANG_THIN_CL AnyProp Scenario(HangOut_Street), Scenario(HangOut_AlleyWay), Scenario(HangOut_OutsideLiquorStore), Scenario(HangOut_BaseballDiamonds)
+AMB@HANG_THIN_CL Scenario(HangOut_ProjectCourtyard), Scenario(HangOut_BasketballCourt), Scenario(HangOut_OutsideMassageParlours), Scenario(HangOut_ClubHouse)
+AMB@HANG_THIN_CL AnyProp Scenario(HangOut_Street), Scenario(HangOut_AlleyWay), Scenario(HangOut_OutsideLiquorStore), Scenario(HangOut_BaseballDiamonds)
+AMB@HANG_THIN_CL Scenario(HangOut_ProjectCourtyard), Scenario(HangOut_BasketballCourt), Scenario(HangOut_OutsideMassageParlours), Scenario(HangOut_ClubHouse)
+
+# (Note: phantom create folder)
+AMB@HANG_STR_IDLS_CRT CreatesProp(BM_CHAR_FAG), SpawnsPercentage(100), Scenario(HangOut_Street), Scenario(HangOut_AlleyWay), Scenario(HangOut_OutsideLiquorStore), Scenario(HangOut_BaseballDiamonds)
+AMB@HANG_STR_IDLS_CRT Scenario(HangOut_ProjectCourtyard), Scenario(HangOut_BasketballCourt), Scenario(HangOut_OutsideMassageParlours), Scenario(HangOut_ClubHouse)
+
+# security guards
+AMB@SECURITY_IDLES_A Scenario(Scenario_SecurityGuard), CreatesProp(AMB_WALKIETALKIE)
+AMB@SECURITY_IDLES_B Scenario(Scenario_SecurityGuard), CreatesProp(AMB_WALKIETALKIE)
+AMB@SECURITY_IDLES_C Scenario(Scenario_SecurityGuard), CreatesProp(AMB_WALKIETALKIE)
+AMB@SECURITY_IDLES_D Scenario(Scenario_SecurityGuard), CreatesProp(AMB_WALKIETALKIE)
+
+#tourists
+AMB@TOURIST_CREATE Scenario(Scenario_TouristPhoto), CreatesProp(CJ_CAMERA), SpawnsPercentage(100)
+AMB@TOURIST_IDLES_A Wander, PedHasProp(CJ_CAMERA)
+AMB@TOURIST_IDLES_B Wander, PedHasProp(CJ_CAMERA)
+AMB@TOURIST_IDLES_A Scenario(Scenario_TouristPhoto), PedHasProp(CJ_CAMERA), SetPriorityMultiplier(1), StandingOnly
+AMB@TOURIST_IDLES_B Scenario(Scenario_TouristPhoto), PedHasProp(CJ_CAMERA), SetPriorityMultiplier(1), StandingOnly
+AMB@TOURIST_CAMERA Scenario(Scenario_TouristPhoto), PedHasProp(CJ_CAMERA), SetPriorityMultiplier(3), StandingOnly
+
+# (Note: phantom create folder)
+AMB@TOURIST_F_CREATE Scenario(Scenario_TouristPhoto), CreatesProp(CJ_CAMERA), SpawnsPercentage(100)
+AMB@TOURIST_F Scenario(Scenario_TouristPhoto), PedHasProp(CJ_CAMERA), StandingOnly
+
+
+# homeless
+AMB@BRAZIER Scenario(Scenario_Brazier)
+AMB@HOMELESS_A Scenario(Scenario_Homeless)
+AMB@HOMELESS_B Scenario(Scenario_Homeless)
+
+# payphone
+AMB@PAYPHONE_CREATE Scenario(Scenario_PayPhone), CreatesProp(AMB_PHONERECIEVER), SpawnsPercentage(100)
+AMB@PAYPHONE_DEFAULT Scenario(Scenario_PayPhone), PedHasProp(AMB_PHONERECIEVER), DefaultScenarioAnims
+# far off idles
+AMB@PAYPHONE_IDL_A Scenario(Scenario_PayPhone), PedHasProp(AMB_PHONERECIEVER), MinRangeToPlayer(10)
+# close up idles
+AMB@PAYPHONE_IDL_B Scenario(Scenario_PayPhone), PedHasProp(AMB_PHONERECIEVER)
+
+#Rake - Male
+AMB@RAKE_CREATE Scenario(Scenario_Gardening), Scenario(Scenario_ParkGardeners), CreatesProp(AMB_RAKE), SpawnsPercentage(100), SetPriorityMultiplier(0) 
+AMB@RAKE_DEFAULT Scenario(Scenario_Gardening), Scenario(Scenario_ParkGardeners), PedHasProp(AMB_RAKE), DefaultScenarioAnims
+AMB@RAKE_IDLES Scenario(Scenario_Gardening), Scenario(Scenario_ParkGardeners), PedHasProp(AMB_RAKE)
+AMB@RAKE_WALK Scenario(Scenario_Gardening), Scenario(Scenario_ParkGardeners), PedHasProp(AMB_RAKE)
+
+#Rake - Female
+AMB@RAKE_F_CREATE Scenario(Scenario_Gardening), Scenario(Scenario_ParkGardeners), CreatesProp(AMB_RAKE), SpawnsPercentage(100), SetPriorityMultiplier(0) 
+AMB@RAKE_F_DEFAULT Scenario(Scenario_Gardening), Scenario(Scenario_ParkGardeners), PedHasProp(AMB_RAKE), DefaultScenarioAnims
+AMB@RAKE_F_IDLES Scenario(Scenario_Gardening), Scenario(Scenario_ParkGardeners), PedHasProp(AMB_RAKE)
+AMB@RAKE_F_WALK Scenario(Scenario_Gardening), Scenario(Scenario_ParkGardeners), PedHasProp(AMB_RAKE)
+
+AMB@WCAN_CREATE Scenario(Scenario_Gardening), Scenario(Scenario_ParkGardeners), CreatesProp(AMB_Watercan), SpawnsPercentage(100), SetPriorityMultiplier(0)  
+AMB@WCAN_DEFAULT Scenario(Scenario_Gardening), Scenario(Scenario_ParkGardeners), PedHasProp(AMB_Watercan), DefaultScenarioAnims
+AMB@WCAN_IDLES Scenario(Scenario_Gardening), Scenario(Scenario_ParkGardeners), PedHasProp(AMB_Watercan)
+
+# Bench - Male anims
+AMB@BNCH_STD_DEF Scenario(Seat_Bench), SpawnsPercentage(25), DefaultScenarioAnims
+AMB@BNCH_STD_IDL Scenario(Seat_Bench), PlayingSpecificAnim(AMB@BNCH_STD_DEF, Bnch_Std_Default)
+
+AMB@BNCH_EAT_DEF Scenario(Seat_Bench), PedHasProp(AMB_chocbar), DefaultScenarioAnims
+# (Note: phantom create folder)
+AMB@BNCH_EAT_CRE Scenario(Seat_Bench), CreatesProp(AMB_chocbar), SpawnsPercentage(50), SetPriorityMultiplier(0) 
+AMB@BNCH_EAT_IDL Scenario(Seat_Bench), PedHasProp(AMB_chocbar)
+
+AMB@BNCH_DNK_DEF Scenario(Seat_Bench), PedHasProp(AMB_COFFEE), DefaultScenarioAnims, !IsModel(M_Y_Prison), AttachedScenario
+# (Note: phantom create folder)
+AMB@BNCH_DNK_CRE Scenario(Seat_Bench), CreatesProp(AMB_COFFEE), SpawnsPercentage(50), SetPriorityMultiplier(0), !IsModel(M_Y_Prison), AttachedScenario 
+AMB@BNCH_DNK_IDL Scenario(Seat_Bench), PedHasProp(AMB_COFFEE), !IsModel(M_Y_Prison), AttachedScenario
+
+AMB@BNCH_SMK_DEF !InInterior, Scenario(Seat_Bench), PedHasProp(BM_CHAR_FAG), DefaultScenarioAnims, !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02)
+# (Note: phantom create folder)
+AMB@BNCH_SMK_CRE !InInterior, Scenario(Seat_Bench), CreatesProp(BM_CHAR_FAG), SpawnsPercentage(50), SetPriorityMultiplier(0), !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02)
+AMB@BNCH_SMK_IDL !InInterior, Scenario(Seat_Bench), PedHasProp(BM_CHAR_FAG), !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02)
+
+AMB@BNCH_READ_DEF  Scenario(Seat_Bench), PedHasProp(<BOOK>), DefaultScenarioAnims
+# (Note: phantom create folder)
+AMB@BNCH_READ_CRE Scenario(Seat_Bench), CreatesProp(<BOOK>), SpawnsPercentage(50), SetPriorityMultiplier(0) 
+AMB@BNCH_READ_IDL Scenario(Seat_Bench), PedHasProp(<BOOK>)
+
+# Bench - Female anims
+AMB@BNCH_STD_DEF_F Scenario(Seat_Bench), SpawnsPercentage(25), DefaultScenarioAnims,!IsModel(F_M_BUSINESS_01)
+AMB@BNCH_STD_IDL_F Scenario(Seat_Bench), PlayingSpecificAnim(AMB@BNCH_STD_DEF_F, Bnch_Std_F_Default),!IsModel(F_M_BUSINESS_01)
+
+AMB@BNCH_DNK_DEF_F Scenario(Seat_Bench), PedHasProp(AMB_COFFEE), DefaultScenarioAnims,!IsModel(F_M_BUSINESS_01), AttachedScenario
+# (Note: phantom create folder)
+AMB@BNCH_DNK_CRE_F Scenario(Seat_Bench), CreatesProp(AMB_COFFEE), SpawnsPercentage(50), SetPriorityMultiplier(0),!IsModel(F_M_BUSINESS_01), AttachedScenario
+AMB@BNCH_DNK_IDL_F Scenario(Seat_Bench), PedHasProp(AMB_COFFEE),!IsModel(F_M_BUSINESS_01), AttachedScenario
+
+AMB@BNCH_EAT_DEF_F Scenario(Seat_Bench), PedHasProp(AMB_chocbar), DefaultScenarioAnims,!IsModel(F_M_BUSINESS_01)
+# (Note: phantom create folder)
+AMB@BNCH_EAT_CRE_F Scenario(Seat_Bench), CreatesProp(AMB_chocbar), SpawnsPercentage(50), SetPriorityMultiplier(0) ,!IsModel(F_M_BUSINESS_01)
+AMB@BNCH_EAT_IDL_F Scenario(Seat_Bench), PedHasProp(AMB_chocbar),!IsModel(F_M_BUSINESS_01)
+
+AMB@BNCH_SMK_DEF_F !InInterior, Scenario(Seat_Bench), PedHasProp(BM_CHAR_FAG_F), DefaultScenarioAnims,!IsModel(F_M_BUSINESS_01)
+# (Note: phantom create folder)
+AMB@BNCH_SMK_CRE_F !InInterior, Scenario(Seat_Bench), CreatesProp(BM_CHAR_FAG_F), SpawnsPercentage(50), SetPriorityMultiplier(0),!IsModel(F_M_BUSINESS_01) 
+AMB@BNCH_SMK_IDL_F !InInterior, Scenario(Seat_Bench), PedHasProp(BM_CHAR_FAG_F),!IsModel(F_M_BUSINESS_01)
+
+AMB@BNCH_READ_DEF_F  Scenario(Seat_Bench), PedHasProp(<BOOK>), DefaultScenarioAnims,!IsModel(F_M_BUSINESS_01)
+# (Note: phantom create folder)
+AMB@BNCH_READ_CRE_F Scenario(Seat_Bench), CreatesProp(<BOOK>), SpawnsPercentage(50), SetPriorityMultiplier(0) ,!IsModel(F_M_BUSINESS_01)
+AMB@BNCH_READ_IDL_F Scenario(Seat_Bench), PedHasProp(<BOOK>),!IsModel(F_M_BUSINESS_01)
+
+# Bench Bum 
+AMB@BNCH_BUM_DEF Scenario(Seat_SlouchedDruggie), DefaultScenarioAnims
+AMB@BNCH_BUM_IDL Scenario(Seat_SlouchedDruggie), PlayingSpecificAnim(AMB@BNCH_BUM_DEF, Bnch_Bum_A_Default)
+
+# Step
+AMB@STEP_DEFAULT Scenario(Seat_OnSteps), Scenario(Seat_OnStepsHangOut), DefaultScenarioAnims
+AMB@STEP_IDL_A Scenario(Seat_OnSteps), Scenario(Seat_OnStepsHangOut)
+AMB@STEP_IDL_B Scenario(Seat_OnSteps), Scenario(Seat_OnStepsHangOut)
+
+# Shoppers
+AMB@WINSHOP_DEFAULT Scenario(Location_ShopBrowsing), DefaultScenarioAnims
+AMB@WINSHOP_IDLES Scenario(Location_ShopBrowsing)
+
+# Cafe
+AMB@CAFE_DEFAULT Scenario(Seat_CafeChair), Scenario(Seat_RestaurantChair), Scenario(Seat_BarChair), DefaultScenarioAnims, PedHasProp(AMB_COFFEE)
+# Phil: extra seat types use the cafe seated anims
+AMB@CAFE_DEFAULT Scenario(Seat_StdChair), Scenario(Seat_StdCouch), Scenario(Seat_BoardGamePlayer), Scenario(Seat_OnCar), Scenario(Seat_Crate)
+AMB@CAFE_IDLES Scenario(Seat_CafeChair), Scenario(Seat_RestaurantChair), Scenario(Seat_BarChair), Scenario(Seat_StdChair), Scenario(Seat_StdCouch), Scenario(Seat_BoardGamePlayer), Scenario(Seat_OnCar), Scenario(Seat_Crate), PedHasProp(AMB_COFFEE)
+# (Note: phantom create folder)
+AMB@CAFE_DEFAULT_CREATE CreatesProp(AMB_COFFEE), SpawnsPercentage(100),SetPriorityMultiplier(0),Scenario(Seat_CafeChair),Scenario(Seat_RestaurantChair),Scenario(Seat_BarChair),Scenario(Seat_StdChair),Scenario(Seat_StdCouch),Scenario(Seat_BoardGamePlayer)
+AMB@CAFE_DEFAULT_CREATE Scenario(Seat_OnCar), Scenario(Seat_Crate)
+
+AMB@CAFE_EMPTY_DEFAULT Scenario(Seat_BarChair), DefaultScenarioAnims, Scenario(Seat_StdChair), Scenario(Seat_StdCouch), Scenario(Seat_BoardGamePlayer), Scenario(Seat_OnCar), Scenario(Seat_Crate)
+AMB@CAFE_EMPTY_DEFAULT Scenario(Seat_CafeChair), Scenario(Seat_RestaurantChair)
+AMB@CAFE_EMPTY_IDL Scenario(Seat_CafeChair), Scenario(Seat_RestaurantChair), Scenario(Seat_BarChair), Scenario(Seat_StdChair), Scenario(Seat_StdCouch), Scenario(Seat_BoardGamePlayer), Scenario(Seat_OnCar), Scenario(Seat_Crate), SpawnsPercentage(100)
+
+AMB@CAFE_SMK_DEFAULT !InInterior, Scenario(Seat_CafeChair), PedHasProp(BM_CHAR_FAG), DefaultScenarioAnims, !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02)
+AMB@CAFE_SMOKE_IDL_A !InInterior, Scenario(Seat_CafeChair), PedHasProp(BM_CHAR_FAG), !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02)
+AMB@CAFE_SMOKE_IDL_B !InInterior, Scenario(Seat_CafeChair), PedHasProp(BM_CHAR_FAG), !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02)
+AMB@CAFE_SMK_CREATE !InInterior, Scenario(Seat_CafeChair), CreatesProp(BM_CHAR_FAG), SpawnsPercentage(100), !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02)
+
+AMB@CAFE_READ_DEF Scenario(Seat_CafeChair), PedHasProp(<BOOK>), DefaultScenarioAnims
+# (Note: phantom create folder)
+AMB@CAFE_READ_CREATE Scenario(Seat_CafeChair), CreatesProp(<BOOK>), SpawnsPercentage(50), SetPriorityMultiplier(0) 
+AMB@CAFE_READ_IDL Scenario(Seat_CafeChair), PedHasProp(<BOOK>)
+
+# Cafe - Female
+AMB@CAFE_F_DEFAULT Scenario(Seat_CafeChair), Scenario(Seat_RestaurantChair), Scenario(Seat_BarChair), DefaultScenarioAnims, PedHasProp(AMB_COFFEE)
+# Phil: extra seat types use the cafe seated anims
+AMB@CAFE_F_DEFAULT Scenario(Seat_StdChair), Scenario(Seat_StdCouch), Scenario(Seat_BoardGamePlayer), Scenario(Seat_OnCar), Scenario(Seat_Crate)
+AMB@CAFE_IDLES_F Scenario(Seat_CafeChair), Scenario(Seat_RestaurantChair), Scenario(Seat_BarChair), Scenario(Seat_StdChair), Scenario(Seat_StdCouch), Scenario(Seat_BoardGamePlayer), Scenario(Seat_OnCar), Scenario(Seat_Crate), PedHasProp(AMB_COFFEE)
+
+AMB@CAFE_F_EMPTY_DEFAULT Scenario(Seat_BarChair),DefaultScenarioAnims,Scenario(Seat_StdChair), Scenario(Seat_StdCouch),Scenario(Seat_BoardGamePlayer),Scenario(Seat_OnCar),Scenario(Seat_Crate)
+AMB@CAFE_F_EMPTY_DEFAULT Scenario(Seat_CafeChair),Scenario(Seat_RestaurantChair)
+AMB@CAFE_EMPTY_IDL_F Scenario(Seat_CafeChair), Scenario(Seat_RestaurantChair), Scenario(Seat_BarChair), Scenario(Seat_StdChair), Scenario(Seat_StdCouch), Scenario(Seat_BoardGamePlayer), Scenario(Seat_OnCar), Scenario(Seat_Crate), SpawnsPercentage(100)
+
+AMB@CAFE_READ_DEF_F Scenario(Seat_CafeChair), PedHasProp(<BOOK>), DefaultScenarioAnims
+# (Note: phantom create folder)
+AMB@CAFE_READ_CREATE_F Scenario(Seat_CafeChair), CreatesProp(<BOOK>), SpawnsPercentage(50), SetPriorityMultiplier(0) 
+AMB@CAFE_READ_IDL_F Scenario(Seat_CafeChair), PedHasProp(<BOOK>)
+
+AMB@CAFE_SMK_F_DEFAULT !InInterior, Scenario(Seat_CafeChair), PedHasProp(BM_CHAR_FAG_F), DefaultScenarioAnims, !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02)
+AMB@CAFE_SMK_IDL_F !InInterior, Scenario(Seat_CafeChair), PedHasProp(BM_CHAR_FAG_F), !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02)
+AMB@CAFE_SMK_F_CREATE !InInterior, Scenario(Seat_CafeChair), CreatesProp(BM_CHAR_FAG_F), SpawnsPercentage(100), !IsModel(M_Y_Courier), !IsModel(M_Y_Swat), !IsModel(M_Y_Mechanic_02)
+
+# broken down car
+AMB@BROKEN_D_DEF Scenario(Vehicle_InspectingBrokenDownVehicle), DefaultScenarioAnims
+AMB@BROKEN_D_IDLES_A Scenario(Vehicle_InspectingBrokenDownVehicle)
+AMB@BROKEN_D_IDLES_B Scenario(Vehicle_InspectingBrokenDownVehicle)
+
+AMB@BOOT_DEFAULT Scenario(Vehicle_LookingInBoot), DefaultScenarioAnims
+AMB@BOOT_IDLES Scenario(Vehicle_LookingInBoot)
+
+# Steps
+AMB@STEP_DEFAULT Scenario(Seat_OnSteps), DefaultScenarioAnims
+AMB@STEP_IDL_A Scenario(Seat_OnSteps)
+AMB@STEP_IDL_B Scenario(Seat_OnSteps)
+
+AMB@STEP_DEFAULT_B Scenario(Seat_OnStepsB), DefaultScenarioAnims
+AMB@STEP_IDLES_B Scenario(Seat_OnStepsB)
+
+# Wall - Male
+AMB@WALL_DEFAULT Scenario(Seat_OnWall), Scenario(Seat_OnWallHangOut), SpawnsPercentage(50), DefaultScenarioAnims
+AMB@WALL_IDLES Scenario(Seat_OnWall), Scenario(Seat_OnWallHangOut)
+
+AMB@WALL_READ_DEF Scenario(Seat_OnWall), Scenario(Seat_OnWallHangOut), PedHasProp(<BOOK>), DefaultScenarioAnims
+# (Note: phantom create folder)
+AMB@WALL_READ_CREATE Scenario(Seat_OnWall), Scenario(Seat_OnWallHangOut), CreatesProp(<BOOK>), SpawnsPercentage(50), SetPriorityMultiplier(0) 
+AMB@WALL_READ_IDL Scenario(Seat_OnWall), Scenario(Seat_OnWallHangOut), PedHasProp(<BOOK>)
+
+# Wall - Female
+AMB@WALL_DEFAULT_F Scenario(Seat_OnWall), Scenario(Seat_OnWallHangOut), SpawnsPercentage(50), DefaultScenarioAnims
+AMB@WALL_IDLES_F Scenario(Seat_OnWall), Scenario(Seat_OnWallHangOut)
+
+AMB@WALL_READ_DEF_F Scenario(Seat_OnWall), Scenario(Seat_OnWallHangOut), PedHasProp(<BOOK>), DefaultScenarioAnims
+# (Note: phantom create folder)
+AMB@WALL_READ_CREATE_F Scenario(Seat_OnWall), Scenario(Seat_OnWallHangOut), CreatesProp(<BOOK>), SpawnsPercentage(50), SetPriorityMultiplier(0)
+AMB@WALL_READ_IDL_F Scenario(Seat_OnWall), Scenario(Seat_OnWallHangOut), PedHasProp(<BOOK>)
+
+# Internet Cafe
+AMB@INT_CAFE_DEFAULT Scenario(Seat_InternetCafe), DefaultScenarioAnims
+AMB@INT_CAFE_IDLES Scenario(Seat_InternetCafe)
+
+# Postman
+AMB@POSTMAN_DEFAULT Scenario(Scenario_PostMan), DefaultScenarioAnims
+AMB@POSTMAN_IDLES Scenario(Scenario_PostMan)
+
+# Viewing Telescope - Male
+AMB@TELESCOPE_DFT Scenario(Scenario_Binoculars), DefaultScenarioAnims
+AMB@TELESCOPE_IDLES Scenario(Scenario_Binoculars)
+
+# Viewing Telescope - Female
+AMB@TELESCOPE_F_DFT Scenario(Scenario_Binoculars), DefaultScenarioAnims
+AMB@TELESCOPE_IDL_F Scenario(Scenario_Binoculars)
+
+# Newspaper Vending 
+AMB@NEWSPAPER_VEND Scenario(Scenario_NewspaperStand), CreatesProp(AMB_NEWSPAPER_2)
+
+# Telegraph Pole Worker
+AMB@TELEGRAPH_DFT Scenario(Scenario_UpTelegraphPoles), DefaultScenarioAnims
+AMB@TELEGRAPH_IDLES Scenario(Scenario_UpTelegraphPoles)
+
+# Service Worker (Spanner)
+AMB@SERVICE_DEFAULT Scenario(Scenario_ServiceWorker), PedHasProp(<SPANNER>), DefaultScenarioAnims
+AMB@SERVICE_IDLES_A Scenario(Scenario_ServiceWorker), PedHasProp(<SPANNER>)
+AMB@SERVICE_IDLES_B Scenario(Scenario_ServiceWorker), PedHasProp(<SPANNER>)
+# (Note: phantom create folder)
+AMB@SERVICE_CREATE Scenario(Scenario_ServiceWorker), CreatesProp(<SPANNER>), SpawnsPercentage(100)
+
+# Strip Club Chair 
+AMB@STRIP_CHR_DEF Scenario(Seat_StripClubChair), DefaultScenarioAnims
+AMB@STRIP_CHR_IDLS_A Scenario(Seat_StripClubChair)
+AMB@STRIP_CHR_IDLS_B Scenario(Seat_StripClubChair)
+
+# Strip Club Stool 
+AMB@STRIP_STOOL_DEF Scenario(Seat_StripClubStool), DefaultScenarioAnims
+AMB@STRIP_STOOL_I_A Scenario(Seat_StripClubStool)
+AMB@STRIP_STOOL_I_B Scenario(Seat_StripClubStool)
+
+# Strip Club Lean On Rails
+AMB@STRIP_RAIL_DEF Scenario(Scenario_WatchingPoleDancer), DefaultScenarioAnims
+AMB@STRIP_RAIL_IDL Scenario(Scenario_WatchingPoleDancer)
+
+# Bouncer (Strip Club)
+AMB@BOUNCER_DEF Scenario(Scenario_Bouncer), DefaultScenarioAnims
+AMB@BOUNCER_IDLES_A Scenario(Scenario_Bouncer)
+AMB@BOUNCER_IDLES_B Scenario(Scenario_Bouncer)
+
+# Window Cleaner
+AMB@WINCLEAN_DEF Scenario(Scenario_WindowCleaner), PedHasProp(AMB_HANKIE), DefaultScenarioAnims
+AMB@WINCLEAN_IDL Scenario(Scenario_WindowCleaner), PedHasProp(AMB_HANKIE)
+# (Note: phantom create folder)
+AMB@WINCLEAN_CRE Scenario(Scenario_WindowCleaner), CreatesProp(AMB_HANKIE), SpawnsPercentage(100)
+
+# Hospital Patients - sat waiting room
+AMB@HOSPITAL_DEFAULT Scenario(Seat_HospitalWaiting), DefaultScenarioAnims
+AMB@HOSPITAL_IDLES_A Scenario(Seat_HospitalWaiting)
+AMB@HOSPITAL_IDLES_B Scenario(Seat_HospitalWaiting)
+
+# Dancers Female
+AMB@DANCE_FEMDFT Scenario(Scenario_DancingNightclub), DefaultScenarioAnims
+AMB@DANCE_FEMIDL_A Scenario(Scenario_DancingNightclub)
+AMB@DANCE_FEMIDL_B Scenario(Scenario_DancingNightclub)
+AMB@DANCE_FEMIDL_C Scenario(Scenario_DancingNightclub)
+
+# Dancers Male
+AMB@DANCE_MALEDFT Scenario(Scenario_DancingNightclub), DefaultScenarioAnims
+AMB@DANCE_MALEIDL_A Scenario(Scenario_DancingNightclub)
+AMB@DANCE_MALEIDL_B Scenario(Scenario_DancingNightclub)
+AMB@DANCE_MALEIDL_C Scenario(Scenario_DancingNightclub)
+AMB@DANCE_MALEIDL_D Scenario(Scenario_DancingNightclub)
+
+# Taxi Hail Male
+AMB@TAXI_WAIT_DEF_M Scenario(Scenario_WaitingForTaxi), DefaultScenarioAnims
+AMB@TAXI_WAIT_I_M_A Scenario(Scenario_WaitingForTaxi), PlayingSpecificAnim(AMB@TAXI_WAIT_DEF_M, Taxi_M_Default)
+AMB@TAXI_WAIT_I_M_B Scenario(Scenario_WaitingForTaxi), PlayingSpecificAnim(AMB@TAXI_WAIT_DEF_M, Taxi_M_Default)
+AMB@TAXI_WAIT_I_M_C Scenario(Scenario_WaitingForTaxi), PlayingSpecificAnim(AMB@TAXI_WAIT_DEF_M, Taxi_M_Default)
+
+# Taxi Hail Female
+AMB@TAXI_WAIT_DEF_F Scenario(Scenario_WaitingForTaxi), DefaultScenarioAnims
+AMB@TAXI_WAIT_I_F_A Scenario(Scenario_WaitingForTaxi), PlayingSpecificAnim(AMB@TAXI_WAIT_DEF_F, Taxi_F_Default)
+AMB@TAXI_WAIT_I_F_B Scenario(Scenario_WaitingForTaxi), PlayingSpecificAnim(AMB@TAXI_WAIT_DEF_F, Taxi_F_Default)
+
+# Wasted Layabouts
+AMB@BEG_WASTED_DEF_A Scenario(Scenario_LayingDruggie), DefaultScenarioAnims
+AMB@BEG_WASTED_DEF_B Scenario(Scenario_LayingDruggie), DefaultScenarioAnims
+AMB@WASTED_A Scenario(Scenario_LayingDruggie), PlayingSpecificAnim(AMB@BEG_WASTED_DEF_A, Wasted_A_Default)
+AMB@WASTED_B Scenario(Scenario_LayingDruggie), PlayingSpecificAnim(AMB@BEG_WASTED_DEF_B, Wasted_B_Default)
+
+# Preacher
+AMB@PREACH_DEF Scenario(Scenario_Preacher), PedHasProp(<BOOK>), DefaultScenarioAnims
+AMB@PREACH_IDL_A Scenario(Scenario_Preacher), PedHasProp(<BOOK>)
+AMB@PREACH_IDL_B Scenario(Scenario_Preacher), PedHasProp(<BOOK>)
+# (Note: phantom create folder)
+AMB@PREACH_CRE Scenario(Scenario_Preacher), CreatesProp(<BOOK>), SpawnsPercentage(100)
+
+# Drug Dealer
+AMB@DRUGD_DEF Scenario(Scenario_SellingDrugs), DefaultScenarioAnims
+AMB@DRUGD_IDL_A Scenario(Scenario_SellingDrugs)
+AMB@DRUGD_IDL_B Scenario(Scenario_SellingDrugs)
+
+# Hospital Bed
+AMB@HOSPITAL_BED Scenario(Scenario_HospitalBed), DefaultScenarioAnims
+
+# Air Workers
+AMB@SUPER_CREATE Scenario(Scenario_AirWorkers), CreatesProp(AMB_CLIPBOARD), SpawnsPercentage(75), SetPriorityMultiplier(0)
+AMB@SUPER_DEFAULT Scenario(Scenario_AirWorkers), PedHasProp(AMB_CLIPBOARD), DefaultScenarioAnims
+AMB@SUPER_IDLES_A Scenario(Scenario_AirWorkers), PedHasProp(AMB_CLIPBOARD)
+AMB@SUPER_IDLES_B Scenario(Scenario_AirWorkers), PedHasProp(AMB_CLIPBOARD)
+
+# Searching Cop
+COP_SEARCH_IDLES Scenario(Scenario_InvestigatingCop), CreatesProp(AMB_WALKIETALKIE)
+
+# PARK
+TAICHI_DEFAULT Scenario(Scenario_TaiChi), DefaultScenarioAnims
+AMB@PARK_TaiChi_A Scenario(Scenario_TaiChi)
+AMB@PARK_TaiChi_B Scenario(Scenario_TaiChi)
+
+# Hookers
+AMB@HOOKER_DEF Scenario(Scenario_Prostitute), DefaultScenarioAnims, !IsModel(F_Y_HOOKER_01)
+AMB@HOOKER Scenario(Scenario_Prostitute), !IsModel(F_Y_HOOKER_01)
+
+AMB@HOOKER_FAT_DEF Scenario(Scenario_Prostitute), DefaultScenarioAnims, !IsModel(F_Y_HOOKER_03)
+AMB@HOOKER_FAT Scenario(Scenario_Prostitute), !IsModel(F_Y_HOOKER_03)
+
+# Busker
+AMB@BUSKER_DEF Scenario(Scenario_StreetPerformer), DefaultScenarioAnims, PedHasProp(CJ_SAXF)
+AMB@BUSKER Scenario(Scenario_StreetPerformer), PedHasProp(CJ_SAXF)
+# (Note: phantom create folder)
+AMB@BUSKER_CRE Scenario(Scenario_StreetPerformer), CreatesProp(CJ_SAXF), SpawnsPercentage(100)
+
+# Standing - Misc
+AMB@SMOKING_IDLES		Scenario(Scenario_Standing)
+AMB@BURGER_IDLE			Scenario(Scenario_Standing)
+AMB@COFFEE_IDLE_M		Scenario(Scenario_Standing)
+AMB@COFFEE_IDLE_F		Scenario(Scenario_Standing)
+
+# Standing - Male
+AMB@STANDING_M_DEF Scenario(Scenario_Standing), DefaultScenarioAnims, !IsModel(M_Y_VENDOR), !IsModel(M_M_STREETFOOD_01), !IsModel(M_Y_CHINVEND_01), !IsModel(M_M_SELLER_01)
+AMB@STANDING_MALE Scenario(Scenario_Standing), !IsModel(M_Y_VENDOR), !IsModel(M_M_STREETFOOD_01), !IsModel(M_Y_CHINVEND_01), !IsModel(M_M_SELLER_01)
+
+# Standing - Female
+AMB@STANDING_F_DEF Scenario(Scenario_Standing), DefaultScenarioAnims
+AMB@STANDING_FEMALE Scenario(Scenario_Standing)
+
+# Standing - Vendors
+AMB@STANDING_VENDOR Scenario(Scenario_Standing), IsModel(M_Y_VENDOR), IsModel(M_M_STREETFOOD_01), IsModel(M_Y_CHINVEND_01), IsModel(M_M_SELLER_01)
+
+# Heavily Armed Guard - Fat
+AMB@GUARD_FAT_DEF Scenario(Scenario_HeavilyArmedPolice), DefaultScenarioAnims, Has2Handed
+
+# ----------------------------------------------------------------------------------------------
+# Anim Group Set Definitions
+# ----------------------------------------------------------------------------------------------
+AMBIENT_GROUP_SETS:
+
+<<BAGS>> AMB@BAG_A_IDLES, AMB@BAG_A_CREATE, AMB@BAG_B_IDLES, AMB@BAG_B_CREATE
+<<UMBRELLA>> AMB@UMBRELLA_OPEN_A, AMB@UMBRELLA_OPEN_B, AMB@UMBRELLA_IDL_A, AMB@UMBRELLA_IDL_B, AMB@UMBRELLA_CLOSE, AMB@RAIN_NEWSPAPER, AMB@RAIN_NEWSPAPER_B, AMB@NEWSPAPER_CREATE_R 
+<<FOOD_DRINK>> AMB@NUTS_IDLE, AMB@NUTS_DESTROY, AMB@BURGER_DESTROY, AMB@BURGER_IDLE, AMB@HOTDOG_DESTROY, AMB@HOTDOG_IDLE, AMB@EAT_FRUIT
+<<FOOD_DRINK_F>> AMB@NUTS_IDLE, AMB@NUTS_DESTROY, AMB@BURGER_DESTROY, AMB@BURGER_IDLE, AMB@HOTDOG_DESTROY_F, AMB@HOTDOG_IDLE_F
+<<COFFEE_M>> AMB@COFFEE_CREATE, AMB@COFFEE_IDLE_M
+<<COFFEE_F>> AMB@COFFEE_CREATE, AMB@COFFEE_IDLE_F
+<<MUSIC>> AMB@MUSIC_CREATE, AMB@MUSIC_DESTROY, AMB@MUSIC_IDLES
+<<TEMPERATURE>> AMB@COLD
+<<COP>> COP_SEARCH_IDLES, COP_WANDER_IDLES, COP_WANDER_RADIO
+<<COP_FAT>> COP_WANDER_IDLES_FAT, COP_WANDER_RADIO_FAT, AMB@GUARD_FAT_DEF
+<<DEFEND>> DEFEND@GEN_1H, DEFEND@GEN_2H
+<<VEH_STD_A>> VEH@STD_JACK_RIFLE, VEH@STD_JACK_RIFLE_B, VEH@STD_JACK_RIFLE_C, VEH@STD_JACK_RPG
+<<VEH_STD_B>> VEH@STD_JACK_UNARMED, VEH@STD_JACK_UNARMDB, VEH@STD_JACK_UNARMDC, VEH@STD_JACK_UNARMDD, VEH@STD_JACK_PISTOL, VEH@STD_JACK_PISTOLB
+<<VEH_VAN_A>> VEH@VAN_JACK_PISTOL, VEH@VAN_JACK_RIFLE, VEH@VAN_JACK_UNARMED
+<<VEH_LOW_A>> VEH@LOW_JACK_PISTOL, VEH@LOW_JACK_RIFLE, VEH@LOW_JACK_RPG
+<<VEH_TRUCK_A>>, VEH@TRU_JACK_PISTOL, VEH@TRU_JACK_RIFLE
+<<VEH_STD_AMB_PS>> AMB@CAR_STD_BK_SEAT, AMB@CAR_STD_PS_B, AMB@CAR_STD_PS_C, AMB@CAR_STD_PS_D, AMB@CAR_STD_PS_E, AMB@CAR_STD_PS_LOOPS, AMB@CAR_STD_PS_TRASH, AMB@CAR_STD_F_ID_PS
+<<VEH_STD_AMB_DS>> AMB@CAR_STD_DS_A, AMB@CAR_STD_DS_B, AMB@CAR_STD_DS_C, AMB@CAR_STD_DS_D, AMB@CAR_STD_DS_TRASH, AMB@CAR_STD_F_ID_DS
+<<VEH_LOW_AMB_PS>> AMB@CAR_LOW_PS_LOOPS
+<<VEH_FLEE>> AMB@CAR_STD_F_DF_DS,  AMB@CAR_STD_F_DF_PS, AMB@CAR_LOW_F_DF_DS,  AMB@CAR_LOW_F_DF_PS, AMB@CAR_VAN_F_DF_DS,  AMB@CAR_VAN_F_DF_PS, AMB@CAR_TRUCK_F_DF_DS, AMB@CAR_TRUCK_F_DF_PS, AMB@CAR_STD_Rear_Flee_DF
+<<DEFAULT>> AMB@YAWN, AMB@MISC, AMB@SHOES_A, AMB@SHOES_B, AMB@TRIPUP, AMB@WATCH_MELEE
+<<ROADCROSS>> AMB@ROADCROSS, AMB@ROADCROSS_HEAD, AMB@ROADCROSS_RAIN, AMB@LOOK_DEAD_PED, AMB@ROADCROSS_RAIN_B
+<<ROADCROSS_FAT>> AMB@ROADCROSS, AMB@ROADCROSS_HEAD, AMB@ROADCROSS_RAIN, AMB@LOOK_DEAD_PED, AMB@ROADCROSS_RAIN_B
+<<FAT_DEFAULT>> AMB@YAWN
+<<SMOKING_MALE>> AMB@SMOKING, AMB@SMOKING_CREATE, AMB@SMOKING_IDLES, AMB@SMOKING_DESTROY, AMB@SMK_SCN_CREATE, AMB@SMK_SCN_IDLES, AMB@SMK_SCN_DESTROY, AMB@SMOKE_M_DEF
+<<SMOKING_FEMALE>> AMB@SMOKING_F, AMB@SMOKING_CREATE_F, AMB@SMOKING_IDLES_F, AMB@SMOKING_DEST_F, AMB@SMK_SCN_CREATE_F, AMB@SMK_SCN_IDLES_F, AMB@SMK_SCN_DEST_F, AMB@SMOKE_F_DEF
+<<NEWSPAPER>> AMB@NEWSPAPER_CREATE, AMB@NEWSPAPER_IDLES, AMB@NEWSPAPER_DESTRY 
+<<PLAYER>> PLAYIDLES_COLD, PLAYIDLES_BAT, PLAYIDLES_STD,PLAYIDLES_RIFLE,PLAYIDLES_INJURED_R,VEH@STD_JACK_RIFLE,VEH@STD_JACK_UNARMED,VEH@STD_JACK_PISTOL,VEH@STD_JACK_PISTOLB,PLAYIDLES_INJURED,PLAYIDLES_TIRED_1H,PLAYIDLES_TIRED_2H,PLAYIDLES_TIRED_RPG
+<<PLAYER_B>> PLAYIDLES_WET_1H, PLAYIDLES_WET_2H
+<<SCEN_ROADWORKER_A>> AMB@SPADE_CREATE, AMB@SPADE_IDLES,  AMB@SPADE_DEFAULT, AMB@DRILL_CREATE, AMB@DRILL_IDLES, AMB@DRILL_DEFAULT, AMB@SLEDGE_CREATE, AMB@SLEDGE_DEFAULT, AMB@SLEDGE_IDLES  
+<<SCEN_ROADWORKER_B>> AMB@SUPER_CREATE, AMB@SUPER_DEFAULT, AMB@SUPER_IDLES_A, AMB@SUPER_IDLES_B, AMB@STOP_DEFAULT, AMB@STOP_CREATE
+<<SCEN_CONSTRUCTION>> AMB@CARRY_CREATE, AMB@CARRY_IDLES
+<<SCEN_INDUSTRIAL>> AMB@SUPER_CREATE, AMB@SUPER_DEFAULT, AMB@SUPER_IDLES_A, AMB@SUPER_IDLES_B 
+<<SCEN_LEANING>> AMB@LEAN_DEFAULT, AMB@LEAN_SMOKE_IDLES, AMB@LEAN_IDLES, AMB@LEAN_PHONE_IDLES, AMB@LEAN_IDL_B, AMB@LEAN_BALC_STAND_DEF, AMB@LEAN_BALC_I_A, AMB@LEAN_BALC_I_B, AMB@LEAN_BALC_CRE, AMB@LEAN_BALC_IDL_B, AMB@LEAN_BALC_SMOKE_DEF
+<<SCEN_LEANING_F>> AMB@LEAN_DEFAULT, AMB@LEAN_SMOKE_IDLES, AMB@LEAN_IDLES, AMB@LEAN_PHONE_IDLES, AMB@LEAN_IDL_B, AMB@LEAN_BALC_STAND_DEF, AMB@LEAN_BALC_I_A, AMB@LEAN_BALC_I_B, AMB@LEAN_BALC_CRE, AMB@LEAN_BALC_I_B_F, AMB@LEAN_BALC_SMOKE_DEF
+<<SCEN_HANGOUTS>> AMB@HANG_STR_DFT, AMB@HANG_STR_IDLS, AMB@HANG_STR_I_CL_A, AMB@HANG_STR_I_CL_C, AMB@HANG_STR_IDLS_CRT
+<<SCEN_HANGOUTS_F>> AMB@HANG_STR_F_DFT, AMB@HANG_STR_F_IDLS, AMB@HANG_ST_I_F_CL_A, AMB@HANG_ST_I_F_CL_C, AMB@HANG_STR_IDLS_CRT
+<<SCEN_HANGOUTS_FAT>> AMB@HANG_STR_FAT_DFT, AMB@HANG_FAT_IDLS, AMB@HANG_FAT_CL_A, AMB@HANG_FAT_CL_B, AMB@HANG_STR_IDLS_CRT
+<<SCEN_HANGOUTS_THIN>> AMB@HANG_STR_THIN_DFT, AMB@HANG_THIN_IDLS, AMB@HANG_THIN_CL, AMB@HANG_STR_IDLS_CRT
+<<SCEN_SECURITY>> AMB@SECURITY_IDLES_A, AMB@SECURITY_IDLES_B, AMB@SECURITY_IDLES_C, AMB@SECURITY_IDLES_D
+<<SCEN_TOURIST>> AMB@TOURIST_CREATE, AMB@TOURIST_IDLES_A, AMB@TOURIST_IDLES_B, AMB@TOURIST_CAMERA
+<<SCEN_TOURIST_F>> AMB@TOURIST_F_CREATE, AMB@TOURIST_F
+<<SCEN_BRAZIER>> AMB@BRAZIER
+<<SCEN_PAYPHONE>> AMB@PAYPHONE_CREATE, AMB@PAYPHONE_DEFAULT, AMB@PAYPHONE_IDL_A, AMB@PAYPHONE_IDL_B 
+<<SCEN_GARDENING_M>> AMB@RAKE_DEFAULT, AMB@RAKE_CREATE, AMB@RAKE_IDLES, AMB@RAKE_WALK, AMB@WCAN_DEFAULT, AMB@WCAN_CREATE, AMB@WCAN_IDLES
+<<SCEN_GARDENING_F>> AMB@RAKE_F_DEFAULT, AMB@RAKE_F_CREATE, AMB@RAKE_F_IDLES, AMB@RAKE_F_WALK, AMB@WCAN_DEFAULT, AMB@WCAN_CREATE, AMB@WCAN_IDLES
+<<SCEN_SEAT_BENCH>> AMB@BNCH_SMK_DEF, AMB@BNCH_SMK_IDL, AMB@BNCH_SMK_CRE, AMB@BNCH_DNK_DEF, AMB@BNCH_DNK_CRE, AMB@BNCH_DNK_IDL, AMB@BNCH_EAT_DEF, AMB@BNCH_EAT_IDL, AMB@BNCH_EAT_CRE, AMB@BNCH_STD_DEF, AMB@BNCH_STD_IDL
+<<SCEN_SEAT_BENCH_READ>> AMB@BNCH_READ_DEF, AMB@BNCH_READ_CRE, AMB@BNCH_READ_IDL
+<<SCEN_SEAT_BENCH_F>> AMB@BNCH_STD_IDL_F, AMB@BNCH_STD_DEF_F, AMB@BNCH_SMK_DEF_F, AMB@BNCH_SMK_CRE_F, AMB@BNCH_SMK_IDL_F, AMB@BNCH_EAT_DEF_F, AMB@BNCH_EAT_CRE_F, AMB@BNCH_EAT_IDL_F, AMB@BNCH_DNK_DEF_F, AMB@BNCH_DNK_IDL_F, AMB@BNCH_DNK_CRE_F
+<<SCEN_SEAT_BENCH_F_READ>> AMB@BNCH_READ_DEF_F, AMB@BNCH_READ_CRE_F, AMB@BNCH_READ_IDL_F
+<<SCEN_SHOPWINDOW>> AMB@WINSHOP_DEFAULT, AMB@WINSHOP_IDLES
+<<SCEN_CAFE>> AMB@CAFE_EMPTY_DEFAULT, AMB@CAFE_EMPTY_IDL, AMB@CAFE_DEFAULT, AMB@CAFE_IDLES, AMB@CAFE_DEFAULT_CREATE, AMB@CAFE_SMK_DEFAULT, AMB@CAFE_SMOKE_IDL_A, AMB@CAFE_SMOKE_IDL_B, AMB@CAFE_SMK_CREATE
+<<SCEN_CAFE_F>> AMB@CAFE_F_EMPTY_DEFAULT, AMB@CAFE_EMPTY_IDL_F, AMB@CAFE_F_DEFAULT, AMB@CAFE_IDLES_F, AMB@CAFE_DEFAULT_CREATE, AMB@CAFE_SMK_F_DEFAULT, AMB@CAFE_SMK_IDL_F, AMB@CAFE_SMK_F_CREATE
+<<SCEN_CAFE_READ_F>> AMB@CAFE_READ_DEF_F, AMB@CAFE_READ_CREATE_F, AMB@CAFE_READ_IDL_F
+<<SCEN_CAFE_READ>>  AMB@CAFE_READ_DEF, AMB@CAFE_READ_CREATE, AMB@CAFE_READ_IDL
+<<SCEN_BROKEN_DOWN>> AMB@BROKEN_D_DEF, AMB@BROKEN_D_IDLES_A, AMB@BROKEN_D_IDLES_B, AMB@BOOT_DEFAULT, AMB@BOOT_IDLES
+<<SCEN_SEAT_ONSTEP>> AMB@STEP_DEFAULT, AMB@STEP_IDL_A, AMB@STEP_IDL_B 
+<<SCEN_SEAT_ONSTEPB>> AMB@STEP_DEFAULT_B, AMB@STEP_IDLES_B
+<<SCEN_SEAT_INTCAFE>> AMB@INT_CAFE_DEFAULT, AMB@INT_CAFE_IDLES
+<<SCEN_SEAT_ONWALL>> AMB@WALL_DEFAULT, AMB@WALL_IDLES, AMB@WALL_READ_DEF, AMB@WALL_READ_CREATE, AMB@WALL_READ_IDL
+<<SCEN_SEAT_ONWALL_F>> AMB@WALL_DEFAULT_F, AMB@WALL_IDLES_F, AMB@WALL_READ_DEF_F, AMB@WALL_READ_CREATE_F, AMB@WALL_READ_IDL_F
+<<SCEN_STREET_AMENITIES>> AMB@NEWSPAPER_VEND, AMB@TELESCOPE_DFT, AMB@TELESCOPE_IDLES
+<<SCEN_STREET_AMENITIES_F>> AMB@NEWSPAPER_VEND, AMB@TELESCOPE_F_DFT, AMB@TELESCOPE_IDL_F
+<<SCEN_SERVICE>> AMB@SERVICE_DEFAULT, AMB@SERVICE_IDLES_A, AMB@SERVICE_IDLES_B, AMB@SERVICE_CREATE, AMB@TELEGRAPH_DFT, AMB@TELEGRAPH_IDLES, AMB@POSTMAN_DEFAULT, AMB@POSTMAN_IDLES, AMB@SWEEP_CREATE, AMB@SWEEP_IDLES
+<<SCEN_FFOOD_M>> AMB@SWEEP_FFOOD_CRE, AMB@SWEEP_FFOOD_DEF, AMB@SWEEP_FFOOD_IDL
+<<SCEN_FFOOD_F>> AMB@SWEEP_FFOOD_CRE, AMB@SWEEP_FFOOD_DEF_F, AMB@SWEEP_FFOOD_I_F
+<<SCEN_STRIP_CLUB>> AMB@STRIP_CHR_DEF, AMB@STRIP_CHR_IDLS_A, AMB@STRIP_CHR_IDLS_B, AMB@BOUNCER_DEF, AMB@BOUNCER_IDLES_A, AMB@BOUNCER_IDLES_B, AMB@STRIP_RAIL_DEF, AMB@STRIP_RAIL_IDL, AMB@STRIP_STOOL_DEF, AMB@STRIP_STOOL_I_A, AMB@STRIP_STOOL_I_B
+<<SCEN_WINDOW_CLEANER>> AMB@WINCLEAN_DEF, AMB@WINCLEAN_IDL, AMB@WINCLEAN_CRE
+<<SCEN_HOSPITAL>> AMB@HOSPITAL_DEFAULT, AMB@HOSPITAL_IDLES_A, AMB@HOSPITAL_IDLES_B, AMB@HOSPITAL_BED
+<<SCEN_DANCER_F>> AMB@DANCE_FEMDFT, AMB@DANCE_FEMIDL_A, AMB@DANCE_FEMIDL_B, AMB@DANCE_FEMIDL_C
+<<SCEN_DANCER_M>> AMB@DANCE_MALEDFT, AMB@DANCE_MALEIDL_A, AMB@DANCE_MALEIDL_B, AMB@DANCE_MALEIDL_C, AMB@DANCE_MALEIDL_D
+<<SCEN_TAXI_WAIT_M>> AMB@TAXI_WAIT_DEF_M, AMB@TAXI_WAIT_I_M_A, AMB@TAXI_WAIT_I_M_B, AMB@TAXI_WAIT_I_M_C
+<<SCEN_TAXI_WAIT_F>> AMB@TAXI_WAIT_DEF_F, AMB@TAXI_WAIT_I_F_A, AMB@TAXI_WAIT_I_F_B
+<<SCEN_BUMS>> AMB@BEG_WASTED_DEF_A, AMB@BEG_WASTED_DEF_B, AMB@WASTED_A, AMB@WASTED_B, AMB@BNCH_BUM_DEF, AMB@BNCH_BUM_IDL, AMB@HOMELESS_A, AMB@HOMELESS_B
+<<SCEN_DEALER>> AMB@DRUGD_DEF, AMB@DRUGD_IDL_A, AMB@DRUGD_IDL_B
+<<SCEN_PREACHER>> AMB@PREACH_DEF, AMB@PREACH_IDL_A, AMB@PREACH_IDL_B, AMB@PREACH_CRE
+<<SCEN_COP_SEARCH>> COP_SEARCH_IDLES
+<<SCEN_TAICHI>> AMB@PARK_TaiChi_A, AMB@PARK_TaiChi_B, TAICHI_DEFAULT
+<<INJURED>> AMB@INJURED_SIDE, AMB@INJURED_FRONT
+<<PHONE_M>> AMB@PHONE_M_A, AMB@PHONE_M_B
+<<PHONE_F>> AMB@PHONE_F
+<<REACTIONS>> AMB@SHOCK, AMB@FLEE_A, AMB@HURRY_WALK, AMB@HURRY_HEAD, AMB@INQUISITIVE
+<<SCEN_HOOKER>> AMB@HOOKER_DEF, AMB@HOOKER, AMB@HOOKER_FAT_DEF, AMB@HOOKER_FAT
+<<SCEN_BUSKER>> AMB@BUSKER_DEF, AMB@BUSKER, AMB@BUSKER_CRE
+<<SCEN_STANDING_MALE>> AMB@STANDING_M_DEF, AMB@STANDING_MALE, AMB@SMOKING_IDLES, AMB@BURGER_IDLE, AMB@COFFEE_IDLE_M, AMB@COFFEE_IDLE_F, AMB@STANDING_VENDOR
+<<SCEN_STANDING_FEMALE>> AMB@STANDING_F_DEF, AMB@STANDING_FEMALE, AMB@SMOKING_IDLES, AMB@BURGER_IDLE, AMB@COFFEE_IDLE_M, AMB@COFFEE_IDLE_F
+<<F_MP>> PLAYIDLES_F_STD, PLAYIDLES_F_RIFLE
+
+# ----------------------------------------------------------------------------------------------
+# Associations between ped anim groups and ambient anims
+# ----------------------------------------------------------------------------------------------
+MOVEMENT_GROUPS:
+
+# Female Movement Groups ##############################################################################################################################################################################################
+
+move_f@bness_a		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_F>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK_F>>, AMB@PREEN_BSNESS, AMB@PREEN, <<MUSIC>>, <<BAGS>>
+move_f@bness_a		<<SCEN_GARDENING_F>>, <<SCEN_SEAT_BENCH_F>>, <<SCEN_SEAT_BENCH_F_READ>>, <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS_F>>, <<SCEN_LEANING_F>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<SCEN_STANDING_FEMALE>>
+move_f@bness_a		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL_F>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE_F>>, <<SCEN_CAFE_READ_F>>, <<VEH_STD_B>>, <<VEH_VAN_A>>, 
+move_f@bness_a		<<SMOKING_FEMALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES_F>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<SCEN_HOOKER>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>
+move_f@bness_a		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST_F>>, <<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_F>>, <<SCEN_DANCER_F>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_F>>, <<ROADCROSS>>
+move_f@bness_a		<<SCEN_SEAT_BENCH_F_READ>>, <<SCEN_FFOOD_F>>
+
+move_f@bness_b		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_F>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK_F>>, AMB@PREEN_BSNESS, AMB@PREEN, <<MUSIC>>, <<BAGS>>,
+move_f@bness_b		<<SCEN_GARDENING_F>>, <<SCEN_SEAT_BENCH_F>>, <<SCEN_SEAT_BENCH_F_READ>>, <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS_F>>, <<SCEN_LEANING_F>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<SCEN_STANDING_FEMALE>>
+move_f@bness_b		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL_F>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE_F>>, <<SCEN_CAFE_READ_F>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_f@bness_b		<<SMOKING_FEMALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES_F>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<SCEN_HOOKER>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>
+move_f@bness_b		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST_F>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_F>>, <<SCEN_DANCER_F>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_F>>, <<ROADCROSS>>, <<SCEN_FFOOD_F>>
+move_f@bness_b		<<SCEN_SEAT_BENCH_F_READ>>
+
+move_f@bness_c		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_F>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK_F>>, AMB@PREEN_BSNESS, AMB@PREEN, <<MUSIC>>, <<BAGS>>
+move_f@bness_c		<<SCEN_GARDENING_F>>, <<SCEN_SEAT_BENCH_F>>, <<SCEN_SEAT_BENCH_F_READ>>, <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS_F>>, <<SCEN_LEANING_F>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<SCEN_STANDING_FEMALE>>
+move_f@bness_c		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL_F>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE_F>>, <<SCEN_CAFE_READ_F>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_f@bness_c		<<SMOKING_FEMALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES_F>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>, <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<SCEN_HOOKER>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>
+move_f@bness_c		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST_F>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_F>>, <<SCEN_DANCER_F>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_F>>, <<ROADCROSS>>, <<SCEN_FFOOD_F>>
+move_f@bness_c		<<SCEN_SEAT_BENCH_F_READ>>
+
+move_f@bness_d		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_F>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK_F>>,AMB@PREEN_BSNESS,AMB@PREEN,<<MUSIC>>,<<BAGS>>,<<SCEN_SEAT_BENCH_F_READ>>
+move_f@bness_d		<<SCEN_GARDENING_F>>, <<SCEN_SEAT_BENCH_F>>, <<SCEN_SEAT_BENCH_F_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS_F>>, <<SCEN_LEANING_F>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<SCEN_STANDING_FEMALE>>
+move_f@bness_d		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL_F>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE_F>>, <<SCEN_CAFE_READ_F>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_f@bness_d		<<SMOKING_FEMALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES_F>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<SCEN_HOOKER>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>
+move_f@bness_d		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST_F>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_F>>, <<SCEN_DANCER_F>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_F>>, <<ROADCROSS>>, <<SCEN_FFOOD_F>>
+
+move_f@bness_e		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_F>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK_F>>, AMB@PREEN_BSNESS, AMB@PREEN, <<MUSIC>>, <<BAGS>>
+move_f@bness_e		<<SCEN_GARDENING_F>>, <<SCEN_SEAT_BENCH_F>>, <<SCEN_SEAT_BENCH_F_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS_F>>, <<SCEN_LEANING_F>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<SCEN_SEAT_BENCH_F_READ>>
+move_f@bness_e		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL_F>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE_F>>, <<SCEN_CAFE_READ_F>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_f@bness_e		<<SMOKING_FEMALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES_F>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<SCEN_HOOKER>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>
+move_f@bness_e		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST_F>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_F>>, <<SCEN_DANCER_F>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_F>>, <<ROADCROSS>>, <<SCEN_FFOOD_F>>
+
+move_f@casual		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_F>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK_F>>, AMB@PREEN, <<MUSIC>>, <<BAGS>>, <<SCEN_SEAT_BENCH_F_READ>>
+move_f@casual		<<SCEN_GARDENING_F>>, <<SCEN_SEAT_BENCH_F>>, <<SCEN_SEAT_BENCH_F_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS_F>>, <<SCEN_LEANING_F>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<SCEN_STANDING_FEMALE>>
+move_f@casual		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL_F>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE_F>>, <<SCEN_CAFE_READ_F>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_f@casual		<<SMOKING_FEMALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES_F>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<SCEN_HOOKER>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>
+move_f@casual		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST_F>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_F>>, <<SCEN_DANCER_F>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_F>>, <<ROADCROSS>>, <<SCEN_FFOOD_F>>
+
+move_f@casual_b		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_F>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK_F>>, AMB@PREEN, <<MUSIC>>, <<BAGS>>
+move_f@casual_b		<<SCEN_GARDENING_F>>, <<SCEN_SEAT_BENCH_F>>, <<SCEN_SEAT_BENCH_F_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS_FAT>>, <<SCEN_LEANING_F>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<SCEN_SEAT_BENCH_F_READ>>
+move_f@casual_b		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL_F>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE_F>>, <<SCEN_CAFE_READ_F>>, <<VEH_STD_B>>, <<VEH_VAN_A>>, 
+move_f@casual_b		<<SMOKING_FEMALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES_F>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<SCEN_HOOKER>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>
+move_f@casual_b		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST_F>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_F>>, <<SCEN_DANCER_F>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_F>>, <<ROADCROSS>>, <<SCEN_FFOOD_F>>
+
+move_f@casual_c		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_F>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK_F>>, AMB@PREEN, <<MUSIC>>, <<BAGS>>, <<SCEN_SEAT_BENCH_F_READ>>
+move_f@casual_c		<<SCEN_GARDENING_F>>, <<SCEN_SEAT_BENCH_F>>, <<SCEN_SEAT_BENCH_F_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS_F>>, <<SCEN_LEANING_F>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<SCEN_STANDING_FEMALE>>
+move_f@casual_c		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL_F>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE_F>>, <<SCEN_CAFE_READ_F>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_f@casual_c		<<SMOKING_FEMALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES_F>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<SCEN_HOOKER>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>
+move_f@casual_c		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST_F>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_F>>, <<SCEN_DANCER_F>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_F>>, <<ROADCROSS>>, <<SCEN_FFOOD_F>>
+
+move_f@generic		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_F>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK_F>>, AMB@PREEN, <<MUSIC>>, <<BAGS>>, <<SCEN_SEAT_BENCH_F_READ>>
+move_f@generic		<<SCEN_GARDENING_F>>, <<SCEN_SEAT_BENCH_F>>, <<SCEN_SEAT_BENCH_F_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS_F>>, <<SCEN_LEANING_F>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<SCEN_STANDING_FEMALE>>
+move_f@generic		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL_F>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE_F>>, <<SCEN_CAFE_READ_F>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_f@generic		<<SMOKING_FEMALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES_F>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<SCEN_HOOKER>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>
+move_f@generic		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST_F>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_F>>, <<SCEN_DANCER_F>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_F>>, <<ROADCROSS>>, <<F_MP>>, <<SCEN_FFOOD_F>>
+
+move_f@michelle		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_F>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK_F>>, AMB@PREEN, <<MUSIC>>, <<BAGS>>, <<SCEN_SEAT_BENCH_F_READ>>
+move_f@michelle		<<SCEN_GARDENING_F>>, <<SCEN_SEAT_BENCH_F>>, <<SCEN_SEAT_BENCH_F_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS_F>>, <<SCEN_LEANING_F>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<SCEN_STANDING_FEMALE>>
+move_f@michelle		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL_F>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE_F>>, <<SCEN_CAFE_READ_F>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_f@michelle		<<SMOKING_FEMALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES_F>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<SCEN_HOOKER>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>
+move_f@michelle		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST_F>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_F>>, <<SCEN_DANCER_F>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_F>>, <<ROADCROSS>>, <<F_MP>>, <<SCEN_FFOOD_F>>
+
+move_f@old_a		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_F>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK_F>>, AMB@PREEN, <<BAGS>>, <<SCEN_SEAT_BENCH_F_READ>>, <<SCEN_FFOOD_F>>
+move_f@old_a		<<SCEN_GARDENING_F>>, <<SCEN_SEAT_BENCH_F>>, <<SCEN_SEAT_BENCH_F_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS_FAT>>, <<SCEN_LEANING_F>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<SCEN_STANDING_FEMALE>>
+move_f@old_a		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL_F>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE_F>>, <<SCEN_CAFE_READ_F>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_f@old_a		<<SMOKING_FEMALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES_F>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<SCEN_HOOKER>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>
+move_f@old_a		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST_F>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_F>>, <<SCEN_DANCER_F>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_F>>, <<ROADCROSS>>, <<SCEN_FFOOD_F>>
+
+move_f@old_b		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_F>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK_F>>, AMB@PREEN, <<BAGS>>, <<SCEN_SEAT_BENCH_F_READ>>, <<SCEN_FFOOD_F>>
+move_f@old_b		<<SCEN_GARDENING_F>>, <<SCEN_SEAT_BENCH_F>>, <<SCEN_SEAT_BENCH_F_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS_FAT>>, <<SCEN_LEANING_F>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<SCEN_STANDING_FEMALE>>
+move_f@old_b		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL_F>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE_F>>, <<SCEN_CAFE_READ_F>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_f@old_b		<<SMOKING_FEMALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES_F>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<SCEN_HOOKER>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>
+move_f@old_b		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST_F>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_F>>, <<SCEN_DANCER_F>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_F>>, <<ROADCROSS>>, <<SCEN_FFOOD_F>>
+
+move_f@old_c		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_F>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK_F>>, AMB@PREEN, <<BAGS>>, <<SCEN_SEAT_BENCH_F_READ>>, <<SCEN_FFOOD_F>>
+move_f@old_c		<<SCEN_GARDENING_F>>, <<SCEN_SEAT_BENCH_F>>, <<SCEN_SEAT_BENCH_F_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS_F>>, <<SCEN_LEANING_F>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<SCEN_STANDING_FEMALE>>
+move_f@old_c		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL_F>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE_F>>, <<SCEN_CAFE_READ_F>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_f@old_c		<<SMOKING_FEMALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES_F>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<SCEN_HOOKER>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>
+move_f@old_c		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST_F>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_F>>, <<SCEN_DANCER_F>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_F>>, <<ROADCROSS>>, <<SCEN_FFOOD_F>>
+
+move_f@old_d		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_F>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK_F>>, AMB@PREEN, <<BAGS>>, <<SCEN_SEAT_BENCH_F_READ>>, <<SCEN_FFOOD_F>>
+move_f@old_d		<<SCEN_GARDENING_F>>, <<SCEN_SEAT_BENCH_F>>, <<SCEN_SEAT_BENCH_F_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS_F>>, <<SCEN_LEANING_F>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<SCEN_STANDING_FEMALE>>
+move_f@old_d		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL_F>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE_F>>, <<SCEN_CAFE_READ_F>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_f@old_d		<<SMOKING_FEMALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES_F>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<SCEN_HOOKER>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>
+move_f@old_d		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST_F>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_F>>, <<SCEN_DANCER_F>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_F>>, <<ROADCROSS>>, <<SCEN_FFOOD_F>>
+
+move_f@sexy		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_F>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK_F>>,  AMB@PREEN, <<MUSIC>>, <<SCEN_SEAT_BENCH_F_READ>>
+move_f@sexy		<<SCEN_GARDENING_F>>, <<SCEN_SEAT_BENCH_F>>, <<SCEN_SEAT_BENCH_F_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS_F>>, <<SCEN_LEANING_F>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<SCEN_STANDING_FEMALE>>
+move_f@sexy		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL_F>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE_F>>, <<SCEN_CAFE_READ_F>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_f@sexy		<<SMOKING_FEMALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES_F>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<SCEN_HOOKER>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>
+move_f@sexy		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST_F>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_F>>, <<SCEN_DANCER_F>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_F>>, <<ROADCROSS>>, <<SCEN_FFOOD_F>>
+
+move_f@fat		<<INJURED>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<UMBRELLA>>, <<FAT_DEFAULT>>, <<BAGS>>, <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS_FAT>>
+move_f@fat		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>, <<SCEN_BROKEN_DOWN>>, <<VEH_STD_B>>, <<VEH_VAN_A>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<COP_FAT>>
+move_f@fat		<<SCEN_COP_SEARCH>>, <<SCEN_TAXI_WAIT_F>>, <<REACTIONS>>, <<ROADCROSS_FAT>>, <<SCEN_FFOOD_F>>
+
+move_f@puffer		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_F>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK_F>>, AMB@PREEN, <<MUSIC>>, <<BAGS>>, <<SCEN_SEAT_BENCH_F_READ>>
+move_f@puffer		<<SCEN_GARDENING_F>>, <<SCEN_SEAT_BENCH_F>>, <<SCEN_SEAT_BENCH_F_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS_FAT>>, <<SCEN_LEANING_F>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>
+move_f@puffer		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL_F>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE_F>>, <<SCEN_CAFE_READ_F>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_f@puffer		<<SMOKING_FEMALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES_F>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<SCEN_HOOKER>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>
+move_f@puffer		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST_F>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_F>>, <<SCEN_DANCER_F>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_F>>, , <<ROADCROSS_FAT>>, <<SCEN_FFOOD_F>>
+
+# Male Movement Groups ##############################################################################################################################################################################################
+
+move_m@bernie		<<INJURED>>
+move_m@eddie		<<INJURED>>
+move_m@playboy		<<INJURED>>
+move_m@roman_inj	<<INJURED>>
+
+move_m@bness_a		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<UMBRELLA>>, <<DEFAULT>>, AMB@WALLET, <<TEMPERATURE>>, <<FOOD_DRINK>>, AMB@PREEN_BSNESS, AMB@PREEN, <<MUSIC>>, <<BAGS>>
+move_m@bness_a		<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<SCEN_SEAT_BENCH_READ>>
+move_m@bness_a		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_m@bness_a		<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<SCEN_FFOOD_M>>
+move_m@bness_a		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>, <<ROADCROSS>>, <<SCEN_STANDING_MALE>>
+
+move_m@bness_b		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<UMBRELLA>>, <<DEFAULT>>, AMB@WALLET, <<TEMPERATURE>>, <<FOOD_DRINK>>, AMB@PREEN_BSNESS, AMB@PREEN, <<MUSIC>>, <<BAGS>>
+move_m@bness_b		<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<SCEN_SEAT_BENCH_READ>>
+move_m@bness_b		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_m@bness_b		<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<SCEN_FFOOD_M>>
+move_m@bness_b		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>, <<ROADCROSS>>, <<SCEN_STANDING_MALE>>
+
+move_m@bness_c		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<UMBRELLA>>, <<DEFAULT>>, AMB@WALLET, <<TEMPERATURE>>, <<FOOD_DRINK>>, AMB@PREEN_BSNESS, AMB@PREEN, <<MUSIC>>, <<BAGS>>
+move_m@bness_c		<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<SCEN_SEAT_BENCH_READ>>
+move_m@bness_c		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_m@bness_c		<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<SCEN_FFOOD_M>>
+move_m@bness_c		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>, <<ROADCROSS>>, <<SCEN_STANDING_MALE>>
+
+move_m@casual		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK>>, AMB@PREEN, <<MUSIC>>, <<BAGS>>, <<SCEN_SEAT_BENCH_READ>>
+move_m@casual		<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>
+move_m@casual		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_m@casual		<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<SCEN_FFOOD_M>>
+move_m@casual		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>, <<ROADCROSS>>, <<SCEN_STANDING_MALE>>
+
+move_m@casual_b		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK>>, AMB@PREEN, <<MUSIC>>, <<BAGS>>, <<SCEN_SEAT_BENCH_READ>>
+move_m@casual_b		<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS_THIN>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<SCEN_STANDING_MALE>>
+move_m@casual_b		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_m@casual_b		<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<ROADCROSS>>, <<SCEN_FFOOD_M>>
+move_m@casual_b		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<VEH_LOW_AMB_PS>>, <<SCEN_BUSKER>>
+
+move_m@casual_c		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK>>, AMB@PREEN, <<MUSIC>>, <<BAGS>>, <<SCEN_SEAT_BENCH_READ>>
+move_m@casual_c		<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<ROADCROSS>>
+move_m@casual_c		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_m@casual_c		<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<SCEN_FFOOD_M>>
+move_m@casual_c		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>, <<SCEN_STANDING_MALE>>
+
+move_m@generic		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK>>, AMB@PREEN, <<MUSIC>>, <<BAGS>>, <<SCEN_SEAT_BENCH_READ>>		
+move_m@generic		<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<ROADCROSS>>
+move_m@generic		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_m@generic		<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<SCEN_FFOOD_M>>
+move_m@generic		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>, <<SCEN_STANDING_MALE>>
+
+move_m@old_a		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK>>, AMB@PREEN, <<BAGS>>, <<SCEN_SEAT_BENCH_READ>>
+move_m@old_a		<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<ROADCROSS>>
+move_m@old_a		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_m@old_a		<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<SCEN_FFOOD_M>>
+move_m@old_a		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>, <<SCEN_STANDING_MALE>>
+
+move_m@old_b		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK>>, AMB@PREEN, <<BAGS>>, <<SCEN_SEAT_BENCH_READ>>
+move_m@old_b		<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<ROADCROSS>>
+move_m@old_b		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_m@old_b		<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<SCEN_FFOOD_M>>
+move_m@old_b		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>, <<SCEN_STANDING_MALE>>
+
+move_m@old_c		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK>>, AMB@PREEN, <<BAGS>>, <<SCEN_SEAT_BENCH_READ>>
+move_m@old_c		<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<ROADCROSS>>
+move_m@old_c		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_m@old_c		<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<SCEN_FFOOD_M>>
+move_m@old_c		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>, <<SCEN_STANDING_MALE>>
+
+move_m@fat		<<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<COP_FAT>>, <<ROADCROSS_FAT>>
+move_m@fat		<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS_FAT>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>
+move_m@fat		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_m@fat		<<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<SCEN_FFOOD_M>>
+move_m@fat		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>
+
+move_m@bum		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_BUMS>>, <<SCEN_BRAZIER>>, <<REACTIONS>>, <<TEMPERATURE>>, <<ROADCROSS>>, <<SCEN_FFOOD_M>>
+
+# Gang Movement Groups ##############################################################################################################################################################################################
+
+move_gng@jam_a		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK>>, <<MUSIC>>, <<SCEN_SEAT_BENCH_READ>>, <<UMBRELLA>>
+move_gng@jam_a		<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<ROADCROSS>>
+move_gng@jam_a		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_gng@jam_a		<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<SCEN_FFOOD_M>>
+move_gng@jam_a		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>, <<SCEN_STANDING_MALE>>
+
+move_gng@jam_b		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK>>, <<MUSIC>>, <<SCEN_SEAT_BENCH_READ>>, <<UMBRELLA>>
+move_gng@jam_b		<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<ROADCROSS>>
+move_gng@jam_b		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_gng@jam_b		<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<SCEN_FFOOD_M>>
+move_gng@jam_b		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>, <<SCEN_STANDING_MALE>>
+
+move_gng@jam_c		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK>>, <<MUSIC>>, <<SCEN_SEAT_BENCH_READ>>, <<UMBRELLA>>
+move_gng@jam_c		<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<ROADCROSS>>
+move_gng@jam_c		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_gng@jam_c		<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<SCEN_FFOOD_M>>
+move_gng@jam_c		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>, <<SCEN_STANDING_MALE>>
+
+move_gng@latino_a	<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK>>, <<MUSIC>>, <<SCEN_SEAT_BENCH_READ>>, <<UMBRELLA>>
+move_gng@latino_a	<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<ROADCROSS>>
+move_gng@latino_a	<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_gng@latino_a	<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<SCEN_FFOOD_M>>
+move_gng@latino_a	<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>, <<SCEN_STANDING_MALE>>
+
+move_gng@latino_b	<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK>>, <<MUSIC>>, <<SCEN_SEAT_BENCH_READ>>, <<UMBRELLA>>
+move_gng@latino_b	<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<ROADCROSS>>
+move_gng@latino_b	<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_gng@latino_b	<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<SCEN_FFOOD_M>>
+move_gng@latino_b	<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>, <<SCEN_STANDING_MALE>>
+
+move_gng@latino_c	<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK>>, <<MUSIC>>, <<SCEN_SEAT_BENCH_READ>>, <<UMBRELLA>>
+move_gng@latino_c	<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<ROADCROSS>>
+move_gng@latino_c	<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_gng@latino_c	<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<SCEN_FFOOD_M>>
+move_gng@latino_c	<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>, <<SCEN_STANDING_MALE>>
+
+move_gng@afro_a		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK>>, <<MUSIC>>, <<SCEN_SEAT_BENCH_READ>>, <<UMBRELLA>>
+move_gng@afro_a		<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<ROADCROSS>>
+move_gng@afro_a		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_gng@afro_a		<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<SCEN_FFOOD_M>>
+move_gng@afro_a		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>, <<SCEN_STANDING_MALE>>
+
+move_gng@afro_b		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK>>, <<MUSIC>>, <<SCEN_SEAT_BENCH_READ>>, <<UMBRELLA>>
+move_gng@afro_b		<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<ROADCROSS>>
+move_gng@afro_b		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_gng@afro_b		<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<SCEN_FFOOD_M>>
+move_gng@afro_b		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>, <<SCEN_STANDING_MALE>>
+
+move_gng@afro_c		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK>>, <<MUSIC>>, <<SCEN_SEAT_BENCH_READ>>, <<UMBRELLA>>
+move_gng@afro_c		<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<ROADCROSS>>
+move_gng@afro_c		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_gng@afro_c		<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<SCEN_FFOOD_M>>
+move_gng@afro_c		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>, <<SCEN_STANDING_MALE>>
+
+move_gng@generic_a	<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK>>, <<MUSIC>>, <<SCEN_SEAT_BENCH_READ>>, <<UMBRELLA>>
+move_gng@generic_a	<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<ROADCROSS>>
+move_gng@generic_a	<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_STRIP_CLUB>>, <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>
+move_gng@generic_a	<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<VEH_VAN_A>>, <<SCEN_FFOOD_M>>
+move_gng@generic_a	<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>, <<SCEN_STANDING_MALE>>
+
+move_gng@generic_b	<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK>>, <<MUSIC>>, <<SCEN_SEAT_BENCH_READ>>, <<UMBRELLA>>
+move_gng@generic_b	<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<ROADCROSS>>
+move_gng@generic_b	<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_gng@generic_b	<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<SCEN_FFOOD_M>>
+move_gng@generic_b	<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>, <<SCEN_STANDING_MALE>>
+
+move_gng@generic_c	<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK>>, <<MUSIC>>, <<SCEN_SEAT_BENCH_READ>>, <<UMBRELLA>>
+move_gng@generic_c	<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>, <<ROADCROSS>>
+move_gng@generic_c	<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_gng@generic_c	<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>, <<VEH_LOW_AMB_PS>>, <<SCEN_FFOOD_M>>
+move_gng@generic_c	<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<SCEN_BUSKER>>, <<SCEN_STANDING_MALE>>
+
+# Misc Movement Groups ##############################################################################################################################################################################################
+
+move_m@tourist		<<NEWSPAPER>>, <<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<PHONE_M>>, <<UMBRELLA>>, <<DEFAULT>>, <<TEMPERATURE>>, <<FOOD_DRINK>>, <<BAGS>>, <<SCEN_SEAT_BENCH_READ>>
+move_m@tourist		<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>, <<SCEN_PAYPHONE>>, <<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>
+move_m@tourist		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+move_m@tourist		<<SMOKING_MALE>>, <<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_A>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>
+move_m@tourist		<<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>, <<REACTIONS>>, <<COFFEE_M>>, <<VEH_LOW_AMB_PS>>, <<ROADCROSS>>, <<SCEN_STANDING_MALE>>, <<SCEN_FFOOD_M>>
+
+MOVE_COP		<<INJURED>>,<<SCEN_TAICHI>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<SCEN_SEAT_BENCH_READ>>, <<COP>>, <<DEFEND>>, <<ROADCROSS>>
+MOVE_COP		<<SCEN_GARDENING_M>>, <<SCEN_SEAT_BENCH>>, <<SCEN_SEAT_BENCH_READ>>,  <<SCEN_PAYPHONE>>, <<SCEN_SECURITY>>, <<SCEN_HANGOUTS>>, <<SCEN_LEANING>>, <<SCEN_CONSTRUCTION>>, <<SCEN_ROADWORKER_A>>
+MOVE_COP		<<VEH_STD_AMB_DS>>, <<VEH_STD_AMB_PS>>,  <<SCEN_SEAT_ONSTEP>>, <<SCEN_SEAT_ONSTEPB>>, <<SCEN_SEAT_INTCAFE>>, <<SCEN_SEAT_ONWALL>>,  <<SCEN_BROKEN_DOWN>>, <<SCEN_CAFE>>, <<SCEN_CAFE_READ>>, <<VEH_STD_B>>, <<VEH_VAN_A>>
+MOVE_COP		<<SCEN_WINDOW_CLEANER>>, <<SCEN_STRIP_CLUB>>, <<SCEN_STREET_AMENITIES>>, <<SCEN_SERVICE>>, <<SCEN_ROADWORKER_B>>,  <<SCEN_INDUSTRIAL>>, <<SCEN_SHOPWINDOW>>, <<VEH_FLEE>>
+MOVE_COP		<<SCEN_COP_SEARCH>>, <<SCEN_TOURIST>>,  <<SCEN_DEALER>>, <<SCEN_PREACHER>>, <<SCEN_BUMS>>, <<SCEN_TAXI_WAIT_M>>, <<SCEN_DANCER_M>>, <<SCEN_HOSPITAL>>
+
+
+# Player Movement Groups ##############################################################################################################################################################################################
+
+MOVE_PLAYER		<<PLAYER>>, <<VEH_STD_A>>, <<VEH_TRUCK_A>>, <<VEH_LOW_A>>, <<VEH_STD_B>>, <<VEH_VAN_A>>, <<PLAYER_B>>
+# MOVE_PLAYER		GUN@AIM_IDLES

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<rage__fragTuneStruct>
+	<GlobalMaxDrawingDistance value="1000.000000"/>
+	<GlobalForceTransmissionScaleDown value="1.000000"/>
+	<GlobalForceTransmissionScaleUp value="1.000000"/>
+	<GlobalRootBreakHealthScale value="0.100000"/>
+	<GlobalBreakHealthScale value="0.100000"/>
+	<GlobalDamageHealthScale value="1.000000"/>
+	<BreakingFrameRateLimit value="5.000000"/>
+	<AggressiveAssetTouching value="false"/>
+	<CollisionDamageScale value="5000.000000"/>
+	<CollisionDamageMinThreshold value="0.000000"/>
+	<CollisionDamageMaxThreshold value="5000.000000"/>
+	<ReferenceMassForDefaultTuning value="100.000000"/>
+</rage__fragTuneStruct>

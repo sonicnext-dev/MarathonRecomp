@@ -3,10 +3,15 @@
 #include <Liberty.inl>
 #include <hk330/hkArray.h>
 #include <hk330/hkReferencedObject.h>
-#include <Sonicteam/SoX/Math/Vector.h>
 
 namespace hk330
 {
+    // Simple Vector type for Havok physics (replaces Sonicteam::SoX::Math::Vector)
+    struct hkVector4
+    {
+        be<float> x, y, z, w;
+    };
+
     class hkpBroadPhase;
     class hkpBroadPhaseBorderListener;
     class hkpCollisionDispatcher;
@@ -28,7 +33,7 @@ namespace hk330
     public:
         xpointer<hkpSimulation> m_simulation;
         LIBERTY_INSERT_PADDING(0x14);
-        Sonicteam::SoX::Math::Vector m_gravity;
+        hkVector4 m_gravity;
         xpointer<hkpSimulationIsland> m_fixedIsland;
         xpointer<hkpRigidBody> m_fixedRigidBody;
         hkArray<xpointer<hkpSimulationIsland>> m_activeSimulationIslands;
@@ -55,7 +60,8 @@ namespace hk330
 
         void updateCollisionFilterOnWorld(uint32_t updateMode, uint32_t updateShapeCollectionFilter)
         {
-            GuestToHostFunction<void>(sub_82832910, this, updateMode, updateShapeCollectionFilter);
+            // TODO: Find GTA IV equivalent function address
+            // GuestToHostFunction<void>(sub_XXXXXXXX, this, updateMode, updateShapeCollectionFilter);
         }
     };
 

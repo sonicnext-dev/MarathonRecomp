@@ -1,0 +1,20 @@
+###########################################################################################################
+#
+#	Filename : Nav.dat
+#	Author : James Broad
+#	Description : This file is read in to initialise the "CPathServer" pathfinding class
+#
+###########################################################################################################
+#
+# SECTORS_PER_NAVMESH		: how large each navmesh is in game sectors (50mx50m)
+# NAVMESH_LOAD_DISTANCE		: how far from the player the navmeshes will be loaded
+# NAVMESH_MAX_SIZE_KB		: the size in Kb of the largest navmesh, used to allocate memory pools
+# RELATIVE_THREAD_PRIORITY	: the thread priority, relative to default of 8.  Lower gives higher priority.
+#
+###########################################################################################################
+
+SECTORS_PER_NAVMESH=2
+NAVMESH_LOAD_DISTANCE=150
+NAVMESH_MAX_SIZE_IN_KB=150
+RELATIVE_THREAD_PRIORITY=8
+NAVGEN_BATCH_FILE=Compile_NY.bat

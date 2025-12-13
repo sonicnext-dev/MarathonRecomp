@@ -16,28 +16,25 @@ cr_as_local = false
 non_argument_as_local = false
 non_volatile_as_local = false
 
-# Register save/restore function addresses
-# These need to be found by searching for specific byte patterns in the XEX
-# TODO: Find actual addresses for GTA IV
-# Patterns to search for:
-#   restgprlr_14: e9 c1 ff 68 (ld r14, -0x98(r1))
-#   savegprlr_14: f9 c1 ff 68 (std r14, -0x98(r1))
-#   restfpr_14:   c9 cc ff 70 (lfd f14, -0x90(r12))
-#   savefpr_14:   d9 cc ff 70 (stfd r14, -0x90(r12))
-#   restvmx_14:   39 60 fe e0 7d cb 60 ce
-#   savevmx_14:   39 60 fe e0 7d cb 61 ce
-#   restvmx_64:   39 60 fc 00 10 0b 60 cb
-#   savevmx_64:   39 60 fc 00 10 0b 61 cb
+# Debug/scaling options
+verbose = true                       # Print progress messages
+progress_every = 1000                # Print progress every N functions
+skip_auto_discovery = false          # Set to true to skip .pdata and branch scanning
+cpp_chunk_functions = 256            # Functions per .cpp chunk (lower = less RAM, more files)
+disable_identical_file_check = true  # Skip file comparison to save RAM
+use_lightweight_analysis = true      # Use memory-efficient analysis (HIGHLY RECOMMENDED)
+max_functions_in_memory = 1000       # Max functions to hold during recompilation
 
-# Placeholder values - must be updated with actual GTA IV addresses
-# restgprlr_14_address = 0x00000000
-# savegprlr_14_address = 0x00000000
-# restfpr_14_address = 0x00000000
-# savefpr_14_address = 0x00000000
-# restvmx_14_address = 0x00000000
-# savevmx_14_address = 0x00000000
-# restvmx_64_address = 0x00000000
-# savevmx_64_address = 0x00000000
+# Register save/restore function addresses
+# Found using FindPatterns tool on GTA IV XEX
+restgprlr_14_address = 0x8298EB30
+savegprlr_14_address = 0x8298EAE0
+restfpr_14_address = 0x8299015C
+savefpr_14_address = 0x82990110
+restvmx_14_address = 0x82990598
+savevmx_14_address = 0x82990300
+restvmx_64_address = 0x8299062C
+savevmx_64_address = 0x82990394
 
 # setjmp/longjmp addresses (if used by the game)
 # longjmp_address = 0x00000000
@@ -45,7 +42,19 @@ non_volatile_as_local = false
 
 # Explicit function boundaries for functions with jump tables
 # that XenonAnalyse couldn't detect correctly
+# Also includes functions that branch into other functions (tail call optimization)
+#
+# These are typically CRT string/memory functions with optimized loops
+# that share common loop bodies across multiple entry points
 functions = [
+    # strncmp-like function that branches into its own continuation
+    # sub_82990020 branches to loc_82990048 which is in sub_82990048
+    { address = 0x82990020, size = 0x50 }, # Covers 0x82990020 to 0x82990070
+    
+    # Memcpy-like functions with shared loop bodies
+    # These functions (sub_8299094C through sub_82990CB8) have interrelated branches
+    # Covering the entire range: 0x8299094C to 0x82990CC8
+    { address = 0x8299094C, size = 0x37C }, # Covers 0x8299094C to 0x82990CC8
 ]
 
 # Invalid instruction patterns to skip

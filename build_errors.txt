@@ -1,0 +1,44 @@
+[1/2] Building CXX object XenonRecomp/CMakeFiles/XenonRecomp.dir/recompiler.cpp.o
+FAILED: [code=1] XenonRecomp/CMakeFiles/XenonRecomp.dir/recompiler.cpp.o 
+/usr/bin/c++ -D_CRT_SECURE_NO_WARNINGS -I/Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/XenonAnalyse -I/Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/XenonUtils/. -I/Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/thirdparty/simde -I/Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/thirdparty/disasm/. -I/Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/thirdparty/fmt/include -I/Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/thirdparty/xxHash/cmake_unofficial/.. -isystem /Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/thirdparty/tomlplusplus/include -O3 -DNDEBUG -std=gnu++17 -arch arm64 -Winvalid-pch -Xclang -include-pch -Xclang /Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/build_find/XenonRecomp/CMakeFiles/XenonRecomp.dir/cmake_pch.hxx.pch -Xclang -include -Xclang /Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/build_find/XenonRecomp/CMakeFiles/XenonRecomp.dir/cmake_pch.hxx -MD -MT XenonRecomp/CMakeFiles/XenonRecomp.dir/recompiler.cpp.o -MF XenonRecomp/CMakeFiles/XenonRecomp.dir/recompiler.cpp.o.d -o XenonRecomp/CMakeFiles/XenonRecomp.dir/recompiler.cpp.o -c /Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/XenonRecomp/recompiler.cpp
+/Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/XenonRecomp/recompiler.cpp:448:55: warning: comparison between NULL and non-pointer ('uint32_t' (aka 'unsigned int') and NULL) [-Wnull-arithmetic]
+  448 |                 midAsmHook->second.jumpAddressOnFalse != NULL || midAsmHook->second.jumpAddressOnTrue != NULL;
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^  ~~~~
+/Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/XenonRecomp/recompiler.cpp:448:103: warning: comparison between NULL and non-pointer ('uint32_t' (aka 'unsigned int') and NULL) [-Wnull-arithmetic]
+  448 |                 midAsmHook->second.jumpAddressOnFalse != NULL || midAsmHook->second.jumpAddressOnTrue != NULL;
+      |                                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^  ~~~~
+/Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/XenonRecomp/recompiler.cpp:499:63: warning: comparison between NULL and non-pointer ('uint32_t' (aka 'unsigned int') and NULL) [-Wnull-arithmetic]
+  499 |                 else if (midAsmHook->second.jumpAddressOnTrue != NULL)
+      |                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^  ~~~~
+/Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/XenonRecomp/recompiler.cpp:508:64: warning: comparison between NULL and non-pointer ('uint32_t' (aka 'unsigned int') and NULL) [-Wnull-arithmetic]
+  508 |                 else if (midAsmHook->second.jumpAddressOnFalse != NULL)
+      |                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^  ~~~~
+/Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/XenonRecomp/recompiler.cpp:519:57: warning: comparison between NULL and non-pointer ('uint32_t' (aka 'unsigned int') and NULL) [-Wnull-arithmetic]
+  519 |                 else if (midAsmHook->second.jumpAddress != NULL)
+      |                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^  ~~~~
+/Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/XenonRecomp/recompiler.cpp:2478:55: warning: comparison between NULL and non-pointer ('uint32_t' (aka 'unsigned int') and NULL) [-Wnull-arithmetic]
+ 2478 |                 midAsmHook->second.jumpAddressOnFalse != NULL || midAsmHook->second.jumpAddressOnTrue != NULL)
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^  ~~~~
+/Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/XenonRecomp/recompiler.cpp:2478:103: warning: comparison between NULL and non-pointer ('uint32_t' (aka 'unsigned int') and NULL) [-Wnull-arithmetic]
+ 2478 |                 midAsmHook->second.jumpAddressOnFalse != NULL || midAsmHook->second.jumpAddressOnTrue != NULL)
+      |                                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^  ~~~~
+/Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/XenonRecomp/recompiler.cpp:2525:48: warning: comparison between NULL and non-pointer ('uint32_t' (aka 'unsigned int') and NULL) [-Wnull-arithmetic]
+ 2525 |             if (midAsmHook->second.jumpAddress != NULL)
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^  ~~~~
+/Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/XenonRecomp/recompiler.cpp:2527:54: warning: comparison between NULL and non-pointer ('uint32_t' (aka 'unsigned int') and NULL) [-Wnull-arithmetic]
+ 2527 |             if (midAsmHook->second.jumpAddressOnTrue != NULL)
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^  ~~~~
+/Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/XenonRecomp/recompiler.cpp:2529:55: warning: comparison between NULL and non-pointer ('uint32_t' (aka 'unsigned int') and NULL) [-Wnull-arithmetic]
+ 2529 |             if (midAsmHook->second.jumpAddressOnFalse != NULL)
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^  ~~~~
+/Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/XenonRecomp/recompiler.cpp:2828:13: error: use of undeclared identifier 'f'
+ 2828 |             f = fopen(filePath.c_str(), "wb");
+      |             ^
+/Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/XenonRecomp/recompiler.cpp:2829:47: error: use of undeclared identifier 'f'
+ 2829 |             fwrite(out.data(), 1, out.size(), f);
+      |                                               ^
+/Users/Ozordi/Downloads/MarathonRecomp/tools/XenonRecomp/XenonRecomp/recompiler.cpp:2830:20: error: use of undeclared identifier 'f'
+ 2830 |             fclose(f);
+      |                    ^
+10 warnings and 3 errors generated.
+ninja: build stopped: subcommand failed.

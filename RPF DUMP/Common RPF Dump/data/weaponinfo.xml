@@ -1,0 +1,689 @@
+<weaponinfo version="1">
+
+	<!--               -->
+	<!-- MELEE WEAPONS -->
+	<!--               -->
+
+	<weapon type="UNARMED">
+		<data slot="UNARMED" firetype="MELEE" damagetype="MELEE" group="PUNCH_KICK" targetrange="10.0" weaponrange="1.6">
+			<damage base="0" networkplayermod="1.0" networkpedmod="1.0"/>
+
+			<pickup regentime="0"/>
+
+			<controller>
+				<rumble duration="60" intensity="0.23"/>
+			</controller>
+
+			<flags>
+				<flag>CAN_AIM</flag>
+				<flag>ARMOUR_PENETRATING</flag>
+			</flags>
+		</data>
+	</weapon>
+
+	<weapon type="BASEBALLBAT">
+		<data slot="MELEE" firetype="MELEE" damagetype="MELEE" group="MELEE_WOOD" targetrange="10.0" weaponrange="1.6">
+			<damage base="1" networkplayermod="1.0" networkpedmod="1.0"/>
+
+			<pickup regentime="120000"/>
+
+			<controller>
+				<rumble duration="60" intensity="0.23"/>
+			</controller>
+
+			<flags>
+				<flag>CAN_AIM</flag>
+				<flag>MELEE_CLUB</flag>
+				<flag>ARMOUR_PENETRATING</flag>
+			</flags>
+		</data>
+
+		<assets model="w_bat">
+			<anim meleegroup1="club_core" meleegroup2="club_extra"/>
+		</assets>
+	</weapon>
+
+	<weapon type="POOLCUE">
+		<data slot="MELEE" firetype="MELEE" damagetype="MELEE" group="MELEE_WOOD" targetrange="10.0" weaponrange="1.6">
+			<damage base="1" networkplayermod="1.0" networkpedmod="1.0"/>
+
+			<pickup regentime="120000"/>
+
+			<controller>
+				<rumble duration="60" intensity="0.23"/>
+			</controller>
+
+			<flags>
+				<flag>CAN_AIM</flag>
+				<flag>MELEE_CLUB</flag>
+				<flag>ARMOUR_PENETRATING</flag>
+			</flags>
+		</data>
+
+		<assets model="w_cue"/>
+	</weapon>
+
+	<weapon type="KNIFE">
+		<data slot="MELEE" firetype="MELEE" damagetype="MELEE" group="MELEE_SHARP" targetrange="10.0" weaponrange="1.6">
+			<damage base="1" networkplayermod="1.0" networkpedmod="1.0"/>
+
+			<pickup regentime="120000"/>
+
+			<controller>
+				<rumble duration="60" intensity="0.1"/>
+			</controller>
+
+			<flags>
+				<flag>CAN_AIM</flag>
+				<flag>MELEE_BLADE</flag>
+				<flag>INSTANT_KILL_IN_MP</flag>
+				<flag>ARMOUR_PENETRATING</flag>
+			</flags>
+		</data>
+
+		<assets model="w_knife">
+			<anim meleegroup1="blade_core" meleegroup2="blade_extra"/>
+		</assets>
+	</weapon>
+
+	<!--             -->
+	<!-- GUN WEAPONS -->
+	<!--             -->
+
+	<weapon type="PISTOL">
+		<data slot="HANDGUN" firetype="INSTANT_HIT" damagetype="BULLET" group="PISTOL_SMALL" targetrange="45.0" weaponrange="50.0" clipsize="17" ammomax="1500" timebetweenshots="333">
+			<damage base="25" networkplayermod="3.0" networkpedmod="1.0"/>
+			<physics force="50.0"/>
+			<reload time="2000" fasttime="2000" crouchtime="2000"/>
+
+			<aiming accuracy="0.5">
+				<offset         x="0.15" y="1.0" z="0.55"/>
+				<crouchedoffset x="0.2"  y="1.0" z="0.05"/>
+				<reticule standing="0.65" ducked="0.55" scale="0.3"/>
+			</aiming>
+
+			<pickup regentime="120000" ammoonstreet="30"/>
+
+			<controller>
+				<rumble duration="110" intensity="0.02"/>
+			</controller>
+
+			<flags>
+				<flag>GUN</flag>
+				<flag>CAN_AIM</flag>
+				<flag>CAN_FREE_AIM</flag>
+				<flag>ANIM_RELOAD</flag>
+				<flag>ANIM_CROUCH_FIRE</flag>
+			</flags>
+		</data>
+
+		<assets model="w_glock">
+			<anim group="gun@handgun" meleegroup1="firearm_core"/>
+
+			<effects>
+				<muzzle fx="muz_pistol_small"/>
+				<shell fx="weap_ejected_pistol"/>
+			</effects>
+		</assets>
+	</weapon>
+
+	<weapon type="DEAGLE">
+		<data slot="HANDGUN" firetype="INSTANT_HIT" damagetype="BULLET" group="PISTOL_LARGE" targetrange="45.0" weaponrange="50.0" clipsize="9" ammomax="1500" timebetweenshots="333">
+			<damage base="40" networkplayermod="4.0" networkpedmod="1.0"/>
+			<physics force="75.0"/>
+			<reload time="2000" fasttime="2000" crouchtime="2000"/>
+
+			<aiming accuracy="0.5">
+				<offset         x="0.15" y="1.0" z="0.55"/>
+				<crouchedoffset x="0.2"  y="1.0" z="0.05"/>
+				<reticule standing="0.6" ducked="0.5" scale="0.3"/>
+			</aiming>
+
+			<pickup regentime="240000" ammoonstreet="30"/>
+
+			<controller>
+				<rumble duration="150" intensity="0.1"/>
+			</controller>
+
+			<flags>
+				<flag>GUN</flag>
+				<flag>CAN_AIM</flag>
+				<flag>CAN_FREE_AIM</flag>
+				<flag>ANIM_RELOAD</flag>
+				<flag>ANIM_CROUCH_FIRE</flag>
+			</flags>
+		</data>
+
+		<assets model="w_eagle">
+			<anim group="gun@deagle" meleegroup1="firearm_core"/>
+
+			<effects>
+				<muzzle fx="muz_pistol_large"/>
+				<shell fx="weap_ejected_pistol"/>
+			</effects>
+		</assets>
+	</weapon>
+
+	<weapon type="SHOTGUN">
+		<data slot="SHOTGUN" firetype="INSTANT_HIT" damagetype="BULLET" group="SHOTGUN" targetrange="35.0" weaponrange="35.0" clipsize="8" ammomax="80" timebetweenshots="1233">
+			<damage base="20" networkplayermod="5.0" networkpedmod="1.0"/>
+			<physics force="15.0"/>
+			<reload time="2933" fasttime="2933" crouchtime="2933"/>
+
+			<aiming accuracy="0.08">
+				<offset         x="0.16" y="1.0" z="0.44"/>
+				<crouchedoffset x="0.16" y="1.0" z="0.0"/>
+				<reticule standing="1.0" ducked="1.0" scale="0.0"/>
+			</aiming>
+
+			<pickup regentime="240000" ammoonstreet="16"/>
+
+			<controller>
+				<rumble duration="200" intensity="1.0"/>
+			</controller>
+
+			<flags>
+				<flag>GUN</flag>
+				<flag>CAN_AIM</flag>
+				<flag>CAN_FREE_AIM</flag>
+				<flag>ANIM_RELOAD</flag>
+				<flag>ANIM_CROUCH_FIRE</flag>
+				<flag>2HANDED</flag>
+				<flag>HIGHER_BREAK_FORCE</flag>
+			</flags>
+		</data>
+
+		<assets model="w_shotgun">
+			<anim group="gun@shotgun"/>
+
+			<effects>
+				<muzzle fx="muz_shotgun"/>
+				<shell fx="weap_ejected_shotgun"/>
+			</effects>
+		</assets>
+	</weapon>
+
+	<weapon type="BARETTA">
+		<data slot="SHOTGUN" firetype="INSTANT_HIT" damagetype="BULLET" group="SHOTGUN" targetrange="35.0" weaponrange="40.0" clipsize="10" ammomax="80" timebetweenshots="433">
+			<damage base="10" networkplayermod="5.0" networkpedmod="1.0"/>
+			<physics force="12.0"/>
+			<reload time="2933" fasttime="2933" crouchtime="2933"/>
+
+			<aiming accuracy="0.05">
+				<offset         x="0.15" y="1.0" z="0.55"/>
+				<crouchedoffset x="0.15" y="1.0" z="0.05"/>
+				<reticule standing="1.0" ducked="1.0" scale="0.0"/>
+			</aiming>
+
+			<pickup regentime="480000" ammoonstreet="15"/>
+
+			<controller>
+        <rumble duration="200" intensity="1.0"/>
+      </controller>
+
+			<flags>
+				<flag>GUN</flag>
+				<flag>CAN_AIM</flag>
+				<flag>CAN_FREE_AIM</flag>
+				<flag>ANIM_RELOAD</flag>
+				<flag>ANIM_CROUCH_FIRE</flag>
+				<flag>2HANDED</flag>
+				<flag>HIGHER_BREAK_FORCE</flag>
+			</flags>
+		</data>
+
+		<assets model="w_pumpshot">
+			<anim group="gun@baretta"/>
+
+			<effects>
+				<muzzle fx="muz_shotgun"/>
+				<shell fx="weap_ejected_shotgun"/>
+			</effects>
+		</assets>
+	</weapon>
+
+	<weapon type="MICRO_UZI">
+		<data slot="SMG" firetype="INSTANT_HIT" damagetype="BULLET" group="SMG" targetrange="45.0" weaponrange="50.0" clipsize="50" ammomax="1200" timebetweenshots="66">
+			<damage base="20" networkplayermod="2.0" networkpedmod="1.0"/>
+			<physics force="40.0"/>
+			<reload time="2266" fasttime="2266" crouchtime="2000"/>
+
+			<aiming accuracy="0.55">
+				<offset         x="0.15" y="1.0" z="0.55"/>
+				<crouchedoffset x="0.2"  y="1.0" z="0.1"/>
+				<reticule standing="0.75" ducked="0.6" scale="0.3"/>
+			</aiming>
+
+			<pickup regentime="240000" ammoonstreet="60"/>
+
+			<controller>
+        <rumble duration="100" intensity="0.02"/>
+			</controller>
+
+			<flags>
+				<flag>GUN</flag>
+				<flag>CAN_AIM</flag>
+				<flag>CAN_FREE_AIM</flag>
+				<flag>ANIM_RELOAD</flag>
+				<flag>ANIM_CROUCH_FIRE</flag>
+			</flags>
+		</data>
+
+		<assets model="w_uzi">
+			<anim group="gun@uzi" meleegroup1="firearm_core"/>
+
+			<effects>
+				<muzzle fx="muz_smg"/>
+				<shell fx="weap_ejected_smg"/>
+			</effects>
+		</assets>
+	</weapon>
+
+	<weapon type="MP5">
+		<data slot="SMG" firetype="INSTANT_HIT" damagetype="BULLET" group="SMG" targetrange="55.0" weaponrange="60.0" clipsize="30" ammomax="1200" timebetweenshots="66">
+			<damage base="20" networkplayermod="2.5" networkpedmod="1.25"/>
+			<physics force="50.0"/>
+			<reload time="1666" fasttime="1666" crouchtime="2533"/>
+
+			<aiming accuracy="0.55">
+				<offset         x="0.13" y="1.0" z="0.45"/>
+				<crouchedoffset x="0.11" y="1.0" z="-0.02"/>
+				<reticule standing="0.75" ducked="0.6" scale="0.3"/>
+			</aiming>
+
+			<pickup regentime="360000" ammoonstreet="60"/>
+
+			<controller>
+        <rumble duration="100" intensity="0.02"/>
+			</controller>
+
+			<flags>
+				<flag>GUN</flag>
+				<flag>CAN_AIM</flag>
+				<flag>CAN_FREE_AIM</flag>
+				<flag>ANIM_RELOAD</flag>
+				<flag>ANIM_CROUCH_FIRE</flag>
+				<flag>TREAT_AS_2HANDED_IN_COVER</flag>
+			</flags>
+		</data>
+
+		<assets model="w_mp5">
+			<anim group="gun@mp5k" meleegroup1="firearm_core">
+       <rates firerate="1.0" blindfirerate="1.4"/>
+      </anim>
+
+      <effects>
+				<muzzle fx="muz_smg"/>
+				<shell fx="weap_ejected_smg"/>
+			</effects>
+		</assets>
+	</weapon>
+
+	<weapon type="AK47">
+		<data slot="RIFLE" firetype="INSTANT_HIT" damagetype="BULLET" group="RIFLE_ASSAULT" targetrange="55.0" weaponrange="65.0" clipsize="30" ammomax="600" timebetweenshots="133">
+			<damage base="30" networkplayermod="2.0" networkpedmod="1.0"/>
+			<physics force="75.0"/>
+			<reload time="2066" fasttime="1166" crouchtime="2066"/>
+
+			<aiming accuracy="0.5">
+				<offset         x="0.16" y="1.0" z="0.55"/>
+				<crouchedoffset x="0.1"  y="1.0" z="0.12"/>
+				<reticule standing="0.6" ducked="0.5" scale="0.3"/>
+			</aiming>
+
+			<pickup regentime="480000" ammoonstreet="80"/>
+
+			<controller>
+				<rumble duration="90" intensity="0.1"/>
+			</controller>
+
+			<flags>
+				<flag>GUN</flag>
+				<flag>CAN_AIM</flag>
+				<flag>CAN_FREE_AIM</flag>
+				<flag>ANIM_RELOAD</flag>
+				<flag>ANIM_CROUCH_FIRE</flag>
+				<flag>2HANDED</flag>
+			</flags>
+		</data>
+
+		<assets model="w_ak47">
+			<anim group="gun@ak47">
+				<rates firerate="1.2" blindfirerate="1.2"/>
+			</anim>
+
+			<effects>
+				<muzzle fx="muz_machine"/>
+				<shell fx="weap_ejected_rifle"/>
+			</effects>
+		</assets>
+	</weapon>
+
+	<weapon type="M4">
+		<data slot="RIFLE" firetype="INSTANT_HIT" damagetype="BULLET" group="RIFLE_ASSAULT" targetrange="65.0" weaponrange="70.0" clipsize="30" ammomax="600" timebetweenshots="133">
+			<damage base="30" networkplayermod="2.5" networkpedmod="1.25"/>
+			<physics force="75.0"/>
+			<reload time="2066" fasttime="1166" crouchtime="2066"/>
+
+			<aiming accuracy="0.5">
+				<offset         x="0.14" y="1.0" z="0.55"/>
+				<crouchedoffset x="0.08"  y="1.0" z="0.12"/>
+				<reticule standing="0.6" ducked="0.5" scale="0.3"/>
+			</aiming>
+
+			<pickup regentime="600000" ammoonstreet="80"/>
+
+			<controller>
+        <rumble duration="90" intensity="0.1"/>
+			</controller>
+
+			<flags>
+				<flag>GUN</flag>
+				<flag>CAN_AIM</flag>
+				<flag>CAN_FREE_AIM</flag>
+				<flag>ANIM_RELOAD</flag>
+				<flag>ANIM_CROUCH_FIRE</flag>
+				<flag>2HANDED</flag>
+			</flags>
+		</data>
+
+		<assets model="w_m4">
+			<anim group="gun@ak47">
+				<rates firerate="1.2" blindfirerate="1.2"/>
+			</anim>
+
+			<effects>
+				<muzzle fx="muz_machine"/>
+				<shell fx="weap_ejected_rifle"/>
+			</effects>
+		</assets>
+	</weapon>
+
+	<weapon type="SNIPERRIFLE">
+		<data slot="SNIPER" firetype="DELAYED_HIT" damagetype="BULLET" group="RIFLE_SNIPER" targetrange="50.0" weaponrange="1500.0" clipsize="10" ammomax="50" timebetweenshots="400">
+			<damage base="20" fps="75" networkplayermod="2.0" networkpedmod="1.0"/>
+			<physics force="100.0"/>
+			<reload time="2066" fasttime="2066" crouchtime="2066"/>
+
+			<aiming accuracy="10.0" accuracyfps="0.0">
+				<offset         x="0.16" y="1.0" z="0.55"/>
+				<crouchedoffset x="0.16"  y="1.0" z="0.12"/>
+				<reticule standing="0.6" ducked="0.5" scale="0.05"/>
+			</aiming>
+
+			<pickup regentime="360000" ammoonstreet="20"/>
+
+			<controller>
+				<rumble duration="120" intensity="0.3"/>
+			</controller>
+
+			<flags>
+				<flag>GUN</flag>
+				<flag>CAN_FREE_AIM</flag>
+				<flag>FIRST_PERSON</flag>
+				<flag>ANIM_RELOAD</flag>
+				<flag>ANIM_CROUCH_FIRE</flag>
+				<flag>2HANDED</flag>
+			</flags>
+		</data>
+
+		<assets model="w_psg1">
+			<anim group="gun@rifle"/>
+		</assets>
+	</weapon>
+
+	<weapon type="M40a1">
+		<data slot="SNIPER" firetype="DELAYED_HIT" damagetype="BULLET" group="RIFLE_SNIPER" targetrange="50.0" weaponrange="1500.0" clipsize="5" ammomax="50" timebetweenshots="333">
+			<damage base="20" fps="75" networkplayermod="2.0" networkpedmod="1.0"/>
+			<physics force="100.0"/>
+			<reload time="1300" fasttime="2066" crouchtime="2066"/>
+
+			<aiming accuracy="10.0" accuracyfps="0.0">
+				<offset         x="0.16" y="1.0" z="0.55"/>
+				<crouchedoffset x="0.16" y="1.0" z="0.12"/>
+				<reticule standing="0.6" ducked="0.5" scale="0.05"/>
+			</aiming>
+
+			<pickup regentime="360000" ammoonstreet="10"/>
+
+			<controller>
+        <rumble duration="120" intensity="0.3"/>
+			</controller>
+
+			<flags>
+				<flag>GUN</flag>
+				<flag>CAN_FREE_AIM</flag>
+				<flag>FIRST_PERSON</flag>
+				<flag>ANIM_RELOAD</flag>
+				<flag>ANIM_CROUCH_FIRE</flag>
+				<flag>2HANDED</flag>
+			</flags>
+		</data>
+
+		<assets model="w_rifle">
+			<anim group="gun@m40a1"/>
+		</assets>
+	</weapon>
+
+	<weapon type="RLAUNCHER">
+		<data slot="HEAVY" firetype="PROJECTILE" damagetype="EXPLOSIVE" group="ROCKET" targetrange="50.0" weaponrange="100.0" clipsize="1" ammomax="8" timebetweenshots="800">
+			<damage networkplayermod="2.0" networkpedmod="1.0"/>
+			<reload time="2066" fasttime="2066" crouchtime="2066"/>
+
+			<aiming accuracy="1.0">
+				<offset         x="0.15" y="1.0" z="0.53"/>
+				<crouchedoffset x="0.12" y="1.0" z="0.05"/>
+				<reticule standing="1.0" ducked="1.0" scale="0.0"/>
+			</aiming>
+
+			<pickup regentime="600000" ammoonstreet="4"/>
+
+			<controller>
+				<rumble duration="200" intensity="0.4"/>
+			</controller>
+
+			<flags>
+				<flag>GUN</flag>
+				<flag>HEAVY</flag>
+				<flag>CAN_FREE_AIM</flag>
+				<flag>ANIM_RELOAD</flag>
+				<flag>ANIM_CROUCH_FIRE</flag>
+				<flag>CREATE_VISIBLE_ORDNANCE</flag>
+				<flag>2HANDED</flag>
+				<flag>KEEP_CAMERA_BEHIND</flag>
+			</flags>
+
+			<projectile>
+				<typetocreate type="ROCKET"/>
+				<offset    x="0.54" y="0.0" z="0.055"/>
+				<rotoffset x="0.0"  y="0.0" z="-1.571"/>
+			</projectile>
+		</data>
+
+		<assets model="rpg">
+			<anim group="gun@rocket"/>
+
+			<effects>
+				<muzzle fx="muz_rocket"/>
+			</effects>
+		</assets>
+	</weapon>
+
+	<weapon type="MINIGUN">
+		<data slot="HEAVY" firetype="INSTANT_HIT" damagetype="BULLET" group="RIFLE_ASSAULT" targetrange="50.0" weaponrange="200.0" clipsize="100" timebetweenshots="66">
+			<damage base="100" networkplayermod="2.0" networkpedmod="1.0"/>
+			<physics force="500.0"/>
+			<reload time="2000" fasttime="2000" crouchtime="2000"/>
+
+			<aiming accuracy="1.0">
+				<offset         x="0.0" y="1.0" z="0.0"/>
+				<crouchedoffset x="0.0" y="1.0" z="0.0"/>
+			</aiming>
+
+			<pickup regentime="0" ammoonstreet="500"/>
+
+			<controller>
+				<rumble duration="60" intensity="0.3"/>
+			</controller>
+
+			<flags>
+				<flag>GUN</flag>
+				<flag>CAN_FREE_AIM</flag>
+				<flag>HEAVY</flag>
+			</flags>
+		</data>
+
+		<assets>
+			<effects>
+				<muzzle fx="muz_minigun"/>
+			</effects>
+		</assets>
+	</weapon>
+
+	<weapon type="FTHROWER"/>
+	<weapon type="CAMERA"/>
+
+	<!--                    -->
+	<!-- PROJECTILE WEAPONS -->
+	<!--                    -->
+
+	<weapon type="GRENADE">
+		<data slot="THROWN" firetype="PROJECTILE" damagetype="EXPLOSIVE" group="GRENADE" targetrange="35.0" clipsize="1" ammomax="25">
+			<damage networkplayermod="2.0" networkpedmod="1.0"/>
+
+			<aiming accuracy="1.0">
+				<offset         x="0.0" y="1.0" z="0.0"/>
+				<crouchedoffset x="0.0" y="1.0" z="0.0"/>
+			</aiming>
+
+			<pickup regentime="360000" ammoonstreet="8"/>
+
+			<controller>
+				<rumble duration="50" intensity="0.1"/>
+			</controller>
+
+			<flags>
+				<flag>THROWN</flag>
+				<flag>CAN_AIM</flag>
+				<flag>CAN_FREE_AIM</flag>
+				<flag>ANIM_RELOAD</flag>
+				<flag>ANIM_CROUCH_FIRE</flag>
+				<flag>ADD_SMOKE_ON_EXPLOSION</flag>
+				<flag>SILENCED</flag>
+			</flags>
+
+			<projectile type="FUSE" fusetime="5000">
+				<explosion type="GRENADE"/>
+				<physics force="33.0" vehiclevelocity="5.0"/>
+			</projectile>
+		</data>
+
+		<assets model="w_grenade">
+			<anim group="grenade"/>
+		</assets>
+	</weapon>
+
+	<weapon type="MOLOTOV">
+		<data slot="THROWN" firetype="PROJECTILE" damagetype="FIRE" group="MOLOTOV" targetrange="35.0" clipsize="1" ammomax="25">
+			<damage networkplayermod="2.0" networkpedmod="1.0"/>
+
+			<aiming accuracy="1.0">
+				<offset         x="0.0" y="1.0" z="0.0"/>
+				<crouchedoffset x="0.0" y="1.0" z="0.0"/>
+			</aiming>
+
+			<pickup regentime="240000" ammoonstreet="8"/>
+
+			<controller>
+        <rumble duration="50" intensity="0.3"/>
+			</controller>
+
+			<flags>
+				<flag>THROWN</flag>
+				<flag>CAN_AIM</flag>
+				<flag>CAN_FREE_AIM</flag>
+				<flag>ANIM_RELOAD</flag>
+				<flag>ANIM_CROUCH_FIRE</flag>
+				<flag>SILENCED</flag>
+			</flags>
+
+			<projectile type="IMPACT">
+				<explosion type="MOLOTOV"/>
+				<physics force="33.0" vehiclevelocity="8.0"/>
+			</projectile>
+		</data>
+
+		<assets model="w_molotov">
+			<anim group="molotov"/>
+		</assets>
+	</weapon>
+
+	<weapon type="ROCKET">
+		<data slot="THROWN" firetype="PROJECTILE" damagetype="EXPLOSIVE" group="ROCKET" targetrange="35.0" clipsize="1" stattype="RLAUNCHER">
+			<damage networkplayermod="2.0" networkpedmod="1.0"/>
+
+			<aiming accuracy="1.0">
+				<offset         x="0.0" y="1.0" z="0.0"/>
+				<crouchedoffset x="0.0" y="1.0" z="0.0"/>
+				<reticule standing="0.65" ducked="0.55" scale="0.3"/>
+			</aiming>
+
+			<pickup regentime="360000" ammoonstreet="8"/>
+
+			<controller>
+				<rumble duration="0" intensity="0.0"/>
+			</controller>
+
+			<flags>
+				<flag>THROWN</flag>
+				<flag>EXPLOSION_BASED_ON_IMPACT</flag>
+				<flag>ADD_SMOKE_ON_EXPLOSION</flag>
+			</flags>
+
+			<projectile type="ROCKET">
+				<explosion type="ROCKET"/>
+				<physics force="30.0" explodeimpactthreshold="0.25" explodeimpactwithvehiclethreshold="0.05"/>
+			</projectile>
+		</data>
+
+		<assets model="cj_rpg_rocket">
+			<effects>
+				<trail fx="weap_rocket_player"/>
+			</effects>
+		</assets>
+	</weapon>
+
+	<weapon type="OBJECT">
+		<data slot="SPECIAL" firetype="PROJECTILE" damagetype="COLLISION" group="MELEE_GENERIC" targetrange="30.0" clipsize="1">
+			<damage base="5" networkplayermod="2.0" networkpedmod="1.0"/>
+
+			<aiming accuracy="1.0">
+				<offset         x="0.0" y="1.0" z="0.0"/>
+				<crouchedoffset x="0.0" y="1.0" z="0.0"/>
+			</aiming>
+
+			<pickup regentime="75" ammoonstreet="1"/>
+
+			<controller>
+				<rumble duration="0" intensity="0.0"/>
+			</controller>
+
+			<flags>
+				<flag>THROWN</flag>
+				<flag>CAN_AIM</flag>
+				<flag>CAN_FREE_AIM</flag>
+				<flag>ANIM_RELOAD</flag>
+				<flag>ANIM_CROUCH_FIRE</flag>
+			</flags>
+
+			<projectile type="NONE">
+				<physics force="20.0"/>
+			</projectile>
+		</data>
+
+		<assets>
+			<anim group="grenade"/>
+		</assets>
+	</weapon>
+
+</weaponinfo>

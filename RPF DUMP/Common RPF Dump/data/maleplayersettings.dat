@@ -1,0 +1,107 @@
+# MALEPLAYERSETTINGS.DAT
+# maintained by Miguel Freitas
+# this file contains info necessary to render the multiplayer player.
+#
+
+#######################################################################################################################################
+# NOTES - Male Multiplayer settings
+#######################################################################################################################################
+#
+#######################################################################################################################################
+# PV_COMP_HEAD	- Head
+# PV_COMP_UPPR	- Uppr body
+# PV_COMP_LOWR	- Lower body
+# PV_COMP_HAIR	- Hair
+# ANCHOR_HEAD	- Hats
+# ANCHOR_EYES	- Glasses
+#######################################################################################################################################
+#
+#######################################################################################################################################
+#
+# Texture ID   -  [ A - 0 ]; [ B - 1 ]; [ C - 2 ]; etc... and so on until the max letters/numbers you can have. 
+#                 Letters are artist conventions and numbers code convention.
+#
+# Hats/Glasses - The first combination receives -1 in the Prop Id and 0 in the texture ID to mean that the first is without any prop.
+#                But there is no need to put that in because the code takes care of that.
+#
+#######################################################################################################################################
+
+# -------------------------------------------------------------------------------
+# -LEVEL-	-Slot/Anchor ID-	-Drawable/Prop ID-	-Texture ID-    - ID - 
+# -------------------------------------------------------------------------------
+0			PV_COMP_HEAD		0					0				0
+0			PV_COMP_HEAD		1					0				1
+0			PV_COMP_HEAD		2					0				2
+0			PV_COMP_HEAD		3					0				3
+1			PV_COMP_HEAD		0					1				4
+1			PV_COMP_HEAD		1					1				5
+2			PV_COMP_HEAD		2					1				6
+2			PV_COMP_HEAD		3					1				7
+3			PV_COMP_HEAD		0					2				8
+4			PV_COMP_HEAD		1					2				9
+5			PV_COMP_HEAD		2					2				10
+6			PV_COMP_HEAD		3					2				11
+# -------------------------------------------------------------------------------
+# -LEVEL-	-Slot/Anchor ID-	-Drawable/Prop ID-	-Texture ID-    - ID - 
+# -------------------------------------------------------------------------------
+0			PV_COMP_UPPR		0					0				0
+0			PV_COMP_UPPR		0					1				1
+0			PV_COMP_UPPR		0					2				2
+0			PV_COMP_UPPR		1					0				3
+1			PV_COMP_UPPR		1					1				4
+1			PV_COMP_UPPR		2					0				5
+2			PV_COMP_UPPR		0					3				6
+2			PV_COMP_UPPR		3					0				7
+3			PV_COMP_UPPR		1					2				8
+3			PV_COMP_UPPR		2					1				9
+4			PV_COMP_UPPR		2					2				10
+5			PV_COMP_UPPR		3					1				11
+6			PV_COMP_UPPR		0					4				12
+6			PV_COMP_UPPR		3					2				13
+7			PV_COMP_UPPR		3					3				14
+# -------------------------------------------------------------------------------
+# -LEVEL-	-Slot/Anchor ID-	-Drawable/Prop ID-	-Texture ID-    - ID - 
+# -------------------------------------------------------------------------------
+0			PV_COMP_LOWR		0					0				0
+0			PV_COMP_LOWR		0					1				1
+0			PV_COMP_LOWR		1					0				2
+0			PV_COMP_LOWR		1					1				3
+1			PV_COMP_LOWR		0					2				4
+1			PV_COMP_LOWR		1					2				5
+2			PV_COMP_LOWR		2					0				6
+4			PV_COMP_LOWR		2					1				7
+5			PV_COMP_LOWR		2					2				8
+6			PV_COMP_LOWR		2					3				9
+# -------------------------------------------------------------------------------
+# -LEVEL-	-Slot/Anchor ID-	-Drawable/Prop ID-	-Texture ID-    - ID - 
+# -------------------------------------------------------------------------------
+0			ANCHOR_HEAD			0					0				0
+0			ANCHOR_HEAD			0					1				1
+0			ANCHOR_HEAD			0					2				2
+0			ANCHOR_HEAD			1					0				3
+0			ANCHOR_HEAD			1					1				4
+0			ANCHOR_HEAD			1					2				5
+1			ANCHOR_HEAD			2					0				6
+1			ANCHOR_HEAD			3					0				7
+2			ANCHOR_HEAD			2					1				8
+3			ANCHOR_HEAD			2					2				9
+3			ANCHOR_HEAD			4					0				10
+4			ANCHOR_HEAD			3					1				11
+4			ANCHOR_HEAD			7					0				12
+5			ANCHOR_HEAD			5					0				13
+6			ANCHOR_HEAD			7					1				14
+7			ANCHOR_HEAD			6					0				15
+7			ANCHOR_HEAD			7					2				16
+8			ANCHOR_HEAD			7					3				17
+9			ANCHOR_HEAD			7					4				18
+# -------------------------------------------------------------------------------
+# -LEVEL-	-Slot/Anchor ID-	-Drawable/Prop ID-	-Texture ID-    - ID - 
+# -------------------------------------------------------------------------------
+0			ANCHOR_EYES			0					0				0
+0			ANCHOR_EYES			0					1				1
+1			ANCHOR_EYES			1					0				2
+2			ANCHOR_EYES			2					0				3
+3			ANCHOR_EYES			3					0				4
+4			ANCHOR_EYES			1					1				5
+5			ANCHOR_EYES			2					1				6
+7			ANCHOR_EYES			4					0				7

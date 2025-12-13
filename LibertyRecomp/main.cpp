@@ -329,7 +329,7 @@ int main(int argc, char *argv[])
     LOGN_WARNING(modulePath.string());
     // Video::StartPipelinePrecompilation();
 
-    GuestThread::Start({ entry, 0, 0 });
+    GuestThread::Start({ entry, 0, 0, 0 });
 
     return 0;
 }

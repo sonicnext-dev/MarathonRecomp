@@ -1,0 +1,52 @@
+# RADIOHUD.DAT
+# maintained by Miguel Freitas
+# this file contains info necessary to render the radio hud.
+
+# NOTES
+#      The RadioHud Manager will load all files that are named RadioHud.dat
+#      It is VERY important to suply the textures file container.
+
+# ----------------------------------------------------------------------------------------------
+# RADIO TEXTURES CONTAINER - Texture container (.itd filename) that has this textures. 
+#                          - the symbol '+' separates the containers from the textures.
+# ----------------------------------------------------------------------------------------------
++
+platform:/textures/radio_hud_colored 1
+platform:/textures/radio_hud_noncolored 0
++
+
+# STRUCTURE:
+# -RADIO NAME           -> Corresponds to the Radio name stored in American.txt.
+# -RADIO NAME FOR HASH  -> Radio name which will hashed to create a unique id for this radio.
+# -BLACK/WHITE TEXTURE  -> Black & White Logo file name.
+# -COLORED TEXTURE      -> Colored Logo file name.
+# -VISIBEL AREA         -> The real visible area of the texture so that the spacing between the textures can be the same.
+# -YPos Modifier HD     -> Modifier applied when the sprite has to be aligned at the top in HighDef mode
+# -YPos Modifier CRT    -> Modifier applied when the sprite has to be aligned at the top in CRT mode
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------
+# -RADIO NAME-		-RADIO NAME FOR HASH-		-BLACK/WHITE TEXTURE-	-COLORED TEXTURE-	-VISIBEL AREA-  -YPos Modifier HD-  -YPos Modifier CRT-
+# ----------------------------------------------------------------------------------------------------------------------------------------------------
+RADIO_0				BEAT_95						beat_bw					beat_col			74					-0.00400					-0.02800
+RADIO_1				VLADIVOSTOK					vladivostok_bw			vladivostok_col		89					-0.00400					-0.02800
+RADIO_2				WKTT						wktt_bw					wktt_col			72					-0.00200					-0.02600
+RADIO_3				FUSION_FM					fusion_bw				fusion_col			94					-0.00200					-0.02600
+RADIO_4				K109_THE_STUDIO				k109_bw					k109_col			82					0.00400					-0.02000
+RADIO_5				BABYLON						tuffgong_bw				tuffgong_col		111					0.01300					-0.01100
+RADIO_6				NY_CLASSICS					theclassics_bw			theclassics_col		111					0.01300					-0.01100
+RADIO_7				THE_VIBE					thevibe_bw				thevibe_col			94					0.00500					-0.01900
+RADIO_8				PLR							plr_bw					plr_col				72					-0.00300					-0.02700
+RADIO_9				DANCE_MIX					electrochoc_bw			electrochoc_col		106					0.01000					-0.01400
+RADIO_10			AFRO_BEAT					if99_bw					if99_col			97					0.01000					-0.01400
+RADIO_11			JAZZ_NATION					jnr_bw					jnr_col				77					-0.00100					-0.02500
+RADIO_12			HARDCORE					lchc_bw					lchc_col			88					0.01000					-0.01400
+RADIO_13			LIBERTY_ROCK				lrr_bw					lrr_col				65					-0.00300					-0.02700
+RADIO_14			BOBBY_KONDERS				massiveb_bw				massiveb_col		67					-0.00300					-0.02700
+RADIO_15			DANCE_ROCK					radiobroker_bw			radiobroker_col		103					0.00400					-0.02000
+RADIO_16			CLASSICAL_AMBIENT			thejourney_bw			thejourney_col		108					0.01000					-0.01400
+RADIO_17			SAN_JUAN_SOUNDS				sanjuan_bw				sanjuan_col			73					0.00200					-0.02200
+RADIO_18			INTEGRITY					integrity_bw			integrity_col		100					0.00500					-0.01900
+# ----------------------------------------------------------------------------------------------
+
+# eof
+

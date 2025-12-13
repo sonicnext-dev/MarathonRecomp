@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/Users/Ozordi/Downloads/MarathonRecomp/run_xenon.py", line 8, in <module>
+    result = subprocess.run(
+  File "/Users/ozordi/.pyenv/versions/3.10.6/lib/python3.10/subprocess.py", line 503, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+  File "/Users/ozordi/.pyenv/versions/3.10.6/lib/python3.10/subprocess.py", line 1152, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+  File "/Users/ozordi/.pyenv/versions/3.10.6/lib/python3.10/subprocess.py", line 2004, in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+  File "/Users/ozordi/.pyenv/versions/3.10.6/lib/python3.10/subprocess.py", line 1196, in _check_timeout
+    raise TimeoutExpired(
+subprocess.TimeoutExpired: Command '['../../tools/XenonRecomp/build_find/XenonRecomp/XenonRecomp', './GTA4.toml', '../../tools/XenonRecomp/XenonUtils/ppc_context.h']' timed out after 120 seconds

@@ -2,14 +2,22 @@
 #include <gpu/video.h>
 #include <install/installer.h>
 #include <kernel/function.h>
+#include <kernel/memory.h>
 #include <os/process.h>
 #include <os/logger.h>
-#include <patches/audio_patches.h>
 #include <patches/patches.h>
 #include <ui/game_window.h>
 #include <user/config.h>
 #include <user/paths.h>
 #include <user/registry.h>
+
+// =============================================================================
+// GTA IV Application Layer
+// =============================================================================
+// This file contains the main application hooks for GTA IV recompilation.
+// Function addresses (sub_XXXXXXXX) need to be identified through reverse
+// engineering of the GTA IV Xbox 360 executable.
+// =============================================================================
 
 static std::thread::id g_mainThreadId = std::this_thread::get_id();
 
@@ -30,157 +38,80 @@ void App::Exit()
     std::_Exit(0);
 }
 
-// GTA4::CGame::CGame
-PPC_FUNC_IMPL(__imp__sub_8262A568);
-PPC_FUNC(sub_8262A568)
+// =============================================================================
+// GTA IV Function Hooks
+// =============================================================================
+// These hooks intercept recompiled PPC functions to add PC-specific behavior.
+// The function addresses below are placeholders - they need to be identified
+// by analyzing the GTA IV XEX executable.
+//
+// Key functions to identify:
+// - CGame::CGame (game constructor/initialization)
+// - CGame::Update (main game loop update)
+// - CTimer::Update (frame timing)
+// - grcDevice::Present (frame presentation)
+// =============================================================================
+
+// Placeholder: GTA IV main game initialization
+// TODO: Find actual address by searching for initialization patterns
+// PPC_FUNC_IMPL(__imp__sub_XXXXXXXX);
+// PPC_FUNC(sub_XXXXXXXX)
+// {
+//     App::s_isInit = true;
+//     App::s_language = Config::Language;
+//     
+//     // Set resolution
+//     // ...
+//     
+//     __imp__sub_XXXXXXXX(ctx, base);
+//     
+//     InitPatches();
+// }
+
+// =============================================================================
+// Frame Update Hook
+// =============================================================================
+// This hook is called every frame to update timing and handle window events.
+// For now, we'll use a simple frame callback approach.
+
+namespace GTA4FrameHooks
 {
-    App::s_isInit = true;
-    App::s_isMissingDLC = true;
-    App::s_language = Config::Language;
-
-    Sonicteam::Globals::Init();
-    Registry::Save();
-
-    struct RenderConfig
+    static double s_lastFrameTime = 0.0;
+    
+    void OnFrameStart()
     {
-        be<uint32_t> Width;
-        be<uint32_t> Height;
-    };
-
-    auto pRenderConfig = reinterpret_cast<RenderConfig*>(g_memory.Translate(ctx.r4.u32));
-    pRenderConfig->Width = Video::s_viewportWidth;
-    pRenderConfig->Height = Video::s_viewportHeight;
-
-    auto pAudioEngine = Sonicteam::AudioEngineXenon::GetInstance();
-    pAudioEngine->m_MusicVolume = Config::MusicVolume * Config::MasterVolume;
-    pAudioEngine->m_EffectsVolume = Config::EffectsVolume * Config::MasterVolume;
-
-    LOGFN_UTILITY("Changed resolution: {}x{}", pRenderConfig->Width.get(), pRenderConfig->Height.get());
-
-    __imp__sub_8262A568(ctx, base);
-
-    App::s_pApp = (GTA4::CGame*)g_memory.Translate(ctx.r3.u32);
-
-    InitPatches();
-}
-
-// GTA4::CGameState::Update
-PPC_FUNC_IMPL(__imp__sub_825EA610);
-PPC_FUNC(sub_825EA610)
-{
-    Video::WaitOnSwapChain();
-
-    // Correct small delta time errors.
-    if (Config::FPS >= FPS_MIN && Config::FPS < FPS_MAX)
-    {
-        double targetDeltaTime = 1.0 / Config::FPS;
-
-        if (abs(ctx.f1.f64 - targetDeltaTime) < 0.00001)
-            ctx.f1.f64 = targetDeltaTime;
+        // Pump SDL events to prevent window from becoming unresponsive
+        if (std::this_thread::get_id() == g_mainThreadId)
+        {
+            SDL_PumpEvents();
+            SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+            GameWindow::Update();
+        }
     }
-
-    App::s_deltaTime = ctx.f1.f64;
-    App::s_time += App::s_deltaTime;
-
-    // This function can also be called by the loading thread,
-    // which SDL does not like. To prevent the OS from thinking
-    // the process is unresponsive, we will flush while waiting
-    // for the pipelines to finish compiling in video.cpp.
-    if (std::this_thread::get_id() == g_mainThreadId)
+    
+    void OnFrameEnd(double deltaTime)
     {
-        SDL_PumpEvents();
-        SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
-        GameWindow::Update();
+        App::s_deltaTime = deltaTime;
+        App::s_time += deltaTime;
+        
+        // Wait for vsync/frame pacing
+        Video::WaitOnSwapChain();
     }
-
-    // Allow variable FPS when config is not 60 FPS.
-    App::s_pApp->m_pDoc->m_VFrame = Config::FPS != 60;
-
-    AudioPatches::Update(App::s_deltaTime);
-
-    __imp__sub_825EA610(ctx, base);
 }
 
-PPC_FUNC_IMPL(__imp__sub_82582648);
-PPC_FUNC(sub_82582648)
+// =============================================================================
+// Debug Logging Hooks
+// =============================================================================
+
+#if _DEBUG
+// Generic file loading debug hook
+// TODO: Hook into RAGE's file loading system for debugging
+void LogFileLoad(const char* filePath)
 {
-    struct File
+    if (filePath && filePath[0] != '\0')
     {
-    public:
-        LIBERTY_INSERT_PADDING(4);
-        xpointer<const char> pFilePath;
-        LIBERTY_INSERT_PADDING(0x0C);
-        be<uint32_t> Length;
-        be<uint32_t> Capacity;
-    };
-
-    auto pFile = reinterpret_cast<File*>(base + ctx.r5.u32);
-
-    if (pFile->pFilePath && pFile->Length > 0)
-        LOGFN_UTILITY("Loading file: {}", pFile->pFilePath.get());
-
-    __imp__sub_82582648(ctx, base);
-}
-
-#if _DEBUG
-// Sonicteam::SoX::Thread::Thread
-PPC_FUNC_IMPL(__imp__sub_825867A8);
-PPC_FUNC(sub_825867A8)
-{
-    auto pThreadName = (const char*)g_memory.Translate(ctx.r4.u32);
-
-    os::logger::Log(fmt::format("Created thread: {}", pThreadName), os::logger::ELogType::Utility, "Sonicteam::SoX::Thread");
-
-    __imp__sub_825867A8(ctx, base);
+        LOGFN_UTILITY("Loading file: {}", filePath);
+    }
 }
 #endif
 
-PPC_FUNC_IMPL(__imp__sub_82744840);
-PPC_FUNC(sub_82744840)
-{
-    LOG_UTILITY("RenderFrame");
-
-    __imp__sub_82744840(ctx, base);
-}
-
-// Sonicteam::SpanverseHeap::Alloc
-PPC_FUNC_IMPL(__imp__sub_825E7918);
-PPC_FUNC(sub_825E7918)
-{
-#if _DEBUG
-    os::logger::Log(fmt::format("Allocated {} bytes", ctx.r3.u32), os::logger::ELogType::Utility, "Sonicteam::SpanverseHeap");
-#endif
-
-    // This function checks if R4 is non-zero
-    // to allow an allocation, but it's always
-    // passed in as zero.
-    ctx.r4.u32 = 1;
-
-    __imp__sub_825E7918(ctx, base);
-}
-
-// Sonicteam::SpanverseHeap::Free
-PPC_FUNC_IMPL(__imp__sub_825E7958);
-PPC_FUNC(sub_825E7958)
-{
-#if _DEBUG
-    os::logger::Log(fmt::format("Freed {:08X}", ctx.r3.u32), os::logger::ELogType::Utility, "Sonicteam::SpanverseHeap");
-#endif
-
-    // This function checks if R4 is non-zero
-    // to allow a free, but it's always
-    // passed in as zero.
-    ctx.r4.u32 = 1;
-
-    __imp__sub_825E7958(ctx, base);
-}
-
-#if _DEBUG
-PPC_FUNC_IMPL(__imp__sub_825822D0);
-PPC_FUNC(sub_825822D0)
-{
-    LOG_UTILITY("!!!");
-
-    __imp__sub_825822D0(ctx, base);
-}
-#endif

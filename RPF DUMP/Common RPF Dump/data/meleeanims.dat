@@ -1,0 +1,373 @@
+# Dat file to specify all anims available to the melee system
+# This can't contain any anims already used in code it must only use melee specific groups
+#
+# MELEE_ANIM_GROUP:
+# <GroupName> <DictionaryName>(name of the image on disk) <Resident> (either "Resident"-loaded by default, "NetResidentOnly"-loaded by default in net games, but streamed otherwise or "Streamed"-anims streamed in when required) <WeaponBased> (for groups that are based on a ped holding or being struck by a weapon)<NetBarred> (for groups not to be loaded in network mode)
+# <animName> -UpperBody	(upper body)
+# <animName> -HeadNeckAndArms (chest up)
+# <animName> -RotatesRoot (for anims that spin the character around)
+# END_ANIM_GROUP
+#
+# MELEE_ANIM_GROUP: etc...
+#
+# e.g. a group called UNARMED_MELEE with 3 anims Melee1 Melee2 and Melee3 would look like this:
+#
+# MELEE_ANIM_GROUP:
+# UNARMED_MELEE UNARMED_MELEE SoloResident NetStreamed
+# 	Melee1
+# 	Melee2 -UpperBody
+# 	Melee3 
+# END_ANIM_GROUP
+#
+
+MELEE_ANIM_GROUP:
+move_full_set move_melee SoloResident NetResident
+	Idle
+	Idle_Outro
+	run
+	run_strafe_b
+	run_strafe_l
+	run_strafe_r
+	walk
+	walk_strafe_b
+	walk_strafe_l
+	walk_strafe_r
+END_ANIM_GROUP
+
+MELEE_ANIM_GROUP:
+move_tough MELEE_GANG_UNARMED SoloStreamed NetResident
+	Idle
+END_ANIM_GROUP
+
+MELEE_ANIM_GROUP:
+move_rubbish MELEE_PED_UNARMED SoloStreamed NetResident
+	Idle
+END_ANIM_GROUP
+
+MELEE_ANIM_GROUP:
+core_moves MELEE_UNARMED_BASE SoloResident NetResident
+	Block		 	         -HeadNeckAndArms
+	Cross_R
+	Cross_R_recoil         
+	Hit_Back
+	Hit_Cross_R  
+	Hit_Jab
+	Hit_Left          
+	Hit_Low_Kick            
+	Hit_Right	
+	Hit_Melee_Gun
+	Jab
+	Jab_Recoil                 
+	Low_Kick_R
+	Low_Kick_Recoil      
+	Ground_Attack_A
+	PARTIAL_PUNCH_R	   	     	      -UpperBody	
+	Stun_Punch
+END_ANIM_GROUP
+
+MELEE_ANIM_GROUP:
+hits_pool MELEE_HITS_COMMON SoloResident NetResident
+	DAM_Block_Front  	      -UpperBody  	     
+	DAM_Block_Left  	      -UpperBody     	 
+	DAM_Block_Right 	      -UpperBody   		 
+	Hit_Back_lower		-RotatesRoot 
+    Hit_Back_upper    		-RotatesRoot    
+    Hit_Elbow_L              
+    Hit_Elbow_R                     
+    Hit_Headbutt 
+    Hit_Hook_L                
+    Hit_Hook_L_Long     
+    Hit_Hook_R               
+    Hit_Hook_R_Long    
+    Hit_Knee                    
+    Hit_Low_Kick_Long 
+    Hit_Lowblow_L         
+    Hit_Lowblow_R   
+    Hit_Side_Left_Lo
+    Hit_Side_Right_Lo
+    Hit_Uppercut_L        
+    Hit_Uppercut_R        
+	Shoved_B                  
+	Shoved_F                  
+	Shoved_L                  
+	Shoved_R      
+END_ANIM_GROUP
+
+MELEE_ANIM_GROUP:
+unarmed_player MELEE_PLAYER_UNARMED SoloStreamed NetResident
+	Elbow_L                     
+	Elbow_L_Recoil        
+	Elbow_R                     
+	Elbow_R_Recoil       
+	Headbutt                    
+	Headbutt_Recoil
+	Hook_L                       
+	Hook_L_Long                        
+	Hook_L_Long_Recoil          
+	Hook_L_Recoil         
+	Hook_R                      
+	Hook_R_Long                       
+	Hook_R_Long_Recoil          
+	Hook_R_Recoil         
+	Knee                           
+	Knee_Recoil             
+	Low_Kick_R_Long   
+	Low_Kick_R_Long_Recoil 
+	Lowblow_L                
+	Lowblow_L_Recoil   
+	Lowblow_R                
+	Lowblow_R_Recoil   
+    Uppercut_L               
+    Uppercut_L_Recoil  
+    Uppercut_R               
+    Uppercut_R_Recoil  
+END_ANIM_GROUP
+
+MELEE_ANIM_GROUP:
+counters_player MELEE_COUNTERS SoloStreamed NetResident
+    Counter_Back           
+    Counter_left  
+    Counter_Right
+    Counter_Back_2
+    Counter_Right_2
+    Counter_Left_2         
+    Counter_Back_3
+    Counter_Right_3
+    Counter_Left_3
+    Disarm_bat
+    Disarm_Knife_B
+    Disarm_Knife_L
+    Disarm_Knife_R
+    Disarmed_bat
+	Disarmed_Knife_B
+	Disarmed_Knife_L
+	Disarmed_Knife_R
+    Dodge_Back              
+    Dodge_L                    
+    Dodge_R   
+	Hit_Counter_Back    
+	Hit_Counter_Left      
+	Hit_Counter_Right
+	Hit_Counter_Back_2
+	Hit_Counter_Right_2
+	Hit_Counter_Left_2
+	Hit_Counter_Back_3
+	Hit_Counter_Right_3
+	Hit_Counter_Left_3  
+END_ANIM_GROUP
+
+MELEE_ANIM_GROUP:
+ground_player MELEE_PLAYER_GROUND SoloStreamed NetResident
+    Ground_Attack_B     
+    Ground_Attack_C                 
+    Ground_Attack_C_Recoil    
+END_ANIM_GROUP
+
+MELEE_ANIM_GROUP:
+unarmed_gang MELEE_GANG_UNARMED SoloStreamed NetResident
+	Headbutt
+	Headbutt_Recoil
+	Idle
+	jab                               
+	Jab_Recoil  
+	Knee
+	Knee_Recoil   
+	L_Elbow
+	L_Elbow_Recoil
+	L_Hook
+	L_Hook_Recoil
+	L_Lowblow
+	L_Lowblow_Recoil
+	L_Uppercut
+	L_Uppercut_Recoil
+	Low_Kick_Nuts
+	Low_Kick_Nuts_Recoil
+	Low_Kick_long
+	Low_Kick_Long_Recoil
+	Move_Away
+	R_Cross
+	R_Cross_Recoil
+	R_Elbow
+	R_Elbow_Recoil
+	R_Hook
+	R_Hook_Recoil
+	R_Lowblow
+	R_Lowblow_Recoil
+	R_Uppercut
+	R_Uppercut_Recoil
+	Shove
+END_ANIM_GROUP
+
+MELEE_ANIM_GROUP:
+unarmed_ped MELEE_PED_UNARMED SoloStreamed NetResident
+	Hook_L                       
+	Hook_L_Long                        
+	Hook_L_Long_Recoil          
+	Hook_L_Recoil         
+	Hook_R                      
+	Hook_R_Long                       
+	Hook_R_Long_Recoil          
+	Hook_R_Recoil  
+	Idle       
+	Knee
+	Knee_Recoil
+	Long_kick
+	Long_kick_recoil                 
+	move_away
+	Shove   
+END_ANIM_GROUP
+
+MELEE_ANIM_GROUP:
+club_core MELEE_BASEBALL_CORE SoloStreamed NetResident WeaponBased
+	Block				-HeadNeckAndArms
+	Ground_Attack_A
+	Ground_Attack_A_Recoil
+	Hit_Hook_L
+	Hit_Hook_R
+	Hit_Low_Kick
+	Hook_L     
+	Hook_L_Recoil                                   
+	Hook_R 
+	Hook_R_Recoil 
+	Idle
+	Idle_Outro                                             
+	Low_Kick_R
+	Low_Kick_Recoil
+	P_Punch       	     	      -UpperBody
+	run
+	run_strafe_b
+	run_strafe_l
+	run_strafe_r
+	walk
+	walk_strafe_b
+	walk_strafe_l
+	walk_strafe_r
+END_ANIM_GROUP
+
+MELEE_ANIM_GROUP:
+club_extra MELEE_BASEBALL_EXTRA SoloStreamed NetResident WeaponBased
+    Batbutt
+    Batbutt_Recoil
+    Counter_Back
+    Counter_left
+    Counter_Right
+    DAM_Block_Front     	      -UpperBody           
+    DAM_Block_Left       	      -UpperBody             
+    DAM_Block_Right     	      -UpperBody             
+    Dodge_Back
+    Dodge_L
+    Dodge_R
+    Hit_Counter_Back
+    Hit_Counter_left
+    Hit_Counter_Right
+    Hit_headbutt
+    Hit_Knee
+    Hit_Low_Kick_Long
+    Hit_lowblow_R
+    Hit_Uppercut_L
+    Hit_Uppercut_R
+    Knee
+    Knee_Recoil
+    Low_Kick_R_Long_Recoil
+    Low_Kick_R_Long
+    Lowblow_R                            
+    Lowblow_R_Recoil
+    Shove   
+    Uppercut_L                           
+    Uppercut_L_Recoil  
+    UpperCut_R                          
+    UpperCut_R_Recoil
+END_ANIM_GROUP
+
+MELEE_ANIM_GROUP:
+blade_core MELEE_KNIFE_CORE SoloStreamed NetResident WeaponBased
+	Block				    -HeadNeckAndArms
+    Hit_low_kick
+    Hit_Med_Swipe_Start_A      
+    Hit_Med_Swipe_Start_B
+	Idle
+	Idle_Outro
+    Low_kick
+	Low_kick_Recoil
+    Med_Swipe_Start_A
+    Med_Swipe_Start_B
+    Med_Swipe_Start_B_Recoil
+    Partial_Swipe    	     	      -UpperBody	
+	run
+	run_strafe_b
+	run_strafe_l
+	run_strafe_r
+	walk
+	walk_strafe_b
+	walk_strafe_l
+	walk_strafe_r
+END_ANIM_GROUP
+
+MELEE_ANIM_GROUP:
+blade_extra MELEE_KNIFE_EXTRA SoloStreamed NetResident WeaponBased
+	Counter_Back           
+    Counter_left  
+    Counter_Right
+    DAM_Block_Front    	     	      -UpperBody	  
+    DAM_Block_Left           	      -UpperBody          
+    DAM_Block_Right 	     	      -UpperBody	  
+    Dodge_Back              
+    Dodge_Left               
+    Dodge_Right             
+    Ground_Attack       
+    Hit_Counter_Back    
+    Hit_Counter_Left      
+    Hit_Counter_Right
+	Hit_Knee
+    Hit_Long_Swipe_A
+    Hit_Long_Swipe_B
+    Hit_low_kick_long
+    Hit_Med_Swipe_Finish_A
+    Hit_Med_Swipe_Finish_B
+    Hit_Med_Swipe_Link_A
+    Hit_Med_Swipe_Link_B
+    Hit_Short_Swipe_Finish_A
+    Hit_Short_Swipe_Finish_B
+    Hit_Short_Swipe_Link_A
+    Hit_Short_Swipe_Link_B
+	Hit_Short_Swipe_Start_A
+	Hit_Short_Swipe_Start_B
+	Hit_Side_Left_Hi
+	Hit_Side_Left_Lo
+	Hit_Side_Right_Hi
+	Hit_Side_Right_Lo
+	Knee
+	Knee_Recoil
+    Long_Swipe_A
+    Long_Swipe_B
+    Long_Swipe_B_Recoil
+    Low_kick_long
+	Low_kick_long_Recoil
+    Med_Swipe_Finish_A
+    Med_Swipe_Finish_B
+    Med_Swipe_Link_A
+    Med_Swipe_Link_B
+    Short_Swipe_Finish_A
+    Short_Swipe_Finish_A_Recoil
+    Short_Swipe_Finish_B
+ 	Short_Swipe_Finish_B_Recoil
+    Short_Swipe_Link_A
+    Short_Swipe_Link_A_Recoil
+    Short_Swipe_Link_B
+    Short_Swipe_Start_A
+    Short_Swipe_Start_A_Recoil
+    Short_Swipe_Start_B
+    Short_Swipe_Start_B_Recoil
+    Shove
+	Slow_Long_Swipe_A	
+	Slow_Long_Swipe_A_Recoil
+	Slow_Short_Swipe_A
+	Slow_Short_Swipe_A_Recoil
+END_ANIM_GROUP
+
+MELEE_ANIM_GROUP:
+firearm_core MELEE_GUN SoloResident NetResident WeaponBased
+	Melee					
+	Melee_ak				
+   	Hold_Pistol	 
+END_ANIM_GROUP

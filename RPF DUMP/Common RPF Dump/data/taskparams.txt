@@ -1,0 +1,752 @@
+
+; This file specifies the parameter sets for NM tasks.
+;
+;
+; The format is as follows:
+;
+; TASK_NAME PARAMETER_SET_NAME {
+;   PARAMETER_NAME PARAMETER_VALUE
+; }
+;
+; TASK_NAME is usually the same name as returned by the GetName() method of the
+; respective task. PARAMETER_SET_NAME is either '*' or a task specific
+; identifier, '*' means that the given parameters are applied to all sets.
+; PARAMETER_NAME depends on the parameters that are available for a specific
+; task, PARAMETER_VALUE is the concrete value or '*' which refers to the default
+; value in the '*' set or the default value set in code.
+;
+;
+; DO NOT REMOVE PARAMETERS OR CHANGE THEIR ORDER!
+; IF YOU WANT TO USE A DEFAULT OR INHERITED VALUE
+; PUT DOWN A '*' AS THE VALUE. DEFAULT SETS SHOULD
+; BE DECLARED FIRST.
+
+
+GrabHelper * {
+  defaultGrabStrength   600.0
+  grabBodyStiffness     10.0
+  grabDistance          4.4
+  grabReachAngle        2.8
+  grabOneSideReachAngle 1.4
+  grabPullUpStrength    0
+  grabPullUpTimer       1
+}
+
+NMBrace * {
+  stayUprightStiffness            3.0 
+  braceDistance                   0.65
+  braceReachAbsorbtionTime        0.15
+  braceTargetPredictionTime       0.45
+  braceGrabStrength               40.0
+  braceGrabDistance               2.0
+  braceGrabReachAngle             1.5
+  braceGrabHoldTimerL             0.5
+  braceGrabHoldTimerH             1.75
+  braceMinTimeBeforeGunThreaten   0
+  braceMaxTimeBeforeGunThreaten   800
+  braceMinTimeBetweenFireGun      200
+  braceMaxTimeBetweenFireGun      700
+  bracePointArmTwistL             0.0
+  bracePointArmTwistH             0.25
+  braceAimAngleDPThreshold        0.8
+  bracePointArmStraightnessL      0.75
+  bracePointArmStraightnessH      0.95
+  braceGrabDontLetGo              false
+  braceUseGunThreatening          true
+  braceLegStiffness               12.0
+  balanceStepClampScale           1.0
+}
+
+NMBrace WEAK {
+  stayUprightStiffness            1.3 
+  braceDistance                   0.65
+  braceReachAbsorbtionTime        0.15
+  braceTargetPredictionTime       0.45
+  braceGrabStrength               20.0
+  braceGrabDistance               2.0
+  braceGrabReachAngle             1.1
+  braceGrabHoldTimerL             0.3
+  braceGrabHoldTimerH             1.05
+  braceMinTimeBeforeGunThreaten   0
+  braceMaxTimeBeforeGunThreaten   800
+  braceMinTimeBetweenFireGun      500
+  braceMaxTimeBetweenFireGun      900
+  bracePointArmTwistL             0.0
+  bracePointArmTwistH             0.25
+  braceAimAngleDPThreshold        0.8
+  bracePointArmStraightnessL      0.75
+  bracePointArmStraightnessH      0.95
+  braceGrabDontLetGo              false
+  braceUseGunThreatening          true
+  braceLegStiffness               11.0
+  balanceStepClampScale           0.4
+}
+
+NMShot_IsMoving * {
+  balanceBodyStiffness       12.0
+  balanceBodyDamping         0.9
+  balanceElbow               1.5
+  balanceShoulder            1.5
+  balanceMaxSteps            3
+  balanceAbortThreshold      1.0
+  balanceLeanAmount          0.4
+  balanceLeanDirApplyAsForce false
+}
+
+NMShot_Standing * {
+  shotBodyStiffness               13.5
+  shotLooseness                   1.0
+  shotLeanAmount                  0.3
+  shotMaxSteps                    6
+  shotGrabTime                    3.0
+  shotUprightStiffness            3.0
+  shotMaxTimeToStopLeanL          600
+  shotMaxTimeToStopLeanH          1200
+  shotTimeBeforeReachForWoundL    0.1
+  shotTimeBeforeReachForWoundH    0.2
+  shotTimeBeforeCollapseWoundLeg  1.0
+  shotSpinePainTimeL              0.5
+  shotSpinePainTimeH              1.5
+  shotSpinePainMultiplierL        1.0
+  shotSpinePainMultiplierH        2.0
+  shotSpinePainTwistMultiplierL   0.5
+  shotSpinePainTwistMultiplierH   1.5
+  shotHeadLookAtWoundMinTimer     0.10
+  shotHeadLookAtWoundMaxTimer     0.75
+  shotHeadLookAtShooterMinTimer   0.75
+  shotHeadLookAtShooterMaxTimer   1.50
+  shotRelaxPeriod_Injured         1.5
+  shotRelaxPeriod_FatallyInjured  0.5
+  shotStablizeHandsAndNeck        false
+  shotMinTimeBeforeGunThreaten    0
+  shotMaxTimeBeforeGunThreaten    500
+  shotMinTimeBetweenFireGun       100
+  shotMaxTimeBetweenFireGun       500
+  shotMaxBlindFireTimeL           400
+  shotMaxBlindFireTimeH           1000
+  shotBlindFireProbability        0.1
+  addShockSpin                    true
+  randomizeShockSpinDirection     false
+  alwaysAddShockSpin              false
+  shockSpinMin                    40.0
+  shockSpinMax                    80.0
+  shockSpinLiftForceMult          -1.0
+  shockSpinDecayMult              4.0
+  shockSpinScalePerComponent      0.5
+  balanceLeanDirApplyAsForce        true
+  balanceLeanAmountScaleWhenRunning 1.5
+  additionalLeanTimeWhenRunning     1000
+}
+
+NMShot_Standing POWERFUL_WEAPON {
+  shotBodyStiffness               *
+  shotLooseness                   *
+  shotLeanAmount                  0.4
+  shotMaxSteps                    *
+  shotGrabTime                    *
+  shotUprightStiffness            *
+  shotMaxTimeToStopLeanL          *
+  shotMaxTimeToStopLeanH          *
+  shotTimeBeforeReachForWoundL    *
+  shotTimeBeforeReachForWoundH    *
+  shotTimeBeforeCollapseWoundLeg  *
+  shotSpinePainTimeL              1.0
+  shotSpinePainTimeH              2.0
+  shotSpinePainMultiplierL        1.0
+  shotSpinePainMultiplierH        3.0
+  shotSpinePainTwistMultiplierL   1.0
+  shotSpinePainTwistMultiplierH   2.0
+  shotHeadLookAtWoundMinTimer     0.4
+  shotHeadLookAtWoundMaxTimer     *
+  shotHeadLookAtShooterMinTimer   *
+  shotHeadLookAtShooterMaxTimer   *
+  shotRelaxPeriod_Injured         *
+  shotRelaxPeriod_FatallyInjured  *
+  shotStablizeHandsAndNeck        *
+  shotMinTimeBeforeGunThreaten    *
+  shotMaxTimeBeforeGunThreaten    *
+  shotMinTimeBetweenFireGun       *
+  shotMaxTimeBetweenFireGun       *
+  shotMaxBlindFireTimeL           *
+  shotMaxBlindFireTimeH           *
+  shotBlindFireProbability        *
+  addShockSpin                    *
+  randomizeShockSpinDirection     *
+  alwaysAddShockSpin              *
+  shockSpinMin                    100.0
+  shockSpinMax                    200.0
+  shockSpinLiftForceMult          -2.0
+  shockSpinDecayMult              3.0
+  shockSpinScalePerComponent      0.6
+  balanceLeanDirApplyAsForce        *
+  balanceLeanAmountScaleWhenRunning *
+  additionalLeanTimeWhenRunning     *
+}
+
+; NMShot_Standing WEAK_POWERFUL_WEAPON
+; use the default set unless specified
+
+NMShot_Standing SNIPER_RIFLE {
+  shotBodyStiffness               *
+  shotLooseness                   *
+  shotLeanAmount                  *
+  shotMaxSteps                    *
+  shotGrabTime                    *
+  shotUprightStiffness            *
+  shotMaxTimeToStopLeanL          *
+  shotMaxTimeToStopLeanH          *
+  shotTimeBeforeReachForWoundL    *
+  shotTimeBeforeReachForWoundH    *
+  shotTimeBeforeCollapseWoundLeg  *
+  shotSpinePainTimeL              *
+  shotSpinePainTimeH              *
+  shotSpinePainMultiplierL        *
+  shotSpinePainMultiplierH        *
+  shotSpinePainTwistMultiplierL   *
+  shotSpinePainTwistMultiplierH   *
+  shotHeadLookAtWoundMinTimer     *
+  shotHeadLookAtWoundMaxTimer     *
+  shotHeadLookAtShooterMinTimer   *
+  shotHeadLookAtShooterMaxTimer   *
+  shotRelaxPeriod_Injured         *
+  shotRelaxPeriod_FatallyInjured  *
+  shotStablizeHandsAndNeck        *
+  shotMinTimeBeforeGunThreaten    *
+  shotMaxTimeBeforeGunThreaten    *
+  shotMinTimeBetweenFireGun       *
+  shotMaxTimeBetweenFireGun       *
+  shotMaxBlindFireTimeL           *
+  shotMaxBlindFireTimeH           *
+  shotBlindFireProbability        *
+  addShockSpin                    true
+  randomizeShockSpinDirection     false
+  alwaysAddShockSpin              true
+  shockSpinMin                    100
+  shockSpinMax                    200
+  shockSpinLiftForceMult          3.0
+  shockSpinDecayMult              4.0
+  shockSpinScalePerComponent      0.6
+  balanceLeanDirApplyAsForce        *
+  balanceLeanAmountScaleWhenRunning *
+  additionalLeanTimeWhenRunning     *
+}
+
+; NMShot_Standing WEAK_SNIPER_RIFLE
+; use the default set unless specified
+
+NMShot_Standing SHOTGUN {
+  shotBodyStiffness               *
+  shotLooseness                   *
+  shotLeanAmount                  *
+  shotMaxSteps                    *
+  shotGrabTime                    *
+  shotUprightStiffness            *
+  shotMaxTimeToStopLeanL          *
+  shotMaxTimeToStopLeanH          *
+  shotTimeBeforeReachForWoundL    *
+  shotTimeBeforeReachForWoundH    *
+  shotTimeBeforeCollapseWoundLeg  *
+  shotSpinePainTimeL              *
+  shotSpinePainTimeH              *
+  shotSpinePainMultiplierL        *
+  shotSpinePainMultiplierH        *
+  shotSpinePainTwistMultiplierL   *
+  shotSpinePainTwistMultiplierH   *
+  shotHeadLookAtWoundMinTimer     *
+  shotHeadLookAtWoundMaxTimer     *
+  shotHeadLookAtShooterMinTimer   *
+  shotHeadLookAtShooterMaxTimer   *
+  shotRelaxPeriod_Injured         *
+  shotRelaxPeriod_FatallyInjured  *
+  shotStablizeHandsAndNeck        *
+  shotMinTimeBeforeGunThreaten    *
+  shotMaxTimeBeforeGunThreaten    *
+  shotMinTimeBetweenFireGun       *
+  shotMaxTimeBetweenFireGun       *
+  shotMaxBlindFireTimeL           *
+  shotMaxBlindFireTimeH           *
+  shotBlindFireProbability        *
+  addShockSpin                    true
+  randomizeShockSpinDirection     true
+  alwaysAddShockSpin              true
+  shockSpinMin                    40
+  shockSpinMax                    120
+  shockSpinLiftForceMult          4.0
+  shockSpinDecayMult              3.0
+  shockSpinScalePerComponent      0.6
+  balanceLeanDirApplyAsForce        *
+  balanceLeanAmountScaleWhenRunning *
+  additionalLeanTimeWhenRunning     *
+}
+
+; NMShot_Standing WEAK_SHOTGUN
+; use the default set unless specified
+
+NMShot_Standing MELEE {
+  shotBodyStiffness               *
+  shotLooseness                   *
+  shotLeanAmount                  0.0
+  shotMaxSteps                    100
+  shotGrabTime                    *
+  shotUprightStiffness            *
+  shotMaxTimeToStopLeanL          *
+  shotMaxTimeToStopLeanH          *
+  shotTimeBeforeReachForWoundL    *
+  shotTimeBeforeReachForWoundH    *
+  shotTimeBeforeCollapseWoundLeg  *
+  shotSpinePainTimeL              0.0
+  shotSpinePainTimeH              0.0
+  shotSpinePainMultiplierL        0.0
+  shotSpinePainMultiplierH        0.0
+  shotSpinePainTwistMultiplierL   0.0
+  shotSpinePainTwistMultiplierH   0.0
+  shotHeadLookAtWoundMinTimer     *
+  shotHeadLookAtWoundMaxTimer     *
+  shotHeadLookAtShooterMinTimer   *
+  shotHeadLookAtShooterMaxTimer   *
+  shotRelaxPeriod_Injured         *
+  shotRelaxPeriod_FatallyInjured  *
+  shotStablizeHandsAndNeck        *
+  shotMinTimeBeforeGunThreaten    *
+  shotMaxTimeBeforeGunThreaten    *
+  shotMinTimeBetweenFireGun       *
+  shotMaxTimeBetweenFireGun       *
+  shotMaxBlindFireTimeL           *
+  shotMaxBlindFireTimeH           *
+  shotBlindFireProbability        *
+  addShockSpin                    false
+  randomizeShockSpinDirection     *
+  alwaysAddShockSpin              *
+  shockSpinMin                    *
+  shockSpinMax                    *
+  shockSpinLiftForceMult          *
+  shockSpinDecayMult 	             *
+  shockSpinScalePerComponent      *
+  balanceLeanDirApplyAsForce        *
+  balanceLeanAmountScaleWhenRunning *
+  additionalLeanTimeWhenRunning     *
+}
+
+NMShot_Standing MELEE_BASEBALL {
+  shotBodyStiffness               12.5
+  shotLooseness                   *
+  shotLeanAmount                  0.0
+  shotMaxSteps                    100
+  shotGrabTime                    *
+  shotUprightStiffness            *
+  shotMaxTimeToStopLeanL          *
+  shotMaxTimeToStopLeanH          *
+  shotTimeBeforeReachForWoundL    *
+  shotTimeBeforeReachForWoundH    *
+  shotTimeBeforeCollapseWoundLeg  *
+  shotSpinePainTimeL              0.0
+  shotSpinePainTimeH              0.0
+  shotSpinePainMultiplierL        0.0
+  shotSpinePainMultiplierH        0.0
+  shotSpinePainTwistMultiplierL   0.0
+  shotSpinePainTwistMultiplierH   0.0
+  shotHeadLookAtWoundMinTimer     *
+  shotHeadLookAtWoundMaxTimer     *
+  shotHeadLookAtShooterMinTimer   *
+  shotHeadLookAtShooterMaxTimer   *
+  shotRelaxPeriod_Injured         *
+  shotRelaxPeriod_FatallyInjured  *
+  shotStablizeHandsAndNeck        *
+  shotMinTimeBeforeGunThreaten    *
+  shotMaxTimeBeforeGunThreaten    *
+  shotMinTimeBetweenFireGun       *
+  shotMaxTimeBetweenFireGun       *
+  shotMaxBlindFireTimeL           *
+  shotMaxBlindFireTimeH           *
+  shotBlindFireProbability        *
+  addShockSpin                    false
+  randomizeShockSpinDirection     false
+  alwaysAddShockSpin              true
+  shockSpinMin                    90
+  shockSpinMax                    220
+  shockSpinLiftForceMult          1.0
+  shockSpinDecayMult              2.0
+  shockSpinScalePerComponent      0.7
+  balanceLeanDirApplyAsForce        *
+  balanceLeanAmountScaleWhenRunning *
+  additionalLeanTimeWhenRunning     *
+}
+
+NMHFall * {
+  pdStrengthPlayer                1.0
+  pdStrengthAI                    0.2
+  hfBodyStiffness                 12.0
+  hfBodyDamping                   1.0
+  hfCutOffVelocity                40.0
+  hfCatchFallTime                 0.3
+  hfArmsUp                        0.1
+  hfLegRadius                     0.3
+  hfLegAngularSpeed               3.5
+  hfArmPeriod                     1.75
+  hfArmAmplitude                  0.5
+  hfAimAngle                      0.2
+  hfLegSideDistance               0.25
+  hfFowardIKOffset                0.15
+  hfFowardVelCompOnAngle          -0.02
+  hfForwardRoll                   false
+  hfOrientateBodyToFallDirection  true
+  hfUseZeroPose                   false
+}
+
+NMHFall WEAK {
+  pdStrengthPlayer                *
+  pdStrengthAI                    *
+  hfBodyStiffness                 *
+  hfBodyDamping                   *
+  hfCutOffVelocity                *
+  hfCatchFallTime                 *
+  hfArmsUp                        *
+  hfLegRadius                     *
+  hfLegAngularSpeed               *
+  hfArmPeriod                     *
+  hfArmAmplitude                  *
+  hfAimAngle                      *
+  hfLegSideDistance               *
+  hfFowardIKOffset                *
+  hfFowardVelCompOnAngle          *
+  hfForwardRoll                   *
+  hfOrientateBodyToFallDirection  *
+  hfUseZeroPose                   *
+}
+
+NMBalance * {
+  balanceStiffness                                  9.0 ; NB. ARMS AND NECK STIFFNESS
+  balanceDamping                                    0.7 ; NB. ARMS DAMPING
+  balanceElbow                                      1.75
+  balanceShoulder                                   1.0
+  balanceHeadLookTimeout                            10.0 ; NB. SPINE STIFFNESS
+  balanceGrabPedalStiffness                         10.0
+  balanceGrabPedalRadius                            0.3
+  balanceGrabPedalOffset                            0.1
+  balanceGrabPedalAsymmetry                         0.05
+  balanceGrabPedalSpeedMax                          8.0
+  balanceGrabPedalScaleWithLocalVelocityMultiplier  1.0
+  balanceSomersaultAngle                            1.0
+  balanceSomersaultAngleThreshold                   0.25
+  balanceSideSomersaultAngle                        1.0
+  balanceSideSomersaultAngleThreshold               0.25
+  balanceReturningToBalanceArmsOut                  0.0
+  balanceArmsOutStraightenElbows                    0.0
+  balanceArmsOutMinLean2                            -9.9
+  balanceBodyTurnTimeout                            1.0 ; NB. SPINE DAMPING
+  balanceAngVelMultiplier                           4.0 1.0 4.0
+  balanceAngVelThreshold                            1.2 3.0 1.2
+  balanceArmsOutOnPushMultiplier                    1.0
+  balanceArmsOutOnPushTimeout                       1.1 ;MAGIC DRUNK PARAMETER VALUE 999.0 CAUSES STEP LENGTH TO BE RANDOMLY VARIED AND balanceArmsOutOnPushTimeout set to 999secs
+  balanceElbowAngleOnContact                        1.9
+  balanceBendElbowsTime                             0.3
+  balanceBendElbowsGait                             0.7
+  balanceGrabPedalScaleWithLocalVelocity            true
+  balanceArmsOutOnPush                              true
+  balanceUseBodyTurn                                true
+  angSpeedMultiplier4Dragging                       0.3
+  balanceHeadLookAtVelProb                          -1.0
+  balanceTurnOffProb                                0.1
+  balanceTurn2VelProb                               0.3 
+  balanceTurnAwayProb                               0.15
+  balanceTurnLeftProb                               0.125
+  balanceTurnRightProb                              0.125
+  balanceTurn2TargetProb                            0.2
+  balanceStepClampScale                             1.0
+}
+
+NMBalance WEAK {
+  balanceStiffness                                  8.7 ; NB. ARMS AND NECK STIFFNESS
+  balanceDamping                                    * ; NB. ARMS DAMPING
+  balanceElbow                                      *
+  balanceShoulder                                   *
+  balanceHeadLookTimeout                            9.2 ; NB. SPINE STIFFNESS
+  balanceGrabPedalStiffness                         *
+  balanceGrabPedalRadius                            *
+  balanceGrabPedalOffset                            *
+  balanceGrabPedalAsymmetry                         *
+  balanceGrabPedalSpeedMax                          *
+  balanceGrabPedalScaleWithLocalVelocityMultiplier  *
+  balanceSomersaultAngle                            0.5
+  balanceSomersaultAngleThreshold                   *
+  balanceSideSomersaultAngle                        0.5
+  balanceSideSomersaultAngleThreshold               *
+  balanceReturningToBalanceArmsOut                  *
+  balanceArmsOutStraightenElbows                    *
+  balanceArmsOutMinLean2                            -2.8
+  balanceBodyTurnTimeout                            0.9 ; NB. SPINE DAMPING
+  balanceAngVelMultiplier                           3.3 0.6 3.3
+  balanceAngVelThreshold                            *
+  balanceArmsOutOnPushMultiplier                    0.6
+  balanceArmsOutOnPushTimeout                       *
+  balanceElbowAngleOnContact                        *
+  balanceBendElbowsTime                             *
+  balanceBendElbowsGait                             *
+  balanceGrabPedalScaleWithLocalVelocity            *
+  balanceArmsOutOnPush                              *
+  balanceUseBodyTurn                                *
+  angSpeedMultiplier4Dragging                       *
+  balanceHeadLookAtVelProb                          0.9
+  balanceTurnOffProb                                0.1
+  balanceTurn2VelProb                               0.5 
+  balanceTurnAwayProb                               0.2
+  balanceTurnLeftProb                               0.05
+  balanceTurnRightProb                              0.05
+  balanceTurn2TargetProb                            0.1
+  balanceStepClampScale                             0.4
+}
+
+NMBalance AGGRESSIVE {
+  balanceStiffness                                  *
+  balanceDamping                                    *
+  balanceElbow                                      *
+  balanceShoulder                                   *
+  balanceHeadLookTimeout                            *
+  balanceGrabPedalStiffness                         *
+  balanceGrabPedalRadius                            *
+  balanceGrabPedalOffset                            *
+  balanceGrabPedalAsymmetry                         *
+  balanceGrabPedalSpeedMax                          *
+  balanceGrabPedalScaleWithLocalVelocityMultiplier  *
+  balanceSomersaultAngle                            *
+  balanceSomersaultAngleThreshold                   *
+  balanceSideSomersaultAngle                        *
+  balanceSideSomersaultAngleThreshold               *
+  balanceReturningToBalanceArmsOut                  *
+  balanceArmsOutStraightenElbows                    *
+  balanceArmsOutMinLean2                            *
+  balanceBodyTurnTimeout                            *
+  balanceAngVelMultiplier                           *
+  balanceAngVelThreshold                            *
+  balanceArmsOutOnPushMultiplier                    *
+  balanceArmsOutOnPushTimeout                       *
+  balanceElbowAngleOnContact                        *
+  balanceBendElbowsTime                             *
+  balanceBendElbowsGait                             *
+  balanceGrabPedalScaleWithLocalVelocity            *
+  balanceArmsOutOnPush                              *
+  balanceUseBodyTurn                                *
+  angSpeedMultiplier4Dragging                       *
+  balanceHeadLookAtVelProb                          0.1
+  balanceTurnOffProb                                0.1
+  balanceTurn2VelProb                               0.1 
+  balanceTurnAwayProb                               0.05
+  balanceTurnLeftProb                               0.05
+  balanceTurnRightProb                              0.05
+  balanceTurn2TargetProb                            0.7
+  balanceStepClampScale                             *
+}
+
+NMBalance MELEE {
+  balanceStiffness                                  0.0
+  balanceDamping                                    *
+  balanceElbow                                      *
+  balanceShoulder                                   *
+  balanceHeadLookTimeout                            *
+  balanceGrabPedalStiffness                         *
+  balanceGrabPedalRadius                            *
+  balanceGrabPedalOffset                            *
+  balanceGrabPedalAsymmetry                         *
+  balanceGrabPedalSpeedMax                          *
+  balanceGrabPedalScaleWithLocalVelocityMultiplier  *
+  balanceSomersaultAngle                            *
+  balanceSomersaultAngleThreshold                   *
+  balanceSideSomersaultAngle                        *
+  balanceSideSomersaultAngleThreshold               *
+  balanceReturningToBalanceArmsOut                  *
+  balanceArmsOutStraightenElbows                    *
+  balanceArmsOutMinLean2                            *
+  balanceBodyTurnTimeout                            *
+  balanceAngVelMultiplier                           *
+  balanceAngVelThreshold                            *
+  balanceArmsOutOnPushMultiplier                    *
+  balanceArmsOutOnPushTimeout                       *
+  balanceElbowAngleOnContact                        *
+  balanceBendElbowsTime                             *
+  balanceBendElbowsGait                             *
+  balanceGrabPedalScaleWithLocalVelocity            *
+  balanceArmsOutOnPush                              *
+  balanceUseBodyTurn                                *
+  angSpeedMultiplier4Dragging                       *
+  balanceHeadLookAtVelProb                          *
+  balanceTurnOffProb                                *
+  balanceTurn2VelProb                               * 
+  balanceTurnAwayProb                               *
+  balanceTurnLeftProb                               *
+  balanceTurnRightProb                              *
+  balanceTurn2TargetProb                            *
+  balanceStepClampScale                             *
+}
+
+NMOnFire * {
+  onFireStumbleLeanAmount           0.325
+  writheStandingArmStiffness        12.0
+  writheStandingArmDamping          1.1
+  writheStandingArmPeriod           0.7
+  writheStandingArmAmplitude        1.0
+  writheStandingElbowAmplitude      1.4
+  writheStandingBackStiffness       11.0
+  writheStandingBackDamping         0.5
+  writheStandingBackPeriod          1.0
+  writheStandingBackAmplitude       2.0
+  writheLyingArmStiffness           14.0
+  writheLyingArmDamping             1.0
+  writheLyingArmPeriod              0.8
+  writheLyingArmAmplitude           1.0
+  writheLyingElbowAmplitude         1.4
+  writheLyingBackStiffness          10.0
+  writheLyingBackDamping            0.5
+  writheLyingBackPeriod             0.5
+  writheLyingBackAmplitude          2.0
+  writheLyingLegStiffness           10.0
+  writheLyingLegDamping             0.5
+  writheLyingLegPeriod              1.2
+  writheLyingLegAmplitude           1.0
+  writheLyingKneeAmplitude          1.25
+  timePeriodBetweenDirectionRethink 1500
+  rangeOfDirectionVariance          140.0
+}
+
+NMOnFire WEAK {
+  onFireStumbleLeanAmount           0.25
+  writheStandingArmStiffness        12.0
+  writheStandingArmDamping          0.7
+  writheStandingArmPeriod           1.3
+  writheStandingArmAmplitude        0.9
+  writheStandingElbowAmplitude      1.0
+  writheStandingBackStiffness       11.0
+  writheStandingBackDamping         0.9
+  writheStandingBackPeriod          1.0
+  writheStandingBackAmplitude       1.5
+  writheLyingArmStiffness           10.5
+  writheLyingArmDamping             0.7
+  writheLyingArmPeriod              1.1
+  writheLyingArmAmplitude           1.0
+  writheLyingElbowAmplitude         1.6
+  writheLyingBackStiffness          10.0
+  writheLyingBackDamping            0.8
+  writheLyingBackPeriod             0.7
+  writheLyingBackAmplitude          2.0
+  writheLyingLegStiffness           10.0
+  writheLyingLegDamping             0.5
+  writheLyingLegPeriod              1.6
+  writheLyingLegAmplitude           0.85
+  writheLyingKneeAmplitude          1.5
+  timePeriodBetweenDirectionRethink 400
+  rangeOfDirectionVariance          140.0
+}
+
+NMJumpRollFromRoadVehicle * {
+  velocityMultiplier      4.0
+  velocityMaxMag          40.0
+  initialUpwardsLift      3.0
+  catchFallBodyStiffness  12.0
+  timeTillRollUp          1000
+  rollUpStiffness         10.0
+  rollUpDamping           1.0
+  rollUpForceMag          0.6
+  rollUpAsymmetry         0.2
+  rollUpArmsToSlow        -0.2
+  rollUpLegPush           0.8
+  rollUpArmReachLength    0.2
+  rollUpArmReachAmount    1.0
+  rollUpDecayTime         3.0
+  rollUpDecayTarget       8.0
+  rollUpAsymmetricalLegs  0.8
+  rollUpUseZeroPose       false
+  rollUpSpinInAir         false
+  zAxisSpinReduction      0.9
+}
+
+NMFlinch * {
+  bodyStiffness         12.0
+  damping               1.0
+  leanAwayAmount        0.2
+  backBendAmount        -0.55
+  handDistanceVertical  0.15
+  handDistanceLeftRight 0.05
+  handDistanceFrontBack 0.15
+  flinchMaxStepsL       3
+  flinchMaxStepsH       8
+  leanAwayFromPos       false
+  leanMaxTimeL    	1000
+  leanMaxTimeH		2000
+  noiseScale            0.1
+  turnTowards           1
+}
+
+NMFlinch MELEE {
+  bodyStiffness         12.0
+  damping               *
+  leanAwayAmount        0.3
+  backBendAmount        -0.3
+  handDistanceVertical  *
+  handDistanceLeftRight *
+  handDistanceFrontBack *
+  flinchMaxStepsL       *
+  flinchMaxStepsH       *
+  leanAwayFromPos       false
+  leanMaxTimeL    	1000
+  leanMaxTimeH		1500
+  noiseScale            *
+  turnTowards           *
+}
+
+; NMFlinch REACT
+; use the default set unless specified
+
+; NMFlinch EXPLOSION_PASIVE
+; use the default set unless specified
+
+NMFlinch MELEE_PASIVE {
+  bodyStiffness         11.0
+  damping               *
+  leanAwayAmount        0.2
+  backBendAmount        -0.45
+  handDistanceVertical  *
+  handDistanceLeftRight *
+  handDistanceFrontBack *
+  flinchMaxStepsL       2
+  flinchMaxStepsH       5
+  leanAwayFromPos       true
+  leanMaxTimeL    	200
+  leanMaxTimeH		900
+  noiseScale            0.3
+  turnTowards           -1
+}
+
+; NMFlinch REACT_PASIVE
+; use the default set unless specified
+
+NMExplosion * {
+  windmillArmStiffness   10.0
+  windmillBodyStiffness  12.0
+  windmillPeriode        2.0
+  windmillAmplitude      1.0
+  windmillPhase          0.2
+  pedalLegStiffness      14.0
+  pedalRadius            0.5
+  pedalSpeed             10.0
+  pedalOffset            0.1
+  pedalAsymmetry         1.0
+  writheArmStiffness     13.0
+  writheLegStiffness     13.0
+  writheBackStiffness    13.0
+  writheLegPeriod        0.5
+  writheArmPeriod        0.5
+  writheBackPeriod       1.0
+  writheDamping          0.5
+  writheLegAmplitude     1.0
+  writheArmAmplitude     1.0
+  writheBackAmplitude    1.0
+  writheKneeAmplitude    1.0
+  writheElbowAmplitude   1.0
+  rollupStiffness        13.0
+  rollupLegPush          0.5
+  rollupArmReachAmount   0.5
+  rollupArmToSlowDown    -0.5
+  rollupAsymmetricalLegs 0.5
+  minPedalTimeInRollUp   1000
+  maxPedalTimeInRollUp   3000
+  rollUpTimeAfterGroundImpact 1000
+}

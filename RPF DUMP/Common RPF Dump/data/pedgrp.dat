@@ -1,0 +1,506 @@
+#
+# file: pedgrp.dat
+# description: contains the list of ped groups for each group type. Each ped
+#	group should contain 32 ped type names. Please dont use 'male01' in any of the pedgroups
+#
+
+# POPCYCLE_GROUP_HARLEM 	  
+F_M_PHarBron_01
+F_O_PHarBron_01
+F_Y_Pbronx_01
+F_Y_PHarBron_01
+F_Y_Pharlem_01
+F_Y_Pqueens_01
+M_M_Pharbron_01
+M_O_Pharbron_01
+M_Y_Bronx_01
+M_Y_Harlem_01
+M_Y_Harlem_02
+M_Y_LEastSide_01
+M_Y_Pbronx_01
+M_Y_PHarBron_01	
+M_Y_Pharlem_01
+M_Y_Pqueens_01
+
+# POPCYCLE_GROUP_BRONX
+F_M_PHarBron_01
+F_O_PHarbron_01
+F_Y_Pbronx_01
+F_Y_Street_30
+M_M_PHarbron_01
+M_O_PHarbron_01
+m_y_bouncer_01
+M_Y_Bronx_01
+M_Y_chopshop_02
+m_y_genstreet_34
+M_Y_Harlem_04
+M_Y_PBronx_01
+M_Y_PLatin_01
+m_y_street_04
+
+# POPCYCLE_GROUP_JERSEY
+F_M_Business_01
+F_M_PJersey_01
+F_M_PJersey_02
+F_O_PJersey_01
+F_O_Rich_01
+F_Y_Business_01
+F_Y_PJersey_02
+F_Y_Street_02
+F_Y_Street_05
+M_M_FatMob_01
+M_O_Janitor
+M_O_mobster
+M_O_PJersey_01
+M_O_Suited
+m_y_dork_02
+m_y_downtown_01
+M_Y_PJersey_01
+m_y_skatebike_01
+M_Y_Tough_05
+
+# POPCYCLE_GROUP_UPTOWN
+F_M_PManhat_01
+F_M_PManhat_02
+F_M_PRich_01
+F_O_Rich_01
+F_Y_PMANHAT_01
+F_Y_PMANHAT_02
+F_Y_Prich_01
+F_Y_Street_09
+F_Y_Tourist_01
+M_M_PManhat_01
+M_M_PManhat_02
+M_M_Prich_01
+M_O_Suited
+m_y_dork_02
+M_Y_PMANHAT_01
+M_Y_Prich_01
+m_y_tourist_02
+
+# POPCYCLE_GROUP_QUEENS 
+F_M_Business_01
+F_Y_Business_01
+F_Y_PQueens_01
+F_Y_Street_34
+M_O_street_01	
+m_y_genstreet_34
+M_Y_PQueens_01
+m_y_street_04
+
+# POPCYCLE_GROUP_BROOKLYN
+F_Y_Shop_03
+F_Y_Shopper_05
+F_Y_Street_02
+F_Y_Street_12
+M_O_Hasid_01
+M_Y_Hasid_01												
+M_Y_Streetpunk_02
+M_Y_Streetpunk_04
+M_Y_Streetpunk_05
+M_Y_Tough_05
+
+# POPCYCLE_GROUP_MIDTOWN
+F_M_PManhat_01
+F_M_PManhat_02
+F_Y_PMANHAT_01
+F_Y_PMANHAT_02
+F_Y_Street_05
+F_Y_Street_30
+F_Y_Street_34
+F_Y_Tourist_01
+M_M_PManhat_01
+M_M_PManhat_02
+M_O_Hasid_01
+m_y_courier
+m_y_dodgy_01
+m_y_dork_02
+m_y_downtown_01
+m_y_downtown_02
+m_y_downtown_03
+m_y_genstreet_16
+m_y_genstreet_20
+m_y_hardman_01
+m_y_leastside_01
+m_y_queensbridge
+m_y_streetblk_02
+m_y_streetblk_03
+m_y_tough_05
+m_y_tourist_02
+
+# POPCYCLE_GROUP_BLACK_POOR		
+F_Y_PHarBron_01
+M_M_Factory_01
+M_M_Trucker_01
+M_Y_Harlem_01
+M_Y_Harlem_04
+m_y_runner
+M_Y_Streetblk_02
+M_Y_Streetblk_03
+
+# POPCYCLE_GROUP_FASHION								
+F_Y_Cdress_01
+M_M_Alcoholic												    		   						
+
+# POPCYCLE_GROUP_BOHEMIAN
+F_Y_PVillbo_02
+F_Y_Shop_03
+F_Y_Shop_04
+F_Y_Shopper_05
+F_Y_Villbo_01
+m_y_bohoguy_01
+m_y_dealer
+M_Y_Downtown_02
+M_Y_PVillbo_01
+M_Y_PVillbo_02
+M_Y_PVillbo_03
+M_Y_Shady_02
+m_y_skatebike_01
+m_y_soho_01
+M_Y_Street_01
+m_y_streetpunk_02
+m_y_streetpunk_04
+M_Y_Streetpunk_05
+ 
+# POPCYCLE_GROUP_TRENDY
+F_Y_PCool_02
+F_Y_SHOP_04
+F_Y_SHOPPER_05
+F_Y_SOCIALITE
+F_Y_STREET_12
+F_Y_VILLBO_01
+M_M_Gaymid
+M_M_MIDTOWN_01
+M_M_PRICH_01
+M_Y_BOHOGUY_01
+M_Y_BRONX_01
+M_Y_BUSINESS_02
+M_Y_GayYoung
+M_Y_PCOOL_01
+M_Y_PCOOL_02
+M_Y_PMANHAT_02
+M_Y_SOHO_01
+
+# POPCYCLE_GROUP_GENERIC				
+F_M_PManhat_02
+F_O_PHarbron_01
+F_O_Rich_01
+F_Y_Shop_04
+F_Y_Street_02
+F_Y_Street_05
+F_Y_Street_09
+F_Y_Street_12
+F_Y_Tourist_01
+M_M_PLatin_01
+M_O_street_01
+M_O_Suited
+M_Y_Dork_02
+M_Y_Queensbridge
+M_Y_Street_03
+M_Y_Street_04
+M_Y_Streetblk_02
+m_y_tourist_02
+ 
+# POPCYCLE_GROUP_ITALIAN		
+F_Y_Street_02
+F_Y_Street_05
+F_Y_Street_12
+M_M_FatMob_01
+M_M_Pitalian_01
+M_M_Pitalian_02
+M_O_mobster										
+M_Y_Hardman_01
+
+# POPCYCLE_GROUP_EASTERN_EUROPEAN
+F_M_PEastEuro_01
+F_O_PEastEuro_01
+F_O_PEastEuro_02
+F_Y_PEastEuro_01
+F_Y_Street_30
+M_M_EE_Heavy_01
+M_M_EE_Heavy_02
+M_M_PEasteuro_01
+M_O_EastEuro_01
+M_O_PEastEuro_02
+M_Y_PEastEuro_01
+
+# POPCYCLE_GROUP_SHOPPING_RICH
+F_M_PRich_01
+F_O_Rich_01
+F_Y_Prich_01
+F_Y_Shop_04
+F_Y_Shopper_05
+M_M_Prich_01
+M_O_Suited
+M_Y_Prich_01
+
+# POPCYCLE_GROUP_CHINESE_JAPANESE															 
+F_M_Chinatown
+F_M_POrient_01
+F_O_POrient_01
+F_Y_POrient_01
+F_Y_PVillbo_02
+M_M_Chinatown_01
+M_M_KoreaCook_01
+M_M_Midtown_01
+M_M_POrient_01
+M_Y_chinatown_03
+M_Y_Downtown_02
+M_Y_GenStreet_11
+M_Y_POrient_01
+
+# POPCYCLE_GROUP_SOUTH_AMERICAN
+F_M_PLatin_01
+F_Y_Platin_01
+M_M_PLatin_01
+M_M_Platin_02
+M_M_Platin_03
+M_Y_chopshop_02
+M_Y_GenStreet_34
+M_Y_PLatin_01
+M_Y_Platin_02
+M_Y_Platin_03 
+
+# POPCYCLE_GROUP_SHOPPING_AVERAGE												
+F_Y_Shop_03
+F_Y_Shop_04
+F_Y_Shopper_05
+F_Y_Street_05
+F_Y_Street_12
+m_y_dork_02
+M_Y_street_03									
+
+# POPCYCLE_GROUP_DOCKS
+M_M_Factory_01
+M_M_PIndus_01
+M_M_Trucker_01
+M_O_Janitor
+M_Y_PIndus_01
+M_Y_PIndus_02
+M_Y_PIndus_03
+
+# POPCYCLE_GROUP_BUSINESS_HIGH						
+F_M_Business_01
+F_M_Business_02
+F_M_PBusiness
+F_Y_Bank_01
+F_Y_Business_01
+M_M_Business_02
+M_M_Business_03
+M_Y_Business_01
+M_Y_business_02
+m_y_courier
+M_Y_Goon_01
+M_M_Lawyer_01
+M_M_PBusiness_01
+
+# POPCYCLE_GROUP_BUSINESS_LOW
+F_M_Business_01
+F_M_PBusiness
+F_M_Business_02
+F_Y_Bank_01
+F_Y_Business_01
+M_Y_Business_01
+M_Y_business_02
+m_y_courier
+M_Y_Goon_01
+M_M_Business_02
+M_M_Business_03
+M_M_PBusiness_01 	
+
+# POPCYCLE_GROUP_FACTORY
+M_M_Factory_01
+M_M_PIndus_01
+M_M_Trucker_01
+M_O_Janitor
+M_Y_PIndus_01
+M_Y_PIndus_02
+M_Y_PIndus_03
+
+# POPCYCLE_GROUP_PARK
+F_Y_Street_34
+F_Y_Tourist_01
+F_Y_Gymgal_01
+M_M_TENNIS
+m_y_skatebike_01
+M_Y_Tourist_02
+M_Y_Gymguy_01
+														
+
+# POPCYCLE_GROUP_GOLF
+empty			 																					
+
+# POPCYCLE_GROUP_TAXI
+empty
+
+# POPCYCLE_GROUP_BUILDING_SITE																							
+M_Y_construct_01
+M_Y_construct_02
+M_Y_construct_03
+
+# POPCYCLE_GROUP_AIRPORT_WORKERS
+M_M_Pilot
+M_M_Helipilot_01
+M_Y_Airworker
+M_M_SecurityMan
+																				
+# POPCYCLE_GROUP_SECURITY
+M_M_ARMOURED
+M_M_SecurityMan
+
+# POPCYCLE_GROUP_PROSTITUTES_PIMPS																				
+F_Y_hooker_01
+F_Y_hooker_03
+M_Y_Bronx_01
+m_y_dealer
+m_y_drug_01
+m_y_runner
+m_y_shady_02												
+
+# POPCYCLE_GROUP_BUMS
+M_M_Crackhead
+M_M_Genbum_01
+M_M_Trampblack
+
+# POPCYCLE_GROUP_GANG_ALBANIAN																						
+M_Y_GAlb_Lo_01
+M_Y_GAlb_Lo_02
+M_Y_GAlb_Lo_03
+M_Y_GAlb_Lo_04																		
+
+# POPCYCLE_GROUP_GANG_BIKER_1 (Angels Of Death)
+M_Y_GBik_Hi_01
+M_Y_GBik_Hi_02
+M_Y_GBik02_Lo_02
+M_M_GBik_Lo_03															
+
+# POPCYCLE_GROUP_GANG_BIKER_2 (The Lost)
+M_Y_GBik_Lo_01
+M_Y_GBik_Lo_02																					
+
+# POPCYCLE_GROUP_GANG_ITALIAN
+M_Y_GMaf_Hi_01
+M_Y_GMaf_Hi_02
+M_Y_GMaf_Lo_01
+M_Y_GMaf_Lo_02
+
+# POPCYCLE_GROUP_GANG_RUSSIAN (Russian Mob)				  											
+M_Y_GRus_Lo_01
+M_Y_GRus_Lo_02
+M_O_GRus_Hi_01
+M_Y_GRus_Hi_02
+
+# POPCYCLE_GROUP_GANG_RUSSIAN_2 (Russian Gang)
+M_M_GRu2_Hi_01
+M_M_GRu2_Hi_02
+M_Y_GRu2_Lo_01
+M_M_GRu2_Lo_02
+
+# POPCYCLE_GROUP_GANG_IRISH	 															
+M_Y_GIri_Lo_01
+M_Y_GIri_Lo_02
+M_Y_GIri_Lo_03  																	
+
+# POPCYCLE_GROUP_GANG_JAMAICAN
+M_M_GJam_Hi_01
+M_M_GJam_Hi_02
+M_M_GJam_Hi_03
+M_Y_GJam_Lo_01
+M_Y_GJam_Lo_02																
+
+# POPCYCLE_GROUP_GANG_AFRICAN_AMERICAN
+M_Y_GAfr_Lo_01
+M_Y_GAfr_Lo_02
+M_Y_GAfr_Hi_01
+M_Y_GAfr_Hi_02
+																
+# POPCYCLE_GROUP_GANG_KOREAN
+M_Y_Gkor_Lo_01
+M_Y_Gkor_Lo_02																				
+
+# POPCYCLE_GROUP_GANG_CHINESE_JAPANESE
+M_M_GTri_Hi_01
+M_M_GTri_Hi_02
+M_Y_GTri_Lo_01
+M_Y_GTri_Lo_02																	
+
+# POPCYCLE_GROUP_GANG_PUERTO_RICAN
+M_Y_GLAT_Lo_02
+M_Y_GLAT_Lo_01
+M_Y_GLAT_Hi_01
+M_Y_GLAT_Hi_02																
+
+# POPCYCLE_GROUP_COPS (M_Y_Cop_Traffic removed. Was the one in NJ)
+M_Y_Cop, M_M_Fatcop_01
+M_Y_STROOPER																
+
+# POPCYCLE_GROUP_NETWORK
+F_Y_shopper_05
+M_Y_Queensbridge
+F_Y_Business_01
+M_Y_LEastSide_01
+M_O_street_01
+F_O_Rich_01
+M_O_suited
+M_Y_Harlem_01
+F_Y_Street_30
+M_M_EE_Heavy_01
+F_Y_PEastEuro_01
+M_Y_BoHoguy_01			
+
+# POPCYCLE_PED_GROUP_HUSBANDS
+M_O_street_01
+M_Y_construct_01
+M_Y_Streetblk_02
+M_Y_Streetblk_03
+M_O_suited
+M_Y_Tourist_02
+m_y_hardman_01
+m_y_tough_05 				
+
+# POPCYCLE_PED_GROUP_WIVES
+F_M_Business_01
+F_O_Rich_01
+F_Y_PEastEuro_01
+F_Y_Business_01
+F_Y_Cdress_01
+F_Y_street_02
+F_Y_Street_12
+F_Y_Street_34
+
+# POPCYCLE_PED_GROUP_SCENARIO_BUILDERS 				
+M_Y_construct_01
+M_Y_construct_02
+M_Y_construct_03																						
+
+# POPCYCLE_PED_GROUP_SCENARIO_ROADWORKERS
+M_Y_construct_02
+M_Y_construct_03																	
+
+# POPCYCLE_PED_GROUP_SCENARIO_INDUSTRIAL
+M_M_Factory_01
+M_M_Pindus_01
+M_M_Pindus_02
+M_Y_PIndus_01
+M_Y_Pindus_02
+M_Y_PIndus_03																	
+
+# POPCYCLE_PED_GROUP_SCENARIO_PROSTITUTES
+F_Y_hooker_01
+F_Y_hooker_03																			
+
+# POPCYCLE_PED_GROUP_SCENARIO_TOURISTS
+M_Y_Tourist_02
+F_Y_Tourist_01
+
+# POPCYCLE_PED_GROUP_SCENARIO_PRISONERS
+M_Y_Prison
+
+# POPCYCLE_PED_GROUP_SCENARIO_JOGGERS
+M_Y_Gymguy_01
+F_Y_Gymgal_01
+
+# POPCYCLE_PED_GROUP_SCENARIO_PREACHERS
+M_M_LOONYBLACK
+M_M_LOONYWHITE
+

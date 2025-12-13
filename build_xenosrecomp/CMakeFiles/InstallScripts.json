@@ -1,0 +1,15 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/Ozordi/Downloads/MarathonRecomp/build_xenosrecomp/cmake_install.cmake",
+		"/Users/Ozordi/Downloads/MarathonRecomp/build_xenosrecomp/thirdparty/cmake_install.cmake",
+		"/Users/Ozordi/Downloads/MarathonRecomp/build_xenosrecomp/thirdparty/fmt/cmake_install.cmake",
+		"/Users/Ozordi/Downloads/MarathonRecomp/build_xenosrecomp/thirdparty/xxHash/cmake_unofficial/cmake_install.cmake",
+		"/Users/Ozordi/Downloads/MarathonRecomp/build_xenosrecomp/thirdparty/zstd/build/cmake/cmake_install.cmake",
+		"/Users/Ozordi/Downloads/MarathonRecomp/build_xenosrecomp/thirdparty/zstd/build/cmake/lib/cmake_install.cmake",
+		"/Users/Ozordi/Downloads/MarathonRecomp/build_xenosrecomp/thirdparty/zstd/build/cmake/programs/cmake_install.cmake",
+		"/Users/Ozordi/Downloads/MarathonRecomp/build_xenosrecomp/thirdparty/dxc-bin/cmake_install.cmake",
+		"/Users/Ozordi/Downloads/MarathonRecomp/build_xenosrecomp/XenosRecomp/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

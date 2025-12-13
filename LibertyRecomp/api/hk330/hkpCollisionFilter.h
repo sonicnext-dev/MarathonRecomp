@@ -8,7 +8,6 @@
 #include <hk330/hkpRigidBody.h>
 #include <hk330/hkpShapeCollectionFilter.h>
 #include <hk330/hkReferencedObject.h>
-#include <Sonicteam/SoX/Math/Vector.h>
 
 namespace hk330
 {

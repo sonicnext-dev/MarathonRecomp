@@ -17,7 +17,22 @@ void* Heap::Alloc(size_t size)
 {
     std::lock_guard lock(mutex);
 
-    return o1heapAllocate(heap, std::max<size_t>(1, size));
+    void* ptr = o1heapAllocate(heap, std::max<size_t>(1, size));
+    if (ptr == nullptr)
+    {
+        const O1HeapDiagnostics diag = o1heapGetDiagnostics(heap);
+        std::fprintf(stderr,
+            "[Heap] OOM (heap): request=%zu capacity=%zu allocated=%zu peak_allocated=%zu peak_request=%zu oom_count=%llu\n",
+            size,
+            diag.capacity,
+            diag.allocated,
+            diag.peak_allocated,
+            diag.peak_request_size,
+            static_cast<unsigned long long>(diag.oom_count));
+        std::fflush(stderr);
+    }
+
+    return ptr;
 }
 
 void* Heap::AllocPhysical(size_t size, size_t alignment)
@@ -28,6 +43,21 @@ void* Heap::AllocPhysical(size_t size, size_t alignment)
     std::lock_guard lock(physicalMutex);
 
     void* ptr = o1heapAllocate(physicalHeap, size + alignment);
+    if (ptr == nullptr)
+    {
+        const O1HeapDiagnostics diag = o1heapGetDiagnostics(physicalHeap);
+        std::fprintf(stderr,
+            "[Heap] OOM (physical): request=%zu align=%zu capacity=%zu allocated=%zu peak_allocated=%zu peak_request=%zu oom_count=%llu\n",
+            size,
+            alignment,
+            diag.capacity,
+            diag.allocated,
+            diag.peak_allocated,
+            diag.peak_request_size,
+            static_cast<unsigned long long>(diag.oom_count));
+        std::fflush(stderr);
+        return nullptr;
+    }
     size_t aligned = ((size_t)ptr + alignment) & ~(alignment - 1);
 
     *((void**)aligned - 1) = ptr;

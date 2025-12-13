@@ -20,7 +20,11 @@ uint32_t XamShowMessageBoxUI(uint32_t dwUserIndex, be<uint16_t>* wszTitle, be<ui
 
 uint32_t XamContentCreateEnumerator(uint32_t dwUserIndex, uint32_t DeviceID, uint32_t dwContentType,
     uint32_t dwContentFlags, uint32_t cItem, be<uint32_t>* pcbBuffer, be<uint32_t>* phEnum);
+uint32_t XamUserCreateAchievementEnumerator(uint32_t titleId, uint32_t userIndex, uint32_t xuidCount,
+    void* pxuid, uint32_t dwStartingIndex, uint32_t cItem, be<uint32_t>* pcbBuffer, be<uint32_t>* phEnum);
 uint32_t XamEnumerate(uint32_t hEnum, uint32_t dwFlags, void* pvBuffer, uint32_t cbBuffer, be<uint32_t>* pcItemsReturned, XXOVERLAPPED* pOverlapped);
+uint32_t XamGetPrivateEnumStructureFromHandle(uint32_t hEnum, void** ppEnumData);
+uint32_t XeKeysConsoleSignatureVerification(void* signature, uint32_t signatureSize, void* data, uint32_t dataSize);
 
 uint32_t XamContentCreateEx(uint32_t dwUserIndex, const char* szRootName, const XCONTENT_DATA* pContentData,
     uint32_t dwContentFlags, be<uint32_t>* pdwDisposition, be<uint32_t>* pdwLicenseMask,

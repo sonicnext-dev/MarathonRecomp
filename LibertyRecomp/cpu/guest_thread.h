@@ -26,6 +26,7 @@ struct GuestThreadParams
 {
     uint32_t function;
     uint32_t value;
+    uint32_t value2;
     uint32_t flags;
 };
 

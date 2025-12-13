@@ -1,0 +1,26 @@
+[*] OS does not support registry.
+[*] Host Startup
+[*] SDL video driver: "cocoa"
+2025-12-13 17:05:00.325 Liberty Recompiled[66825:9940558] ApplePersistenceIgnoreState: Existing state will not be touched. New state will be written to /var/folders/vw/zkgh5tjj5lz07rzj05_hns500000gq/T/OZORDI.LibertyRecomp.savedState
+[*] Start Guest Thread
+[*] /Users/ozordi/Library/Application Support/LibertyRecomp/game/default.xex
+[MmAllocatePhysicalMemoryEx] 0x0, 0x6000000, 0x80000004, 0x0, 0xffffffff, 0x0
+[MmAllocatePhysicalMemoryEx] 0x0, 0x11000000, 0x80000004, 0x0, 0xffffffff, 0x0
+[NetDll_XNetStartup] !!! STUB !!!
+[NetDll_WSAStartup] !!! STUB !!!
+[NetDll_WSACleanup] !!! STUB !!!
+[ObDereferenceObject] !!! STUB !!!
+[ExCreateThread] 0x3000A0C10, 0x10000, 0x3000A0C70, 0x829B08E0, 0x827DAE40, 0x830F51C0, 0x1 C63205CF
+[ObDereferenceObject] !!! STUB !!!
+[KeSetDisableBoostThread] !!! STUB !!!
+[ObDereferenceObject] !!! STUB !!!
+[ObDereferenceObject] !!! STUB !!!
+[ExCreateThread] 0x3000A0C10, 0x10000, 0x3000A0C70, 0x829B08E0, 0x827DAE40, 0x830F51EC, 0x1 AE8E3AF1
+[ObDereferenceObject] !!! STUB !!!
+[KeSetDisableBoostThread] !!! STUB !!!
+[ObDereferenceObject] !!! STUB !!!
+[ObDereferenceObject] !!! STUB !!!
+[Game] Loading file: ""
+[RtlNtStatusToDosError] Unimplemented NtStatus translation: 0xc0000034
+[Game] Loading file: ""
+[RtlNtStatusToDosError] Unimplemented NtStatus translation: 0xc0000034

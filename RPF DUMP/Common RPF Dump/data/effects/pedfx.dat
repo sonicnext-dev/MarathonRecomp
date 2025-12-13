@@ -1,0 +1,68 @@
+1.00
+
+#########################################################################################################################################################################################################################################################################################################################################################################################################################################################################################
+#			NORMAL FOOTPRINT ------------------------------------------------------------------------------------------------------------------------------------------------------------------------->		BLOOD FOOTPRINT ---------------------------------------------------------------------------------------------------------------------------------------------------------->	EFFECTS ------------------------------------------------------------>
+#			MALE DIFFUSE MAP		MALE NORMAL MAP			FEMALE DIFFUSE MAP		FEMALE NORMAL MAP		TEXTURE INFO	 SPECULAR  	  PARALLAX   	   SIZE			MALE DIFFUSE MAP		MALE NORMAL MAP			FEMALE DIFFUSE MAP		FEMALE NORMAL MAP		 SPECULAR  	  PARALLAX   	   SIZE		FEMALE	FOOT_FX			WET_THRESH	    WET_FOOT_FX		
+#																			ROW COL IDM IDF	FALLOFF	INT	STEEP	SCALE	MIN	MAX																		FALLOFF	INT	STEEP	SCALE	MIN	MAX	SIZE
+#########################################################################################################################################################################################################################################################################################################################################################################################################################################################################################
+																																												
+PEDFX_INFO_START																																										
+																																												
+VOID			-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		-				-				-				-				0100.0	0.01	0	0.0	0.0	0.0	0.8	-			0.99		    -			
+CONCRETE		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+STONE			-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+PAVING_SLABS		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+																																												
+BRICK_COBBLE		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+GRAVEL			-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		-				-				-				-				0100.0	0.01	0	0.0	0.0	0.0	0.8	ped_foot_gravel		0.3		    ped_foot_gravel		
+MUD_SOFT		footprints_01			footprints_01_normal		footprints_01			footprints_01_normal		1   2	0   1	0100.0	0.01	1	0.1	0.24	0.24		footprints_03			footprints_01_normal		footprints_03			footprints_01_normal		0100.0	0.01	1	0.15	0.24	0.24	0.8	ped_foot_mud_soft	0.3		    ped_foot_mud_soft	
+DIRT_DRY		footprints_01			footprints_01_normal		footprints_01			footprints_01_normal		1   2	0   1	0100.0	0.01	1	0.08	0.24	0.24		footprints_03			footprints_01_normal		footprints_03			footprints_01_normal		0100.0	0.01	1	0.1	0.24	0.24	0.8	ped_foot_dirt_dry	0.3		    ped_foot_dirt_dry	
+																																												
+SAND			footprints_01			footprints_01_normal		footprints_01			footprints_01_normal		1   2	0   1	0100.0	0.01	1	0.11	0.24	0.24		footprints_03			footprints_01_normal		footprints_03			footprints_01_normal		0100.0	0.01	1	0.15	0.24	0.24	0.8	ped_foot_sand		0.3		    ped_foot_sand		
+SNOW			footprints_01			footprints_01_normal		footprints_01			footprints_01_normal		1   2	0   1	0100.0	0.01	1	0.1	0.24	0.24		-				-				-				-				0100.0	0.01	0	0.0	0.0	0.0	0.8	-			0.3		    ped_foot_water		
+WOOD			-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+METAL			-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+																																												
+CERAMICS		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+MARBLE			-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+LAMINATE		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+CARPET_FABRIC		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+																																												
+LINOLEUM		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+RUBBER			-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+PLASTIC			-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+CARDBOARD		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+																																												
+PAPER			-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+MATTRESS_FOAM		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+PILLOW_FEATHERS		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+GRASS			footprints_01			footprints_01_normal		footprints_01			footprints_01_normal		1   2	0   1	0100.0	0.01	1	0.1	0.24	0.24		footprints_03			footprints_01_normal		footprints_03			footprints_01_normal		0100.0	0.01	1	0.15	0.24	0.24	0.8	-			0.3		    ped_foot_water		
+																																												
+BUSHES			-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		-				-				-				-				0100.0	0.01	0	0.0	0.0	0.0	0.8	ped_foot_leaves		0.3		    ped_foot_leaves		
+TREE_BARK_DARK		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+TREE_BARK_MEDIUM	-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+TREE_BARK_LIGHT		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+																																												
+FLOWERS			-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		-				-				-				-				0100.0	0.01	0	0.0	0.0	0.0	0.8	ped_foot_mud_soft	0.3		    ped_foot_mud_soft	
+LEAVES_PILE		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		-				-				-				-				0100.0	0.01	0	0.0	0.0	0.0	0.8	ped_foot_leaves		0.3		    ped_foot_leaves		
+GLASS			-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+WINDSCREEN		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+																																												
+CAR_METAL		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+CAR_PLASTIC		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		footprints_02			footprints_02_normal		footprints_02			footprints_02_normal		0100.0	0.01	0	0.0	0.17	0.17	0.8	-			0.3		    ped_foot_water		
+WATER			-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		-				-				-				-				0100.0	0.01	0	0.0	0.0	0.0	0.8	-			0.99		    -			
+GENERIC			-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		-				-				-				-				0100.0	0.01	0	0.0	0.0	0.0	0.8	-			0.3		    ped_foot_water		
+																																												
+PED_HEAD		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		-				-				-				-				0100.0	0.01	0	0.0	0.0	0.0	0.8	-			0.99		    -			
+PED_TORSO		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		-				-				-				-				0100.0	0.01	0	0.0	0.0	0.0	0.8	-			0.99		    -			
+PED_LIMB		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		-				-				-				-				0100.0	0.01	0	0.0	0.0	0.0	0.8	-			0.99		    -			
+PED_FOOT		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		-				-				-				-				0100.0	0.01	0	0.0	0.0	0.0	0.8	-			0.99		    -			
+																																												
+TVSCREEN		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		-				-				-				-				0100.0	0.01	0	0.0	0.0	0.0	0.8	-			0.3		    ped_foot_water		
+VIDEOWALL		-				-				-				-				1   2	0   1	0100.0	0.01	0	0.0	0.0	0.0		-				-				-				-				0100.0	0.01	0	0.0	0.0	0.0	0.8	-			0.3		    ped_foot_water		
+																																																		
+																															
+																																		
+																																		
+PEDFX_INFO_END
+

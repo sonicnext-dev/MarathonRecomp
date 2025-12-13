@@ -176,6 +176,7 @@ uint32_t GuestThread::Start(const GuestThreadParams& params)
 
     GuestThreadContext ctx(cpuNumber);
     ctx.ppcContext.r3.u64 = params.value;
+    ctx.ppcContext.r4.u64 = params.value2;
 
     g_memory.FindFunction(params.function)(ctx.ppcContext, g_memory.base);
 

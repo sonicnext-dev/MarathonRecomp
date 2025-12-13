@@ -1,0 +1,27 @@
+#
+# Object types
+#
+IDE common:/data/default.ide
+IDE common:/data/vehicles.ide
+IDE common:/data/peds.ide
+
+ANIMGRP common:/data/animgrp.dat
+HANDLING common:/data/handling.dat
+VEHICLEEXTRAS common:/data/VehicleExtras.dat
+PLAYER platform:/models/cdimages/playerped.rpf
+PEDGRP common:/data/pedgrp.dat
+CARGRP common:/data/cargrp.dat
+RADIO common:/data/radiohud.dat
+RADIOLOGOS independent:/textures/radio_hud.itd
+WEAPONINFO common:/data/weaponinfo.xml
+THROWNWEAPONINFO common:/data/thrownweaponinfo.xml
+PEDPERSONALITY common:/data/pedpersonality.dat
+MELEEANIMS common:/data/meleeanims.dat
+ACTIONTABLE common:/data/action_table.csv
+EXPLOSIONFX common:/data/effects/explosionFx.dat
+VEHOFF common:/data/vehOff.csv
+FMENUFILE common:/data/frontend_menus.xml
+LBDATAFILE common:/data/leaderboards_data.xml
+LBICONSFILE independent:/textures/Leaderboards.itd
+
+HTML http:

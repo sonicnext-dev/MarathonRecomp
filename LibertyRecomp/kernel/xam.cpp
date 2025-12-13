@@ -279,6 +279,35 @@ uint32_t XamContentCreateEnumerator(uint32_t dwUserIndex, uint32_t DeviceID, uin
     return 0;
 }
 
+// Stub for achievement enumeration - GTA IV specific
+uint32_t XamUserCreateAchievementEnumerator(uint32_t titleId, uint32_t userIndex, uint32_t xuidCount,
+    void* pxuid, uint32_t dwStartingIndex, uint32_t cItem, be<uint32_t>* pcbBuffer, be<uint32_t>* phEnum)
+{
+    // Stub - achievement enumeration not implemented yet
+    // Return error to indicate no achievements available
+    if (phEnum)
+        *phEnum = 0;
+    if (pcbBuffer)
+        *pcbBuffer = 0;
+    return ERROR_NO_MORE_FILES;
+}
+
+// Stub for XeKeys signature verification
+uint32_t XeKeysConsoleSignatureVerification(void* signature, uint32_t signatureSize, void* data, uint32_t dataSize)
+{
+    // Stub - always return success (signature valid)
+    return 0;
+}
+
+// Stub for internal enumeration helper
+uint32_t XamGetPrivateEnumStructureFromHandle(uint32_t hEnum, void** ppEnumData)
+{
+    // Stub - return null
+    if (ppEnumData)
+        *ppEnumData = nullptr;
+    return ERROR_INVALID_HANDLE;
+}
+
 uint32_t XamEnumerate(uint32_t hEnum, uint32_t dwFlags, void* pvBuffer, uint32_t cbBuffer, be<uint32_t>* pcItemsReturned, XXOVERLAPPED* pOverlapped)
 {
     auto* enumerator = GetKernelObject<XamEnumeratorBase>(hEnum);

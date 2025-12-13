@@ -1,0 +1,285 @@
+#
+# ModelIDs 
+# peds:				0-129 (special characters 99-109)
+# vehicles:			400-799
+# car components 		800-805
+# ped components 		806-807
+# wheels: 			810-820
+# gifts and misc weapons:	821-829
+# weapons:			830-869
+# cutscene heads/objs: 		870-874
+#
+
+###############################################################################
+objs
+###############################################################################
+
+#misc
+airtrain_vlo,	generic,	2000, 	0
+testPhysBox, 	null,		50, 	0
+testTerrain, 	null,		50, 	0
+end
+
+###############################################################################
+weap
+###############################################################################
+
+# melee
+w_nstick, 		w_nstick, 		null, 			1, 	50, 	0
+w_bat, 			w_bat, 			null, 			1, 	50, 	0
+w_cue, 			w_cue, 			null,			1, 	50, 	0
+w_knife, 		w_knife, 		null,			1, 	50, 	0
+
+# projectiles
+w_grenade, 		w_grenade, 		throw_grenade,		1,	100,	0
+w_molotov, 		w_molotov, 		throw_grenade,		1,	100,	0
+cj_rpg_rocket, 		cj_rpg_rocket, 		null,			1,	100,	0
+
+# handguns
+w_glock, 		w_glock, 		gun@handgun, 		1, 	30, 	0
+#w_silenced, 		w_silenced, 		gun@handgun, 		1, 	30, 	0
+w_eagle, 		w_eagle, 		gun@deagle, 		1, 	30, 	0
+
+# shotguns
+w_pumpshot, 		w_pumpshot,		gun@baretta, 		1, 	50, 	0
+w_shotgun, 		w_shotgun, 		gun@shotgun, 		1, 	50, 	0
+
+# sub-machineguns
+w_uzi, 			w_uzi, 			gun@uzi, 		1, 	30, 	0
+w_mp5, 			w_mp5, 			gun@mp5k, 		1, 	30, 	0
+
+# machineguns
+w_ak47, 		w_ak47, 		gun@ak47, 		1, 	50, 	0
+w_m4, 			w_m4, 			gun@ak47, 		1, 	50, 	0
+
+# rifles
+w_psg1, 		w_psg1, 		gun@rifle, 		1, 	50, 	0
+w_rifle, 		w_rifle, 		gun@rifle, 		1, 	50, 	0
+
+
+# heavy
+rpg, 			rpg, 			gun@rocket, 		1, 	100,	0
+#flame, 		flame, 			null, 			1, 	50, 	0
+#minigun, 		minigun, 		null, 			1, 	50, 	0
+
+# specials
+#bomb, 			bomb, 			null, 			1, 	50, 	0
+
+AMB_COFFEE, 		AMB_COFFEE, 		AMB@COFFEE_HOLD,	1,	50,		0
+cj_camera, 			cj_camera, 			AMB@TOURIST_HOLD, 	1, 	50, 	0
+EC_CHAR_BROLLIE, 	EC_CHAR_BROLLIE,	AMB@UMBRELLA_HOLD, 	1, 	50, 	0
+EC_CHAR_BROLLIE02, 	EC_CHAR_BROLLIE02,	AMB@UMBRELLA_HOLD, 	1, 	50, 	0
+EC_CHAR_BROLLIE03, 	EC_CHAR_BROLLIE03,	AMB@UMBRELLA_HOLD, 	1, 	50, 	0
+AMB_MP3PLAYER, 		AMB_MP3PLAYER, 		AMB@MUSIC_HOLD, 	1, 	50, 	0
+BM_CHAR_FAG, 		BM_CHAR_FAG, 		null,				1, 	50, 	0
+BM_CHAR_FAG_F, 		BM_CHAR_FAG_F, 		null,				1, 	50, 	0
+AMB_CAN_DRINK_1, 	AMB_CAN_DRINK_1, 	null,				1, 	50, 	0
+AMB_CAN_DRINK_2, 	AMB_CAN_DRINK_2, 	null,				1, 	50, 	0
+AMB_WINE, 			AMB_WINE, 			AMB@BOTTLE_HOLD, 	1, 	50, 	0
+AMB_MILK, 			AMB_MILK, 			AMB@BOTTLE_HOLD, 	1, 	50, 	0
+AMB_JUICE_BOT, 		AMB_JUICE_BOT, 		AMB@BOTTLE_HOLD, 	1, 	50, 	0
+AMB_BS_DRINK, 		AMB_BS_DRINK, 		AMB@BOTTLE_HOLD, 	1, 	50, 	0
+AMB_BURG, 			AMB_BURG, 			AMB@BURGER_HOLD, 	1, 	50, 	0
+AMB_HOTDOG, 		AMB_HOTDOG, 		AMB@HOTDOG_HOLD	, 	1, 	50, 	0
+AMB_MOBILE_1, 		AMB_MOBILE_1, 		null, 				1, 	50, 	0
+AMB_MOBILE_2, 		AMB_MOBILE_2, 		null, 				1, 	50, 	0
+AMB_CARRIERBAG01, 	AMB_CARRIERBAG01, 	AMB@BAG_A_HOLD, 	1, 	50, 	0
+AMB_CARRIERBAG02, 	AMB_CARRIERBAG02, 	AMB@BAG_A_HOLD, 	1, 	50, 	0
+AMB_CARRIERBAG03, 	AMB_CARRIERBAG03, 	AMB@BAG_A_HOLD, 	1, 	50, 	0
+AMB_CARRIERBAG04, 	AMB_CARRIERBAG04, 	AMB@BAG_A_HOLD, 	1, 	50, 	0
+AMB_PAPERBAG01, 	AMB_PAPERBAG01, 	AMB@BAG_A_HOLD, 	1, 	50, 	0
+AMB_PAPERBAG02, 	AMB_PAPERBAG02, 	AMB@BAG_A_HOLD, 	1, 	50, 	0
+AMB_PAPERBAG03, 	AMB_PAPERBAG03, 	AMB@BAG_A_HOLD, 	1, 	50, 	0
+AMB_PAPERBAG04, 	AMB_PAPERBAG04, 	AMB@BAG_A_HOLD, 	1, 	50, 	0
+AMB_PAPERBAG05, 	AMB_PAPERBAG05, 	AMB@BAG_A_HOLD, 	1, 	50, 	0
+AMB_PAPERBAG06, 	AMB_PAPERBAG06, 	AMB@BAG_A_HOLD, 	1, 	50, 	0
+AMB_GROCERYBAG, 	AMB_GROCERYBAG, 	AMB@BAG_B_HOLD, 	1, 	50, 	0
+AMB_BOOKOPEN, 		AMB_BOOKOPEN, 		null, 				1, 	50, 	0
+AMB_NEWSPAPER_1, 	AMB_NEWSPAPER_1, 	null, 				1, 	50, 	0
+AMB_NEWSPAPER_2, 	AMB_NEWSPAPER_2, 	AMB@NEWSPAPER_HOLD, 	1, 	50, 	0
+AMB_COMB,			AMB_COMB, 			null, 			1, 	50, 	0 
+AMB_JACKHAMMER, 	AMB_JACKHAMMER, 	null, 			1,	50,	0
+AMB_BROOM,			AMB_BROOM, 			AMB@SWEEP_HOLD,		1,	50,	0
+AMB_SPADE,			AMB_SPADE,			null,			1,	50,	0
+AMB_NUTS,			AMB_NUTS,			AMB@NUTS_HOLD,		1,	50,	0
+AMB_PICKAXE,		AMB_PICKAXE, 		null,			1,	50,	0
+AMB_SLEDGEHAMMER,	AMB_SLEDGEHAMMER,	null,			1,	50,	0
+AMB_CLIPBOARD,		AMB_CLIPBOARD,		AMB@SUPER_PART, 	1, 	50, 	0
+AMB_PLANK,			AMB_PLANK,			AMB@PLANK_HOLD,		1,	50,	0
+AMB_STOPSIGN,		AMB_STOPSIGN,		null,			1,	50,	0
+AMB_CLAWHAMMER,		AMB_CLAWHAMMER, 	AMB@CARRY_HOLD,		1,	50,	0
+AMB_DRILL,			AMB_DRILL, 			AMB@CARRY_HOLD,		1,	50,	0
+AMB_NAILGUN,		AMB_NAILGUN,		AMB@CARRY_HOLD,		1,	50,	0
+AMB_SPANNER,		AMB_SPANNER,		AMB@CARRY_HOLD,		1,	50,	0
+AMB_TOOLBOX,		AMB_TOOLBOX,		AMB@CARRY_HOLD,		1,	50,	0
+AMB_BRICK,			AMB_BRICK,			null,                   1,      50,     0
+AMB_RUBBISH01,		AMB_RUBBISH01, 		null,			1,	50,	0
+AMB_RUBBISH02,		AMB_RUBBISH02, 		null,			1,	50,	0
+AMB_RUBBISH03,		AMB_RUBBISH03, 		null,			1,	50,	0
+AMB_PHONERECIEVER,	AMB_PHONERECIEVER,	null, 			1, 	50,	0
+AMB_RAKE, 			AMB_RAKE, 			AMB@RAKE_HOLD,		1, 	50, 	0
+CJ_HOLDALL2,            CJ_HOLDALL2,            null,                   1,      50,     0
+gb_suitcase_lev,           gb_suitcase_lev,            null,                   1,      50,     0
+AMB_WATERCAN, 		AMB_WATERCAN, 		AMB@WCAN_PART		1, 	50, 	0
+AMB_CHOCBAR, 		AMB_CHOCBAR, 		null,			1, 	50, 	0
+AMB_ICECONE01,		AMB_ICECONE01, 		AMB@ICECREAM_DEFAULT,	1, 	50,	0
+AMB_HANKIE, 		AMB_HANKIE, 		null,			1,	50,	0
+AMB_WALKIETALKIE,	AMB_WALKIETALKIE, 	null,			1,	50,	0
+CJ_SAXF,		CJ_SAXF, 		null,			1,	50,	0
+
+armour, armour, null, 1, 30, 0
+
+end
+
+
+###############################################################################
+hier
+###############################################################################
+
+# leave ID 374 - 383 to use in temp car components
+# car_door
+# car_bumper
+# car_panel
+# car_bonnet
+# car_boot
+# car_wheel
+# bodypart_A
+# bodypart_B
+
+1, csplay, 	player,		null, 	2000.0
+
+# clothes objects
+clothes01,	generic,	null,	2000.0
+clothes02, 	generic, 	null, 	2000.0
+clothes03, 	generic, 	null, 	2000.0
+clothes04, 	generic, 	null, 	2000.0
+clothes05, 	generic, 	null, 	2000.0
+clothes06, 	generic, 	null, 	2000.0
+clothes07, 	generic, 	null, 	2000.0
+clothes08, 	generic, 	null, 	2000.0
+clothes09, 	generic, 	null, 	2000.0
+clothes10, 	generic, 	null, 	2000.0
+
+# hands
+SHANDL, 	generic, 	null, 	15.0
+SHANDR, 	generic, 	null, 	15.0
+FHANDL, 	generic, 	null, 	15.0
+FHANDR, 	generic, 	null, 	15.0
+
+# cutscene object
+cutobj01, 	generic, 	null, 	2000.0
+cutobj02, 	generic, 	null, 	2000.0
+cutobj03, 	generic, 	null, 	2000.0
+cutobj04, 	generic, 	null, 	2000.0
+cutobj05, 	generic, 	null, 	2000.0
+cutobj06, 	generic, 	null, 	2000.0
+cutobj07, 	generic, 	null, 	2000.0
+cutobj08, 	generic, 	null, 	2000.0
+cutobj09, 	generic, 	null, 	2000.0
+cutobj10, 	generic, 	null, 	2000.0
+cutobj11, 	generic, 	null, 	2000.0
+cutobj12, 	generic, 	null, 	2000.0
+cutobj13, 	generic, 	null, 	2000.0
+cutobj14, 	generic, 	null, 	2000.0
+cutobj15, 	generic, 	null, 	2000.0
+cutobj16, 	generic, 	null, 	2000.0
+cutobj17, 	generic, 	null, 	2000.0
+cutobj18, 	generic, 	null, 	2000.0
+cutobj19, 	generic, 	null, 	2000.0
+cutobj20, 	generic, 	null, 	2000.0
+end
+
+###############################################################################
+amat
+###############################################################################
+w_nstick,	0,	CM_WEAPONS_NIGHTSTICK
+w_bat,	0,	CM_WEAPONS_BASEBALL_BAT
+w_cue,	0,	CM_WEAPONS_POOLCUE
+w_knife,	0,	CM_WEAPONS_KNIFE
+w_grenade,	0,	CM_WEAPONS_GRENADE
+w_molotov,	0,	CM_WEAPONS_MOLOTOV
+cj_rpg_rocket,	0,	CM_WEAPONS_GRENADE
+w_glock,	0,	CM_WEAPONS_PISTOL
+#w_silenced,	0,	CM_WEAPONS_PISTOL
+w_eagle,	0,	CM_WEAPONS_PISTOL
+w_pumpshot,	0,	CM_WEAPONS_SHOTGUN
+w_shotgun,	0,	CM_WEAPONS_SHOTGUN
+w_uzi,	0,	CM_WEAPONS_SMG
+w_mp5,	0,	CM_WEAPONS_SMG
+w_ak47,	0,	CM_WEAPONS_AK47
+w_m4,	0,	CM_WEAPONS_M4
+w_psg1,	0,	CM_WEAPONS_SNIPER_RIFLE
+w_rifle,	0,	CM_WEAPONS_SNIPER_RIFLE
+rpg,	0,	CM_WEAPONS_ROCKET_LAUNCHER
+AMB_COFFEE,	0,	CM_PED_PAPER_CUP
+cj_camera,	0,	CM_ELECTRICAL_MOBILE_PHONE
+EC_CHAR_BROLLIE,	0,	CM_PED_UMBRELLA
+EC_CHAR_BROLLIE02,	0,	CM_PED_UMBRELLA
+EC_CHAR_BROLLIE03,	0,	CM_PED_UMBRELLA
+AMB_MP3PLAYER,	0,	CM_ELECTRICAL_MOBILE_PHONE
+BM_CHAR_FAG,	0,	CM_PED_CIGARETTE
+BM_CHAR_FAG_F,	0,	CM_PED_CIGARETTE
+AMB_CAN_DRINK_1,	0,	CM_JUNK_DRINKS_CAN
+AMB_CAN_DRINK_2,	0,	CM_JUNK_DRINKS_CAN
+AMB_WINE,	0,	CM_GLASS_BEER_BOTTLE
+AMB_MILK,	0,	CM_SHOPS_FOOD_CARTON
+AMB_JUICE_BOT,	0,	CM_SHOPS_FOOD_DRINK_BOTTLE
+AMB_BS_DRINK,	0,	CM_SHOPS_FASTFOOD_SODA
+AMB_BURG,	0,	CM_SHOPS_FOOD_SANDWICH_BURGER_HOTDOG
+AMB_HOTDOG,	0,	CM_SHOPS_FOOD_SANDWICH_BURGER_HOTDOG
+AMB_MOBILE_1,	0,	CM_ELECTRICAL_MOBILE_PHONE
+AMB_MOBILE_2,	0,	CM_ELECTRICAL_MOBILE_PHONE
+AMB_CARRIERBAG01,	0,	CM_JUNK_BIN_BAG
+AMB_CARRIERBAG02,	0,	CM_JUNK_BIN_BAG
+AMB_CARRIERBAG03,	0,	CM_JUNK_BIN_BAG
+AMB_CARRIERBAG04,	0,	CM_JUNK_BIN_BAG
+AMB_PAPERBAG01,	0,	CM_SHOPS_PACKAGING_POSH_PAPER_BAG
+AMB_PAPERBAG02,	0,	CM_SHOPS_PACKAGING_POSH_PAPER_BAG
+AMB_PAPERBAG03,	0,	CM_SHOPS_PACKAGING_POSH_PAPER_BAG
+AMB_PAPERBAG04,	0,	CM_SHOPS_PACKAGING_POSH_PAPER_BAG
+AMB_PAPERBAG05,	0,	CM_SHOPS_PACKAGING_POSH_PAPER_BAG
+AMB_PAPERBAG06,	0,	CM_SHOPS_PACKAGING_POSH_PAPER_BAG
+AMB_GROCERYBAG,	0,	CM_SHOPS_PACKAGING_POSH_PAPER_BAG
+AMB_BOOKOPEN,	0,	CM_CARDBOARD_BOOK
+AMB_NEWSPAPER_1,	0,	CM_PED_NEWSPAPER
+AMB_NEWSPAPER_2,	0,	CM_PED_NEWSPAPER
+AMB_COMB,	0,	CM_BEAUTY_COMB
+AMB_JACKHAMMER,	0,	CM_PED_POWER_TOOL
+AMB_BROOM,	0,	CM_WORKS_BRUSH
+AMB_SPADE,	0,	CM_WORKS_SPADE_HANDLE
+AMB_NUTS,	0,	CM_SHOPS_FOOD_BISCUITS
+AMB_PICKAXE,	0,	CM_WORKS_SPADE_HANDLE
+AMB_SLEDGEHAMMER,	0,	CM_WORKS_SPADE_HANDLE
+AMB_CLIPBOARD,	0,	CM_METAL_SIGN_POST
+AMB_PLANK,	0,	CM_WOOD_TWO_BY_FOUR_PLANK
+AMB_STOPSIGN,	0,	CM_METAL_SIGN_POST
+AMB_CLAWHAMMER,	0,	CM_PED_HAND_TOOL
+AMB_DRILL,	0,	CM_PED_POWER_TOOL
+AMB_NAILGUN,	0,	CM_PED_POWER_TOOL
+AMB_SPANNER,	0,	CM_PED_HAND_TOOL_METAL
+AMB_TOOLBOX,	0,	CM_PED_TOOLBOX
+AMB_BRICK,	0,	CM_MINIGAME_BRICK
+AMB_RUBBISH01,	0,	CM_PED_RUBBISH
+AMB_RUBBISH02,	0,	CM_PED_RUBBISH
+AMB_RUBBISH03,	0,	CM_PED_RUBBISH
+AMB_PHONERECIEVER,	0,	CM_ELECTRICAL_MOBILE_PHONE
+AMB_RAKE,	0,	CM_WORKS_SPADE_HANDLE
+CJ_HOLDALL2,	0,	CM_PED_GYM_BAG
+gb_suitcase_lev		0,	CM_PED_GYM_BAG
+AMB_WATERCAN,	0,	CM_JUNK_METAL_OIL_CAN
+AMB_CHOCBAR,	0,	CM_PED_FRUIT
+AMB_ICECONE01,	0,	CM_PED_FRUIT
+AMB_HANKIE,	0,	CM_PED_RUBBISH
+AMB_WALKIETALKIE,	0,	CM_ELECTRICAL_MOBILE_PHONE
+CJ_SAXF,	0,	CM_PED_SAX
+armour,	0,	CM_PED_GYM_BAG
+end
+2dfx
+AMB_broom, 0.571156, 0.109951, 0.946658, 1, -0.632613, 0.581269, 0.331444, -0.389964, ANIM_SWEEP_DUST, 5, 0, 1, 100, 0, 255, 255, 255
+AMB_watercan, 0.624666, 0.0190496, -0.0230804, 1, -0.448197, 0.456476, 0.482791, -0.598049, ANIM_WATERING_CAN, 5, 0, 1, 100, 0, 255, 255, 255
+AMB_rake, 0.674518, 0.0947466, 0.934628, 1, -0.632613, 0.581269, 0.331444, -0.389964, ANIM_RAKE_LEAVES, 5, 0, 1, 100, 0, 255, 255, 255
+AMB_jackhammer, 0.947154, 0.394261, 0.0534096, 1, 0.605553, 0.252264, -0.734665, 0.173021, ANIM_PNEUMATIC, 5, 0, 1, 100, 0, 255, 255, 255
+AMB_spade, 0.774404, 0.851341, -0.0246243, 1, -0.694185, -0.42888, 0.570982, -0.0902705, ANIM_HAMMER, 5, 0, 1, 100, 0, 255, 255, 255
+AMB_pickaxe, 0.40098, 0.0253347, 0.478107, 1, -0.947413, 0.0985133, 0.283098, -0.112067, ANIM_HAMMER, 5, 0, 1, 100, 0, 255, 255, 255
+AMB_sledgehammer, 0.197935, 0.00110757, 0.600749, 1, -4.98258e-008, -2.57831e-007, 6.89761e-009, -1, ANIM_HAMMER, 5, 0, 1, 100, 0, 255, 255, 255
+end

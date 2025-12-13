@@ -1,0 +1,268 @@
+1.00
+
+
+# ANY ENTRY WITH A SMIDMARK_THRESH ABOVE >1.0 WILL RAISE TYRE TEMPERATURE
+# ANY ENTRY <1.0 WILL NOT AFFECT TYRE TEMPERATURE
+
+#################################################################################################################################################################################################################################################		
+#																														#
+#			SKIDMARK_THRESH	SKIDMARK_TEX_DIFF	SKIDMARK_TEX_NORM	TEXTURE INFO	 SPECULAR  	  PARALLAX   	FRICTION_THRESH	FRICTION_FX			DISP_THRESH	DISPLACEMENT_FX		COLN TYPE	#			
+#											ROWS COLS ID	FALLOFF	INT	STEEP	SCALE	MIN	MAX					MIN	MAX						#
+#################################################################################################################################################################################################################################################
+
+## WHEN TYRE IS OK ON A DRY SURFACE
+
+VEHFX_INFO_START
+
+VOID			9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0
+CONCRETE		2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0
+STONE			2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0
+PAVING_SLABS		2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0
+	
+BRICK_COBBLE		2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0			
+GRAVEL			2.0		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.5	18.0	wheel_friction_gravel		0.05	3.0	wheel_disp_gravel	2		
+MUD_SOFT		0.01		skids_01		skids_01_normal		2   1	0	0100.0	0.01	1	0.4	0.1	4.0	wheel_friction_mud		0.1	5.0	wheel_disp_mud		2	
+DIRT_DRY		0.01		skids_01		skids_01_normal		2   1	1	0100.0	0.01	1	0.3	0.2	16.0	wheel_friction_dirt_dry		9999.9	9999.9	-			0			
+
+SAND			0.01		skids_01		skids_01_normal		2   1	1	0100.0	0.01	1	0.45	0.1	6.0	wheel_friction_sand		9999.9	9999.9	-			0			
+SNOW			9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0	
+WOOD			2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+METAL			2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+											
+CERAMICS		2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+MARBLE			2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+LAMINATE		2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+CARPET_FABRIC		2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+																											
+LINOLEUM		2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+RUBBER			2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+PLASTIC			2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+CARDBOARD		2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+																											
+PAPER			2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+MATTRESS_FOAM		2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+PILLOW_FEATHERS		2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+GRASS			0.01		skids_01		skids_01_normal		2   1	0	0100.0	0.01	1	0.4	0.2	12.0	wheel_friction_grass		0.1	5.0	wheel_disp_grass	2
+											
+BUSHES			2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.05    8.0	wheel_friction_leaves		0.05	3.0	wheel_disp_leaves	0	
+TREE_BARK_DARK		2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+TREE_BARK_MEDIUM	2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+TREE_BARK_LIGHT		2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+																											
+FLOWERS			0.01		skids_01		skids_01_normal		2   1	0	0100.0	0.01	1	0.4	0.1	4.0	wheel_friction_mud		0.1	5.0	wheel_disp_mud		2
+LEAVES_PILE		2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.05    8.0	wheel_friction_leaves		0.05	3.0	wheel_disp_leaves	0	
+GLASS			2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+WINDSCREEN		2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+																											
+CAR_METAL		2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+CAR_PLASTIC		2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+WATER			9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	0.1     8.0	wheel_friction_water		9999.9	9999.9	-			0
+GENERIC			9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0	
+											
+PED_HEAD		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0	
+PED_TORSO		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0	
+PED_LIMB		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0	
+PED_FOOT		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0	
+																											
+TVSCREEN		2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+VIDEOWALL		2.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	2.2     15.0	wheel_friction_hard		9999.9	9999.9	-			0	
+											
+VEHFX_INFO_END	
+
+
+#################################################################################################################################################################################################################################################		
+#																														#
+#			SKIDMARK_THRESH	SKIDMARK_TEX_DIFF	SKIDMARK_TEX_NORM	TEXTURE INFO	 SPECULAR  	  PARALLAX   	FRICTION_THRESH	FRICTION_FX			DISP_THRESH	DISPLACEMENT_FX		COLN TYPE	#			
+#											ROWS COLS ID	FALLOFF	INT	STEEP	SCALE	MIN	MAX					MIN	MAX						#
+#################################################################################################################################################################################################################################################
+
+## WHEN TYRE IS BURST ON A DRY SURFACE
+
+VEHFX_INFO_BURST_START
+
+VOID			9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0
+CONCRETE		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	4.0	wheel_friction_conc_rim		1.0	6.0	wheel_disp_conc_rim	2	
+STONE			0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	4.0	wheel_friction_conc_rim		1.0	6.0	wheel_disp_conc_rim	2	
+PAVING_SLABS		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	4.0	wheel_friction_conc_rim		1.0	6.0	wheel_disp_conc_rim	2	
+											
+BRICK_COBBLE		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	4.0	wheel_friction_conc_rim		1.0	6.0	wheel_disp_conc_rim	2				
+GRAVEL			0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.02	4.0	wheel_friction_gravel_rim	0.05	3.0	wheel_disp_gravel	2					
+MUD_SOFT		0.01		skids_02		skids_02_normal		2   1	0	0100.0	0.01	1	0.5	0.05	4.0	wheel_friction_mud		0.1	5.0	wheel_disp_mud		2					
+DIRT_DRY		0.01		skids_02		skids_02_normal		2   1	1	0100.0	0.01	1	0.4	0.02	12.0	wheel_friction_dirt_dry_rim	9999.9	9999.9	-			0					
+																								
+SAND			0.01		skids_02		skids_02_normal		2   1	1	0100.0	0.01	1	0.6	0.01	4.0	wheel_friction_sand_rim		9999.9	9999.9	-			0				
+SNOW			9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0			
+WOOD			0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	4.0	wheel_friction_wood_rim		1.0	6.0	wheel_disp_wood_rim	2		
+METAL			0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	12.0	wheel_friction_hard_rim		1.0	6.0	wheel_disp_hard_rim	2					
+																												
+CERAMICS		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	12.0	wheel_friction_hard_rim		1.0	6.0	wheel_disp_hard_rim	2					
+MARBLE			0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	12.0	wheel_friction_hard_rim		1.0	6.0	wheel_disp_hard_rim	2			
+LAMINATE		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	4.0	wheel_friction_wood_rim		1.0	6.0	wheel_disp_wood_rim	2		
+CARPET_FABRIC		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_carpet		2			
+																													
+LINOLEUM		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0			
+RUBBER			0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0			
+PLASTIC			0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0			
+CARDBOARD		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0			
+																													
+PAPER			0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0				
+MATTRESS_FOAM		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0			
+PILLOW_FEATHERS		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0			               
+GRASS			0.01		skids_02		skids_02_normal		2   1	0	0100.0	0.01	1	0.5	0.2	9.0	wheel_friction_grass		0.1	5.0	wheel_disp_grass	2			
+																												
+BUSHES			9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	0.05    8.0	wheel_friction_leaves		0.05	3.0	wheel_disp_leaves	0			         
+TREE_BARK_DARK		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	4.0	wheel_friction_wood_rim		1.0	6.0	wheel_disp_wood_rim	2		         
+TREE_BARK_MEDIUM	0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	4.0	wheel_friction_wood_rim		1.0	6.0	wheel_disp_wood_rim	2	         
+TREE_BARK_LIGHT		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	4.0	wheel_friction_wood_rim		1.0	6.0	wheel_disp_wood_rim	2			         
+																													
+FLOWERS			0.01		skids_02		skids_02_normal		2   1	0	0100.0	0.01	1	0.5	0.05	4.0	wheel_friction_mud		0.1	5.0	wheel_disp_mud		2					
+LEAVES_PILE		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	0.05    8.0	wheel_friction_leaves		0.05	3.0	wheel_disp_leaves	0	
+GLASS			9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0			
+WINDSCREEN		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0			
+																													
+CAR_METAL		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	12.0	wheel_friction_hard_rim		1.0	6.0	wheel_disp_hard_rim	2			
+CAR_PLASTIC		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	12.0	wheel_friction_hard_rim		1.0	6.0	wheel_disp_hard_rim	2			
+WATER			9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	0.1     8.0	wheel_friction_water		9999.9	9999.9	-			0		
+GENERIC			9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0		
+													
+PED_HEAD		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0	
+PED_TORSO		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0	
+PED_LIMB		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0	
+PED_FOOT		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0	
+																													
+TVSCREEN		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0		
+VIDEOWALL		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0		
+			
+VEHFX_INFO_BURST_END	
+			
+
+#################################################################################################################################################################################################################################################		
+#																														#
+#			SKIDMARK_THRESH	SKIDMARK_TEX_DIFF	SKIDMARK_TEX_NORM	TEXTURE INFO	 SPECULAR  	  PARALLAX   	FRICTION_THRESH	FRICTION_FX			DISP_THRESH	DISPLACEMENT_FX		COLN TYPE	#			
+#											ROWS COLS ID	FALLOFF	INT	STEEP	SCALE	MIN	MAX					MIN	MAX						#
+#################################################################################################################################################################################################################################################
+
+## WHEN TYRE IS OK ON A WET SURFACE
+
+VEHFX_INFO_WET_START
+
+VOID			9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0			
+CONCRETE		4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0			
+STONE			4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0			
+PAVING_SLABS		4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0			
+																								
+BRICK_COBBLE		4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0				
+GRAVEL			4.0		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	12.0	wheel_friction_gravel		0.1	5.0	wheel_disp_gravel_w	2				
+MUD_SOFT		0.01		skids_01		skids_01_normal		2   1	0	0100.0	0.01	1	0.4	0.05	4.0	wheel_friction_mud		0.1	5.0	wheel_disp_mud		2		
+DIRT_DRY		0.01		skids_01		skids_01_normal		2   1	1	0100.0	0.01	1	0.3	0.2	16.0	wheel_friction_dirt_dry		9999.9	9999.9	-			0					
+																								
+SAND			0.01		skids_01		skids_01_normal		2   1	1	0100.0	0.01	1	0.45	0.1	7.0	wheel_friction_sand		9999.9	9999.9	-			0				
+SNOW			9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0		
+WOOD			4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0		
+METAL			4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0		
+																												
+CERAMICS		4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0		
+MARBLE			4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0		
+LAMINATE		4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0		
+CARPET_FABRIC		4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0		
+																													
+LINOLEUM		4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0			
+RUBBER			4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0				
+PLASTIC			4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0				
+CARDBOARD		4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0				
+																													
+PAPER			4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0				
+MATTRESS_FOAM		4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0			
+PILLOW_FEATHERS		4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0		
+GRASS			0.01		skids_01		skids_01_normal		2   1	0	0100.0	0.01	1	0.4	0.2	9.0	wheel_friction_grass		0.1	5.0	wheel_disp_grass	2			
+																												
+BUSHES			4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.05    18.0	wheel_friction_leaves_w		0.05	8.0	wheel_disp_leaves_w	0				
+TREE_BARK_DARK		4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0		
+TREE_BARK_MEDIUM	4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0		
+TREE_BARK_LIGHT		4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0		
+																													
+FLOWERS			0.01		skids_01		skids_01_normal		2   1	0	0100.0	0.01	1	0.4	0.05	4.0	wheel_friction_mud		0.1	5.0	wheel_disp_mud		2	
+LEAVES_PILE		4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.05    18.0	wheel_friction_leaves_w		0.05	8.0	wheel_disp_leaves_w	0		
+GLASS			4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0		
+WINDSCREEN		4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0		
+																													
+CAR_METAL		4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0	
+CAR_PLASTIC		4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0	
+WATER			9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	0.1     8.0	wheel_friction_water		9999.9	9999.9	-			0
+GENERIC			9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0	
+													
+PED_HEAD		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0	
+PED_TORSO		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0	
+PED_LIMB		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0	
+PED_FOOT		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0	
+																													
+TVSCREEN		4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0	
+VIDEOWALL		4.7		skidmark_hard		flat_normal_8x8		1   1	0	0100.0	0.01	0	0.0	0.1	20.0	wheel_friction_hard_w		0.1	10.0	wheel_disp_hard_w	0	
+
+VEHFX_INFO_WET_END	
+
+#################################################################################################################################################################################################################################################		
+#																														#
+#			SKIDMARK_THRESH	SKIDMARK_TEX_DIFF	SKIDMARK_TEX_NORM	TEXTURE INFO	 SPECULAR  	  PARALLAX   	FRICTION_THRESH	FRICTION_FX			DISP_THRESH	DISPLACEMENT_FX		COLN TYPE	#			
+#											ROWS COLS ID	FALLOFF	INT	STEEP	SCALE	MIN	MAX					MIN	MAX						#
+#################################################################################################################################################################################################################################################
+
+## WHEN TYRE IS BURST ON A WET SURFACE
+
+VEHFX_INFO_BURST_WET_START
+
+VOID			9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0			
+CONCRETE		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	4.0	wheel_friction_conc_rim		1.0	6.0	wheel_disp_conc_rim	2					
+STONE			0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	4.0	wheel_friction_conc_rim		1.0	6.0	wheel_disp_conc_rim	2					
+PAVING_SLABS		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	4.0	wheel_friction_conc_rim		1.0	6.0	wheel_disp_conc_rim	2					
+																								
+BRICK_COBBLE		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	4.0	wheel_friction_conc_rim		1.0	6.0	wheel_disp_conc_rim	2					
+GRAVEL			0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.02	4.0	wheel_friction_gravel_rim	0.1	5.0	wheel_disp_gravel_w	2				
+MUD_SOFT		0.01		skids_02		skids_02_normal		2   1	0	0100.0	0.01	1	0.5	0.05	4.0	wheel_friction_mud		0.1	5.0	wheel_disp_mud		2			
+DIRT_DRY		0.01		skids_02		skids_02_normal		2   1	1	0100.0	0.01	1	0.4	0.02	12.0	wheel_friction_dirt_dry_rim	9999.9	9999.9	-			0				
+																								
+SAND			0.01		skids_02		skids_02_normal		2   1	1	0100.0	0.01	1	0.5	0.01	4.0	wheel_friction_sand_rim		9999.9	9999.9	-			0				
+SNOW			9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0		
+WOOD			0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	4.0	wheel_friction_wood_rim		1.0	6.0	wheel_disp_wood_rim	2		
+METAL			0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	12.0	wheel_friction_hard_rim		1.0	6.0	wheel_disp_hard_rim	2			
+																												
+CERAMICS		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	12.0	wheel_friction_hard_rim		1.0	6.0	wheel_disp_hard_rim	2			
+MARBLE			0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	12.0	wheel_friction_hard_rim		1.0	6.0	wheel_disp_hard_rim	2			
+LAMINATE		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	4.0	wheel_friction_wood_rim		1.0	6.0	wheel_disp_wood_rim	2		
+CARPET_FABRIC		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_carpet		2			
+																													
+LINOLEUM		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0				
+RUBBER			0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0					
+PLASTIC			0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0					
+CARDBOARD		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0					
+																													
+PAPER			0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0					
+MATTRESS_FOAM		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0		
+PILLOW_FEATHERS		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0	               
+GRASS			0.01		skids_02		skids_02_normal		2   1	0	0100.0	0.01	1	0.5	0.2	9.0	wheel_friction_grass		0.1	5.0	wheel_disp_grass	2			
+																												
+BUSHES			9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	0.05    18.0	wheel_friction_leaves_w		0.05	8.0	wheel_disp_leaves_w	0			         
+TREE_BARK_DARK		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	4.0	wheel_friction_wood_rim		1.0	6.0	wheel_disp_wood_rim	2	         
+TREE_BARK_MEDIUM	0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	4.0	wheel_friction_wood_rim		1.0	6.0	wheel_disp_wood_rim	2	         
+TREE_BARK_LIGHT		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	4.0	wheel_friction_wood_rim		1.0	6.0	wheel_disp_wood_rim	2	         
+																													
+FLOWERS			0.01		skids_02		skids_02_normal		2   1	0	0100.0	0.01	1	0.5	0.05	4.0	wheel_friction_mud		0.1	5.0	wheel_disp_mud		2			
+LEAVES_PILE		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	0.05    18.0	wheel_friction_leaves_w		0.05	8.0	wheel_disp_leaves_w	0	
+GLASS			9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0			
+WINDSCREEN		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0			
+																													
+CAR_METAL		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	12.0	wheel_friction_hard_rim		1.0	6.0	wheel_disp_hard_rim	2		
+CAR_PLASTIC		0.01		rims_hard		rims_hard_normal	1   1	0	0100.0	0.01	0	0.0	0.01	12.0	wheel_friction_hard_rim		1.0	6.0	wheel_disp_hard_rim	2		
+WATER			9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	0.1     8.0	wheel_friction_water		9999.9	9999.9	-			0	
+GENERIC			9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0	
+													
+PED_HEAD		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0	
+PED_TORSO		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0	
+PED_LIMB		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0	
+PED_FOOT		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				9999.9	9999.9	-			0	
+																													
+TVSCREEN		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0		
+VIDEOWALL		9999.9		-			-			1   1	0	0100.0	0.01	0	0.0	9999.9	9999.9	-				1.0	8.0	scrape_dusty		0		
+			
+VEHFX_INFO_BURST_WET_END	
+			

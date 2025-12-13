@@ -36,8 +36,11 @@ public:
     static inline CommonMenu s_commonMenu{};
     static inline OptionsMenuState s_state{};
     static inline OptionsMenuFlowState s_flowState{};
-    static inline Sonicteam::MainMenuTask* s_pMainMenuTask{};
-    static inline Sonicteam::SoX::Audio::Cue* s_pBgmCue{};
+    // TODO: Replace with GTA IV menu system
+    // static inline Sonicteam::MainMenuTask* s_pMainMenuTask{};
+    // static inline Sonicteam::SoX::Audio::Cue* s_pBgmCue{};
+    static inline void* s_pMainMenuTask{}; // Placeholder
+    static inline void* s_pBgmCue{}; // Placeholder
     static inline bool s_isVisible{};
     static inline bool s_isPause{};
     static inline bool s_isDebugUnlocked{};

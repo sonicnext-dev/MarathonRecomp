@@ -13,13 +13,313 @@
 #include "xam.h"
 #include "xdm.h"
 #include <user/config.h>
+#include <user/paths.h>
 #include <os/logger.h>
+
+#include "io/file_system.h"
+
+#include <cerrno>
+#include <fstream>
+#include <algorithm>
+#include <vector>
 
 #ifdef _WIN32
 #include <ntstatus.h>
 #endif
 
 std::unordered_map<uint32_t, uint32_t> g_handleDuplicates{};
+
+namespace
+{
+    constexpr uint32_t STATUS_INVALID_HANDLE = 0xC0000008;
+    constexpr uint32_t STATUS_INVALID_PARAMETER = 0xC000000D;
+    constexpr uint32_t STATUS_INFO_LENGTH_MISMATCH = 0xC0000004;
+    constexpr uint32_t STATUS_END_OF_FILE = 0xC0000011;
+    constexpr uint32_t STATUS_ACCESS_DENIED = 0xC0000022;
+    constexpr uint32_t STATUS_OBJECT_NAME_NOT_FOUND = 0xC0000034;
+    constexpr uint32_t STATUS_OBJECT_PATH_NOT_FOUND = 0xC000003A;
+    constexpr uint32_t STATUS_BUFFER_OVERFLOW = 0x80000005;
+    constexpr uint32_t STATUS_NO_MORE_FILES = 0x80000006;
+
+    // FILE_INFORMATION_CLASS (subset)
+    constexpr uint32_t FileBasicInformation = 4;
+    constexpr uint32_t FileStandardInformation = 5;
+    constexpr uint32_t FilePositionInformation = 14;
+    constexpr uint32_t FileEndOfFileInformation = 20;
+    constexpr uint32_t FileNetworkOpenInformation = 34;
+
+    // FS_INFORMATION_CLASS (subset)
+    constexpr uint32_t FileFsSizeInformation = 3;
+    constexpr uint32_t FileFsDeviceInformation = 4;
+    constexpr uint32_t FileFsAttributeInformation = 5;
+
+    constexpr uint32_t kNtFileHandleMagic = 0x4E544649; // 'NTFI'
+    constexpr uint32_t kNtDirHandleMagic = 0x4E544449; // 'NTDI'
+
+    struct NtFileHandle final : KernelObject
+    {
+        uint32_t magic = kNtFileHandleMagic;
+        std::fstream stream;
+        std::filesystem::path path;
+    };
+
+    struct NtDirHandle final : KernelObject
+    {
+        uint32_t magic = kNtDirHandleMagic;
+        std::filesystem::path path;
+        std::vector<std::filesystem::directory_entry> entries;
+        size_t cursor = 0;
+        bool initialized = false;
+    };
+
+    static std::unordered_map<uint32_t, NtFileHandle*> g_ntFileHandles;
+    static std::unordered_map<uint32_t, NtDirHandle*> g_ntDirHandles;
+
+    static uint32_t AlignUp(uint32_t value, uint32_t align)
+    {
+        return (value + (align - 1)) & ~(align - 1);
+    }
+
+    static uint32_t ErrnoToNtStatus(int err)
+    {
+        switch (err)
+        {
+        case EACCES:
+            return STATUS_ACCESS_DENIED;
+        case ENOENT:
+            return STATUS_OBJECT_NAME_NOT_FOUND;
+        case ENOTDIR:
+            return STATUS_OBJECT_PATH_NOT_FOUND;
+        default:
+            return STATUS_FAIL_CHECK;
+        }
+    }
+
+    static bool TryGetAnsiPath(const XOBJECT_ATTRIBUTES* attributes, std::string& out)
+    {
+        out.clear();
+        if (!attributes)
+        {
+            LOG_IMPL(Utility, "TryGetAnsiPath", "attributes is null");
+            return false;
+        }
+
+        const XANSI_STRING* name = attributes->Name.get();
+        if (!name)
+        {
+            LOG_IMPL(Utility, "TryGetAnsiPath", "Name.get() is null");
+            return false;
+        }
+
+        const char* buf = name->Buffer.get();
+        if (!buf)
+        {
+            LOG_IMPL(Utility, "TryGetAnsiPath", "Buffer.get() is null");
+            return false;
+        }
+
+        const uint16_t len = name->Length.get();
+        // Sanity check: zero length or very large lengths are suspect
+        if (len == 0)
+        {
+            // Allow empty paths to pass through, they'll fail later
+        }
+        else if (len > 1024)
+        {
+            LOGF_IMPL(Utility, "TryGetAnsiPath", "Suspicious length: {} (max 1024)", len);
+            return false;
+        }
+        else
+        {
+            // Check if the path looks valid (should contain printable ASCII)
+            bool hasValid = false;
+            bool hasGarbage = false;
+            for (size_t i = 0; i < std::min<size_t>(len, 20); i++)
+            {
+                unsigned char c = static_cast<unsigned char>(buf[i]);
+                if (c >= 32 && c <= 126)
+                    hasValid = true;
+                else if (c >= 128)
+                    hasGarbage = true;
+            }
+            if (hasGarbage && !hasValid)
+            {
+                LOGF_IMPL(Utility, "TryGetAnsiPath", "Garbage path detected (len={}, first byte=0x{:02X})", len, static_cast<unsigned char>(buf[0]));
+                // Still allow it to pass for now, so we can see the full picture
+            }
+        }
+
+        // Log the raw pointer values for debugging
+        // LOGF_IMPL(Utility, "TryGetAnsiPath", "Name.ptr=0x{:08X} Length={} Buffer.ptr=0x{:08X}", 
+        //     attributes->Name.ptr.value, len, name->Buffer.ptr.value);
+
+        out.assign(buf, buf + len);
+        return true;
+    }
+
+    static std::filesystem::path ResolveGuestPathBestEffort(const std::string& guestPath)
+    {
+        std::filesystem::path resolved = FileSystem::ResolvePath(guestPath, true);
+
+        std::error_code ec;
+        if (std::filesystem::exists(resolved, ec))
+            return resolved;
+
+        const std::filesystem::path cachedPath = FindInPathCache(resolved.string());
+        if (!cachedPath.empty())
+            return cachedPath;
+
+        return resolved;
+    }
+
+    static uint32_t GetFileAttributesBestEffort(const std::filesystem::path& path)
+    {
+        std::error_code ec;
+        const bool isDir = std::filesystem::is_directory(path, ec);
+        if (ec)
+            return FILE_ATTRIBUTE_NORMAL;
+
+        if (isDir)
+            return FILE_ATTRIBUTE_DIRECTORY;
+
+        return FILE_ATTRIBUTE_NORMAL;
+    }
+
+    static uint64_t RoundUpToPage(uint64_t value)
+    {
+        constexpr uint64_t kPageSize = 0x1000;
+        return (value + (kPageSize - 1)) & ~(kPageSize - 1);
+    }
+
+#pragma pack(push, 1)
+    struct XFILE_BASIC_INFORMATION
+    {
+        be<int64_t> CreationTime;
+        be<int64_t> LastAccessTime;
+        be<int64_t> LastWriteTime;
+        be<int64_t> ChangeTime;
+        be<uint32_t> FileAttributes;
+        be<uint32_t> Reserved;
+    };
+
+    struct XFILE_STANDARD_INFORMATION
+    {
+        be<int64_t> AllocationSize;
+        be<int64_t> EndOfFile;
+        be<uint32_t> NumberOfLinks;
+        uint8_t DeletePending;
+        uint8_t Directory;
+        uint16_t Reserved;
+    };
+
+    struct XFILE_POSITION_INFORMATION
+    {
+        be<int64_t> CurrentByteOffset;
+    };
+
+    struct XFILE_END_OF_FILE_INFORMATION
+    {
+        be<int64_t> EndOfFile;
+    };
+
+    struct XFILE_NETWORK_OPEN_INFORMATION
+    {
+        be<int64_t> CreationTime;
+        be<int64_t> LastAccessTime;
+        be<int64_t> LastWriteTime;
+        be<int64_t> ChangeTime;
+        be<int64_t> AllocationSize;
+        be<int64_t> EndOfFile;
+        be<uint32_t> FileAttributes;
+        be<uint32_t> Reserved;
+    };
+
+    struct XFILE_FS_SIZE_INFORMATION
+    {
+        be<int64_t> TotalAllocationUnits;
+        be<int64_t> AvailableAllocationUnits;
+        be<uint32_t> SectorsPerAllocationUnit;
+        be<uint32_t> BytesPerSector;
+    };
+
+    struct XFILE_FS_DEVICE_INFORMATION
+    {
+        be<uint32_t> DeviceType;
+        be<uint32_t> Characteristics;
+    };
+
+    struct XFILE_FS_ATTRIBUTE_INFORMATION_FIXED
+    {
+        be<uint32_t> FileSystemAttributes;
+        be<uint32_t> MaximumComponentNameLength;
+        be<uint32_t> FileSystemNameLength;
+        be<uint16_t> FileSystemName[16];
+    };
+
+    // FILE_INFORMATION_CLASS for NtQueryDirectoryFile (subset)
+    constexpr uint32_t FileDirectoryInformation = 1;
+    constexpr uint32_t FileFullDirectoryInformation = 2;
+    constexpr uint32_t FileBothDirectoryInformation = 3;
+
+    struct XFILE_DIRECTORY_INFORMATION_FIXED
+    {
+        be<uint32_t> NextEntryOffset;
+        be<uint32_t> FileIndex;
+        be<int64_t> CreationTime;
+        be<int64_t> LastAccessTime;
+        be<int64_t> LastWriteTime;
+        be<int64_t> ChangeTime;
+        be<int64_t> EndOfFile;
+        be<int64_t> AllocationSize;
+        be<uint32_t> FileAttributes;
+        be<uint32_t> FileNameLength;
+        // Followed by FileName (UTF-16BE)
+    };
+
+    struct XFILE_FULL_DIR_INFORMATION_FIXED
+    {
+        be<uint32_t> NextEntryOffset;
+        be<uint32_t> FileIndex;
+        be<int64_t> CreationTime;
+        be<int64_t> LastAccessTime;
+        be<int64_t> LastWriteTime;
+        be<int64_t> ChangeTime;
+        be<int64_t> EndOfFile;
+        be<int64_t> AllocationSize;
+        be<uint32_t> FileAttributes;
+        be<uint32_t> FileNameLength;
+        be<uint32_t> EaSize;
+        // Followed by FileName (UTF-16BE)
+    };
+
+    struct XFILE_BOTH_DIR_INFORMATION_FIXED
+    {
+        be<uint32_t> NextEntryOffset;
+        be<uint32_t> FileIndex;
+        be<int64_t> CreationTime;
+        be<int64_t> LastAccessTime;
+        be<int64_t> LastWriteTime;
+        be<int64_t> ChangeTime;
+        be<int64_t> EndOfFile;
+        be<int64_t> AllocationSize;
+        be<uint32_t> FileAttributes;
+        be<uint32_t> FileNameLength;
+        be<uint32_t> EaSize;
+        uint8_t ShortNameLength;
+        uint8_t Reserved1;
+        be<uint16_t> ShortName[12];
+        // Followed by FileName (UTF-16BE)
+    };
+#pragma pack(pop)
+
+    static_assert(sizeof(XFILE_BASIC_INFORMATION) == 40);
+    static_assert(sizeof(XFILE_STANDARD_INFORMATION) == 24);
+    static_assert(sizeof(XFILE_POSITION_INFORMATION) == 8);
+    static_assert(sizeof(XFILE_END_OF_FILE_INFORMATION) == 8);
+    static_assert(sizeof(XFILE_NETWORK_OPEN_INFORMATION) == 56);
+    static_assert(sizeof(XFILE_FS_SIZE_INFORMATION) == 24);
+    static_assert(sizeof(XFILE_FS_DEVICE_INFORMATION) == 8);
+}
 
 struct Event final : KernelObject, HostObject<XKEVENT>
 {
@@ -349,9 +649,92 @@ void XamLoaderLaunchTitle()
     LOG_UTILITY("!!! STUB !!!");
 }
 
-void NtOpenFile()
+// NtOpenFile is essentially a simplified NtCreateFile for opening existing files
+uint32_t NtOpenFile(
+    be<uint32_t>* FileHandle,
+    uint32_t DesiredAccess,
+    XOBJECT_ATTRIBUTES* Attributes,
+    XIO_STATUS_BLOCK* IoStatusBlock,
+    uint32_t ShareAccess,
+    uint32_t OpenOptions)
 {
-    LOG_UTILITY("!!! STUB !!!");
+    (void)ShareAccess;
+    (void)OpenOptions;
+
+    if (!FileHandle || !Attributes)
+        return STATUS_INVALID_PARAMETER;
+
+    std::string guestPath;
+    if (!TryGetAnsiPath(Attributes, guestPath))
+        return STATUS_INVALID_PARAMETER;
+
+    // DesiredAccess on Xbox uses Win32-like GENERIC_READ/WRITE bits.
+    std::ios::openmode mode = std::ios::binary;
+    if (DesiredAccess & (GENERIC_READ | FILE_READ_DATA))
+        mode |= std::ios::in;
+    if (DesiredAccess & GENERIC_WRITE)
+        mode |= std::ios::out;
+
+    // Fallback: treat unknown access flags as read.
+    if ((mode & (std::ios::in | std::ios::out)) == 0)
+        mode |= std::ios::in;
+
+    std::filesystem::path resolved = ResolveGuestPathBestEffort(guestPath);
+
+    // Check for directory
+    {
+        std::error_code ec;
+        bool exists = std::filesystem::exists(resolved, ec);
+        bool isDir = exists && std::filesystem::is_directory(resolved, ec);
+        
+        if (exists && isDir && !ec)
+        {
+            NtDirHandle* hDir = CreateKernelObject<NtDirHandle>();
+            hDir->path = resolved;
+
+            const uint32_t handleValue = GetKernelHandle(hDir);
+            g_ntDirHandles.emplace(handleValue, hDir);
+
+            *FileHandle = handleValue;
+            if (IoStatusBlock)
+            {
+                IoStatusBlock->Status = STATUS_SUCCESS;
+                IoStatusBlock->Information = 1;
+            }
+
+            return STATUS_SUCCESS;
+        }
+    }
+
+    std::fstream stream;
+    stream.open(resolved, mode);
+
+    if (!stream.is_open())
+    {
+        const uint32_t status = ErrnoToNtStatus(errno);
+        if (IoStatusBlock)
+        {
+            IoStatusBlock->Status = status;
+            IoStatusBlock->Information = 0;
+        }
+        *FileHandle = 0;
+        return status;
+    }
+
+    NtFileHandle* h = CreateKernelObject<NtFileHandle>();
+    h->stream = std::move(stream);
+    h->path = std::move(resolved);
+
+    const uint32_t handleValue = GetKernelHandle(h);
+    g_ntFileHandles.emplace(handleValue, h);
+
+    *FileHandle = handleValue;
+    if (IoStatusBlock)
+    {
+        IoStatusBlock->Status = STATUS_SUCCESS;
+        IoStatusBlock->Information = 1;
+    }
+    return STATUS_SUCCESS;
 }
 
 void RtlInitAnsiString(XANSI_STRING* destination, char* source)
@@ -371,12 +754,97 @@ uint32_t NtCreateFile
     uint64_t* AllocationSize,
     uint32_t FileAttributes,
     uint32_t ShareAccess,
-    uint32_t CreateDisposition,
-    uint32_t CreateOptions
+    uint32_t CreateDisposition
 )
 {
-    LOG_UTILITY("!!! STUB !!!");
-    return 0;
+    (void)AllocationSize;
+    (void)FileAttributes;
+    (void)ShareAccess;
+
+    if (!FileHandle || !Attributes)
+        return STATUS_INVALID_PARAMETER;
+
+    std::string guestPath;
+    if (!TryGetAnsiPath(Attributes, guestPath))
+        return STATUS_INVALID_PARAMETER;
+
+    // DesiredAccess on Xbox uses Win32-like GENERIC_READ/WRITE bits.
+    std::ios::openmode mode = std::ios::binary;
+    if (DesiredAccess & (GENERIC_READ | FILE_READ_DATA))
+        mode |= std::ios::in;
+    if (DesiredAccess & GENERIC_WRITE)
+        mode |= std::ios::out;
+
+    // Fallback: treat unknown access flags as read.
+    if ((mode & (std::ios::in | std::ios::out)) == 0)
+        mode |= std::ios::in;
+
+    std::filesystem::path resolved = ResolveGuestPathBestEffort(guestPath);
+
+    // Debug: Log resolved path for troubleshooting
+    LOGF_IMPL(Utility, "NtCreateFile", "Guest: '{}' -> Resolved: '{}'", guestPath, resolved.string());
+
+    // Directories can't be opened with std::fstream; represent them with a dedicated handle.
+    {
+        std::error_code ec;
+        bool exists = std::filesystem::exists(resolved, ec);
+        bool isDir = exists && std::filesystem::is_directory(resolved, ec);
+        LOGF_IMPL(Utility, "NtCreateFile", "exists={} isDir={} ec={}", exists, isDir, ec ? ec.message() : "none");
+        
+        if (exists && isDir && !ec)
+        {
+            NtDirHandle* hDir = CreateKernelObject<NtDirHandle>();
+            hDir->path = resolved;
+
+            const uint32_t handleValue = GetKernelHandle(hDir);
+            g_ntDirHandles.emplace(handleValue, hDir);
+
+            *FileHandle = handleValue;
+            LOGF_IMPL(Utility, "NtCreateFile", "Created directory handle 0x{:08X} for {}", handleValue, resolved.string());
+            if (IoStatusBlock)
+            {
+                IoStatusBlock->Status = STATUS_SUCCESS;
+                IoStatusBlock->Information = 1;
+            }
+
+            return STATUS_SUCCESS;
+        }
+    }
+
+    std::fstream stream;
+    stream.open(resolved, mode);
+
+    if (!stream.is_open())
+    {
+        const uint32_t status = ErrnoToNtStatus(errno);
+        LOGF_IMPL(Utility, "NtCreateFile", "fstream.open failed: errno={} status=0x{:08X}", errno, status);
+        if (IoStatusBlock)
+        {
+            IoStatusBlock->Status = status;
+            IoStatusBlock->Information = 0;
+        }
+        *FileHandle = 0;
+        return status;
+    }
+
+    // TODO: Respect CreateDisposition if the title needs create/overwrite semantics.
+    (void)CreateDisposition;
+
+    NtFileHandle* h = CreateKernelObject<NtFileHandle>();
+    h->stream = std::move(stream);
+    h->path = std::move(resolved);
+
+    const uint32_t handleValue = GetKernelHandle(h);
+    g_ntFileHandles.emplace(handleValue, h);
+
+    *FileHandle = handleValue;
+    if (IoStatusBlock)
+    {
+        IoStatusBlock->Status = STATUS_SUCCESS;
+        IoStatusBlock->Information = 1; // FILE_OPENED (best-effort)
+    }
+
+    return STATUS_SUCCESS;
 }
 
 uint32_t NtClose(uint32_t handle)
@@ -387,11 +855,29 @@ uint32_t NtClose(uint32_t handle)
     if (IsKernelObject(handle))
     {
         // If the handle was duplicated, just decrement the duplication count. Otherwise, delete the object.
-        const auto& it = g_handleDuplicates.find(handle);
-        if (it == g_handleDuplicates.end() || it->second == 0)
-            DestroyKernelObject(handle);
-        else if (--it->second == 0)
-            g_handleDuplicates.erase(it);
+        auto it = g_handleDuplicates.find(handle);
+        const bool willDestroy = (it == g_handleDuplicates.end() || it->second == 0);
+        if (!willDestroy)
+        {
+            if (--it->second == 0)
+                g_handleDuplicates.erase(it);
+            return 0;
+        }
+
+        // Close NT file handles we created.
+        if (auto fhIt = g_ntFileHandles.find(handle); fhIt != g_ntFileHandles.end())
+        {
+            if (fhIt->second)
+                fhIt->second->stream.close();
+            g_ntFileHandles.erase(fhIt);
+        }
+
+        if (auto dhIt = g_ntDirHandles.find(handle); dhIt != g_ntDirHandles.end())
+        {
+            g_ntDirHandles.erase(dhIt);
+        }
+
+        DestroyKernelObject(handle);
 
         return 0;
     }
@@ -452,9 +938,52 @@ uint32_t NtWaitForSingleObjectEx(uint32_t Handle, uint32_t WaitMode, uint32_t Al
     return STATUS_TIMEOUT;
 }
 
-void NtWriteFile()
+uint32_t NtWriteFile(
+    uint32_t FileHandle,
+    uint32_t /*Event*/, 
+    uint32_t /*ApcRoutine*/,
+    uint32_t /*ApcContext*/,
+    XIO_STATUS_BLOCK* IoStatusBlock,
+    const void* Buffer,
+    uint32_t Length,
+    be<int64_t>* ByteOffset)
 {
-    LOG_UTILITY("!!! STUB !!!");
+    if (FileHandle == GUEST_INVALID_HANDLE_VALUE || !IsKernelObject(FileHandle))
+    {
+        LOGF_IMPL(Utility, "NtWriteFile", "INVALID handle 0x{:08X}", FileHandle);
+        return STATUS_INVALID_HANDLE;
+    }
+
+    auto it = g_ntFileHandles.find(FileHandle);
+    if (it == g_ntFileHandles.end() || !it->second || it->second->magic != kNtFileHandleMagic)
+    {
+        LOGF_IMPL(Utility, "NtWriteFile", "Not a file handle 0x{:08X}", FileHandle);
+        return STATUS_INVALID_HANDLE;
+    }
+
+    NtFileHandle* hFile = it->second;
+    if (!Buffer)
+        return STATUS_INVALID_PARAMETER;
+
+    if (ByteOffset != nullptr)
+    {
+        const int64_t offset = ByteOffset->get();
+        hFile->stream.clear();
+        hFile->stream.seekp(offset, std::ios::beg);
+        if (hFile->stream.bad())
+            return STATUS_FAIL_CHECK;
+    }
+
+    hFile->stream.write(reinterpret_cast<const char*>(Buffer), Length);
+    const bool ok = !hFile->stream.bad();
+
+    if (IoStatusBlock)
+    {
+        IoStatusBlock->Status = ok ? STATUS_SUCCESS : STATUS_FAIL_CHECK;
+        IoStatusBlock->Information = ok ? Length : 0;
+    }
+
+    return ok ? STATUS_SUCCESS : STATUS_FAIL_CHECK;
 }
 
 void vsprintf_x()
@@ -533,6 +1062,14 @@ void NtQueryVirtualMemory()
 {
     LOG_UTILITY("!!! STUB !!!");
 }
+
+#ifndef STATUS_INVALID_PARAMETER
+#define STATUS_INVALID_PARAMETER 0xC000000D
+#endif
+
+#ifndef STATUS_NO_MEMORY
+#define STATUS_NO_MEMORY 0xC0000017
+#endif
 
 void MmQueryStatistics()
 {
@@ -640,19 +1177,477 @@ void ExFreePool()
     LOG_UTILITY("!!! STUB !!!");
 }
 
-void NtQueryInformationFile()
+uint32_t NtQueryInformationFile(
+    uint32_t FileHandle,
+    XIO_STATUS_BLOCK* IoStatusBlock,
+    void* FileInformation,
+    uint32_t Length,
+    uint32_t FileInformationClass)
 {
-    LOG_UTILITY("!!! STUB !!!");
+    if (FileHandle == GUEST_INVALID_HANDLE_VALUE || !IsKernelObject(FileHandle))
+        return STATUS_INVALID_HANDLE;
+
+    std::filesystem::path path;
+    NtFileHandle* hFile = nullptr;
+    if (auto it = g_ntFileHandles.find(FileHandle); it != g_ntFileHandles.end() && it->second && it->second->magic == kNtFileHandleMagic)
+    {
+        hFile = it->second;
+        path = hFile->path;
+    }
+    else if (auto it = g_ntDirHandles.find(FileHandle); it != g_ntDirHandles.end() && it->second && it->second->magic == kNtDirHandleMagic)
+    {
+        path = it->second->path;
+    }
+    else
+    {
+        return STATUS_INVALID_HANDLE;
+    }
+
+    if (!IoStatusBlock || !FileInformation)
+        return STATUS_INVALID_PARAMETER;
+
+    std::error_code ec;
+    const bool exists = std::filesystem::exists(path, ec);
+    if (!exists || ec)
+    {
+        IoStatusBlock->Status = STATUS_OBJECT_NAME_NOT_FOUND;
+        IoStatusBlock->Information = 0;
+        return STATUS_OBJECT_NAME_NOT_FOUND;
+    }
+
+    const bool isDir = std::filesystem::is_directory(path, ec);
+    if (ec)
+    {
+        IoStatusBlock->Status = STATUS_FAIL_CHECK;
+        IoStatusBlock->Information = 0;
+        return STATUS_FAIL_CHECK;
+    }
+
+    uint64_t fileSize = 0;
+    if (!isDir)
+    {
+        fileSize = std::filesystem::file_size(path, ec);
+        if (ec)
+            fileSize = 0;
+    }
+
+    const uint64_t allocationSize = RoundUpToPage(fileSize);
+    const uint32_t attrs = GetFileAttributesBestEffort(path);
+
+    switch (FileInformationClass)
+    {
+    case FileBasicInformation:
+    {
+        if (Length < sizeof(XFILE_BASIC_INFORMATION))
+            return STATUS_INFO_LENGTH_MISMATCH;
+
+        auto* info = reinterpret_cast<XFILE_BASIC_INFORMATION*>(FileInformation);
+        info->CreationTime = 0;
+        info->LastAccessTime = 0;
+        info->LastWriteTime = 0;
+        info->ChangeTime = 0;
+        info->FileAttributes = attrs;
+        info->Reserved = 0;
+
+        IoStatusBlock->Status = STATUS_SUCCESS;
+        IoStatusBlock->Information = sizeof(XFILE_BASIC_INFORMATION);
+        return STATUS_SUCCESS;
+    }
+    case FileStandardInformation:
+    {
+        if (Length < sizeof(XFILE_STANDARD_INFORMATION))
+            return STATUS_INFO_LENGTH_MISMATCH;
+
+        auto* info = reinterpret_cast<XFILE_STANDARD_INFORMATION*>(FileInformation);
+        info->AllocationSize = static_cast<int64_t>(allocationSize);
+        info->EndOfFile = static_cast<int64_t>(fileSize);
+        info->NumberOfLinks = 1;
+        info->DeletePending = 0;
+        info->Directory = isDir ? 1 : 0;
+        info->Reserved = 0;
+
+        IoStatusBlock->Status = STATUS_SUCCESS;
+        IoStatusBlock->Information = sizeof(XFILE_STANDARD_INFORMATION);
+        return STATUS_SUCCESS;
+    }
+    case FilePositionInformation:
+    {
+        if (Length < sizeof(XFILE_POSITION_INFORMATION))
+            return STATUS_INFO_LENGTH_MISMATCH;
+
+        auto* info = reinterpret_cast<XFILE_POSITION_INFORMATION*>(FileInformation);
+        if (hFile)
+        {
+            const auto pos = hFile->stream.tellg();
+            if (pos < 0)
+                info->CurrentByteOffset = 0;
+            else
+                info->CurrentByteOffset = static_cast<int64_t>(pos);
+        }
+        else
+        {
+            info->CurrentByteOffset = 0;
+        }
+
+        IoStatusBlock->Status = STATUS_SUCCESS;
+        IoStatusBlock->Information = sizeof(XFILE_POSITION_INFORMATION);
+        return STATUS_SUCCESS;
+    }
+    case FileEndOfFileInformation:
+    {
+        if (Length < sizeof(XFILE_END_OF_FILE_INFORMATION))
+            return STATUS_INFO_LENGTH_MISMATCH;
+
+        auto* info = reinterpret_cast<XFILE_END_OF_FILE_INFORMATION*>(FileInformation);
+        info->EndOfFile = static_cast<int64_t>(fileSize);
+
+        IoStatusBlock->Status = STATUS_SUCCESS;
+        IoStatusBlock->Information = sizeof(XFILE_END_OF_FILE_INFORMATION);
+        return STATUS_SUCCESS;
+    }
+    case FileNetworkOpenInformation:
+    {
+        if (Length < sizeof(XFILE_NETWORK_OPEN_INFORMATION))
+            return STATUS_INFO_LENGTH_MISMATCH;
+
+        auto* info = reinterpret_cast<XFILE_NETWORK_OPEN_INFORMATION*>(FileInformation);
+        info->CreationTime = 0;
+        info->LastAccessTime = 0;
+        info->LastWriteTime = 0;
+        info->ChangeTime = 0;
+        info->AllocationSize = static_cast<int64_t>(allocationSize);
+        info->EndOfFile = static_cast<int64_t>(fileSize);
+        info->FileAttributes = attrs;
+        info->Reserved = 0;
+
+        IoStatusBlock->Status = STATUS_SUCCESS;
+        IoStatusBlock->Information = sizeof(XFILE_NETWORK_OPEN_INFORMATION);
+        return STATUS_SUCCESS;
+    }
+    default:
+        LOGF_WARNING("NtQueryInformationFile: unhandled class {}", FileInformationClass);
+        IoStatusBlock->Status = STATUS_INVALID_PARAMETER;
+        IoStatusBlock->Information = 0;
+        return STATUS_INVALID_PARAMETER;
+    }
 }
 
-void NtQueryVolumeInformationFile()
+uint32_t NtQueryVolumeInformationFile(
+    uint32_t FileHandle,
+    XIO_STATUS_BLOCK* IoStatusBlock,
+    void* FsInformation,
+    uint32_t Length,
+    uint32_t FsInformationClass)
 {
-    LOG_UTILITY("!!! STUB !!!");
+    if (FileHandle == GUEST_INVALID_HANDLE_VALUE || !IsKernelObject(FileHandle))
+        return STATUS_INVALID_HANDLE;
+
+    // Accept both file handles and directory handles for volume information.
+    std::filesystem::path path;
+    if (auto it = g_ntFileHandles.find(FileHandle); it != g_ntFileHandles.end() && it->second && it->second->magic == kNtFileHandleMagic)
+    {
+        path = it->second->path;
+    }
+    else if (auto it = g_ntDirHandles.find(FileHandle); it != g_ntDirHandles.end() && it->second && it->second->magic == kNtDirHandleMagic)
+    {
+        path = it->second->path;
+    }
+    else
+    {
+        return STATUS_INVALID_HANDLE;
+    }
+
+    if (!IoStatusBlock || !FsInformation)
+        return STATUS_INVALID_PARAMETER;
+
+    switch (FsInformationClass)
+    {
+    case FileFsDeviceInformation:
+    {
+        if (Length < sizeof(XFILE_FS_DEVICE_INFORMATION))
+            return STATUS_INFO_LENGTH_MISMATCH;
+
+        auto* info = reinterpret_cast<XFILE_FS_DEVICE_INFORMATION*>(FsInformation);
+        info->DeviceType = 0x00000007; // FILE_DEVICE_DISK
+        info->Characteristics = 0;
+
+        IoStatusBlock->Status = STATUS_SUCCESS;
+        IoStatusBlock->Information = sizeof(XFILE_FS_DEVICE_INFORMATION);
+        return STATUS_SUCCESS;
+    }
+    case FileFsSizeInformation:
+    {
+        if (Length < sizeof(XFILE_FS_SIZE_INFORMATION))
+            return STATUS_INFO_LENGTH_MISMATCH;
+
+        auto* info = reinterpret_cast<XFILE_FS_SIZE_INFORMATION*>(FsInformation);
+        // Very rough defaults: 512-byte sectors, 8 sectors per allocation unit (4KB).
+        info->BytesPerSector = 512;
+        info->SectorsPerAllocationUnit = 8;
+        info->TotalAllocationUnits = 0x100000;
+        info->AvailableAllocationUnits = 0x080000;
+
+        IoStatusBlock->Status = STATUS_SUCCESS;
+        IoStatusBlock->Information = sizeof(XFILE_FS_SIZE_INFORMATION);
+        return STATUS_SUCCESS;
+    }
+    case FileFsAttributeInformation:
+    {
+        // Return a fixed buffer with a short filesystem name.
+        constexpr uint16_t kName[] = { 'F', 'A', 'T', 'X' };
+        constexpr uint32_t kNameBytes = sizeof(kName);
+        constexpr uint32_t kFixedSize = sizeof(XFILE_FS_ATTRIBUTE_INFORMATION_FIXED);
+
+        if (Length < kFixedSize)
+            return STATUS_INFO_LENGTH_MISMATCH;
+
+        auto* info = reinterpret_cast<XFILE_FS_ATTRIBUTE_INFORMATION_FIXED*>(FsInformation);
+        info->FileSystemAttributes = 0;
+        info->MaximumComponentNameLength = 255;
+        info->FileSystemNameLength = kNameBytes;
+        memset(info->FileSystemName, 0, sizeof(info->FileSystemName));
+        for (size_t i = 0; i < (sizeof(kName) / sizeof(kName[0])); ++i)
+            info->FileSystemName[i] = kName[i];
+
+        IoStatusBlock->Status = STATUS_SUCCESS;
+        IoStatusBlock->Information = kFixedSize;
+        return STATUS_SUCCESS;
+    }
+    default:
+        LOGF_WARNING("NtQueryVolumeInformationFile: unhandled class {}", FsInformationClass);
+        IoStatusBlock->Status = STATUS_INVALID_PARAMETER;
+        IoStatusBlock->Information = 0;
+        return STATUS_INVALID_PARAMETER;
+    }
 }
 
-void NtQueryDirectoryFile()
+uint32_t NtQueryDirectoryFile(
+    uint32_t FileHandle,
+    uint32_t /*Event*/,
+    uint32_t /*ApcRoutine*/,
+    uint32_t /*ApcContext*/,
+    XIO_STATUS_BLOCK* IoStatusBlock,
+    void* FileInformation,
+    uint32_t Length,
+    uint32_t FileInformationClass,
+    uint32_t ReturnSingleEntry,
+    XANSI_STRING* FileName,
+    uint32_t RestartScan)
 {
-    LOG_UTILITY("!!! STUB !!!");
+    LOGF_IMPL(Utility, "NtQueryDirectoryFile", "Handle=0x{:08X}", FileHandle);
+    if (FileHandle == GUEST_INVALID_HANDLE_VALUE || !IsKernelObject(FileHandle))
+    {
+        LOG_IMPL(Utility, "NtQueryDirectoryFile", "INVALID_HANDLE_VALUE or not kernel object");
+        return STATUS_INVALID_HANDLE;
+    }
+
+    auto it = g_ntDirHandles.find(FileHandle);
+    if (it == g_ntDirHandles.end() || !it->second || it->second->magic != kNtDirHandleMagic)
+    {
+        LOGF_IMPL(Utility, "NtQueryDirectoryFile", "Handle not in g_ntDirHandles (found={}, hasSecond={}, magic=0x{:08X})",
+            it != g_ntDirHandles.end(), it != g_ntDirHandles.end() && it->second != nullptr,
+            (it != g_ntDirHandles.end() && it->second) ? it->second->magic : 0);
+        return STATUS_INVALID_HANDLE;
+    }
+
+    NtDirHandle* hDir = it->second;
+    if (!IoStatusBlock || !FileInformation || Length == 0)
+        return STATUS_INVALID_PARAMETER;
+
+    if (RestartScan)
+        hDir->cursor = 0;
+
+    if (!hDir->initialized)
+    {
+        std::error_code ec;
+        for (auto iter = std::filesystem::directory_iterator(hDir->path, ec); !ec && iter != std::filesystem::directory_iterator(); ++iter)
+            hDir->entries.emplace_back(*iter);
+
+        // Stable, deterministic ordering helps with repeatability.
+        std::sort(hDir->entries.begin(), hDir->entries.end(), [](const auto& a, const auto& b) {
+            return a.path().filename().string() < b.path().filename().string();
+        });
+
+        hDir->initialized = true;
+    }
+
+    std::string filterName;
+    if (FileName && FileName->Buffer.get() && FileName->Length.get() != 0)
+    {
+        const char* buf = FileName->Buffer.get();
+        filterName.assign(buf, buf + FileName->Length.get());
+    }
+
+    const auto writeUtf16Be = [](be<uint16_t>* out, const std::string& s) {
+        for (size_t i = 0; i < s.size(); ++i)
+            out[i] = static_cast<uint16_t>(static_cast<unsigned char>(s[i]));
+    };
+
+    uint8_t* out = reinterpret_cast<uint8_t*>(FileInformation);
+    uint32_t remaining = Length;
+    uint32_t written = 0;
+
+    // Track the prior entry so we can fill in its NextEntryOffset.
+    be<uint32_t>* prevNextEntryOffset = nullptr;
+    uint32_t prevEntrySize = 0;
+
+    const bool single = (ReturnSingleEntry != 0);
+
+    while (hDir->cursor < hDir->entries.size())
+    {
+        const auto& entry = hDir->entries[hDir->cursor];
+        const std::string name = entry.path().filename().string();
+
+        if (!filterName.empty() && name != filterName)
+        {
+            ++hDir->cursor;
+            continue;
+        }
+
+        std::error_code ec;
+        const std::filesystem::path entryPath = entry.path();
+        const bool isDir = std::filesystem::is_directory(entryPath, ec);
+        uint64_t fileSize = 0;
+        if (!isDir)
+        {
+            fileSize = std::filesystem::file_size(entryPath, ec);
+            if (ec)
+                fileSize = 0;
+        }
+
+        const uint64_t allocationSize = RoundUpToPage(fileSize);
+        const uint32_t attrs = GetFileAttributesBestEffort(entryPath);
+
+        const uint32_t nameBytes = static_cast<uint32_t>(name.size() * sizeof(uint16_t));
+
+        uint32_t fixedSize = 0;
+        switch (FileInformationClass)
+        {
+        case FileDirectoryInformation:
+            fixedSize = sizeof(XFILE_DIRECTORY_INFORMATION_FIXED);
+            break;
+        case FileFullDirectoryInformation:
+            fixedSize = sizeof(XFILE_FULL_DIR_INFORMATION_FIXED);
+            break;
+        case FileBothDirectoryInformation:
+            fixedSize = sizeof(XFILE_BOTH_DIR_INFORMATION_FIXED);
+            break;
+        default:
+            IoStatusBlock->Status = STATUS_INVALID_PARAMETER;
+            IoStatusBlock->Information = 0;
+            return STATUS_INVALID_PARAMETER;
+        }
+
+        const uint32_t entrySizeUnaligned = fixedSize + nameBytes;
+        const uint32_t entrySize = AlignUp(entrySizeUnaligned, 8);
+
+        if (entrySize > remaining)
+        {
+            if (written == 0)
+            {
+                IoStatusBlock->Status = STATUS_BUFFER_OVERFLOW;
+                IoStatusBlock->Information = 0;
+                return STATUS_BUFFER_OVERFLOW;
+            }
+            break;
+        }
+
+        // Update the previous entry now that we know we are emitting a new one.
+        if (prevNextEntryOffset)
+            *prevNextEntryOffset = prevEntrySize;
+
+        uint8_t* entryBase = out + written;
+        memset(entryBase, 0, entrySize);
+
+        uint8_t* nameOut = nullptr;
+        switch (FileInformationClass)
+        {
+        case FileDirectoryInformation:
+        {
+            auto* info = reinterpret_cast<XFILE_DIRECTORY_INFORMATION_FIXED*>(entryBase);
+            info->NextEntryOffset = 0;
+            info->FileIndex = 0;
+            info->CreationTime = 0;
+            info->LastAccessTime = 0;
+            info->LastWriteTime = 0;
+            info->ChangeTime = 0;
+            info->EndOfFile = static_cast<int64_t>(fileSize);
+            info->AllocationSize = static_cast<int64_t>(allocationSize);
+            info->FileAttributes = attrs;
+            info->FileNameLength = nameBytes;
+            nameOut = entryBase + sizeof(XFILE_DIRECTORY_INFORMATION_FIXED);
+            prevNextEntryOffset = &info->NextEntryOffset;
+            break;
+        }
+        case FileFullDirectoryInformation:
+        {
+            auto* info = reinterpret_cast<XFILE_FULL_DIR_INFORMATION_FIXED*>(entryBase);
+            info->NextEntryOffset = 0;
+            info->FileIndex = 0;
+            info->CreationTime = 0;
+            info->LastAccessTime = 0;
+            info->LastWriteTime = 0;
+            info->ChangeTime = 0;
+            info->EndOfFile = static_cast<int64_t>(fileSize);
+            info->AllocationSize = static_cast<int64_t>(allocationSize);
+            info->FileAttributes = attrs;
+            info->FileNameLength = nameBytes;
+            info->EaSize = 0;
+            nameOut = entryBase + sizeof(XFILE_FULL_DIR_INFORMATION_FIXED);
+            prevNextEntryOffset = &info->NextEntryOffset;
+            break;
+        }
+        case FileBothDirectoryInformation:
+        {
+            auto* info = reinterpret_cast<XFILE_BOTH_DIR_INFORMATION_FIXED*>(entryBase);
+            info->NextEntryOffset = 0;
+            info->FileIndex = 0;
+            info->CreationTime = 0;
+            info->LastAccessTime = 0;
+            info->LastWriteTime = 0;
+            info->ChangeTime = 0;
+            info->EndOfFile = static_cast<int64_t>(fileSize);
+            info->AllocationSize = static_cast<int64_t>(allocationSize);
+            info->FileAttributes = attrs;
+            info->FileNameLength = nameBytes;
+            info->EaSize = 0;
+            info->ShortNameLength = 0;
+            info->Reserved1 = 0;
+            memset(info->ShortName, 0, sizeof(info->ShortName));
+            nameOut = entryBase + sizeof(XFILE_BOTH_DIR_INFORMATION_FIXED);
+            prevNextEntryOffset = &info->NextEntryOffset;
+            break;
+        }
+        default:
+            break;
+        }
+
+        if (nameOut)
+            writeUtf16Be(reinterpret_cast<be<uint16_t>*>(nameOut), name);
+
+        prevEntrySize = entrySize;
+        written += entrySize;
+        remaining -= entrySize;
+        ++hDir->cursor;
+
+        if (single)
+            break;
+    }
+
+    if (written == 0)
+    {
+        IoStatusBlock->Status = STATUS_NO_MORE_FILES;
+        IoStatusBlock->Information = 0;
+        return STATUS_NO_MORE_FILES;
+    }
+
+    // Final entry in the buffer.
+    if (prevNextEntryOffset)
+        *prevNextEntryOffset = 0;
+
+    IoStatusBlock->Status = STATUS_SUCCESS;
+    IoStatusBlock->Information = written;
+    return STATUS_SUCCESS;
 }
 
 void NtReadFileScatter()
@@ -660,9 +1655,73 @@ void NtReadFileScatter()
     LOG_UTILITY("!!! STUB !!!");
 }
 
-void NtReadFile()
+uint32_t NtReadFile(
+    uint32_t FileHandle,
+    uint32_t /*Event*/,
+    uint32_t /*ApcRoutine*/,
+    uint32_t /*ApcContext*/,
+    XIO_STATUS_BLOCK* IoStatusBlock,
+    void* Buffer,
+    uint32_t Length,
+    be<int64_t>* ByteOffset)
 {
-    LOG_UTILITY("!!! STUB !!!");
+    if (FileHandle == GUEST_INVALID_HANDLE_VALUE || !IsKernelObject(FileHandle))
+    {
+        LOGF_IMPL(Utility, "NtReadFile", "INVALID handle 0x{:08X}", FileHandle);
+        return STATUS_INVALID_HANDLE;
+    }
+
+    // Check if this is a directory handle - directories can't be read as files, 
+    // but return END_OF_FILE instead of INVALID_HANDLE to be more permissive.
+    if (auto dit = g_ntDirHandles.find(FileHandle); dit != g_ntDirHandles.end() && dit->second && dit->second->magic == kNtDirHandleMagic)
+    {
+        LOGF_IMPL(Utility, "NtReadFile", "Directory handle 0x{:08X} - returning END_OF_FILE", FileHandle);
+        if (IoStatusBlock)
+        {
+            IoStatusBlock->Status = STATUS_END_OF_FILE;
+            IoStatusBlock->Information = 0;
+        }
+        return STATUS_END_OF_FILE;
+    }
+
+    auto it = g_ntFileHandles.find(FileHandle);
+    if (it == g_ntFileHandles.end() || !it->second || it->second->magic != kNtFileHandleMagic)
+    {
+        LOGF_IMPL(Utility, "NtReadFile", "Not a file handle 0x{:08X}", FileHandle);
+        return STATUS_INVALID_HANDLE;
+    }
+
+    NtFileHandle* hFile = it->second;
+    if (!IoStatusBlock || !Buffer)
+        return STATUS_INVALID_PARAMETER;
+
+    if (ByteOffset != nullptr)
+    {
+        const int64_t offset = ByteOffset->get();
+        hFile->stream.clear();
+        hFile->stream.seekg(offset, std::ios::beg);
+        if (hFile->stream.bad())
+        {
+            IoStatusBlock->Status = STATUS_FAIL_CHECK;
+            IoStatusBlock->Information = 0;
+            return STATUS_FAIL_CHECK;
+        }
+    }
+
+    hFile->stream.read(reinterpret_cast<char*>(Buffer), Length);
+    const uint32_t bytesRead = static_cast<uint32_t>(hFile->stream.gcount());
+
+    if (bytesRead == 0 && Length != 0 && hFile->stream.eof())
+    {
+        IoStatusBlock->Status = STATUS_END_OF_FILE;
+        IoStatusBlock->Information = 0;
+        return STATUS_END_OF_FILE;
+    }
+
+    const bool ok = !hFile->stream.bad();
+    IoStatusBlock->Status = ok ? STATUS_SUCCESS : STATUS_FAIL_CHECK;
+    IoStatusBlock->Information = ok ? bytesRead : 0;
+    return ok ? STATUS_SUCCESS : STATUS_FAIL_CHECK;
 }
 
 uint32_t NtDuplicateObject(uint32_t SourceHandle, be<uint32_t>* TargetHandle, uint32_t Options)
@@ -689,15 +1748,85 @@ uint32_t NtDuplicateObject(uint32_t SourceHandle, be<uint32_t>* TargetHandle, ui
     }
 }
 
-void NtAllocateVirtualMemory()
+static std::unordered_map<uint32_t, uint32_t> g_ntVirtualMemoryAllocs;
+
+// NT-style virtual memory APIs used by some titles (e.g., GTA IV).
+// Backed by the existing guest heap allocator since we map a full 4GB guest address space.
+// This is intentionally minimal: it supports the common "BaseAddress == NULL" allocation path.
+uint32_t NtAllocateVirtualMemory(
+    be<uint32_t>* BaseAddress,
+    be<uint32_t>* RegionSize,
+    uint32_t AllocationType,
+    uint32_t Protect,
+    uint32_t ZeroBits)
 {
-    __builtin_trap();
-    LOG_UTILITY("!!! STUB !!!");
+    (void)AllocationType;
+    (void)Protect;
+    (void)ZeroBits;
+
+    if (!BaseAddress || !RegionSize)
+        return STATUS_INVALID_PARAMETER;
+
+    uint32_t size = RegionSize->get();
+    if (size == 0)
+        return STATUS_INVALID_PARAMETER;
+
+    // Round up to page size. X360 is page-based, callers often expect at least 4KB granularity.
+    constexpr uint32_t kPageSize = 0x1000;
+    size = (size + (kPageSize - 1)) & ~(kPageSize - 1);
+
+    uint32_t requested = BaseAddress->get();
+    if (requested != 0)
+    {
+        // We currently don't manage fixed-address reservations/commits.
+        // The full guest address space is already mapped, so accept the request if it is in-range.
+        if (requested >= PPC_MEMORY_SIZE)
+            return STATUS_INVALID_PARAMETER;
+
+        *RegionSize = size;
+        return STATUS_SUCCESS;
+    }
+
+    void* ptr = g_userHeap.AllocPhysical(size, kPageSize);
+    if (!ptr)
+        return STATUS_NO_MEMORY;
+
+    const uint32_t base = g_memory.MapVirtual(ptr);
+    g_ntVirtualMemoryAllocs[base] = size;
+
+    *BaseAddress = base;
+    *RegionSize = size;
+    return STATUS_SUCCESS;
 }
 
-void NtFreeVirtualMemory()
+uint32_t NtFreeVirtualMemory(
+    be<uint32_t>* BaseAddress,
+    be<uint32_t>* RegionSize,
+    uint32_t FreeType,
+    uint32_t /*Unknown*/)
 {
-    LOG_UTILITY("!!! STUB !!!");
+    (void)FreeType;
+
+    if (!BaseAddress)
+        return STATUS_INVALID_PARAMETER;
+
+    const uint32_t addr = BaseAddress->get();
+    if (addr == 0)
+        return STATUS_SUCCESS;
+
+    // If MEM_RELEASE is specified, RegionSize must be 0 on Win32.
+    // Some titles may pass non-zero; we ignore and free anyway.
+    if (RegionSize)
+        *RegionSize = 0;
+
+    const auto it = g_ntVirtualMemoryAllocs.find(addr);
+    if (it != g_ntVirtualMemoryAllocs.end())
+    {
+        g_userHeap.Free(g_memory.Translate(addr));
+        g_ntVirtualMemoryAllocs.erase(it);
+    }
+    *BaseAddress = 0;
+    return STATUS_SUCCESS;
 }
 
 void ObDereferenceObject()
@@ -1038,7 +2167,11 @@ uint32_t MmAllocatePhysicalMemoryEx
 )
 {
     LOGF_UTILITY("0x{:x}, 0x{:x}, 0x{:x}, 0x{:x}, 0x{:x}, 0x{:x}", flags, size, protect, minAddress, maxAddress, alignment);
-    return g_memory.MapVirtual(g_userHeap.AllocPhysical(size, alignment));
+    void* host = g_userHeap.AllocPhysical(size, alignment);
+    if (host == nullptr)
+        return 0;
+
+    return g_memory.MapVirtual(host);
 }
 
 void ObDeleteSymbolicLink()
@@ -1362,9 +2495,47 @@ void RtlCaptureContext_x()
     LOG_UTILITY("!!! STUB !!!");
 }
 
-void NtQueryFullAttributesFile()
+uint32_t NtQueryFullAttributesFile(XOBJECT_ATTRIBUTES* ObjectAttributes, XFILE_NETWORK_OPEN_INFORMATION* FileInformation)
 {
-    LOG_UTILITY("!!! STUB !!!");
+    if (!ObjectAttributes || !FileInformation)
+        return STATUS_INVALID_PARAMETER;
+
+    std::string guestPath;
+    if (!TryGetAnsiPath(ObjectAttributes, guestPath))
+        return STATUS_INVALID_PARAMETER;
+
+    const std::filesystem::path resolved = ResolveGuestPathBestEffort(guestPath);
+
+    std::error_code ec;
+    const bool exists = std::filesystem::exists(resolved, ec);
+    if (!exists || ec)
+        return STATUS_OBJECT_NAME_NOT_FOUND;
+
+    const bool isDir = std::filesystem::is_directory(resolved, ec);
+    if (ec)
+        return STATUS_FAIL_CHECK;
+
+    uint64_t fileSize = 0;
+    if (!isDir)
+    {
+        fileSize = std::filesystem::file_size(resolved, ec);
+        if (ec)
+            fileSize = 0;
+    }
+
+    const uint64_t allocationSize = RoundUpToPage(fileSize);
+    const uint32_t attrs = GetFileAttributesBestEffort(resolved);
+
+    FileInformation->CreationTime = 0;
+    FileInformation->LastAccessTime = 0;
+    FileInformation->LastWriteTime = 0;
+    FileInformation->ChangeTime = 0;
+    FileInformation->AllocationSize = static_cast<int64_t>(allocationSize);
+    FileInformation->EndOfFile = static_cast<int64_t>(fileSize);
+    FileInformation->FileAttributes = attrs;
+    FileInformation->Reserved = 0;
+
+    return STATUS_SUCCESS;
 }
 
 uint32_t RtlMultiByteToUnicodeN(be<uint16_t>* UnicodeString, uint32_t MaxBytesInUnicodeString, be<uint32_t>* BytesInUnicodeString, const char* MultiByteString, uint32_t BytesInMultiByteString)
@@ -1592,7 +2763,20 @@ uint32_t ExCreateThread(be<uint32_t>* handle, uint32_t stackSize, be<uint32_t>* 
 
     uint32_t hostThreadId;
 
-    *handle = GetKernelHandle(GuestThread::Start({ startAddress, startContext, creationFlags }, &hostThreadId));
+    uint32_t entry = startAddress;
+    uint32_t r3 = startContext;
+    uint32_t r4 = 0;
+
+    // Many titles use an XAPI thread startup wrapper that takes (entry, arg) in (r3, r4)
+    // and then performs an indirect call to entry.
+    if (xApiThreadStartup != 0)
+    {
+        entry = xApiThreadStartup;
+        r3 = startAddress;
+        r4 = startContext;
+    }
+
+    *handle = GetKernelHandle(GuestThread::Start({ entry, r3, r4, creationFlags }, &hostThreadId));
     LOGF_UTILITY("0x{:X}, 0x{:X}, 0x{:X}, 0x{:X}, 0x{:X}, 0x{:X}, 0x{:X} {:X}",
         (intptr_t)handle, stackSize, (intptr_t)threadId, xApiThreadStartup, startAddress, startContext, creationFlags, hostThreadId);
     if (threadId != nullptr)
@@ -1793,6 +2977,319 @@ void XapiInitProcess()
     *XapiProcessHeap = 1;
 }
 
+// GTA IV specific stubs
+void XamTaskSchedule()
+{
+    LOG_UTILITY("!!! STUB !!!");
+}
+
+uint32_t XamTaskShouldExit(uint32_t taskHandle)
+{
+    // Return 1 to indicate task should exit (no async tasks supported yet)
+    return 1;
+}
+
+uint32_t XamTaskCloseHandle(uint32_t taskHandle)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return ERROR_SUCCESS;
+}
+
+uint32_t XamUserAreUsersFriends(uint32_t userIndex, uint64_t* xuids, uint32_t count, uint32_t* results, void* overlapped)
+{
+    // Return that no users are friends
+    if (results)
+        memset(results, 0, count * sizeof(uint32_t));
+    return ERROR_SUCCESS;
+}
+
+uint32_t XamUserCheckPrivilege(uint32_t userIndex, uint32_t privilegeType, uint32_t* result)
+{
+    // Grant all privileges
+    if (result)
+        *result = 1;
+    return ERROR_SUCCESS;
+}
+
+uint32_t XamUserCreateStatsEnumerator(uint32_t titleId, uint32_t userIndex, uint32_t xuidCount,
+    void* pxuid, uint32_t dwNumStatSpecs, void* pStatSpecs, be<uint32_t>* pcbBuffer, be<uint32_t>* phEnum)
+{
+    // Return no stats available
+    if (phEnum)
+        *phEnum = 0;
+    if (pcbBuffer)
+        *pcbBuffer = 0;
+    return ERROR_NO_MORE_FILES;
+}
+
+uint32_t XamUserGetName(uint32_t userIndex, char* buffer, uint32_t bufferSize)
+{
+    if (userIndex != 0)
+        return ERROR_NO_SUCH_USER;
+    if (buffer && bufferSize > 0)
+    {
+        const char* name = "Player";
+        strncpy(buffer, name, bufferSize - 1);
+        buffer[bufferSize - 1] = '\0';
+    }
+    return ERROR_SUCCESS;
+}
+
+uint32_t XamUserGetXUID(uint32_t userIndex, uint64_t* xuid)
+{
+    if (userIndex != 0)
+        return ERROR_NO_SUCH_USER;
+    if (xuid)
+        *xuid = 0x0001000000000001ULL; // Fake XUID
+    return ERROR_SUCCESS;
+}
+
+uint32_t XamUserWriteProfileSettings(uint32_t userIndex, uint32_t numSettings, void* settings, void* overlapped)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return ERROR_SUCCESS;
+}
+
+uint32_t XamVoiceCreate(uint32_t userIndex, uint32_t flags, void** voice)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    if (voice)
+        *voice = nullptr;
+    return ERROR_DEVICE_NOT_CONNECTED;
+}
+
+void XamVoiceClose(void* voice)
+{
+    LOG_UTILITY("!!! STUB !!!");
+}
+
+uint32_t XamVoiceHeadsetPresent(uint32_t userIndex)
+{
+    // No headset present
+    return 0;
+}
+
+uint32_t XamVoiceSubmitPacket(void* voice, uint32_t size, void* data)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return ERROR_SUCCESS;
+}
+
+uint32_t XeKeysConsolePrivateKeySign(void* signature, void* data, uint32_t dataSize)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return ERROR_SUCCESS;
+}
+
+void IoDismountVolumeByFileHandle()
+{
+    LOG_UTILITY("!!! STUB !!!");
+}
+
+uint32_t NetDll_XNetGetEthernetLinkStatus()
+{
+    // Return link up
+    return 1;
+}
+
+uint32_t KeTryToAcquireSpinLockAtRaisedIrql(void* spinlock)
+{
+    // Try to acquire, always succeed for now
+    return 1;
+}
+
+uint32_t XamShowGamerCardUIForXUID(uint32_t userIndex, uint64_t xuid, void* overlapped)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return ERROR_SUCCESS;
+}
+
+uint32_t XamShowPlayerReviewUI(uint32_t userIndex, uint64_t xuid, void* overlapped)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return ERROR_SUCCESS;
+}
+
+// Additional GTA IV stubs
+void* XamAlloc(uint32_t flags, uint32_t size, void* pBuffer)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return nullptr;
+}
+
+void XamFree(void* buffer)
+{
+    LOG_UTILITY("!!! STUB !!!");
+}
+
+uint32_t NtSetTimerEx(void* timerHandle, void* dueTime, void* apcRoutine, void* apcContext, uint32_t resume, uint32_t period, void* previousState)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return 0;
+}
+
+uint32_t NtCancelTimer(void* timerHandle, void* currentState)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return 0;
+}
+
+uint32_t NtCreateTimer(void* timerHandle, uint32_t desiredAccess, void* objectAttributes, uint32_t timerType)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return 0;
+}
+
+uint32_t NtCreateMutant(void* mutantHandle, uint32_t desiredAccess, void* objectAttributes, uint32_t initialOwner)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return 0;
+}
+
+uint32_t NtReleaseMutant(void* mutantHandle, void* previousCount)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return 0;
+}
+
+void IoDismountVolume()
+{
+    LOG_UTILITY("!!! STUB !!!");
+}
+
+void XNotifyPositionUI(uint32_t position)
+{
+    LOG_UTILITY("!!! STUB !!!");
+}
+
+void NetDll_XNetCleanup()
+{
+    LOG_UTILITY("!!! STUB !!!");
+}
+
+int32_t NetDll_getsockname(uint32_t socket, void* name, void* namelen)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return -1;
+}
+
+int32_t NetDll_ioctlsocket(uint32_t socket, uint32_t cmd, void* argp)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return 0;
+}
+
+int32_t NetDll_sendto(uint32_t socket, void* buf, uint32_t len, uint32_t flags, void* to, uint32_t tolen)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return -1;
+}
+
+int32_t NetDll_recvfrom(uint32_t socket, void* buf, uint32_t len, uint32_t flags, void* from, void* fromlen)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return -1;
+}
+
+int32_t NetDll_shutdown(uint32_t socket, uint32_t how)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return 0;
+}
+
+void XMsgCancelIORequest()
+{
+    LOG_UTILITY("!!! STUB !!!");
+}
+
+uint32_t XAudioGetSpeakerConfig(void* config)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return 0;
+}
+
+uint32_t XamContentSetThumbnail(const char* rootName, void* imageData, uint32_t imageSize, void* overlapped)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return ERROR_SUCCESS;
+}
+
+uint32_t XamInputGetKeystrokeEx(uint32_t userIndex, uint32_t flags, void* keystroke)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return ERROR_DEVICE_NOT_CONNECTED;
+}
+
+uint32_t XamSessionCreateHandle(void* sessionInfo, void* handle)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return ERROR_SUCCESS;
+}
+
+uint32_t XamSessionRefObjByHandle(uint32_t handle, void* obj)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return ERROR_INVALID_HANDLE;
+}
+
+void KeSetDisableBoostThread(void* thread, uint32_t disable)
+{
+    LOG_UTILITY("!!! STUB !!!");
+}
+
+uint32_t XamCreateEnumeratorHandle(uint32_t type, uint32_t size, void* data, void* handle)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return ERROR_SUCCESS;
+}
+
+uint32_t NtDeviceIoControlFile(void* fileHandle, void* event, void* apcRoutine, void* apcContext, void* ioStatusBlock, uint32_t ioControlCode, void* inputBuffer, uint32_t inputBufferLength, void* outputBuffer, uint32_t outputBufferLength)
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return 0;
+}
+
+int32_t NetDll_WSAGetLastError()
+{
+    LOG_UTILITY("!!! STUB !!!");
+    return 0;
+}
+
+void NetDll_XNetQosListen()
+{
+    LOG_UTILITY("!!! STUB !!!");
+}
+
+void NetDll_XNetQosLookup()
+{
+    LOG_UTILITY("!!! STUB !!!");
+}
+
+void NetDll_XNetQosRelease()
+{
+    LOG_UTILITY("!!! STUB !!!");
+}
+
+void NetDll_XNetServerToInAddr()
+{
+    LOG_UTILITY("!!! STUB !!!");
+}
+
+void NetDll_XNetXnAddrToInAddr()
+{
+    LOG_UTILITY("!!! STUB !!!");
+}
+
+void NetDll_XNetGetConnectStatus()
+{
+    LOG_UTILITY("!!! STUB !!!");
+}
+
+void NetDll_XNetUnregisterInAddr()
+{
+    LOG_UTILITY("!!! STUB !!!");
+}
+
 GUEST_FUNCTION_HOOK(sub_825383D8, XapiInitProcess)
 GUEST_FUNCTION_HOOK(__imp__XGetVideoMode, VdQueryVideoMode); // XGetVideoMode
 GUEST_FUNCTION_HOOK(__imp__XNotifyGetNext, XNotifyGetNext);
@@ -1813,6 +3310,28 @@ GUEST_FUNCTION_HOOK(__imp__XamUserGetSigninInfo, XamUserGetSigninInfo);
 GUEST_FUNCTION_HOOK(__imp__XamShowSigninUI, XamShowSigninUI);
 GUEST_FUNCTION_HOOK(__imp__XamShowDeviceSelectorUI, XamShowDeviceSelectorUI);
 GUEST_FUNCTION_HOOK(__imp__XamShowMessageBoxUI, XamShowMessageBoxUI);
+GUEST_FUNCTION_HOOK(__imp__XamUserCreateAchievementEnumerator, XamUserCreateAchievementEnumerator);
+GUEST_FUNCTION_HOOK(__imp__XeKeysConsoleSignatureVerification, XeKeysConsoleSignatureVerification);
+GUEST_FUNCTION_HOOK(__imp__XamGetPrivateEnumStructureFromHandle, XamGetPrivateEnumStructureFromHandle);
+GUEST_FUNCTION_HOOK(__imp__XamTaskSchedule, XamTaskSchedule);
+GUEST_FUNCTION_HOOK(__imp__XamTaskShouldExit, XamTaskShouldExit);
+GUEST_FUNCTION_HOOK(__imp__XamTaskCloseHandle, XamTaskCloseHandle);
+GUEST_FUNCTION_HOOK(__imp__XamUserAreUsersFriends, XamUserAreUsersFriends);
+GUEST_FUNCTION_HOOK(__imp__XamUserCheckPrivilege, XamUserCheckPrivilege);
+GUEST_FUNCTION_HOOK(__imp__XamUserCreateStatsEnumerator, XamUserCreateStatsEnumerator);
+GUEST_FUNCTION_HOOK(__imp__XamUserGetName, XamUserGetName);
+GUEST_FUNCTION_HOOK(__imp__XamUserGetXUID, XamUserGetXUID);
+GUEST_FUNCTION_HOOK(__imp__XamUserWriteProfileSettings, XamUserWriteProfileSettings);
+GUEST_FUNCTION_HOOK(__imp__XamVoiceCreate, XamVoiceCreate);
+GUEST_FUNCTION_HOOK(__imp__XamVoiceClose, XamVoiceClose);
+GUEST_FUNCTION_HOOK(__imp__XamVoiceHeadsetPresent, XamVoiceHeadsetPresent);
+GUEST_FUNCTION_HOOK(__imp__XamVoiceSubmitPacket, XamVoiceSubmitPacket);
+GUEST_FUNCTION_HOOK(__imp__XeKeysConsolePrivateKeySign, XeKeysConsolePrivateKeySign);
+GUEST_FUNCTION_HOOK(__imp__IoDismountVolumeByFileHandle, IoDismountVolumeByFileHandle);
+GUEST_FUNCTION_HOOK(__imp__NetDll_XNetGetEthernetLinkStatus, NetDll_XNetGetEthernetLinkStatus);
+GUEST_FUNCTION_HOOK(__imp__KeTryToAcquireSpinLockAtRaisedIrql, KeTryToAcquireSpinLockAtRaisedIrql);
+GUEST_FUNCTION_HOOK(__imp__XamShowGamerCardUIForXUID, XamShowGamerCardUIForXUID);
+GUEST_FUNCTION_HOOK(__imp__XamShowPlayerReviewUI, XamShowPlayerReviewUI);
 GUEST_FUNCTION_HOOK(__imp__XamShowDirtyDiscErrorUI, XamShowDirtyDiscErrorUI);
 GUEST_FUNCTION_HOOK(__imp__XamEnableInactivityProcessing, XamEnableInactivityProcessing);
 GUEST_FUNCTION_HOOK(__imp__XamResetInactivity, XamResetInactivity);
@@ -1994,3 +3513,36 @@ GUEST_FUNCTION_HOOK(__imp__XMACreateContext, XMACreateContext);
 GUEST_FUNCTION_HOOK(__imp__XAudioRegisterRenderDriverClient, XAudioRegisterRenderDriverClient);
 GUEST_FUNCTION_HOOK(__imp__XAudioUnregisterRenderDriverClient, XAudioUnregisterRenderDriverClient);
 GUEST_FUNCTION_HOOK(__imp__XAudioSubmitRenderDriverFrame, XAudioSubmitRenderDriverFrame);
+// Additional GTA IV stubs
+GUEST_FUNCTION_HOOK(__imp__XamAlloc, XamAlloc);
+GUEST_FUNCTION_HOOK(__imp__XamFree, XamFree);
+GUEST_FUNCTION_HOOK(__imp__NtSetTimerEx, NtSetTimerEx);
+GUEST_FUNCTION_HOOK(__imp__NtCancelTimer, NtCancelTimer);
+GUEST_FUNCTION_HOOK(__imp__NtCreateTimer, NtCreateTimer);
+GUEST_FUNCTION_HOOK(__imp__NtCreateMutant, NtCreateMutant);
+GUEST_FUNCTION_HOOK(__imp__NtReleaseMutant, NtReleaseMutant);
+GUEST_FUNCTION_HOOK(__imp__IoDismountVolume, IoDismountVolume);
+GUEST_FUNCTION_HOOK(__imp__XNotifyPositionUI, XNotifyPositionUI);
+GUEST_FUNCTION_HOOK(__imp__NetDll_XNetCleanup, NetDll_XNetCleanup);
+GUEST_FUNCTION_HOOK(__imp__NetDll_getsockname, NetDll_getsockname);
+GUEST_FUNCTION_HOOK(__imp__NetDll_ioctlsocket, NetDll_ioctlsocket);
+GUEST_FUNCTION_HOOK(__imp__NetDll_sendto, NetDll_sendto);
+GUEST_FUNCTION_HOOK(__imp__NetDll_recvfrom, NetDll_recvfrom);
+GUEST_FUNCTION_HOOK(__imp__NetDll_shutdown, NetDll_shutdown);
+GUEST_FUNCTION_HOOK(__imp__XMsgCancelIORequest, XMsgCancelIORequest);
+GUEST_FUNCTION_HOOK(__imp__XAudioGetSpeakerConfig, XAudioGetSpeakerConfig);
+GUEST_FUNCTION_HOOK(__imp__XamContentSetThumbnail, XamContentSetThumbnail);
+GUEST_FUNCTION_HOOK(__imp__XamInputGetKeystrokeEx, XamInputGetKeystrokeEx);
+GUEST_FUNCTION_HOOK(__imp__XamSessionCreateHandle, XamSessionCreateHandle);
+GUEST_FUNCTION_HOOK(__imp__XamSessionRefObjByHandle, XamSessionRefObjByHandle);
+GUEST_FUNCTION_HOOK(__imp__KeSetDisableBoostThread, KeSetDisableBoostThread);
+GUEST_FUNCTION_HOOK(__imp__XamCreateEnumeratorHandle, XamCreateEnumeratorHandle);
+GUEST_FUNCTION_HOOK(__imp__NtDeviceIoControlFile, NtDeviceIoControlFile);
+GUEST_FUNCTION_HOOK(__imp__NetDll_WSAGetLastError, NetDll_WSAGetLastError);
+GUEST_FUNCTION_HOOK(__imp__NetDll_XNetQosListen, NetDll_XNetQosListen);
+GUEST_FUNCTION_HOOK(__imp__NetDll_XNetQosLookup, NetDll_XNetQosLookup);
+GUEST_FUNCTION_HOOK(__imp__NetDll_XNetQosRelease, NetDll_XNetQosRelease);
+GUEST_FUNCTION_HOOK(__imp__NetDll_XNetServerToInAddr, NetDll_XNetServerToInAddr);
+GUEST_FUNCTION_HOOK(__imp__NetDll_XNetXnAddrToInAddr, NetDll_XNetXnAddrToInAddr);
+GUEST_FUNCTION_HOOK(__imp__NetDll_XNetGetConnectStatus, NetDll_XNetGetConnectStatus);
+GUEST_FUNCTION_HOOK(__imp__NetDll_XNetUnregisterInAddr, NetDll_XNetUnregisterInAddr);

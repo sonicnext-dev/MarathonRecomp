@@ -1,0 +1,634 @@
+#
+# see default.ide for id ranges
+#
+
+peds
+# car groups:
+#NORMAL_CAR 		1
+#POOR_FAMILY_CAR 	2
+#RICH_FAMILY_CAR	4
+#EXECUTIVE_CAR		8
+#WORKER_CAR		16
+#BIG_CAR		32
+#TAXI_CAR		64
+#MOPED			128
+#MOTORBIKE		256
+#LEISURE_BOAT		512
+#WORKER_BOAT		1024
+#BICYCLE		2048
+#ON FOOT		4096
+#
+# flags:
+# BuysDrugs             1
+
+
+# radio stations
+# Rap 			0
+# Pop			1
+# Interview		2
+# Soul			3
+# Rock			4
+# Current affairs	5
+# Spanish		6
+# Fernando		7
+# new wave		8
+# off			9
+#
+# ModelName, TxdName, Default pedtype,S
+# animGroup(man,cop,woman,fatwoman,sexywoman...), cars can drive mask(in hex), other flag (drugs,...),  
+# animfile, radio1, radio2
+#
+#
+
+
+
+
+# **********************************************************************************************************************************************************************************************************************************************************************************************************************************
+# ** STORY PEDS (please ensure the player is always first, the rest in alphabetical order)
+
+#model			props			pedtype	 		animgroup		gesturegroup		gesturephonegroup	facialgroup		visemegroup		flags		animfile		blendshapefile		radio1&2	audiotype		firstvoice	lastvoice  	
+
+player, 		player_p,		PLAYER1, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	VOICE_PLY_CR,  	VOICE_PLY_CR    
+
+M_Y_Multiplayer, 	M_Y_Multiplayer_p,	CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_player, 		null,			9,9,		PED_TYPE_PLAYER,	VOICE_PLY_CR,  	VOICE_PLY_CR    
+F_Y_Multiplayer, 	F_Y_Multiplayer_p,	CIVFEMALE, 		move_f@generic,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@generic,		null,			9,9,		PED_TYPE_PLAYER,	VOICE_PLY_CR,  	VOICE_PLY_CR    
+
+
+superlod, 		null,			CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			9,9,		PED_TYPE_PLAYER,	VOICE_PLY_CR,  	VOICE_PLY_CR 
+
+ig_Anna, 		null,			CIVFEMALE, 		move_f@casual,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@m_lo,		0, 		move_f@casual, 		null,			-1,-1,		PED_TYPE_PLAYER,	ANNA_PVG,	VOICE_PLY_CR
+ig_Anthony,		null,			CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic, 	null,			-1,-1,		PED_TYPE_PLAYER,	ANTHONY_PVG,  	VOICE_PLY_CR    
+ig_Badman,		ig_Badman_p,		CIVMALE, 		move_gng@afro_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@afro_b, 	null,			-1,-1,		PED_TYPE_PLAYER,	REAL_BADMAN_PVG,VOICE_PLY_CR    
+ig_Bernie_Crane,	ig_Bernie_Crane_p,	CIVMALE, 		move_m@bernie,		GESTURES@FEMALE,	GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bernie, 		null,			8,0,		PED_TYPE_PLAYER,	BERNIE_PVG,  	VOICE_PLY_CR    
+ig_Bledar,		null,			CIVMALE, 		move_gng@generic_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_b, 	null,			-1,-1,		PED_TYPE_PLAYER,	BLEEDAR_PVG,  	VOICE_PLY_CR    
+ig_Brian,		ig_Brian_p,		CIVMALE, 		move_gng@generic_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_c, 	null,			-1,-1,		PED_TYPE_PLAYER,	BRIAN_PVG,  	VOICE_PLY_CR    
+ig_Brucie,		ig_Brucie_p,		CIVMALE, 		move_gng@generic_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_c, 	null,			7,0,		PED_TYPE_PLAYER,	BRUCIE_PVG,  	VOICE_PLY_CR    
+ig_Bulgarin, 		null,		      	CIVMALE, 	      	move_gng@generic_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_b, 	null,			-1,-1,		PED_TYPE_PLAYER,	BULGARIN_PVG,  	VOICE_PLY_CR    
+ig_Charise, 		ig_Charise_p,		CIVFEMALE, 		move_f@casual,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@m_lo,		0, 		move_f@casual, 		null,			-1,-1,		PED_TYPE_PLAYER,	PI_CHERISE_PVG,	VOICE_PLY_CR
+ig_CharlieUC, 		null,		      	CIVMALE, 	      	move_gng@generic_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_b, 	null,			-1,-1,		PED_TYPE_PLAYER,	CHARLIE_UC_PVG,  	VOICE_PLY_CR    
+ig_Clarence,		null,			CIVMALE, 		move_gng@generic_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_b, 	null,			-1,-1,		PED_TYPE_PLAYER,	CLARENCE_PVG,  	VOICE_PLY_CR    
+ig_Dardan, 		null,			CIVMALE, 		move_gng@generic_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_Lo,		visemes@m_lo,		0, 		move_gng@generic_c, 	null,			-1,-1,		PED_TYPE_PLAYER,	DARDAN_PVG,  	VOICE_PLY_CR    
+ig_Darko, 		null,			CIVMALE, 		move_gng@generic_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_Lo,		visemes@m_lo,		0, 		move_gng@generic_c, 	null,			-1,-1,		PED_TYPE_PLAYER,	DARKO_PVG,  	VOICE_PLY_CR    
+ig_Derrick_Mc, 		null,			CIVMALE,  		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a, 	null,			12,0,		PED_TYPE_PLAYER,	DERRICK_MCREARY_PVG,VOICE_PLY_CR    
+ig_Dmitri, 		ig_Dmitri_p,		CIVMALE, 		move_gng@generic_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_Lo,		visemes@m_lo,		0, 		move_gng@generic_b, 	null,			10,0,		PED_TYPE_PLAYER,	DIMITRI_PVG,  	VOICE_PLY_CR    
+ig_Dwayne, 		ig_Dwayne_p,		CIVMALE, 		move_gng@afro_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_Lo,		visemes@m_lo,		0, 		move_gng@afro_c, 	null,			7,0,		PED_TYPE_PLAYER,	DWAYNE_PVG,  	VOICE_PLY_CR    
+ig_EddieLow, 		ig_EddieLow_p,		CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic, 	null,			-1,-1,		PED_TYPE_PLAYER,	PI_ED_LOW_PVG,  VOICE_PLY_CR    
+ig_Faustin, 		null,			CIVMALE, 		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a, 	null,			-1,-1,		PED_TYPE_PLAYER,	FAUSTIN_PVG,  	VOICE_PLY_CR    
+ig_Francis_Mc, 		null,			CIVMALE, 		move_m@casual_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual_b, 	null,			-1,-1,		PED_TYPE_PLAYER,	FRANCIS_MC_PVG,  	VOICE_PLY_CR    
+ig_French_Tom, 		null,			CIVMALE, 		move_gng@generic_c,	GESTURES@FEMALE,	GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_c, 	null,			-1,-1,		PED_TYPE_PLAYER,	FRENCH_TOM_PVG,	VOICE_PLY_CR
+ig_Gordon, 		null,			CIVMALE, 		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a, 	null,			-1,-1,		PED_TYPE_PLAYER,	GORDON_PVG,	VOICE_PLY_CR
+ig_Gracie,		ig_Gracie_p,		CIVFEMALE, 		move_f@casual,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual, 		null,			-1,-1,		PED_TYPE_PLAYER,	GRACIE_PVG,  	VOICE_PLY_CR    
+ig_Hossan,		ig_Hossan_p,		CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic, 	null,			-1,-1,		PED_TYPE_PLAYER,	HOSSAN_PVG,  	VOICE_PLY_CR    
+ig_Ilyena,		null,			CIVFEMALE, 		move_f@casual,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual, 		null,			-1,-1,		PED_TYPE_PLAYER,	ILYENA_PVG,  	VOICE_PLY_CR    
+ig_Isaac, 		ig_Isaac_p,		CIVMALE, 		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a, 	null,			-1,-1,		PED_TYPE_PLAYER,	ISAAC_PVG,	VOICE_PLY_CR
+ig_Ivan, 		ig_Ivan_p,		CIVMALE, 		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a, 	null,			-1,-1,		PED_TYPE_PLAYER,	IVAN_PVG,	VOICE_PLY_CR
+ig_Jay,			ig_Jay_p,		CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic, 	null,			-1,-1,		PED_TYPE_PLAYER,	JAY_PVG,  	VOICE_PLY_CR    
+ig_Jason,		null,			CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic, 	null,			-1,-1,		PED_TYPE_PLAYER,	JASON_PVG,  	VOICE_PLY_CR    
+ig_Jeff,		null,			CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic 		null,			-1,-1,		PED_TYPE_PLAYER,	JEFF_PVG,  	VOICE_PLY_CR    
+ig_Jimmy,		null,			CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic, 	null,			1,0,		PED_TYPE_PLAYER,	JIMMY_PEGORINO_PVG,  	VOICE_PLY_CR    
+ig_JohnnyBiker,		null,			CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			-1,-1,		PED_TYPE_PLAYER,	JOHNNY_BIKER_PVG,  	VOICE_PLY_CR    
+ig_KateMc, 		ig_KateMc_p,		CIVFEMALE, 		move_f@generic,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@m_lo,		0, 		move_f@generic, 		null,			11,0,		PED_TYPE_PLAYER,	KATEMC_PVG,	VOICE_PLY_CR
+ig_Kenny,		null,			CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic, 	null,			-1,-1,		PED_TYPE_PLAYER,	KENNY_PVG,  	VOICE_PLY_CR    
+ig_LilJacob, 		ig_LilJacob_p,		CIVMALE, 		move_gng@afro_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@afro_c, 	null,			4,0,		PED_TYPE_PLAYER,	JACOB_PVG,	VOICE_PLY_CR
+ig_LilJacobW, 		ig_LilJacob_p,		CIVMALE, 		move_gng@afro_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@afro_c, 	null,			4,0,		PED_TYPE_PLAYER,	JACOB_PVG,	VOICE_PLY_CR
+ig_Luca, 		ig_Luca_p,		CIVMALE, 		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a, 	null,			-1,-1,		PED_TYPE_PLAYER,	LUCA_PVG,	VOICE_PLY_CR
+ig_Luis, 		null,			CIVMALE, 		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a, 	null,			-1,-1,		PED_TYPE_PLAYER,	LUIS_PVG,	VOICE_PLY_CR
+ig_Mallorie, 		ig_Mallorie_p,		CIVFEMALE, 		move_f@generic,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@m_lo,		0, 		move_f@generic, 	null,			-1,-1,		PED_TYPE_PLAYER,	MALLORIE_PVG,	VOICE_PLY_CR
+ig_MaMc, 		null,			CIVFEMALE, 		move_f@generic,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@m_lo,		0, 		move_f@generic, 	null,			-1,-1,		PED_TYPE_PLAYER,	VOICE_PLY_CR,	VOICE_PLY_CR
+ig_Manny, 		ig_Manny_p,		CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic, 	null,			-1,-1,		PED_TYPE_PLAYER,	MANNY_PVG,  	VOICE_PLY_CR    
+ig_Marnie, 		ig_Marnie_p,		CIVFEMALE, 		move_f@casual,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@m_lo,		0, 		move_f@casual, 		null,			-1,-1,		PED_TYPE_PLAYER,	MARNIE_PVG,	VOICE_PLY_CR
+ig_Mel, 		ig_Mel_p,		CIVMALE, 		move_gng@generic_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_b, 	null,			-1,-1,		PED_TYPE_PLAYER,	MEL_PVG,	VOICE_PLY_CR
+ig_Michael, 		null,			CIVMALE, 		move_gng@generic_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_b, 	null,			-1,-1,		PED_TYPE_PLAYER,	MICHAEL_PVG,	VOICE_PLY_CR
+ig_Michelle, 		ig_Michelle_p,		CIVFEMALE, 		move_f@michelle,	GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@m_lo,		0, 		move_f@michelle, 	null,			10,0,	PED_TYPE_PLAYER,		MICHELLE_PVG,	VOICE_PLY_CR
+ig_Mickey, 		null,			CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic, 	null,			-1,-1,		PED_TYPE_PLAYER,	MICKEY_PVG,  	VOICE_PLY_CR    
+ig_Packie_Mc,		ig_Packie_Mc_p,		CIVMALE, 		move_gng@generic_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_b, 	null,			9,0,		PED_TYPE_PLAYER,	PACKIE_MC_PVG,	VOICE_PLY_CR
+ig_Pathos, 		ig_Pathos_p,		CIVMALE, 		move_gng@generic_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_b, 	null,			-1,-1,		PED_TYPE_PLAYER,	PATHOS_PVG,	VOICE_PLY_CR
+ig_Petrovic, 		null,			CIVMALE, 		move_gng@generic_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_b, 	null,			-1,-1,		PED_TYPE_PLAYER,	PETROVIC_PVG,	VOICE_PLY_CR
+ig_Phil_Bell, 		ig_Phil_Bell_p,		CIVMALE, 		move_gng@generic_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_b, 	null,			1,0,	PED_TYPE_PLAYER,		BELL_PVG,	VOICE_PLY_CR
+ig_Playboy_X, 		ig_Playboy_X_p,		CIVMALE, 		move_m@playboy,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@playboy, 	null,			7,0,		PED_TYPE_PLAYER,	PLAYBOY_PVG,	VOICE_PLY_CR
+IG_Ray_Boccino,		null,			CIVMALE, 		move_gng@generic_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_b, 	null,			-1,-1,		PED_TYPE_PLAYER,	RAY_BOCCINO_PVG,	VOICE_PLY_CR
+ig_Ricky, 		null,			CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic, 	null,			11,0,		PED_TYPE_PLAYER,	RICKY_PVG,	VOICE_PLY_CR
+ig_Roman, 		ig_Roman_p,		CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic, 	null,			11,0,		PED_TYPE_PLAYER,	ROMAN_PVG,	VOICE_PLY_CR
+ig_RomanW, 		ig_Roman_p,		CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic, 	null,			11,0,		PED_TYPE_PLAYER,	ROMAN_PVG,	VOICE_PLY_CR
+ig_Sarah, 		ig_Sarah_p,		CIVFEMALE, 		move_f@generic,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@m_lo,		0, 		move_f@generic, 	null,			-1,-1,		PED_TYPE_PLAYER,	SARAH_PVG,	VOICE_PLY_CR
+ig_Tuna, 		ig_tuna_p,		CIVMALE, 		move_gng@generic_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_c, 	null,			-1,-1,		PED_TYPE_PLAYER,	TUNA_PVG,	VOICE_PLY_CR
+ig_Vinny_Spaz, 		ig_Vinny_Spaz_p,	CIVMALE, 		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual, 		null,			-1,-1,		PED_TYPE_PLAYER,	MAFIA_HEAVIES,	VOICE_PLY_CR
+ig_Vlad, 		null,			CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic, 	null,			-1,-1,		PED_TYPE_PLAYER,	VLAD_PVG,	VOICE_PLY_CR
+
+
+
+CS_Andrei, 		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Andrei,		-1,-1,		PED_TYPE_PLAYER,	ANDREI_PVG,  	VOICE_PLY_CR    
+CS_Angie,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	ANGIE_PVG,  	VOICE_PLY_CR    
+CS_Badman, 		CS_Badman_p,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Badman,		-1,-1,		PED_TYPE_PLAYER,	REAL_BADMAN_PVG,VOICE_PLY_CR    
+CS_Bledar, 		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	BLEEDAR_PVG,  	VOICE_PLY_CR    
+CS_Bulgarin, 		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	BULGARIN_PVG,  	VOICE_PLY_CR    
+CS_BulgarinHench, 	null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	BULGARINHENCH_PVG,  	VOICE_PLY_CR    
+CS_CIA,			CS_CIA_p,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_CIA,			-1,-1,		PED_TYPE_PLAYER,	CIA_PVG,  	VOICE_PLY_CR    
+CS_Dardan, 		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	DARDAN_PVG,  	VOICE_PLY_CR    
+CS_DaveTheMate, 	null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	DAVE_THE_MATE_PVG,  	VOICE_PLY_CR    
+CS_Dmitri, 		CS_Dmitri_p,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Dmitri,		10,0,		PED_TYPE_PLAYER,	DIMITRI_PVG,  	VOICE_PLY_CR    
+CS_EdTheMate, 		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	ED_THE_MATE_PVG,  	VOICE_PLY_CR    
+CS_Faustin, 		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Faustin,		-1,-1,		PED_TYPE_PLAYER,	FAUSTIN_PVG,  	VOICE_PLY_CR    
+CS_Francis,		CS_Francis_p,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Francis,		-1,-1,		PED_TYPE_PLAYER,	FRANCIS_MC_PVG,  	VOICE_PLY_CR    
+CS_Hossan, 		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	HOSSAN_PVG,  	VOICE_PLY_CR    
+CS_Ilyena, 		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Ilyena,		-1,-1,		PED_TYPE_PLAYER,	ILYENA_PVG,  	VOICE_PLY_CR    
+CS_Ivan, 		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	IVAN_PVG,  	VOICE_PLY_CR    
+CS_Jay,			CS_Jay_p,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Jay,			-1,-1,		PED_TYPE_PLAYER,	JAY_PVG,  	VOICE_PLY_CR    
+CS_Jimmy_Pegorino,	null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Jimmy_Pegorino,	1,9,		PED_TYPE_PLAYER,	JIMMY_PEGORINO_PVG,  	VOICE_PLY_CR    
+CS_Mel, 		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	MEL_PVG,  	VOICE_PLY_CR    
+CS_Michelle, 		CS_Michelle_p,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Michelle,		10,0,		PED_TYPE_PLAYER,	MICHELLE_PVG,  	VOICE_PLY_CR    
+CS_Mickey, 		CS_Mickey_p,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	MICKEY_PVG,  	VOICE_PLY_CR    
+CS_Official, 		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	OFFICIAL_PVG,  	VOICE_PLY_CR    
+CS_Ray_Boccino,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Ray_Boccino,		-1,-1,		PED_TYPE_PLAYER,	RAY_BOCCINO_PVG,  	VOICE_PLY_CR    
+CS_Sergei, 		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	SERGEI_PVG,  	VOICE_PLY_CR    
+CS_Vlad, 		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Vlad,		-1,-1,		PED_TYPE_PLAYER,	VLAD_PVG,  	VOICE_PLY_CR    
+CS_WhippingGirl,	null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	WHIPPING_GIRL_PVG,  	VOICE_PLY_CR    
+CS_manny, 		CS_manny_P,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_manny,		-1,-1,		PED_TYPE_PLAYER,	MANNY_PVG,  	VOICE_PLY_CR    
+
+
+CS_Anthony,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	ANTHONY_PVG,  	VOICE_PLY_CR    
+CS_Ashley,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	ASHLEY_PVG,  	VOICE_PLY_CR    
+CS_Assistant, 		null,			CIVFEMALE, 		move_f@generic,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_HI,		visemes@m_hi,		0, 		move_f@generic, 	null,			-1,-1,		PED_TYPE_PLAYER,	ASSISTANT_PVG,	VOICE_PLY_CR
+CS_Captain,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	CAPTAIN_PVG,  	VOICE_PLY_CR    
+CS_CharlieUC,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	CHARLIE_UC_PVG,  	VOICE_PLY_CR    
+CS_Darko,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Darko,		-1,-1,		PED_TYPE_PLAYER,	DARKO_PVG,  	VOICE_PLY_CR    
+CS_Dwayne,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Dwayne,		7,0,		PED_TYPE_PLAYER,	DWAYNE_PVG,  	VOICE_PLY_CR    
+CS_Eli_Jester, 		CS_Eli_Jester_p,	CIVMALE, 		move_gng@generic_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_gng@generic_b, 	null,			-1,-1,		PED_TYPE_PLAYER,	ELI_JESTER_PVG,	VOICE_PLY_CR
+CS_Elizabeta,		CS_Elizabeta_p,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Elizabeta,		-1,-1,		PED_TYPE_PLAYER,	ELIZABETA_PVG,  	VOICE_PLY_CR    
+CS_GayTony,		CS_GayTony_p,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	GAY_TONY_PVG,  	VOICE_PLY_CR    
+CS_GerryMc,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_GerryMc,		-1,-1,		PED_TYPE_PLAYER,	GERRY_MC_PVG,  	VOICE_PLY_CR    
+CS_Gordon,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	GORDON_PVG,  	VOICE_PLY_CR    
+CS_Issac,		CS_Issac_p,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	ISAAC_PVG,  	VOICE_PLY_CR    
+CS_JohnnyTheBiker,	null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_JohnnyTheBiker,	-1,-1,		PED_TYPE_PLAYER,	JOHNNY_BIKER_PVG,  	VOICE_PLY_CR    
+CS_JonGravelli,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_JonGravelli,		-1,-1,		PED_TYPE_PLAYER,	JON_GRAVELLI_PVG,  	VOICE_PLY_CR    
+CS_Jorge,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	JORGE_PVG,  	VOICE_PLY_CR    
+CS_Kat,			CS_Kat_p,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Kat,			-1,-1,		PED_TYPE_PLAYER,	KAT_PVG,  	VOICE_PLY_CR    
+CS_Killer,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	KILLER_PVG,  	VOICE_PLY_CR    
+CS_Luis,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	LUIS_PVG,  	VOICE_PLY_CR    
+CS_Magician, 		null,			CIVMALE, 		move_gng@generic_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_gng@generic_b, 	null,			-1,-1,		PED_TYPE_PLAYER,	MAGICIAN_PVG,	VOICE_PLY_CR
+CS_MaMc,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	MA_MC_PVG,  	VOICE_PLY_CR    
+CS_Melody, 		null,			CIVFEMALE, 		move_f@generic,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_HI,		visemes@m_hi,		0, 		move_f@generic, 	null,			-1,-1,		PED_TYPE_PLAYER,	MELODY_PVG,	VOICE_PLY_CR
+CS_MitchCop,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	MITCH_COP_PVG,  	VOICE_PLY_CR    
+CS_Mori,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	MORI_PVG,  	VOICE_PLY_CR    
+CS_PBXGirl2, 		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	PBX_GIRL2_PVG,  	VOICE_PLY_CR    
+CS_PhilB,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_PhilB,		1,9,		PED_TYPE_PLAYER,	RICKY_PVG,  	VOICE_PLY_CR    
+CS_PlayboyX,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_PlayboyX,		7,0,		PED_TYPE_PLAYER,	PLAYBOY_PVG,  	VOICE_PLY_CR    
+CS_Priest,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	PRIEST_PVG,  	VOICE_PLY_CR    
+CS_Ricky,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Ricky,		-1,-1,		PED_TYPE_PLAYER,	RICKY_PVG,  	VOICE_PLY_CR    
+CS_Tommy,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	TOMMY_PVG,  	VOICE_PLY_CR    
+CS_Tramp,		CS_Tramp_p,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	TRAMP_PVG,  	VOICE_PLY_CR    
+
+
+
+CS_Brian,		CS_Brian_p,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	BRIAN_PVG,  	VOICE_PLY_CR    
+CS_Charise,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	CHERISE_PVG,  	VOICE_PLY_CR    
+CS_Clarence,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	CLARENCE_PVG,  	VOICE_PLY_CR    
+CS_EddieLow,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	PI_ED_LOW_PVG,  	VOICE_PLY_CR    
+CS_Gracie,		CS_Gracie_p,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	GRACIE_PVG,  	VOICE_PLY_CR    
+CS_Jeff,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	JEFF_PVG,  	VOICE_PLY_CR    
+CS_Marnie,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	MARNIE_PVG,  	VOICE_PLY_CR    
+CS_Marshal,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	MARSHAL_PVG,  	VOICE_PLY_CR    
+CS_Pathos,		CS_Pathos_p,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	PATHOS_PVG,  	VOICE_PLY_CR    
+CS_Sarah,		CS_Sarah_p,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	SARAH_PVG,  	VOICE_PLY_CR    
+
+
+# **************************************************************************************************************************************************************************************	*******************************************************************************************************************************************
+# ** CS SPLITS
+
+CS_Roman_D, 		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Roman_D,		11,0,		PED_TYPE_PLAYER,	ROMAN_PVG,  	VOICE_PLY_CR    
+CS_Roman_T, 		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Roman_T,		11,0,		PED_TYPE_PLAYER,	ROMAN_PVG,  	VOICE_PLY_CR    
+CS_Roman_W, 		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Roman_W,		11,0,		PED_TYPE_PLAYER,	ROMAN_PVG,  	VOICE_PLY_CR    
+
+CS_Brucie_B,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Brucie_B,		7,0,		PED_TYPE_PLAYER,	BRUCIE_PVG,  	VOICE_PLY_CR    
+CS_Brucie_T,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Brucie_T,		7,0,		PED_TYPE_PLAYER,	BRUCIE_PVG,  	VOICE_PLY_CR    
+CS_Brucie_W,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Brucie_W,		7,0,		PED_TYPE_PLAYER,	BRUCIE_PVG,  	VOICE_PLY_CR    
+
+CS_Bernie_CraneC,	CS_Bernie_Crane_p,	CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Bernie_CraneC,	8,0,		PED_TYPE_PLAYER,	BERNIE_PVG,  	VOICE_PLY_CR    
+CS_Bernie_CraneT,	CS_Bernie_Crane_p,	CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Bernie_CraneT,	8,0,		PED_TYPE_PLAYER,	BERNIE_PVG,  	VOICE_PLY_CR    
+CS_Bernie_CraneW,	CS_Bernie_Crane_p,	CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Bernie_CraneW,	8,0,		PED_TYPE_PLAYER,	BERNIE_PVG,  	VOICE_PLY_CR    
+
+CS_LilJacob_B, 		CS_LilJacob_p,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_LilJacob_B,		4,0,		PED_TYPE_PLAYER,	JACOB_PVG,  	VOICE_PLY_CR    
+CS_LilJacob_J, 		CS_LilJacob_p,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_LilJacob_J,		4,0,		PED_TYPE_PLAYER,	JACOB_PVG,  	VOICE_PLY_CR    
+
+CS_Mallorie_D, 		CS_Mallorie_p,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Mallorie_D,		-1,-1,		PED_TYPE_PLAYER,	MALLORIE_PVG,  	VOICE_PLY_CR    
+CS_Mallorie_J, 		CS_Mallorie_p,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Mallorie_J,		-1,-1,		PED_TYPE_PLAYER,	MALLORIE_PVG,  	VOICE_PLY_CR    
+CS_Mallorie_W, 		CS_Mallorie_p,		CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_Mallorie_W,		-1,-1,		PED_TYPE_PLAYER,	MALLORIE_PVG,  	VOICE_PLY_CR    
+
+CS_DerrickMc_B,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_DerrickMc_B,		12,0,		PED_TYPE_PLAYER,	DERRICK_MCREARY_PVG,VOICE_PLY_CR    
+CS_DerrickMc_D,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_DerrickMc_D,		12,0,		PED_TYPE_PLAYER,	DERRICK_MCREARY_PVG,VOICE_PLY_CR    
+
+CS_Michael_B,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	MICHAEL_PVG,  	VOICE_PLY_CR    
+CS_Michael_D,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		null,			-1,-1,		PED_TYPE_PLAYER,	MICHAEL_PVG,  	VOICE_PLY_CR    
+
+CS_PackieMc_B,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_PackieMc_B,		-1,-1,		PED_TYPE_PLAYER,	PACKIE_MC_PVG,	VOICE_PLY_CR    
+CS_PackieMc_D,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_PackieMc_D,		-1,-1,		PED_TYPE_PLAYER,	PACKIE_MC_PVG,	VOICE_PLY_CR    
+
+CS_KateMc_D,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_KateMc_D,		11,0,		PED_TYPE_PLAYER,	KATE_MC_PVG,  	VOICE_PLY_CR    
+CS_KateMc_W,		null,			CIVMALE, 		move_player,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_HI,		visemes@m_hi,		0, 		move_player, 		CS_KateMc_W,		11,0,		PED_TYPE_PLAYER,	KATE_MC_PVG,  	VOICE_PLY_CR    
+
+
+
+# **************************************************************************************************************************************************************************************	*******************************************************************************************************************************************
+# ** Gang Peds
+
+#model			props			pedtype	 		animgroup		gesturegroup		gesturephonegroup	facialgroup		visemegroup		flags		animfile		blendshapefile		radio1&2	audiotype		firstvoice	lastvoice
+
+M_Y_GAfr_Lo_01, 	M_Y_GAfr_Lo_01_p,	GANG_AFRICAN_AMERICAN, 		move_gng@afro_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@afro_c,	null,			7,11,		PED_TYPE_PLAYER,	HARLEM_HUSTLERS,  	VOICE_PLY_CR
+M_Y_GAfr_Lo_02, 	M_Y_GAfr_Lo_02_p,	GANG_AFRICAN_AMERICAN, 		move_gng@afro_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@afro_a,	null,			7,11,		PED_TYPE_PLAYER,	HARLEM_HUSTLERS,  	VOICE_PLY_CR
+M_Y_GAfr_Hi_01, 	M_Y_GAfr_Hi_01_p,	GANG_AFRICAN_AMERICAN, 		move_gng@afro_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@afro_c,	null,			1,8,		PED_TYPE_PLAYER,	PINSTRIPE_PIMPS,  	VOICE_PLY_CR
+M_Y_GAfr_Hi_02, 	M_Y_GAfr_Hi_02_p,	GANG_AFRICAN_AMERICAN, 		move_M@FAT,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_M@FAT,		null,			7,11,		PED_TYPE_PLAYER,	CHUBBY_HUSTLERS,  	VOICE_PLY_CR
+
+
+M_Y_GAlb_Lo_01, 	M_Y_GAlb_Lo_01_p,	GANG_ALBANIAN, 		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a,	null,			2,9,		PED_TYPE_PLAYER,	ALBANIAN_THUGS,  	VOICE_PLY_CR
+M_Y_GAlb_Lo_02, 	M_Y_GAlb_Lo_02_p,	GANG_ALBANIAN, 		move_gng@generic_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_b,	null,			2,9,		PED_TYPE_PLAYER,	ALBANIAN_THUGS,  	VOICE_PLY_CR
+M_Y_GAlb_Lo_03, 	M_Y_GAlb_Lo_03_p,	GANG_ALBANIAN, 		move_gng@generic_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_c,	null,			2,9,		PED_TYPE_PLAYER,	ALBANIAN_HEAVIES,  	VOICE_PLY_CR
+M_Y_GALB_LO_04, 	M_Y_GALB_LO_04_p,	GANG_ALBANIAN, 		move_gng@generic_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_c,	null,			2,9,		PED_TYPE_PLAYER,	ALBANIAN_THUGS,  	VOICE_PLY_CR
+
+
+M_M_GBik_Lo_03, 	M_M_GBik_Lo_03_p,	GANG_BIKER_1, 		move_gng@generic_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_c,	null,			9,2,		PED_TYPE_PLAYER,	OLD_BIKERS,  		VOICE_PLY_CR
+M_Y_GBik_Hi_01, 	M_Y_GBik_Hi_01_p,	GANG_BIKER_1, 		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a,	null,			9,2,		PED_TYPE_PLAYER,	CHUBBY_BIKERS,  	VOICE_PLY_CR
+M_Y_GBik_Hi_02, 	M_Y_GBik_Hi_02_p,	GANG_BIKER_1, 		move_m@fat,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@fat,		null,			9,2,		PED_TYPE_PLAYER,	CHUBBY_BIKERS,  	VOICE_PLY_CR
+M_Y_GBik02_Lo_02, 	M_Y_GBik02_Lo_02_p,	GANG_BIKER_1,		move_gng@generic_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_c,	null,			9,2,		PED_TYPE_PLAYER,	YOUNG_BIKERS,  	VOICE_PLY_CR
+
+M_Y_GBik_Lo_01, 	M_Y_GBik_Lo_01_p,	GANG_BIKER_2, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic, 	null,			2,9,		PED_TYPE_PLAYER,	BIKER_BADASSES,  	VOICE_PLY_CR
+M_Y_GBik_Lo_02, 	M_Y_GBik_Lo_02_p,	GANG_BIKER_2, 		move_gng@generic_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_c,	null,			2,9,		PED_TYPE_PLAYER,	BIKER_BADASSES,  	VOICE_PLY_CR
+
+
+M_Y_GIRI_Lo_01, 	M_Y_GIRI_Lo_01_p,	GANG_IRISH,			move_gng@generic_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_c,	null,			9,2,		PED_TYPE_PLAYER,	IRISH_THUGS,  	VOICE_PLY_CR
+M_Y_GIRI_Lo_02, 	M_Y_GIRI_Lo_02_p,	GANG_IRISH,			move_gng@generic_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_c,	null,			9,2,		PED_TYPE_PLAYER,	IRISH_THUGS,  	VOICE_PLY_CR
+M_Y_GIRI_Lo_03, 	M_Y_GIRI_Lo_03_p,	GANG_IRISH,			move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a,     null,			9,2,		PED_TYPE_PLAYER,	IRISH_THUGS,  	VOICE_PLY_CR
+
+
+M_M_GJam_Hi_01, 	M_M_GJam_Hi_01_p,	GANG_JAMAICAN,		move_gng@jam_b,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@jam_b,		null,			4,5,		PED_TYPE_PLAYER,	RASTA_PIMPS,  	VOICE_PLY_CR
+M_M_GJam_Hi_02, 	M_M_GJam_Hi_02_p,	GANG_JAMAICAN,		move_gng@jam_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@jam_a,		null,			4,5,		PED_TYPE_PLAYER,	RASTA_PIMPS,  	VOICE_PLY_CR
+M_M_GJam_Hi_03, 	M_M_GJam_Hi_03_p,	GANG_JAMAICAN,		move_gng@jam_b,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@jam_b,		null,			4,5,		PED_TYPE_PLAYER,	RASTA_PIMPS,  	VOICE_PLY_CR
+M_Y_GJam_Lo_01, 	M_Y_GJam_Lo_01_p,	GANG_JAMAICAN,		move_gng@jam_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@jam_a,		null,			4,5,		PED_TYPE_PLAYER,	RASTA_THUGS,  	VOICE_PLY_CR
+M_Y_GJam_Lo_02, 	M_Y_GJam_Lo_02_p,	GANG_JAMAICAN,		move_gng@jam_b,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@jam_b,		null,			4,5,		PED_TYPE_PLAYER,	RASTA_THUGS,  	VOICE_PLY_CR
+
+
+M_Y_GKor_Lo_01, 	M_Y_GKor_Lo_01_p,	GANG_KOREAN,		move_m@bness_b,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_b,		null,			3,12,		PED_TYPE_PLAYER,	KOREAN_BADASSES,  	VOICE_PLY_CR
+M_Y_GKor_Lo_02, 	M_Y_GKor_Lo_02_p,	GANG_KOREAN,		move_m@bness_c,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_c,		null,			-1,-1,		PED_TYPE_PLAYER,	KOREAN_THUGS,  	VOICE_PLY_CR
+
+
+M_Y_GLAT_Lo_01, 	M_Y_GLAT_Lo_01_p,	GANG_PUERTO_RICAN, 	move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,	null,			5,4,		PED_TYPE_PLAYER,	LATIN_STREET_THUGS,  	VOICE_PLY_CR
+M_Y_GLAT_Lo_02, 	M_Y_GLAT_Lo_02_p,	GANG_PUERTO_RICAN, 	move_gng@latino_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_a,	null,			5,4,		PED_TYPE_PLAYER,	LATIN_STREET_THUGS,  	VOICE_PLY_CR
+M_Y_GLAT_Hi_01, 	M_Y_GLAT_Hi_01_p,	GANG_PUERTO_RICAN, 	move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,	null,			5,4,		PED_TYPE_PLAYER,	LATIN_HEAVIES,  	VOICE_PLY_CR
+M_Y_GLAT_Hi_02, 	M_Y_GLAT_Hi_02_p,	GANG_PUERTO_RICAN, 	move_gng@latino_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_a,	null,			5,4,		PED_TYPE_PLAYER,	LATIN_STREET_THUGS,  	VOICE_PLY_CR
+
+
+M_Y_GMaf_Hi_01, 	M_Y_GMaf_Hi_01_p,	GANG_ITALIAN, 		move_m@casual_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual_b,	null,			1,6,		PED_TYPE_PLAYER,	MAFIA_CAPTAINS,  	VOICE_PLY_CR
+M_Y_GMaf_Hi_02, 	M_Y_GMaf_Hi_02_p,	GANG_ITALIAN, 		move_gng@generic_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_b,	null,			1,8,		PED_TYPE_PLAYER,	TEAMSTERS,  	VOICE_PLY_CR
+M_Y_GMaf_Lo_01, 	M_Y_GMaf_Lo_01_p,	GANG_ITALIAN, 		move_M@generic,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_M@generic,	null,			10,9,		PED_TYPE_PLAYER,	TEAMSTERS,  	VOICE_PLY_CR
+M_Y_GMaf_Lo_02, 	M_Y_GMaf_Lo_02_p,	GANG_ITALIAN, 		move_gng@generic_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_c,	null,			1,6,		PED_TYPE_PLAYER,	MAFIA_HEAVIES,  	VOICE_PLY_CR
+
+
+M_O_GRus_Hi_01, 	M_O_GRus_Hi_01_p,	GANG_RUSSIAN, 		move_gng@generic_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_c,	null,			12,10,		PED_TYPE_PLAYER,	RUSSIAN_BOSSES,  	VOICE_PLY_CR
+M_Y_GRus_Lo_01, 	M_Y_GRus_Lo_01_p,	GANG_RUSSIAN, 		move_gng@generic_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_b,	null,			10,9,		PED_TYPE_PLAYER,	RUSSIAN_HEAVIES,  	VOICE_PLY_CR
+M_Y_GRus_Lo_02, 	M_Y_GRus_Lo_02_p,	GANG_RUSSIAN, 		move_gng@generic_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_b,	null,			10,9,		PED_TYPE_PLAYER,	RUSSIAN_OVERSEERS,  	VOICE_PLY_CR
+M_Y_GRus_Hi_02, 	M_Y_GRus_Hi_02_p,	GANG_RUSSIAN, 		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a,	null,			12,10,		PED_TYPE_PLAYER,	RUSSIAN_OVERSEERS,  	VOICE_PLY_CR
+
+
+
+M_M_GRu2_Hi_01, 	M_M_GRu2_Hi_01_p,	GANG_RUSSIAN_2,		move_gng@generic_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_c,	null,			2,10,		PED_TYPE_PLAYER,	RUSSIAN_STREET_THUGS,  	VOICE_PLY_CR
+M_M_GRu2_Hi_02, 	M_M_GRu2_Hi_02_p,	GANG_RUSSIAN_2,		move_gng@generic_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_c,	null,			9,10,		PED_TYPE_PLAYER,	OLDER_RUSSIANS,  	VOICE_PLY_CR
+M_M_GRu2_Lo_02, 	M_M_GRu2_Lo_02_p,	GANG_RUSSIAN_2,		move_m@bness_b,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_b,		null,			10,2,		PED_TYPE_PLAYER,	RUSSIAN_STREET_THUGS,  	VOICE_PLY_CR
+M_Y_GRu2_Lo_01, 	M_Y_GRu2_Lo_01_p,	GANG_RUSSIAN_2,		move_gng@generic_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_c,	null,			10,2,		PED_TYPE_PLAYER,	RUSSIAN_STREET_THUGS,  	VOICE_PLY_CR
+
+
+
+M_M_GTri_Hi_01, 	M_M_GTri_Hi_01_p,	GANG_CHINESE_JAPANESE,	move_gng@generic_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_c,	null,			8,1,		PED_TYPE_PLAYER,	TRIAD_OVERSEERS,  	VOICE_PLY_CR
+M_M_GTri_Hi_02, 	M_M_GTri_Hi_02_p,	GANG_CHINESE_JAPANESE,	move_m@fat,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@fat,		null,			8,1,		PED_TYPE_PLAYER,	TRIAD_HEAVIES,  	VOICE_PLY_CR
+M_Y_GTri_Lo_01, 	M_Y_GTri_Lo_01_p,	GANG_CHINESE_JAPANESE,	move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a	        null,			3,8,		PED_TYPE_PLAYER,	TRIAD_THUGS,  		VOICE_PLY_CR
+M_Y_GTri_Lo_02, 	M_Y_GTri_Lo_02_p,	GANG_CHINESE_JAPANESE,  move_m@bness_b,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_b,		null,			3,8,		PED_TYPE_PLAYER,	TRIAD_RANDOMS,  	VOICE_PLY_CR
+
+
+# *********************************************************************************************************************************************************************************************************************************************************************************************************************************
+# ** Specific/Foreground peds (in alphabetical order)
+
+#model			props			pedtype	 		animgroup		gesturegroup		gesturephonegroup	facialgroup		visemegroup		flags		animfile		blendshapefile		radio1&2	audiotype		firstvoice	lastvoice
+F_O_Maid_01,		F_O_Maid_01_p, 		CIVFEMALE, 		move_f@old_a,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@old_a,		null,			-1,-1,		PED_TYPE_PLAYER,	F_O_Maid_01,  	VOICE_PLY_CR
+F_O_Binco,		null, 			CIVFEMALE,		move_f@old_b,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@old_b,		null,			10,8,		PED_TYPE_PLAYER,	F_O_BINCO_01,  	VOICE_PLY_CR
+
+
+
+F_Y_Bank_01,		F_Y_Bank_01_p, 		CIVFEMALE, 		move_f@bness_a,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@bness_a,		null,			-1,-1,		PED_TYPE_PLAYER,	F_Y_Bank_01,  		VOICE_PLY_CR
+F_Y_Doctor_01,		F_Y_Doctor_01_p, 	CIVFEMALE, 		move_f@generic,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@generic,		null,			-1,-1,		PED_TYPE_PLAYER,	F_Y_Doctor_01,  	VOICE_PLY_CR
+F_Y_Gymgal_01,		F_Y_Gymgal_01_p, 	CIVFEMALE, 		move_f@generic,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@generic,		null,			3,8,		PED_TYPE_PLAYER,	F_Y_GYMGAL_01,		VOICE_PLY_CR   
+F_Y_FF_Burger_R,	F_Y_FF_Burger_R_p, 	CIVFEMALE, 		move_f@casual,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual,		null,			-1,-1,		PED_TYPE_PLAYER,	F_Y_FASTFOODHISPANIC,  	VOICE_PLY_CR
+F_Y_FF_Cluck_R,		F_Y_FF_cluck_R_p, 	CIVFEMALE, 		move_f@casual,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual,		null,			-1,-1,		PED_TYPE_PLAYER,	F_Y_FASTFOODHISPANIC,  	VOICE_PLY_CR
+F_Y_FF_RSCafe,		F_Y_FF_RSCafe_p, 	CIVFEMALE, 		move_f@casual_c,	GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual_c,	null,			-1,-1,		PED_TYPE_PLAYER,	F_Y_FF_RSCafe,		VOICE_PLY_CR
+F_Y_FF_TwCafe,		F_Y_FF_TwCafe_p, 	CIVFEMALE, 		move_f@casual_c,	GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual_c,	null,			-1,-1,		PED_TYPE_PLAYER,	F_Y_FF_TWCafe,		VOICE_PLY_CR
+F_Y_FF_WSPIZZa_R,	F_Y_FF_WsPIZZa_R_p, 	CIVFEMALE, 		move_f@casual,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual,		null,			-1,-1,		PED_TYPE_PLAYER,	F_Y_FASTFOODHISPANIC,  	VOICE_PLY_CR
+F_Y_hooker_01,		F_Y_hooker_01_p, 	CIVFEMALE,		move_f@casual_b,	GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual_b,	null,			11,3,		PED_TYPE_PLAYER,	F_Y_Hooker_01,  	VOICE_PLY_CR
+F_Y_hooker_03,		F_Y_hooker_03_p, 	CIVFEMALE,		move_f@sexy,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@sexy,		null,			-1,-1,		PED_TYPE_PLAYER,	F_Y_hooker_03,  	VOICE_PLY_CR
+F_Y_nurse,		f_Y_nurse_p,	 	CIVFEMALE, 		move_f@bness_a,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@bness_a,		null,			-1,-1,		PED_TYPE_PLAYER,	F_Y_nurse,  		VOICE_PLY_CR
+F_Y_STRIPPERC01,	null,			CIVFEMALE, 		move_f@sexy,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@sexy,		null,			-1,-1,		PED_TYPE_PLAYER,	F_Y_STRIPPERC01,  	VOICE_PLY_CR
+F_Y_STRIPPERC02,	F_Y_STRIPPERC02_p,	CIVFEMALE, 		move_f@casual_c,	GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual_c,	null,			-1,-1,		PED_TYPE_PLAYER,	F_Y_STRIPPERC02,  	VOICE_PLY_CR
+F_Y_waitress_01,	null,	 		CIVFEMALE, 		move_f@casual,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual,		null,			-1,-1,		PED_TYPE_PLAYER,	F_Y_waitress,  	VOICE_PLY_CR
+
+
+M_M_Alcoholic,		M_M_Alcoholic_p, 	CIVMALE,		move_m@bum,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bum,		null,			-1,-1,		PED_TYPE_PLAYER,	M_M_BUMSWHITE_PVG,  	VOICE_PLY_CR
+M_M_ARMOURED,		M_M_ARMOURED_p, 	CIVMALE, 		move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,	null,			-1,-1,		PED_TYPE_PLAYER,	M_M_ARMOURED,  		VOICE_PLY_CR
+M_M_busdriver,		M_M_busdriver_p, 	CIVMALE, 		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a,	null,			-1,-1,		PED_TYPE_PLAYER,	M_M_busdriver,  	VOICE_PLY_CR
+M_M_Chinatown_01,	M_M_Chinatown_01_p, 	CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic, 	null,			9,6,		PED_TYPE_PLAYER,	M_M_Chinatown_01,  	VOICE_PLY_CR
+M_M_Crackhead,		M_M_Crackhead_p, 	CIVMALE,		move_m@bum,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bum,		null,			5,3,		PED_TYPE_PLAYER,	M_M_BUMSWHITE_PVG,  	VOICE_PLY_CR
+M_M_doc_scrubs_01,	M_M_doc_scrubs_01_p, 	CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			-1,-1,		PED_TYPE_PLAYER,	M_M_doc_scrubs_01,  	VOICE_PLY_CR
+M_M_doctor_01,		M_M_doctor_01_p, 	CIVMALE, 		move_m@bness_b,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_b,		null,			-1,-1,		PED_TYPE_PLAYER,	M_M_doctor_01,  	VOICE_PLY_CR
+M_M_DODGYDOC,		M_M_dodgydoc_p, 	CIVMALE,		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			-1,-1,		PED_TYPE_PLAYER,	M_M_DODGYDOC,  		VOICE_PLY_CR
+M_M_EECook,		M_M_EECook_p, 		CIVMALE,		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			-1,-1,		PED_TYPE_PLAYER,	M_M_EECook,		VOICE_PLY_CR
+M_M_Enforcer,		M_M_Enforcer_p, 	CIVMALE, 		move_gng@generic_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_b,	null,			11,7,		PED_TYPE_PLAYER,	IRISH_THUGS,  		VOICE_PLY_CR
+M_M_Factory_01,		M_M_Factory_01_p, 	CIVMALE, 		move_gng@afro_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@afro_a,	null,			6,11,		PED_TYPE_PLAYER,	M_M_Factory_01,  	VOICE_PLY_CR
+M_M_FatCop_01,		M_M_FatCop_01_p, 	COP, 			move_m@fat,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@fat,		null,			-1,-1,		PED_TYPE_PLAYER,	VOICE_PLY_CR,  		VOICE_PLY_CR
+M_M_FBI,		M_M_FBI_p, 		COP,	 		move_m@bness_c,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_c,		null,			-1,-1,		PED_TYPE_PLAYER,	VOICE_PLY_CR,  		VOICE_PLY_CR
+M_M_FedCo,		M_M_FedCo_p, 		CIVMALE, 		move_gng@latino_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_a,	null,			6,9,		PED_TYPE_PLAYER,	M_M_FedCo,  		VOICE_PLY_CR
+M_M_Firechief,		M_M_Firechief_p, 	CIVMALE, 		move_gng@generic_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_c,	null,			-1,-1,		PED_TYPE_PLAYER,	M_M_FIRECHIEF,  		VOICE_PLY_CR
+M_M_GunNut_01,		M_M_GunNut_01_p, 	CIVMALE, 		move_gng@afro_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@afro_b,	null,			-1,-1,		PED_TYPE_PLAYER,	M_M_GunNut_01,  	VOICE_PLY_CR
+M_M_Helipilot_01,	M_M_Helipilot_01_p, 	CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			9,1,		PED_TYPE_PLAYER,	M_M_Helipilot_01,	VOICE_PLY_CR
+M_M_HPorter_01,		null, 			CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			-1,-1,		PED_TYPE_PLAYER,	M_M_HPorter_01,		VOICE_PLY_CR
+M_M_KoreaCook_01,	null,	 		CIVMALE, 		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			-1,-1,		PED_TYPE_PLAYER,	M_M_KoreaCook_01,	VOICE_PLY_CR
+M_M_Lawyer_01,		M_M_Lawyer_01_p,	CIVMALE,		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			1,12,		PED_TYPE_PLAYER,	M_M_Lawyer_01,	  	VOICE_PLY_CR
+M_M_Lawyer_02,		null,			CIVMALE,		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			-1,-1,		PED_TYPE_PLAYER,	GOLDBERG_PVG,  		VOICE_PLY_CR
+M_M_LoonyBlack,		M_M_LoonyBlack_p,	CIVMALE,		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			1,8,		PED_TYPE_PLAYER,	M_M_LoonyBlack,  	VOICE_PLY_CR
+M_M_pilot,		M_M_pilot_p, 		CIVMALE, 		move_m@casual_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual_b,	null,			-1,-1,		PED_TYPE_PLAYER,	M_M_pilot,  		VOICE_PLY_CR
+M_M_PIndus_01,		M_M_PIndus_01_P, 	CIVMALE,		move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,	null,			11,8,		PED_TYPE_PLAYER,	M_M_PIndus_01,  	VOICE_PLY_CR
+M_M_Postal_01,		M_M_postal_01_p, 	CIVMALE, 		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			-1,-1,		PED_TYPE_PLAYER,	M_M_Postal_01,  	VOICE_PLY_CR
+M_M_SaxPlayer_01, 	M_M_SaxPlayer_01_p,	CIVMALE,		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a,	null,			-1,-1,		PED_TYPE_PLAYER,	M_O_BUSKER,  		VOICE_PLY_CR
+M_M_securityman,	M_M_securityman_p, 	CIVMALE, 		move_m@fat,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@fat,		null,			-1,-1,		PED_TYPE_PLAYER,	M_M_SECURITYMAN,  	VOICE_PLY_CR
+M_M_Seller_01,		M_M_Seller_01_p,	CIVMALE, 		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			-1,-1,		PED_TYPE_PLAYER,	M_M_Seller_01,  	VOICE_PLY_CR
+M_M_shortorder,		M_M_shortorder_p, 	CIVMALE, 		move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,	null,			-1,-1,		PED_TYPE_PLAYER,	M_M_shortorder,  	VOICE_PLY_CR
+M_M_streetfood_01,	M_M_streetfood_01_p, 	CIVMALE, 		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			-1,-1,		PED_TYPE_PLAYER,	M_M_streetfood_01,  	VOICE_PLY_CR
+M_M_Sweeper,		M_M_Sweeper_p,		CIVMALE, 		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a,	null,			-1,-1,		PED_TYPE_PLAYER,	M_M_Sweeper,  		VOICE_PLY_CR
+M_M_Taxidriver,		M_M_Taxidriver_p, 	CIVMALE, 		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a,	null,			6,13,		PED_TYPE_PLAYER,	M_M_Taxidriver,  	VOICE_PLY_CR
+M_M_Telephone,		M_M_Telephone_p, 	CIVMALE, 		move_m@casual_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual_c,	null,			2,9,		PED_TYPE_PLAYER,	M_M_Telephone,  	VOICE_PLY_CR
+M_M_Tennis,		M_M_Tennis_p, 		CIVMALE,		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			9,8,		PED_TYPE_PLAYER,	M_M_Tennis,  		VOICE_PLY_CR
+M_M_Train_01,		M_M_Train_01_p, 	CIVMALE, 		move_gng@afro_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@afro_a,	null,			8,1,		PED_TYPE_PLAYER,	M_M_Train_01,  		VOICE_PLY_CR
+M_M_trampblack,		M_M_trampblack_p, 	CIVMALE,		move_m@bum,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bum,		null,			-1,-1,		PED_TYPE_PLAYER,	M_M_Trampblack,  	VOICE_PLY_CR
+M_M_Trucker_01,		M_M_Trucker_01_p, 	CIVMALE, 		move_gng@afro_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@afro_b,	null,			9,11,		PED_TYPE_PLAYER,	M_M_Trucker_01,  	VOICE_PLY_CR
+
+
+
+M_O_Janitor,		M_O_Janitor_p, 		CIVMALE, 		move_m@old_b,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@old_b,		null,			2,9,		PED_TYPE_PLAYER,	M_O_Janitor,  		VOICE_PLY_CR
+M_O_Hotel_Foot,		M_O_Hotel_Foot_p, 	CIVMALE, 		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			1,12,		PED_TYPE_PLAYER,	M_O_Hotel_Foot,  	VOICE_PLY_CR
+M_O_MPMobBoss, 		M_O_MPMobBoss_p,	CIVMALE, 		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a, 	null,			-1,-1,		PED_TYPE_PLAYER,	M_O_Mobster,		VOICE_PLY_CR
+
+
+M_Y_airworker, 		M_Y_airworker_p, 	CIVMALE, 		move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,	null,			9,2,		PED_TYPE_PLAYER,	M_Y_airworker,  	VOICE_PLY_CR
+M_Y_barman_01, 		null, 			CIVMALE, 		move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,	null,			2,9,		PED_TYPE_PLAYER,	M_Y_barman_01,  	VOICE_PLY_CR
+M_Y_bouncer_01, 	M_Y_bouncer_01_p, 	CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			2,9,		PED_TYPE_PLAYER,	M_Y_bouncer_01,  	VOICE_PLY_CR
+M_Y_bouncer_02, 	null, 			CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_bouncer_01,  	VOICE_PLY_CR
+M_Y_Bowl_01,		M_Y_Bowl_01_p, 		CIVMALE,		move_m@casual_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual_c,	null,			1,12,		PED_TYPE_PLAYER,	M_Y_Bowl_01,  		VOICE_PLY_CR
+M_Y_Bowl_02,		M_Y_Bowl_02_p, 		CIVMALE,		move_m@casual_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual_c,	null,			8,1,		PED_TYPE_PLAYER,	M_Y_Bowl_02,	  	VOICE_PLY_CR
+M_Y_chinvend_01, 	M_Y_chinvend_01_p,	CIVMALE, 		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			9,2,		PED_TYPE_PLAYER,	M_Y_chinvend_01,  	VOICE_PLY_CR
+M_Y_clubfit,		M_Y_clubfit_p,		CIVMALE,		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_clubfit,  		VOICE_PLY_CR
+M_Y_construct_01, 	M_Y_construct_01_p,	CIVMALE, 		move_m@generic,	 	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			9,11,		PED_TYPE_PLAYER,	M_Y_construct_01,  	VOICE_PLY_CR
+M_Y_construct_02, 	M_Y_construct_02_p,	CIVMALE, 		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			11,7,		PED_TYPE_PLAYER,	M_Y_construct_02,  	VOICE_PLY_CR
+M_Y_construct_03, 	M_Y_construct_03_p,	CIVMALE, 		move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,	null,			11,8,		PED_TYPE_PLAYER,	M_Y_construct_03,  	VOICE_PLY_CR
+M_Y_Cop,		M_Y_Cop_p, 		COP,	 		move_cop,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_cop,		null,			-1,-1,		PED_TYPE_PLAYER,	VOICE_PLY_CR,  	VOICE_PLY_CR
+M_Y_Cop_Traffic,	M_Y_Cop_Traffic_p,	COP,	 		move_cop,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_cop,		null,			-1,-1,		PED_TYPE_PLAYER,	VOICE_PLY_CR,  	VOICE_PLY_CR
+M_Y_courier,		M_Y_courier_p,		CIVMALE,		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			4,5,		PED_TYPE_PLAYER,	M_Y_courier,  	VOICE_PLY_CR
+M_Y_Cowboy_01,		M_Y_Cowboy_01_p,	CIVMALE,		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			9,2,		PED_TYPE_PLAYER,	M_Y_COWBOY,  	VOICE_PLY_CR
+M_Y_dealer,		M_Y_dealer_p, 		CIVMALE, 		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a,	null,			2,3,		PED_TYPE_PLAYER,	M_Y_dealer,  	VOICE_PLY_CR
+M_Y_Drug_01,		M_Y_Drug_01_p, 		CIVMALE, 		move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,      null,			3,8,		PED_TYPE_PLAYER,	M_Y_Drug_01,  		VOICE_PLY_CR
+M_Y_FF_Burger_R,	M_Y_FF_Burger_R_p, 	CIVMALE, 		move_gng@afro_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@afro_a,	null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_FASTFOODBLACK,  	VOICE_PLY_CR
+M_Y_FF_Cluck_R,		M_Y_FF_Cluck_R_p, 	CIVMALE, 		move_gng@afro_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@afro_b,	null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_FASTFOODBLACK,  	VOICE_PLY_CR
+M_Y_FF_RSCafe,		M_Y_FF_RSCafe_p, 	CIVMALE,		move_m@casual_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual_c,	null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_FF_RSCafe,  	VOICE_PLY_CR
+M_Y_FF_TwCafe,		M_Y_FF_TwCafe_p, 	CIVMALE,		move_m@casual_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual_c,	null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_FF_TWCafe,  	VOICE_PLY_CR
+M_Y_FF_WSPizza_R,	M_Y_FF_WSPizza_R_p, 	CIVMALE, 		move_gng@latino_a	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_a	null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_FASTFOODBLACK,  	VOICE_PLY_CR
+M_Y_Fireman,		M_Y_Fireman_p, 		FIREMAN,		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			-1,-1,		PED_TYPE_PLAYER,	VOICE_PLY_CR,  		VOICE_PLY_CR
+M_Y_Garbage,		M_Y_Garbage_p, 		CIVMALE, 		move_gng@latino_b	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b	null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_Garbage,  		VOICE_PLY_CR
+M_Y_Goon_01,		M_Y_Goon_01_p, 		CIVMALE, 		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			1,6,		PED_TYPE_PLAYER,	M_Y_Goon_01,  		VOICE_PLY_CR
+M_Y_Gymguy_01,		M_Y_Gymguy_01_p, 	CIVMALE,		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a,	null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_GymGuy_01,  	VOICE_PLY_CR
+M_Y_Mechanic_02,	M_Y_Mechanic_02_P, 	CIVMALE,		move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,	null,			9,12,		PED_TYPE_PLAYER,	M_Y_Mechanic_02,  	VOICE_PLY_CR
+M_Y_Modo,		null,			CIVMALE,		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			3,2,		PED_TYPE_PLAYER,	M_Y_shopAsst_01,  	VOICE_PLY_CR
+M_Y_NHelipilot,		M_Y_NHelipilot_p, 	CIVMALE,		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_Nhelipilot,  	VOICE_PLY_CR
+M_Y_Perseus,		M_Y_Perseus_p,		CIVMALE,		move_m@generic,		GESTURES@FEMALE,	GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_Perseus,  		VOICE_PLY_CR
+M_Y_PIndus_01,		M_Y_PIndus_01_P, 	CIVMALE,		move_m@old_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@old_a,		null,			8,11,		PED_TYPE_PLAYER,	M_Y_Pindus_01,  	VOICE_PLY_CR
+M_Y_PIndus_02,		M_Y_PIndus_02_P, 	CIVMALE,		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a,	null,			11,7,		PED_TYPE_PLAYER,	M_Y_Pindus_02,  	VOICE_PLY_CR
+M_Y_PIndus_03,		M_Y_PIndus_03_P, 	CIVMALE,		move_gng@latino_b	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b	null,			11,8,		PED_TYPE_PLAYER,	M_Y_Pindus_03,  	VOICE_PLY_CR
+M_Y_pmedic, 		null, 			MEDIC,			move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_PMEDIC,  		VOICE_PLY_CR
+M_Y_prison, 		M_Y_prison_p, 		CIVMALE,		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			-1,-1,		PED_TYPE_PLAYER,	VOICE_PLY_CR,  		VOICE_PLY_CR
+M_Y_prisonAOM, 		null, 			CIVMALE,		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			-1,-1,		PED_TYPE_PLAYER,	VOICE_PLY_CR,  		VOICE_PLY_CR
+M_Y_RomanCab,		M_Y_RomanCab_p,		CIVMALE, 		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			4,5,		PED_TYPE_PLAYER,	M_Y_RomanCab,  		VOICE_PLY_CR
+M_Y_runner,		M_Y_runner_p, 		CIVMALE, 		move_gng@afro_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@afro_c,	null,			4,5,		PED_TYPE_PLAYER,	M_Y_runner,  		VOICE_PLY_CR
+M_Y_shopAsst_01,	M_Y_shopAsst_01_p,	CIVMALE,		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			3,2,		PED_TYPE_PLAYER,	M_Y_shopAsst_01,  	VOICE_PLY_CR
+M_Y_STROOPER,		M_Y_STROOPER_p, 	COP,	 		move_cop,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_cop,		null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_COP_WHITE,  		VOICE_PLY_CR
+M_Y_Swat, 		M_Y_Swat_p, 		COP, 			move_m@swat,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@swat,		null,			-1,-1,		PED_TYPE_PLAYER,	VOICE_PLY_CR,  		VOICE_PLY_CR
+M_Y_SwordSwallow,	M_Y_SwordSwallow_p,	CIVMALE,		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_SwordSwallow,  	VOICE_PLY_CR
+M_Y_Thief,		M_Y_Thief_p,		CIVMALE,		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_Thief,  		VOICE_PLY_CR
+M_Y_Valet,		null,			CIVMALE,		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_Valet,  		VOICE_PLY_CR
+M_Y_Vendor, 		M_Y_Vendor_p, 		CIVMALE, 		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			5,9,		PED_TYPE_PLAYER,	M_Y_Vendor,  		VOICE_PLY_CR
+
+
+
+M_Y_FrenchTom, 		M_Y_FrenchTom_p,	CIVMALE,		move_gng@generic_a,	GESTURES@FEMALE,	GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a,	null,			-1,-1,,		PED_TYPE_PLAYER,	VOICE_PLY_CR,  	VOICE_PLY_CR
+M_Y_Jim_Fitz,		M_Y_Jim_Fitz_p, 	CIVMALE,		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			-1,-1,		PED_TYPE_PLAYER,	VOICE_PLY_CR,  	VOICE_PLY_CR
+
+
+
+
+# *********************************************************************************************************************************************************************************************************************************************************************************************************************************
+# ** Generic/Background peds (in alphabetical order)
+
+#model			props			pedtype	 		animgroup		gesturegroup 		gesturephonegroup	facialgroup 		visemegroup 		flags		animfile		blendshapefile 		radio1&2	audiotype		firstvoice	lastvoice
+F_O_PEastEuro_01,	F_O_PEastEuro_01_p, 	CIVFEMALE,		move_f@old_b,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@old_b,		null,			1,10,		PED_TYPE_PLAYER,	F_O_PEastEuro_01,  	VOICE_PLY_CR
+F_O_PEastEuro_02,	F_O_PEastEuro_02_p, 	CIVFEMALE,		move_f@old_b,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@old_b,		null,			10,8,		PED_TYPE_PLAYER,	F_O_PEastEuro_02,  	VOICE_PLY_CR
+F_O_PHarbron_01,	F_O_PHarbron_01_p, 	CIVFEMALE,		move_f@old_b,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@old_b,		null,			6,1,		PED_TYPE_PLAYER,	F_O_PHarBron_01,  	VOICE_PLY_CR
+F_O_PJersey_01,		F_O_PJersey_01_p, 	CIVFEMALE,		move_f@old_a,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@old_a,		null,			6,8,		PED_TYPE_PLAYER,	F_O_PJersey_01,  	VOICE_PLY_CR
+F_O_POrient_01,		F_O_POrient_01_p, 	CIVFEMALE,		move_f@old_a,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@old_a,		null,			1,9,		PED_TYPE_PLAYER,	F_O_Porient_01,  	VOICE_PLY_CR
+F_O_Rich_01,		F_O_Rich_01_p, 		CIVFEMALE,		move_f@old_a,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@old_a,		null,			1,6,		PED_TYPE_PLAYER,	F_O_Rich_01,  		VOICE_PLY_CR
+
+
+
+F_M_Business_01,	F_M_Business_01_p, 	CIVFEMALE,		move_f@bness_e,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@bness_e,		null,			-1,-1,		PED_TYPE_PLAYER,	F_M_Business_01,  	VOICE_PLY_CR
+F_M_Business_02,	F_M_Business_02_p, 	CIVFEMALE,		move_f@fat,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@fat,		null,			-1,-1,		PED_TYPE_PLAYER,	F_M_Business_02,  	VOICE_PLY_CR
+F_M_CHINATOWN,		F_M_Chinatown_p, 	CIVFEMALE,		move_f@generic,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@generic,		null,			-1,-1,		PED_TYPE_PLAYER,	F_M_CHINATOWN,  	VOICE_PLY_CR
+F_M_Pbusiness,		F_M_PBusiness_p, 	CIVFEMALE,		move_f@old_a,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@old_a,		null,			1,8,		PED_TYPE_PLAYER,	F_M_Pbusiness,  	VOICE_PLY_CR
+F_M_PEastEuro_01,	F_M_PEastEuro_01_p, 	CIVFEMALE,		move_f@bness_a,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@bness_a,		null,			10,9,		PED_TYPE_PLAYER,	F_M_PEastEuro_01,  	VOICE_PLY_CR
+F_M_PHarBron_01,	F_M_PHarBron_01_p, 	CIVFEMALE,		move_f@bness_e,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@bness_e,		null,			7,8,		PED_TYPE_PLAYER,	F_M_PHarBron_01,  	VOICE_PLY_CR
+F_M_PJersey_01,		F_M_PJersey_01_p, 	CIVFEMALE,		move_f@bness_a,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@bness_a,		null,			9,1,		PED_TYPE_PLAYER,	F_M_PJersey_01,  	VOICE_PLY_CR
+F_M_PJersey_02,		F_M_PJersey_02_p, 	CIVFEMALE,		move_f@generic,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@generic,		null,			9,8,		PED_TYPE_PLAYER,	F_M_PJersey_02,  	VOICE_PLY_CR
+F_M_PLatin_01,		F_M_PLatin_01_p, 	CIVFEMALE,		move_f@casual_b,	GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual_b,	null,			3,8,		PED_TYPE_PLAYER,	F_M_PLatin_01,  	VOICE_PLY_CR
+F_M_PLatin_02,		F_M_PLatin_02_p, 	CIVFEMALE,		move_f@generic,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@generic,		null,			11,8,		PED_TYPE_PLAYER,	F_M_Platin_01,  	VOICE_PLY_CR
+F_M_PManhat_01,		F_M_PManhat_01_p, 	CIVFEMALE,		move_f@casual,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual,		null,			-1,-1,		PED_TYPE_PLAYER,	F_M_Pmanhat_01,  	VOICE_PLY_CR
+F_M_PManhat_02,		F_M_PManhat_02_p, 	CIVFEMALE,		move_f@casual_c,	GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual_c,	null,			11,8,		PED_TYPE_PLAYER,	F_M_PManhat_02,  	VOICE_PLY_CR
+F_M_POrient_01,		F_M_POrient_01_p, 	CIVFEMALE,		move_f@casual,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual,		null,			12,1,		PED_TYPE_PLAYER,	F_M_POrient_01,  	VOICE_PLY_CR
+F_M_PRich_01,		F_M_PRich_01_p, 	CIVFEMALE,		move_f@old_a,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@old_a,		null,			9,12,		PED_TYPE_PLAYER,	F_M_PRich_01,  		VOICE_PLY_CR
+
+
+
+F_Y_Business_01,	F_Y_Business_01_p, 	CIVFEMALE,		move_f@bness_a,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@bness_a,		null,			11,12,		PED_TYPE_PLAYER,	F_Y_Business_01,  	VOICE_PLY_CR
+F_Y_Cdress_01,		F_Y_Cdress_01_p, 	CIVFEMALE,		move_f@sexy,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@sexy,		null,			12,8,		PED_TYPE_PLAYER,	F_Y_Cdress_01,  	VOICE_PLY_CR
+F_Y_PBronx_01,		F_Y_PBronx_01_p,	CIVFEMALE,		move_f@casual_b,	GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual_b,	null,			-1,-1,		PED_TYPE_PLAYER,	F_Y_PBronx_01,		VOICE_PLY_CR
+F_Y_PCool_01,		F_Y_PCool_01_p, 	CIVFEMALE, 		move_f@bness_a,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@bness_a,		null,			3,1,		PED_TYPE_PLAYER,	ALEX_PVG,		VOICE_PLY_CR
+F_Y_PCool_02,		F_Y_PCool_02_p, 	CIVFEMALE, 		move_f@generic,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@generic,		null,			-1,-1,		PED_TYPE_PLAYER,	F_Y_PCool_02,		VOICE_PLY_CR
+F_Y_PEastEuro_01,	F_Y_PEastEuro_01_p,	CIVFEMALE,		move_f@casual,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual,		null,			11,9,		PED_TYPE_PLAYER,	F_Y_PEastEuro_01,  	VOICE_PLY_CR
+F_Y_PHarBron_01,	F_Y_PHarBron_01_p, 	CIVFEMALE,		move_f@generic,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@generic,		null,			-1,-1,		PED_TYPE_PLAYER,	F_Y_PHarBron_01,  	VOICE_PLY_CR
+F_Y_PHarlem_01,		F_Y_PHarlem_01_p, 	CIVFEMALE, 		move_f@casual,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual,		null,			7,8,		PED_TYPE_PLAYER,	F_Y_PHarlem_01,		VOICE_PLY_CR
+F_Y_PJersey_02,		F_Y_PJersey_02_p,	CIVFEMALE,		move_f@bness_e,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@bness_e,		null,			6,1,		PED_TYPE_PLAYER,	F_Y_PJersey_02,		VOICE_PLY_CR
+F_Y_PLatin_01,		F_Y_PLatin_01_p,	CIVFEMALE,		move_f@casual_b,	GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual_b,	null,			5,7,		PED_TYPE_PLAYER,	F_Y_PLatin_01,		VOICE_PLY_CR
+F_Y_PLatin_02,		F_Y_PLatin_02_p,	CIVFEMALE,		move_f@generic,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@generic,		null,			5,7,		PED_TYPE_PLAYER,	CARMEN_PVG,		VOICE_PLY_CR
+F_Y_PLatin_03,		F_Y_PLatin_03_p,	CIVFEMALE,		move_f@generic,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@generic,		null,			5,7,		PED_TYPE_PLAYER,	F_Y_Platin_03,		VOICE_PLY_CR
+F_Y_PManhat_01,		F_Y_PManhat_01_p,	CIVFEMALE,		move_f@casual_c,	GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual_c,	null,			3,9,		PED_TYPE_PLAYER,	F_Y_PManhat_01,		VOICE_PLY_CR
+F_Y_PManhat_02,		F_Y_PManhat_02_p,	CIVFEMALE,		move_f@sexy,	     	GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@sexy,		null,			3,2,		PED_TYPE_PLAYER,	F_Y_PManhat_02,		VOICE_PLY_CR
+F_Y_PManhat_03,		F_Y_PManhat_03_p,	CIVFEMALE,		move_f@casual_c,	GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual_c,	null,			8,11,		PED_TYPE_PLAYER,	KIKI_PVG,		VOICE_PLY_CR
+F_Y_POrient_01,		F_Y_POrient_01_p, 	CIVFEMALE, 		move_f@bness_a,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@bness_a,		null,			1,12,		PED_TYPE_PLAYER,	F_Y_POrient_01,		VOICE_PLY_CR
+F_Y_PQueens_01,		F_Y_PQueens_01_p, 	CIVFEMALE, 		move_f@bness_d,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@bness_d,		null,			11,8,		PED_TYPE_PLAYER,	F_Y_PQueens_01,		VOICE_PLY_CR
+F_Y_PRich_01,		F_Y_PRich_01_p,		CIVFEMALE,		move_f@sexy,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@sexy,		null,			3,9,		PED_TYPE_PLAYER,	F_Y_Prich_01,		VOICE_PLY_CR
+F_Y_Pvillbo_02,		F_Y_Pvillbo_02_p, 	CIVFEMALE,		move_f@bness_a,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@bness_a,		null,			3,12,		PED_TYPE_PLAYER,	F_Y_Pvillbo_02,  	VOICE_PLY_CR
+F_Y_shop_03,		F_Y_shop_03_p, 		CIVFEMALE,		move_f@casual,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual,		null,			3,9,		PED_TYPE_PLAYER,	F_Y_shop_03,  		VOICE_PLY_CR
+F_Y_shop_04,		F_Y_shop_04_p, 		CIVFEMALE,		move_f@generic,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@generic,		null,			12,6,		PED_TYPE_PLAYER,	F_Y_shop_04,		VOICE_PLY_CR
+F_Y_shopper_05,		F_Y_shopper_05_p, 	CIVFEMALE,		move_f@casual,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual,		null,			4,1,		PED_TYPE_PLAYER,	F_Y_shopper_05,		VOICE_PLY_CR
+F_Y_Socialite,		F_Y_Socialite_p, 	CIVFEMALE,		move_f@bness_a,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@bness_a,		null,			3,8,		PED_TYPE_PLAYER,	F_Y_Socialite,		VOICE_PLY_CR
+F_Y_street_02,		F_Y_street_02_p, 	CIVFEMALE,		move_f@casual_c,	GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual_c,	null,			2,3,		PED_TYPE_PLAYER,	F_Y_street_02,		VOICE_PLY_CR
+F_Y_street_05,		F_Y_street_05_p, 	CIVFEMALE,		move_f@bness_a,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@bness_a,		null,			2,3,		PED_TYPE_PLAYER,	F_Y_street_05,  	VOICE_PLY_CR
+F_Y_street_09,		F_Y_street_09_p, 	CIVFEMALE,		move_f@bness_a,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@bness_a,		null,			8,3,		PED_TYPE_PLAYER,	F_Y_street_09,  	VOICE_PLY_CR
+F_Y_street_12,		F_Y_street_12_p, 	CIVFEMALE,		move_f@sexy,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@sexy,		null,			4,5,		PED_TYPE_PLAYER,	F_Y_STREET_12,  	VOICE_PLY_CR
+F_Y_street_30,		F_Y_street_30_p, 	CIVFEMALE,		move_f@casual_c,	GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual_c,	null,			9,8,		PED_TYPE_PLAYER,	F_Y_street_30,  	VOICE_PLY_CR
+F_Y_street_34,		F_Y_street_34_p, 	CIVFEMALE,		move_f@generic,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@generic,		null,			5,2,		PED_TYPE_PLAYER,	F_Y_street_34,  	VOICE_PLY_CR
+f_Y_Tourist_01,		F_Y_Tourist_01_p, 	CIVFEMALE,		move_f@casual,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@casual,		null,			6,12,		PED_TYPE_PLAYER,	F_Y_Tourist_01,  	VOICE_PLY_CR
+F_Y_villbo_01,		F_Y_villbo_01_p, 	CIVFEMALE,		move_f@generic,		GESTURES@FEMALE,	GESTURES@F_PHONE,	FACIALS@F_LO,		visemes@f_lo,		0, 		move_f@generic,		null,			8,11,		PED_TYPE_PLAYER,	F_Y_vilbo_01,	  	VOICE_PLY_CR
+
+
+M_M_business_02,	M_M_business_02_p, 	CIVMALE,		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			1,6,		PED_TYPE_PLAYER,	M_M_Business_02,  	VOICE_PLY_CR
+M_M_Business_03,	M_M_Business_03_p,	CIVMALE,		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			1,6,		PED_TYPE_PLAYER,	M_M_Business_03,  	VOICE_PLY_CR
+M_M_EE_Heavy_01,	M_M_EE_Heavy_01_p, 	CIVMALE,		move_m@casual_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual_b,	null,			9,1,		PED_TYPE_PLAYER,	M_M_EE_Heavy_01,  	VOICE_PLY_CR
+M_M_EE_Heavy_02,	M_M_EE_Heavy_02_p, 	CIVMALE,		move_gng@generic_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_b,	null,			9,2,		PED_TYPE_PLAYER,	M_M_EE_Heavy_02,  	VOICE_PLY_CR
+M_M_FatMob_01,		M_M_FatMob_01_p, 	CIVMALE,		move_m@fat,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@fat,		null,			1,12,		PED_TYPE_PLAYER,	M_M_FatMob_01,  	VOICE_PLY_CR
+M_M_GayMid,		M_M_GayMid_p,		CIVMALE,		move_m@generic,		GESTURES@FEMALE,	GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			12,8,		PED_TYPE_PLAYER,	M_M_Gaymid,  		VOICE_PLY_CR
+M_M_Genbum_01,		M_M_Genbum_01_p, 	CIVMALE,		move_m@bum,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bum,		null,			2,9,		PED_TYPE_PLAYER,	M_M_BUMSWHITE_PVG,  	VOICE_PLY_CR
+M_M_Loonywhite,		M_M_Loonywhite_p, 	CIVMALE,		move_m@bum,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bum,		null,			-1,-1,		PED_TYPE_PLAYER,	M_M_Loonywhite,  	VOICE_PLY_CR
+M_M_Midtown_01,		M_M_Midtown_01_p, 	CIVMALE,		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			11,1,		PED_TYPE_PLAYER,	M_M_MIDTOWN_01,  	VOICE_PLY_CR
+M_M_PBusiness_01,	M_M_PBusiness_01_p,	CIVMALE,		move_m@bness_b,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_b,		null,			12,1,		PED_TYPE_PLAYER,	M_M_PRICH_01,  	VOICE_PLY_CR
+M_M_PeastEuro_01,	M_M_PeastEuro_01_p, 	CIVMALE,		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			10,1,		PED_TYPE_PLAYER,	RUSSIAN_STREET_THUGS,	VOICE_PLY_CR
+M_M_PHarBron_01,	M_M_PHarBron_01_p, 	CIVMALE,		move_m@fat,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@fat,		null,			7,11,		PED_TYPE_PLAYER,	M_M_PHarBron_01,	VOICE_PLY_CR
+M_M_PIndus_02,		M_M_PIndus_02_P, 	CIVMALE,		move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,	null,			7,11,		PED_TYPE_PLAYER,	M_M_Pindus_02,  	VOICE_PLY_CR
+M_M_PItalian_01,	M_M_PItalian_01_p, 	CIVMALE,		move_m@fat,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@fat,		null,			1,6,		PED_TYPE_PLAYER,	M_M_PItalian_01,  	VOICE_PLY_CR
+M_M_PItalian_02,	M_M_PItalian_02_p, 	CIVMALE,		move_gng@generic_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_c,	null,			1,6,		PED_TYPE_PLAYER,	M_M_PItalian_02,  	VOICE_PLY_CR
+M_M_PLatin_01,		M_M_PLatin_01_p,	CIVMALE,		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			8,9,		PED_TYPE_PLAYER,	M_M_PLatin_01,  	VOICE_PLY_CR
+M_M_PLatin_02,		M_M_PLatin_02_p,	CIVMALE,		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			5,11,		PED_TYPE_PLAYER,	M_M_PLatin_02,  	VOICE_PLY_CR
+M_M_PLatin_03,		M_M_PLatin_03_p,	CIVMALE,		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			5,8,		PED_TYPE_PLAYER,	M_M_PLatin_03,  	VOICE_PLY_CR
+M_M_PManhat_01,		M_M_PManhat_01_p, 	CIVMALE,		move_m@bness_b,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_b		null,			-1,-1,		PED_TYPE_PLAYER,	M_M_PManhat_01,  	VOICE_PLY_CR
+M_M_PManhat_02,		M_M_PManhat_02_p, 	CIVMALE,		move_m@casual_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual_b,	null,			1,11,		PED_TYPE_PLAYER,	M_M_PManhat_02,  	VOICE_PLY_CR
+M_M_POrient_01,		M_M_POrient_01_p,	CIVMALE,		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			1,6,		PED_TYPE_PLAYER,	M_M_POrient_01,  	VOICE_PLY_CR
+M_M_PRich_01,		M_M_PRich_01_p, 	CIVMALE,		move_m@casual_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual_b,	null,			9,6,		PED_TYPE_PLAYER,	M_M_PRich_01,  		VOICE_PLY_CR
+
+
+
+M_O_EastEuro_01,	M_O_EastEuro_01_p, 	CIVMALE,		move_m@old_c,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@old_c,		null,			10,12,		PED_TYPE_PLAYER,	M_O_EastEuro_01,  	VOICE_PLY_CR
+M_O_Hasid_01,		M_O_Hasid_01_p, 	CIVMALE,		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			1,12,		PED_TYPE_PLAYER,	M_O_Hasid_01,  		VOICE_PLY_CR
+M_O_Mobster,		M_O_Mobster_p,		CIVMALE,		move_m@old_b,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@old_b,		null,			1,9,		PED_TYPE_PLAYER,	MAFIA_HEAVIES,  	VOICE_PLY_CR
+M_O_PEastEuro_02,	M_O_PEastEuro_02_p, 	CIVMALE,		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			1,10,		PED_TYPE_PLAYER,	M_O_PEastEuro_02,  	VOICE_PLY_CR
+M_O_PHarbron_01,	M_O_PHarbron_01_p, 	CIVMALE,		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			6,1,		PED_TYPE_PLAYER,	M_O_PHarbron_01,  	VOICE_PLY_CR
+M_O_PJersey_01,		M_O_PJersey_01_p, 	CIVMALE,		move_m@old_b,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@old_b,		null,			9,2,		PED_TYPE_PLAYER,	M_O_PJersey_01,  	VOICE_PLY_CR
+M_O_street_01,		M_O_street_01_p, 	CIVMALE,		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			11,8,		PED_TYPE_PLAYER,	M_O_street_01,  	VOICE_PLY_CR
+M_O_suited,		M_O_suited_p, 		CIVMALE,		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			6,12,		PED_TYPE_PLAYER,	M_O_suited,  		VOICE_PLY_CR
+
+
+
+M_Y_BoHo_01,		M_Y_BoHo_01_p, 		CIVMALE,		move_m@casual_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual_c,	null,			12,3,		PED_TYPE_PLAYER,	M_Y_BoHo_01, 	 	VOICE_PLY_CR
+M_Y_BoHoguy_01,		M_Y_Bohoguy_01_P,	CIVMALE,		move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,	null,			3,12,		PED_TYPE_PLAYER,	M_Y_BoHoguy_01,  	VOICE_PLY_CR
+M_Y_Bronx_01,		M_Y_Bronx_01_p, 	CIVMALE,		move_gng@afro_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@afro_b,	null,			7,11,		PED_TYPE_PLAYER,	M_Y_Bronx_01,	  	VOICE_PLY_CR
+M_Y_business_01,	null,	 		CIVMALE,		move_m@casual_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual_b,	null,			11,3,		PED_TYPE_PLAYER,	M_Y_business_01,  	VOICE_PLY_CR
+M_Y_business_02,	M_Y_business_02_p, 	CIVMALE,		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			12,6,		PED_TYPE_PLAYER,	M_Y_business_02,  	VOICE_PLY_CR
+M_Y_chinatown_03,	M_Y_chinatown_03_p, 	CIVMALE,		move_m@casual_c,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual_c,	null,			5,8,		PED_TYPE_PLAYER,	M_Y_chinatown_03,  	VOICE_PLY_CR
+M_Y_chopshop_01,	M_Y_chopshop_01_p, 	CIVMALE,		move_gng@latino_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_a,	null,			3,7,		PED_TYPE_PLAYER,	M_Y_chopshop_01,  	VOICE_PLY_CR
+M_Y_chopshop_02,	M_Y_chopshop_02_p, 	CIVMALE,		move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,,	null,			3,7,		PED_TYPE_PLAYER,	M_Y_chopshop_02,  	VOICE_PLY_CR
+M_Y_dodgy_01,		M_Y_dodgy_01_p,		CIVMALE,		move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b	null,			2,3,		PED_TYPE_PLAYER,	M_Y_dodgy_01,	  	VOICE_PLY_CR
+M_Y_dork_02,		M_Y_dork_02_p,		CIVMALE,		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			8,9,		PED_TYPE_PLAYER,	M_Y_dork_02, 	 	VOICE_PLY_CR
+M_Y_Downtown_01,	M_Y_Downtown_01_p,	CIVMALE,		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			3,5,		PED_TYPE_PLAYER,	M_Y_Downtown_01,  	VOICE_PLY_CR
+M_Y_Downtown_02,	M_Y_Downtown_02_p,	CIVMALE,		move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,	null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_Downtown_02,  	VOICE_PLY_CR
+M_Y_Downtown_03,	M_Y_Downtown_03_p,	CIVMALE,		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			2,3,		PED_TYPE_PLAYER,	M_Y_Downtown_03,  	VOICE_PLY_CR
+M_Y_GayYoung,		M_Y_GayYoung_p,		CIVMALE,		move_m@generic,		GESTURES@FEMALE,	GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_GayYoung,	  	VOICE_PLY_CR
+M_Y_GenStreet_11,	M_Y_GenStreet_11_p,	CIVMALE,		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a,	null,			7,11,		PED_TYPE_PLAYER,	M_Y_GenStreet_11,  	VOICE_PLY_CR
+M_Y_GenStreet_16,	M_Y_GenStreet_16_p,	CIVMALE,		move_m@casual_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual_b,	null,			7,8,		PED_TYPE_PLAYER,	M_Y_GenStreet_16,  	VOICE_PLY_CR
+M_Y_GenStreet_20,	M_Y_GenStreet_20_p,	CIVMALE,		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			3,11,		PED_TYPE_PLAYER,	M_Y_GenStreet_20,  	VOICE_PLY_CR
+M_Y_GenStreet_34,	null,			CIVMALE,		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a,	null,			7,3,		PED_TYPE_PLAYER,	M_Y_GenStreet_34,  	VOICE_PLY_CR
+M_Y_Hardman_01,		M_Y_Hardman_01_p, 	CIVMALE,		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a,	null,			9,2,		PED_TYPE_PLAYER,	M_Y_Hardman_01,  	VOICE_PLY_CR
+M_Y_Harlem_01,		M_Y_Harlem_01_p,	CIVMALE,		move_gng@afro_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@afro_b,	null,			7,11,		PED_TYPE_PLAYER,	M_Y_Harlem_01,  	VOICE_PLY_CR
+M_Y_Harlem_02,		M_Y_Harlem_02_p,	CIVMALE,		move_gng@afro_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@afro_a,	null,			7,11,		PED_TYPE_PLAYER,	M_Y_Harlem_02,  	VOICE_PLY_CR
+M_Y_Harlem_04,		M_Y_Harlem_04_p,	CIVMALE,		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			7,8,		PED_TYPE_PLAYER,	M_Y_Harlem_04,  	VOICE_PLY_CR
+M_Y_Hasid_01,		M_Y_Hasid_01_p,		CIVMALE,		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			1,12,		PED_TYPE_PLAYER,	M_Y_Hasid_01,	  	VOICE_PLY_CR
+M_Y_LEastSide_01,	M_Y_LEastSide_01_p, 	CIVMALE,		move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,	null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_LEastSide_01,	VOICE_PLY_CR
+M_Y_PBronx_01,		M_Y_PBronx_01_p,	CIVMALE,		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			7,8,		PED_TYPE_PLAYER,	M_Y_PBronx_01,		VOICE_PLY_CR
+M_Y_PCool_01,		M_Y_PCool_01_p,		CIVMALE,		move_m@bness_b,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_b,		null,			3,12,		PED_TYPE_PLAYER,	M_Y_PCool_01,		VOICE_PLY_CR
+M_Y_PCool_02,		M_Y_PCool_02_p,		CIVMALE,		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			7,5,		PED_TYPE_PLAYER,	M_Y_PCool_02,		VOICE_PLY_CR
+M_Y_PEastEuro_01,	M_Y_PEastEuro_01_p,	CIVMALE,		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			9,2,		PED_TYPE_PLAYER,	M_Y_PEastEuro_01,	VOICE_PLY_CR
+M_Y_PHarbron_01,	M_Y_PHarbron_01_p,	CIVMALE,		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_PHarBron_01,  	VOICE_PLY_CR
+M_Y_PHarlem_01,		M_Y_PHarlem_01_p,	CIVMALE,		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			7,11,		PED_TYPE_PLAYER,	M_Y_PHarlem_01,		VOICE_PLY_CR
+M_Y_PJersey_01,		M_Y_PJersey_01_p,	CIVMALE,		move_gng@latino_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_a,	null,			2,9,		PED_TYPE_PLAYER,	M_Y_PJersey_01,  	VOICE_PLY_CR
+M_Y_PLatin_01,		M_Y_PLatin_01_p,	CIVMALE,		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			5,8,		PED_TYPE_PLAYER,	M_Y_PLatin_01,  	VOICE_PLY_CR
+M_Y_PLatin_02,		M_Y_PLatin_02_p,	CIVMALE,		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			5,11,		PED_TYPE_PLAYER,	M_Y_Platin_02,  	VOICE_PLY_CR
+M_Y_PLatin_03,		M_Y_PLatin_03_p,	CIVMALE,		move_m@bness_a,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a,		null,			5,7,		PED_TYPE_PLAYER,	M_Y_Platin_03,  	VOICE_PLY_CR
+M_Y_PManhat_01,		M_Y_PManhat_01_p,	CIVMALE,		move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,	null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_PManhat_01,  	VOICE_PLY_CR
+M_Y_PManhat_02,		M_Y_PManhat_02_p,	CIVMALE,		move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,	null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_Pmanhat_02,  	VOICE_PLY_CR
+M_Y_POrient_01,		M_Y_POrient_01_p,	CIVMALE,		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			3,7,		PED_TYPE_PLAYER,	M_Y_POrient_01,		VOICE_PLY_CR
+M_Y_PQueens_01,		M_Y_PQueens_01_p,	CIVMALE,		move_gng@afro_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@afro_b,	null,			11,7,		PED_TYPE_PLAYER,	M_Y_PQueens_01,		VOICE_PLY_CR
+M_Y_PRich_01,		M_Y_PRich_01_p,		CIVMALE,		move_m@bness_b,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_b,		null,			9,12,		PED_TYPE_PLAYER,	M_Y_PRich_01,		VOICE_PLY_CR
+M_Y_PVillbo_01,		M_Y_PVillbo_01_p,	CIVMALE,		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			2,9,		PED_TYPE_PLAYER,	M_Y_PVillbo_01,  	VOICE_PLY_CR
+M_Y_PVillbo_02,		M_Y_PVillbo_02_p,	CIVMALE,		move_m@casual_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual_b,	null,			8,5,		PED_TYPE_PLAYER,	M_Y_PVillbo_02,  	VOICE_PLY_CR
+M_Y_PVillbo_03,		M_Y_PVillbo_03_p,	CIVMALE,		move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,	null,			8,5,		PED_TYPE_PLAYER,	M_Y_PVillbo_03,  	VOICE_PLY_CR
+M_Y_Queensbridge,	M_Y_Queensbridge_p, 	CIVMALE,		move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,	null,			7,11,		PED_TYPE_PLAYER,	M_Y_Queensbridge,  	VOICE_PLY_CR
+M_Y_shady_02,		M_Y_shady_02_p,		CIVMALE,		move_m@bness_a, 	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@bness_a, 	null,			2,3,		PED_TYPE_PLAYER,	M_Y_shady_02,  		VOICE_PLY_CR
+M_Y_skatebike_01,	M_Y_skatebike_01_p,	CIVMALE,		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			2,3,		PED_TYPE_PLAYER,	M_Y_skatebike_01,  	VOICE_PLY_CR
+M_Y_soho_01, 		M_Y_soho_01_p, 		CIVMALE,		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			-1,-1,		PED_TYPE_PLAYER,	M_Y_soho_01,  		VOICE_PLY_CR
+M_Y_street_01,		M_Y_street_01_p,	CIVMALE,		move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,	null,			3,12,		PED_TYPE_PLAYER,	M_Y_street_01,  	VOICE_PLY_CR
+M_Y_street_03,		M_Y_street_03_p, 	CIVMALE,		move_m@casual,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual,		null,			3,9,		PED_TYPE_PLAYER,	M_Y_street_03,  	VOICE_PLY_CR
+M_Y_street_04,		M_Y_street_04_p, 	CIVMALE,		move_gng@latino_b	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b	null,			8,7,		PED_TYPE_PLAYER,	M_Y_street_04,  	VOICE_PLY_CR
+M_Y_Streetblk_02, 	M_Y_Streetblk_02_p,	CIVMALE,		move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,	null,			8,3,		PED_TYPE_PLAYER,	M_Y_Streetblk_02,  	VOICE_PLY_CR
+M_Y_Streetblk_03, 	M_Y_Streetblk_03_p,	CIVMALE,		move_m@generic,		GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@generic,		null,			3,11,		PED_TYPE_PLAYER,	M_Y_Streetblk_03,  	VOICE_PLY_CR
+M_Y_Streetpunk_02, 	M_Y_Streetpunk_02_p,	CIVMALE,		move_m@casual_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual_b,	null,			2,3,		PED_TYPE_PLAYER,	M_Y_Streetpunk_02,  	VOICE_PLY_CR
+M_Y_Streetpunk_04, 	M_Y_Streetpunk_04_p, 	CIVMALE,		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a,	null,			3,8,		PED_TYPE_PLAYER,	M_Y_Streetpunk_04,  	VOICE_PLY_CR
+M_Y_Streetpunk_05, 	M_Y_Streetpunk_05_p, 	CIVMALE,		move_gng@latino_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@latino_b,	null,			3,9,		PED_TYPE_PLAYER,	M_Y_Streetpunk_05,  	VOICE_PLY_CR
+M_Y_Tough_05, 		M_Y_Tough_05_p,		CIVMALE,		move_gng@generic_a,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_gng@generic_a,	null,			9,2,		PED_TYPE_PLAYER,	M_Y_Tough_05,  		VOICE_PLY_CR
+M_Y_Tourist_02,		M_Y_Tourist_02_p, 	CIVMALE,		move_m@casual_b,	GESTURES@MALE,		GESTURES@M_PHONE,	FACIALS@M_LO,		visemes@m_lo,		0, 		move_m@casual_b,	null,			6,9,		PED_TYPE_PLAYER,	M_Y_Tourist_02,  	VOICE_PLY_CR
+
+
+# *********************************************************************************************************************************************************************************************************************************************************************************************************************************
+# ** these peds are due for deletion. _Do not use_!
+
+#model			props			pedtype	 		animgroup		gesturegroup 		gesturephonegroup	facialgroup 		visemegroup 		flags		animfile		blendshapefile		radio1&2	audiotype		firstvoice	lastvoice
+
+
+# *********************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+
+
+
+
+end
+
+# Ped model, audio group, head index
+agrps
+
+M_Y_Cop,			M_Y_COP_BLACK,				0
+M_Y_Cop,			M_Y_COP_HISPANIC,			1
+M_Y_Cop,			M_Y_COP_WHITE,				2
+
+M_M_FatCop_01,		M_M_FATCOP_WHITE,			0
+M_M_FatCop_01,		M_M_FATCOP_BLACK,			1
+
+M_Y_Cop_Traffic,	M_Y_COP_BLACK,		0
+M_Y_Cop_Traffic,	M_Y_COP_HISPANIC,	1
+M_Y_Cop_Traffic,	M_Y_COP_WHITE,		2
+
+M_Y_Swat,			M_Y_SWAT_WHITE,				0
+M_Y_Swat,			M_Y_SWAT_WHITE,				1
+M_Y_Swat,			M_Y_SWAT_BLACK,				2
+M_Y_Swat,			M_Y_SWAT_HISPANIC,			3
+
+M_Y_pmedic,			M_Y_PMEDIC_BLACK,			0
+M_Y_pmedic,			M_Y_PMEDIC_CHINESE,			1
+M_Y_pmedic,			M_Y_PMEDIC_CHINESE,			2
+
+M_Y_Fireman,		M_Y_FIREMAN_BLACK,			0
+M_Y_Fireman,		M_Y_FIREMAN_WHITE,			1
+
+end
+
+
+
+
+
+
+
+

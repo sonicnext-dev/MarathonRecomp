@@ -1,0 +1,1100 @@
+# LOADINGSCREENS.DAT
+# maintained by Derek Payne
+# this file contains the animation of static loading screen images
+
+
+
+
+
+
+#################################################################################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+####################################    16:9 (Widescreen)    ####################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+
+[16:9]
+
+
+
+
+#
+# 1 - Legal Screen
+#
+
+[BEGIN]
+
+Flag : LEGAL
+
+Objects : 0
+
+Duration : 6000
+
+Fade : NONE
+
+[END]
+
+
+
+
+#
+# 2 - R* Games
+#
+
+
+[BEGIN]
+
+Flag : START_INTRO
+
+Objects : 1
+
+Duration : 4000
+
+Fade : IN_OUT
+
+Texture 1 : ny BEFORE
+
+StartTime 1 : 800
+
+EndTime 1 : 3800
+
+MoveTime 1 : 20
+
+ScaleTime 1 : 20
+
+StartPos 1 : 0.5 0.48
+
+MoveAmount 1 : 0.000 0.000
+
+StartSize 1 : 0.270 0.480
+
+ScaleAmount 1 : -0.001 -0.001778
+
+[END]
+
+
+
+#
+# 3 - R* North
+#
+
+[BEGIN]
+
+Flag : NONE
+
+Objects : 1
+
+Duration : 3200
+
+Fade : IN_OUT
+
+Texture 1 : north BEFORE
+
+StartTime 1 : 0
+
+EndTime 1 : 3000
+
+MoveTime 1 : 20
+
+ScaleTime 1 : 20
+
+StartPos 1 : 0.5 0.48
+
+MoveAmount 1 : 0.000 0.000
+
+StartSize 1 : 0.225 0.400
+
+ScaleAmount 1 : -0.0009 -0.00159
+
+[END]
+
+
+
+#
+# 4 - GTA LOGO Screen
+#
+
+[BEGIN]
+
+Flag : END_INTRO
+
+Objects : 1
+
+Duration : 3200
+
+Fade : IN_OUT
+
+Texture 1 : gta BEFORE
+
+StartTime 1 : 0
+
+EndTime 1 : 3200
+
+MoveTime 1 : 20
+
+ScaleTime 1 : 20
+
+StartPos 1 : 0.5 0.48
+
+MoveAmount 1 : 0.0 0.0
+
+StartSize 1 : 0.4 0.711
+
+ScaleAmount 1 : 0.00 0.00
+
+[END]
+
+
+
+#
+# 5 - Blank screen
+#
+
+[BEGIN]
+
+Flag : NONE
+
+Objects : 0
+
+Duration : 900
+
+Fade : NONE
+
+[END]
+
+
+
+
+#
+# 6 - Main Screen1
+#
+
+[BEGIN]
+
+Flag : INITIAL_MAIN
+
+Objects : 3
+
+Duration : 8000
+
+Fade : IN_OUT
+
+Texture 1 : 1_1 BEFORE
+Texture 2 : 1_2 BEFORE
+Texture 3 : 1_3 BEFORE
+
+
+StartTime 1 : 0
+StartTime 2 : 0
+StartTime 3 : 0
+
+
+EndTime 1 : 8000
+EndTime 2 : 8000
+EndTime 3 : 8000
+
+
+MoveTime 1 : 20
+MoveTime 2 : 20
+MoveTime 3 : 20
+
+
+ScaleTime 1 : 20
+ScaleTime 2 : 20
+ScaleTime 3 : 20
+
+
+StartPos 1 : 0.5 0.5
+StartPos 2 : 0.5 0.5
+StartPos 3 : 0.49 0.5
+
+
+MoveAmount 1 : 0.000 0.000
+MoveAmount 2 : 0.00001 0.000
+MoveAmount 3 : -0.0002 0.000
+
+
+StartSize 1 : 1.03 1.03
+StartSize 2 : 1.0 1.0
+StartSize 3 : 1.01 1.01
+
+
+ScaleAmount 1 : -0.0001 -0.0001
+ScaleAmount 2 : 0.0003 0.0003
+ScaleAmount 3 : 0.0004 0.0004
+
+
+[END]
+
+
+
+#
+# 7 - Main Screen2
+#
+
+[BEGIN]
+
+Flag : NONE
+
+Objects : 2
+
+Duration : 8000
+
+Fade : IN_OUT
+
+Texture 1 : 2_1 BEFORE
+Texture 2 : 2_2 BEFORE
+
+
+StartTime 1 : 0
+StartTime 2 : 0
+
+
+EndTime 1 : 8000
+EndTime 2 : 8000
+
+
+MoveTime 1 : 20
+MoveTime 2 : 20
+
+
+ScaleTime 1 : 20
+ScaleTime 2 : 20
+
+
+StartPos 1 : 0.5 0.5
+StartPos 2 : 0.5 0.55
+
+
+MoveAmount 1 : 0.000 -0.00005
+MoveAmount 2 : 0.000 0.0003
+
+
+StartSize 1 : 1.2 1.2
+StartSize 2 : 0.5 1.0
+
+
+ScaleAmount 1 : -0.0007 -0.0007
+ScaleAmount 2 : 0.0005 0.0010
+
+
+[END]
+
+
+#
+# 8 - Main Screen3
+#
+
+[BEGIN]
+
+Flag : LAST_INGAME
+
+Objects : 3
+
+Duration : 8000
+
+Fade : IN_OUT
+
+Texture 1 : 3_1 BEFORE
+Texture 2 : 3_2 BEFORE
+Texture 3 : 3_3 BEFORE
+
+
+StartTime 1 : 0
+StartTime 2 : 0
+StartTime 3 : 0
+
+
+EndTime 1 : 8000
+EndTime 2 : 8000
+EndTime 3 : 8000
+
+
+MoveTime 1 : 20
+MoveTime 2 : 20
+MoveTime 3 : 20
+
+
+ScaleTime 1 : 20
+ScaleTime 2 : 20
+ScaleTime 3 : 20
+
+
+StartPos 1 : 0.5 0.5
+StartPos 2 : 0.5 0.49
+StartPos 3 : 0.25 0.5
+
+
+MoveAmount 1 : 0.00    0.00
+MoveAmount 2 : 0.0001  0.000
+MoveAmount 3 : -0.0001 0.000
+
+
+StartSize 1 : 1.05 1.05
+StartSize 2 : 1.1 1.1
+StartSize 3 : 0.54 1.08
+
+
+ScaleAmount 1 : -0.0001 -0.0001
+ScaleAmount 2 : 0.00015  0.00015
+ScaleAmount 3 : 0.000125 0.00025
+
+
+[END]
+
+
+
+
+#
+# 9 - Main Screen4
+#
+
+[BEGIN]
+
+Flag : NONE
+
+Objects : 3
+
+Duration : 8000
+
+Fade : IN_OUT
+
+Texture 1 : 4_1 BEFORE
+Texture 2 : 4_2 BEFORE
+Texture 3 : 4_3 BEFORE
+
+
+StartTime 1 : 0
+StartTime 2 : 0
+StartTime 3 : 0
+
+
+EndTime 1 : 8000
+EndTime 2 : 8000
+EndTime 3 : 8000
+
+
+MoveTime 1 : 20
+MoveTime 2 : 20
+MoveTime 3 : 20
+
+
+ScaleTime 1 : 20
+ScaleTime 2 : 20
+ScaleTime 3 : 20
+
+
+StartPos 1 : 0.5 0.5
+StartPos 2 : 0.68 0.50
+StartPos 3 : 0.475 0.50
+
+
+MoveAmount 1 : -0.00005  0.000
+MoveAmount 2 : 0.00015 0.000
+MoveAmount 3 : 0.0003 0.000
+
+
+StartSize 1 : 1.05 1.05
+StartSize 2 : 0.525 1.05
+StartSize 3 : 1.05 1.05
+
+
+ScaleAmount 1 : 0.000 0.000
+ScaleAmount 2 : 0.000 0.000
+ScaleAmount 3 : 0.000 0.000
+
+
+[END]
+
+
+
+
+#
+# 10 - Main Screen5
+#
+
+[BEGIN]
+
+Flag : NONE
+
+Objects : 3
+
+Duration : 8000
+
+Fade : IN_OUT
+
+Texture 1 : 5_1 BEFORE
+Texture 2 : 5_2 BEFORE
+Texture 3 : 5_3 BEFORE
+
+
+StartTime 1 : 0
+StartTime 2 : 0
+StartTime 3 : 0
+
+
+EndTime 1 : 8000
+EndTime 2 : 8000
+EndTime 3 : 8000
+
+
+MoveTime 1 : 20
+MoveTime 2 : 20
+MoveTime 3 : 20
+
+
+ScaleTime 1 : 20
+ScaleTime 2 : 20
+ScaleTime 3 : 20
+
+
+StartPos 1 : 0.5 0.5
+StartPos 2 : 0.65 0.50
+StartPos 3 : 0.30 0.50
+
+
+MoveAmount 1 : 0.000   0.0001
+MoveAmount 2 : -0.0001 0.0001
+MoveAmount 3 : 0.00015  0.00015
+
+
+StartSize 1 : 1.05 1.05
+StartSize 2 : 0.525 1.05
+StartSize 3 : 0.525 1.05
+
+
+ScaleAmount 1 : 0.0000  0.0000
+ScaleAmount 2 : 0.0001  0.0002
+ScaleAmount 3 : 0.00015 0.0003
+
+
+
+
+[END]
+
+#
+# 11 - Main Screen6
+#
+
+[BEGIN]
+
+Flag : NONE
+
+Objects : 3
+
+Duration : 8000
+
+Fade : IN_OUT
+
+Texture 1 : 6_1 BEFORE
+Texture 2 : 6_2 BEFORE
+Texture 3 : 6_3 BEFORE
+
+
+StartTime 1 : 0
+StartTime 2 : 0
+StartTime 3 : 0
+
+
+EndTime 1 : 8000
+EndTime 2 : 8000
+EndTime 3 : 8000
+
+
+MoveTime 1 : 20
+MoveTime 2 : 20
+MoveTime 3 : 20
+
+
+ScaleTime 1 : 20
+ScaleTime 2 : 20
+ScaleTime 3 : 20
+
+
+StartPos 1 : 0.48 0.5
+StartPos 2 : 0.5 0.5
+StartPos 3 : 0.5 0.5
+
+
+MoveAmount 1 : 0.00001 0.0
+MoveAmount 2 : -0.0001 -0.00008
+MoveAmount 3 : 0.00013 -0.0001
+
+
+StartSize 1 : 1.35 1.35
+StartSize 2 : 1.1  1.1
+StartSize 3 : 1    1
+
+
+ScaleAmount 1 : -0.0003 -0.0003
+ScaleAmount 2 : 0.0003 0.0003
+ScaleAmount 3 : 0.0006 0.0006
+
+
+[END]
+
+
+
+
+
+
+
+
+
+
+#################################################################################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+##################################    4:3 (Non-Widescreen)    ###################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+#################################################################################################
+
+[4:3]
+
+
+
+#
+# 1 - Legal Screen
+#
+
+[BEGIN]
+
+Flag : LEGAL
+
+Objects : 0
+
+Duration : 6000
+
+Fade : NONE
+
+[END]
+
+
+
+
+
+#
+# 2 - R* Games
+#
+
+[BEGIN]
+
+Flag : START_INTRO
+
+Objects : 1
+
+Duration : 4000
+
+Fade : IN_OUT
+
+Texture 1 : ny BEFORE
+
+StartTime 1 : 800
+
+EndTime 1 : 3800
+
+MoveTime 1 : 20
+
+ScaleTime 1 : 20
+
+StartPos 1 : 0.5 0.48
+
+MoveAmount 1 : 0.000 0.000
+
+StartSize 1 : 0.420 0.560
+
+ScaleAmount 1 : -0.0015 -0.002
+
+[END]
+
+
+
+#
+# 3 - R* North
+#
+
+[BEGIN]
+
+Flag : NONE
+
+Objects : 1
+
+Duration : 3200
+
+Fade : IN_OUT
+
+Texture 1 : north BEFORE
+
+StartTime 1 : 0
+
+EndTime 1 : 3000
+
+MoveTime 1 : 20
+
+ScaleTime 1 : 20
+
+StartPos 1 : 0.5 0.48
+
+MoveAmount 1 : 0.000 0.000
+
+StartSize 1 : 0.340 0.453
+
+ScaleAmount 1 : -0.0015 -0.002
+[END]
+
+
+
+
+#
+# 4 - GTA LOGO Screen
+#
+
+[BEGIN]
+
+Flag : END_INTRO
+
+Objects : 1
+
+Duration : 3200
+
+Fade : IN_OUT
+
+Texture 1 : gta BEFORE
+
+StartTime 1 : 0
+
+EndTime 1 : 3200
+
+MoveTime 1 : 20
+
+ScaleTime 1 : 20
+
+StartPos 1 : 0.5 0.48
+
+MoveAmount 1 : 0.0 0.0
+
+StartSize 1 : 0.55 0.733
+
+ScaleAmount 1 : 0.00 0.00
+
+[END]
+
+
+
+
+#
+# 5 - Blank screen
+#
+
+[BEGIN]
+
+Flag : NONE
+
+Objects : 0
+
+Duration : 900
+
+Fade : NONE
+
+[END]
+
+
+
+
+
+
+
+#
+# 6 - Main Screen1
+#
+
+[BEGIN]
+
+Flag : INITIAL_MAIN
+
+Objects : 3
+
+Duration : 8000
+
+Fade : IN_OUT
+
+Texture 1 : 1_1 BEFORE
+Texture 2 : 1_2 BEFORE
+Texture 3 : 1_3 BEFORE
+
+
+StartTime 1 : 0
+StartTime 2 : 0
+StartTime 3 : 0
+
+
+EndTime 1 : 8000
+EndTime 2 : 8000
+EndTime 3 : 8000
+
+
+MoveTime 1 : 20
+MoveTime 2 : 20
+MoveTime 3 : 20
+
+
+ScaleTime 1 : 20
+ScaleTime 2 : 20
+ScaleTime 3 : 20
+
+
+StartPos 1 : 0.5 0.5
+StartPos 2 : 0.5 0.5
+StartPos 3 : 0.491 0.5
+
+MoveAmount 1 : 0.000 0.000
+MoveAmount 2 : 0.0001 0.000
+MoveAmount 3 : -0.0002 0.000
+
+
+StartSize 1 : 1.4 1.05
+StartSize 2 : 1.4 1.05
+StartSize 3 : 1.41 1.06
+
+
+ScaleAmount 1 : -0.00014 -0.0001
+ScaleAmount 2 : 0.00028 0.0002
+ScaleAmount 3 : 0.00042 0.0003
+
+
+[END]
+
+
+
+#
+# 7 - Main Screen2
+#
+
+[BEGIN]
+
+Flag : NONE
+
+Objects : 2
+
+Duration : 8000
+
+Fade : IN_OUT
+
+Texture 1 : 2_1 BEFORE
+Texture 2 : 2_2 BEFORE
+
+
+StartTime 1 : 0
+StartTime 2 : 0
+
+
+EndTime 1 : 8000
+EndTime 2 : 8000
+
+
+MoveTime 1 : 20
+MoveTime 2 : 20
+
+
+ScaleTime 1 : 20
+ScaleTime 2 : 20
+
+
+StartPos 1 : 0.5 0.51
+StartPos 2 : 0.5 0.55
+
+
+MoveAmount 1 : 0.000 -0.00004
+MoveAmount 2 : 0.000 0.0004
+
+
+StartSize 1 : 1.5 1.113
+StartSize 2 : 0.66 1.0
+
+
+ScaleAmount 1 : -0.0012 -0.00086
+ScaleAmount 2 : 0.0006 0.0010
+
+
+[END]
+
+
+#
+# 8 - Main Screen3
+#
+
+[BEGIN]
+
+Flag : LAST_INGAME
+
+Objects : 3
+
+Duration : 8000
+
+Fade : IN_OUT
+
+Texture 1 : 3_1 BEFORE
+Texture 2 : 3_2 BEFORE
+Texture 3 : 3_3 BEFORE
+
+
+StartTime 1 : 0
+StartTime 2 : 0
+StartTime 3 : 0
+
+
+EndTime 1 : 8000
+EndTime 2 : 8000
+EndTime 3 : 8000
+
+
+MoveTime 1 : 20
+MoveTime 2 : 20
+MoveTime 3 : 20
+
+
+ScaleTime 1 : 20
+ScaleTime 2 : 20
+ScaleTime 3 : 20
+
+
+StartPos 1 : 0.5 0.5
+StartPos 2 : 0.5 0.49
+StartPos 3 : 0.25 0.5
+
+
+MoveAmount 1 : 0.00    0.00
+MoveAmount 2 : 0.0001  0.000
+MoveAmount 3 : -0.0001 0.000
+
+
+StartSize 1 : 1.4 1.05
+StartSize 2 : 1.4 1.05
+StartSize 3 : 0.66 1.05
+
+
+ScaleAmount 1 : -0.00014 -0.000105
+ScaleAmount 2 : 0.00014  0.000105
+ScaleAmount 3 : 0.000132 0.000210
+
+
+[END]
+
+
+
+#
+# 9 - Main Screen4
+#
+
+[BEGIN]
+
+Flag : NONE
+
+Objects : 3
+
+Duration : 8000
+
+Fade : IN_OUT
+
+Texture 1 : 4_1 BEFORE
+Texture 2 : 4_2 BEFORE
+Texture 3 : 4_3 BEFORE
+
+
+StartTime 1 : 0
+StartTime 2 : 0
+StartTime 3 : 0
+
+
+EndTime 1 : 8000
+EndTime 2 : 8000
+EndTime 3 : 8000
+
+
+MoveTime 1 : 20
+MoveTime 2 : 20
+MoveTime 3 : 20
+
+
+ScaleTime 1 : 20
+ScaleTime 2 : 20
+ScaleTime 3 : 20
+
+
+StartPos 1 : 0.5 0.5
+StartPos 2 : 0.70 0.50
+StartPos 3 : 0.50 0.50
+
+
+MoveAmount 1 : -0.00005 0.000
+MoveAmount 2 : 0.00015 0.0001
+MoveAmount 3 : 0.0003 0.000
+
+
+StartSize 1 : 1.4 1.05
+StartSize 2 : 0.66 1.05
+StartSize 3 : 1.4 1.05
+
+
+ScaleAmount 1 : -0.00014 -0.0001
+ScaleAmount 2 : 0.0 0.0
+ScaleAmount 3 : 0.0 0.0
+
+
+[END]
+
+
+
+
+
+
+#
+# 10 - Main Screen5
+#
+
+[BEGIN]
+
+Flag : NONE
+
+Objects : 3
+
+Duration : 8000
+
+Fade : IN_OUT
+
+Texture 1 : 5_1 BEFORE
+Texture 2 : 5_2 BEFORE
+Texture 3 : 5_3 BEFORE
+
+
+StartTime 1 : 0
+StartTime 2 : 0
+StartTime 3 : 0
+
+
+EndTime 1 : 8000
+EndTime 2 : 8000
+EndTime 3 : 8000
+
+
+MoveTime 1 : 20
+MoveTime 2 : 20
+MoveTime 3 : 20
+
+
+ScaleTime 1 : 20
+ScaleTime 2 : 20
+ScaleTime 3 : 20
+
+
+StartPos 1 : 0.5 0.5
+StartPos 2 : 0.65 0.50
+StartPos 3 : 0.30 0.50
+
+
+MoveAmount 1 : 0.000 0.000
+MoveAmount 2 : -0.0001 -0.0001
+MoveAmount 3 : 0.0002 -0.0001
+
+
+StartSize 1 : 1.44 1.05
+StartSize 2 : 0.66 1.05
+StartSize 3 : 0.66 1.05
+
+
+ScaleAmount 1 : -0.00014 -0.0001
+ScaleAmount 2 : -0.000198 -0.0002
+ScaleAmount 3 : 0.00015 0.0003
+
+
+[END]
+
+#
+# 11 - Main Screen6
+#
+
+[BEGIN]
+
+Flag : NONE
+
+Objects : 3
+
+Duration : 8000
+
+Fade : IN_OUT
+
+Texture 1 : 6_1 BEFORE
+Texture 2 : 6_2 BEFORE
+Texture 3 : 6_3 BEFORE
+
+
+StartTime 1 : 0
+StartTime 2 : 0
+StartTime 3 : 0
+
+
+EndTime 1 : 8000
+EndTime 2 : 8000
+EndTime 3 : 8000
+
+
+MoveTime 1 : 20
+MoveTime 2 : 20
+MoveTime 3 : 20
+
+
+ScaleTime 1 : 20
+ScaleTime 2 : 20
+ScaleTime 3 : 20
+
+
+StartPos 1 : 0.47 0.5
+StartPos 2 : 0.46 0.5
+StartPos 3 : 0.5 0.5
+
+
+MoveAmount 1 : 0.00001 0.0
+MoveAmount 2 : -0.00008 0.0
+MoveAmount 3 : 0.00013 0.0
+
+
+StartSize 1 : 1.6 1.2
+StartSize 2 : 1.4 1.05
+StartSize 3 : 1.4 1.05
+
+
+ScaleAmount 1 : -0.0001 -0.0001
+ScaleAmount 2 : 0.00028 0.00021
+ScaleAmount 3 : 0.00056 0.00042
+
+
+
+[END]
+
+
+
+
+# -eof-

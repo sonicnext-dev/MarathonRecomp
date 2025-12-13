@@ -1,0 +1,220 @@
+;
+;	Title	:	Plants.dat
+;	Author	:	Andrzej Madajczyk
+;	Date	:	02/05/2003
+;
+;----------------------------------------------------------------------------------
+;
+; Note: "Renderer"->"PlantsMgr"->"Reload plants.dat" widget will reload 
+;		this file while game is running;
+;
+;----------------------------------------------------------------------------------
+;
+;
+;--------------------------------------------------------------------------------------------
+; Following debug settings work ONLY in debug/beta builds of the game (not in release/final):
+;
+; 1. LocTris far dist (metres):
+;;###	TRILOC_FAR_DIST		15.0
+;###	TRILOC_FAR_DIST		25.0
+;
+; 2. Plants alpha fade start (metres):
+;;###	ALPHA_CLOSE_DIST	20.0
+;###	ALPHA_CLOSE_DIST	0.0
+;
+; 3. Plants alpha fade end (metres):
+;;###	ALPHA_FAR_DIST		45.0
+;###	ALPHA_FAR_DIST		15.0
+;--------------------------------------------------------------------------------------------
+;
+;
+;
+;
+;
+;
+;	Name		- 	Surface Name (it must correspond to names in "ColPoint.h",
+;					e.g. "TARMAC" -> "COLPOINT_SURFACETYPE_TARMAC");
+;
+;
+;	PCDid		- 	Plant Cover Definition Index for SurfaceType (0-2)
+;					Notes:	1. There must be at least 1 PCDid specified per SurfaceType
+;							2. Each plant definition have own options for plants, but all definitions
+;								must share the same constant SlotID (see below)
+;
+;	SlotID		-	Plant Slot ID (defines main geometry set and "big" texture ID)
+;					Note:	SlotID must be CONSTANT for all plant cover definitions in SurfaceType
+;
+;
+;	ModelID		- 	subModel ID (0-3)
+;	UVoff		- 	local UV offset in "big" texture (64x1024), described by ID (0-15):
+;
+;  ******
+;  *  0 *
+;  ******
+;  *  1 *
+;  ******
+;  *  2 *
+;  ******
+;  * .. *
+;  ******
+;  * .. *
+;  ******
+;  * .. *
+;  ******
+;  * 13 *
+;  ******
+;  * 14 *
+;  ******
+;  * 15 *
+;  ******
+;
+;
+;	R,G,B		-	Color RGB (0-255)		(default=(255,255,255))
+;
+;	I			- 	Color Intensity	(0-255)	(default=255) 
+;	VarI		- 	Color intensity Variation (default=0 (no variation))
+;					Intensity should be <255 to see any effect of this (final_I = I + VarI*rand01())
+;
+;	A			- 	Color Alpha	(129-255)	(default=255)
+;
+;
+;	SclXY		- 	Plant Size Scale XY 			(default=1.0)
+;	SclZ		- 	Plant Size Scale Z (height)		(default=1.0)
+;	SclVarXY	- 	Plant Size Scale Variation XY	(default=0.0 (no variation)) (final_SclXY = SclXY + SclVarXY*rand01())
+;	SclVarZ		- 	Plant Size Scale Variation Z	(like SclVarXY)
+;
+;
+;	WBendScl	-	Wind bending scale (default=0.0 (no wind bending))
+;					Notes:	1. This scale may be negative (s<0) - then you will get "opposite to the wind" movement
+;							2. This should be off (=0.0) for very small plants (with low ScaleZ), as bending looks unnatural for them
+;
+;	WBendVar	-	Wind bending variation (0 <= var <= 10)
+;					(>1.0 = big differences in bending among plants in set, 0.5 = medium differences,
+;					 0.0 = every plant is bended in the same way)
+;
+;					final_bend = [ 1.0 + (bend_var*rand(-1,1)) ] * [ global_wind * bend_scale ]
+;
+;					Notes:	1. when WBendScl is small (~1.0) and WBendVar is big (>3.0), then bending differences will be very visible
+;							2. when WBendScl is big (~3.0) and WBendVar is small (<1.0), then bending differences will be very small
+;
+;
+;	Density		- 	Density (num of plants per 1 sq/m)
+;					(1.0=dense, 0.2=average, 0.1=sparse, 0.0 = no plants generated)
+;
+;
+;
+;
+;
+;	
+;
+;Name				PCDid		SlotID		ModelID		UVoff		R		G		B		I		VarI		A		SclXY		SclZ		clVarXY			SclVarZ		WBendScl		WBendVar			Density
+;
+;TARMAC_REALLYFUCKED		0		0		2		1		190		250		165		100		0		25		0.1		0.11		0.1			0.1		1.0			3.0				0.02
+;
+;GRASS_SHORT_LUSH		0		0		0		1		220		210		165		160		22		40		0.5		0.51		1.5			0.65		5.0			1.0				0.1
+;GRASS_SHORT_LUSH		1		0		1		1		220		210		165		160		22		40		1.5		0.61		1.5			0.85		5.0			1.0				0.08
+;
+;GRASS_MEDIUM_LUSH		0		0		2		1		210		250		128		111		64		46		1.5		0.51		1.5			0.65		1.0			3.0				0.1
+;GRASS_MEDIUM_LUSH		1		0		2		1		210		250		128		111		64		46		1.5		0.61		1.5			0.85		1.0			3.0				0.08
+;
+;GRASS_LONG_LUSH			0		0		0		1		214		170		189		150		64		50		0.5		0.11		1.5			0.25		1.0			3.0				0.16
+;
+;GRASS_SHORT_DRY			0		1		0		1		222		220		219		190		50		50		0.5		0.11		1.5			0.25		1.0			3.0				0.1
+;GRASS_SHORT_DRY			1		1		0		1		222		220		219		190		50		40		1.5		0.61		1.5			0.85		1.0			3.0				0.08
+;
+;GRASS_MEDIUM_DRY		0		0		0		1		220		210		165		160		22		40		0.5		0.51		1.5			0.65		5.0			1.0				0.1
+;GRASS_MEDIUM_DRY		1		0		1		1		220		d210		165		160		22		40		1.5		0.61		1.5			0.85		5.0			1.0				0.08
+;
+;GRASS_LONG_DRY			1		0		0		3		190		250		165		100		0		20		1.5		0.61		1.5			0.85		1.0			3.0				0.08
+;
+;Name				PCDid		SlotID		ModelID		UVoff		R		G		B		I		VarI		A		SclXY		SclZ		clVarXY			SclVarZ		WBendScl		WBendVar			Density
+;
+;WOODLANDGROUND			0		0		0		1		120		120		125		120		220		90		3.5		0.6		1.9			1.25		1.0			6.0				0.09
+;WOODLANDGROUND			1		0		0		0		125		125		125		120		220		50		1.0		1.0		0.5			0.5		1.0			6.0				0.09
+;
+;
+;
+;
+;SAND_DEEP			0		1		0		1		192		192		192		120		220		155		0.5		0.5		0.5			0.55		1.0			0.0				0.01
+;SAND_DEEP			0		1		0		1		192		192		192		120		220		155		0.5		0.5		0.5			0.55		1.0			0.0				0.01
+;SAND_MEDIUM			0		1		0		0		190		190		195		120		220		200		3.5		0.2		0.9			0.25		1.0			0.0				0.18
+;SAND_MEDIUM			0		1		0		0		190		190		195		120		220		200		3.5		0.2		0.9			0.25		1.0			0.0				0.18
+;
+;SAND_COMPACT			0		1		0		3		245		147		113		86		45		35		1.5		0.2		0.5			0.55		1.0			0.0				0.18
+;SAND_COMPACT			1		1		0		1		245		147		113		86		45		35		0.5		0.5		0.5			0.55		1.0			0.0				0.18
+;SAND_COMPACT			0		1		0		3		245		147		113		86		45		35		1.5		0.2		0.5			0.55		1.0			0.0				0.18
+;SAND_COMPACT			1		1		0		1		245		147		113		86		45		35		0.5		0.5		0.5			0.55		1.0			0.0				0.18
+;
+;SAND_ARID			1		1		0		0		210		205		182		210		0		50		1.5		0.6		1.5			0.85		1.0			3.0				0.04
+;
+;SAND_MORE			0		1		0		2		192		192		192		110		220		100		0.5		0.5		0.5			0.55		1.0			0.0				0.18
+;SAND_MORE			0		1		0		2		192		192		192		110		220		100		0.5		0.5		0.5			0.55		1.0			0.0				0.18
+;
+;P_GRASSMID1			0		1		0		1		242		240		239		190		50		50		0.5		0.11		1.5			0.25		1.0			3.0				0.1
+;P_GRASSMID1			1		1		0		1		242		240		239		190		50		40		1.5		0.61		1.5			0.85		1.0			3.0				0.08
+;
+;P_GRASSMID2			0		1		0		1		222		220		219		190		50		50		0.5		0.11		1.5			0.25		1.0			3.0				0.1
+;P_GRASSMID2			1		1		0		1		222		220		219		190		50		40		1.5		0.61		1.5			0.85		1.0			3.0				0.08
+;
+;
+;P_BUSHYDRY			0		1		0		1		222		220		219		190		50		50		0.5		0.11		1.5			0.25		1.0			3.0				0.1
+;P_BUSHYDRY			1		1		0		1		222		220		219		190		50		40		1.5		0.61		1.5			0.85		1.0			3.0				0.08
+;
+;P_GRASSLIGHTER			0		1		0		1		242		240		239		190		50		50		0.5		0.11		1.5			0.25		1.0			3.0				0.1
+;P_GRASSLIGHTER			1		1		0		1		242		240		239		190		50		40		1.5		0.61		1.5			0.85		1.0			3.0				0.08
+;
+;P_GRASSLIGHTER2			0		1		0		1		242		240		239		190		50		50		0.5		0.11		1.5			0.25		1.0			3.0				0.1
+;P_GRASSLIGHTER2			1		1		0		1		242		240		239		190		50		40		1.5		0.61		1.5			0.85		1.0			3.0				0.08
+;
+;P_WOODLAND			0		0		0		1		252		220		139		190		50		50		0.5		0.11		1.5			0.25		1.0			3.0				0.1
+;P_WOODLAND			1		0		0		1		252		220		139		190		50		40		1.5		0.61		1.5			0.85		1.0			3.0				0.08
+;
+;P_FORESTSTUMPS			0		0		0		1		252		220		139		190		50		50		0.5		0.11		1.5			0.25		1.0			3.0				0.1
+;P_FORESTSTUMPS			1		0		0		1		252		220		139		190		50		40		1.5		0.61		1.5			0.85		1.0			3.0				0.08
+;
+;P_GRASSBRNMIX			0		0		0		1		252		200		139		190		50		50		0.5		0.11		1.5			0.25		1.0			3.0				0.1
+;P_GRASSBRNMIX			1		0		0		1		252		200		139		190		50		40		1.5		0.61		1.5			0.85		1.0			3.0				0.08
+;
+;CORNFIELD			0		1		0		1		242		240		239		220		90		70		0.5		2.11		1.5			0.25		1.0			3.0				0.1
+;CORNFIELD			1		1		0		1		242		240		239		220		90		70		1.5		2.61		1.5			0.85		1.0			3.0				0.08
+;
+;P_SAND				1		1		0		0		210		205		182		210		0		50		1.5		0.6		1.5			0.85		1.0			3.0				0.01
+;P_SAND_ARID			1		1		0		0		210		205		182		210		0		50		1.5		0.6		1.5			0.85		1.0			3.0				0.04
+;P_SAND_DENSE			1		1		0		0		210		205		182		210		0		50		1.5		0.6		1.5			0.85		1.0			3.0				0.01
+;P_SAND_COMPACT			1		1		0		0		120		135		70		170		0		30		1.5		0.6		1.5			0.85		1.0			3.0				0.06
+;P_GRASS_SHORT			0		0		0		2		190		250		165		100		0		50		2.5		0.61		2.5			0.85		1.0			3.0				0.04
+;P_GRASS_MEADOW			0		0		0		2		210		250		128		111		64		16		0.5		0.51		1.5			0.65		1.0			3.0				0.0
+;P_GRASS_DRY			0		0		0		2		220		210		165		160		22		40		0.5		0.51		1.5			0.65		5.0			1.0				0.0
+;P_WOODDENSE			0		0		0		3		190		250		165		100		0		20		1.5		0.61		1.5			0.85		1.0			3.0				0.00
+;P_ROADSIDEDES			0		0		0		2		202		222		202		180		220		100		1.5		1.2		0.5			0.55		1.0			0.0				0.01
+;
+;P_GRASSWEEFLOWERS		0		1		0		1		242		240		239		190		50		50		0.5		0.11		1.5			0.25		1.0			3.0				0.1
+;P_GRASSWEEFLOWERS		1		1		0		1		242		240		239		190		50		40		1.5		0.61		1.5			0.85		1.0			3.0				0.08
+;
+;P_GRASSDRYTALL			0		1		0		1		242		240		239		190		50		50		0.5		0.11		1.5			0.25		1.0			3.0				0.1
+;P_GRASSDRYTALL			1		1		0		1		242		240		239		190		50		40		1.5		0.61		1.5			0.85		1.0			3.0				0.08
+;
+;P_GRASSLUSHTALL			0		1		0		1		242		240		239		190		50		50		0.5		0.11		1.5			0.25		1.0			3.0				0.1
+;P_GRASSLUSHTALL			1		1		0		1		242		240		239		190		50		40		1.5		0.61		1.5			0.85		1.0			3.0				0.08
+;
+;P_GRASSGRNMIX			0		1		0		1		242		240		239		190		50		50		0.5		0.11		1.5			0.25		1.0			3.0				0.1
+;P_GRASSGRNMIX			1		1		0		1		242		240		239		190		50		40		1.5		0.61		1.5			0.85		1.0			3.0				0.08
+;
+;P_GRASSLOW			0		0		0		1		190		250		165		100		0		50		0.5		0.11		1.5			0.25		1.0			3.0				0.1
+;P_GRASSLIGHTER2			0		1		0		1		242		240		239		190		50		50		0.5		0.11		1.5			0.25		1.0			3.0				0.1
+;P_GRASSLIGHTER2			1		1		0		1		242		240		239		190		50		40		1.5		0.61		1.5			0.85		1.0			3.0				0.08
+;
+;P_GRASSROCKY			0		0		0		1		190		250		165		100		0		50		0.5		0.11		1.5			0.25		1.0			3.0				0.1
+;P_GRASSSMALLTREES		0		0		0		1		190		250		165		100		0		50		0.5		0.11		1.5			0.25		1.0			3.0				0.1
+;P_GRASSLIGHT			0		0		0		1		190		250		165		100		0		50		0.5		0.11		1.5			0.25		1.0			3.0				0.1
+;
+;Name				PCDid		SlotID		ModelID		UVoff		R		G		B		I		VarI		A		SclXY		SclZ		clVarXY			SclVarZ		WBendScl		WBendVar			Density;
+;P_GRASSDARK			0		0		0		1		190		250		165		100		0		50		0.5		0.11		1.5			0.25		1.0			3.0				0.1
+;P_GRASSDARK2			0		0		0		1		190		250		165		100		0		50		0.5		0.11		1.5			0.25		1.0			3.0				0.1
+;P_GRASSDIRTMIX			0		0		0		1		190		250		165		100		0		50		0.5		0.11		1.5			0.25		1.0			3.0				0.1
+;
+;PARKGRASS			0		0		0		0		195		255		185		111		165		155		2.0		1.0		6.5			4.25		6.0			4.0				1.0
+;PARKGRASS			0		0		0		0		255		255		255		0		250		100		0.01		1.0		2.5			3.25		1.0			4.0				1.3
+;
+;
+;the end

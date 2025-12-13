@@ -5514,13 +5514,20 @@ static GuestShader* CreateShader(const be<uint32_t>* function, ResourceType reso
 {
     XXH64_hash_t hash = XXH3_64bits(function, function[1] + function[2]);
 
+    if (g_shaderCacheEntryCount == 0)
+    {
+        LOG_ERROR("Shader cache is empty (g_shaderCacheEntryCount == 0). GTA IV shader extraction/recompilation has not been implemented yet.");
+        LOG_ERROR("Expected: extract shaders from GTA IV .rpf archives and generate LibertyRecompLib/shader/shader_cache.cpp.");
+        std::_Exit(1);
+    }
+
     auto findResult = FindShaderCacheEntry(hash);
     GuestShader* shader = nullptr;
 
     if (findResult == nullptr) {
-        LOGF_WARNING("Shader of function {:x} is not found by value: {:x}", reinterpret_cast<uintptr_t>(function), hash);
-        LOG_WARNING("Perhaps the path to the required shader will be printed before this error");
-        __builtin_trap();
+        LOGF_ERROR("Shader of function {:x} is not found by value: {:x}", reinterpret_cast<uintptr_t>(function), hash);
+        LOG_ERROR("This usually means the shader cache is incomplete for this title.");
+        std::_Exit(1);
     }
     if (findResult != nullptr)
     {

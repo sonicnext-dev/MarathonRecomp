@@ -1,0 +1,66 @@
+
+# Consider dependencies only in project.
+set(CMAKE_DEPENDS_IN_PROJECT_ONLY OFF)
+
+# The set of languages for which implicit dependencies are needed:
+set(CMAKE_DEPENDS_LANGUAGES
+  )
+
+# The set of dependency files which are needed:
+set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/common/debug.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/common/debug.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/common/debug.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/common/entropy_common.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/common/entropy_common.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/common/entropy_common.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/common/error_private.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/common/error_private.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/common/error_private.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/common/fse_decompress.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/common/fse_decompress.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/common/fse_decompress.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/common/pool.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/common/pool.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/common/pool.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/common/threading.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/common/threading.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/common/threading.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/common/xxhash.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/common/xxhash.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/common/xxhash.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/common/zstd_common.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/common/zstd_common.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/common/zstd_common.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/compress/fse_compress.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/fse_compress.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/fse_compress.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/compress/hist.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/hist.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/hist.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/compress/huf_compress.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/huf_compress.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/huf_compress.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/compress/zstd_compress.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstd_compress.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstd_compress.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/compress/zstd_compress_literals.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstd_compress_literals.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstd_compress_literals.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/compress/zstd_compress_sequences.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstd_compress_sequences.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstd_compress_sequences.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/compress/zstd_compress_superblock.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstd_compress_superblock.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstd_compress_superblock.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/compress/zstd_double_fast.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstd_double_fast.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstd_double_fast.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/compress/zstd_fast.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstd_fast.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstd_fast.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/compress/zstd_lazy.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstd_lazy.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstd_lazy.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/compress/zstd_ldm.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstd_ldm.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstd_ldm.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/compress/zstd_opt.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstd_opt.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstd_opt.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/compress/zstd_preSplit.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstd_preSplit.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstd_preSplit.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/compress/zstdmt_compress.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstdmt_compress.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/compress/zstdmt_compress.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/decompress/huf_decompress.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/decompress/huf_decompress.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/decompress/huf_decompress.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/decompress/zstd_ddict.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/decompress/zstd_ddict.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/decompress/zstd_ddict.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/decompress/zstd_decompress.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/decompress/zstd_decompress.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/decompress/zstd_decompress.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/decompress/zstd_decompress_block.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/decompress/zstd_decompress_block.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/decompress/zstd_decompress_block.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/dictBuilder/cover.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/dictBuilder/cover.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/dictBuilder/cover.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/dictBuilder/divsufsort.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/dictBuilder/divsufsort.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/dictBuilder/divsufsort.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/dictBuilder/fastcover.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/dictBuilder/fastcover.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/dictBuilder/fastcover.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/dictBuilder/zdict.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/dictBuilder/zdict.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/dictBuilder/zdict.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/legacy/zstd_v01.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/legacy/zstd_v01.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/legacy/zstd_v01.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/legacy/zstd_v02.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/legacy/zstd_v02.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/legacy/zstd_v02.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/legacy/zstd_v03.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/legacy/zstd_v03.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/legacy/zstd_v03.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/legacy/zstd_v04.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/legacy/zstd_v04.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/legacy/zstd_v04.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/legacy/zstd_v05.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/legacy/zstd_v05.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/legacy/zstd_v05.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/legacy/zstd_v06.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/legacy/zstd_v06.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/legacy/zstd_v06.c.o.d"
+  "/Users/Ozordi/Downloads/MarathonRecomp/tools/XenosRecomp/thirdparty/zstd/lib/legacy/zstd_v07.c" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/legacy/zstd_v07.c.o" "gcc" "thirdparty/zstd/build/cmake/lib/CMakeFiles/libzstd_shared.dir/__/__/__/lib/legacy/zstd_v07.c.o.d"
+  )
+
+# Pairs of files generated by the same build rule.
+set(CMAKE_MULTIPLE_OUTPUT_PAIRS
+  "/Users/Ozordi/Downloads/MarathonRecomp/build_xenosrecomp/thirdparty/zstd/build/cmake/lib/libzstd.1.dylib" "/Users/Ozordi/Downloads/MarathonRecomp/build_xenosrecomp/thirdparty/zstd/build/cmake/lib/libzstd.1.5.7.dylib"
+  "/Users/Ozordi/Downloads/MarathonRecomp/build_xenosrecomp/thirdparty/zstd/build/cmake/lib/libzstd.dylib" "/Users/Ozordi/Downloads/MarathonRecomp/build_xenosrecomp/thirdparty/zstd/build/cmake/lib/libzstd.1.5.7.dylib"
+  )
+
+
+# Targets to which this target links which contain Fortran sources.
+set(CMAKE_Fortran_TARGET_LINKED_INFO_FILES
+  )
+
+# Targets to which this target links which contain Fortran sources.
+set(CMAKE_Fortran_TARGET_FORWARD_LINKED_INFO_FILES
+  )
+
+# Fortran module output directory.
+set(CMAKE_Fortran_TARGET_MODULE_DIR "")

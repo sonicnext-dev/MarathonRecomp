@@ -14,6 +14,13 @@ gta4/
 # Development Notes - Private
 NOTES.md
 
+# SparkIV (vendored dev tool)
+SparkIV-master/*.zip
+SparkIV-master/**/packages/
+
+# Extracted game assets - DO NOT COMMIT
+extracted_shaders/
+
 # User-specific files
 *.rsuser
 *.suo

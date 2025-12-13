@@ -1,0 +1,58 @@
+<thrownweaponinfo>
+
+	<object name="CJ_PROC_Tin">
+		<offset x="0.11" y="0.04" z="0"/>
+		<rotoffset x="0" y="90" z="0"/>
+	</object>
+
+	<object name="CJ_PROC_Tin3">
+		<offset x="0.11" y="0.04" z="0"/>
+		<rotoffset x="0" y="90" z="0"/>
+	</object>
+
+	<object name="CJ_PROC_BRICK">
+		<offset x="0.11" y="0.04" z="0"/>
+		<rotoffset x="90" y="90" z="0"/>
+	</object>
+
+	<object name="CJ_PROC_BRICK4">
+		<offset x="0.11" y="0.04" z="0"/>
+		<rotoffset x="90" y="90" z="0"/>
+	</object>
+
+	<object name="CJ_PROC_BRICK5">
+		<offset x="0.11" y="0.04" z="0"/>
+		<rotoffset x="90" y="0" z="0"/>
+	</object>
+
+	<object name="CJ_PROC_BRICK6">
+		<offset x="0.11" y="0.04" z="0"/>
+		<rotoffset x="90" y="0" z="0"/>
+	</object>
+
+	<object name="CJ_PROC_BS_CUP">
+		<offset x="0.105" y="0.07" z="0"/>
+		<rotoffset x="12.5" y="-78" z="180"/>
+	</object>
+
+	<object name="CJ_PROC_COFFEE1">
+		<offset x="0.12" y="0.05" z="0"/>
+		<rotoffset x="96" y="-135" z="47"/>
+	</object>
+
+	<object name="BM_burgershot_burg2">
+		<offset x="0.11" y="0.04" z="0"/>
+		<rotoffset x="90" y="0" z="0"/>
+	</object>
+
+	<object name="CJ_PROC_BEER_1">
+		<offset x="0.11" y="0.063" z="0"/>
+		<rotoffset x="-52.5" y="87.75" z="-53"/>
+	</object>
+
+	<object name="CJ_PROC_BEER_2">
+		<offset x="0.105" y="0.038" z="0"/>
+		<rotoffset x="99" y="0" z="0"/>
+	</object>
+
+</thrownweaponinfo>

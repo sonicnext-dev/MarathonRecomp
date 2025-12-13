@@ -1,0 +1,713 @@
+<LeaderboardsData version="1">
+
+	<gamemode label="FNTGT_COMP_0" id="GAMENAME_COMP_DEATHMATCH" gameModeId="MatchCreate::GAME_MODE_COMP_DEATHMATCH" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_0" teamMode="FALSE" >
+		<lbData>
+			<lb id="LB_Leaderboard_Ranked_CompDeathmatch"    arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_CompDeathmatch_BG" arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES"/>
+			<lb id="LB_Leaderboard_Standard_CompDeathmatch"  arbitrated="FALSE" race="0" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+
+			<lb id="LB_SkillLeaderboard_CompDeathMatchRanked"   arbitrated="TRUE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_SkillLeaderboard_CompDeathMatchStandard" arbitrated="FALSE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+		</lbData>
+
+		<columnsData>
+			<column icon="K_NICO_GP"     label="NICON_GP"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_PLAYED" isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_GW"     label="NICON_GW"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_WON"    isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="TRUE" id="NET_STAT_ID_SCORE"        isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="TRUE" id="NET_STAT_ID_KILLS"        isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="TRUE" id="NET_STAT_ID_DEATHS"       isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="TRUE" id="NET_STAT_ID_SCORE_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="7"/>
+
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="FALSE" id="NET_STAT_ID_SCORE"        isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="FALSE" id="NET_STAT_ID_KILLS"        isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="FALSE" id="NET_STAT_ID_DEATHS"       isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="FALSE" id="NET_STAT_ID_SCORE_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="5"/>
+
+			<column icon="K_NICO_GP"     label="NICON_GP"     isUpdated="TRUE"  id="NET_STAT_ID_GAMES_PLAYED" isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="FALSE" index="2"/>
+			<column icon="K_NICO_GW"     label="NICON_GW"     isUpdated="TRUE"  id="NET_STAT_ID_GAMES_WON"    isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="FALSE" index="3"/>
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="FALSE" id="NET_STAT_ID_SCORE"        isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="FALSE" index="4"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="FALSE" id="NET_STAT_ID_SCORE_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="FALSE" index="5"/>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="FNTGT_COMP_1" id="GAMENAME_COMP_MAFIA" gameModeId="MatchCreate::GAME_MODE_COMP_RANDEVENT" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_0" teamMode="FALSE">
+		<lbData>
+			<lb id="LB_Leaderboard_Ranked_CompMafiaWork"    arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_CompMafiaWork_BG" arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES"/>
+			<lb id="LB_Leaderboard_Standard_CompMafiaWork"  arbitrated="FALSE" race="0" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+
+			<lb id="LB_SkillLeaderboard_CompRandEventRanked"   arbitrated="TRUE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_SkillLeaderboard_CompRandEventStandard" arbitrated="FALSE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+		</lbData>
+
+		<columnsData>
+			<column icon="K_NICO_GP"     label="NICON_GP"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_PLAYED"    isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_GW"     label="NICON_GW"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_WON"       isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="TRUE" id="NET_STAT_ID_SCORE"           isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_TCOMP"  label="NICON_TC"     isUpdated="TRUE" id="NET_STAT_ID_TASKS_COMPLETED" isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="TRUE" id="NET_STAT_ID_KILLS"           isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="TRUE" id="NET_STAT_ID_DEATHS"          isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="TRUE" index="7"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="TRUE" id="NET_STAT_ID_SCORE_HIDDEN"    isVisible="FALSE" instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="8"/>
+
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="FALSE" id="NET_STAT_ID_SCORE"           isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_TCOMP"  label="NICON_TC"     isUpdated="FALSE" id="NET_STAT_ID_TASKS_COMPLETED" isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="FALSE" id="NET_STAT_ID_KILLS"           isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="FALSE" id="NET_STAT_ID_DEATHS"          isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="FALSE" id="NET_STAT_ID_SCORE_HIDDEN"    isVisible="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="6"/>
+
+			<column icon="K_NICO_GP"    label="NICON_GP"     isUpdated="TRUE"  id="NET_STAT_ID_GAMES_PLAYED" isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="FALSE" index="2"/>
+			<column icon="K_NICO_GW"    label="NICON_GW"     isUpdated="TRUE"  id="NET_STAT_ID_GAMES_WON"    isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="FALSE" index="3"/>
+			<column icon="K_NICO_SCORE" label="NICON_SCORE"  isUpdated="FALSE" id="NET_STAT_ID_SCORE"        isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="FALSE" index="4"/>
+			<column icon="K_NICO_SCORE" label="NICON_HIDDEN" isUpdated="FALSE" id="NET_STAT_ID_SCORE_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="FALSE" index="5"/>
+		</columnsData>                                                                                                                    
+	</gamemode>
+
+	<gamemode label="FNTGT_COMP_2" id="GAMENAME_COMP_CAR" gameModeId="MatchCreate::GAME_MODE_COMP_CARSTEAL" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_0" teamMode="FALSE" >
+		<lbData>
+			<lb id="LB_Leaderboard_Ranked_CompCarSteal"    arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_CompCarSteal_BG" arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES"/>
+			<lb id="LB_Leaderboard_Standard_CompCarSteal"  arbitrated="FALSE" race="0" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+
+			<lb id="LB_SkillLeaderboard_CompCarStealRanked"   arbitrated="TRUE"  race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_SkillLeaderboard_CompCarStealStandard" arbitrated="FALSE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+		</lbData>
+
+		<columnsData>
+			<column icon="K_NICO_GP"      label="NICON_GP"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_PLAYED"   isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_GW"      label="NICON_GW"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_WON"      isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_SCORE"   label="NICON_SCORE"  isUpdated="TRUE" id="NET_STAT_ID_SCORE"          isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_CSTOLEN" label="NICON_CD"     isUpdated="TRUE" id="NET_STAT_ID_CARS_DELIVERED" isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_KILLS"   label="NICON_KILLS"  isUpdated="TRUE" id="NET_STAT_ID_KILLS"          isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_DEATHS"  label="NICON_DEATHS" isUpdated="TRUE" id="NET_STAT_ID_DEATHS"         isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="7"/>
+			<column icon="K_NICO_SCORE"   label="NICON_HIDDEN" isUpdated="TRUE" id="NET_STAT_ID_SCORE_HIDDEN"   isVisible="FALSE" instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="8"/>
+
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="FALSE" id="NET_STAT_ID_SCORE"           isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_CSTOLEN" label="NICON_CD"    isUpdated="FALSE" id="NET_STAT_ID_CARS_DELIVERED"  isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="FALSE" id="NET_STAT_ID_KILLS"           isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="FALSE" id="NET_STAT_ID_DEATHS"          isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="FALSE" id="NET_STAT_ID_SCORE_HIDDEN"    isVisible="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="6"/>
+
+			<column icon="K_NICO_GP"     label="NICON_GP"     isUpdated="TRUE"  id="NET_STAT_ID_GAMES_PLAYED" isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="FALSE" index="2"/>
+			<column icon="K_NICO_GW"     label="NICON_GW"     isUpdated="TRUE"  id="NET_STAT_ID_GAMES_WON"    isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="FALSE" index="3"/>
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="FALSE" id="NET_STAT_ID_SCORE"        isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="FALSE" index="4"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="FALSE" id="NET_STAT_ID_SCORE_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="FALSE" index="5"/>
+
+		</columnsData>
+	</gamemode>
+	
+	<gamemode label="FNTGT_RACE_0" id="GAMENAME_RACE_STANDARD" gameModeId="MatchCreate::GAME_MODE_RACE_STANDARD" raceMode="TRUE" ActionOnNewScreen="MENU_ACTION_2" teamMode="FALSE" >
+		<lbData>
+			<lb id="LB_Leaderboard_Ranked_Race1Standard"  arbitrated="TRUE" race="1"  isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race2Standard"  arbitrated="TRUE" race="2"  isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race3Standard"  arbitrated="TRUE" race="3"  isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race4Standard"  arbitrated="TRUE" race="4"  isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race5Standard"  arbitrated="TRUE" race="5"  isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race6Standard"  arbitrated="TRUE" race="6"  isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race7Standard"  arbitrated="TRUE" race="7"  isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race8Standard"  arbitrated="TRUE" race="8"  isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race9Standard"  arbitrated="TRUE" race="9"  isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race10Standard" arbitrated="TRUE" race="10" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race11Standard" arbitrated="TRUE" race="11" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race12Standard" arbitrated="TRUE" race="12" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race13Standard" arbitrated="TRUE" race="13" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race14Standard" arbitrated="TRUE" race="14" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race15Standard" arbitrated="TRUE" race="15" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race16Standard" arbitrated="TRUE" race="16" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race17Standard" arbitrated="TRUE" race="17" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race18Standard" arbitrated="TRUE" race="18" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race19Standard" arbitrated="TRUE" race="19" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race20Standard" arbitrated="TRUE" race="20" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race21Standard" arbitrated="TRUE" race="21" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race22Standard" arbitrated="TRUE" race="22" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race23Standard" arbitrated="TRUE" race="23" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race24Standard" arbitrated="TRUE" race="24" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race25Standard" arbitrated="TRUE" race="25" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race26Standard" arbitrated="TRUE" race="26" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race27Standard" arbitrated="TRUE" race="27" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race28Standard" arbitrated="TRUE" race="28" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race29Standard" arbitrated="TRUE" race="29" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race30Standard" arbitrated="TRUE" race="30" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race31Standard" arbitrated="TRUE" race="31" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race32Standard" arbitrated="TRUE" race="32" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race33Standard" arbitrated="TRUE" race="33" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race34Standard" arbitrated="TRUE" race="34" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race35Standard" arbitrated="TRUE" race="35" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race36Standard" arbitrated="TRUE" race="36" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race37Standard" arbitrated="TRUE" race="37" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race38Standard" arbitrated="TRUE" race="38" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race39Standard" arbitrated="TRUE" race="39" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race40Standard" arbitrated="TRUE" race="40" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race41Standard" arbitrated="TRUE" race="41" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race42Standard" arbitrated="TRUE" race="42" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race43Standard" arbitrated="TRUE" race="43" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race44Standard" arbitrated="TRUE" race="44" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race45Standard" arbitrated="TRUE" race="45" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race46Standard" arbitrated="TRUE" race="46" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race47Standard" arbitrated="TRUE" race="47" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race48Standard" arbitrated="TRUE" race="48" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race49Standard" arbitrated="TRUE" race="49" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race50Standard" arbitrated="TRUE" race="50" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race51Standard" arbitrated="TRUE" race="51" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race52Standard" arbitrated="TRUE" race="52" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race53Standard" arbitrated="TRUE" race="53" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race54Standard" arbitrated="TRUE" race="54" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+
+			<lb id="LB_SkillLeaderboard_RaceStandardRanked"   arbitrated="TRUE" race="0"  isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_SkillLeaderboard_RaceStandardStandard" arbitrated="FALSE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+		</lbData>                                                                          
+
+		<columnsData>
+			<column icon="K_NICO_GP"     label="NICON_GP"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_PLAYED"  isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_GW"     label="NICON_GW"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_WON"     isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_BLTIME" label="NICON_BLT"    isUpdated="TRUE" id="NET_STAT_ID_BEST_LAP_TIME" isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="TRUE" id="NET_STAT_ID_SCORE"         isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="TRUE" id="NET_STAT_ID_SCORE_HIDDEN"  isVisible="FALSE" instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="6"/>
+		</columnsData>
+	</gamemode>
+
+		
+	<gamemode label="FNTGT_RACE_1" id="GAMENAME_RACE_ATOB" gameModeId="MatchCreate::GAME_MODE_RACE_ATOB" raceMode="TRUE" ActionOnNewScreen="MENU_ACTION_2" teamMode="FALSE">
+		<lbData>
+			<lb id="LB_Leaderboard_Ranked_Race1NoHolds"  arbitrated="TRUE" race="1"  isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race2NoHolds"  arbitrated="TRUE" race="2"  isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race3NoHolds"  arbitrated="TRUE" race="3"  isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race4NoHolds"  arbitrated="TRUE" race="4"  isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race5NoHolds"  arbitrated="TRUE" race="5"  isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race6NoHolds"  arbitrated="TRUE" race="6"  isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race7NoHolds"  arbitrated="TRUE" race="7"  isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race8NoHolds"  arbitrated="TRUE" race="8"  isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race9NoHolds"  arbitrated="TRUE" race="9"  isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race10NoHolds" arbitrated="TRUE" race="10" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race11NoHolds" arbitrated="TRUE" race="11" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race12NoHolds" arbitrated="TRUE" race="12" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race13NoHolds" arbitrated="TRUE" race="13" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race14NoHolds" arbitrated="TRUE" race="14" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race15NoHolds" arbitrated="TRUE" race="15" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race16NoHolds" arbitrated="TRUE" race="16" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race17NoHolds" arbitrated="TRUE" race="17" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race18NoHolds" arbitrated="TRUE" race="18" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race19NoHolds" arbitrated="TRUE" race="19" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race20NoHolds" arbitrated="TRUE" race="20" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race21NoHolds" arbitrated="TRUE" race="21" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race22NoHolds" arbitrated="TRUE" race="22" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race23NoHolds" arbitrated="TRUE" race="23" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race24NoHolds" arbitrated="TRUE" race="24" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race25NoHolds" arbitrated="TRUE" race="25" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race26NoHolds" arbitrated="TRUE" race="26" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race27NoHolds" arbitrated="TRUE" race="27" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race28NoHolds" arbitrated="TRUE" race="28" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race29NoHolds" arbitrated="TRUE" race="29" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race30NoHolds" arbitrated="TRUE" race="30" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race31NoHolds" arbitrated="TRUE" race="31" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race32NoHolds" arbitrated="TRUE" race="32" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race33NoHolds" arbitrated="TRUE" race="33" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race34NoHolds" arbitrated="TRUE" race="34" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race35NoHolds" arbitrated="TRUE" race="35" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race36NoHolds" arbitrated="TRUE" race="36" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race37NoHolds" arbitrated="TRUE" race="37" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race38NoHolds" arbitrated="TRUE" race="38" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race39NoHolds" arbitrated="TRUE" race="39" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race40NoHolds" arbitrated="TRUE" race="40" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race41NoHolds" arbitrated="TRUE" race="41" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race42NoHolds" arbitrated="TRUE" race="42" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race43NoHolds" arbitrated="TRUE" race="43" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race44NoHolds" arbitrated="TRUE" race="44" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race45NoHolds" arbitrated="TRUE" race="45" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race46NoHolds" arbitrated="TRUE" race="46" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race47NoHolds" arbitrated="TRUE" race="47" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race48NoHolds" arbitrated="TRUE" race="48" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race49NoHolds" arbitrated="TRUE" race="49" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race50NoHolds" arbitrated="TRUE" race="50" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race51NoHolds" arbitrated="TRUE" race="51" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race52NoHolds" arbitrated="TRUE" race="52" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race53NoHolds" arbitrated="TRUE" race="53" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_Race54NoHolds" arbitrated="TRUE" race="54" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+
+			<lb id="LB_SkillLeaderboard_RaceAtoBRanked"   arbitrated="TRUE" race="0"  isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_SkillLeaderboard_RaceAtoBStandard" arbitrated="FALSE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+		</lbData>                                                        
+
+		<columnsData>
+			<column icon="K_NICO_GP"     label="NICON_GP"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_PLAYED"  isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_GW"     label="NICON_GW"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_WON"     isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_BLTIME" label="NICON_BLT"    isUpdated="TRUE" id="NET_STAT_ID_BEST_LAP_TIME" isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="TRUE" id="NET_STAT_ID_SCORE"         isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="TRUE" id="NET_STAT_ID_KILLS"         isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="TRUE" id="NET_STAT_ID_DEATHS"        isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="7"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="TRUE" id="NET_STAT_ID_SCORE_HIDDEN"  isVisible="FALSE" instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="8"/>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="FNTGT_TEAM_0" id="GAMENAME_TEAM_DEATHMATCH" gameModeId="MatchCreate::GAME_MODE_TEAM_DEATHMATCH" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_0" teamMode="TRUE" >
+		<lbData>
+			<lb id="LB_Leaderboard_Ranked_TeamDeathmatch"    arbitrated="TRUE" race="0" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_TeamDeathmatch_BG" arbitrated="TRUE" race="0" isSkill="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES"/>
+			<lb id="LB_Leaderboard_Standard_TeamDeathmatch"  arbitrated="FALSE" race="0" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+
+			<lb id="LB_SkillLeaderboard_TeamDeathMatchRanked"   arbitrated="TRUE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_SkillLeaderboard_TeamDeathMatchStandard" arbitrated="FALSE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+		</lbData>
+
+		<columnsData>
+			<column icon="K_NICO_GP"     label="NICON_GP"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_PLAYED" isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_GW"     label="NICON_GW"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_WON"    isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="TRUE" id="NET_STAT_ID_SCORE"        isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_TSCORE" label="NICON_TS"     isUpdated="TRUE" id="NET_STAT_ID_TEAM_SCORE"   isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="TRUE" id="NET_STAT_ID_KILLS"        isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_TKILLS" label="NICON_TK"     isUpdated="TRUE" id="NET_STAT_ID_TEAM_KILLS"   isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="7"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="TRUE" id="NET_STAT_ID_DEATHS"       isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="8"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="TRUE" id="NET_STAT_ID_SCORE_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="9"/>
+
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="FALSE" id="NET_STAT_ID_SCORE"        isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_TSCORE" label="NICON_TS"     isUpdated="FALSE" id="NET_STAT_ID_TEAM_SCORE"   isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="FALSE" id="NET_STAT_ID_KILLS"        isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_TKILLS" label="NICON_TK"     isUpdated="FALSE" id="NET_STAT_ID_TEAM_KILLS"   isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="FALSE" id="NET_STAT_ID_DEATHS"       isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="FALSE" id="NET_STAT_ID_SCORE_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="7"/>
+
+			<column icon="K_NICO_GP"       label="NICON_GP"     isUpdated="TRUE"  id="NET_STAT_ID_GAMES_PLAYED" isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="FALSE" index="2"/>
+			<column icon="K_NICO_GW"       label="NICON_GW"     isUpdated="TRUE"  id="NET_STAT_ID_GAMES_WON"    isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="FALSE" index="3"/>
+			<column icon="K_NICO_SCORE"    label="NICON_SCORE"  isUpdated="FALSE" id="NET_STAT_ID_SCORE"        isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="FALSE" index="4"/>
+			<column icon="K_NICO_TSCORE"   label="NICON_TS"     isUpdated="FALSE" id="NET_STAT_ID_TEAM_SCORE"   isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="FALSE" index="5"/>
+		</columnsData>
+	</gamemode>
+
+		
+	<gamemode label="FNTGT_TEAM_1" id="GAMENAME_TEAM_MAFIA" gameModeId="MatchCreate::GAME_MODE_TEAM_MAFYA" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_0" teamMode="TRUE" >
+		<lbData>
+			<lb id="LB_Leaderboard_Ranked_TeamMafya"    arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_TeamMafya_BG" arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES"/>
+			<lb id="LB_Leaderboard_Standard_TeamMafya"  arbitrated="FALSE" race="0" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+
+			<lb id="LB_SkillLeaderboard_TeamMafyaRanked"   arbitrated="TRUE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_SkillLeaderboard_TeamMafyaStandard" arbitrated="FALSE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+		</lbData>
+
+		<columnsData>
+			<column icon="K_NICO_GP"     label="NICON_GP"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_PLAYED"    isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_GW"     label="NICON_GW"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_WON"       isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="TRUE" id="NET_STAT_ID_SCORE"           isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_TSCORE" label="NICON_TS"     isUpdated="TRUE" id="NET_STAT_ID_TEAM_SCORE"      isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_TCOMP"  label="NICON_TC"     isUpdated="TRUE" id="NET_STAT_ID_TASKS_COMPLETED" isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="TRUE" id="NET_STAT_ID_KILLS"           isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="7"/>
+			<column icon="K_NICO_TKILLS" label="NICON_TK"     isUpdated="TRUE" id="NET_STAT_ID_TEAM_KILLS"      isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="8"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="TRUE" id="NET_STAT_ID_DEATHS"          isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="9"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="TRUE" id="NET_STAT_ID_SCORE_HIDDEN"    isVisible="FALSE" instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="10"/>
+
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="FALSE" id="NET_STAT_ID_SCORE"           isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_TSCORE" label="NICON_TS"     isUpdated="FALSE" id="NET_STAT_ID_TEAM_SCORE"      isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_TCOMP"  label="NICON_TC"     isUpdated="FALSE" id="NET_STAT_ID_TASKS_COMPLETED" isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES"  arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="FALSE" id="NET_STAT_ID_KILLS"           isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_TKILLS" label="NICON_TK"     isUpdated="FALSE" id="NET_STAT_ID_TEAM_KILLS"      isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="FALSE" id="NET_STAT_ID_DEATHS"          isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="7"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="FALSE" id="NET_STAT_ID_SCORE_HIDDEN"    isVisible="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="8"/>
+
+			<column icon="K_NICO_GP"       label="NICON_GP"     isUpdated="TRUE"  id="NET_STAT_ID_GAMES_PLAYED" isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="FALSE" index="2"/>
+			<column icon="K_NICO_GW"       label="NICON_GW"     isUpdated="TRUE"  id="NET_STAT_ID_GAMES_WON"    isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="FALSE" index="3"/>
+			<column icon="K_NICO_SCORE"    label="NICON_SCORE"  isUpdated="FALSE" id="NET_STAT_ID_SCORE"        isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="FALSE" index="4"/>
+			<column icon="K_NICO_TSCORE"   label="NICON_TS"     isUpdated="FALSE" id="NET_STAT_ID_TEAM_SCORE"   isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="FALSE" index="5"/>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="FNTGT_TEAM_2" id="GAMENAME_TEAM_CAR" gameModeId="MatchCreate::GAME_MODE_TEAM_CARSTEAL" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_0" teamMode="TRUE" >
+		<lbData>
+			<lb id="LB_Leaderboard_Ranked_TeamCarSteal"    arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_TeamCarSteal_BG" arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES"/>
+			<lb id="LB_Leaderboard_Standard_TeamCarSteal"  arbitrated="FALSE" race="0" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			
+
+			<lb id="LB_SkillLeaderboard_TeamCarStealRanked"   arbitrated="TRUE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_SkillLeaderboard_TeamCarStealStandard" arbitrated="FALSE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+		</lbData>
+
+		<columnsData>
+			<column icon="K_NICO_GP"      label="NICON_GP"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_PLAYED"   isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_GW"      label="NICON_GW"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_WON"      isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_SCORE"   label="NICON_SCORE"  isUpdated="TRUE" id="NET_STAT_ID_SCORE"          isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_TSCORE"  label="NICON_TS"     isUpdated="TRUE" id="NET_STAT_ID_TEAM_SCORE"     isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_CSTOLEN" label="NICON_CD"     isUpdated="TRUE" id="NET_STAT_ID_CARS_DELIVERED" isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_KILLS"   label="NICON_KILLS"  isUpdated="TRUE" id="NET_STAT_ID_KILLS"          isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="7"/>
+			<column icon="K_NICO_TKILLS"  label="NICON_TK"     isUpdated="TRUE" id="NET_STAT_ID_TEAM_KILLS"     isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="8"/>
+			<column icon="K_NICO_DEATHS"  label="NICON_DEATHS" isUpdated="TRUE" id="NET_STAT_ID_DEATHS"         isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="9"/>
+			<column icon="K_NICO_SCORE"   label="NICON_HIDDEN" isUpdated="TRUE" id="NET_STAT_ID_SCORE_HIDDEN"   isVisible="FALSE" instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="10"/>
+
+			<column icon="K_NICO_SCORE"   label="NICON_SCORE" isUpdated="FALSE" id="NET_STAT_ID_SCORE"          isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_TSCORE"  label="NICON_TS"    isUpdated="FALSE" id="NET_STAT_ID_TEAM_SCORE"     isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_CSTOLEN" label="NICON_CD"    isUpdated="FALSE" id="NET_STAT_ID_CARS_DELIVERED" isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="FALSE" id="NET_STAT_ID_KILLS"          isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_TKILLS" label="NICON_TK"     isUpdated="FALSE" id="NET_STAT_ID_TEAM_KILLS"     isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="FALSE" id="NET_STAT_ID_DEATHS"         isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="7"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="FALSE" id="NET_STAT_ID_SCORE_HIDDEN"   isVisible="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="8"/>
+
+			<column icon="K_NICO_GP"       label="NICON_GP"    isUpdated="TRUE"  id="NET_STAT_ID_GAMES_PLAYED" isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="FALSE" index="2"/>
+			<column icon="K_NICO_GW"       label="NICON_GW"    isUpdated="TRUE"  id="NET_STAT_ID_GAMES_WON"    isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="FALSE" index="3"/>
+			<column icon="K_NICO_SCORE"    label="NICON_SCORE" isUpdated="FALSE" id="NET_STAT_ID_SCORE"        isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="FALSE" index="4"/>
+			<column icon="K_NICO_TSCORE"   label="NICON_TS"    isUpdated="FALSE" id="NET_STAT_ID_TEAM_SCORE"   isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="FALSE" index="5"/>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="FNTGT_TEAM_3" id="GAMENAME_TEAM_VIP" gameModeId="MatchCreate::GAME_MODE_TEAM_VIP" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_0" teamMode="TRUE" >
+		<lbData>
+			<lb id="LB_Leaderboard_Ranked_TeamVip"    arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_TeamVip_BG" arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES"/>
+			<lb id="LB_Leaderboard_Standard_TeamVip"  arbitrated="FALSE" race="0" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+
+			<lb id="LB_SkillLeaderboard_TeamVIPRanked"   arbitrated="TRUE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_SkillLeaderboard_TeamVIPStandard" arbitrated="FALSE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+		</lbData>
+
+		<columnsData>
+			<column icon="K_NICO_GP"     label="NICON_GP"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_PLAYED" isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_GW"     label="NICON_GW"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_WON"    isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="TRUE" id="NET_STAT_ID_SCORE"        isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_TSCORE" label="NICON_TS"     isUpdated="TRUE" id="NET_STAT_ID_TEAM_SCORE"   isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="TRUE" id="NET_STAT_ID_KILLS"        isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_TKILLS" label="NICON_TK"     isUpdated="TRUE" id="NET_STAT_ID_TEAM_KILLS"   isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="7"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="TRUE" id="NET_STAT_ID_DEATHS"       isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="8"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="TRUE" id="NET_STAT_ID_SCORE_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="9"/>
+
+			<column icon="K_NICO_SCORE"   label="NICON_SCORE" isUpdated="FALSE" id="NET_STAT_ID_SCORE"        isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_TSCORE"  label="NICON_TS"    isUpdated="FALSE" id="NET_STAT_ID_TEAM_SCORE"   isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="FALSE" id="NET_STAT_ID_KILLS"        isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_TKILLS" label="NICON_TK"     isUpdated="FALSE" id="NET_STAT_ID_TEAM_KILLS"   isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="FALSE" id="NET_STAT_ID_DEATHS"       isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="FALSE" id="NET_STAT_ID_SCORE_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="7"/>
+
+			<column icon="K_NICO_GP"       label="NICON_GP"    isUpdated="TRUE"  id="NET_STAT_ID_GAMES_PLAYED" isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="FALSE" index="2"/>
+			<column icon="K_NICO_GW"       label="NICON_GW"    isUpdated="TRUE"  id="NET_STAT_ID_GAMES_WON"    isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="FALSE" index="3"/>
+			<column icon="K_NICO_SCORE"    label="NICON_SCORE" isUpdated="FALSE" id="NET_STAT_ID_SCORE"        isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="FALSE" index="4"/>
+			<column icon="K_NICO_TSCORE"   label="NICON_TS"    isUpdated="FALSE" id="NET_STAT_ID_TEAM_SCORE"   isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="FALSE" index="5"/>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="FNTGT_TEAM_4" id="GAMENAME_TEAM_BASE" gameModeId="MatchCreate::GAME_MODE_TEAM_BASE" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_0" teamMode="TRUE">
+		<lbData>
+			<lb id="LB_Leaderboard_Ranked_TeamGangBase"    arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_TeamGangBase_BG" arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES"/>
+			<lb id="LB_Leaderboard_Standard_TeamGangBase"  arbitrated="FALSE" race="0" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			
+			<lb id="LB_SkillLeaderboard_TeamBaseRanked"             arbitrated="TRUE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_SkillLeaderboard_TeamBaseStandard"           arbitrated="FALSE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+		</lbData>
+
+		<columnsData>
+			<column icon="K_NICO_GP"       label="NICON_GP"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_PLAYED" isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_GW"       label="NICON_GW"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_WON"    isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_SCORE"    label="NICON_SCORE"  isUpdated="TRUE" id="NET_STAT_ID_SCORE"        isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_TSCORE"   label="NICON_TS"     isUpdated="TRUE" id="NET_STAT_ID_TEAM_SCORE"   isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_CAPTURE" label="NICON_C"      isUpdated="TRUE" id="NET_STAT_ID_CAPTURES"     isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_KILLS"    label="NICON_KILLS"  isUpdated="TRUE" id="NET_STAT_ID_KILLS"        isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="7"/>
+			<column icon="K_NICO_TKILLS"   label="NICON_TK"     isUpdated="TRUE" id="NET_STAT_ID_TEAM_KILLS"   isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="8"/>
+			<column icon="K_NICO_DEATHS"   label="NICON_DEATHS" isUpdated="TRUE" id="NET_STAT_ID_DEATHS"       isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="9"/>
+			<column icon="K_NICO_SCORE"    label="NICON_HIDDEN" isUpdated="TRUE" id="NET_STAT_ID_SCORE_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="10"/>
+
+			<column icon="K_NICO_SCORE"    label="NICON_SCORE"  isUpdated="FALSE" id="NET_STAT_ID_SCORE"        isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_TSCORE"   label="NICON_TS"     isUpdated="FALSE" id="NET_STAT_ID_TEAM_SCORE"   isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_CAPTURE" label="NICON_C"      isUpdated="FALSE" id="NET_STAT_ID_CAPTURES"     isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_KILLS"    label="NICON_KILLS"  isUpdated="FALSE" id="NET_STAT_ID_KILLS"        isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_TKILLS"   label="NICON_TK"     isUpdated="FALSE" id="NET_STAT_ID_TEAM_KILLS"   isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_DEATHS"   label="NICON_DEATHS" isUpdated="FALSE" id="NET_STAT_ID_DEATHS"       isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="7"/>
+			<column icon="K_NICO_SCORE"    label="NICON_HIDDEN" isUpdated="FALSE" id="NET_STAT_ID_SCORE_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="8"/>
+
+			<column icon="K_NICO_GP"       label="NICON_GP"     isUpdated="TRUE"  isUpdated="TRUE" id="NET_STAT_ID_GAMES_PLAYED" isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="FALSE" index="2"/>
+			<column icon="K_NICO_GW"       label="NICON_GW"     isUpdated="TRUE"  id="NET_STAT_ID_GAMES_WON"    isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="FALSE" index="3"/>
+			<column icon="K_NICO_SCORE"    label="NICON_SCORE"  isUpdated="FALSE" id="NET_STAT_ID_SCORE"        isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="FALSE" index="4"/>
+			<column icon="K_NICO_TSCORE"   label="NICON_TS"     isUpdated="FALSE" id="NET_STAT_ID_TEAM_SCORE"   isVisible="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"  arbitrated="FALSE" index="5"/>
+		</columnsData>
+	</gamemode>
+
+
+	<gamemode label="FNTGT_COOP_0" id="GAMENAME_COOP_DRUG" gameModeId="MatchCreate::GAME_MODE_COOP_DRUGFACTORY" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_1" teamMode="TRUE" >
+		<lbData>
+			<lb id="LB_Leaderboard_Ranked_CoopDrugFactory"           arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_CoopDrugFactory_BG"        arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_CoopDrugFactory_BG_TIME"   arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_BESTGAMETIME_SCORES"/>
+			<lb id="LB_Leaderboard_Standard_CoopDrugFactory_BG_TIME" arbitrated="FALSE" race="0" isSkill="FALSE" instance="LB_INSTANCE_BESTGAMETIME_SCORES"/>
+
+			<lb id="LB_SkillLeaderboard_CoopDrugFactoryRanked"   arbitrated="TRUE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_SkillLeaderboard_CoopDrugFactoryStandard" arbitrated="FALSE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+		</lbData>
+
+		<columnsData>
+			<column icon="K_NICO_GP"     label="NICON_GP"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_PLAYED" isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_GSP"    label="NICON_GPA"    isUpdated="TRUE" id="NET_STAT_ID_GAMES_PASSED" isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_GW"     label="NICON_GW"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_WON"    isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="TRUE" id="NET_STAT_ID_SCORE"        isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="TRUE" id="NET_STAT_ID_KILLS"        isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_TKILLS" label="NICON_TK"     isUpdated="TRUE" id="NET_STAT_ID_TEAM_KILLS"   isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="7"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="TRUE" id="NET_STAT_ID_DEATHS"       isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="8"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="TRUE" id="NET_STAT_ID_SCORE_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="9"/>
+
+			<column icon="K_NICO_MTIME"  label="NICON_MT"     isUpdated="FALSE" id="NET_STAT_ID_MISSION_TIME" isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="FALSE" id="NET_STAT_ID_SCORE"        isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="FALSE" id="NET_STAT_ID_KILLS"        isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_TKILLS" label="NICON_TK"     isUpdated="FALSE" id="NET_STAT_ID_TEAM_KILLS"   isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="FALSE" id="NET_STAT_ID_DEATHS"       isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="FALSE" id="NET_STAT_ID_SCORE_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="7"/>
+                                                       
+			<column icon="K_NICO_MTIME"  label="NICON_MT"     isUpdated="FALSE" id="NET_STAT_ID_MISSION_TIME" isVisible="TRUE"  instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="FALSE" id="NET_STAT_ID_SCORE"        isVisible="TRUE"  instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="FALSE" id="NET_STAT_ID_KILLS"        isVisible="TRUE"  instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_TKILLS" label="NICON_TK"     isUpdated="FALSE" id="NET_STAT_ID_TEAM_KILLS"   isVisible="TRUE"  instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="FALSE" id="NET_STAT_ID_DEATHS"       isVisible="TRUE"  instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="FALSE" id="NET_STAT_ID_SCORE_BYTIME_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="TRUE" index="7"/>
+                                                       
+			<column icon="K_NICO_GP"     label="NICON_GP"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_PLAYED" isVisible="TRUE" instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="FALSE"  index="2"/>
+			<column icon="K_NICO_GSP"    label="NICON_GPA"    isUpdated="TRUE" id="NET_STAT_ID_GAMES_PASSED" isVisible="TRUE" instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="FALSE"  index="3"/>
+			<column icon="K_NICO_GW"     label="NICON_GW"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_WON"    isVisible="TRUE" instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="FALSE"  index="4"/>
+			<column icon="K_NICO_MTIME"  label="NICON_MT"     isUpdated="FALSE" id="NET_STAT_ID_MISSION_TIME" isVisible="TRUE" instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="FALSE" index="5"/>
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="FALSE" id="NET_STAT_ID_SCORE"        isVisible="TRUE" instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="FALSE" index="6"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="FALSE" id="NET_STAT_ID_SCORE_BYTIME_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="FALSE" index="7"/>
+
+		</columnsData>
+	</gamemode>
+	
+	<gamemode label="FNTGT_COOP_1" id="GAMENAME_COOP_SWAT" gameModeId="MatchCreate::GAME_MODE_COOP_SWAT" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_1" teamMode="TRUE" >
+		<lbData>
+			<lb id="LB_Leaderboard_Ranked_CoopSwatAssault"           arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_CoopSwatAssault_BG"        arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_CoopSwatAssault_BG_TIME"   arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_BESTGAMETIME_SCORES"/>
+			<lb id="LB_Leaderboard_Standard_CoopSwatAssault_BG_TIME" arbitrated="FALSE" race="0" isSkill="FALSE" instance="LB_INSTANCE_BESTGAMETIME_SCORES"/>
+
+			<lb id="LB_SkillLeaderboard_CoopSWATRanked"   arbitrated="TRUE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_SkillLeaderboard_CoopSWATStandard" arbitrated="FALSE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+		</lbData>
+
+		<columnsData>
+			<column icon="K_NICO_GP"     label="NICON_GP"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_PLAYED" isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_GSP"    label="NICON_GPA"    isUpdated="TRUE" id="NET_STAT_ID_GAMES_PASSED" isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_GW"     label="NICON_GW"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_WON"    isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="TRUE" id="NET_STAT_ID_SCORE"        isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="TRUE" id="NET_STAT_ID_KILLS"        isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_TKILLS" label="NICON_TK"     isUpdated="TRUE" id="NET_STAT_ID_TEAM_KILLS"   isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="7"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="TRUE" id="NET_STAT_ID_DEATHS"       isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="8"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="TRUE" id="NET_STAT_ID_SCORE_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="9"/>
+
+			<column icon="K_NICO_MTIME"  label="NICON_MT"     isUpdated="FALSE" id="NET_STAT_ID_MISSION_TIME" isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="FALSE" id="NET_STAT_ID_SCORE"        isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="FALSE" id="NET_STAT_ID_KILLS"        isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_TKILLS" label="NICON_TK"     isUpdated="FALSE" id="NET_STAT_ID_TEAM_KILLS"   isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="FALSE" id="NET_STAT_ID_DEATHS"       isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="FALSE" id="NET_STAT_ID_SCORE_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="7"/>
+                                                       
+			<column icon="K_NICO_MTIME"  label="NICON_MT"     isUpdated="FALSE" id="NET_STAT_ID_MISSION_TIME" isVisible="TRUE"  instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="FALSE" id="NET_STAT_ID_SCORE"        isVisible="TRUE"  instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="FALSE" id="NET_STAT_ID_KILLS"        isVisible="TRUE"  instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_TKILLS" label="NICON_TK"     isUpdated="FALSE" id="NET_STAT_ID_TEAM_KILLS"   isVisible="TRUE"  instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="FALSE" id="NET_STAT_ID_DEATHS"       isVisible="TRUE"  instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="FALSE" id="NET_STAT_ID_SCORE_BYTIME_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="TRUE" index="7"/>
+                                                       
+			<column icon="K_NICO_GP"     label="NICON_GP"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_PLAYED" isVisible="TRUE" instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="FALSE"  index="2"/>
+			<column icon="K_NICO_GSP"    label="NICON_GPA"    isUpdated="TRUE" id="NET_STAT_ID_GAMES_PASSED" isVisible="TRUE" instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="FALSE"  index="3"/>
+			<column icon="K_NICO_GW"     label="NICON_GW"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_WON"    isVisible="TRUE" instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="FALSE"  index="4"/>
+			<column icon="K_NICO_MTIME"  label="NICON_MT"     isUpdated="FALSE" id="NET_STAT_ID_MISSION_TIME" isVisible="TRUE" instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="FALSE" index="5"/>
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="FALSE" id="NET_STAT_ID_SCORE"        isVisible="TRUE" instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="FALSE" index="6"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="FALSE" id="NET_STAT_ID_SCORE_BYTIME_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="FALSE" index="7"/>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="FNTGT_COOP_2" id="GAMENAME_COOP_SNIPE" gameModeId="MatchCreate::GAME_MODE_COOP_SNIPE" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_1" teamMode="TRUE" >
+		<lbData>
+			<lb id="LB_Leaderboard_Ranked_CoopBombBase"           arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_CoopBombBase_BG"        arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES"/>
+			<lb id="LB_Leaderboard_Ranked_CoopBombBase_BG_TIME"   arbitrated="TRUE"  race="0" isSkill="FALSE" instance="LB_INSTANCE_BESTGAMETIME_SCORES"/>
+			<lb id="LB_Leaderboard_Standard_CoopBombBase_BG_TIME" arbitrated="FALSE" race="0" isSkill="FALSE" instance="LB_INSTANCE_BESTGAMETIME_SCORES"/>
+
+			<lb id="LB_SkillLeaderboard_CoopSnipeRanked"   arbitrated="TRUE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+			<lb id="LB_SkillLeaderboard_CoopSnipeStandard" arbitrated="FALSE" race="0" isSkill="TRUE" instance="LB_INSTANCE_OVERALL_SCORES"/>
+		</lbData>
+
+		<columnsData>
+			<column icon="K_NICO_GP"     label="NICON_GP"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_PLAYED" isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_GSP"    label="NICON_GPA"    isUpdated="TRUE" id="NET_STAT_ID_GAMES_PASSED" isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_GW"     label="NICON_GW"     isUpdated="TRUE" id="NET_STAT_ID_GAMES_WON"    isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="TRUE" id="NET_STAT_ID_SCORE"        isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="TRUE" id="NET_STAT_ID_KILLS"        isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_TKILLS" label="NICON_TK"     isUpdated="TRUE" id="NET_STAT_ID_TEAM_KILLS"   isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="7"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="TRUE" id="NET_STAT_ID_DEATHS"       isVisible="TRUE"  instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="8"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="TRUE" id="NET_STAT_ID_SCORE_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_OVERALL_SCORES" arbitrated="TRUE" index="9"/>
+
+			<column icon="K_NICO_MTIME"  label="NICON_MT"     isUpdated="FALSE" id="NET_STAT_ID_MISSION_TIME" isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="FALSE" id="NET_STAT_ID_SCORE"        isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="FALSE" id="NET_STAT_ID_KILLS"        isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_TKILLS" label="NICON_TK"     isUpdated="FALSE" id="NET_STAT_ID_TEAM_KILLS"   isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="FALSE" id="NET_STAT_ID_DEATHS"       isVisible="TRUE"  instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="FALSE" id="NET_STAT_ID_SCORE_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_BESTGAME_SCORES" arbitrated="TRUE" index="7"/>
+                                                       
+			<column icon="K_NICO_MTIME"  label="NICON_MT"     isUpdated="FALSE" id="NET_STAT_ID_MISSION_TIME" isVisible="TRUE"  instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="FALSE" id="NET_STAT_ID_SCORE"        isVisible="TRUE"  instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_KILLS"  label="NICON_KILLS"  isUpdated="FALSE" id="NET_STAT_ID_KILLS"        isVisible="TRUE"  instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_TKILLS" label="NICON_TK"     isUpdated="FALSE" id="NET_STAT_ID_TEAM_KILLS"   isVisible="TRUE"  instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="TRUE" index="5"/>
+			<column icon="K_NICO_DEATHS" label="NICON_DEATHS" isUpdated="FALSE" id="NET_STAT_ID_DEATHS"       isVisible="TRUE"  instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="TRUE" index="6"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="FALSE" id="NET_STAT_ID_SCORE_BYTIME_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="TRUE" index="7"/>
+
+			<column icon="K_NICO_GP"     label="NICON_GP"     isUpdated="TRUE"  id="NET_STAT_ID_GAMES_PLAYED" isVisible="TRUE" instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="FALSE"  index="2"/>
+			<column icon="K_NICO_GSP"    label="NICON_GPA"    isUpdated="TRUE"  id="NET_STAT_ID_GAMES_PASSED" isVisible="TRUE" instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="FALSE"  index="3"/>
+			<column icon="K_NICO_GW"     label="NICON_GW"     isUpdated="TRUE"  id="NET_STAT_ID_GAMES_WON"    isVisible="TRUE" instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="FALSE"  index="4"/>
+			<column icon="K_NICO_MTIME"  label="NICON_MT"     isUpdated="FALSE" id="NET_STAT_ID_MISSION_TIME" isVisible="TRUE" instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="FALSE" index="5"/>
+			<column icon="K_NICO_SCORE"  label="NICON_SCORE"  isUpdated="FALSE" id="NET_STAT_ID_SCORE"        isVisible="TRUE" instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="FALSE" index="6"/>
+			<column icon="K_NICO_SCORE"  label="NICON_HIDDEN" isUpdated="FALSE" id="NET_STAT_ID_SCORE_BYTIME_HIDDEN" isVisible="FALSE" instance="LB_INSTANCE_BESTGAMETIME_SCORES" arbitrated="FALSE" index="7"/>
+
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="FNTGT_RANK" id="GAMENAME_GAMER_LEVEL" gameModeId="GAMEMODE_INVALID" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_2" teamMode="FALSE" >
+		<lbData>
+			<lb id="LB_Leaderboard_Ranked_GamerMoney" arbitrated="TRUE" race="0" isSkill="FALSE" instance="LB_INSTANCE_GAMERLEVEL"/>
+		</lbData>
+
+		<columnsData>
+			<column icon="K_NICO_AVGS"  label="NICON_AVSCORE" isUpdated="TRUE" id="NET_STAT_ID_AVERAGE_SCORE" instance="LB_INSTANCE_GAMERLEVEL" isVisible="TRUE" arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_SCORE" label="NICON_SCORE"   isUpdated="TRUE" id="NET_STAT_ID_SCORE"         instance="LB_INSTANCE_GAMERLEVEL" isVisible="TRUE" arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_GP"    label="NICON_GP"      isUpdated="TRUE" id="NET_STAT_ID_GAMES_PLAYED"  instance="LB_INSTANCE_GAMERLEVEL" isVisible="TRUE" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_GW"    label="NICON_GW"      isUpdated="TRUE" id="NET_STAT_ID_GAMES_WON"     instance="LB_INSTANCE_GAMERLEVEL" isVisible="TRUE" arbitrated="TRUE" index="5"/>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="NET_TRUESKILL" id="GAMENAME_TRUESKILL" gameModeId="GAMEMODE_INVALID" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_2" teamMode="FALSE">
+		<lbData>
+		</lbData>
+
+		<columnsData>
+			<column icon="K_NICO_SKILL"    label="NICON_SKILL" isUpdated="TRUE" id="NET_STAT_ID_SKILLLB_SKILL"       instance="LB_INSTANCE_TRUESKILL" isVisible="TRUE"  arbitrated="TRUE" index="2"/>
+			<column icon="K_NICO_GP"       label="NICON_GP"    isUpdated="TRUE" id="NET_STAT_ID_SKILLLB_GAMESPLAYED" instance="LB_INSTANCE_TRUESKILL" isVisible="TRUE"  arbitrated="TRUE" index="3"/>
+			<column icon="K_NICO_SKILL_MU" label="NICON_MU"    isUpdated="TRUE" id="NET_STAT_ID_SKILLLB_MU"          instance="LB_INSTANCE_TRUESKILL" isVisible="FALSE" arbitrated="TRUE" index="4"/>
+			<column icon="K_NICO_SK_SIG"   label="NICON_SIGMA" isUpdated="TRUE" id="NET_STAT_ID_SKILLLB_SIGMA"       instance="LB_INSTANCE_TRUESKILL" isVisible="FALSE" arbitrated="TRUE" index="5"/>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="" id="GAMENAME_INVALID" gameModeId="MatchCreate::GAME_MODE_TEAM_FORT" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_NONE" teamMode="FALSE">
+		<lbData>
+		</lbData>
+		<columnsData>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="" id="GAMENAME_INVALID" gameModeId="MatchCreate::GAME_MODE_TEAM_BANK" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_NONE" teamMode="FALSE">
+		<lbData>
+		</lbData>
+		<columnsData>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="" id="GAMENAME_INVALID" gameModeId="MatchCreate::GAME_MODE_COMP_ANTAGONIZE" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_NONE" teamMode="FALSE">
+		<lbData>
+		</lbData>
+		<columnsData>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="" id="GAMENAME_INVALID" gameModeId="MatchCreate::GAME_MODE_FREEMODE" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_NONE" teamMode="FALSE">
+		<lbData>
+		</lbData>
+		<columnsData>
+		</columnsData>
+	</gamemode>
+	
+	<gamemode label="" id="GAMENAME_INVALID" gameModeId="MatchCreate::GAME_MODE_RACE_DRIVEBY" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_NONE" teamMode="FALSE">
+		<lbData>
+		</lbData>
+		<columnsData>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="" id="GAMENAME_INVALID" gameModeId="MatchCreate::GAME_MODE_EPISODIC_1" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_NONE" teamMode="FALSE">
+		<lbData>
+		</lbData>
+		<columnsData>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="" id="GAMENAME_INVALID" gameModeId="MatchCreate::GAME_MODE_EPISODIC_2" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_NONE" teamMode="FALSE">
+		<lbData>
+		</lbData>
+		<columnsData>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="" id="GAMENAME_INVALID" gameModeId="MatchCreate::GAME_MODE_EPISODIC_3" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_NONE" teamMode="FALSE">
+		<lbData>
+		</lbData>
+		<columnsData>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="" id="GAMENAME_INVALID" gameModeId="MatchCreate::GAME_MODE_EPISODIC_4" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_NONE" teamMode="FALSE">
+		<lbData>
+		</lbData>
+		<columnsData>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="" id="GAMENAME_INVALID" gameModeId="MatchCreate::GAME_MODE_EPISODIC_5" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_NONE" teamMode="FALSE">
+		<lbData>
+		</lbData>
+		<columnsData>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="" id="GAMENAME_INVALID" gameModeId="MatchCreate::GAME_MODE_EPISODIC_6" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_NONE" teamMode="FALSE">
+		<lbData>
+		</lbData>
+		<columnsData>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="" id="GAMENAME_INVALID" gameModeId="MatchCreate::GAME_MODE_EPISODIC_7" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_NONE" teamMode="FALSE">
+		<lbData>
+		</lbData>
+		<columnsData>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="" id="GAMENAME_INVALID" gameModeId="MatchCreate::GAME_MODE_EPISODIC_8" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_NONE" teamMode="FALSE">
+		<lbData>
+		</lbData>
+		<columnsData>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="" id="GAMENAME_INVALID" gameModeId="MatchCreate::GAME_MODE_EPISODIC_9" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_NONE" teamMode="FALSE">
+		<lbData>
+		</lbData>
+		<columnsData>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="" id="GAMENAME_INVALID" gameModeId="MatchCreate::GAME_MODE_EPISODIC_10" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_NONE" teamMode="FALSE">
+		<lbData>
+		</lbData>
+		<columnsData>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="" id="GAMENAME_INVALID" gameModeId="MatchCreate::GAME_MODE_EPISODIC_11" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_NONE" teamMode="FALSE">
+		<lbData>
+		</lbData>
+		<columnsData>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="" id="GAMENAME_INVALID" gameModeId="MatchCreate::GAME_MODE_EPISODIC_12" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_NONE" teamMode="FALSE">
+		<lbData>
+		</lbData>
+		<columnsData>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="" id="GAMENAME_INVALID" gameModeId="MatchCreate::GAME_MODE_EPISODIC_13" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_NONE" teamMode="FALSE">
+		<lbData>
+		</lbData>
+		<columnsData>
+		</columnsData>
+	</gamemode>
+
+	<gamemode label="" id="GAMENAME_INVALID" gameModeId="MatchCreate::GAME_MODE_EPISODIC_14" raceMode="FALSE" ActionOnNewScreen="MENU_ACTION_NONE" teamMode="FALSE">
+		<lbData>
+		</lbData>
+		<columnsData>
+		</columnsData>
+	</gamemode>
+
+</LeaderboardsData>
+

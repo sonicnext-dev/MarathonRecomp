@@ -1,0 +1,3723 @@
+F_M_Business_01,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_M_Business_02,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_M_Chinatown,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+F_M_PBusiness,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+end
+F_M_PEastEuro_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+end
+F_M_PHARBRON_01,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	3,	0,	-1,	-1,		4
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_M_PJersey_01,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+end
+F_M_PJersey_02,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		1,		0,	0,	0,	0,	0,	2,	0,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	2,	1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_M_PLatin_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+F_M_PLatin_02,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+end
+F_M_PManhat_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_M_PManhat_02,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+F_M_POrient_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+F_M_PRich_01,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_O_Binco,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+uppr,		0,		0,	0,	0,	0,	0,	2,	1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+end
+F_O_Maid_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_O_PEastEuro_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_O_PEastEuro_02,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	2,	1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	2,	0,	-1,	-1,		3
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_O_PHarbron_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+F_O_PJersey_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+F_O_POrient_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+F_O_Rich_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+end
+F_Y_Bank_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+#model file for female young uptown char		no. of variations we are setting values for
+F_Y_Business_01,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	7,	2,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+#model file for female young char		no. of variations we are setting values for
+F_Y_Cdress_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		15
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		15
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+end
+F_Y_Cdress_01,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		15
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_Doctor_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_FF_Burger_R,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_FF_Cluck_R,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_FF_RSCafe,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_FF_TWcafe,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_FF_WSPizza_R,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_Gymgal_01,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+sus2,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_Hooker_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		15
+end
+F_Y_Hooker_03,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		15
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_Multiplayer,		31
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+feet,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+head,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+head,		4,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		4,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		15
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		15
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		4,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		4,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		5,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		6,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		7,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+F_Y_Nurse,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_PBRONX_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+end
+F_Y_PCOOL_02,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+end
+F_Y_PCool_01,		13
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	3,	0,	-1,	-1,		3
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	7,	1,	-1,	-1,		0
+end
+F_Y_PEastEuro_01,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_PHARBRON_01,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_PHARLEM_01,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+hair,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_PJersey_02,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+end
+F_Y_PLatin_02,		15
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	3,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	2,	0,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		3,		0,	0,	0,	0,	0,	0,	0,	-1,	-1,		0
+end
+F_Y_PLatin_03,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	2,	1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	2,	0,	-1,	-1,		4
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_PMANHAT_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+F_Y_PMANHAT_03,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+hair,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	0,	0,	-1,	-1,		0
+end
+F_Y_POrient_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_PQueens_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+F_Y_PRich_01,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_PVillbo_02,		12
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+hair,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_Platin_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+F_Y_Pmanhat_02,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+feet,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		15
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		15
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_SHOP_03,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+sus2,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_SHOP_04,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_STRIPPERC01,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		15
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		15
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_STRIPPERC02,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		15
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		15
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_Shopper_05,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+end
+F_Y_Socialite,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		15
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+F_Y_Street_02,		12
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_Street_05,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+F_Y_Street_09,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+F_Y_Street_12,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+F_Y_Street_30,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+F_Y_Street_34,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_Tourist_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+F_Y_Villbo_01,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	2,	0,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	2,	1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+F_Y_waitress_01,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+IG_Anna,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+IG_Anthony,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_Badman,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_Bernie_Crane,		13
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+IG_Bledar,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+end
+IG_Brian,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_Brucie,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		15
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_Bulgarin,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		12
+end
+IG_Charise,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_CharlieUC,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+IG_Clarence,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+IG_Dardan,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+IG_Darko,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+IG_Derrick_Mc,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+IG_Dmitri,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_Dwayne,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_EddieLow,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_Faustin,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_Francis_MC,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_French_Tom,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+IG_Gordon,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+IG_Gracie,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+IG_Hossan,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_Ilyena,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+IG_Ivan,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_JASON,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+IG_Jay,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+IG_Jeff,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_Jeremy,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+IG_JohnnyBiker,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+IG_KateMc,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_Kenny,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_LilJacob,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_LilJacobW,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+IG_Luca,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+IG_Luis,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+IG_Mallorie,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+uppr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		9
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+hair,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+IG_Manny,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		15
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_Marnie,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_Mel,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_Michael,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+IG_Michelle,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_Mickey,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_Packie_Mc,		12
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_Pathos,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_Petrovic,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_Phil_Bell,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_Playboy_X,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_Ray_Boccino,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+end
+IG_Ricky,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+IG_Roman,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_RomanW,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+IG_Sarah,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+IG_Tuna,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+IG_Vlad,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_ARMOURED,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_Alcoholic,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_M_BusDriver,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_Business_02,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_M_Business_03,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_M_Chinatown_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_M_Crackhead,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	100,	0,	100,	1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_Doc_Scrubs_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_Doctor_01,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_DodgyDoc,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_M_EECook,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+end
+M_M_EE_Heavy_01,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	3,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_EE_Heavy_02,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_M_Enforcer,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	2,	1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	2,	0,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_M_FBI,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_Factory_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+#model 		no. of variations we are setting values for
+M_M_FatCOP_01,		12
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+head,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	1,	1,	0,	0,	3,	1,	100,	1,		1
+uppr,		1,		0,	1,	1,	0,	0,	3,	1,	100,	1,		2
+uppr,		2,		0,	1,	0,	1,	0,	3,	0,	100,	0,		5
+lowr,		0,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		1,	1,	1,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		1,	1,	0,	1,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_FatMob_01,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_M_Fedco,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_M_Firechief,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_GBik_Lo_03,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		7
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_GJam_Hi_01,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_GJam_Hi_02,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	2,	1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	2,	0,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+hair,		1,		0,	0,	0,	0,	0,	1,	0,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_GRu2_Hi_01,		13
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_GRu2_Hi_02,		13
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		6
+head,		1,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	2,	1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	2,	0,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_GRu2_Lo_02,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		1,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		10
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	2,	0,	-1,	-1,		2
+uppr,		0,		0,	0,	0,	0,	0,	2,	1,	-1,	-1,		5
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_GTri_Hi_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		0
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_M_GTri_Hi_02,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_M_GayMid,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_M_Gjam_Hi_03,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		6
+head,		1,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_GunNut_01,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_HPorter_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+end
+M_M_Helipilot_01,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_M_Koreacook_01,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_M_Lawyer_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_M_Lawyer_02,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_M_LoonyBlack,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_Loonywhite,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_M_Midtown_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_M_PBusiness_01,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		0
+head,		1,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		0
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	7,	1,	-1,	-1,		0
+end
+M_M_PEasteuro_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_M_PHARBRON_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_M_PItalian_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_M_PItalian_02,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_M_PLatin_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_M_PLatin_02,		13
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	3,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_PLatin_03,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_PManhat_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_M_PManhat_02,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_M_POrient_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_M_PRich_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_M_Pilot,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_Pindus_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		12
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_Pindus_02,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_Postal_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_SECURITYMAN,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_M_SWEEPER,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		1,	0,	0,	0,	0,	3,	0,	-1,	-1,		2
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	100,	1,	100,	2,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_SaxPlayer_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_Seller_01,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_Shortorder,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_M_TENNIS,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+end
+M_M_Telephone,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_Train_01,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_Trampblack,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_M_Trucker_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_M_genbum_01,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+feet,		0,		0,	0,	0,	0,	0,	100,	0,	100,	1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_streetfood_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_M_taxidriver,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		12
+end
+M_O_EastEuro_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+end
+M_O_GRus_Hi_01,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_O_Hasid_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_O_Hotel_Foot,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_O_Janitor,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_O_MPMobBoss,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+#model file for male old mobster char		no. of variations we are setting values for
+M_O_Mobster,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_O_PEastEuro_02,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+end
+M_O_PJersey_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_O_Suited,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_O_pharbron_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_O_street_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_AIRWORKER,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_ears,		0,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_BRONX_01,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		0
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_ears,		0,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	102,	0,	-1,	-1,		0
+end
+M_Y_Barman_01,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_BoHo_01,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_Bohoguy_01,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Bouncer_01,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Bouncer_02,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Bowl_01,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+end
+M_Y_Bowl_02,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+end
+M_Y_Business_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_Y_Business_02,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_Y_Busker_01,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_CLUBFIT,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+#model 		no. of variations we are setting values for
+M_Y_COP,		12
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		2,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+head,		0,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		2,		0,	1,	1,	0,	0,	2,	1,	100,	1,		6
+uppr,		1,		0,	1,	1,	0,	0,	2,	1,	100,	1,		3
+uppr,		0,		0,	1,	1,	0,	0,	2,	1,	100,	1,		1
+uppr,		3,		0,	1,	0,	1,	0,	2,	0,	100,	0,		0
+lowr,		0,		0,	1,	1,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	1,	0,	1,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		1,	1,	1,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		1,	1,	0,	1,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_COP_TRAFFIC,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		2,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+head,		0,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		1,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_ChinVend_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_Chinatown_03,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Chopshop_01,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Chopshop_02,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Courier,		16
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+suse,		0,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_ears,		0,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		4,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		3,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		5,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		6,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Cowboy_01,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_Dealer,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		5
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Dodgy_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	100,	0,	100,	1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Dork_02,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_DownTown_02,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	100,	3,	-1,	-1,		0
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_ears,		0,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		3,		0,	0,	0,	0,	0,	102,	0,	-1,	-1,		0
+end
+M_Y_Downtown_01,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+sus2,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Downtown_03,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_ears,		0,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Drug_01,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		0
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_FF_Burger_R,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+end
+M_Y_FF_Cluck_R,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+end
+M_Y_FF_RSCafe,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+end
+M_Y_FF_Twcafe,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+end
+M_Y_FF_WSPizza_R,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+end
+M_Y_FRENCHTOM,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GAFR_HI_01,		15
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		1,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		10
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	3,	1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	3,	0,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GAFR_HI_02,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		1,		0,	0,	0,	0,	0,	100,	3,	-1,	-1,		10
+head,		0,		0,	0,	0,	0,	0,	100,	3,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GAFR_LO_01,		17
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+head,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+p_head,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		1,		0,	0,	0,	0,	0,	100,	3,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	100,	3,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GAFR_LO_02,		14
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	100,	4,	-1,	-1,		6
+head,		1,		0,	0,	0,	0,	0,	100,	4,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+uppr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		4,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GALB_LO_01,		13
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+sus2,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	3,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	100,	3,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GALB_LO_02,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GALB_LO_03,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+sus2,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GALB_LO_04,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+sus2,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GBik02_Lo_02,		12
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		7
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GBik_Hi_01,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		7
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GBik_Hi_02,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GBik_Lo_01,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		8
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+hair,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GBik_Lo_02,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		1,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		5
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GIRI_LO_01,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GIRI_LO_02,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		1,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GIRI_LO_03,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GJam_Lo_01,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GJam_Lo_02,		14
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GKor_Lo_01,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GKor_Lo_02,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GLAT_HI_02,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GLAT_Lo_02,		15
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	100,	4,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		4,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GLat_Hi_01,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		5
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GMAF_HI_02,		12
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		3,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		4,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GMAF_lo_01,		13
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		1,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		10
+head,		0,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GMAF_lo_02,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GMaf_Hi_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GRu2_Lo_01,		14
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GRus_Hi_02,		13
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		1,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		10
+head,		0,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		10
+uppr,		2,		0,	0,	0,	0,	0,	2,	0,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	2,	0,	-1,	-1,		1
+uppr,		3,		0,	0,	0,	0,	0,	2,	0,	-1,	-1,		2
+uppr,		0,		0,	0,	0,	0,	0,	2,	1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+sus2,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GRus_Hi_03,		1
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+end
+M_Y_GRus_Lo_01,		14
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+sus2,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GRus_Lo_02,		13
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		1,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		0
+head,		2,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		0
+uppr,		2,		0,	0,	0,	0,	0,	2,	0,	2,	1,		0
+uppr,		1,		0,	0,	0,	0,	0,	2,	0,	2,	2,		0
+uppr,		0,		0,	0,	0,	0,	0,	2,	1,	2,	2,		0
+lowr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GRus_Lo_03,		1
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+end
+M_Y_GTri_Lo_01,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+hair,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GTri_Lo_02,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Garbage,		13
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+suse,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+feet,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GayYoung,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GenStreet_09,		2
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_Y_GenStreet_11,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_ears,		0,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_GenStreet_20,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_GenStreet_34,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_ears,		0,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Genstreet_16,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_ears,		0,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Glat_Lo_01,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Goon_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_Y_GymGuy_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_HARLEM_01,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_HPATROL,		2
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_Y_Hardman_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Harlem_02,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Hasid_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_Y_Jim_fitz,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_LEastSide_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_Mechanic_02,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Modo,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_Multiplayer,		28
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+head,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		4,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		15
+uppr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+lowr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		15
+hair,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		6,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		5,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		4,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		7,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_NHELIPILOT,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_PBronx_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_PCool_01,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_PCool_02,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_PEastEuro_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_PHARBRON_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_PHARLEM_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+end
+M_Y_PIndus_01,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		12
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_PIndus_02,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_PJersey_01,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_PLATIN_01,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_PLATIN_02,		13
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		4,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		5,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_PLatin_03,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_PMANhat_02,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_PManhat_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_POrient_01,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	3,	0,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_PQueens_01,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_PRich_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_Y_PVillbo_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_PVillbo_02,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_PVillbo_03,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_Perseus,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_Y_Pindus_03,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_Pmedic,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_Y_Prison,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_PrisonAOM,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_Y_Queensbridge,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Romancab,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Runner,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		0,		0,	0,	0,	0,	0,	100,	0,	100,	1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_STREET_04,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	3,	0,	-1,	-1,		5
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_ears,		0,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_STROOPER,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		1,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_SWAT,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		1,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	1,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Shady_02,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	100,	0,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_ShopAsst_01,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_SkateBike_01,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+suse,		0,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+feet,		0,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Soho_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_ears,		0,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Streetblk_02,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	3,	0,	5,	0,		3
+uppr,		0,		0,	0,	0,	0,	0,	3,	1,	5,	1,		2
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Streetblk_03,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_Streetpunk_02,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Streetpunk_04,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	2,	1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	2,	0,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Streetpunk_05,		11
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_SwordSwallow,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_Y_THIEF,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_TRAFFIC,		2
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_Y_Tough_05,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	100,	1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_Tourist_02,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+#model file for male young uptown char		no. of variations we are setting values for
+M_Y_Uptown_01,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	1,	0,	0,	-1,	-1,	-1,	-1,		0
+uppr,		0,		0,	0,	0,	1,	0,	-1,	-1,	-1,	-1,		0
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+end
+M_Y_Valet,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+end
+M_Y_Vendor,		6
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_WINTER,		2
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end
+M_Y_Zombie_01,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_Zombie_02,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_construct_01,		14
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+feet,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_construct_02,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		0,		0,	0,	0,	0,	0,	5,	0,	-1,	-1,		2
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_construct_03,		9
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	3,	0,	-1,	-1,		3
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_fireman,		10
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_harlem_04,		5
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+end
+M_Y_street_01,		7
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		5
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+M_Y_street_03,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+head,		0,		0,	0,	0,	0,	0,	100,	2,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+ig_BAZ,		4
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+end
+ig_Vinny_Spaz,		8
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		10
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+p_head,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+end
+player,		45
+#slot		geometry	BULK	JOB	SUNNY	WET	MAT1	RES1A	RES1B	RES2A	RES2B		AUDIO ID
+head,		0,		0,	0,	0,	0,	0,	7,	1,	7,	2,		10
+uppr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		7,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		8,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		10,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		16,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		6
+uppr,		5,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		11,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		13,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		12,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		9,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+uppr,		15,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		4,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+uppr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		14,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+uppr,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		4
+uppr,		6,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+lowr,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		4,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		6,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+lowr,		5,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		12
+lowr,		7,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		11
+lowr,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		3,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		5,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+feet,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		3
+feet,		4,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+feet,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+feet,		6,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		2
+suse,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+suse,		1,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+suse,		3,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+sus2,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+sus2,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		2,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+hair,		0,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		1,		0,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		0,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		0
+p_head,		2,		1,	0,	0,	0,	0,	-1,	-1,	-1,	-1,		1
+end

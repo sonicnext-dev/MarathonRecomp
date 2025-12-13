@@ -60,3 +60,6 @@ To build this project, you will need:
 - [Skyth](https://github.com/blueskythlikesclouds): Graphics consultation
 - [Darío](https://github.com/DarioSamo): Creator of [plume](https://github.com/renderbag/plume) graphics abstraction layer
 - [ocornut](https://github.com/ocornut): Creator of [Dear ImGui](https://github.com/ocornut/imgui)
+
+### Developer Tools
+- [SparkIV](https://github.com/ahmed605/SparkIV) by aru & Ahmed Walid (GPL-3.0) — vendored in this repo for RPF archive inspection

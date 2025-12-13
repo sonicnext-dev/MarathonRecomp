@@ -387,7 +387,7 @@ uint32_t XWriteFile(FileHandle* hFile, const void* lpBuffer, uint32_t nNumberOfB
 
 std::filesystem::path FileSystem::ResolvePath(const std::string_view& path, bool checkForMods)
 {
-    LOGF_IMPL(Utility, "Game", "Loading file: \"{}\"", path.data());
+    LOGF_IMPL(Utility, "Game", "Loading file: \"{}\"", path);
     if (checkForMods)
     {
         std::filesystem::path resolvedPath = ModLoader::ResolvePath(path);

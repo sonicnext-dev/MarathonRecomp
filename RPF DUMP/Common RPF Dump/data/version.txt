@@ -1,0 +1,10 @@
+# Version number - the number set here will display in the game
+
+[VERSION_NUMBER]
+118
+
+# version number for savegame files in non-final builds
+[SAVEGAME_VERSION_NUMBER]
+56
+
+# eof
