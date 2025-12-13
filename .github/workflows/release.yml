@@ -1,0 +1,431 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., v1.0.0)'
+        required: true
+        type: string
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  LLVM_VERSION: 18
+
+jobs:
+  # ============================================================================
+  # Windows x64 Build
+  # ============================================================================
+  build-windows-x64:
+    name: Windows x64
+    runs-on: windows-latest
+    env:
+      CMAKE_PRESET: x64-Clang-Release
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ccache-windows-x64-release
+
+      - name: Cache vcpkg
+        uses: actions/cache@v4
+        with:
+          path: |
+            ./thirdparty/vcpkg/downloads
+            ./thirdparty/vcpkg/packages
+          key: vcpkg-windows-x64-${{ hashFiles('vcpkg.json') }}
+          restore-keys: |
+            vcpkg-windows-x64-
+
+      - name: Install Dependencies
+        run: |
+          choco install ninja
+          Remove-Item -Path "C:\ProgramData\Chocolatey\bin\ccache.exe" -Force -ErrorAction SilentlyContinue
+
+      - name: Configure Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Configure Project
+        run: cmake . --preset ${{ env.CMAKE_PRESET }} -DSDL2MIXER_VORBIS=VORBISFILE -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
+
+      - name: Build Project
+        run: cmake --build .\out\build\${{ env.CMAKE_PRESET }} --target LibertyRecomp
+
+      - name: Pack Release
+        run: |
+          New-Item -ItemType Directory -Path .\release
+          New-Item -ItemType Directory -Path .\release\D3D12
+
+          Move-Item -Path ".\out\build\${{ env.CMAKE_PRESET }}\LibertyRecomp\D3D12\D3D12Core.dll" -Destination ".\release\D3D12\D3D12Core.dll"
+          Move-Item -Path ".\out\build\${{ env.CMAKE_PRESET }}\LibertyRecomp\dxcompiler.dll" -Destination ".\release\dxcompiler.dll"
+          Move-Item -Path ".\out\build\${{ env.CMAKE_PRESET }}\LibertyRecomp\dxil.dll" -Destination ".\release\dxil.dll"
+          Move-Item -Path ".\out\build\${{ env.CMAKE_PRESET }}\LibertyRecomp\LibertyRecomp.exe" -Destination ".\release\LibertyRecomp.exe"
+          
+          Compress-Archive -Path .\release\* -DestinationPath LibertyRecomp-Windows-x64.zip
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LibertyRecomp-Windows-x64
+          path: LibertyRecomp-Windows-x64.zip
+
+  # ============================================================================
+  # Linux x64 Build
+  # ============================================================================
+  build-linux-x64:
+    name: Linux x64
+    runs-on: ubuntu-24.04
+    env:
+      CMAKE_PRESET: linux-release
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ccache-linux-x64-release
+
+      - name: Cache vcpkg
+        uses: actions/cache@v4
+        with:
+          path: |
+            ./thirdparty/vcpkg/downloads
+            ./thirdparty/vcpkg/packages
+          key: vcpkg-linux-x64-${{ hashFiles('vcpkg.json') }}
+          restore-keys: |
+            vcpkg-linux-x64-
+
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y ninja-build llvm-${{ env.LLVM_VERSION }}-dev libgtk-3-dev libasound2-dev libpulse-dev libpipewire-0.3-dev
+
+      - name: Configure Project
+        env:
+          CCACHE_DIR: /tmp/ccache
+        run: cmake . --preset ${{ env.CMAKE_PRESET }} -DSDL2MIXER_VORBIS=VORBISFILE -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
+
+      - name: Build Project
+        env:
+          CCACHE_DIR: /tmp/ccache
+        run: cmake --build ./out/build/${{ env.CMAKE_PRESET }} --target LibertyRecomp
+
+      - name: Pack Release
+        run: |
+          mkdir -p release
+          cp ./out/build/${{ env.CMAKE_PRESET }}/LibertyRecomp/LibertyRecomp release/
+          tar -czvf LibertyRecomp-Linux-x64.tar.gz -C release .
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LibertyRecomp-Linux-x64
+          path: LibertyRecomp-Linux-x64.tar.gz
+
+  # ============================================================================
+  # Linux ARM64 Build
+  # ============================================================================
+  build-linux-arm64:
+    name: Linux ARM64
+    runs-on: ubuntu-24.04-arm
+    env:
+      CMAKE_PRESET: linux-release
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ccache-linux-arm64-release
+
+      - name: Cache vcpkg
+        uses: actions/cache@v4
+        with:
+          path: |
+            ./thirdparty/vcpkg/downloads
+            ./thirdparty/vcpkg/packages
+          key: vcpkg-linux-arm64-${{ hashFiles('vcpkg.json') }}
+          restore-keys: |
+            vcpkg-linux-arm64-
+
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y ninja-build llvm-${{ env.LLVM_VERSION }}-dev libgtk-3-dev libasound2-dev libpulse-dev libpipewire-0.3-dev
+
+      - name: Configure Project
+        env:
+          CCACHE_DIR: /tmp/ccache
+        run: cmake . --preset ${{ env.CMAKE_PRESET }} -DSDL2MIXER_VORBIS=VORBISFILE -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
+
+      - name: Build Project
+        env:
+          CCACHE_DIR: /tmp/ccache
+        run: cmake --build ./out/build/${{ env.CMAKE_PRESET }} --target LibertyRecomp
+
+      - name: Pack Release
+        run: |
+          mkdir -p release
+          cp ./out/build/${{ env.CMAKE_PRESET }}/LibertyRecomp/LibertyRecomp release/
+          tar -czvf LibertyRecomp-Linux-ARM64.tar.gz -C release .
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LibertyRecomp-Linux-ARM64
+          path: LibertyRecomp-Linux-ARM64.tar.gz
+
+  # ============================================================================
+  # macOS ARM64 Build (Apple Silicon)
+  # ============================================================================
+  build-macos-arm64:
+    name: macOS ARM64
+    runs-on: macos-15
+    env:
+      CMAKE_PRESET: macos-release
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ccache-macos-arm64-release
+
+      - name: Cache vcpkg
+        uses: actions/cache@v4
+        with:
+          path: |
+            ./thirdparty/vcpkg/downloads
+            ./thirdparty/vcpkg/packages
+          key: vcpkg-macos-arm64-${{ hashFiles('vcpkg.json') }}
+          restore-keys: |
+            vcpkg-macos-arm64-
+
+      - name: Install Dependencies
+        run: brew install ninja
+
+      - name: Configure Project
+        env:
+          CCACHE_DIR: /tmp/ccache
+        run: cmake . --preset ${{ env.CMAKE_PRESET }} -DCMAKE_OSX_ARCHITECTURES=arm64 -DSDL2MIXER_VORBIS=VORBISFILE -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
+
+      - name: Build Project
+        env:
+          CCACHE_DIR: /tmp/ccache
+        run: cmake --build ./out/build/${{ env.CMAKE_PRESET }} --target LibertyRecomp
+
+      - name: Pack Release
+        run: |
+          codesign --deep -fs - "./out/build/${{ env.CMAKE_PRESET }}/LibertyRecomp/Liberty Recompiled.app"
+          cd ./out/build/${{ env.CMAKE_PRESET }}/LibertyRecomp
+          zip -r ../../../../LibertyRecomp-macOS-ARM64.zip "Liberty Recompiled.app"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LibertyRecomp-macOS-ARM64
+          path: LibertyRecomp-macOS-ARM64.zip
+
+  # ============================================================================
+  # macOS x64 Build (Intel)
+  # ============================================================================
+  build-macos-x64:
+    name: macOS x64
+    runs-on: macos-13
+    env:
+      CMAKE_PRESET: macos-release
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ccache-macos-x64-release
+
+      - name: Cache vcpkg
+        uses: actions/cache@v4
+        with:
+          path: |
+            ./thirdparty/vcpkg/downloads
+            ./thirdparty/vcpkg/packages
+          key: vcpkg-macos-x64-${{ hashFiles('vcpkg.json') }}
+          restore-keys: |
+            vcpkg-macos-x64-
+
+      - name: Install Dependencies
+        run: brew install ninja
+
+      - name: Configure Project
+        env:
+          CCACHE_DIR: /tmp/ccache
+        run: cmake . --preset ${{ env.CMAKE_PRESET }} -DCMAKE_OSX_ARCHITECTURES=x86_64 -DSDL2MIXER_VORBIS=VORBISFILE -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
+
+      - name: Build Project
+        env:
+          CCACHE_DIR: /tmp/ccache
+        run: cmake --build ./out/build/${{ env.CMAKE_PRESET }} --target LibertyRecomp
+
+      - name: Pack Release
+        run: |
+          codesign --deep -fs - "./out/build/${{ env.CMAKE_PRESET }}/LibertyRecomp/Liberty Recompiled.app"
+          cd ./out/build/${{ env.CMAKE_PRESET }}/LibertyRecomp
+          zip -r ../../../../LibertyRecomp-macOS-x64.zip "Liberty Recompiled.app"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LibertyRecomp-macOS-x64
+          path: LibertyRecomp-macOS-x64.zip
+
+  # ============================================================================
+  # Linux Flatpak Build
+  # ============================================================================
+  build-flatpak:
+    name: Linux Flatpak
+    runs-on: ubuntu-24.04
+    env:
+      FLATPAK_ID: io.github.ozordi.libertyrecomp
+      FREEDESKTOP_VERSION: 23.08
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y flatpak-builder ccache
+
+      - name: Setup ccache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/ccache
+          key: ccache-flatpak-release
+
+      - name: Prepare Flatpak
+        run: |
+          flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          flatpak --user install -y flathub org.freedesktop.Sdk//${{ env.FREEDESKTOP_VERSION }}
+          flatpak --user install -y flathub org.freedesktop.Sdk.Extension.llvm${{ env.LLVM_VERSION }}//${{ env.FREEDESKTOP_VERSION }}
+
+      - name: Build Flatpak
+        run: |
+          export CCACHE_DIR=/tmp/ccache
+          flatpak-builder --user --force-clean --install-deps-from=flathub --repo=repo --ccache builddir ./flatpak/${{ env.FLATPAK_ID }}.json
+          flatpak build-bundle repo ./${{ env.FLATPAK_ID }}.flatpak ${{ env.FLATPAK_ID }} --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LibertyRecomp-Flatpak
+          path: ./${{ env.FLATPAK_ID }}.flatpak
+
+  # ============================================================================
+  # Create GitHub Release
+  # ============================================================================
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs:
+      - build-windows-x64
+      - build-linux-x64
+      - build-linux-arm64
+      - build-macos-arm64
+      - build-macos-x64
+      - build-flatpak
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Prepare Release Files
+        run: |
+          mkdir -p release-files
+          cp artifacts/LibertyRecomp-Windows-x64/LibertyRecomp-Windows-x64.zip release-files/
+          cp artifacts/LibertyRecomp-Linux-x64/LibertyRecomp-Linux-x64.tar.gz release-files/
+          cp artifacts/LibertyRecomp-Linux-ARM64/LibertyRecomp-Linux-ARM64.tar.gz release-files/
+          cp artifacts/LibertyRecomp-macOS-ARM64/LibertyRecomp-macOS-ARM64.zip release-files/
+          cp artifacts/LibertyRecomp-macOS-x64/LibertyRecomp-macOS-x64.zip release-files/
+          cp artifacts/LibertyRecomp-Flatpak/*.flatpak release-files/
+          ls -la release-files/
+
+      - name: Get Version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: Liberty Recompiled ${{ steps.version.outputs.version }}
+          draft: false
+          prerelease: ${{ contains(steps.version.outputs.version, 'alpha') || contains(steps.version.outputs.version, 'beta') || contains(steps.version.outputs.version, 'rc') }}
+          generate_release_notes: true
+          files: |
+            release-files/LibertyRecomp-Windows-x64.zip
+            release-files/LibertyRecomp-Linux-x64.tar.gz
+            release-files/LibertyRecomp-Linux-ARM64.tar.gz
+            release-files/LibertyRecomp-macOS-ARM64.zip
+            release-files/LibertyRecomp-macOS-x64.zip
+            release-files/*.flatpak
+          body: |
+            ## Liberty Recompiled ${{ steps.version.outputs.version }}
+            
+            A static recompilation of Grand Theft Auto IV for Xbox 360.
+            
+            ### Downloads
+            
+            | Platform | Architecture | Download |
+            |----------|--------------|----------|
+            | Windows | x64 | `LibertyRecomp-Windows-x64.zip` |
+            | Linux | x64 | `LibertyRecomp-Linux-x64.tar.gz` |
+            | Linux | ARM64 | `LibertyRecomp-Linux-ARM64.tar.gz` |
+            | Linux | Flatpak | `io.github.ozordi.libertyrecomp.flatpak` |
+            | macOS | ARM64 (Apple Silicon) | `LibertyRecomp-macOS-ARM64.zip` |
+            | macOS | x64 (Intel) | `LibertyRecomp-macOS-x64.zip` |
+            
+            ### Requirements
+            
+            - A legally obtained copy of Grand Theft Auto IV for Xbox 360
+            - See the README for installation instructions
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
