@@ -255,6 +255,10 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Install Dependencies (macOS)
+        run: |
+          brew install ninja
+
       - name: Checkout Private Repository
         if: ${{ secrets.ASSET_REPO != '' && secrets.ASSET_REPO_TOKEN != '' }}
         uses: actions/checkout@v4
@@ -277,10 +281,6 @@ jobs:
           key: vcpkg-${{ runner.os }}-${{ matrix.arch }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: |
             vcpkg-${{ runner.os }}-${{ matrix.arch }}-
-
-      - name: Install Dependencies (macOS)
-        run: |
-          brew install ninja
 
       - name: Cache ccache Directory
         uses: actions/cache@v4
