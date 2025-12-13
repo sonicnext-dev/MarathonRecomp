@@ -1185,6 +1185,27 @@ static void DrawNavigationButton()
         {
             SetCurrentPage(g_firstPage);
         }
+        else if (g_currentPage == WizardPage::SelectGame)
+        {
+            // GTA IV: Skip DLC selection and go directly to source validation and install
+            std::string sourcesErrorMessage;
+            if (!InstallerParseSources(sourcesErrorMessage))
+            {
+                // Some of the sources that were provided to the installer are not valid.
+                std::stringstream stringStream;
+                stringStream << Localise("Installer_Message_InvalidFiles");
+                if (!sourcesErrorMessage.empty()) {
+                    stringStream << std::endl << std::endl << sourcesErrorMessage;
+                }
+
+                g_currentMessagePrompt = stringStream.str();
+                g_currentMessagePromptConfirmation = false;
+            }
+            else
+            {
+                SetCurrentPage(WizardPage::CheckSpace);
+            }
+        }
         else
         {
             SetCurrentPage(WizardPage(int(g_currentPage) + 1));
@@ -1233,8 +1254,13 @@ static void CheckCancelAction()
     }
     else if (int(g_currentPage) > 0)
     {
-        // Just go back to the previous page.
-        SetCurrentPage(WizardPage(int(g_currentPage) - 1));
+        // Just go back to the previous page, but skip SelectDLC (GTA IV has no DLC to install)
+        WizardPage prevPage = WizardPage(int(g_currentPage) - 1);
+        if (prevPage == WizardPage::SelectDLC)
+        {
+            prevPage = WizardPage::SelectGame;
+        }
+        SetCurrentPage(prevPage);
     }
 }
 

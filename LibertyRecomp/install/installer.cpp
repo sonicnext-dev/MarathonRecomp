@@ -103,18 +103,22 @@ static bool checkFile(const FilePair &pair, const uint64_t *fileHashes, const st
             return false;
         }
 
-        uint64_t fileHash = XXH3_64bits(fileData.data(), fileSize);
-        bool fileHashFound = false;
-        for (uint32_t i = 0; i < hashCount && !fileHashFound; i++)
+        // Skip hash validation if no hashes are specified (hashCount == 0)
+        if (hashCount > 0)
         {
-            fileHashFound = fileHash == fileHashes[i];
-        }
+            uint64_t fileHash = XXH3_64bits(fileData.data(), fileSize);
+            bool fileHashFound = false;
+            for (uint32_t i = 0; i < hashCount && !fileHashFound; i++)
+            {
+                fileHashFound = fileHash == fileHashes[i];
+            }
 
-        if (!fileHashFound)
-        {
-            journal.lastResult = Journal::Result::FileHashFailed;
-            journal.lastErrorMessage = fmt::format("File {} did not match any of the known hashes.", fileName);
-            return false;
+            if (!fileHashFound)
+            {
+                journal.lastResult = Journal::Result::FileHashFailed;
+                journal.lastErrorMessage = fmt::format("File {} did not match any of the known hashes.", fileName);
+                return false;
+            }
         }
 
         journal.progressCounter += fileSize;
@@ -147,7 +151,7 @@ static bool copyFile(const FilePair &pair, const uint64_t *fileHashes, VirtualFi
         return false;
     }
 
-    if (!skipHashChecks)
+    if (!skipHashChecks && hashCount > 0)
     {
         uint64_t fileHash = XXH3_64bits(fileData.data(), fileData.size());
         bool fileHashFound = false;
