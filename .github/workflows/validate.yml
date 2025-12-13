@@ -61,7 +61,7 @@ jobs:
           key: ccache-${{ runner.os }}-${{ matrix.preset }}
 
       - name: Prepare Project
-        run: cp ./private/* ./MarathonRecompLib/private
+        run: cp ./private/* ./LibertyRecompLib/private
   
       - name: Configure Project
         env:
@@ -71,13 +71,13 @@ jobs:
       - name: Build Project
         env:
           CCACHE_DIR: /tmp/ccache
-        run: cmake --build ./out/build/${{ env.CMAKE_PRESET }} --target MarathonRecomp
+        run: cmake --build ./out/build/${{ env.CMAKE_PRESET }} --target LibertyRecomp
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MarathonRecomp-Linux-${{ env.CMAKE_PRESET }}
-          path: ./out/build/${{ env.CMAKE_PRESET }}/MarathonRecomp/MarathonRecomp
+          name: LibertyRecomp-Linux-${{ env.CMAKE_PRESET }}
+          path: ./out/build/${{ env.CMAKE_PRESET }}/LibertyRecomp/LibertyRecomp
   build-windows:
     name: Build Windows
     runs-on: windows-latest
@@ -127,41 +127,41 @@ jobs:
         run: |
           $commitMessage = git log -1 --pretty=%s
           Add-Content -Path $env:GITHUB_ENV -Value "commit_message=$commitMessage"
-          copy .\private\* .\MarathonRecompLib\private
+          copy .\private\* .\LibertyRecompLib\private
 
       - name: Configure Project
         run: cmake . --preset ${{ env.CMAKE_PRESET }} -DSDL2MIXER_VORBIS=VORBISFILE -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
 
       - name: Build Project
-        run: cmake --build .\out\build\${{ env.CMAKE_PRESET }} --target MarathonRecomp
+        run: cmake --build .\out\build\${{ env.CMAKE_PRESET }} --target LibertyRecomp
       
       - name: Pack Release
         run: |
           New-Item -ItemType Directory -Path .\release
           New-Item -ItemType Directory -Path .\release\D3D12
 
-          Move-Item -Path ".\out\build\${{ env.CMAKE_PRESET }}\MarathonRecomp\D3D12\D3D12Core.dll" -Destination ".\release\D3D12\D3D12Core.dll"
-          Move-Item -Path ".\out\build\${{ env.CMAKE_PRESET }}\MarathonRecomp\dxcompiler.dll" -Destination ".\release\dxcompiler.dll"
-          Move-Item -Path ".\out\build\${{ env.CMAKE_PRESET }}\MarathonRecomp\dxil.dll" -Destination ".\release\dxil.dll"
-          Move-Item -Path ".\out\build\${{ env.CMAKE_PRESET }}\MarathonRecomp\MarathonRecomp.exe" -Destination ".\release\MarathonRecomp.exe"
+          Move-Item -Path ".\out\build\${{ env.CMAKE_PRESET }}\LibertyRecomp\D3D12\D3D12Core.dll" -Destination ".\release\D3D12\D3D12Core.dll"
+          Move-Item -Path ".\out\build\${{ env.CMAKE_PRESET }}\LibertyRecomp\dxcompiler.dll" -Destination ".\release\dxcompiler.dll"
+          Move-Item -Path ".\out\build\${{ env.CMAKE_PRESET }}\LibertyRecomp\dxil.dll" -Destination ".\release\dxil.dll"
+          Move-Item -Path ".\out\build\${{ env.CMAKE_PRESET }}\LibertyRecomp\LibertyRecomp.exe" -Destination ".\release\LibertyRecomp.exe"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MarathonRecomp-Windows-${{ env.CMAKE_PRESET }}
+          name: LibertyRecomp-Windows-${{ env.CMAKE_PRESET }}
           path: .\release
 
       - name: Upload PDB
         uses: actions/upload-artifact@v4
         if: ${{ matrix.preset != 'x64-Clang-Release' }}
         with:
-          name: MarathonRecomp-Windows-${{ env.CMAKE_PRESET }}-PDB
-          path: .\out\build\${{ env.CMAKE_PRESET }}\MarathonRecomp\MarathonRecomp.pdb
+          name: LibertyRecomp-Windows-${{ env.CMAKE_PRESET }}-PDB
+          path: .\out\build\${{ env.CMAKE_PRESET }}\LibertyRecomp\LibertyRecomp.pdb
   build-flatpak:
     name: Build Flatpak
     runs-on: ubuntu-24.04
     env:
-      FLATPAK_ID: io.github.sonicnext_dev.marathonrecomp
+      FLATPAK_ID: io.github.ozordi.libertyrecomp
       FREEDESKTOP_VERSION: 23.08
       LLVM_VERSION: 18
 
@@ -190,7 +190,7 @@ jobs:
           key: ccache-${{ runner.os }}
 
       - name: Prepare Project
-        run: cp ./private/* ./MarathonRecompLib/private  
+        run: cp ./private/* ./LibertyRecompLib/private  
 
       - name: Prepare Flatpak
         run: |
@@ -208,7 +208,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MarathonRecomp-Flatpak
+          name: LibertyRecomp-Flatpak
           path: ./${{ env.FLATPAK_ID }}.flatpak
   build-macos:
     name: Build macOS
@@ -260,7 +260,7 @@ jobs:
 
       - name: Prepare Project
         run: |
-          cp ./private/* ./MarathonRecompLib/private
+          cp ./private/* ./LibertyRecompLib/private
 
       - name: Configure Project
         env:
@@ -270,15 +270,15 @@ jobs:
       - name: Build Project
         env:
           CCACHE_DIR: /tmp/ccache
-        run: cmake --build ./out/build/${{ env.CMAKE_PRESET }} --target MarathonRecomp
+        run: cmake --build ./out/build/${{ env.CMAKE_PRESET }} --target LibertyRecomp
 
       - name: Pack Release
         run: |
-          codesign --deep -fs - "./out/build/${{ env.CMAKE_PRESET }}/MarathonRecomp/Marathon Recompiled.app"
-          tar -czf MarathonRecomp-macOS-${{ matrix.arch }}-${{ env.CMAKE_PRESET }}.tar.gz -C ./out/build/${{ env.CMAKE_PRESET }}/MarathonRecomp "Marathon Recompiled.app"
+          codesign --deep -fs - "./out/build/${{ env.CMAKE_PRESET }}/LibertyRecomp/Liberty Recompiled.app"
+          tar -czf LibertyRecomp-macOS-${{ matrix.arch }}-${{ env.CMAKE_PRESET }}.tar.gz -C ./out/build/${{ env.CMAKE_PRESET }}/LibertyRecomp "Liberty Recompiled.app"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MarathonRecomp-macOS-${{ matrix.arch }}-${{ env.CMAKE_PRESET }}
-          path: MarathonRecomp-macOS-${{ matrix.arch }}-${{ env.CMAKE_PRESET }}.tar.gz
+          name: LibertyRecomp-macOS-${{ matrix.arch }}-${{ env.CMAKE_PRESET }}
+          path: LibertyRecomp-macOS-${{ matrix.arch }}-${{ env.CMAKE_PRESET }}.tar.gz

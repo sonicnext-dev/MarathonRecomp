@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.ozordi.libertyrecomp</id>
+  
+  <name>Liberty Recompiled</name>
+  <summary>An unofficial PC port of Grand Theft Auto IV (Xbox 360).</summary>
+  
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0+</project_license>
+  
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>touch</control>
+  </supports>
+  
+  <description>
+    <p>
+      An unofficial PC port of the Xbox 360 version of Grand Theft Auto IV created through the process of static recompilation.
+
+      https://github.com/OZORDI/LibertyRecomp
+    </p>
+  </description>
+  
+  <launchable type="desktop-id">io.github.ozordi.libertyrecomp.desktop</launchable>
+</component>

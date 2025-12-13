@@ -4,8 +4,8 @@ if(NOT DEFINED ENV{VCPKG_ROOT})
     message(FATAL_ERROR "VCPKG_ROOT is not defined!")
 endif()
 
-set(MARATHON_RECOMP_THIRDPARTY_ROOT ${CMAKE_SOURCE_DIR}/thirdparty)
-set(MARATHON_RECOMP_TOOLS_ROOT ${CMAKE_SOURCE_DIR}/tools)
+set(LIBERTY_RECOMP_THIRDPARTY_ROOT ${CMAKE_SOURCE_DIR}/thirdparty)
+set(LIBERTY_RECOMP_TOOLS_ROOT ${CMAKE_SOURCE_DIR}/tools)
 set(CMAKE_CXX_STANDARD 20)
 set(BUILD_SHARED_LIBS OFF)
 
@@ -17,23 +17,23 @@ endif()
 
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-project("MarathonRecomp-ALL")
+project("LibertyRecomp-ALL")
 
 if (APPLE)
     enable_language(OBJC OBJCXX)
 endif()
 
 if (CMAKE_OSX_ARCHITECTURES)
-    set(MARATHON_RECOMP_ARCHITECTURE ${CMAKE_OSX_ARCHITECTURES})
+    set(LIBERTY_RECOMP_ARCHITECTURE ${CMAKE_OSX_ARCHITECTURES})
 elseif(CMAKE_SYSTEM_PROCESSOR)
-    set(MARATHON_RECOMP_ARCHITECTURE ${CMAKE_SYSTEM_PROCESSOR})
+    set(LIBERTY_RECOMP_ARCHITECTURE ${CMAKE_SYSTEM_PROCESSOR})
 else()
-    set(MARATHON_RECOMP_ARCHITECTURE ${CMAKE_HOST_SYSTEM_PROCESSOR})
+    set(LIBERTY_RECOMP_ARCHITECTURE ${CMAKE_HOST_SYSTEM_PROCESSOR})
 endif()
-string(TOLOWER "${MARATHON_RECOMP_ARCHITECTURE}" MARATHON_RECOMP_ARCHITECTURE)
-message(STATUS "Detected architecture: ${MARATHON_RECOMP_ARCHITECTURE}")
+string(TOLOWER "${LIBERTY_RECOMP_ARCHITECTURE}" LIBERTY_RECOMP_ARCHITECTURE)
+message(STATUS "Detected architecture: ${LIBERTY_RECOMP_ARCHITECTURE}")
 
-if (MARATHON_RECOMP_ARCHITECTURE STREQUAL "x86_64" OR MARATHON_RECOMP_ARCHITECTURE STREQUAL "amd64")
+if (LIBERTY_RECOMP_ARCHITECTURE STREQUAL "x86_64" OR LIBERTY_RECOMP_ARCHITECTURE STREQUAL "amd64")
     # Target Sandy Bridge for all projects
     add_compile_options(
         -march=sandybridge
@@ -45,9 +45,9 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_definitions(_DEBUG)
 endif()
 
-add_subdirectory(${MARATHON_RECOMP_THIRDPARTY_ROOT})
-add_subdirectory(${MARATHON_RECOMP_TOOLS_ROOT})
+add_subdirectory(${LIBERTY_RECOMP_THIRDPARTY_ROOT})
+add_subdirectory(${LIBERTY_RECOMP_TOOLS_ROOT})
 
 # Include sub-projects.
-add_subdirectory("MarathonRecompLib")
-add_subdirectory("MarathonRecomp")
+add_subdirectory("LibertyRecompLib")
+add_subdirectory("LibertyRecomp")

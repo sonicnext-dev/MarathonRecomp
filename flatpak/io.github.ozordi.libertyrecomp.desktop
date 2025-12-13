@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Liberty Recompiled
+Exec=/app/bin/LibertyRecomp
+Type=Application
+Icon=io.github.ozordi.libertyrecomp
+Categories=Game;
+Comment=Static recompilation of Grand Theft Auto IV (Xbox 360).
+MimeType=x-scheme-handler/libertyrecomp

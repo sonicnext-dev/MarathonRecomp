@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=Marathon Recompiled
-Exec=/app/bin/MarathonRecomp
-Type=Application
-Icon=io.github.sonicnext_dev.marathonrecomp
-Categories=Game;
-Comment=Static recompilation of Sonic the Hedgehog (2006).
-MimeType=x-scheme-handler/marathonrecomp
