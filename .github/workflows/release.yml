@@ -255,7 +255,7 @@ jobs:
   # ============================================================================
   build-macos-x64:
     name: macOS x64
-    runs-on: macos-13
+    runs-on: macos-14
     env:
       CMAKE_PRESET: macos-release
 
