@@ -3,9 +3,9 @@ on:
   workflow_call:
     secrets:
       ASSET_REPO:
-        required: true
+        required: false
       ASSET_REPO_TOKEN:
-        required: true
+        required: false
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -28,6 +28,7 @@ jobs:
           submodules: recursive
 
       - name: Checkout Private Repository
+        if: ${{ secrets.ASSET_REPO != '' && secrets.ASSET_REPO_TOKEN != '' }}
         uses: actions/checkout@v4
         with:
           repository: ${{ secrets.ASSET_REPO }}
@@ -60,8 +61,15 @@ jobs:
           path: /tmp/ccache
           key: ccache-${{ runner.os }}-${{ matrix.preset }}
 
-      - name: Prepare Project
+      - name: Prepare Project (with private assets)
+        if: ${{ secrets.ASSET_REPO != '' && secrets.ASSET_REPO_TOKEN != '' }}
         run: cp ./private/* ./LibertyRecompLib/private
+
+      - name: Prepare Project (without private assets)
+        if: ${{ secrets.ASSET_REPO == '' || secrets.ASSET_REPO_TOKEN == '' }}
+        run: |
+          mkdir -p ./LibertyRecompLib/private
+          touch ./LibertyRecompLib/private/.gitkeep
   
       - name: Configure Project
         env:
@@ -78,6 +86,7 @@ jobs:
         with:
           name: LibertyRecomp-Linux-${{ env.CMAKE_PRESET }}
           path: ./out/build/${{ env.CMAKE_PRESET }}/LibertyRecomp/LibertyRecomp
+
   build-windows:
     name: Build Windows
     runs-on: windows-latest
@@ -94,6 +103,7 @@ jobs:
           submodules: recursive
 
       - name: Checkout private repository
+        if: ${{ secrets.ASSET_REPO != '' && secrets.ASSET_REPO_TOKEN != '' }}
         uses: actions/checkout@v4
         with:
           repository: ${{ secrets.ASSET_REPO }}
@@ -123,11 +133,20 @@ jobs:
       - name: Configure Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Prepare Project
+      - name: Prepare Project (with private assets)
+        if: ${{ secrets.ASSET_REPO != '' && secrets.ASSET_REPO_TOKEN != '' }}
         run: |
           $commitMessage = git log -1 --pretty=%s
           Add-Content -Path $env:GITHUB_ENV -Value "commit_message=$commitMessage"
           copy .\private\* .\LibertyRecompLib\private
+
+      - name: Prepare Project (without private assets)
+        if: ${{ secrets.ASSET_REPO == '' || secrets.ASSET_REPO_TOKEN == '' }}
+        run: |
+          $commitMessage = git log -1 --pretty=%s
+          Add-Content -Path $env:GITHUB_ENV -Value "commit_message=$commitMessage"
+          New-Item -ItemType Directory -Path .\LibertyRecompLib\private -Force
+          New-Item -ItemType File -Path .\LibertyRecompLib\private\.gitkeep -Force
 
       - name: Configure Project
         run: cmake . --preset ${{ env.CMAKE_PRESET }} -DSDL2MIXER_VORBIS=VORBISFILE -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
@@ -157,6 +176,7 @@ jobs:
         with:
           name: LibertyRecomp-Windows-${{ env.CMAKE_PRESET }}-PDB
           path: .\out\build\${{ env.CMAKE_PRESET }}\LibertyRecomp\LibertyRecomp.pdb
+
   build-flatpak:
     name: Build Flatpak
     runs-on: ubuntu-24.04
@@ -172,6 +192,7 @@ jobs:
           submodules: recursive
 
       - name: Checkout Private Repository
+        if: ${{ secrets.ASSET_REPO != '' && secrets.ASSET_REPO_TOKEN != '' }}
         uses: actions/checkout@v4
         with:
           repository: ${{ secrets.ASSET_REPO }}
@@ -189,8 +210,15 @@ jobs:
           path: /tmp/ccache
           key: ccache-${{ runner.os }}
 
-      - name: Prepare Project
-        run: cp ./private/* ./LibertyRecompLib/private  
+      - name: Prepare Project (with private assets)
+        if: ${{ secrets.ASSET_REPO != '' && secrets.ASSET_REPO_TOKEN != '' }}
+        run: cp ./private/* ./LibertyRecompLib/private
+
+      - name: Prepare Project (without private assets)
+        if: ${{ secrets.ASSET_REPO == '' || secrets.ASSET_REPO_TOKEN == '' }}
+        run: |
+          mkdir -p ./LibertyRecompLib/private
+          touch ./LibertyRecompLib/private/.gitkeep
 
       - name: Prepare Flatpak
         run: |
@@ -210,6 +238,7 @@ jobs:
         with:
           name: LibertyRecomp-Flatpak
           path: ./${{ env.FLATPAK_ID }}.flatpak
+
   build-macos:
     name: Build macOS
     runs-on: macos-15
@@ -227,6 +256,7 @@ jobs:
           submodules: recursive
 
       - name: Checkout Private Repository
+        if: ${{ secrets.ASSET_REPO != '' && secrets.ASSET_REPO_TOKEN != '' }}
         uses: actions/checkout@v4
         with:
           repository: ${{ secrets.ASSET_REPO }}
@@ -258,9 +288,15 @@ jobs:
           path: /tmp/ccache
           key: ccache-${{ runner.os }}-${{ matrix.arch }}-${{ matrix.preset }}
 
-      - name: Prepare Project
+      - name: Prepare Project (with private assets)
+        if: ${{ secrets.ASSET_REPO != '' && secrets.ASSET_REPO_TOKEN != '' }}
+        run: cp ./private/* ./LibertyRecompLib/private
+
+      - name: Prepare Project (without private assets)
+        if: ${{ secrets.ASSET_REPO == '' || secrets.ASSET_REPO_TOKEN == '' }}
         run: |
-          cp ./private/* ./LibertyRecompLib/private
+          mkdir -p ./LibertyRecompLib/private
+          touch ./LibertyRecompLib/private/.gitkeep
 
       - name: Configure Project
         env:
