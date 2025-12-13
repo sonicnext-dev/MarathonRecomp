@@ -3,6 +3,14 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# GTA IV Game Files - DO NOT COMMIT
+Grand Theft Auto IV*/
+GTA4/
+gta4/
+*.xex
+*.iso
+*.xcp
+
 # User-specific files
 *.rsuser
 *.suo
