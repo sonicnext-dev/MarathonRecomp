@@ -19,6 +19,8 @@ jobs:
         preset: ["linux-debug", "linux-release", "linux-relwithdebinfo"]
     env:
       LLVM_VERSION: 18
+      ASSET_REPO: ${{ secrets.ASSET_REPO }}
+      ASSET_REPO_TOKEN: ${{ secrets.ASSET_REPO_TOKEN }}
       CMAKE_PRESET: ${{ matrix.preset }}
 
     steps:
@@ -26,14 +28,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-
-      - name: Checkout Private Repository
-        if: ${{ secrets.ASSET_REPO != '' && secrets.ASSET_REPO_TOKEN != '' }}
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ secrets.ASSET_REPO }}
-          token: ${{ secrets.ASSET_REPO_TOKEN }}
-          path: ./private
 
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
@@ -61,15 +55,19 @@ jobs:
           path: /tmp/ccache
           key: ccache-${{ runner.os }}-${{ matrix.preset }}
 
-      - name: Prepare Project (with private assets)
-        if: ${{ secrets.ASSET_REPO != '' && secrets.ASSET_REPO_TOKEN != '' }}
-        run: cp ./private/* ./LibertyRecompLib/private
-
-      - name: Prepare Project (without private assets)
-        if: ${{ secrets.ASSET_REPO == '' || secrets.ASSET_REPO_TOKEN == '' }}
+      - name: Prepare Project Assets
+        shell: bash
         run: |
-          mkdir -p ./LibertyRecompLib/private
-          touch ./LibertyRecompLib/private/.gitkeep
+          if [ -n "${ASSET_REPO}" ] && [ -n "${ASSET_REPO_TOKEN}" ]; then
+            mkdir -p ./private
+            auth_b64="$(printf 'x-access-token:%s' "${ASSET_REPO_TOKEN}" | base64)"
+            git -c http.extraHeader="AUTHORIZATION: basic ${auth_b64}" clone --depth 1 "https://github.com/${ASSET_REPO}.git" ./private
+            mkdir -p ./LibertyRecompLib/private
+            cp ./private/* ./LibertyRecompLib/private
+          else
+            mkdir -p ./LibertyRecompLib/private
+            touch ./LibertyRecompLib/private/.gitkeep
+          fi
   
       - name: Configure Project
         env:
@@ -103,6 +101,8 @@ jobs:
       matrix:
         preset: ["x64-Clang-Debug", "x64-Clang-Release", "x64-Clang-RelWithDebInfo"]
     env:
+      ASSET_REPO: ${{ secrets.ASSET_REPO }}
+      ASSET_REPO_TOKEN: ${{ secrets.ASSET_REPO_TOKEN }}
       CMAKE_PRESET: ${{ matrix.preset }}
 
     steps:
@@ -110,14 +110,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-
-      - name: Checkout private repository
-        if: ${{ secrets.ASSET_REPO != '' && secrets.ASSET_REPO_TOKEN != '' }}
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ secrets.ASSET_REPO }}
-          token: ${{ secrets.ASSET_REPO_TOKEN }}
-          path: .\private
 
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
@@ -142,20 +134,22 @@ jobs:
       - name: Configure Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Prepare Project (with private assets)
-        if: ${{ secrets.ASSET_REPO != '' && secrets.ASSET_REPO_TOKEN != '' }}
+      - name: Prepare Project Assets
+        shell: pwsh
         run: |
           $commitMessage = git log -1 --pretty=%s
           Add-Content -Path $env:GITHUB_ENV -Value "commit_message=$commitMessage"
-          copy .\private\* .\LibertyRecompLib\private
 
-      - name: Prepare Project (without private assets)
-        if: ${{ secrets.ASSET_REPO == '' || secrets.ASSET_REPO_TOKEN == '' }}
-        run: |
-          $commitMessage = git log -1 --pretty=%s
-          Add-Content -Path $env:GITHUB_ENV -Value "commit_message=$commitMessage"
-          New-Item -ItemType Directory -Path .\LibertyRecompLib\private -Force
-          New-Item -ItemType File -Path .\LibertyRecompLib\private\.gitkeep -Force
+          if (-not [string]::IsNullOrEmpty($env:ASSET_REPO) -and -not [string]::IsNullOrEmpty($env:ASSET_REPO_TOKEN)) {
+            New-Item -ItemType Directory -Path .\private -Force | Out-Null
+            $b64 = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("x-access-token:$env:ASSET_REPO_TOKEN"))
+            git -c "http.extraHeader=AUTHORIZATION: basic $b64" clone --depth 1 "https://github.com/$env:ASSET_REPO.git" .\private
+            New-Item -ItemType Directory -Path .\LibertyRecompLib\private -Force | Out-Null
+            Copy-Item -Path .\private\* -Destination .\LibertyRecompLib\private -Force
+          } else {
+            New-Item -ItemType Directory -Path .\LibertyRecompLib\private -Force | Out-Null
+            New-Item -ItemType File -Path .\LibertyRecompLib\private\.gitkeep -Force | Out-Null
+          }
 
       - name: Configure Project
         run: cmake . --preset ${{ env.CMAKE_PRESET }} -DSDL2MIXER_VORBIS=VORBISFILE -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
@@ -193,20 +187,14 @@ jobs:
       FLATPAK_ID: io.github.ozordi.libertyrecomp
       FREEDESKTOP_VERSION: 23.08
       LLVM_VERSION: 18
+      ASSET_REPO: ${{ secrets.ASSET_REPO }}
+      ASSET_REPO_TOKEN: ${{ secrets.ASSET_REPO_TOKEN }}
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           submodules: recursive
-
-      - name: Checkout Private Repository
-        if: ${{ secrets.ASSET_REPO != '' && secrets.ASSET_REPO_TOKEN != '' }}
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ secrets.ASSET_REPO }}
-          token: ${{ secrets.ASSET_REPO_TOKEN }}
-          path: ./private
 
       - name: Install Dependencies
         run: |-
@@ -219,15 +207,19 @@ jobs:
           path: /tmp/ccache
           key: ccache-${{ runner.os }}
 
-      - name: Prepare Project (with private assets)
-        if: ${{ secrets.ASSET_REPO != '' && secrets.ASSET_REPO_TOKEN != '' }}
-        run: cp ./private/* ./LibertyRecompLib/private
-
-      - name: Prepare Project (without private assets)
-        if: ${{ secrets.ASSET_REPO == '' || secrets.ASSET_REPO_TOKEN == '' }}
+      - name: Prepare Project Assets
+        shell: bash
         run: |
-          mkdir -p ./LibertyRecompLib/private
-          touch ./LibertyRecompLib/private/.gitkeep
+          if [ -n "${ASSET_REPO}" ] && [ -n "${ASSET_REPO_TOKEN}" ]; then
+            mkdir -p ./private
+            auth_b64="$(printf 'x-access-token:%s' "${ASSET_REPO_TOKEN}" | base64)"
+            git -c http.extraHeader="AUTHORIZATION: basic ${auth_b64}" clone --depth 1 "https://github.com/${ASSET_REPO}.git" ./private
+            mkdir -p ./LibertyRecompLib/private
+            cp ./private/* ./LibertyRecompLib/private
+          else
+            mkdir -p ./LibertyRecompLib/private
+            touch ./LibertyRecompLib/private/.gitkeep
+          fi
 
       - name: Prepare Flatpak
         run: |
@@ -256,6 +248,8 @@ jobs:
         arch: [ "arm64" ]
         preset: ["macos-debug", "macos-release", "macos-relwithdebinfo"]
     env:
+      ASSET_REPO: ${{ secrets.ASSET_REPO }}
+      ASSET_REPO_TOKEN: ${{ secrets.ASSET_REPO_TOKEN }}
       CMAKE_PRESET: ${{ matrix.preset }}
 
     steps:
@@ -267,14 +261,6 @@ jobs:
       - name: Install Dependencies (macOS)
         run: |
           brew install ninja
-
-      - name: Checkout Private Repository
-        if: ${{ secrets.ASSET_REPO != '' && secrets.ASSET_REPO_TOKEN != '' }}
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ secrets.ASSET_REPO }}
-          token: ${{ secrets.ASSET_REPO_TOKEN }}
-          path: ./private
 
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
@@ -297,15 +283,19 @@ jobs:
           path: /tmp/ccache
           key: ccache-${{ runner.os }}-${{ matrix.arch }}-${{ matrix.preset }}
 
-      - name: Prepare Project (with private assets)
-        if: ${{ secrets.ASSET_REPO != '' && secrets.ASSET_REPO_TOKEN != '' }}
-        run: cp ./private/* ./LibertyRecompLib/private
-
-      - name: Prepare Project (without private assets)
-        if: ${{ secrets.ASSET_REPO == '' || secrets.ASSET_REPO_TOKEN == '' }}
+      - name: Prepare Project Assets
+        shell: bash
         run: |
-          mkdir -p ./LibertyRecompLib/private
-          touch ./LibertyRecompLib/private/.gitkeep
+          if [ -n "${ASSET_REPO}" ] && [ -n "${ASSET_REPO_TOKEN}" ]; then
+            mkdir -p ./private
+            auth_b64="$(printf 'x-access-token:%s' "${ASSET_REPO_TOKEN}" | base64)"
+            git -c http.extraHeader="AUTHORIZATION: basic ${auth_b64}" clone --depth 1 "https://github.com/${ASSET_REPO}.git" ./private
+            mkdir -p ./LibertyRecompLib/private
+            cp ./private/* ./LibertyRecompLib/private
+          else
+            mkdir -p ./LibertyRecompLib/private
+            touch ./LibertyRecompLib/private/.gitkeep
+          fi
 
       - name: Configure Project
         env:
