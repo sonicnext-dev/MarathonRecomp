@@ -295,6 +295,7 @@ uint32_t XSetFilePointerEx(FileHandle* hFile, int32_t lDistanceToMove, LARGE_INT
 
 FindHandle* XFindFirstFileA(const char* lpFileName, WIN32_FIND_DATAA* lpFindFileData)
 {
+    LOGF_IMPL(Utility, "XFindFirstFileA", "path: '{}'", lpFileName);
     std::string_view path = lpFileName;
     if (path.find("\\*") == (path.size() - 2) || path.find("/*") == (path.size() - 2))
     {

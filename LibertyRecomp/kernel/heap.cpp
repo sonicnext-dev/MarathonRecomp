@@ -4,8 +4,12 @@
 #include "function.h"
 #include "xdm.h"
 
+// XMA I/O only needs 64KB but we keep some reserved space for safety
+// Shrink reserved region to give more physical memory to the game
+// Original: RESERVED_END = 0xA0000000 (1.5GB physical)
+// New: RESERVED_END = 0x80000000 (2GB physical - from 0x80000000 to 0x100000000)
 constexpr size_t RESERVED_BEGIN = 0x7FEA0000;
-constexpr size_t RESERVED_END = 0xA0000000;
+constexpr size_t RESERVED_END = 0x80000000;  // Was 0xA0000000
 
 void Heap::Init()
 {

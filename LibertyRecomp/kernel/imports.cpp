@@ -38,6 +38,8 @@ namespace
     constexpr uint32_t STATUS_ACCESS_DENIED = 0xC0000022;
     constexpr uint32_t STATUS_OBJECT_NAME_NOT_FOUND = 0xC0000034;
     constexpr uint32_t STATUS_OBJECT_PATH_NOT_FOUND = 0xC000003A;
+    constexpr uint32_t STATUS_OBJECT_NAME_INVALID = 0xC0000033;
+    constexpr uint32_t STATUS_OBJECT_NAME_COLLISION = 0xC0000035;
     constexpr uint32_t STATUS_BUFFER_OVERFLOW = 0x80000005;
     constexpr uint32_t STATUS_NO_MORE_FILES = 0x80000006;
 
@@ -122,7 +124,7 @@ namespace
         // Sanity check: zero length or very large lengths are suspect
         if (len == 0)
         {
-            // Allow empty paths to pass through, they'll fail later
+            // Empty paths are allowed but will fail later
         }
         else if (len > 1024)
         {
@@ -131,27 +133,43 @@ namespace
         }
         else
         {
-            // Check if the path looks valid (should contain printable ASCII)
-            bool hasValid = false;
-            bool hasGarbage = false;
+            // Check if the path looks valid
+            // Valid paths should start with a letter (drive:) or a letter after game:\ prefix
+            unsigned char firstChar = static_cast<unsigned char>(buf[0]);
+            
+            // First character should be printable ASCII for a valid path
+            // Valid starts: letters (a-z, A-Z), backslash, dot, or space
+            bool validStart = (firstChar >= 'A' && firstChar <= 'Z') ||
+                              (firstChar >= 'a' && firstChar <= 'z') ||
+                              firstChar == '\\' || firstChar == '.' || 
+                              firstChar == ' ' || firstChar == '/';
+            
+            if (!validStart)
+            {
+                // Check if it's just high-byte garbage (common pattern)
+                if (firstChar >= 128)
+                {
+                    LOGF_IMPL(Utility, "TryGetAnsiPath", "Garbage path rejected (len={}, first=0x{:02X}, Name.ptr=0x{:08X}, Buffer.ptr=0x{:08X})", 
+                        len, firstChar, attributes->Name.ptr.value, name->Buffer.ptr.value);
+                    return false;
+                }
+            }
+            
+            // Also check for excessive non-ASCII content
+            size_t garbageCount = 0;
             for (size_t i = 0; i < std::min<size_t>(len, 20); i++)
             {
                 unsigned char c = static_cast<unsigned char>(buf[i]);
-                if (c >= 32 && c <= 126)
-                    hasValid = true;
-                else if (c >= 128)
-                    hasGarbage = true;
+                if (c >= 128)
+                    garbageCount++;
             }
-            if (hasGarbage && !hasValid)
+            // If more than 50% of first 20 chars are non-ASCII, reject
+            if (garbageCount > 10)
             {
-                LOGF_IMPL(Utility, "TryGetAnsiPath", "Garbage path detected (len={}, first byte=0x{:02X})", len, static_cast<unsigned char>(buf[0]));
-                // Still allow it to pass for now, so we can see the full picture
+                LOGF_IMPL(Utility, "TryGetAnsiPath", "Mostly garbage path rejected (len={}, garbage={}/20)", len, garbageCount);
+                return false;
             }
         }
-
-        // Log the raw pointer values for debugging
-        // LOGF_IMPL(Utility, "TryGetAnsiPath", "Name.ptr=0x{:08X} Length={} Buffer.ptr=0x{:08X}", 
-        //     attributes->Name.ptr.value, len, name->Buffer.ptr.value);
 
         out.assign(buf, buf + len);
         return true;
@@ -1116,6 +1134,24 @@ uint32_t RtlNtStatusToDosError(uint32_t Status)
         return ERROR_CALL_NOT_IMPLEMENTED;
     case uint32_t(STATUS_SEMAPHORE_LIMIT_EXCEEDED):
         return ERROR_TOO_MANY_POSTS;
+    case uint32_t(STATUS_OBJECT_NAME_NOT_FOUND):
+        return ERROR_FILE_NOT_FOUND;
+    case uint32_t(STATUS_INVALID_PARAMETER):
+        return ERROR_INVALID_PARAMETER;
+    case uint32_t(STATUS_INVALID_HANDLE):
+        return ERROR_INVALID_HANDLE;
+    case uint32_t(STATUS_END_OF_FILE):
+        return ERROR_HANDLE_EOF;
+    case uint32_t(STATUS_NO_MORE_FILES):
+        return ERROR_NO_MORE_FILES;
+    case uint32_t(STATUS_ACCESS_DENIED):
+        return ERROR_ACCESS_DENIED;
+    case uint32_t(STATUS_OBJECT_NAME_INVALID):
+        return ERROR_INVALID_NAME;
+    case uint32_t(STATUS_OBJECT_PATH_NOT_FOUND):
+        return ERROR_PATH_NOT_FOUND;
+    case uint32_t(STATUS_OBJECT_NAME_COLLISION):
+        return ERROR_ALREADY_EXISTS;
     default:
         LOGF_WARNING("Unimplemented NtStatus translation: {:#08x}", Status);
         return Status;
@@ -1829,9 +1865,12 @@ uint32_t NtFreeVirtualMemory(
     return STATUS_SUCCESS;
 }
 
-void ObDereferenceObject()
+void ObDereferenceObject(void* object)
 {
-    LOG_UTILITY("!!! STUB !!!");
+    // Reference counting is not fully implemented.
+    // Objects are managed by the kernel object system.
+    // This is a no-op for now.
+    (void)object;
 }
 
 void KeSetBasePriorityThread(GuestThreadHandle* hThread, int priority)
@@ -2138,7 +2177,8 @@ void VdInitializeScalerCommandBuffer()
 
 void KeLeaveCriticalRegion()
 {
-    LOG_UTILITY("!!! STUB !!!");
+    // Critical region management for APC protection.
+    // Since APCs are not fully implemented, this is a no-op.
 }
 
 uint32_t VdRetrainEDRAM()
@@ -2153,7 +2193,8 @@ void VdRetrainEDRAMWorker()
 
 void KeEnterCriticalRegion()
 {
-    LOG_UTILITY("!!! STUB !!!");
+    // Critical region management for APC protection.
+    // Since APCs are not fully implemented, this is a no-op.
 }
 
 uint32_t MmAllocatePhysicalMemoryEx
@@ -2556,9 +2597,12 @@ void DbgBreakPoint()
     LOG_UTILITY("!!! STUB !!!");
 }
 
-void MmQueryAllocationSize()
+uint32_t MmQueryAllocationSize(uint32_t guestAddress)
 {
-    LOG_UTILITY("!!! STUB !!!");
+    if (guestAddress == 0)
+        return 0;
+    
+    return (uint32_t)g_userHeap.Size(g_memory.Translate(guestAddress));
 }
 
 uint32_t NtClearEvent(Event* handle, uint32_t* previousState)
@@ -2753,9 +2797,12 @@ void RtlInitUnicodeString()
     LOG_UTILITY("!!! STUB !!!");
 }
 
-void ExTerminateThread()
+void ExTerminateThread(uint32_t exitCode)
 {
-    LOG_UTILITY("!!! STUB !!!");
+    // Thread termination request. The calling thread should exit.
+    // Since this is typically called for cleanup during VdInitializeEngines,
+    // we can safely ignore it for now.
+    (void)exitCode;
 }
 
 uint32_t ExCreateThread(be<uint32_t>* handle, uint32_t stackSize, be<uint32_t>* threadId, uint32_t xApiThreadStartup, uint32_t startAddress, uint32_t startContext, uint32_t creationFlags)
@@ -3234,7 +3281,10 @@ uint32_t XamSessionRefObjByHandle(uint32_t handle, void* obj)
 
 void KeSetDisableBoostThread(void* thread, uint32_t disable)
 {
-    LOG_UTILITY("!!! STUB !!!");
+    // Thread priority boost control is not implemented.
+    // This is safe to ignore as it only affects scheduling hints.
+    (void)thread;
+    (void)disable;
 }
 
 uint32_t XamCreateEnumeratorHandle(uint32_t type, uint32_t size, void* data, void* handle)

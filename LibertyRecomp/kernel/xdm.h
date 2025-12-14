@@ -38,14 +38,19 @@
 #define ERROR_NO_MORE_FILES        0x12
 #define ERROR_NO_SUCH_USER         0x525
 #define ERROR_SUCCESS              0x0
+#define ERROR_FILE_NOT_FOUND       0x2
 #define ERROR_PATH_NOT_FOUND       0x3
 #define ERROR_ACCESS_DENIED        0x5
+#define ERROR_INVALID_HANDLE       0x6
+#define ERROR_INVALID_PARAMETER    0x57
+#define ERROR_INVALID_NAME         0x7B
+#define ERROR_HANDLE_EOF           0x26
+#define ERROR_ALREADY_EXISTS       0xB7
 #define ERROR_FILE_EXISTS          0x50
 #define ERROR_CALL_NOT_IMPLEMENTED 0x78
 #define ERROR_BAD_ARGUMENTS        0xA0
 #define ERROR_TOO_MANY_POSTS       0x12A
 #define ERROR_DEVICE_NOT_CONNECTED 0x48F
-#define ERROR_INVALID_HANDLE       0x6
 #define PAGE_READWRITE             0x04
 
 typedef union _LARGE_INTEGER {
