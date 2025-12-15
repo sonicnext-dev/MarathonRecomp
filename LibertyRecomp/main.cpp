@@ -61,9 +61,15 @@ void HostStartup()
     hid::Init();
 }
 
+// Forward declaration from imports.cpp
+void InitKernelMainThread();
+
 // Name inspired from nt's entry point
 void KiSystemStartup()
 {
+    // Initialize main thread ID for SDL event safety
+    InitKernelMainThread();
+    
     if (g_memory.base == nullptr)
     {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, GameWindow::GetTitle(), Localise("System_MemoryAllocationFailed").c_str(), GameWindow::s_pWindow);
@@ -76,6 +82,12 @@ void KiSystemStartup()
     const std::string gamePath = (const char*)(GetGamePath() / "game").u8string().c_str();
 
     BuildPathCache(gamePath);
+
+    // Also cache extracted assets living under "RPF DUMP" (nested RPFS, audio packs, etc.).
+    // This improves hit rate when the title requests files that are not present in game/.
+    const std::string rpfDumpPath = (const char*)(GetGamePath() / "RPF DUMP").u8string().c_str();
+    if (std::filesystem::exists(rpfDumpPath))
+        BuildPathCache(rpfDumpPath);
 
     XamRegisterContent(gameContent, gamePath);
 
@@ -106,6 +118,27 @@ void KiSystemStartup()
 
     // OS mounts game data to D:
     XamContentCreateEx(0, "D", &gameContent, OPEN_EXISTING, nullptr, nullptr, 0, 0, nullptr);
+
+    // GTA IV uses "common:" and "platform:" root paths
+    // common: -> extracted/common/ (extracted from common.rpf)
+    // platform: -> extracted/xbox360/ (extracted from xbox360.rpf)
+    // We use the "extracted" folder which has proper structure from RPF extraction
+    const std::string extractedPath = (const char*)(GetGamePath() / "extracted").u8string().c_str();
+    const std::string commonPath = (const char*)(GetGamePath() / "extracted" / "common").u8string().c_str();
+    const std::string platformPath = (const char*)(GetGamePath() / "extracted" / "xbox360").u8string().c_str();
+    const std::string audioPath = (const char*)(GetGamePath() / "extracted" / "audio").u8string().c_str();
+    
+    // Register main root paths
+    XamRootCreate("common", commonPath);
+    XamRootCreate("platform", platformPath);
+    XamRootCreate("audio", audioPath);
+    
+    // Also register alternate names the game might use
+    XamRootCreate("xbox360", platformPath);  // Some code uses xbox360: instead of platform:
+    
+    LOGF_IMPL(Utility, "Main", "Registered common: -> {}", commonPath);
+    LOGF_IMPL(Utility, "Main", "Registered platform: -> {}", platformPath);
+    LOGF_IMPL(Utility, "Main", "Registered audio: -> {}", audioPath);
 
     std::error_code ec;
     for (auto& file : std::filesystem::directory_iterator(GetGamePath() / "dlc", ec))

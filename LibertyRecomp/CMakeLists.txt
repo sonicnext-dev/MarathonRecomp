@@ -138,6 +138,8 @@ set(LIBERTY_RECOMP_PATCHES_CXX_SOURCES
     # GTA IV-specific patches (active)
     "patches/gta4_patches.cpp"
     "patches/gta4_aspect_ratio_patches.cpp"
+    "patches/gta4_input_patches.cpp"  # GTA IV input remapping
+    "patches/memcpy_patches.cpp"  # Native memcpy implementation to fix broken recompiled control flow
     
     # Generic/stub patches needed for compilation
     # "patches/aspect_ratio_patches.cpp"  # Has Sonicteam references - replaced by gta4_aspect_ratio_patches.cpp
@@ -190,6 +192,7 @@ set(LIBERTY_RECOMP_USER_CXX_SOURCES
     "user/achievement_data.cpp"
     "user/achievement_manager.cpp"
     "user/config.cpp"
+    "user/persistent_storage_manager.cpp"  # GTA IV save data handling
     "user/registry.cpp"
     "user/paths.cpp"
 )

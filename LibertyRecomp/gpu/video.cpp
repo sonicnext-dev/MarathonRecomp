@@ -3112,7 +3112,29 @@ static std::atomic<bool> g_executedCommandList;
 
 void Video::Present() 
 {
+    static uint32_t s_presentCount = 0;
+    ++s_presentCount;
+    if (s_presentCount <= 5 || (s_presentCount % 600) == 0)
+    {
+        LOGF_WARNING("Video::Present called #{} (swapChainValid={})", s_presentCount, g_swapChainValid);
+    }
+
     g_readyForCommands = false;
+
+    // Clear to a visible color so we know rendering is working
+    // GTA IV rendering will eventually replace this with actual game content
+    {
+        RenderCommand clearCmd;
+        clearCmd.type = RenderCommandType::Clear;
+        clearCmd.clear.flags = D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL;
+        clearCmd.clear.color[0] = 0.0f;   // R - dark blue
+        clearCmd.clear.color[1] = 0.05f;  // G
+        clearCmd.clear.color[2] = 0.15f;  // B
+        clearCmd.clear.color[3] = 1.0f;   // A
+        clearCmd.clear.z = 1.0f;
+        clearCmd.clear.stencil = 0;
+        g_renderQueue.enqueue(clearCmd);
+    }
 
     RenderCommand cmd;
     cmd.type = RenderCommandType::ExecutePendingStretchRectCommands;
@@ -3394,9 +3416,9 @@ static RenderFormat ConvertFormat(uint32_t format)
     case D3DFMT_DXT4:
         return RenderFormat::BC3_UNORM;
     default:
-        LOGF_WARNING("{:x}\n", format);
-        assert(false && "Unknown format");
-        return RenderFormat::R16G16B16A16_FLOAT;
+        // GTA IV uses some non-standard format codes, return a safe default
+        LOGF_WARNING("Unknown format {:#x} - using RGBA8 fallback\n", format);
+        return RenderFormat::R8G8B8A8_UNORM;
     }
 }
 
@@ -5039,6 +5061,13 @@ static void SetPrimitiveType(uint32_t primitiveType)
 
 static void DrawPrimitive(GuestDevice* device, uint32_t primitiveType, uint32_t startVertex, uint32_t primitiveCount) 
 {
+    static uint32_t s_drawPrimitiveCount = 0;
+    ++s_drawPrimitiveCount;
+    if (s_drawPrimitiveCount <= 10 || (s_drawPrimitiveCount % 5000) == 0)
+    {
+        LOGF_WARNING("DrawPrimitive #{} type={} startVertex={} primCount={}", s_drawPrimitiveCount, primitiveType, startVertex, primitiveCount);
+    }
+
     LocalRenderCommandQueue queue;
     FlushRenderStateForMainThread(device, queue);
 
@@ -5063,8 +5092,17 @@ static void ProcDrawPrimitive(const RenderCommand& cmd)
     commandList->drawInstanced(args.primitiveCount, 1, args.startVertex, 0);
 }
 
-static void DrawIndexedPrimitive(GuestDevice* device, uint32_t primitiveType, int32_t baseVertexIndex, uint32_t startIndex, uint32_t primCount)
+static void DrawIndexedPrimitive(GuestDevice* device, uint32_t primitiveType, int32_t baseVertexIndex, uint32_t minVertexIndex,
+    uint32_t numVertices, uint32_t startIndex, uint32_t primitiveCount)
 {
+    static uint32_t s_drawIndexedPrimitiveCount = 0;
+    ++s_drawIndexedPrimitiveCount;
+    if (s_drawIndexedPrimitiveCount <= 10 || (s_drawIndexedPrimitiveCount % 5000) == 0)
+    {
+        LOGF_WARNING("DrawIndexedPrimitive #{} type={} baseVtx={} minVtx={} numVtx={} startIdx={} primCount={}",
+            s_drawIndexedPrimitiveCount, primitiveType, baseVertexIndex, minVertexIndex, numVertices, startIndex, primitiveCount);
+    }
+
     LocalRenderCommandQueue queue;
     FlushRenderStateForMainThread(device, queue);
 
@@ -5073,7 +5111,7 @@ static void DrawIndexedPrimitive(GuestDevice* device, uint32_t primitiveType, in
     cmd.drawIndexedPrimitive.primitiveType = primitiveType;
     cmd.drawIndexedPrimitive.baseVertexIndex = baseVertexIndex;
     cmd.drawIndexedPrimitive.startIndex = startIndex;
-    cmd.drawIndexedPrimitive.primCount = primCount;
+    cmd.drawIndexedPrimitive.primCount = primitiveCount;
 
     queue.submit();
 }
@@ -5514,6 +5552,24 @@ static GuestShader* CreateShader(const be<uint32_t>* function, ResourceType reso
 {
     XXH64_hash_t hash = XXH3_64bits(function, function[1] + function[2]);
 
+    static uint32_t s_createVsCount = 0;
+    static uint32_t s_createPsCount = 0;
+    if (resourceType == ResourceType::VertexShader)
+        ++s_createVsCount;
+    else if (resourceType == ResourceType::PixelShader)
+        ++s_createPsCount;
+
+    const uint32_t callIndex = (resourceType == ResourceType::VertexShader) ? s_createVsCount : s_createPsCount;
+    if (callIndex <= 25 || (callIndex % 500) == 0)
+    {
+        LOGF_WARNING("CreateShader {} #{} funcPtr=0x{:X} byteSize={} hash=0x{:X}",
+            (resourceType == ResourceType::VertexShader) ? "VS" : "PS",
+            callIndex,
+            reinterpret_cast<uintptr_t>(function),
+            ByteSwap(function[1].value) + ByteSwap(function[2].value),
+            hash);
+    }
+
     if (g_shaderCacheEntryCount == 0)
     {
         LOG_ERROR("Shader cache is empty (g_shaderCacheEntryCount == 0). GTA IV shader extraction/recompilation has not been implemented yet.");
@@ -5523,6 +5579,14 @@ static GuestShader* CreateShader(const be<uint32_t>* function, ResourceType reso
 
     auto findResult = FindShaderCacheEntry(hash);
     GuestShader* shader = nullptr;
+
+    if (callIndex <= 25 || (callIndex % 500) == 0)
+    {
+        LOGF_WARNING("CreateShader {} #{} cacheLookup={}",
+            (resourceType == ResourceType::VertexShader) ? "VS" : "PS",
+            callIndex,
+            (findResult != nullptr) ? "HIT" : "MISS");
+    }
 
     if (findResult == nullptr) {
         LOGF_ERROR("Shader of function {:x} is not found by value: {:x}", reinterpret_cast<uintptr_t>(function), hash);
@@ -7933,8 +7997,301 @@ struct LightAndIndexBufferResourceV5
 //         g_userHeap.Free(newIndices);
 // }
 
-GUEST_FUNCTION_HOOK(sub_8253EC98, CreateDevice);
+// =============================================================================
+// GTA IV D3D Function Hooks
+// GTA IV D3D functions are in the 0x829D.... and 0x829E.... address range.
+// These addresses were identified by analyzing the PPC recomp code.
+// =============================================================================
 
+// Device creation - This one calls VdInitializeEngines which we hook separately
+GUEST_FUNCTION_HOOK(sub_829D87E8, CreateDevice);
+
+// =============================================================================
+// GTA IV Shader System Stubs
+// The shader lookup system at 0x827E/0x827F can get stuck in infinite loops
+// during initialization. For now, we stub the outer effect manager function
+// to return success without actually loading shaders. This allows the game
+// to proceed past initialization. Proper shader loading needs to be implemented.
+// =============================================================================
+
+// Effect manager initialization - stub
+// This prevents the infinite loop in shader lookup
+// Address 0x8285E048 is the effect manager that tries to load shaders
+// 
+// The function takes:
+// - r3: Effect manager context
+// - r4: Output pointer for effect data (stored in r31)
+//
+// The output structure appears to be at least 0x60 bytes based on the PPC code.
+// We need to return SUCCESS (1) and set up a valid-looking structure so the
+// game doesn't fall back to manual directory enumeration which causes garbage
+// path issues.
+//
+// Structure layout (partial, from PPC analysis):
+// - Offset 0x00: Flags or status (set to non-zero to indicate "loaded")
+// - Various other fields we don't fully understand
+//
+// By returning success with a "valid" structure, the game should proceed
+// instead of trying to enumerate directories.
+static uint32_t EffectManagerStub(be<uint32_t>* effectContext, be<uint32_t>* outputPtr)
+{
+    static int callCount = 0;
+    ++callCount;
+    
+    // Log first 10 calls and then every 100th call
+    if (callCount <= 10 || callCount % 100 == 0) {
+        LOGF_WARNING("EffectManager::Load STUBBED call #{} - ctx=0x{:08X} out=0x{:08X}", 
+            callCount, 
+            effectContext ? g_memory.MapVirtual(effectContext) : 0,
+            outputPtr ? g_memory.MapVirtual(outputPtr) : 0);
+    }
+    
+    // The garbage path comes from the effectContext containing a filename.
+    // When we zeroed all of effectContext, the game hung - it needs some of that state.
+    // 
+    // Looking at the log: after EffectManager, the game tries to load "\\" (just backslash).
+    // This suggests there's a filename field in effectContext that got read.
+    // 
+    // Instead of zeroing everything, we need to find where the filename is stored.
+    // The effectContext is at 0x80268230. Let me log what's in it before and after.
+    
+    if (callCount <= 3 && effectContext) {
+        // Log first few uint32s of effectContext
+        LOGF_WARNING("EffectManager - effectContext dwords: 0=0x{:08X} 1=0x{:08X} 2=0x{:08X} 3=0x{:08X}", 
+            effectContext[0].get(), effectContext[1].get(), effectContext[2].get(), effectContext[3].get());
+        LOGF_WARNING("EffectManager - effectContext dwords: 4=0x{:08X} 5=0x{:08X} 6=0x{:08X} 7=0x{:08X}", 
+            effectContext[4].get(), effectContext[5].get(), effectContext[6].get(), effectContext[7].get());
+        
+        // Try to read strings from the pointer addresses - may need to follow multiple levels
+        for (int i = 0; i < 8; i += 2) {
+            uint32_t guestPtr = effectContext[i].get();
+            if (guestPtr >= 0x80000000 && guestPtr < 0x90000000) {
+                // Valid guest address range, read bytes at that address
+                const uint8_t* hostPtr = reinterpret_cast<const uint8_t*>(g_memory.Translate(guestPtr));
+                if (hostPtr) {
+                    // Read as big-endian uint32s (these are likely more pointers)
+                    uint32_t val0 = (hostPtr[0] << 24) | (hostPtr[1] << 16) | (hostPtr[2] << 8) | hostPtr[3];
+                    uint32_t val1 = (hostPtr[4] << 24) | (hostPtr[5] << 16) | (hostPtr[6] << 8) | hostPtr[7];
+                    
+                    LOGF_WARNING("EffectManager - effectContext[{}]=0x{:08X} -> ptrs: 0x{:08X} 0x{:08X}",
+                        i, guestPtr, val0, val1);
+                    
+                    // Follow the first pointer one more level
+                    if (val0 >= 0x80000000 && val0 < 0x90000000) {
+                        const char* strPtr = reinterpret_cast<const char*>(g_memory.Translate(val0));
+                        if (strPtr) {
+                            char buf[64] = {0};
+                            bool valid = true;
+                            for (int j = 0; j < 63 && strPtr[j]; ++j) {
+                                if (strPtr[j] < 32 || static_cast<unsigned char>(strPtr[j]) > 127) {
+                                    valid = false;
+                                    break;
+                                }
+                                buf[j] = strPtr[j];
+                            }
+                            if (valid && buf[0]) {
+                                LOGF_WARNING("EffectManager - effectContext[{}] -> *ptr0 = string: '{}'", i, buf);
+                            } else {
+                                // Dump hex if not valid string
+                                LOGF_WARNING("EffectManager - effectContext[{}] -> *ptr0 = hex: {:02X} {:02X} {:02X} {:02X}",
+                                    i, (uint8_t)strPtr[0], (uint8_t)strPtr[1], (uint8_t)strPtr[2], (uint8_t)strPtr[3]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // The effectContext contains pointers at offsets 0, 2, 4, 6 (indices 0, 2, 4, 6)
+    // These point to guest memory which contains garbage (0xCDCDCDCD indicates uninitialized heap)
+    // 
+    // IMPORTANT: Don't zero these! Zeroing them causes the game to hang.
+    // The garbage path issue is now handled at the ResolvePath level where we
+    // detect and reject paths with garbage characters (>127 or <32).
+    //
+    // Let the effectContext pass through and rely on path validation to catch garbage.
+    
+    // Set up output structure to indicate success
+    if (outputPtr) {
+        memset(outputPtr, 0, 0x60);
+        // Set status to "loaded" so game proceeds with shader system
+        outputPtr[0] = 1;  // Status: loaded
+        
+        if (callCount <= 5) {
+            LOGF_WARNING("EffectManager::Load - Set up SUCCESS stub at 0x{:08X}", 
+                g_memory.MapVirtual(outputPtr));
+        }
+    }
+    
+    // Return 1 (success) to let the game proceed with shader loading
+    return 1;
+}
+
+// Stub the effect manager that causes infinite shader lookup loops
+// This is a temporary fix until proper shader loading is implemented
+GUEST_FUNCTION_HOOK(sub_8285E048, EffectManagerStub);
+
+// =============================================================================
+// GTA IV GPU Memory Allocation Stubs
+// The Xbox 360 GPU memory allocation functions (sub_829DFAD8, etc.) don't work
+// in the recompiled environment. We stub them to return success and provide
+// dummy memory locations until proper GPU resource creation is implemented.
+// =============================================================================
+
+// GPU memory allocation stub - returns success with small offset
+// Original function at 0x829DFAD8 tries to allocate GPU memory for vertex/index buffers
+// Parameters: r3 = size, r4 = pointer to uint32_t to write offset
+// Returns: 1 for success, 0 for failure
+//
+// The original function returns an OFFSET into a GPU memory pool (small values like 0, 720, etc.)
+// The caller checks if (offset + size > 2048) and rejects if too large.
+// We return small sequential offsets to pass this check.
+static uint32_t GpuMemAllocStub(uint32_t size, be<uint32_t>* outOffset)
+{
+    static int allocCount = 0;
+    static uint32_t currentOffset = 0;  // Track current offset in "virtual" GPU pool
+    ++allocCount;
+    
+    if (allocCount <= 10 || allocCount % 100 == 0) {
+        LOGF_WARNING("GpuMemAlloc #{} - size={:#x}, returning offset={:#x}", 
+                     allocCount, size, currentOffset);
+    }
+    
+    // Return the current offset (the caller expects a small offset into GPU memory pool)
+    if (outOffset) {
+        *outOffset = currentOffset;
+    }
+    
+    // Advance the offset for next allocation (align to 16)
+    // Wrap around if we get too big to avoid potential overflow issues
+    currentOffset += (size + 15) & ~15u;
+    if (currentOffset > 0x100000) {  // Reset at 1MB to avoid issues
+        currentOffset = 0;
+    }
+    
+    return 1; // Return success
+}
+
+// Hook the GPU memory allocation function that's causing the hang
+GUEST_FUNCTION_HOOK(sub_829DFAD8, GpuMemAllocStub);
+
+// =============================================================================
+// GTA IV Resource Creation 
+// For now, we let the game's own CreateVertexBuffer/CreateTexture run, but 
+// our GpuMemAllocStub above provides fake GPU memory addresses. The game's
+// internal structures will be properly initialized this way.
+//
+// NOTE: The resource hooks below are DISABLED - they were returning incompatible
+// structures that caused crashes. Instead, we stub the low-level GPU memory
+// allocator (sub_829DFAD8) which lets the game's own initialization code run.
+// =============================================================================
+#if 0 // DISABLED - let game's own init run with stubbed GPU memory
+static GuestBuffer* GTAIV_CreateVertexBuffer(uint32_t device, uint32_t length, uint32_t usage, uint32_t pool, uint32_t unknown)
+{
+    static int createCount = 0;
+    ++createCount;
+    
+    if (createCount <= 20 || createCount % 100 == 0) {
+        LOGF_WARNING("GTAIV_CreateVertexBuffer #{} - device={:#x} length={:#x} usage={:#x} pool={:#x}", 
+                     createCount, device, length, usage, pool);
+    }
+    
+    // Allocate a proper GuestBuffer using the existing infrastructure
+    auto buffer = g_userHeap.AllocPhysical<GuestBuffer>(ResourceType::VertexBuffer);
+    if (!buffer) {
+        LOGN_ERROR("Failed to allocate GuestBuffer for vertex buffer");
+        return nullptr;
+    }
+    
+    // Create actual GPU buffer  
+    buffer->buffer = g_device->createBuffer(RenderBufferDesc::VertexBuffer(length, GetBufferHeapType(), RenderBufferFlag::INDEX));
+    buffer->dataSize = length;
+    
+#ifdef _DEBUG 
+    buffer->buffer->setName(fmt::format("GTA4 Vertex Buffer {:X}", g_memory.MapVirtual(buffer)));
+#endif
+    
+    return buffer;
+}
+
+static GuestTexture* GTAIV_CreateTexture(uint32_t device, uint32_t width, uint32_t height, uint32_t levels, uint32_t usage, uint32_t format, uint32_t pool)
+{
+    static int createCount = 0;
+    ++createCount;
+    
+    if (createCount <= 20 || createCount % 100 == 0) {
+        LOGF_WARNING("GTAIV_CreateTexture #{} - {}x{} levels={} format={:#x}", 
+                     createCount, width, height, levels, format);
+    }
+    
+    auto texture = g_userHeap.AllocPhysical<GuestTexture>(ResourceType::Texture);
+    if (!texture) {
+        LOGN_ERROR("Failed to allocate GuestTexture");
+        return nullptr;
+    }
+    
+    RenderTextureDesc desc;
+    desc.dimension = RenderTextureDimension::TEXTURE_2D;
+    desc.width = std::max(1u, width);
+    desc.height = std::max(1u, height);
+    desc.depth = 1;
+    desc.mipLevels = std::max(1u, levels);
+    desc.arraySize = 1;
+    desc.multisampling.sampleCount = RenderSampleCount::COUNT_1;
+    desc.format = ConvertFormat(format);
+    desc.flags = RenderTextureFlag::NONE;
+    
+    texture->textureHolder = g_device->createTexture(desc);
+    texture->texture = texture->textureHolder.get();
+    texture->width = desc.width;
+    texture->height = desc.height;
+    texture->depth = 1;
+    texture->mipLevels = desc.mipLevels;
+    texture->format = desc.format;
+    
+#ifdef _DEBUG
+    texture->texture->setName(fmt::format("GTA4 Texture {:X}", g_memory.MapVirtual(texture)));
+#endif
+    
+    return texture;
+}
+
+GUEST_FUNCTION_HOOK(sub_829D3520, GTAIV_CreateVertexBuffer);
+GUEST_FUNCTION_HOOK(sub_829D3400, GTAIV_CreateTexture);
+#endif
+
+// NOTE: The following hooks are DISABLED because the functions have different  
+// parameter layouts than expected. Need to analyze the actual calling conventions
+// in GTA IV's D3D wrapper layer before enabling these.
+#if 0 // DISABLED - parameter layout investigation needed
+// Resource creation functions
+GUEST_FUNCTION_HOOK(sub_829D3400, CreateTexture);  // Allocates 52-byte GuestTexture struct
+GUEST_FUNCTION_HOOK(sub_829D3520, CreateVertexBuffer);  // Allocates 48-byte GuestBuffer struct
+// TODO: Find CreateIndexBuffer address (likely similar to CreateVertexBuffer pattern)
+
+// Surface descriptor functions
+GUEST_FUNCTION_HOOK(sub_829D3648, GetSurfaceDesc);
+
+// Texture locking
+GUEST_FUNCTION_HOOK(sub_829D6560, LockTextureRect);
+GUEST_FUNCTION_HOOK(sub_829D6690, UnlockTextureRect);
+
+// Buffer locking
+GUEST_FUNCTION_HOOK(sub_829D6830, LockVertexBuffer);
+GUEST_FUNCTION_HOOK(sub_829D69D8, UnlockVertexBuffer);
+#endif
+
+// NOTE(GTAIV): Do NOT hook the game's Present wrapper directly to Video::Present.
+// GTA IV's Present wrapper (sub_829D5388) calls the VdSwap import; we already hook
+// VdSwap in kernel/imports.cpp, which is the correct point to drive the host present.
+
+// =============================================================================
+// Sonic 06 D3D hooks - DISABLED for GTA IV
+// These addresses are from Sonic 06 and don't exist in GTA IV's address space.
+// Keeping them here for reference but they should not be active.
+// =============================================================================
+#if 0 // Disabled Sonic 06 hooks
 GUEST_FUNCTION_HOOK(sub_8253AE98, DestructResource);
 
 GUEST_FUNCTION_HOOK(sub_8253A740, LockTextureRect);
@@ -7953,7 +8310,9 @@ GUEST_FUNCTION_HOOK(sub_8253AB20, GetSurfaceDesc);
 GUEST_FUNCTION_HOOK(sub_825471F8, GetVertexDeclaration);
 // GUEST_FUNCTION_HOOK(sub_82BE0530, HashVertexDeclaration);
 
+// Sonic 06 Present - keeping for reference but doesn't apply to GTA IV
 GUEST_FUNCTION_HOOK(sub_825586B0, Video::Present);
+
 GUEST_FUNCTION_HOOK(sub_82543B58, GetBackBuffer);
 GUEST_FUNCTION_HOOK(sub_82543BA0, GetDepthStencil);
 
@@ -8031,6 +8390,7 @@ GUEST_FUNCTION_HOOK(sub_82541D08, SetRenderState<D3DRS_CCW_STENCILZFAIL>);
 GUEST_FUNCTION_HOOK(sub_82541D48, SetRenderState<D3DRS_CCW_STENCILPASS>);
 GUEST_FUNCTION_HOOK(sub_82541C98, SetRenderState<D3DRS_CCW_STENCILFUNC>);
 GUEST_FUNCTION_HOOK(sub_82541E38, SetRenderState<D3DRS_CLIPPLANEENABLE>);
+#endif // End disabled Sonic 06 hooks
 
 int GetType(GuestResource* resource)
 {
@@ -8043,7 +8403,7 @@ int GetType(GuestResource* resource)
     return 0;
 }
 
-GUEST_FUNCTION_HOOK(sub_8253AE08, GetType);
+// GUEST_FUNCTION_HOOK(sub_8253AE08, GetType); // Disabled - Sonic 06 address
 
 // Game asks about the size of surface to check if it needs to be tiled.
 // Because EDRAM has only 10MB, if size is more than 1024, then it enables tiling.
@@ -8053,6 +8413,8 @@ int SurfaceSize(uint32_t width, uint32_t height, uint32_t format, uint32_t multi
     return 0;
 }
 
+// Disabled Sonic 06 hooks
+#if 0
 GUEST_FUNCTION_HOOK(sub_82538D60, SurfaceSize);
 GUEST_FUNCTION_HOOK(sub_82656B68, MakePictureData);
 GUEST_FUNCTION_HOOK(sub_82656DB8, MakePictureData);
@@ -8077,6 +8439,7 @@ GUEST_FUNCTION_STUB(sub_8254D7B0); // BeginConditional
 GUEST_FUNCTION_STUB(sub_8254D9D0); // BeginConditional
 GUEST_FUNCTION_STUB(sub_8254DB90); // BeginConditional
 GUEST_FUNCTION_STUB(sub_8254DD40); // SetScreenExtentQueryMode
+#endif // More disabled Sonic 06 hooks
 
 struct Rect
 {
@@ -8100,7 +8463,7 @@ int D3DDevice_BeginTiling(GuestDevice* device, uint32_t flags, uint32_t count, R
     return 0;
 }
 
-GUEST_FUNCTION_HOOK(sub_82558F88, D3DDevice_BeginTiling);
+// GUEST_FUNCTION_HOOK(sub_82558F88, D3DDevice_BeginTiling); // Disabled - Sonic 06 address
 
 int D3DDevice_EndTiling(GuestDevice* device, uint32_t flags, Rect* pResolveRects, GuestTexture* pDestTexture, be<float>* pClearColor, float clearZ, uint32_t clearStencil, RESOLVE_PARAMS* resolveParams)
 {
@@ -8112,7 +8475,7 @@ int D3DDevice_EndTiling(GuestDevice* device, uint32_t flags, Rect* pResolveRects
     return 0;
 }
 
-GUEST_FUNCTION_HOOK(sub_82559480, D3DDevice_EndTiling);
+// GUEST_FUNCTION_HOOK(sub_82559480, D3DDevice_EndTiling); // Disabled - Sonic 06 address
 
 int D3DDevice_BeginShaderConstantF4(GuestDevice* device, uint32_t isPixelShader, uint32_t startRegister, be<uint32_t>* cachedConstantData, be<uint32_t>* writeCombinedConstantData, uint32_t vectorCount)
 {
@@ -8142,4 +8505,4 @@ int D3DDevice_BeginShaderConstantF4(GuestDevice* device, uint32_t isPixelShader,
     return 0;
 }
 
-GUEST_FUNCTION_HOOK(sub_825466E8, D3DDevice_BeginShaderConstantF4);
+// GUEST_FUNCTION_HOOK(sub_825466E8, D3DDevice_BeginShaderConstantF4); // Disabled - Sonic 06 address

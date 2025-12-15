@@ -17,14 +17,11 @@ const std::filesystem::path& GetUserPath();
 
 inline std::filesystem::path GetGamePath()
 {
-#ifdef __APPLE__
-    // On macOS, there is the expectation that the app may be installed to
-    // /Applications/, and the bundle should not be modified. Thus we need
-    // to install game files to the user directory instead of next to the app.
-    return GetUserPath();
-#else
-    return GAME_INSTALL_DIRECTORY;
-#endif
+    // Point to the project folder - the installer expects a "game" subdirectory
+    // containing default.xex, so we return the parent of the actual game folder.
+    // The game files are in: MarathonRecomp/Grand Theft Auto IV (USA) (En,Fr,De,Es,It)/
+    // We need to create a "game" symlink or adjust paths
+    return "/Users/Ozordi/Downloads/MarathonRecomp";
 }
 
 inline std::filesystem::path GetSavePath(bool checkForMods)

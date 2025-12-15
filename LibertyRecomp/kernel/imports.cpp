@@ -1,9 +1,14 @@
 #include <cstdint>
 #include <cstdio>
+#include <unordered_set>
+#include <thread>
+#include <atomic>
 #include <stdafx.h>
 #include <cpu/ppc_context.h>
 #include <cpu/guest_thread.h>
 #include <apu/audio.h>
+#include <gpu/video.h>
+#include <ui/game_window.h>
 #include "function.h"
 #include "xex.h"
 #include "xbox.h"
@@ -23,9 +28,66 @@
 #include <algorithm>
 #include <vector>
 
+#if defined(__APPLE__)
+#include <CommonCrypto/CommonCryptor.h>
+#endif
+
 #ifdef _WIN32
 #include <ntstatus.h>
 #endif
+
+// =============================================================================
+// SDL Event Pumping Helper
+// =============================================================================
+// This is called from kernel functions that are invoked frequently during
+// game execution to keep the window responsive. Without this, the window
+// freezes because GuestThread::Start blocks the main thread.
+// 
+// IMPORTANT: On macOS, SDL event pumping MUST happen on the main thread.
+// If called from a worker thread, we skip the pump to avoid crashes.
+
+static std::chrono::steady_clock::time_point g_lastSdlPumpTime;
+static constexpr auto SDL_PUMP_INTERVAL = std::chrono::milliseconds(16); // ~60fps
+static std::thread::id g_kernelMainThreadId;
+static std::atomic<bool> g_kernelMainThreadIdSet{false};
+
+void InitKernelMainThread()
+{
+    g_kernelMainThreadId = std::this_thread::get_id();
+    g_kernelMainThreadIdSet = true;
+}
+
+bool IsMainThread()
+{
+    if (!g_kernelMainThreadIdSet) return false;
+    return std::this_thread::get_id() == g_kernelMainThreadId;
+}
+
+void PumpSdlEventsIfNeeded()
+{
+    // On macOS, SDL event pumping MUST happen on the main thread
+    // Skip if we're on a worker thread to avoid Cocoa crashes
+    if (!IsMainThread()) return;
+    
+    auto now = std::chrono::steady_clock::now();
+    if (now - g_lastSdlPumpTime >= SDL_PUMP_INTERVAL)
+    {
+        g_lastSdlPumpTime = now;
+        SDL_PumpEvents();
+        
+        // Process critical events (window close, etc.)
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_QUIT)
+            {
+                std::_Exit(0);
+            }
+        }
+    }
+}
+
+// =============================================================================
 
 std::unordered_map<uint32_t, uint32_t> g_handleDuplicates{};
 
@@ -57,12 +119,19 @@ namespace
 
     constexpr uint32_t kNtFileHandleMagic = 0x4E544649; // 'NTFI'
     constexpr uint32_t kNtDirHandleMagic = 0x4E544449; // 'NTDI'
+    constexpr uint32_t kNtVirtFileHandleMagic = 0x4E545646; // 'NTVF'
 
     struct NtFileHandle final : KernelObject
     {
         uint32_t magic = kNtFileHandleMagic;
         std::fstream stream;
         std::filesystem::path path;
+        // RPF metadata cached per-open
+        bool rpfHeaderParsed = false;
+        bool isRpf = false;
+        uint32_t tocOffset = 0;
+        uint32_t tocSize = 0;
+        bool tocEncrypted = false;
     };
 
     struct NtDirHandle final : KernelObject
@@ -74,12 +143,704 @@ namespace
         bool initialized = false;
     };
 
+    struct NtVirtFileHandle final : KernelObject
+    {
+        uint32_t magic = kNtVirtFileHandleMagic;
+        std::filesystem::path debugPath;
+        std::vector<uint8_t> data;
+    };
+
     static std::unordered_map<uint32_t, NtFileHandle*> g_ntFileHandles;
     static std::unordered_map<uint32_t, NtDirHandle*> g_ntDirHandles;
+    static std::unordered_map<uint32_t, NtVirtFileHandle*> g_ntVirtFileHandles;
+    
+    // GPU Ring Buffer state for fake GPU consumption
+    struct GpuRingBufferState {
+        uint32_t ringBufferBase = 0;      // Physical address of ring buffer
+        uint32_t ringBufferSize = 0;      // Size in bytes (1 << size_log2)
+        uint32_t readPtrWritebackAddr = 0; // Address where GPU writes read pointer
+        uint32_t blockSize = 0;           // Block size for writeback (1 << block_size_log2)
+        uint32_t interruptCallback = 0;   // Graphics interrupt callback function
+        uint32_t interruptUserData = 0;   // User data for interrupt callback
+        bool initialized = false;
+        bool writebackEnabled = false;
+        bool interruptFired = false;
+        
+        // Persistent video state flags - the GPU polling loop checks these
+        bool enginesInitialized = false;
+        bool edramTrainingComplete = false;
+        bool interruptSeen = false;
+    };
+    static GpuRingBufferState g_gpuRingBuffer;
+    
+    // Global RPF streams for translation layer - opened once, used for all reads
+    struct RpfStreamInfo {
+        std::fstream stream;
+        std::filesystem::path path;
+        uint64_t fileSize = 0;
+        bool headerParsed = false;
+        uint32_t tocOffset = 0;
+        uint32_t tocSize = 0;
+        bool tocEncrypted = false;
+        std::vector<uint8_t> decryptedToc;  // Pre-decrypted TOC for fast access
+        bool tocDecrypted = false;
+    };
+    static std::unordered_map<std::string, std::unique_ptr<RpfStreamInfo>> g_rpfStreams;
+    
+    // Map any handle to its backing RPF name (e.g., "common", "xbox360", "audio")
+    static std::unordered_map<uint32_t, std::string> g_handleToRpf;
+    
+    // Offset-to-file mapping for serving extracted files
+    struct RpfFileEntry {
+        uint32_t offset;
+        uint32_t size;
+        const char* path;
+    };
+    
+    // File mapping for common.rpf - maps RPF offsets to extracted file paths
+    // Generated from parsing the decrypted TOC
+    static const RpfFileEntry g_commonRpfFiles[] = {
+        {0x005000,   469881, "data/action_table.csv"},
+        {0x00C800,   123153, "data/ambient.dat"},
+        {0x010000,    12063, "data/animgrp.dat"},
+        {0x010800,    24102, "data/carcols.dat"},
+        {0x012800,     5554, "data/cargrp.dat"},
+        {0x013000,    22853, "data/credits_360.dat"},
+        {0x0152FE,      882, "data/default.dat"},
+        {0x015800,    11342, "data/default.ide"},
+        {0x016800,     5534, "data/femaleplayersettings.dat"},
+        {0x017000,     9855, "data/fonts.dat"},
+        {0x018000,    13883, "data/frontend_360.dat"},
+        {0x019000,    36821, "data/frontend_menus.xml"},
+        {0x01A000,     8022, "data/gta.dat"},
+        {0x01B000,    41386, "data/handling.dat"},
+        {0x01D800,     9498, "data/hud.dat"},
+        {0x01E000,     4529, "data/hudcolor.dat"},
+        {0x01E800,     5964, "data/images.txt"},
+        {0x01F000,    18884, "data/info.zon"},
+        {0x020800,     3779, "data/introspline.csv"},
+        {0x021000,    77653, "data/leaderboards_data.xml"},
+        {0x022000,    14880, "data/loadingscreens_360.dat"},
+        {0x023000,     4828, "data/maleplayersettings.dat"},
+        {0x024000,     9047, "data/meleeanims.dat"},
+        {0x025000,     7988, "data/moveblend.dat"},
+        {0x025800,      974, "data/nav.dat"},
+        {0x026000,   139863, "data/navprecalc.dat"},
+        {0x03B000,     6873, "data/networktest.dat"},
+        {0x03C000,     8735, "data/pedgrp.dat"},
+        {0x03D000,    89589, "data/pedpersonality.dat"},
+        {0x03E800,    96255, "data/peds.ide"},
+        {0x041000,   158690, "data/pedvariations.dat"},
+        {0x043000,    10774, "data/plants.dat"},
+        {0x044000,   594605, "data/popcycle.dat"},
+        {0x048000,   593598, "data/popcycle.datnew"},
+        {0x04C800,    10800, "data/precincts.dat"},
+        {0x04D000,     3490, "data/radiohud.dat"},
+        {0x04D800,     1393, "data/radiologo.dat"},
+        {0x04E000,     9208, "data/relationships.dat"},
+        {0x04E800,    12207, "data/scenarios.dat"},
+        {0x04F800,     4046, "data/scrollbars.dat"},
+        {0x050000,    18052, "data/startup.sco"},
+        {0x051000,     5107, "data/statexport.dat"},
+        {0x052000,     6665, "data/surface.dat"},
+        {0x053000,    10312, "data/surfaceaudio.dat"},
+        {0x054000,     5149, "data/timecycle.dat"},
+        {0x055000,     5149, "data/timecyclemod.dat"},
+        {0x056000,     2451, "data/traincamnodes.txt"},
+        {0x057000,     5036, "data/traintrack.dat"},
+        {0x058000,    16626, "data/tuneables.dat"},
+        {0x059000,    15168, "data/vehcomps.dat"},
+        {0x05A800,   286690, "data/vehoff.csv"},
+        {0x063000,    43058, "data/vehicles.ide"},
+        {0x068000,    35451, "data/visualsettings.dat"},
+        {0x06C000,    16393, "data/water.dat"},
+        {0x06D000,    29497, "data/weaponinfo.xml"},
+        {0x070000,    10127, "data/weapons.dat"},
+        {0x072000,    15680, "data/weather.dat"},
+        {0x087800,   270035, "data/maps/occlu.ipl"},
+        {0x09B800,  1720829, "data/maps/paths.ipl"},
+        {0x198800,    99007, "shaders/fxl_final/deferred_lighting.fxc"},
+        {0x19F800,    38797, "shaders/fxl_final/gta_atmoscatt_clouds.fxc"},
+        {0x1A2800,    29220, "shaders/fxl_final/gta_cubemap_reflect.fxc"},
+        {0x1A5000,    28838, "shaders/fxl_final/gta_cutout_fence.fxc"},
+        {0x1A7800,    29201, "shaders/fxl_final/gta_decal.fxc"},
+        {0x1AA000,    29122, "shaders/fxl_final/gta_decal_amb_only.fxc"},
+        {0x1AC800,    28356, "shaders/fxl_final/gta_decal_dirt.fxc"},
+        {0x1AF000,    29385, "shaders/fxl_final/gta_decal_glue.fxc"},
+        {0x1B1800,    31357, "shaders/fxl_final/gta_decal_normal_only.fxc"},
+        {0x1B4800,    28758, "shaders/fxl_final/gta_default.fxc"},
+        {0x1B7000,    17697, "shaders/fxl_final/gta_diffuse_instance.fxc"},
+        {0x1B8800,    20703, "shaders/fxl_final/gta_emissive.fxc"},
+        {0x1BA000,    21405, "shaders/fxl_final/gta_emissivenight.fxc"},
+        {0x1BB800,    20965, "shaders/fxl_final/gta_emissivestrong.fxc"},
+        {0x1BD000,    31661, "shaders/fxl_final/gta_glass.fxc"},
+        {0x1C0000,    23504, "shaders/fxl_final/gta_glass_emissive.fxc"},
+        {0x1C2000,    24048, "shaders/fxl_final/gta_glass_emissivenight.fxc"},
+        {0x1C4000,    33090, "shaders/fxl_final/gta_glass_normal_spec_reflect.fxc"},
+        {0x1C7000,    30062, "shaders/fxl_final/gta_glass_reflect.fxc"},
+        {0x1C9800,    29649, "shaders/fxl_final/gta_glass_spec.fxc"},
+        {0x1CC800,    23995, "shaders/fxl_final/gta_hair_sorted_alpha.fxc"},
+        {0x1CF000,    23882, "shaders/fxl_final/gta_hair_sorted_alpha_exp.fxc"},
+        {0x1D1800,    14196, "shaders/fxl_final/gta_im.fxc"},
+        {0x1D3000,    31405, "shaders/fxl_final/gta_normal.fxc"},
+        {0x1D6000,    31219, "shaders/fxl_final/gta_normal_cubemap_reflect.fxc"},
+        {0x1D9000,    31454, "shaders/fxl_final/gta_normal_decal.fxc"},
+        {0x1DC000,    30991, "shaders/fxl_final/gta_normal_reflect.fxc"},
+        {0x1DE800,    31123, "shaders/fxl_final/gta_normal_reflect_alpha.fxc"},
+        {0x1E1000,    31044, "shaders/fxl_final/gta_normal_reflect_decal.fxc"},
+        {0x1E3800,    32750, "shaders/fxl_final/gta_normal_spec.fxc"},
+        {0x1E6800,    34062, "shaders/fxl_final/gta_normal_spec_cubemap_reflect.fxc"},
+        {0x1E9800,    32791, "shaders/fxl_final/gta_normal_spec_decal.fxc"},
+        {0x1EC800,    35048, "shaders/fxl_final/gta_normal_spec_reflect.fxc"},
+        {0x1EF800,    35109, "shaders/fxl_final/gta_normal_spec_reflect_decal.fxc"},
+        {0x1F2800,    24134, "shaders/fxl_final/gta_normal_spec_reflect_emissive.fxc"},
+        {0x1F4800,    24686, "shaders/fxl_final/gta_normal_spec_reflect_emissivenight.fxc"},
+        {0x1F6800,    32284, "shaders/fxl_final/gta_parallax.fxc"},
+        {0x1F9800,    33573, "shaders/fxl_final/gta_parallax_specmap.fxc"},
+        {0x1FC800,    32784, "shaders/fxl_final/gta_parallax_steep.fxc"},
+        {0x1FF800,    24963, "shaders/fxl_final/gta_ped.fxc"},
+        {0x202000,    26468, "shaders/fxl_final/gta_ped_reflect.fxc"},
+        {0x204800,    25642, "shaders/fxl_final/gta_ped_skin.fxc"},
+        {0x207000,    32242, "shaders/fxl_final/gta_ped_skin_blendshape.fxc"},
+        {0x20A000,    42311, "shaders/fxl_final/gta_projtex.fxc"},
+        {0x20E000,    42775, "shaders/fxl_final/gta_projtex_steep.fxc"},
+        {0x212800,    28972, "shaders/fxl_final/gta_reflect.fxc"},
+        {0x215000,    28969, "shaders/fxl_final/gta_reflect_decal.fxc"},
+        {0x21F800,    31551, "shaders/fxl_final/gta_spec.fxc"},
+        {0x222800,    31572, "shaders/fxl_final/gta_spec_decal.fxc"},
+        {0x225800,    32083, "shaders/fxl_final/gta_spec_reflect.fxc"},
+        {0x228800,    32116, "shaders/fxl_final/gta_spec_reflect_decal.fxc"},
+        {0x22B800,    12493, "shaders/fxl_final/gta_terrain_va_2lyr.fxc"},
+        {0x22C800,    16869, "shaders/fxl_final/gta_terrain_va_3lyr.fxc"},
+        {0x22D800,    21225, "shaders/fxl_final/gta_terrain_va_4lyr.fxc"},
+        {0x22E800,    11423, "shaders/fxl_final/gta_trees.fxc"},
+        {0x22F800,    39294, "shaders/fxl_final/gta_vehicle_badges.fxc"},
+        {0x232800,    31620, "shaders/fxl_final/gta_vehicle_basic.fxc"},
+        {0x235000,    43225, "shaders/fxl_final/gta_vehicle_chrome.fxc"},
+        {0x238800,    28625, "shaders/fxl_final/gta_vehicle_disc.fxc"},
+        {0x23A800,    43656, "shaders/fxl_final/gta_vehicle_generic.fxc"},
+        {0x23E000,    42850, "shaders/fxl_final/gta_vehicle_interior.fxc"},
+        {0x241800,    41461, "shaders/fxl_final/gta_vehicle_interior2.fxc"},
+        {0x245000,    45261, "shaders/fxl_final/gta_vehicle_lightsemissive.fxc"},
+        {0x249000,    44350, "shaders/fxl_final/gta_vehicle_mesh.fxc"},
+        {0x24C800,    43525, "shaders/fxl_final/gta_vehicle_paint1.fxc"},
+        {0x250000,    43269, "shaders/fxl_final/gta_vehicle_paint2.fxc"},
+        {0x253800,    44582, "shaders/fxl_final/gta_vehicle_paint3.fxc"},
+        {0x257000,    32462, "shaders/fxl_final/gta_vehicle_rims1.fxc"},
+        {0x259000,    32134, "shaders/fxl_final/gta_vehicle_rims2.fxc"},
+        {0x25B000,    37859, "shaders/fxl_final/gta_vehicle_rubber.fxc"},
+        {0x25E000,    37472, "shaders/fxl_final/gta_vehicle_shuts.fxc"},
+        {0x261000,    33297, "shaders/fxl_final/gta_vehicle_tire.fxc"},
+        {0x263800,    39399, "shaders/fxl_final/gta_vehicle_vehglass.fxc"},
+        {0x267000,    29706, "shaders/fxl_final/gta_wire.fxc"},
+        {0x26E000,    36486, "shaders/fxl_final/rage_postfx.fxc"},
+        {0x273000,    10514, "shaders/fxl_final/water.fxc"},
+        {0x275000,  2767809, "text/american.gxt"},
+        {0x519000,  3034116, "text/french.gxt"},
+        {0x7FE000,  3048486, "text/german.gxt"},
+        {0xAE6800,  2915066, "text/italian.gxt"},
+        {0xDAE800,  2876898, "text/spanish.gxt"},
+        {0, 0, nullptr}  // Sentinel
+    };
+    
+    // Find extracted file for a given RPF offset
+    // Since RPF files can have overlapping ranges (due to compression), we need to find
+    // the file whose start offset is closest to (but not greater than) the target offset
+    static const RpfFileEntry* FindExtractedFile(const std::string& rpfName, uint32_t offset)
+    {
+        const RpfFileEntry* entries = nullptr;
+        if (rpfName == "common")
+            entries = g_commonRpfFiles;
+        // TODO: Add xbox360 and audio mappings
+        
+        if (!entries)
+            return nullptr;
+        
+        const RpfFileEntry* bestMatch = nullptr;
+        uint32_t bestDistance = UINT32_MAX;
+        
+        for (const RpfFileEntry* e = entries; e->path != nullptr; ++e)
+        {
+            // File must start at or before the target offset
+            if (e->offset <= offset)
+            {
+                // Check if target is within this file's range
+                if (offset < e->offset + e->size)
+                {
+                    // Find the file with the smallest distance (closest start offset)
+                    uint32_t distance = offset - e->offset;
+                    if (distance < bestDistance)
+                    {
+                        bestDistance = distance;
+                        bestMatch = e;
+                    }
+                }
+            }
+        }
+        return bestMatch;
+    }
+    
+    // Cache for opened extracted files
+    struct ExtractedFileCache {
+        std::fstream stream;
+        std::string path;
+        uint32_t rpfOffset;
+        uint32_t fileSize;
+    };
+    static std::unordered_map<std::string, std::unique_ptr<ExtractedFileCache>> g_extractedFileCache;
+    
+    // Get or open an RPF stream
+    static RpfStreamInfo* GetRpfStream(const std::string& rpfName)
+    {
+        auto it = g_rpfStreams.find(rpfName);
+        if (it != g_rpfStreams.end())
+            return it->second.get();
+        
+        // Open the RPF file
+        std::filesystem::path rpfPath = GetGamePath() / "game" / (rpfName + ".rpf");
+        if (!std::filesystem::exists(rpfPath))
+        {
+            LOGF_IMPL(Utility, "GetRpfStream", "RPF not found: {}", rpfPath.string());
+            return nullptr;
+        }
+        
+        auto info = std::make_unique<RpfStreamInfo>();
+        info->stream.open(rpfPath, std::ios::in | std::ios::binary);
+        if (!info->stream.is_open())
+        {
+            LOGF_IMPL(Utility, "GetRpfStream", "Failed to open RPF: {}", rpfPath.string());
+            return nullptr;
+        }
+        
+        info->path = rpfPath;
+        {
+            info->stream.clear();
+            info->stream.seekg(0, std::ios::end);
+            const std::streampos endPos = info->stream.tellg();
+            if (endPos > 0)
+                info->fileSize = static_cast<uint64_t>(endPos);
+            info->stream.clear();
+            info->stream.seekg(0, std::ios::beg);
+        }
+        
+        // Parse RPF2 header
+        char hdr[20] = {};
+        info->stream.read(hdr, sizeof(hdr));
+        if (info->stream.gcount() >= 20)
+        {
+            bool isRpf2 = (hdr[0] == 'R' && hdr[1] == 'P' && hdr[2] == 'F' && hdr[3] == '2');
+            if (isRpf2)
+            {
+                auto le32 = [](const uint8_t* p) -> uint32_t {
+                    return (uint32_t)p[0] | ((uint32_t)p[1] << 8) | ((uint32_t)p[2] << 16) | ((uint32_t)p[3] << 24);
+                };
+                info->tocSize = le32(reinterpret_cast<uint8_t*>(hdr + 4));
+                uint32_t encrypted = le32(reinterpret_cast<uint8_t*>(hdr + 16));
+                info->tocOffset = 0x800;
+                info->tocEncrypted = (encrypted != 0);
+                info->headerParsed = true;
+                
+                LOGF_IMPL(Utility, "GetRpfStream", "Opened {} - tocOffset=0x{:X} tocSize={} encrypted={}",
+                          rpfName, info->tocOffset, info->tocSize, info->tocEncrypted);
+            }
+        }
+        info->stream.clear();
+        info->stream.seekg(0, std::ios::beg);
+        
+        RpfStreamInfo* ptr = info.get();
+        g_rpfStreams[rpfName] = std::move(info);
+        return ptr;
+    }
+
+    static void DecryptRpfBufferInPlace(uint8_t* data, uint32_t length, uint64_t tocRelativeOffset);
+    
+    static void EnsureTocDecrypted(RpfStreamInfo* rpf)
+    {
+        if (!rpf || rpf->tocDecrypted || !rpf->headerParsed || !rpf->tocEncrypted)
+            return;
+        if (rpf->tocSize == 0)
+            return;
+        
+        rpf->decryptedToc.resize(rpf->tocSize);
+        rpf->stream.clear();
+        rpf->stream.seekg(rpf->tocOffset, std::ios::beg);
+        rpf->stream.read(reinterpret_cast<char*>(rpf->decryptedToc.data()), rpf->tocSize);
+        
+        if (rpf->stream.gcount() != static_cast<std::streamsize>(rpf->tocSize))
+        {
+            LOGF_IMPL(Utility, "EnsureTocDecrypted", "Failed to read TOC: got {} bytes, expected {}", 
+                      rpf->stream.gcount(), rpf->tocSize);
+            rpf->decryptedToc.clear();
+            return;
+        }
+        
+        DecryptRpfBufferInPlace(rpf->decryptedToc.data(), rpf->tocSize, 0);
+        rpf->tocDecrypted = true;
+        LOGF_IMPL(Utility, "EnsureTocDecrypted", "Pre-decrypted {} bytes of TOC", rpf->tocSize);
+    }
+
+    // Read from extracted file given RPF name and offset
+    static uint32_t ReadFromExtractedFile(const std::string& rpfName, uint8_t* hostBuffer, uint32_t size, uint32_t offset, int count)
+    {
+        const RpfFileEntry* entry = FindExtractedFile(rpfName, offset);
+        if (!entry)
+            return 0;
+        
+        // Calculate offset within the extracted file
+        const uint32_t fileOffset = offset - entry->offset;
+        if (fileOffset >= entry->size)
+            return 0;
+        
+        // Build path to extracted file
+        std::filesystem::path extractedPath = GetGamePath() / "extracted" / rpfName / entry->path;
+        
+        // Check cache first
+        auto cacheKey = extractedPath.string();
+        auto cacheIt = g_extractedFileCache.find(cacheKey);
+        ExtractedFileCache* cache = nullptr;
+        
+        if (cacheIt != g_extractedFileCache.end())
+        {
+            cache = cacheIt->second.get();
+        }
+        else
+        {
+            // Open the extracted file
+            if (!std::filesystem::exists(extractedPath))
+            {
+                if (count <= 20)
+                {
+                    LOGF_IMPL(Utility, "GTA4_FileLoad", "Extracted file not found: {}", extractedPath.string());
+                }
+                return 0;
+            }
+            
+            auto newCache = std::make_unique<ExtractedFileCache>();
+            newCache->stream.open(extractedPath, std::ios::in | std::ios::binary);
+            if (!newCache->stream.is_open())
+            {
+                if (count <= 20)
+                {
+                    LOGF_IMPL(Utility, "GTA4_FileLoad", "Failed to open extracted file: {}", extractedPath.string());
+                }
+                return 0;
+            }
+            
+            newCache->path = cacheKey;
+            newCache->rpfOffset = entry->offset;
+            newCache->fileSize = entry->size;
+            
+            cache = newCache.get();
+            g_extractedFileCache[cacheKey] = std::move(newCache);
+            
+            if (count <= 50)
+            {
+                LOGF_IMPL(Utility, "GTA4_FileLoad", "Opened extracted file: {} (rpfOffset=0x{:X} size={})",
+                          entry->path, entry->offset, entry->size);
+            }
+        }
+        
+        // Read from the extracted file
+        cache->stream.clear();
+        cache->stream.seekg(fileOffset, std::ios::beg);
+        
+        const uint32_t availableInFile = entry->size - fileOffset;
+        const uint32_t toRead = std::min(size, availableInFile);
+        
+        cache->stream.read(reinterpret_cast<char*>(hostBuffer), toRead);
+        const uint32_t bytesRead = static_cast<uint32_t>(cache->stream.gcount());
+        
+        if (count <= 50 || count % 100 == 0)
+        {
+            LOGF_IMPL(Utility, "GTA4_FileLoad", "Read {} bytes from extracted '{}' at fileOffset=0x{:X}",
+                      bytesRead, entry->path, fileOffset);
+        }
+        
+        return bytesRead;
+    }
+    
+    static uint32_t ReadFromRpfStream(RpfStreamInfo* rpf, uint8_t* hostBuffer, uint32_t size, uint32_t offset, int count, const std::string& rpfName)
+    {
+        if (!rpf || !rpf->stream.is_open())
+            return 0;
+        if (rpf->fileSize != 0 && offset >= rpf->fileSize)
+            return 0;
+        
+        // Ensure TOC is pre-decrypted for fast access
+        EnsureTocDecrypted(rpf);
+        
+        // Check if this read overlaps with the TOC region
+        const uint64_t tocStart = rpf->tocOffset;
+        const uint64_t tocEnd = tocStart + rpf->tocSize;
+        const uint64_t readStart = offset;
+        const uint64_t readEnd = offset + size;
+        
+        // If we have a pre-decrypted TOC and the read overlaps it, serve from cache
+        if (rpf->tocDecrypted && !rpf->decryptedToc.empty() && readEnd > tocStart && readStart < tocEnd)
+        {
+            // Read overlaps TOC - serve decrypted data
+            uint32_t totalRead = 0;
+            
+            // Part before TOC (if any)
+            if (readStart < tocStart)
+            {
+                const uint32_t beforeLen = static_cast<uint32_t>(tocStart - readStart);
+                rpf->stream.clear();
+                rpf->stream.seekg(offset, std::ios::beg);
+                rpf->stream.read(reinterpret_cast<char*>(hostBuffer), beforeLen);
+                totalRead += static_cast<uint32_t>(rpf->stream.gcount());
+            }
+            
+            // TOC overlap part - serve from decrypted cache
+            const uint64_t overlapStart = std::max(readStart, tocStart);
+            const uint64_t overlapEnd = std::min(readEnd, tocEnd);
+            if (overlapEnd > overlapStart)
+            {
+                const uint32_t tocOff = static_cast<uint32_t>(overlapStart - tocStart);
+                const uint32_t bufOffset = static_cast<uint32_t>(overlapStart - readStart);
+                const uint32_t len = static_cast<uint32_t>(overlapEnd - overlapStart);
+                
+                memcpy(hostBuffer + bufOffset, rpf->decryptedToc.data() + tocOff, len);
+                totalRead += len;
+                
+                if (count <= 20 || count % 100 == 0)
+                {
+                    LOGF_IMPL(Utility, "GTA4_FileLoad", "Served {} bytes from pre-decrypted TOC at tocOffset=0x{:X}",
+                        len, tocOff);
+                }
+            }
+            
+            // Part after TOC - serve raw RPF data (not extracted text files)
+            if (readEnd > tocEnd)
+            {
+                const uint32_t afterOffset = static_cast<uint32_t>(tocEnd);
+                const uint32_t afterLen = static_cast<uint32_t>(readEnd - tocEnd);
+                const uint32_t bufOffset = static_cast<uint32_t>(tocEnd - readStart);
+                
+                // Read raw RPF data directly - extracted files are TEXT format, game expects BINARY
+                rpf->stream.clear();
+                rpf->stream.seekg(afterOffset, std::ios::beg);
+                rpf->stream.read(reinterpret_cast<char*>(hostBuffer + bufOffset), afterLen);
+                totalRead += static_cast<uint32_t>(rpf->stream.gcount());
+            }
+            
+            return totalRead;
+        }
+        
+        // For reads past TOC, read raw RPF data directly
+        // NOTE: Extracted files are TEXT format, but game expects BINARY RPF format
+        
+        // Read from raw RPF
+        rpf->stream.clear();
+        rpf->stream.seekg(offset, std::ios::beg);
+        
+        if (rpf->stream.bad())
+            return 0;
+        
+        rpf->stream.read(reinterpret_cast<char*>(hostBuffer), size);
+        const uint32_t bytesRead = static_cast<uint32_t>(rpf->stream.gcount());
+        
+        if (bytesRead == 0)
+            return 0;
+        
+        // Fallback: decrypt TOC region on-the-fly if not using cache
+        if (rpf->headerParsed && rpf->tocEncrypted && !rpf->tocDecrypted)
+        {
+            const uint64_t overlapStart = std::max(readStart, tocStart);
+            const uint64_t overlapEnd = std::min(static_cast<uint64_t>(offset + bytesRead), tocEnd);
+            
+            if (overlapEnd > overlapStart)
+            {
+                const uint32_t startInBuf = static_cast<uint32_t>(overlapStart - readStart);
+                const uint32_t len = static_cast<uint32_t>(overlapEnd - overlapStart);
+                const uint64_t tocRelativeOffset = overlapStart - tocStart;
+                
+                if (count <= 20 || count % 100 == 0)
+                {
+                    LOGF_IMPL(Utility, "GTA4_FileLoad", "Decrypting TOC region on-the-fly: bufOffset={} len={} tocRelOffset={}",
+                        startInBuf, len, tocRelativeOffset);
+                }
+                
+                DecryptRpfBufferInPlace(hostBuffer + startInBuf, len, tocRelativeOffset);
+            }
+        }
+        
+        return bytesRead;
+    }
+
+    static uint32_t ReadFromBestRpf(uint32_t handle, uint8_t* hostBuffer, uint32_t size, uint32_t offset, int count, std::string& outName)
+    {
+        static const std::string kCommon = "common";
+        static const std::string kXbox360 = "xbox360";
+        static const std::string kAudio = "audio";
+        
+        auto tryName = [&](const std::string& name) -> uint32_t {
+            RpfStreamInfo* rpf = GetRpfStream(name);
+            if (!rpf)
+                return 0;
+            if (rpf->fileSize != 0 && offset >= rpf->fileSize)
+                return 0;
+            return ReadFromRpfStream(rpf, hostBuffer, size, offset, count, name);
+        };
+        
+        if (auto mapIt = g_handleToRpf.find(handle); mapIt != g_handleToRpf.end())
+        {
+            const std::string mapped = mapIt->second;
+            if (uint32_t n = tryName(mapped); n != 0)
+            {
+                outName = mapped;
+                return n;
+            }
+            g_handleToRpf.erase(mapIt);
+        }
+        
+        if (uint32_t n = tryName(kCommon); n != 0) { outName = kCommon; return n; }
+        if (uint32_t n = tryName(kXbox360); n != 0) { outName = kXbox360; return n; }
+        if (uint32_t n = tryName(kAudio); n != 0) { outName = kAudio; return n; }
+        
+        return 0;
+    }
+
+    static std::vector<uint8_t> MakeEmptyRpfImage()
+    {
+        // Many GTA IV code paths treat a trailing-slash open (e.g. "game:\\") as
+        // "mount the disc/RPF container" and then read the RPF header.
+        //
+        // Provide a tiny, valid-looking header so the title can proceed without
+        // triggering Dirty Disc, while we serve actual assets from extracted files.
+        //
+        // Header layout (20 bytes):
+        //   magic[4] = 'RPF3' (bytes)
+        //   toc_size u32
+        //   entry_count u32
+        //   unknown u32
+        //   encrypted u32
+        // We set all numeric fields to 0 (endian-agnostic).
+        std::vector<uint8_t> buf(0x800, 0);
+        buf[0] = 'R';
+        buf[1] = 'P';
+        buf[2] = 'F';
+        buf[3] = '3';
+        return buf;
+    }
 
     static uint32_t AlignUp(uint32_t value, uint32_t align)
     {
         return (value + (align - 1)) & ~(align - 1);
+    }
+
+    // AES key for RPF TOC decryption (loaded from RPF DUMP/aes_key.bin)
+    static std::vector<uint8_t> g_aesKey;
+
+    static void LoadAesKeyIfNeeded()
+    {
+        if (!g_aesKey.empty())
+            return;
+
+        const auto keyPath = GetGamePath() / "RPF DUMP" / "aes_key.bin";
+        std::error_code ec;
+        if (!std::filesystem::exists(keyPath, ec))
+        {
+            LOGF_IMPL(Utility, "LoadAesKeyIfNeeded", "AES key not found: '{}'", keyPath.string());
+            return;
+        }
+
+        std::ifstream f(keyPath, std::ios::binary);
+        if (!f.is_open())
+        {
+            LOGF_IMPL(Utility, "LoadAesKeyIfNeeded", "Failed to open AES key: '{}'", keyPath.string());
+            return;
+        }
+
+        std::vector<uint8_t> key((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+        if (key.size() >= 32)
+        {
+            g_aesKey.assign(key.begin(), key.begin() + 32);
+            LOGF_IMPL(Utility, "LoadAesKeyIfNeeded", "Loaded AES key ({} bytes)", (int)g_aesKey.size());
+        }
+        else
+        {
+            LOGF_IMPL(Utility, "LoadAesKeyIfNeeded", "AES key too small: {} bytes", (int)key.size());
+        }
+    }
+
+    // Decrypt RPF TOC data using AES-256 ECB repeated 16 times (SparkIV behavior).
+    // This version handles misaligned buffer starts by only decrypting complete 16-byte blocks.
+    // The caller is responsible for ensuring the buffer corresponds to aligned TOC offsets.
+    static void DecryptRpfBufferInPlace(uint8_t* data, uint32_t length, uint64_t tocRelativeOffset = 0)
+    {
+        if (!data || length == 0)
+            return;
+
+        LoadAesKeyIfNeeded();
+        if (g_aesKey.size() != 32)
+        {
+            LOGF_IMPL(Utility, "DecryptRpfBufferInPlace", "AES key not available (size={})", g_aesKey.size());
+            return;
+        }
+
+        // AES-ECB works on 16-byte blocks. We need to handle the case where the read
+        // doesn't start on a block boundary within the TOC.
+        // 
+        // Strategy: Find the first complete 16-byte block boundary in the buffer,
+        // decrypt from there, and leave any partial leading/trailing bytes as-is.
+        // This is safe because the game will typically read aligned chunks.
+        
+        const uint32_t blockSize = 16;
+        
+        // Calculate how many bytes into a block we are (based on TOC-relative offset)
+        uint32_t offsetIntoBlock = static_cast<uint32_t>(tocRelativeOffset % blockSize);
+        
+        // Skip leading partial block bytes
+        uint32_t skipBytes = (offsetIntoBlock == 0) ? 0 : (blockSize - offsetIntoBlock);
+        if (skipBytes >= length)
+        {
+            // Entire buffer is within a partial block, can't decrypt
+            LOGF_IMPL(Utility, "DecryptRpfBufferInPlace", "Buffer too small for aligned decrypt (len={} skip={})", length, skipBytes);
+            return;
+        }
+        
+        uint8_t* alignedStart = data + skipBytes;
+        uint32_t remainingLen = length - skipBytes;
+        uint32_t alignedLen = remainingLen & ~0x0Fu; // Round down to block boundary
+        
+        if (alignedLen == 0)
+        {
+            LOGF_IMPL(Utility, "DecryptRpfBufferInPlace", "No complete blocks to decrypt (len={} skip={})", length, skipBytes);
+            return;
+        }
+
+#if defined(__APPLE__)
+        std::vector<uint8_t> tmp(alignedLen);
+
+        // Repeat AES-ECB-256 decrypt 16 times (matches SparkIV behavior)
+        for (int iter = 0; iter < 16; ++iter)
+        {
+            size_t outLen = 0;
+            CCCryptorStatus status = CCCrypt(kCCDecrypt,
+                                             kCCAlgorithmAES,
+                                             kCCOptionECBMode,
+                                             g_aesKey.data(), kCCKeySizeAES256,
+                                             nullptr,
+                                             alignedStart, alignedLen,
+                                             tmp.data(), alignedLen,
+                                             &outLen);
+
+            if (status != kCCSuccess || outLen != alignedLen)
+            {
+                LOGF_IMPL(Utility, "DecryptRpfBufferInPlace", "AES decrypt failed (status={} iter={})", status, iter);
+                return;
+            }
+
+            // Copy back for next iteration or result
+            memcpy(alignedStart, tmp.data(), alignedLen);
+        }
+        
+        LOGF_IMPL(Utility, "DecryptRpfBufferInPlace", "Decrypted {} bytes (skipped {} leading bytes)", alignedLen, skipBytes);
+#else
+        // Non-macOS: no AES implementation available here.
+        LOGF_IMPL(Utility, "DecryptRpfBufferInPlace", "AES decrypt not implemented on this platform");
+#endif
     }
 
     static uint32_t ErrnoToNtStatus(int err)
@@ -94,6 +855,79 @@ namespace
             return STATUS_OBJECT_PATH_NOT_FOUND;
         default:
             return STATUS_FAIL_CHECK;
+        }
+    }
+
+    static void ParseRpfHeader(NtFileHandle* h)
+    {
+        if (!h || h->rpfHeaderParsed)
+            return;
+
+        h->rpfHeaderParsed = true;
+
+        try {
+            const std::string ext = h->path.extension().string();
+            std::string extLower = ext;
+            std::transform(extLower.begin(), extLower.end(), extLower.begin(), [](unsigned char c){ return std::tolower(c); });
+            if (extLower != ".rpf")
+                return;
+
+            h->isRpf = true;
+
+            // Read first 20 bytes of header
+            std::streampos cur = h->stream.tellg();
+            h->stream.clear();
+            h->stream.seekg(0, std::ios::beg);
+            char hdr[20] = {};
+            h->stream.read(hdr, sizeof(hdr));
+            const std::streamsize got = h->stream.gcount();
+            // restore position
+            h->stream.clear();
+            h->stream.seekg(cur, std::ios::beg);
+
+            if (got < 20)
+            {
+                LOGF_IMPL(Utility, "ParseRpfHeader", "Failed to read header from '{}' (got {} bytes)", h->path.string(), got);
+                return;
+            }
+
+            // GTA IV Xbox 360 uses RPF2 (0x52504632 = "RPF2"), not RPF3
+            // RPF2 Header layout (20 bytes):
+            //   4b - INT32 - RPF Version (0x52504632 for RPF2)
+            //   4b - INT32 - Table of Contents Size
+            //   4b - INT32 - Number of Entries
+            //   4b - INT32 - Unknown
+            //   4b - INT32 - Encrypted (0 = unencrypted, non-zero = encrypted)
+            
+            // Check magic - accept both RPF2 and RPF3
+            bool isRpf2 = (hdr[0] == 'R' && hdr[1] == 'P' && hdr[2] == 'F' && hdr[3] == '2');
+            bool isRpf3 = (hdr[0] == 'R' && hdr[1] == 'P' && hdr[2] == 'F' && hdr[3] == '3');
+            
+            if (!isRpf2 && !isRpf3)
+            {
+                LOGF_IMPL(Utility, "ParseRpfHeader", "Unknown RPF magic in '{}': {:02X} {:02X} {:02X} {:02X}", 
+                          h->path.string(), (uint8_t)hdr[0], (uint8_t)hdr[1], (uint8_t)hdr[2], (uint8_t)hdr[3]);
+                return;
+            }
+
+            auto le32 = [](const uint8_t* p) -> uint32_t {
+                return (uint32_t)p[0] | ((uint32_t)p[1] << 8) | ((uint32_t)p[2] << 16) | ((uint32_t)p[3] << 24);
+            };
+
+            uint32_t tocSize = le32(reinterpret_cast<uint8_t*>(hdr + 4));
+            uint32_t numEntries = le32(reinterpret_cast<uint8_t*>(hdr + 8));
+            uint32_t encrypted = le32(reinterpret_cast<uint8_t*>(hdr + 16));
+
+            // TOC starts at offset 0x800 (2048 bytes from file origin)
+            h->tocOffset = 0x800;
+            h->tocSize = tocSize;
+            h->tocEncrypted = (encrypted != 0);
+
+            LOGF_IMPL(Utility, "ParseRpfHeader", "Parsed {} header '{}': tocOffset=0x{:X} tocSize={} entries={} encrypted={}", 
+                      isRpf2 ? "RPF2" : "RPF3", h->path.filename().string(), h->tocOffset, tocSize, numEntries, h->tocEncrypted);
+        }
+        catch (...) {
+            LOGF_IMPL(Utility, "ParseRpfHeader", "Exception parsing header for '{}'", h->path.string());
         }
     }
 
@@ -124,7 +958,8 @@ namespace
         // Sanity check: zero length or very large lengths are suspect
         if (len == 0)
         {
-            // Empty paths are allowed but will fail later
+            // Empty paths will always fail - reject silently
+            return false;
         }
         else if (len > 1024)
         {
@@ -624,7 +1459,23 @@ uint32_t XamShowDeviceSelectorUI
 
 void XamShowDirtyDiscErrorUI()
 {
-    LOG_UTILITY("!!! STUB !!!");
+    static int callCount = 0;
+    ++callCount;
+    
+    // Pump SDL events to keep window responsive
+    PumpSdlEventsIfNeeded();
+    
+    // Only log first few to avoid spam
+    if (callCount <= 3) {
+        LOGF_UTILITY("!!! STUB !!! - Dirty disc error #{} (bypassing)", callCount);
+    }
+    
+    // DON'T exit - just return and let the game continue
+    // The game may retry or find an alternative code path
+    // Small delay to prevent tight CPU loop
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    
+    // Return normally - game will either retry or continue
 }
 
 void XamEnableInactivityProcessing()
@@ -699,11 +1550,15 @@ uint32_t NtOpenFile(
 
     std::filesystem::path resolved = ResolveGuestPathBestEffort(guestPath);
 
+    LOGF_IMPL(Utility, "NtOpenFile", "Guest: '{}' -> Resolved: '{}'", guestPath, resolved.string());
+
     // Check for directory
     {
         std::error_code ec;
         bool exists = std::filesystem::exists(resolved, ec);
         bool isDir = exists && std::filesystem::is_directory(resolved, ec);
+        
+        LOGF_IMPL(Utility, "NtOpenFile", "exists={} isDir={} ec={}", exists, isDir, ec ? ec.message() : "none");
         
         if (exists && isDir && !ec)
         {
@@ -714,6 +1569,7 @@ uint32_t NtOpenFile(
             g_ntDirHandles.emplace(handleValue, hDir);
 
             *FileHandle = handleValue;
+            LOGF_IMPL(Utility, "NtOpenFile", "Created directory handle 0x{:08X} for {}", handleValue, resolved.string());
             if (IoStatusBlock)
             {
                 IoStatusBlock->Status = STATUS_SUCCESS;
@@ -730,6 +1586,8 @@ uint32_t NtOpenFile(
     if (!stream.is_open())
     {
         const uint32_t status = ErrnoToNtStatus(errno);
+        LOGF_IMPL(Utility, "NtOpenFile", "FAILED to open '{}' -> '{}': errno={} status=0x{:08X}", 
+                  guestPath, resolved.string(), errno, status);
         if (IoStatusBlock)
         {
             IoStatusBlock->Status = status;
@@ -742,11 +1600,19 @@ uint32_t NtOpenFile(
     NtFileHandle* h = CreateKernelObject<NtFileHandle>();
     h->stream = std::move(stream);
     h->path = std::move(resolved);
+    // Mark RPF files for special handling (TOC decryption)
+    try {
+        std::string ext = h->path.extension().string();
+        std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c){ return std::tolower(c); });
+        if (ext == ".rpf")
+            h->isRpf = true;
+    } catch (...) {}
 
     const uint32_t handleValue = GetKernelHandle(h);
     g_ntFileHandles.emplace(handleValue, h);
 
     *FileHandle = handleValue;
+    LOGF_IMPL(Utility, "NtOpenFile", "Opened file handle 0x{:08X} for {}", handleValue, resolved.string());
     if (IoStatusBlock)
     {
         IoStatusBlock->Status = STATUS_SUCCESS;
@@ -775,6 +1641,9 @@ uint32_t NtCreateFile
     uint32_t CreateDisposition
 )
 {
+    // Pump SDL events to keep window responsive
+    PumpSdlEventsIfNeeded();
+    
     (void)AllocationSize;
     (void)FileAttributes;
     (void)ShareAccess;
@@ -800,7 +1669,27 @@ uint32_t NtCreateFile
     std::filesystem::path resolved = ResolveGuestPathBestEffort(guestPath);
 
     // Debug: Log resolved path for troubleshooting
-    LOGF_IMPL(Utility, "NtCreateFile", "Guest: '{}' -> Resolved: '{}'", guestPath, resolved.string());
+    LOGF_IMPL(Utility, "NtCreateFile", "Guest: '{}' -> Resolved: '{}' DesiredAccess=0x{:08X}", guestPath, resolved.string(), DesiredAccess);
+
+    // Check if this is a direct .rpf file open (e.g., "game:\common.rpf")
+    {
+        std::string pathLower = guestPath;
+        std::transform(pathLower.begin(), pathLower.end(), pathLower.begin(), ::tolower);
+        if (pathLower.find(".rpf") != std::string::npos)
+        {
+            LOGF_IMPL(Utility, "NtCreateFile", "RPF file access detected: '{}'", guestPath);
+        }
+    }
+
+    // GTA IV RPF handling: When the game tries to open a path ending with backslash
+    // (like "fxl_final\" or "game:\") as if it were a file, it's trying to mount an RPF archive.
+    // Since we've extracted the RPF contents, we should let the game fail gracefully here
+    // so it falls back to accessing extracted files individually.
+    // However, if the game opens these for directory enumeration (not file reading), we allow it.
+    bool isRpfMountAttempt = !guestPath.empty() && 
+                              (guestPath.back() == '\\' || guestPath.back() == '/') &&
+                              (DesiredAccess & (GENERIC_READ | FILE_READ_DATA)) &&
+                              !(DesiredAccess & GENERIC_WRITE);
 
     // Directories can't be opened with std::fstream; represent them with a dedicated handle.
     {
@@ -811,14 +1700,165 @@ uint32_t NtCreateFile
         
         if (exists && isDir && !ec)
         {
-            NtDirHandle* hDir = CreateKernelObject<NtDirHandle>();
-            hDir->path = resolved;
+            // GTA IV behavior: it opens `game:\\` (and sometimes `D:\\`) as if it were a file
+            // and then reads an RPF header from it as part of its packfile/disc mounting logic.
+            // On our host FS `game` resolves to a directory, which makes reads fail and triggers
+            // the dirty-disc loop.
+            //
+            // Fix: for mount-style opens on the root, map that open to real .rpf files and let
+            // the title parse them using normal NtReadFile semantics.
+            // For all other directories, always return a directory handle so enumeration works.
+            auto isRootMountPath = [](const std::string& path) -> bool
+            {
+                std::string_view p(path);
+                while (!p.empty() && (p.back() == '\\' || p.back() == '/'))
+                    p.remove_suffix(1);
 
-            const uint32_t handleValue = GetKernelHandle(hDir);
-            g_ntDirHandles.emplace(handleValue, hDir);
+                auto ieq = [](std::string_view a, std::string_view b) -> bool
+                {
+                    if (a.size() != b.size())
+                        return false;
+                    for (size_t i = 0; i < a.size(); i++)
+                    {
+                        char ca = a[i];
+                        char cb = b[i];
+                        if (ca >= 'A' && ca <= 'Z')
+                            ca = char(ca - 'A' + 'a');
+                        if (cb >= 'A' && cb <= 'Z')
+                            cb = char(cb - 'A' + 'a');
+                        if (ca != cb)
+                            return false;
+                    }
+                    return true;
+                };
 
-            *FileHandle = handleValue;
-            LOGF_IMPL(Utility, "NtCreateFile", "Created directory handle 0x{:08X} for {}", handleValue, resolved.string());
+                return ieq(p, "game:") || ieq(p, "d:");
+            };
+
+            if (isRpfMountAttempt)
+            {
+                // GTA IV opens directories with trailing backslash as if they were RPF files.
+                // For game:\ root, treat it as a directory so the game can enumerate RPF files.
+                // For paths like fxl_final\, these are inside RPFs - redirect to extracted content.
+                
+                std::string pathLower = guestPath;
+                std::transform(pathLower.begin(), pathLower.end(), pathLower.begin(), ::tolower);
+                
+                // Strip trailing slashes
+                while (!pathLower.empty() && (pathLower.back() == '\\' || pathLower.back() == '/'))
+                    pathLower.pop_back();
+                
+                // For game:\ root, return as directory handle so game can enumerate files
+                if (pathLower == "game:" || pathLower == "d:")
+                {
+                    // Return directory handle for game root
+                    NtDirHandle* hDir = CreateKernelObject<NtDirHandle>();
+                    hDir->path = resolved;
+
+                    const uint32_t handleValue = GetKernelHandle(hDir);
+                    g_ntDirHandles.emplace(handleValue, hDir);
+
+                    *FileHandle = handleValue;
+                    LOGF_IMPL(Utility, "NtCreateFile", "game:\\ root -> directory handle 0x{:08X} for {}", handleValue, resolved.string());
+                    
+                    if (IoStatusBlock)
+                    {
+                        IoStatusBlock->Status = STATUS_SUCCESS;
+                        IoStatusBlock->Information = 1;
+                    }
+                    return STATUS_SUCCESS;
+                }
+                
+                // For paths like fxl_final\, these are inside common.rpf
+                // Open common.rpf as a file handle so sub_829A1F00 can read from it
+                if (pathLower.find("fxl_final") != std::string::npos)
+                {
+                    // Open common.rpf for reading
+                    std::filesystem::path rpfPath = GetGamePath() / "game" / "common.rpf";
+                    if (std::filesystem::exists(rpfPath))
+                    {
+                        std::fstream rpfStream;
+                        rpfStream.open(rpfPath, std::ios::in | std::ios::binary);
+                        
+                        if (rpfStream.is_open())
+                        {
+                            NtFileHandle* hFile = CreateKernelObject<NtFileHandle>();
+                            hFile->stream = std::move(rpfStream);
+                            hFile->path = rpfPath;
+                            hFile->isRpf = true;
+                            
+                            const uint32_t handleValue = GetKernelHandle(hFile);
+                            g_ntFileHandles.emplace(handleValue, hFile);
+                            
+                            // Parse RPF header immediately
+                            ParseRpfHeader(hFile);
+
+                            *FileHandle = handleValue;
+                            LOGF_IMPL(Utility, "NtCreateFile", "fxl_final -> opened common.rpf for reading (handle=0x{:08X})", 
+                                      handleValue);
+                            
+                            if (IoStatusBlock)
+                            {
+                                IoStatusBlock->Status = STATUS_SUCCESS;
+                                IoStatusBlock->Information = 1;
+                            }
+                            return STATUS_SUCCESS;
+                        }
+                    }
+                    
+                    // Fallback to extracted directory if RPF not available
+                    std::filesystem::path extractedPath = GetGamePath() / "RPF DUMP" / "common" / "shaders" / "fxl_final";
+                    if (std::filesystem::exists(extractedPath))
+                    {
+                        NtDirHandle* hDir = CreateKernelObject<NtDirHandle>();
+                        hDir->path = extractedPath;
+
+                        const uint32_t handleValue = GetKernelHandle(hDir);
+                        g_ntDirHandles.emplace(handleValue, hDir);
+
+                        *FileHandle = handleValue;
+                        LOGF_IMPL(Utility, "NtCreateFile", "fxl_final -> fallback to extracted dir: {} (handle=0x{:08X})", 
+                                  extractedPath.string(), handleValue);
+                        
+                        if (IoStatusBlock)
+                        {
+                            IoStatusBlock->Status = STATUS_SUCCESS;
+                            IoStatusBlock->Information = 1;
+                        }
+                        return STATUS_SUCCESS;
+                    }
+                }
+                
+                // For other RPF mount attempts, return virtual empty RPF
+                NtVirtFileHandle* hVirt = CreateKernelObject<NtVirtFileHandle>();
+                hVirt->debugPath = resolved;
+                hVirt->data = MakeEmptyRpfImage();
+
+                const uint32_t handleValue = GetKernelHandle(hVirt);
+                g_ntVirtFileHandles.emplace(handleValue, hVirt);
+
+                *FileHandle = handleValue;
+                LOGF_IMPL(Utility, "NtCreateFile", "RPF mount '{}' -> virtual empty RPF (handle=0x{:08X})", guestPath, handleValue);
+                
+                if (IoStatusBlock)
+                {
+                    IoStatusBlock->Status = STATUS_SUCCESS;
+                    IoStatusBlock->Information = 1;
+                }
+
+                return STATUS_SUCCESS;
+            }
+            else
+            {
+                NtDirHandle* hDir = CreateKernelObject<NtDirHandle>();
+                hDir->path = resolved;
+
+                const uint32_t handleValue = GetKernelHandle(hDir);
+                g_ntDirHandles.emplace(handleValue, hDir);
+
+                *FileHandle = handleValue;
+                LOGF_IMPL(Utility, "NtCreateFile", "Created directory handle 0x{:08X} for {}", handleValue, resolved.string());
+            }
             if (IoStatusBlock)
             {
                 IoStatusBlock->Status = STATUS_SUCCESS;
@@ -835,7 +1875,8 @@ uint32_t NtCreateFile
     if (!stream.is_open())
     {
         const uint32_t status = ErrnoToNtStatus(errno);
-        LOGF_IMPL(Utility, "NtCreateFile", "fstream.open failed: errno={} status=0x{:08X}", errno, status);
+        LOGF_IMPL(Utility, "NtCreateFile", "FAILED to open '{}' -> '{}': errno={} status=0x{:08X}", 
+                  guestPath, resolved.string(), errno, status);
         if (IoStatusBlock)
         {
             IoStatusBlock->Status = status;
@@ -893,6 +1934,11 @@ uint32_t NtClose(uint32_t handle)
         if (auto dhIt = g_ntDirHandles.find(handle); dhIt != g_ntDirHandles.end())
         {
             g_ntDirHandles.erase(dhIt);
+        }
+
+        if (auto vhIt = g_ntVirtFileHandles.find(handle); vhIt != g_ntVirtFileHandles.end())
+        {
+            g_ntVirtFileHandles.erase(vhIt);
         }
 
         DestroyKernelObject(handle);
@@ -1190,6 +2236,9 @@ uint32_t RtlUnicodeToMultiByteN(char* MultiByteString, uint32_t MaxBytesInMultiB
 
 uint32_t KeDelayExecutionThread(uint32_t WaitMode, bool Alertable, be<int64_t>* Timeout)
 {
+    // Pump SDL events to keep window responsive
+    PumpSdlEventsIfNeeded();
+    
     // We don't do async file reads.
     if (Alertable)
         return STATUS_USER_APC;
@@ -1225,10 +2274,16 @@ uint32_t NtQueryInformationFile(
 
     std::filesystem::path path;
     NtFileHandle* hFile = nullptr;
+    NtVirtFileHandle* hVirt = nullptr;
     if (auto it = g_ntFileHandles.find(FileHandle); it != g_ntFileHandles.end() && it->second && it->second->magic == kNtFileHandleMagic)
     {
         hFile = it->second;
         path = hFile->path;
+    }
+    else if (auto it = g_ntVirtFileHandles.find(FileHandle); it != g_ntVirtFileHandles.end() && it->second && it->second->magic == kNtVirtFileHandleMagic)
+    {
+        hVirt = it->second;
+        path = hVirt->debugPath;
     }
     else if (auto it = g_ntDirHandles.find(FileHandle); it != g_ntDirHandles.end() && it->second && it->second->magic == kNtDirHandleMagic)
     {
@@ -1243,32 +2298,46 @@ uint32_t NtQueryInformationFile(
         return STATUS_INVALID_PARAMETER;
 
     std::error_code ec;
-    const bool exists = std::filesystem::exists(path, ec);
-    if (!exists || ec)
-    {
-        IoStatusBlock->Status = STATUS_OBJECT_NAME_NOT_FOUND;
-        IoStatusBlock->Information = 0;
-        return STATUS_OBJECT_NAME_NOT_FOUND;
-    }
-
-    const bool isDir = std::filesystem::is_directory(path, ec);
-    if (ec)
-    {
-        IoStatusBlock->Status = STATUS_FAIL_CHECK;
-        IoStatusBlock->Information = 0;
-        return STATUS_FAIL_CHECK;
-    }
-
+    bool isDir = false;
     uint64_t fileSize = 0;
-    if (!isDir)
+    uint32_t attrs = 0;
+
+    if (hVirt)
     {
-        fileSize = std::filesystem::file_size(path, ec);
+        // In-memory file: pretend it's a normal file with known size.
+        isDir = false;
+        fileSize = hVirt->data.size();
+        attrs = ByteSwap(FILE_ATTRIBUTE_NORMAL);
+    }
+    else
+    {
+        const bool exists = std::filesystem::exists(path, ec);
+        if (!exists || ec)
+        {
+            IoStatusBlock->Status = STATUS_OBJECT_NAME_NOT_FOUND;
+            IoStatusBlock->Information = 0;
+            return STATUS_OBJECT_NAME_NOT_FOUND;
+        }
+
+        isDir = std::filesystem::is_directory(path, ec);
         if (ec)
-            fileSize = 0;
+        {
+            IoStatusBlock->Status = STATUS_FAIL_CHECK;
+            IoStatusBlock->Information = 0;
+            return STATUS_FAIL_CHECK;
+        }
+
+        if (!isDir)
+        {
+            fileSize = std::filesystem::file_size(path, ec);
+            if (ec)
+                fileSize = 0;
+        }
+
+        attrs = GetFileAttributesBestEffort(path);
     }
 
     const uint64_t allocationSize = RoundUpToPage(fileSize);
-    const uint32_t attrs = GetFileAttributesBestEffort(path);
 
     switch (FileInformationClass)
     {
@@ -1360,11 +2429,41 @@ uint32_t NtQueryInformationFile(
         IoStatusBlock->Information = sizeof(XFILE_NETWORK_OPEN_INFORMATION);
         return STATUS_SUCCESS;
     }
+    case 26: // Xbox 360 specific - appears to query file size/info
+    {
+        // Xbox 360 games may use different class numbers
+        // Class 26 appears to be used for file size queries
+        // Return file size information in a generic format
+        if (Length >= 8)
+        {
+            // Return file size as first 8 bytes (common pattern)
+            auto* sizePtr = reinterpret_cast<int64_t*>(FileInformation);
+            *sizePtr = static_cast<int64_t>(fileSize);
+            if (Length > 8)
+                memset(reinterpret_cast<uint8_t*>(FileInformation) + 8, 0, Length - 8);
+            
+            LOGF_IMPL(Utility, "NtQueryInformationFile", "Class 26 (Xbox size query) for '{}': returning size={}", 
+                      path.filename().string(), fileSize);
+        }
+        else if (Length > 0)
+        {
+            memset(FileInformation, 0, Length);
+        }
+        IoStatusBlock->Status = STATUS_SUCCESS;
+        IoStatusBlock->Information = Length;
+        return STATUS_SUCCESS;
+    }
     default:
-        LOGF_WARNING("NtQueryInformationFile: unhandled class {}", FileInformationClass);
-        IoStatusBlock->Status = STATUS_INVALID_PARAMETER;
-        IoStatusBlock->Information = 0;
-        return STATUS_INVALID_PARAMETER;
+        // For unhandled classes, try to return success with zeroed data
+        // This helps games that query for optional information
+        if (Length > 0) {
+            memset(FileInformation, 0, Length);
+        }
+        LOGF_WARNING("NtQueryInformationFile: unhandled class {} for '{}' - returning success with zeroed data", 
+                     FileInformationClass, path.filename().string());
+        IoStatusBlock->Status = STATUS_SUCCESS;
+        IoStatusBlock->Information = Length;
+        return STATUS_SUCCESS;
     }
 }
 
@@ -1383,6 +2482,10 @@ uint32_t NtQueryVolumeInformationFile(
     if (auto it = g_ntFileHandles.find(FileHandle); it != g_ntFileHandles.end() && it->second && it->second->magic == kNtFileHandleMagic)
     {
         path = it->second->path;
+    }
+    else if (auto it = g_ntVirtFileHandles.find(FileHandle); it != g_ntVirtFileHandles.end() && it->second && it->second->magic == kNtVirtFileHandleMagic)
+    {
+        path = it->second->debugPath;
     }
     else if (auto it = g_ntDirHandles.find(FileHandle); it != g_ntDirHandles.end() && it->second && it->second->magic == kNtDirHandleMagic)
     {
@@ -1470,7 +2573,7 @@ uint32_t NtQueryDirectoryFile(
     XANSI_STRING* FileName,
     uint32_t RestartScan)
 {
-    LOGF_IMPL(Utility, "NtQueryDirectoryFile", "Handle=0x{:08X}", FileHandle);
+    LOGF_IMPL(Utility, "NtQueryDirectoryFile", "Handle=0x{:08X} Class={} RestartScan={}", FileHandle, FileInformationClass, RestartScan);
     if (FileHandle == GUEST_INVALID_HANDLE_VALUE || !IsKernelObject(FileHandle))
     {
         LOG_IMPL(Utility, "NtQueryDirectoryFile", "INVALID_HANDLE_VALUE or not kernel object");
@@ -1480,11 +2583,13 @@ uint32_t NtQueryDirectoryFile(
     auto it = g_ntDirHandles.find(FileHandle);
     if (it == g_ntDirHandles.end() || !it->second || it->second->magic != kNtDirHandleMagic)
     {
-        LOGF_IMPL(Utility, "NtQueryDirectoryFile", "Handle not in g_ntDirHandles (found={}, hasSecond={}, magic=0x{:08X})",
+        LOGF_IMPL(Utility, "NtQueryDirectoryFile", "Handle 0x{:08X} not in g_ntDirHandles (found={}, hasSecond={}, magic=0x{:08X})",
+            FileHandle,
             it != g_ntDirHandles.end(), it != g_ntDirHandles.end() && it->second != nullptr,
             (it != g_ntDirHandles.end() && it->second) ? it->second->magic : 0);
         return STATUS_INVALID_HANDLE;
     }
+    LOGF_IMPL(Utility, "NtQueryDirectoryFile", "Dir path: '{}'", it->second->path.string());
 
     NtDirHandle* hDir = it->second;
     if (!IoStatusBlock || !FileInformation || Length == 0)
@@ -1505,6 +2610,7 @@ uint32_t NtQueryDirectoryFile(
         });
 
         hDir->initialized = true;
+        LOGF_IMPL(Utility, "NtQueryDirectoryFile", "Enumerated {} files in '{}'", hDir->entries.size(), hDir->path.string());
     }
 
     std::string filterName;
@@ -1701,23 +2807,76 @@ uint32_t NtReadFile(
     uint32_t Length,
     be<int64_t>* ByteOffset)
 {
+    static int s_readCount = 0;
+    ++s_readCount;
+    
+    const uint64_t offset = ByteOffset ? static_cast<uint64_t>(ByteOffset->get()) : 0ull;
+    if (s_readCount <= 50 || s_readCount % 500 == 0)
+    {
+        LOGF_IMPL(Utility, "NtReadFile", "#{} handle=0x{:08X} len={} offset=0x{:X}", s_readCount, FileHandle, Length, offset);
+    }
+    
+    // Pump SDL events to keep window responsive
+    PumpSdlEventsIfNeeded();
+    
+    // Explicit check for NULL handle - return fatal error to break retry loops
+    if (FileHandle == 0)
+    {
+        static int nullHandleCount = 0;
+        ++nullHandleCount;
+        if (nullHandleCount <= 3 || nullHandleCount % 1000 == 0) {
+            LOGF_IMPL(Utility, "NtReadFile", "NULL handle 0x00000000 (count={})", nullHandleCount);
+        }
+        // Return INVALID_HANDLE to signal the caller to give up
+        if (IoStatusBlock) {
+            IoStatusBlock->Status = STATUS_INVALID_HANDLE;
+            IoStatusBlock->Information = 0;
+        }
+        // Add small delay to prevent tight CPU loop
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        return STATUS_INVALID_HANDLE;
+    }
+    
     if (FileHandle == GUEST_INVALID_HANDLE_VALUE || !IsKernelObject(FileHandle))
     {
         LOGF_IMPL(Utility, "NtReadFile", "INVALID handle 0x{:08X}", FileHandle);
         return STATUS_INVALID_HANDLE;
     }
 
-    // Check if this is a directory handle - directories can't be read as files, 
-    // but return END_OF_FILE instead of INVALID_HANDLE to be more permissive.
-    if (auto dit = g_ntDirHandles.find(FileHandle); dit != g_ntDirHandles.end() && dit->second && dit->second->magic == kNtDirHandleMagic)
+    // Virtual (in-memory) file handles (used to satisfy RPF mount header reads).
+    if (auto vit = g_ntVirtFileHandles.find(FileHandle);
+        vit != g_ntVirtFileHandles.end() && vit->second && vit->second->magic == kNtVirtFileHandleMagic)
     {
-        LOGF_IMPL(Utility, "NtReadFile", "Directory handle 0x{:08X} - returning END_OF_FILE", FileHandle);
-        if (IoStatusBlock)
+        NtVirtFileHandle* hVirt = vit->second;
+        if (!IoStatusBlock || !Buffer)
+            return STATUS_INVALID_PARAMETER;
+
+        const uint64_t offset = ByteOffset ? static_cast<uint64_t>(ByteOffset->get()) : 0ull;
+        if (offset >= hVirt->data.size())
         {
             IoStatusBlock->Status = STATUS_END_OF_FILE;
             IoStatusBlock->Information = 0;
+            return STATUS_END_OF_FILE;
         }
-        return STATUS_END_OF_FILE;
+
+        const uint32_t available = static_cast<uint32_t>(hVirt->data.size() - offset);
+        const uint32_t toCopy = std::min<uint32_t>(Length, available);
+        memcpy(Buffer, hVirt->data.data() + offset, toCopy);
+
+        IoStatusBlock->Status = STATUS_SUCCESS;
+        IoStatusBlock->Information = toCopy;
+        return STATUS_SUCCESS;
+    }
+
+    // Directories can't be read as files.
+    if (auto dit = g_ntDirHandles.find(FileHandle); dit != g_ntDirHandles.end() && dit->second && dit->second->magic == kNtDirHandleMagic)
+    {
+        if (IoStatusBlock)
+        {
+            IoStatusBlock->Status = STATUS_INVALID_PARAMETER;
+            IoStatusBlock->Information = 0;
+        }
+        return STATUS_INVALID_PARAMETER;
     }
 
     auto it = g_ntFileHandles.find(FileHandle);
@@ -1731,11 +2890,30 @@ uint32_t NtReadFile(
     if (!IoStatusBlock || !Buffer)
         return STATUS_INVALID_PARAMETER;
 
+    // Parse RPF header on first access so we can detect encrypted TOC ranges.
+    if (!hFile->rpfHeaderParsed)
+    {
+        // If the path extension indicates .rpf, mark it as RPF
+        if (!hFile->isRpf)
+        {
+            try {
+                std::string ext = hFile->path.extension().string();
+                std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c){ return std::tolower(c); });
+                if (ext == ".rpf")
+                    hFile->isRpf = true;
+            } catch (...) {}
+        }
+        
+        // Parse header if this is an RPF file
+        if (hFile->isRpf)
+            ParseRpfHeader(hFile);
+    }
+
+    const uint64_t fileOffset = ByteOffset ? static_cast<uint64_t>(ByteOffset->get()) : 0ull;
     if (ByteOffset != nullptr)
     {
-        const int64_t offset = ByteOffset->get();
         hFile->stream.clear();
-        hFile->stream.seekg(offset, std::ios::beg);
+        hFile->stream.seekg(fileOffset, std::ios::beg);
         if (hFile->stream.bad())
         {
             IoStatusBlock->Status = STATUS_FAIL_CHECK;
@@ -1752,6 +2930,25 @@ uint32_t NtReadFile(
         IoStatusBlock->Status = STATUS_END_OF_FILE;
         IoStatusBlock->Information = 0;
         return STATUS_END_OF_FILE;
+    }
+
+    // If this is an RPF file with encrypted TOC, decrypt any portion we returned that overlaps the TOC.
+    if (hFile->isRpf && hFile->tocEncrypted && bytesRead > 0)
+    {
+        const uint64_t tocStart = hFile->tocOffset;
+        const uint64_t tocEnd = tocStart + hFile->tocSize;
+        const uint64_t readStart = fileOffset;
+        const uint64_t readEnd = fileOffset + bytesRead;
+        const uint64_t overlapStart = std::max(readStart, tocStart);
+        const uint64_t overlapEnd = std::min(readEnd, tocEnd);
+        if (overlapEnd > overlapStart)
+        {
+            const uint32_t startInBuf = static_cast<uint32_t>(overlapStart - readStart);
+            const uint32_t len = static_cast<uint32_t>(overlapEnd - overlapStart);
+            // Pass TOC-relative offset for proper AES block alignment
+            const uint64_t tocRelativeOffset = overlapStart - tocStart;
+            DecryptRpfBufferInPlace(reinterpret_cast<uint8_t*>(Buffer) + startInBuf, len, tocRelativeOffset);
+        }
     }
 
     const bool ok = !hFile->stream.bad();
@@ -2040,12 +3237,35 @@ bool VdPersistDisplay(uint32_t a1, uint32_t* a2)
 
 void VdSwap()
 {
-    LOG_UTILITY("!!! STUB !!!");
+    // VdSwap is called by the Xbox 360 GPU to present frames
+    static uint32_t s_frameCount = 0;
+    if (s_frameCount < 10 || (s_frameCount % 60 == 0 && s_frameCount < 600))
+    {
+        LOGF_UTILITY("VdSwap frame {} - presenting!", s_frameCount);
+    }
+    ++s_frameCount;
+    
+    // Pump SDL events to keep the window responsive
+    // IMPORTANT: On macOS, this MUST happen on the main thread
+    if (IsMainThread())
+    {
+        SDL_PumpEvents();
+        SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+        GameWindow::Update();
+    }
+    
+    // Call our host rendering system to present the frame
+    Video::Present();
 }
 
 void VdGetSystemCommandBuffer()
 {
-    LOG_UTILITY("!!! STUB !!!");
+    static std::unordered_set<uint32_t> s_seenCallers;
+    const uint32_t lr = g_ppcContext ? static_cast<uint32_t>(g_ppcContext->lr) : 0;
+    if (lr != 0 && s_seenCallers.insert(lr).second)
+        LOGF_UTILITY("!!! STUB !!! caller_lr=0x{:08X}", lr);
+    else
+        LOG_UTILITY("!!! STUB !!!");
 }
 
 void KeReleaseSpinLockFromRaisedIrql(uint32_t* spinLock)
@@ -2073,14 +3293,39 @@ uint32_t KiApcNormalRoutineNop()
     return 0;
 }
 
-void VdEnableRingBufferRPtrWriteBack()
+void VdEnableRingBufferRPtrWriteBack(uint32_t writebackAddr, uint32_t blockSizeLog2)
 {
-    LOG_UTILITY("!!! STUB !!!");
+    // r3 = writeback address (physical)
+    // r4 = log2(block size), typically 6
+    g_gpuRingBuffer.readPtrWritebackAddr = writebackAddr;
+    g_gpuRingBuffer.blockSize = 1u << blockSizeLog2;
+    g_gpuRingBuffer.writebackEnabled = true;
+    
+    LOGF_UTILITY("writebackAddr=0x{:08X} blockSizeLog2={} blockSize={}", 
+                 writebackAddr, blockSizeLog2, g_gpuRingBuffer.blockSize);
+    
+    // Immediately write 0 to the writeback address to indicate GPU is caught up
+    if (writebackAddr != 0)
+    {
+        uint32_t* hostPtr = reinterpret_cast<uint32_t*>(g_memory.Translate(writebackAddr));
+        if (hostPtr)
+        {
+            *hostPtr = 0;  // GPU read pointer = 0 (caught up with write pointer initially)
+            LOGF_UTILITY("Initialized writeback at 0x{:08X} to 0", writebackAddr);
+        }
+    }
 }
 
-void VdInitializeRingBuffer()
+void VdInitializeRingBuffer(uint32_t physAddr, uint32_t sizeLog2)
 {
-    LOG_UTILITY("!!! STUB !!!");
+    // r3 = physical address of ring buffer (from MmGetPhysicalAddress)
+    // r4 = log2(size)
+    g_gpuRingBuffer.ringBufferBase = physAddr;
+    g_gpuRingBuffer.ringBufferSize = 1u << sizeLog2;
+    g_gpuRingBuffer.initialized = true;
+    
+    LOGF_UTILITY("ringBufferBase=0x{:08X} sizeLog2={} size={}", 
+                 physAddr, sizeLog2, g_gpuRingBuffer.ringBufferSize);
 }
 
 uint32_t MmGetPhysicalAddress(uint32_t address)
@@ -2139,20 +3384,27 @@ void VdSetDisplayMode()
     LOG_UTILITY("!!! STUB !!!");
 }
 
-void VdSetGraphicsInterruptCallback()
+void VdSetGraphicsInterruptCallback(uint32_t callback, uint32_t userData)
 {
-    LOG_UTILITY("!!! STUB !!!");
+    // r3 = callback function pointer
+    // r4 = user data passed to callback
+    g_gpuRingBuffer.interruptCallback = callback;
+    g_gpuRingBuffer.interruptUserData = userData;
+    
+    LOGF_UTILITY("callback=0x{:08X} userData=0x{:08X}", callback, userData);
 }
 
 uint32_t VdInitializeEngines()
 {
-    LOG_UTILITY("!!! STUB !!!");
+    g_gpuRingBuffer.enginesInitialized = true;
+    LOG_UTILITY("enginesInitialized = true");
     return 1;
 }
 
-void VdIsHSIOTrainingSucceeded()
+uint32_t VdIsHSIOTrainingSucceeded()
 {
-    LOG_UTILITY("!!! STUB !!!");
+    // Return 1 to indicate HSIO training succeeded - this unblocks GPU init polling
+    return 1;
 }
 
 void VdGetCurrentDisplayGamma()
@@ -2183,12 +3435,22 @@ void KeLeaveCriticalRegion()
 
 uint32_t VdRetrainEDRAM()
 {
+    // Return 0 to indicate EDRAM retraining succeeded
     return 0;
 }
 
-void VdRetrainEDRAMWorker()
+uint32_t VdRetrainEDRAMWorker(uint32_t unk0)
 {
-    LOG_UTILITY("!!! STUB !!!");
+    // This is called by the GPU init polling loop
+    // Must set persistent state, not just return success
+    g_gpuRingBuffer.edramTrainingComplete = true;
+    
+    static int s_callCount = 0;
+    if (++s_callCount <= 3)
+    {
+        LOGF_UTILITY("unk0=0x{:08X} - edramTrainingComplete = true (call #{})", unk0, s_callCount);
+    }
+    return 0;  // Success
 }
 
 void KeEnterCriticalRegion()
@@ -2207,7 +3469,14 @@ uint32_t MmAllocatePhysicalMemoryEx
     uint32_t alignment
 )
 {
-    LOGF_UTILITY("0x{:x}, 0x{:x}, 0x{:x}, 0x{:x}, 0x{:x}, 0x{:x}", flags, size, protect, minAddress, maxAddress, alignment);
+    static std::unordered_set<uint32_t> s_seenCallers;
+    const uint32_t lr = g_ppcContext ? static_cast<uint32_t>(g_ppcContext->lr) : 0;
+    if (lr != 0 && s_seenCallers.insert(lr).second)
+    {
+        LOGF_UTILITY(
+            "caller_lr=0x{:08X} flags=0x{:X} size=0x{:X} prot=0x{:X} min=0x{:08X} max=0x{:08X} align=0x{:X}",
+            lr, flags, size, protect, minAddress, maxAddress, alignment);
+    }
     void* host = g_userHeap.AllocPhysical(size, alignment);
     if (host == nullptr)
         return 0;
@@ -2265,10 +3534,123 @@ bool KeResetEvent(XKEVENT* pEvent)
     return QueryKernelObject<Event>(*pEvent)->Reset();
 }
 
+// Track recent async reads for correlation with waits
+static std::atomic<uint32_t> g_lastAsyncInfo{0};
+static std::atomic<int> g_asyncReadCount{0};
+
 uint32_t KeWaitForSingleObject(XDISPATCHER_HEADER* Object, uint32_t WaitReason, uint32_t WaitMode, bool Alertable, be<int64_t>* Timeout)
 {
+    static int s_waitCount = 0;
+    static int s_infiniteWaitCount = 0;
+    ++s_waitCount;
+    
     const uint32_t timeout = GuestTimeoutToMilliseconds(Timeout);
-    assert(timeout == INFINITE);
+    const uint32_t caller = g_ppcContext ? static_cast<uint32_t>(g_ppcContext->lr) : 0;
+    const uint32_t objAddr = Object ? static_cast<uint32_t>(reinterpret_cast<uintptr_t>(Object) & 0xFFFFFFFF) : 0;
+    
+    // Log ALL waits for async IO debugging - exclude GPU poll thread (0x829DDD48)
+    static int s_asyncWaitLogCount = 0;
+    if (g_asyncReadCount > 0 && caller != 0x829DDD48 && s_asyncWaitLogCount < 200)
+    {
+        ++s_asyncWaitLogCount;
+        LOGF_IMPL(Utility, "KeWaitForSingleObject", 
+                  "ASYNC_WAIT #{} type={} obj=0x{:08X} caller=0x{:08X} timeout={} lastAsync=0x{:08X}",
+                  s_asyncWaitLogCount, Object ? Object->Type : -1, objAddr, caller, timeout, g_lastAsyncInfo.load());
+    }
+    
+    // Log INFINITE waits more aggressively as they can block forever
+    if (timeout == INFINITE)
+    {
+        ++s_infiniteWaitCount;
+        if (s_infiniteWaitCount <= 20 || s_infiniteWaitCount % 100 == 0)
+        {
+            LOGF_IMPL(Utility, "KeWaitForSingleObject", "INFINITE WAIT #{} type={} obj=0x{:08X} caller=0x{:08X}", 
+                      s_infiniteWaitCount, Object ? Object->Type : -1, objAddr, caller);
+        }
+        
+        // GPU init deadlock prevention: known GPU bootstrap callers that wait forever
+        // These callers are waiting for GPU readiness signals that never come from stubs.
+        // We fake GPU consumption by updating the ring buffer read pointer writeback.
+        static const std::unordered_set<uint32_t> s_gpuInitCallers = {
+            0x829DDD48,  // VdRetrainEDRAM / GPU init wait
+            0x829D8AA8,  // VdInitializeRingBuffer caller
+        };
+        
+        if (s_gpuInitCallers.count(caller) != 0)
+        {
+            static int s_gpuSignalCount = 0;
+            ++s_gpuSignalCount;
+            
+            // Log video state flags periodically for debugging
+            if (s_gpuSignalCount <= 5 || s_gpuSignalCount % 1000 == 0)
+            {
+                LOGF_IMPL(Utility, "KeWaitForSingleObject", 
+                          "GPU poll #{}: engines={} edram={} interrupt={}", 
+                          s_gpuSignalCount,
+                          g_gpuRingBuffer.enginesInitialized ? 1 : 0,
+                          g_gpuRingBuffer.edramTrainingComplete ? 1 : 0,
+                          g_gpuRingBuffer.interruptSeen ? 1 : 0);
+            }
+            
+            // Short-circuit: if all video state flags are true, GPU init is complete
+            // The game's polling loop checks memory-backed flags that we can't easily update.
+            // Instead, we block this thread with a real wait to stop the spinning.
+            // This allows other threads to progress while the GPU poll thread sleeps.
+            if (g_gpuRingBuffer.enginesInitialized &&
+                g_gpuRingBuffer.edramTrainingComplete &&
+                g_gpuRingBuffer.interruptSeen)
+            {
+                static bool s_loggedOnce = false;
+                if (!s_loggedOnce)
+                {
+                    s_loggedOnce = true;
+                    LOGF_IMPL(Utility, "KeWaitForSingleObject", 
+                              "GPU init complete - all flags true, parking poll thread (count={})", s_gpuSignalCount);
+                }
+                // Park this thread - sleep for a long time to stop spinning
+                // The game's GPU poll thread will be effectively disabled
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                return STATUS_SUCCESS;
+            }
+            
+            // Fake GPU consumption: set RP to ring buffer size
+            if (g_gpuRingBuffer.writebackEnabled && g_gpuRingBuffer.readPtrWritebackAddr != 0)
+            {
+                uint32_t* writebackPtr = reinterpret_cast<uint32_t*>(
+                    g_memory.Translate(g_gpuRingBuffer.readPtrWritebackAddr));
+                if (writebackPtr)
+                {
+                    uint32_t fakeRP = g_gpuRingBuffer.ringBufferSize;
+                    *writebackPtr = ByteSwap(fakeRP);
+                }
+            }
+            
+            // Signal the event
+            if (Object->Type == 0 || Object->Type == 1)
+            {
+                QueryKernelObject<Event>(*Object)->Set();
+            }
+            
+            // Fire graphics interrupt callback once and set interruptSeen flag
+            if (!g_gpuRingBuffer.interruptFired && g_gpuRingBuffer.interruptCallback != 0)
+            {
+                g_gpuRingBuffer.interruptFired = true;
+                g_gpuRingBuffer.interruptSeen = true;
+                LOGF_IMPL(Utility, "KeWaitForSingleObject", 
+                          "Firing graphics interrupt callback 0x{:08X} - interruptSeen = true", 
+                          g_gpuRingBuffer.interruptCallback);
+            }
+            
+            // After many iterations, add a small delay to prevent CPU spinning
+            if (s_gpuSignalCount > 1000)
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            }
+            
+            return STATUS_SUCCESS;
+        }
+        
+    }
 
     switch (Object->Type)
     {
@@ -2282,7 +3664,7 @@ uint32_t KeWaitForSingleObject(XDISPATCHER_HEADER* Object, uint32_t WaitReason, 
             break;
 
         default:
-            assert(false && "Unrecognized kernel object type.");
+            LOGF_IMPL(Utility, "KeWaitForSingleObject", "Unrecognized kernel object type: {}", Object->Type);
             return STATUS_TIMEOUT;
     }
 
@@ -2680,6 +4062,9 @@ void NtFlushBuffersFile()
 
 void KeQuerySystemTime(be<uint64_t>* time)
 {
+    // Pump SDL events periodically to prevent window from becoming unresponsive
+    PumpSdlEventsIfNeeded();
+    
     constexpr int64_t FILETIME_EPOCH_DIFFERENCE = 116444736000000000LL;
 
     auto now = std::chrono::system_clock::now();
@@ -2821,6 +4206,15 @@ uint32_t ExCreateThread(be<uint32_t>* handle, uint32_t stackSize, be<uint32_t>* 
         entry = xApiThreadStartup;
         r3 = startAddress;
         r4 = startContext;
+    }
+
+    // Debug: Dump memory at startContext to see what callback should be there
+    if (startContext != 0 && startContext >= 0x82000000 && startContext < 0x84000000)
+    {
+        uint32_t* ctxMem = reinterpret_cast<uint32_t*>(g_memory.Translate(startContext));
+        LOGF_IMPL(Utility, "ExCreateThread", "startContext@0x{:08X}: [0]=0x{:08X}, [1]=0x{:08X}, [2]=0x{:08X}, [3]=0x{:08X}",
+            startContext, 
+            ByteSwap(ctxMem[0]), ByteSwap(ctxMem[1]), ByteSwap(ctxMem[2]), ByteSwap(ctxMem[3]));
     }
 
     *handle = GetKernelHandle(GuestThread::Start({ entry, r3, r4, creationFlags }, &hostThreadId));
@@ -3340,6 +4734,218 @@ void NetDll_XNetUnregisterInAddr()
     LOG_UTILITY("!!! STUB !!!");
 }
 
+// =============================================================================
+// GTA IV: Bypass dirty disc error display only
+// sub_82192100 - dirty disc error display UI - HOOK to skip UI
+// sub_829A1290 - another dirty disc caller
+// sub_827F0B20 - retry loop - let it run but limit retries
+// sub_829A1F00 - the actual file loading function
+// =============================================================================
+
+// Hook sub_82192100 - skip dirty disc error UI and limit retries
+PPC_FUNC(sub_82192100)
+{
+    static int count = 0;
+    count++;
+    
+    if (count <= 5)
+    {
+        LOGF_IMPL(Utility, "GTA4_DirtyDisc", "sub_82192100 (dirty disc UI) called #{} - skipping", count);
+    }
+    
+    // After too many calls, log and let game continue without crashing
+    if (count >= 50)
+    {
+        LOG_UTILITY("[GTA4_DirtyDisc] Too many dirty disc errors - game may have issues loading files");
+    }
+    
+    // Return without showing UI - just skip
+}
+
+// Hook sub_829A1290 - skip dirty disc caller
+PPC_FUNC(sub_829A1290)
+{
+    static int count = 0;
+    if (++count <= 3)
+    {
+        LOG_UTILITY("[GTA4] sub_829A1290 (dirty disc caller) - skipping");
+    }
+}
+
+// Forward declare the original implementation from recompiled code
+extern "C" void __imp__sub_829A1F00(PPCContext& ctx, uint8_t* base);
+
+// Hook sub_829A1F00 - the actual file loading function
+// This function is called by the game's internal packfile system.
+// We serve data from RPF files with decrypted TOC, or fall back to original implementation.
+// Parameters: r3=handle, r4=buffer(guest), r5=size, r6=offset, r7=asyncInfo
+PPC_FUNC(sub_829A1F00)
+{
+    static int count = 0;
+    count++;
+    
+    const uint32_t handle = ctx.r3.u32;
+    const uint32_t guestBuffer = ctx.r4.u32;
+    const uint32_t size = ctx.r5.u32;
+    const uint32_t offset = ctx.r6.u32;
+    const uint32_t asyncInfo = ctx.r7.u32;
+    
+    uint8_t* hostBuffer = reinterpret_cast<uint8_t*>(base + guestBuffer);
+    
+    // Log first 50 calls and then every 100th
+    if (count <= 50 || count % 100 == 0)
+    {
+        LOGF_IMPL(Utility, "GTA4_FileLoad", "sub_829A1F00 #{} handle=0x{:08X} size=0x{:X} offset=0x{:X} async=0x{:08X}",
+                  count, handle, size, offset, asyncInfo);
+    }
+    
+    // For ASYNC reads: serve data ourselves, but also update the REQUEST OBJECT
+    // The async struct at asyncInfo has [5] pointing to a request object (0x000A00F0)
+    // That request object likely has a state field we need to set to COMPLETED
+    uint32_t* asyncPtr = nullptr;
+    uint32_t requestObjAddr = 0;
+    if (asyncInfo != 0 && asyncInfo < 0x20000000)
+    {
+        asyncPtr = reinterpret_cast<uint32_t*>(base + asyncInfo);
+        requestObjAddr = ByteSwap(asyncPtr[5]);  // Request object address
+        
+        if (count <= 20)
+        {
+            // Dump the REQUEST OBJECT to find the state field
+            if (requestObjAddr != 0 && requestObjAddr < 0x20000000)
+            {
+                uint32_t* reqObj = reinterpret_cast<uint32_t*>(base + requestObjAddr);
+                LOGF_IMPL(Utility, "GTA4_FileLoad", "REQUEST_OBJ at 0x{:08X}: [0-3]=0x{:08X} 0x{:08X} 0x{:08X} 0x{:08X}",
+                    requestObjAddr, ByteSwap(reqObj[0]), ByteSwap(reqObj[1]), ByteSwap(reqObj[2]), ByteSwap(reqObj[3]));
+                LOGF_IMPL(Utility, "GTA4_FileLoad", "REQUEST_OBJ at 0x{:08X}: [4-7]=0x{:08X} 0x{:08X} 0x{:08X} 0x{:08X}",
+                    requestObjAddr, ByteSwap(reqObj[4]), ByteSwap(reqObj[5]), ByteSwap(reqObj[6]), ByteSwap(reqObj[7]));
+            }
+        }
+    }
+    
+    // Translation layer: serve from RPF streams with decrypted TOC
+    {
+        std::string chosen;
+        const uint32_t bytesRead = ReadFromBestRpf(handle, hostBuffer, size, offset, count, chosen);
+        if (bytesRead > 0)
+        {
+            g_handleToRpf[handle] = chosen;
+            if (count <= 50 || count % 100 == 0)
+            {
+                LOGF_IMPL(Utility, "GTA4_FileLoad", "sub_829A1F00 #{} read {} bytes from '{}' at offset 0x{:X}",
+                          count, bytesRead, chosen, offset);
+            }
+            
+            // For async reads, try returning bytesRead directly
+            // The game might check r3 for the actual byte count to determine completion
+            if (asyncInfo != 0)
+            {
+                ctx.r3.u32 = bytesRead;  // Return bytes read for async
+                if (count <= 20)
+                {
+                    LOGF_IMPL(Utility, "GTA4_FileLoad", "ASYNC: returning bytesRead={} in r3", bytesRead);
+                }
+            }
+            else
+            {
+                ctx.r3.u32 = 1;  // Return 1 for sync reads
+            }
+            return;
+        }
+    }
+    
+    // Check if this is one of our file handles
+    auto it = g_ntFileHandles.find(handle);
+    if (it != g_ntFileHandles.end() && it->second && it->second->magic == kNtFileHandleMagic)
+    {
+        NtFileHandle* hFile = it->second;
+        
+        // Parse RPF header if not done yet
+        if (!hFile->rpfHeaderParsed)
+            ParseRpfHeader(hFile);
+        
+        // Seek to offset and read
+        hFile->stream.clear();
+        hFile->stream.seekg(offset, std::ios::beg);
+        
+        if (!hFile->stream.bad())
+        {
+            hFile->stream.read(reinterpret_cast<char*>(hostBuffer), size);
+            const uint32_t bytesRead = static_cast<uint32_t>(hFile->stream.gcount());
+            
+            // Decrypt TOC region if this is an encrypted RPF
+            if (hFile->isRpf && hFile->tocEncrypted && bytesRead > 0)
+            {
+                const uint64_t tocStart = hFile->tocOffset;
+                const uint64_t tocEnd = tocStart + hFile->tocSize;
+                const uint64_t readStart = offset;
+                const uint64_t readEnd = offset + bytesRead;
+                const uint64_t overlapStart = std::max(readStart, tocStart);
+                const uint64_t overlapEnd = std::min(readEnd, tocEnd);
+                
+                if (overlapEnd > overlapStart)
+                {
+                    const uint32_t startInBuf = static_cast<uint32_t>(overlapStart - readStart);
+                    const uint32_t len = static_cast<uint32_t>(overlapEnd - overlapStart);
+                    const uint64_t tocRelativeOffset = overlapStart - tocStart;
+                    
+                    if (count <= 20 || count % 100 == 0)
+                    {
+                        LOGF_IMPL(Utility, "GTA4_FileLoad", "Decrypting TOC region: bufOffset={} len={} tocRelOffset={}",
+                                  startInBuf, len, tocRelativeOffset);
+                    }
+                    
+                    DecryptRpfBufferInPlace(hostBuffer + startInBuf, len, tocRelativeOffset);
+                }
+            }
+            
+            if (count <= 20 || count % 100 == 0)
+            {
+                LOGF_IMPL(Utility, "GTA4_FileLoad", "sub_829A1F00 #{} read {} bytes from '{}' at offset 0x{:X}",
+                          count, bytesRead, hFile->path.filename().string(), offset);
+            }
+            
+            if (bytesRead > 0)
+            {
+                ctx.r3.u32 = 1;
+                return;
+            }
+        }
+    }
+
+    // Check if this is a virtual file handle
+    auto vit = g_ntVirtFileHandles.find(handle);
+    if (vit != g_ntVirtFileHandles.end() && vit->second && vit->second->magic == kNtVirtFileHandleMagic)
+    {
+        NtVirtFileHandle* hVirt = vit->second;
+        
+        // Fallback to virtual data if RPF read failed
+        if (offset < hVirt->data.size())
+        {
+            const uint32_t available = static_cast<uint32_t>(hVirt->data.size() - offset);
+            const uint32_t toCopy = std::min(size, available);
+            memcpy(hostBuffer, hVirt->data.data() + offset, toCopy);
+            
+            if (count <= 20 || count % 100 == 0)
+            {
+                LOGF_IMPL(Utility, "GTA4_FileLoad", "sub_829A1F00 #{} read {} bytes from virtual data at offset 0x{:X}",
+                          count, toCopy, offset);
+            }
+            
+            ctx.r3.u32 = 1;
+            return;
+        }
+    }
+
+    // All else failed
+    if (count <= 20 || count % 100 == 0)
+    {
+        LOGF_IMPL(Utility, "GTA4_FileLoad", "sub_829A1F00 #{} FAILED for handle 0x{:08X}", count, handle);
+    }
+    ctx.r3.u32 = 0;
+}
+
+// DON'T hook sub_827F0B20 - let the retry loop run, our file system should handle it
 GUEST_FUNCTION_HOOK(sub_825383D8, XapiInitProcess)
 GUEST_FUNCTION_HOOK(__imp__XGetVideoMode, VdQueryVideoMode); // XGetVideoMode
 GUEST_FUNCTION_HOOK(__imp__XNotifyGetNext, XNotifyGetNext);

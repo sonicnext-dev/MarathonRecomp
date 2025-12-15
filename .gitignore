@@ -3,23 +3,50 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
-# GTA IV Game Files - DO NOT COMMIT
+# GTA IV Game Files - DO NOT COMMIT (Copyrighted)
 Grand Theft Auto IV*/
 GTA4/
 gta4/
 *.xex
 *.iso
 *.xcp
+game/
+game
+
+# RPF Archives and Extracted Content - DO NOT COMMIT (Copyrighted)
+RPF DUMP/
+extracted/
+*.rpf
 
 # Development Notes - Private
 NOTES.md
 
+# Sample/Reference Projects - Not part of this repo
+Sample Recomp Projects/
+
 # SparkIV (vendored dev tool)
-SparkIV-master/*.zip
-SparkIV-master/**/packages/
+SparkIV-master/
 
 # Extracted game assets - DO NOT COMMIT
 extracted_shaders/
+
+# Run logs and debug output
+run_logs/
+*.log
+*_log.txt
+*_output.txt
+trace_*.txt
+game_*.txt
+run_*.txt
+test_*.txt
+extraction_log.txt
+
+# Temporary tools/scripts for extraction
+tools/extract_*.sh
+tools/extract_*.py
+tools/reorganize_*.py
+tools/rpf_*.py
+tools/rage_shader_extract/
 
 # User-specific files
 *.rsuser
