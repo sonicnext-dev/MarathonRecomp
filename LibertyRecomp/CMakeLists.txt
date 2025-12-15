@@ -139,11 +139,11 @@ set(LIBERTY_RECOMP_PATCHES_CXX_SOURCES
     "patches/gta4_patches.cpp"
     "patches/gta4_aspect_ratio_patches.cpp"
     "patches/gta4_input_patches.cpp"  # GTA IV input remapping
+    "patches/audio_patches.cpp"       # GTA IV audio system (updated for RAGE)
     "patches/memcpy_patches.cpp"  # Native memcpy implementation to fix broken recompiled control flow
     
     # Generic/stub patches needed for compilation
     # "patches/aspect_ratio_patches.cpp"  # Has Sonicteam references - replaced by gta4_aspect_ratio_patches.cpp
-    # "patches/audio_patches.cpp"          # Has Sonicteam references - needs GTA IV version
     # "patches/camera_patches.cpp"         # Has Sonicteam references - needs GTA IV version
     # "patches/fps_patches.cpp"            # May need review
     # "patches/frontend_listener.cpp"      # May need review
