@@ -52,7 +52,12 @@ functions = [
     { address = 0x82990020, size = 0x50 }, # Covers 0x82990020 to 0x82990070
     
     # Memcpy-like functions with shared loop bodies
-    # These functions (sub_8299094C through sub_82990CB8) have interrelated branches
+    # sub_82990830 branches to 0x82990894 which is in sub_82990880
+    # These functions share control flow between multiple entry points
+    # Covering the range: 0x82990830 to 0x8299094C (and beyond)
+    { address = 0x82990830, size = 0x11C }, # Covers 0x82990830 to 0x8299094C
+    
+    # Additional memcpy functions (sub_8299094C through sub_82990CB8) have interrelated branches
     # Covering the entire range: 0x8299094C to 0x82990CC8
     { address = 0x8299094C, size = 0x37C }, # Covers 0x8299094C to 0x82990CC8
 ]

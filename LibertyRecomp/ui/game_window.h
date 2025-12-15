@@ -4,8 +4,10 @@
 #include <user/config.h>
 #include <sdl_events.h>
 
-#define DEFAULT_WIDTH 1280
-#define DEFAULT_HEIGHT 720
+// Default to native display resolution (detected at runtime)
+// These are fallback values if detection fails
+#define DEFAULT_WIDTH 1920
+#define DEFAULT_HEIGHT 1080
 #define MIN_WIDTH 640
 #define MIN_HEIGHT 480
 

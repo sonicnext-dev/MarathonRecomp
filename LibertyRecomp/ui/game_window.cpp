@@ -183,6 +183,25 @@ void GameWindow::Init(const char* sdlVideoDriver)
     s_width = Config::WindowWidth;
     s_height = Config::WindowHeight;
 
+    // If window size is default (1280x720 from old config), use native display resolution
+    if (s_width == 1280 && s_height == 720)
+    {
+        SDL_DisplayMode displayMode;
+        if (SDL_GetDesktopDisplayMode(0, &displayMode) == 0)
+        {
+            s_width = displayMode.w;
+            s_height = displayMode.h;
+            LOGFN("Using native display resolution: {}x{}", s_width, s_height);
+        }
+        else
+        {
+            // Fallback to 1920x1080 if detection fails
+            s_width = DEFAULT_WIDTH;
+            s_height = DEFAULT_HEIGHT;
+            LOGFN("Display detection failed, using fallback: {}x{}", s_width, s_height);
+        }
+    }
+
     if (s_x == -1 && s_y == -1)
         s_x = s_y = SDL_WINDOWPOS_CENTERED;
 

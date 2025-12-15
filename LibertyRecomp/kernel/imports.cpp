@@ -4775,9 +4775,12 @@ PPC_FUNC(sub_829A1290)
 // Forward declare the original implementation from recompiled code
 extern "C" void __imp__sub_829A1F00(PPCContext& ctx, uint8_t* base);
 
+// Track completed async operations to avoid re-serving data
+// Key: async pointer, Value: pair<handle, offset> of completed operation
+static std::unordered_map<uint32_t, std::pair<uint32_t, uint32_t>> g_completedAsyncOps;
+
 // Hook sub_829A1F00 - the actual file loading function
-// This function is called by the game's internal packfile system.
-// We serve data from RPF files with decrypted TOC, or fall back to original implementation.
+// SIMPLIFIED APPROACH: Call original recompiled function, then ensure async completion
 // Parameters: r3=handle, r4=buffer(guest), r5=size, r6=offset, r7=asyncInfo
 PPC_FUNC(sub_829A1F00)
 {
@@ -4799,59 +4802,36 @@ PPC_FUNC(sub_829A1F00)
                   count, handle, size, offset, asyncInfo);
     }
     
-    // For ASYNC reads: serve data ourselves, but also update the REQUEST OBJECT
-    // The async struct at asyncInfo has [5] pointing to a request object (0x000A00F0)
-    // That request object likely has a state field we need to set to COMPLETED
-    uint32_t* asyncPtr = nullptr;
-    uint32_t requestObjAddr = 0;
-    if (asyncInfo != 0 && asyncInfo < 0x20000000)
-    {
-        asyncPtr = reinterpret_cast<uint32_t*>(base + asyncInfo);
-        requestObjAddr = ByteSwap(asyncPtr[5]);  // Request object address
-        
-        if (count <= 20)
-        {
-            // Dump the REQUEST OBJECT to find the state field
-            if (requestObjAddr != 0 && requestObjAddr < 0x20000000)
-            {
-                uint32_t* reqObj = reinterpret_cast<uint32_t*>(base + requestObjAddr);
-                LOGF_IMPL(Utility, "GTA4_FileLoad", "REQUEST_OBJ at 0x{:08X}: [0-3]=0x{:08X} 0x{:08X} 0x{:08X} 0x{:08X}",
-                    requestObjAddr, ByteSwap(reqObj[0]), ByteSwap(reqObj[1]), ByteSwap(reqObj[2]), ByteSwap(reqObj[3]));
-                LOGF_IMPL(Utility, "GTA4_FileLoad", "REQUEST_OBJ at 0x{:08X}: [4-7]=0x{:08X} 0x{:08X} 0x{:08X} 0x{:08X}",
-                    requestObjAddr, ByteSwap(reqObj[4]), ByteSwap(reqObj[5]), ByteSwap(reqObj[6]), ByteSwap(reqObj[7]));
-            }
-        }
-    }
+    // Try to serve from our RPF streams with decrypted TOC
+    std::string chosen;
+    const uint32_t bytesRead = ReadFromBestRpf(handle, hostBuffer, size, offset, count, chosen);
     
-    // Translation layer: serve from RPF streams with decrypted TOC
+    if (bytesRead > 0)
     {
-        std::string chosen;
-        const uint32_t bytesRead = ReadFromBestRpf(handle, hostBuffer, size, offset, count, chosen);
-        if (bytesRead > 0)
+        g_handleToRpf[handle] = chosen;
+        if (count <= 50 || count % 100 == 0)
         {
-            g_handleToRpf[handle] = chosen;
-            if (count <= 50 || count % 100 == 0)
-            {
-                LOGF_IMPL(Utility, "GTA4_FileLoad", "sub_829A1F00 #{} read {} bytes from '{}' at offset 0x{:X}",
-                          count, bytesRead, chosen, offset);
-            }
-            
-            // For async reads, try returning bytesRead directly
-            // The game might check r3 for the actual byte count to determine completion
-            if (asyncInfo != 0)
-            {
-                ctx.r3.u32 = bytesRead;  // Return bytes read for async
-                if (count <= 20)
-                {
-                    LOGF_IMPL(Utility, "GTA4_FileLoad", "ASYNC: returning bytesRead={} in r3", bytesRead);
-                }
-            }
-            else
-            {
-                ctx.r3.u32 = 1;  // Return 1 for sync reads
-            }
-            return;
+            LOGF_IMPL(Utility, "GTA4_FileLoad", "sub_829A1F00 #{} read {} bytes from '{}' at offset 0x{:X}",
+                      count, bytesRead, chosen, offset);
         }
+        
+        // For async reads, set completion flags BEFORE returning (static recomp playbook)
+        if (asyncInfo != 0 && asyncInfo < 0x20000000)
+        {
+            volatile uint32_t* asyncPtr = reinterpret_cast<volatile uint32_t*>(base + asyncInfo);
+            asyncPtr[0] = 0;                    // Error = 0 (ERROR_SUCCESS)
+            asyncPtr[1] = ByteSwap(bytesRead);  // Length = bytes transferred
+            asyncPtr[6] = 0;                    // dwExtendedError = 0
+            std::atomic_thread_fence(std::memory_order_seq_cst);
+            
+            if (count <= 20)
+            {
+                LOGF_IMPL(Utility, "GTA4_FileLoad", "ASYNC: Set completion: Error=0, Length={}", bytesRead);
+            }
+        }
+        
+        ctx.r3.u32 = 1;  // Return success
+        return;
     }
     
     // Check if this is one of our file handles
@@ -4945,7 +4925,8 @@ PPC_FUNC(sub_829A1F00)
     ctx.r3.u32 = 0;
 }
 
-// DON'T hook sub_827F0B20 - let the retry loop run, our file system should handle it
+// NOTE: sub_827F0B20 is the retry loop - we let it run but our file system should handle reads properly
+// The key is to ensure sub_829A1F00 returns correct data and completion flags
 GUEST_FUNCTION_HOOK(sub_825383D8, XapiInitProcess)
 GUEST_FUNCTION_HOOK(__imp__XGetVideoMode, VdQueryVideoMode); // XGetVideoMode
 GUEST_FUNCTION_HOOK(__imp__XNotifyGetNext, XNotifyGetNext);
