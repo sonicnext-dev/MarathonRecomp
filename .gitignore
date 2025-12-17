@@ -70,6 +70,9 @@ tools/rage_fxc_extractor/extracted_shaders/
 # Extracted game assets - DO NOT COMMIT
 extracted_shaders/
 
+# App resources (fonts, images, music, sounds) - managed separately
+MarathonRecompResources/
+
 # Run logs and debug output
 run_logs/
 *.log
