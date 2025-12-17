@@ -59,6 +59,39 @@
             }
         },
         {
+            "name": "arm64-Clang-Debug",
+            "displayName": "ARM64 Debug",
+            "inherits": "windows-base",
+            "architecture": {
+                "value": "arm64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "VCPKG_TARGET_TRIPLET": {
+                    "value": "arm64-windows-static",
+                    "type": "STRING"
+                }
+            }
+        },
+        {
+            "name": "arm64-Clang-RelWithDebInfo",
+            "displayName": "ARM64 RelWithDebInfo",
+            "inherits": "arm64-Clang-Debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+            }
+        },
+        {
+            "name": "arm64-Clang-Release",
+            "displayName": "ARM64 Release",
+            "inherits": "arm64-Clang-Debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_INTERPROCEDURAL_OPTIMIZATION": true
+            }
+        },
+        {
             "name": "linux-base",
             "hidden": true,
             "generator": "Ninja",
