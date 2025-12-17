@@ -176,6 +176,10 @@ set(LIBERTY_RECOMP_UI_CXX_SOURCES
 set(LIBERTY_RECOMP_INSTALL_CXX_SOURCES
     "install/installer.cpp"
     "install/iso_file_system.cpp"
+    "install/iso_extractor.cpp"
+    "install/platform_paths.cpp"
+    "install/rpf_extractor.cpp"
+    "install/shader_converter.cpp"
     "install/update_checker.cpp"
     "install/xcontent_file_system.cpp"
     "install/hashes/game.cpp"

@@ -1,12 +1,14 @@
-# Dumping
+# Dumping GTA IV for Xbox 360
+
+This guide explains how to extract Grand Theft Auto IV game files from your Xbox 360 for use with Liberty Recompiled.
 
 ### Pre-requisites
 - Xbox 360 (modifications not necessary)
 - Xbox 360 Hard Drive (20 GB minimum)
 - Xbox 360 Hard Drive Transfer Cable (or a compatible SATA to USB adapter)
-- Sonic the Hedgehog (2006) for Xbox 360
-    - Retail Disc or Digital Copy.
-    - All available DLC are optional.
+- Grand Theft Auto IV for Xbox 360
+    - Retail Disc (2 discs) or Digital Copy
+    - Episodes from Liberty City DLC is optional
 - [7-Zip](https://7-zip.org/download.html) (for extracting Velocity)
 - [Velocity](https://github.com/Gualdimar/Velocity/releases/download/xex%2Biso-branch/Velocity-XEXISO.rar) (Gualdimar's fork)
 
@@ -20,11 +22,11 @@
 ### Instructions
 
 > [!NOTE]
-> If you have a digital copy of Sonic the Hedgehog, skip to step 4.
+> If you have a digital copy of GTA IV, skip to step 4.
 
-1. Insert your retail disc copy of Sonic the Hedgehog into the Xbox 360 disc tray.
+1. Insert Disc 1 of your retail copy of Grand Theft Auto IV into the Xbox 360 disc tray.
 2. At the Xbox Dashboard, go over to the disc tile under the **home** tab and press X to view **Game Details**.
-3. Under the **overview** tab, select the **Install** tile and choose to install to the primary hard drive.
+3. Under the **overview** tab, select the **Install** tile and choose to install to the primary hard drive. Repeat for Disc 2 if prompted.
 4. Once installed, turn off your Xbox 360 and remove the hard drive from your console.
 
 > [!TIP]
@@ -52,8 +54,17 @@
 
 8. Right-click `Velocity.exe` and click **Properties**, then under the **Compatibility** tab, tick **Run this program as an administrator** and click **OK**. This is required in order for the program to recognize the hard drive. You can now launch `Velocity.exe`.
 9. You should see a **Device Detected** message appear on launch asking if you would like to open the **Device Content Viewer**. Click **Yes**.
-10. You should now see a tree view of your hard drive's contents. Expand the tree nodes for `/Shared Items/Games/` (and optionally `/Shared Items/DLC/`, if you have the DLC installed).
-11. Hold the CTRL key and click on **SONIC THE HEDGEHOG** under the `Games` node, as well as the **DLC** under the `DLC` node, if you have the DLC installed. Ensure all are selected before the next step.
+10. You should now see a tree view of your hard drive's contents. Expand the tree nodes for `/Shared Items/Games/`.
+11. Hold the CTRL key and click on **Grand Theft Auto IV** under the `Games` node. If you have Episodes from Liberty City installed, select that as well.
 12. Right-click any of the selected items and click **Copy Selected to Local Disk**, then navigate to the folder you created in step 7 and select it. Velocity will now begin copying the game files to your PC.
-13. Once the transfer is complete, close the **Device Content Viewer** window and navigate to **Tools > Device Tools > Raw Device Viewer**.
-14. Once the transfer is complete, you should now have all of the necessary files for installation. [Return to the readme and proceed to the next step](/README.md#how-to-install).
+13. Once the transfer is complete, close the **Device Content Viewer** window.
+14. You should now have all of the necessary files for installation. [Return to the readme and proceed to the next step](/README.md#how-to-install).
+
+### Alternative: Using an ISO
+
+If you have a GTA IV Xbox 360 ISO file, you can use it directly with Liberty Recompiled's installer wizard. The installer supports:
+- `.iso` files (Xbox 360 disc images)
+- Extracted game folders
+- XContent packages
+
+Simply point the installer to your ISO file or extracted game folder when prompted.

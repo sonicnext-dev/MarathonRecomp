@@ -1,0 +1,7 @@
+/Users/Ozordi/Downloads/MarathonRecomp/tools/rage_fxc_extractor/build/CMakeFiles/rage_fxc_extractor.dir
+/Users/Ozordi/Downloads/MarathonRecomp/tools/rage_fxc_extractor/build/CMakeFiles/edit_cache.dir
+/Users/Ozordi/Downloads/MarathonRecomp/tools/rage_fxc_extractor/build/CMakeFiles/rebuild_cache.dir
+/Users/Ozordi/Downloads/MarathonRecomp/tools/rage_fxc_extractor/build/CMakeFiles/list_install_components.dir
+/Users/Ozordi/Downloads/MarathonRecomp/tools/rage_fxc_extractor/build/CMakeFiles/install.dir
+/Users/Ozordi/Downloads/MarathonRecomp/tools/rage_fxc_extractor/build/CMakeFiles/install/local.dir
+/Users/Ozordi/Downloads/MarathonRecomp/tools/rage_fxc_extractor/build/CMakeFiles/install/strip.dir

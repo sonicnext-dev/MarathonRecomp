@@ -1,4 +1,8 @@
 #include "installer.h"
+#include "shader_converter.h"
+#include "iso_extractor.h"
+#include "rpf_extractor.h"
+#include "platform_paths.h"
 
 #include <xxh3.h>
 
@@ -538,6 +542,60 @@ bool Installer::install(const Sources &sources, const std::filesystem::path &tar
     {
         return false;
     }
+    
+    // Ensure platform directories exist
+    PlatformPaths::EnsureDirectoriesExist();
+    
+    // Scan for shaders - first check if already extracted, then try RPF extraction
+    std::filesystem::path gameDir = targetDirectory / GameDirectory;
+    std::filesystem::path shaderCacheDir = targetDirectory / "shader_cache";
+    std::filesystem::path extractedDir = shaderCacheDir / "extracted";
+    
+    // Try to find/extract shaders from RPF archives
+    {
+        std::vector<uint8_t> aesKey;
+        std::filesystem::path aesKeyPath = PlatformPaths::GetAesKeyPath();
+        if (std::filesystem::exists(aesKeyPath))
+        {
+            RpfExtractor::LoadAesKey(aesKeyPath, aesKey);
+        }
+        
+        // Scan game directory for shaders (checks extracted files first, then RPFs)
+        auto shaderScanResult = RpfExtractor::ScanAndExtractShaders(
+            gameDir,
+            extractedDir,
+            aesKey,
+            nullptr  // Progress callback handled separately
+        );
+        
+        // Log shader discovery results (non-fatal if none found)
+        if (!shaderScanResult.fxcFiles.empty())
+        {
+            // Shaders found - proceed with conversion
+        }
+    }
+    
+    // Convert shaders to platform-native format
+    {
+        ShaderConversionJournal shaderJournal;
+        ShaderPlatform platform = ShaderConverter::detectPlatform();
+        
+        // Only convert if cache doesn't exist or is outdated
+        if (!ShaderConverter::isCacheValid(shaderCacheDir, gameDir))
+        {
+            ShaderConverter::convertShaders(gameDir, shaderCacheDir, platform, shaderJournal, progressCallback);
+            
+            // Shader conversion failure is non-fatal - game can still run with runtime compilation
+            if (shaderJournal.lastResult != ShaderConversionJournal::Result::Success &&
+                shaderJournal.lastResult != ShaderConversionJournal::Result::NoShadersFound)
+            {
+                // Log warning but continue
+            }
+        }
+    }
+    
+    // Clean up temp files
+    PlatformPaths::CleanupTemp();
     
     for (uint32_t i = 0; i < 2; i++)
     {

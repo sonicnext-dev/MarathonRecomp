@@ -17,31 +17,82 @@ Liberty Recompiled is an unofficial PC port of the Xbox 360 version of Grand The
 ## Table of Contents
 
 - [Project Status](#project-status)
+- [Installation](#installation)
 - [Building](#building)
+- [Documentation](#documentation)
 - [Credits](#credits)
 
 ## Project Status
 
-This project is in **early development**. The following components need to be implemented:
+This project is in **early development**. Current progress:
 
+### Completed
+- [x] XenonRecomp integration for PowerPC → C++ translation
+- [x] XenosRecomp integration for Xenos → HLSL shader conversion
+- [x] Cross-platform build system (Windows, Linux, macOS)
+- [x] Installer wizard with ISO/folder/XContent support
+- [x] Shader extraction pipeline (RAGE FXC → Xbox 360 → platform-native)
+- [x] Platform-specific install directory support
+
+### In Progress
 - [ ] RAGE engine structure reverse engineering
-- [ ] GTA IV executable analysis and function mapping
-- [ ] Shader recompilation for GTA IV's rendering pipeline
+- [ ] GPU/rendering pipeline implementation
+- [ ] File system and RPF archive handling
 - [ ] Game-specific patches and fixes
+
+### TODO
+- [ ] Audio system implementation
 - [ ] Save data handling
 - [ ] Input remapping for GTA IV controls
+- [ ] Network/multiplayer stubs
 
-## Prerequisites
+## Installation
 
-To build this project, you will need:
+### Platform Install Directories
 
-- The GTA IV Xbox 360 `default.xex` executable
-- GTA IV shader archives from the Xbox 360 version
-- A legal copy of GTA IV for Xbox 360
+| Platform | Install Directory |
+|----------|-------------------|
+| Windows | `%LOCALAPPDATA%\LibertyRecomp\` |
+| Linux | `~/.local/share/LibertyRecomp/` |
+| macOS | `~/Library/Application Support/LibertyRecomp/` |
+
+### Game Files Required
+
+You need a legal copy of GTA IV for Xbox 360. Supported formats:
+- Xbox 360 disc images (`.iso`)
+- Extracted game folders
+- XContent packages
+
+See [Dumping Guide](/docs/DUMPING-en.md) for detailed extraction instructions.
 
 ## Building
 
 [Check out the building instructions here](/docs/BUILDING.md).
+
+### Quick Start
+
+```bash
+# Clone with submodules
+git clone --recurse-submodules https://github.com/OZORDI/LibertyRecomp.git
+cd LibertyRecomp
+
+# Add game files to LibertyRecompLib/private/
+# - default.xex
+# - xbox360.rpf
+
+# Configure and build (macOS example)
+cmake . --preset macos-release
+cmake --build ./out/build/macos-release --target LibertyRecomp
+```
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [Building Guide](/docs/BUILDING.md) | Build instructions for all platforms |
+| [Dumping Guide](/docs/DUMPING-en.md) | How to extract game files from Xbox 360 |
+| [Shader Pipeline](/docs/SHADER_PIPELINE.md) | RAGE FXC → platform shader conversion |
+| [Installation Architecture](/docs/INSTALLATION_ARCHITECTURE.md) | Platform paths and install flow |
 
 ## Credits
 

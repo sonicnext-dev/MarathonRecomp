@@ -1,0 +1,1 @@
+/usr/bin/c++  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/rage_fxc_extractor.dir/rage_fxc_extractor.cpp.o -o rage_fxc_extractor

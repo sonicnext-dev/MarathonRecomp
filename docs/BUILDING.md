@@ -1,4 +1,6 @@
-# Building
+# Building Liberty Recompiled
+
+Liberty Recompiled is an unofficial PC port of Grand Theft Auto IV for Xbox 360, created through static recompilation. This guide covers building the project from source.
 
 ## 1. Clone the Repository
 
@@ -12,19 +14,21 @@ If you skipped the `--recurse-submodules` argument during cloning, you can run `
 
 ## 2. Add the Required Game Files
 
-Copy the following files from the game and place them inside `./LibertyRecompLib/private/`:
-- `default.xex`
-- `shader.arc`
-- `shader_lt.arc`
+Copy the following files from your GTA IV Xbox 360 game and place them inside `./LibertyRecompLib/private/`:
+- `default.xex` - Main executable (from game root)
+- `xbox360.rpf` - Main game archive (from game root)
 
-`default.xex` is located in the game's root directory, while the others are located in `/xenon/archives`.
+> [!TIP]
+> It is recommended that you install the game using [an existing Liberty Recompiled release](https://github.com/OZORDI/LibertyRecomp/releases/latest) to acquire these files, otherwise you'll need to rely on third-party tools to extract them from your Xbox 360 disc or ISO.
+>
+> When sourcing these files from a Liberty Recompiled installation, they will be stored under the `game` subdirectory.
 
-[//]: # (> [!TIP])
-[//]: # (> It is recommended that you install the game using [an existing Liberty Recompiled release]&#40;https://github.com/OZORDI/LibertyRecomp/releases/latest&#41; to acquire these files, otherwise you'll need to rely on third-party tools to extract them.)
-[//]: # (>)
-[//]: # (> Using the Liberty Recompiled installation wizard will also ensure that these files are compatible with each other so that they can be used with the build environment.)
-[//]: # (>)
-[//]: # (> When sourcing these files from an Liberty Recompiled installation, they will be stored under `game` and `update` subdirectories.)
+### Shader Files (Optional)
+
+For shader development, you can also copy the shader files from `common/shaders/` to enable the shader pipeline:
+- All `.fxc` files from the game's shader directories
+
+These will be automatically processed during installation to generate platform-native shader caches.
 
 ## 3. Install Dependencies
 
@@ -114,4 +118,73 @@ cmake --build ./out/build/macos-release --target LibertyRecomp
 3. Navigate to the directory that was specified as the output in the previous step and run the game.
 ```bash
 open -a LibertyRecomp.app
+```
+
+## 5. Shader Pipeline (Development)
+
+Liberty Recompiled includes an automated shader pipeline that converts Xbox 360 RAGE engine shaders to platform-native formats during installation.
+
+### How It Works
+
+1. **During Installation**: The installer automatically extracts and converts shaders from `.fxc` files
+2. **Platform Detection**: Automatically selects the correct format:
+   - **Windows**: DXIL (Direct3D 12)
+   - **Linux**: SPIR-V (Vulkan)
+   - **macOS**: AIR (Metal)
+3. **Caching**: Converted shaders are cached to avoid re-conversion on subsequent runs
+
+### Building the Shader Tools
+
+#### RAGE FXC Extractor (Standalone Tool)
+```bash
+cd tools/rage_fxc_extractor
+mkdir build && cd build
+cmake ..
+make
+```
+
+#### XenosRecomp (Shader Compiler)
+```bash
+cd build_xenosrecomp
+cmake ../tools/XenosRecomp
+make
+```
+
+### Manual Shader Conversion
+
+For development purposes, you can manually convert shaders:
+
+```bash
+# Extract shaders from RAGE FXC files
+./tools/rage_fxc_extractor/build/rage_fxc_extractor --batch shader_batch/ extracted_shaders/
+
+# Compile to shader cache
+./build_xenosrecomp/XenosRecomp/XenosRecomp extracted_shaders/ LibertyRecompLib/shader/shader_cache.cpp tools/XenosRecomp/XenosRecomp/shader_common.h
+```
+
+For more details, see [SHADER_PIPELINE.md](SHADER_PIPELINE.md).
+
+## 6. Project Structure
+
+```
+LibertyRecomp/
+├── LibertyRecomp/          # Main application code
+│   ├── apu/                # Audio processing
+│   ├── cpu/                # CPU emulation / guest thread
+│   ├── gpu/                # Graphics / video rendering
+│   ├── hid/                # Human input devices
+│   ├── install/            # Installer and shader converter
+│   ├── kernel/             # Kernel imports / memory
+│   ├── patches/            # GTA IV specific patches
+│   ├── ui/                 # ImGui-based UI
+│   └── user/               # User config and saves
+├── LibertyRecompLib/       # Recompiled game code
+│   ├── ppc/                # PowerPC recompiled functions
+│   ├── shader/             # Shader cache
+│   └── private/            # Game files (not in repo)
+├── tools/                  # Development tools
+│   ├── XenosRecomp/        # Xbox 360 shader recompiler
+│   ├── rage_fxc_extractor/ # RAGE FXC shader extractor
+│   └── bc_diff/            # Binary comparison tool
+└── docs/                   # Documentation
 ```

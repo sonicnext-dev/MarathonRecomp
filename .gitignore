@@ -23,9 +23,24 @@ NOTES.md
 
 # Sample/Reference Projects - Not part of this repo
 Sample Recomp Projects/
+Reference Projects/
 
 # SparkIV (vendored dev tool)
 SparkIV-master/
+
+# IDE/Editor settings
+.windsurf/
+.vscode/
+.idea/
+
+# Temporary output files
+macos_dump.txt
+output.txt
+py_out.txt
+build_errors.txt
+xenon_stdout.txt
+implemented_imports.txt
+required_imports.txt
 
 # Extracted game assets - DO NOT COMMIT
 extracted_shaders/
