@@ -1,5 +1,0 @@
-=== Running XenonRecomp ===
-PWD: /Users/Ozordi/Downloads/MarathonRecomp/LibertyRecompLib/config
-TOML: GTA4.toml
-PPC Context: ../../tools/XenonRecomp/XenonUtils/ppc_context.h
-

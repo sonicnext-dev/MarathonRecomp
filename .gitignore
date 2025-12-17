@@ -41,6 +41,31 @@ build_errors.txt
 xenon_stdout.txt
 implemented_imports.txt
 required_imports.txt
+recomp_output.txt
+log2.txt
+
+# Development scripts (local only)
+run2.sh
+run_recomp.sh
+run_xenon.py
+run_xenon.sh
+update_submodules.sh
+
+# Shader batches - extracted from game (copyrighted)
+shader_batch/
+shader_batch2/
+shader_batch3/
+shader_batch4/
+test_shaders/
+
+# Test files
+test_shader_cache.cpp
+
+# Build tool output directories
+build_xenosrecomp/
+build_tools/
+tools/rage_fxc_extractor/build/
+tools/rage_fxc_extractor/extracted_shaders/
 
 # Extracted game assets - DO NOT COMMIT
 extracted_shaders/
