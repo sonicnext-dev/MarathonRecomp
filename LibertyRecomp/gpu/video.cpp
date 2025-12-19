@@ -2941,6 +2941,12 @@ static void SetFramebuffer(GuestSurface *renderTarget, GuestSurface *depthStenci
 
 static void ProcDrawImGui(const RenderCommand& cmd)
 {
+    // Safety check: skip ImGui if backbuffer not ready
+    if (g_backBuffer == nullptr || g_backBuffer->texture == nullptr)
+    {
+        return;
+    }
+
     // Make sure the backbuffer is the current target.
     AddBarrier(g_backBuffer, RenderTextureLayout::COLOR_WRITE);
     FlushBarriers();
@@ -3113,34 +3119,79 @@ static std::atomic<bool> g_executedCommandList;
 void Video::Present() 
 {
     static uint32_t s_presentCount = 0;
+    static uint32_t s_droppedFrames = 0;
     ++s_presentCount;
     if (s_presentCount <= 5 || (s_presentCount % 600) == 0)
     {
-        LOGF_WARNING("Video::Present called #{} (swapChainValid={})", s_presentCount, g_swapChainValid);
+        LOGF_WARNING("Video::Present called #{} (swapChainValid={}, dropped={})", s_presentCount, g_swapChainValid, s_droppedFrames);
     }
 
     g_readyForCommands = false;
 
-    // Clear to a visible color so we know rendering is working
-    // GTA IV rendering will eventually replace this with actual game content
+    // CRITICAL: Check for swapchain starvation before doing any work
+    // If the swapchain is exhausted (we're submitting faster than GPU can present),
+    // the backbuffer texture becomes null. We must skip this frame gracefully.
+    if (!g_swapChainValid)
     {
-        RenderCommand clearCmd;
-        clearCmd.type = RenderCommandType::Clear;
-        clearCmd.clear.flags = D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL;
-        clearCmd.clear.color[0] = 0.0f;   // R - dark blue
-        clearCmd.clear.color[1] = 0.05f;  // G
-        clearCmd.clear.color[2] = 0.15f;  // B
-        clearCmd.clear.color[3] = 1.0f;   // A
-        clearCmd.clear.z = 1.0f;
-        clearCmd.clear.stencil = 0;
-        g_renderQueue.enqueue(clearCmd);
+        ++s_droppedFrames;
+        if (s_droppedFrames <= 10 || (s_droppedFrames % 100) == 0)
+        {
+            LOGF_WARNING("Video::Present: Swapchain invalid, dropping frame #{} (total dropped={})", s_presentCount, s_droppedFrames);
+        }
+        // Still need to do frame bookkeeping so game logic doesn't hang
+        g_frame = g_nextFrame;
+        g_nextFrame = (g_frame + 1) % NUM_FRAMES;
+        CheckSwapChain();
+        return;
     }
+
+    // Ensure backbuffer is bound as render target before clearing
+    if (g_backBuffer != nullptr && g_renderTarget == nullptr)
+    {
+        g_renderTarget = g_backBuffer;
+    }
+
+    // Check for swapchain exhaustion: backbuffer texture becomes null
+    if (g_backBuffer == nullptr || g_backBuffer->texture == nullptr)
+    {
+        ++s_droppedFrames;
+        if (s_droppedFrames <= 10 || (s_droppedFrames % 100) == 0)
+        {
+            LOGF_WARNING("Video::Present: Swapchain starved (no drawable), dropping frame #{}", s_presentCount);
+        }
+        // Frame bookkeeping to prevent hang
+        g_frame = g_nextFrame;
+        g_nextFrame = (g_frame + 1) % NUM_FRAMES;
+        CheckSwapChain();
+        return;
+    }
+
+    // Clear disabled temporarily - causes crash in plume_metal.cpp clearColor
+    // The issue is swapchain exhaustion: after ~10 frames the backbuffer texture becomes invalid
+    // TODO: Fix frame pacing to prevent swapchain starvation
+    // {
+    //     RenderCommand clearCmd;
+    //     clearCmd.type = RenderCommandType::Clear;
+    //     clearCmd.clear.flags = D3DCLEAR_TARGET;
+    //     clearCmd.clear.color[0] = 0.1f;
+    //     clearCmd.clear.color[1] = 0.0f;
+    //     clearCmd.clear.color[2] = 0.2f;
+    //     clearCmd.clear.color[3] = 1.0f;
+    //     clearCmd.clear.z = 1.0f;
+    //     clearCmd.clear.stencil = 0;
+    //     g_renderQueue.enqueue(clearCmd);
+    // }
 
     RenderCommand cmd;
     cmd.type = RenderCommandType::ExecutePendingStretchRectCommands;
     g_renderQueue.enqueue(cmd);
 
-    DrawImGui();
+    // ImGui has threading issues during gameplay - crashes with iterator assertions
+    // But the installer runs single-threaded, so enable ImGui for installer UI
+    if (InstallerWizard::s_isVisible)
+    {
+        DrawImGui();
+    }
 
     cmd.type = RenderCommandType::ExecuteCommandList;
     g_renderQueue.enqueue(cmd);
@@ -4022,6 +4073,13 @@ static void SetFramebuffer(GuestSurface* renderTarget, GuestSurface* depthStenci
 
         if (framebufferContainer != nullptr)
         {
+            // Safety: Skip framebuffer creation if texture is null (swapchain starvation)
+            if (renderTarget != nullptr && renderTarget->texture == nullptr)
+            {
+                g_framebuffer = nullptr;
+                return;
+            }
+
             auto& framebuffer = framebufferContainer->framebuffers[framebufferKey];
 
             if (framebuffer == nullptr)
@@ -4080,6 +4138,17 @@ static void ProcClear(const RenderCommand& cmd)
 {
     const auto& args = cmd.clear;
 
+    // Safety check: skip ENTIRE clear if render target or backbuffer has no valid texture
+    // This prevents the clearColor crash in plume_metal.cpp when framebuffer is null
+    if (g_renderTarget != nullptr && g_renderTarget->texture == nullptr)
+    {
+        return;
+    }
+    if (g_backBuffer != nullptr && g_backBuffer->texture == nullptr)
+    {
+        return;
+    }
+
     if (PopulateBarriersForStretchRect(g_renderTarget, g_depthStencil))
     {
         FlushBarriers();
@@ -4100,13 +4169,19 @@ static void ProcClear(const RenderCommand& cmd)
 
     auto& commandList = g_commandLists[g_frame];
 
+    // Additional safety: ensure framebuffer was set before clearing
+    // The crash happens in clearColor when framebuffer is null - be extra defensive
     if (g_renderTarget != nullptr && (args.flags & D3DCLEAR_TARGET) != 0)
     {
         if (!canClearInOnePass) {
             SetFramebuffer(g_renderTarget, nullptr, true);
         }
 
-        commandList->clearColor(0, RenderColor(args.color[0], args.color[1], args.color[2], args.color[3]));
+        // Final safety check before clearColor - the actual crash point
+        if (g_framebuffer != nullptr)
+        {
+            commandList->clearColor(0, RenderColor(args.color[0], args.color[1], args.color[2], args.color[3]));
+        }
     }
 
     const bool clearDepth = (args.flags & D3DCLEAR_ZBUFFER) != 0;

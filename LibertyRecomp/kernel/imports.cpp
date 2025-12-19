@@ -1225,7 +1225,34 @@ struct Event final : KernelObject, HostObject<XKEVENT>
         }
         else
         {
-            assert(false && "Unhandled timeout value.");
+            // Finite timeout - convert to milliseconds and do a timed wait
+            // Xbox timeout is in 100ns units, negative means relative
+            auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout);
+            
+            if (manualReset)
+            {
+                while (!signaled.load())
+                {
+                    if (std::chrono::steady_clock::now() >= deadline)
+                        return STATUS_TIMEOUT;
+                    // Brief sleep to avoid busy-wait
+                    std::this_thread::sleep_for(std::chrono::microseconds(100));
+                }
+            }
+            else
+            {
+                while (true)
+                {
+                    bool expected = true;
+                    if (signaled.compare_exchange_weak(expected, false))
+                        break;
+                    
+                    if (std::chrono::steady_clock::now() >= deadline)
+                        return STATUS_TIMEOUT;
+                    // Brief sleep to avoid busy-wait
+                    std::this_thread::sleep_for(std::chrono::microseconds(100));
+                }
+            }
         }
 
         return STATUS_SUCCESS;
@@ -1988,7 +2015,17 @@ uint32_t NtWaitForSingleObjectEx(uint32_t Handle, uint32_t WaitMode, uint32_t Al
         return 0xFFFFFFFF;
 
     uint32_t timeout = GuestTimeoutToMilliseconds(Timeout);
-    // assert(timeout == 0 || timeout == INFINITE);
+    
+    // Trace all wait calls to understand blocking
+    static int s_waitCount = 0;
+    ++s_waitCount;
+    uint32_t callerLR = g_ppcContext ? g_ppcContext->lr : 0;
+    
+    if (s_waitCount <= 20 || s_waitCount % 500 == 0)
+    {
+        LOGF_IMPL(Utility, "NtWaitEx", "#{} handle=0x{:08X} timeout={} caller=0x{:08X}",
+                  s_waitCount, Handle, timeout, callerLR);
+    }
 
     if (IsKernelObject(Handle))
     {
@@ -2140,9 +2177,30 @@ void MmQueryStatistics()
     LOG_UTILITY("!!! STUB !!!");
 }
 
+// Track all created Event handles so VdSwap can signal them to unblock workers
+static std::mutex g_eventTrackMutex;
+static std::vector<uint32_t> g_trackedEventHandles;
+
 uint32_t NtCreateEvent(be<uint32_t>* handle, void* objAttributes, uint32_t eventType, uint32_t initialState)
 {
-    *handle = GetKernelHandle(CreateKernelObject<Event>(!eventType, !!initialState));
+    Event* evt = CreateKernelObject<Event>(!eventType, !!initialState);
+    uint32_t h = GetKernelHandle(evt);
+    *handle = h;
+    
+    // Track this event so we can signal it later
+    {
+        std::lock_guard lock(g_eventTrackMutex);
+        g_trackedEventHandles.push_back(h);
+    }
+    
+    static int s_count = 0;
+    ++s_count;
+    if (s_count <= 20)
+    {
+        LOGF_IMPL(Utility, "NtCreateEvent", "#{} handle=0x{:08X} type={} initial={}", 
+                  s_count, h, eventType, initialState);
+    }
+    
     return 0;
 }
 
@@ -3256,6 +3314,35 @@ void VdSwap()
     
     // Call our host rendering system to present the frame
     Video::Present();
+    
+    // Signal "End of Frame" to unblock workers waiting on GPU fences
+    // The GPU fence at 0x8006F844 and 0x8006F7F4 need to be signaled
+    // Also increment the global KeSetEvent generation to wake any waiters
+    ++g_keSetEventGeneration;
+    g_keSetEventGeneration.notify_all();
+    
+    // Signal ALL tracked Event objects to unblock workers
+    // Workers are waiting on events with infinite timeout - they need to be signaled
+    {
+        std::lock_guard lock(g_eventTrackMutex);
+        static int s_signalLogCount = 0;
+        for (uint32_t h : g_trackedEventHandles)
+        {
+            if (IsKernelObject(h))
+            {
+                Event* evt = GetKernelObject<Event>(h);
+                if (evt)
+                {
+                    evt->Set();
+                }
+            }
+        }
+        if (s_signalLogCount < 5)
+        {
+            ++s_signalLogCount;
+            LOGF_UTILITY("VdSwap signaled {} events (gen={})", g_trackedEventHandles.size(), g_keSetEventGeneration.load());
+        }
+    }
 }
 
 void VdGetSystemCommandBuffer()
@@ -3435,8 +3522,15 @@ void KeLeaveCriticalRegion()
 
 uint32_t VdRetrainEDRAM()
 {
-    // Return 0 to indicate EDRAM retraining succeeded
-    return 0;
+    // Set the EDRAM training complete flag - the GPU poll loop waits for this
+    g_gpuRingBuffer.edramTrainingComplete = true;
+    
+    static int s_callCount = 0;
+    if (++s_callCount <= 3)
+    {
+        LOGF_UTILITY("edramTrainingComplete = true (call #{})", s_callCount);
+    }
+    return 0;  // Success
 }
 
 uint32_t VdRetrainEDRAMWorker(uint32_t unk0)
@@ -3521,6 +3615,14 @@ void KeUnlockL2()
 
 bool KeSetEvent(XKEVENT* pEvent, uint32_t Increment, bool Wait)
 {
+    static int s_count = 0;
+    ++s_count;
+    
+    if (s_count <= 20 || s_count % 100 == 0)
+    {
+        LOGF_IMPL(Utility, "Event", "KeSetEvent #{}", s_count);
+    }
+    
     bool result = QueryKernelObject<Event>(*pEvent)->Set();
 
     ++g_keSetEventGeneration;
@@ -3546,7 +3648,100 @@ uint32_t KeWaitForSingleObject(XDISPATCHER_HEADER* Object, uint32_t WaitReason, 
     
     const uint32_t timeout = GuestTimeoutToMilliseconds(Timeout);
     const uint32_t caller = g_ppcContext ? static_cast<uint32_t>(g_ppcContext->lr) : 0;
-    const uint32_t objAddr = Object ? static_cast<uint32_t>(reinterpret_cast<uintptr_t>(Object) & 0xFFFFFFFF) : 0;
+    const uint32_t objAddr = Object ? static_cast<uint32_t>(reinterpret_cast<uintptr_t>(Object) - reinterpret_cast<uintptr_t>(g_memory.base)) : 0;
+    
+    // =========================================================================
+    // GPU FENCE BYPASS: Auto-signal the GPU fence to unblock the boot sequence
+    // The GPU thread (caller 0x829DDD48) waits on fence 0x8006F844.
+    // The caller is in a loop that processes GPU commands and waits for completion.
+    // Since we don't have a real GPU, we block this thread to let others run.
+    // =========================================================================
+    if (objAddr == 0x8006F844 || caller == 0x829DDD48)
+    {
+        static int s_fenceBypassCount = 0;
+        static bool s_gpuThreadParked = false;
+        ++s_fenceBypassCount;
+        
+        if (s_fenceBypassCount <= 10)
+        {
+            LOGF_IMPL(Utility, "FenceBypass", "GPU thread wait #{} obj=0x{:08X} caller=0x{:08X}", 
+                      s_fenceBypassCount, objAddr, caller);
+        }
+        
+        // Force-signal any fence object
+        if (Object)
+        {
+            Object->SignalState = 1;
+        }
+        
+        // Update ring buffer read pointer to indicate all commands consumed
+        if (g_gpuRingBuffer.writebackEnabled && g_gpuRingBuffer.readPtrWritebackAddr != 0)
+        {
+            uint32_t* writebackPtr = reinterpret_cast<uint32_t*>(
+                g_memory.Translate(g_gpuRingBuffer.readPtrWritebackAddr));
+            *writebackPtr = ByteSwap(0xFFFFFFFF);
+        }
+        
+        // Force-set all GPU init flags after a few iterations to unblock boot
+        if (s_fenceBypassCount >= 5)
+        {
+            g_gpuRingBuffer.enginesInitialized = true;
+            g_gpuRingBuffer.edramTrainingComplete = true;
+            g_gpuRingBuffer.interruptSeen = true;
+        }
+        
+        // Park the GPU thread: once GPU init is done, fire VBlank interrupt periodically
+        if (g_gpuRingBuffer.enginesInitialized && 
+            g_gpuRingBuffer.edramTrainingComplete && 
+            g_gpuRingBuffer.interruptSeen)
+        {
+            if (!s_gpuThreadParked)
+            {
+                s_gpuThreadParked = true;
+                LOGF_IMPL(Utility, "FenceBypass", "GPU init complete - starting VBlank heartbeat (after {} waits)", s_fenceBypassCount);
+            }
+            
+            // Fire VBlank interrupt periodically (~60 FPS = 16ms)
+            static auto s_lastVBlank = std::chrono::steady_clock::now();
+            static int s_vblankCount = 0;
+            auto now = std::chrono::steady_clock::now();
+            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - s_lastVBlank).count();
+            
+            if (elapsed >= 16 && g_gpuRingBuffer.interruptCallback != 0)
+            {
+                s_lastVBlank = now;
+                ++s_vblankCount;
+                
+                if (s_vblankCount <= 10 || s_vblankCount % 60 == 0)
+                {
+                    LOGF_IMPL(Utility, "VBlank", "Firing VBlank #{} callback=0x{:08X}", 
+                              s_vblankCount, g_gpuRingBuffer.interruptCallback);
+                }
+                
+                // Call the guest interrupt callback function
+                // r3 = interrupt type (0 = VBlank, 1 = other)
+                // r4 = user data pointer
+                auto func = g_memory.FindFunction(g_gpuRingBuffer.interruptCallback);
+                if (func)
+                {
+                    PPCContext tempCtx = *g_ppcContext;
+                    tempCtx.r3.u32 = 0;  // Interrupt type: 0 = VBlank
+                    tempCtx.r4.u32 = g_gpuRingBuffer.interruptUserData;
+                    func(tempCtx, g_memory.base);
+                }
+            }
+            
+            // Short sleep to prevent tight spinning
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+        else
+        {
+            // During init, short sleep to allow progress
+            std::this_thread::sleep_for(std::chrono::microseconds(100));
+        }
+        
+        return STATUS_SUCCESS;
+    }
     
     // Log ALL waits for async IO debugging - exclude GPU poll thread (0x829DDD48)
     static int s_asyncWaitLogCount = 0;
@@ -4017,6 +4212,16 @@ uint32_t NtCreateSemaphore(be<uint32_t>* Handle, XOBJECT_ATTRIBUTES* ObjectAttri
 
 uint32_t NtReleaseSemaphore(Semaphore* Handle, uint32_t ReleaseCount, int32_t* PreviousCount)
 {
+    static int s_count = 0;
+    ++s_count;
+    
+    if (s_count <= 20 || s_count % 100 == 0)
+    {
+        uint32_t curCount = Handle->count.load();
+        LOGF_IMPL(Utility, "Semaphore", "NtReleaseSemaphore #{} release={} count={}/{}", 
+                  s_count, ReleaseCount, curCount, Handle->maximumCount);
+    }
+    
     // the game releases semaphore with 1 maximum number of releases more than once
     if (Handle->count + ReleaseCount > Handle->maximumCount)
         return STATUS_SEMAPHORE_LIMIT_EXCEEDED;
@@ -4291,9 +4496,46 @@ void NetDll_XNetStartup()
     LOG_UTILITY("!!! STUB !!!");
 }
 
-void NetDll_XNetGetTitleXnAddr()
+// XNetGetTitleXnAddr - Return fake IP to unblock network wait
+// The game loops on this until it gets a valid network state
+// Return value: 0=Pending, 1=None, 2=Ethernet (connected)
+uint32_t NetDll_XNetGetTitleXnAddr(uint32_t pAddr)
 {
-    LOG_UTILITY("!!! STUB !!!");
+    static int s_callCount = 0;
+    ++s_callCount;
+    
+    if (pAddr != 0)
+    {
+        uint8_t* base = g_memory.base;
+        
+        // XNADDR structure layout:
+        // 0x00: IN_ADDR ina (4 bytes) - Local IP
+        // 0x04: IN_ADDR inaOnline (4 bytes) - Online IP  
+        // 0x08: WORD wPortOnline (2 bytes)
+        // 0x0A: BYTE abEnet[6] - MAC address
+        // 0x10: BYTE abOnline[20] - Online key
+        
+        // Write fake IP: 192.168.1.100 (0xC0A80164 in network byte order)
+        *reinterpret_cast<be<uint32_t>*>(base + pAddr + 0x00) = 0x6401A8C0; // 192.168.1.100
+        *reinterpret_cast<be<uint32_t>*>(base + pAddr + 0x04) = 0x6401A8C0; // Same for online
+        *reinterpret_cast<be<uint16_t>*>(base + pAddr + 0x08) = 3074; // Port
+        
+        // Fake MAC address: 00:11:22:33:44:55
+        base[pAddr + 0x0A] = 0x00;
+        base[pAddr + 0x0B] = 0x11;
+        base[pAddr + 0x0C] = 0x22;
+        base[pAddr + 0x0D] = 0x33;
+        base[pAddr + 0x0E] = 0x44;
+        base[pAddr + 0x0F] = 0x55;
+    }
+    
+    if (s_callCount <= 5)
+    {
+        LOGF_UTILITY("XNetGetTitleXnAddr #{} -> Returning ETHERNET (2) with fake IP 192.168.1.100", s_callCount);
+    }
+    
+    // Return XNET_GET_XNADDR_ETHERNET (2) = Connected
+    return 2;
 }
 
 uint32_t KeWaitForMultipleObjects(uint32_t Count, xpointer<XDISPATCHER_HEADER>* Objects, uint32_t WaitType, uint32_t WaitReason, uint32_t WaitMode, uint32_t Alertable, be<int64_t>* Timeout)
@@ -4344,7 +4586,18 @@ void KfLowerIrql() { }
 
 uint32_t KeReleaseSemaphore(XKSEMAPHORE* semaphore, uint32_t increment, uint32_t adjustment, uint32_t wait)
 {
+    static int s_count = 0;
+    ++s_count;
+    
     auto* object = QueryKernelObject<Semaphore>(semaphore->Header);
+    
+    if (s_count <= 20 || s_count % 100 == 0)
+    {
+        uint32_t curCount = object->count.load();
+        LOGF_IMPL(Utility, "Semaphore", "KeReleaseSemaphore #{} adj={} count={}/{}", 
+                  s_count, adjustment, curCount, object->maximumCount);
+    }
+    
     object->Release(adjustment, nullptr);
     return STATUS_SUCCESS;
 }
@@ -4419,15 +4672,43 @@ void XapiInitProcess()
 }
 
 // GTA IV specific stubs
-void XamTaskSchedule()
+// XamTaskSchedule - schedule an async task
+// For now, just return success with a valid handle - tasks aren't fully implemented
+uint32_t XamTaskSchedule(uint32_t funcAddr, uint32_t context, uint32_t processId,
+                         uint32_t stackSize, uint32_t priority, uint32_t flags,
+                         be<uint32_t>* phTask)
 {
-    LOG_UTILITY("!!! STUB !!!");
+    static int s_count = 0;
+    static uint32_t s_nextHandle = 0x80001000;
+    
+    ++s_count;
+    if (s_count <= 20)
+    {
+        LOGF_IMPL(Utility, "XamTaskSchedule", 
+                  "#{} func=0x{:08X} ctx=0x{:08X} stack={} prio={} flags=0x{:X}",
+                  s_count, funcAddr, context, stackSize, priority, flags);
+    }
+    
+    // Assign a task handle
+    uint32_t taskHandle = s_nextHandle++;
+    if (phTask)
+    {
+        *phTask = taskHandle;
+    }
+    
+    return ERROR_SUCCESS;
 }
 
 uint32_t XamTaskShouldExit(uint32_t taskHandle)
 {
-    // Return 1 to indicate task should exit (no async tasks supported yet)
-    return 1;
+    // Return 0 so tasks continue running - returning 1 causes task loops to exit
+    // immediately, which prevents initialization from completing and blocks main loop
+    static int s_count = 0;
+    if (++s_count <= 10)
+    {
+        LOGF_UTILITY("handle=0x{:08X} -> returning 0 (task continues)", taskHandle);
+    }
+    return 0;
 }
 
 uint32_t XamTaskCloseHandle(uint32_t taskHandle)
@@ -4742,6 +5023,203 @@ void NetDll_XNetUnregisterInAddr()
 // sub_829A1F00 - the actual file loading function
 // =============================================================================
 
+// Hook sub_827DAE40 - Worker thread entry point (streaming workers)
+// This function calls an indirect task function that may be stuck
+extern "C" void __imp__sub_827DAE40(PPCContext& ctx, uint8_t* base);
+PPC_FUNC(sub_827DAE40)
+{
+    static int s_count = 0;
+    ++s_count;
+    
+    uint32_t context = ctx.r3.u32;  // Worker context pointer
+    
+    // Read the task function pointer from the context structure
+    // Based on the disassembly, the function ptr is at context+80 (after 44-byte copy)
+    uint32_t* ctxData = reinterpret_cast<uint32_t*>(base + context);
+    uint32_t taskFunc = ByteSwap(ctxData[0]);  // First dword of context
+    
+    if (s_count <= 20 || s_count % 100 == 0)
+    {
+        LOGF_IMPL(Utility, "WorkerThread", 
+                  "sub_827DAE40 ENTER #{} ctx=0x{:08X} taskFunc=0x{:08X}", 
+                  s_count, context, taskFunc);
+    }
+    
+    __imp__sub_827DAE40(ctx, base);
+    
+    if (s_count <= 20 || s_count % 100 == 0)
+    {
+        LOGF_IMPL(Utility, "WorkerThread", "sub_827DAE40 EXIT #{}", s_count);
+    }
+}
+
+// Hook sub_829A9738 - Wait-with-retry helper (calls NtWaitForSingleObjectEx)
+extern "C" void __imp__sub_829A9738(PPCContext& ctx, uint8_t* base);
+PPC_FUNC(sub_829A9738)
+{
+    static int s_count = 0;
+    ++s_count;
+    
+    uint32_t waitObj = ctx.r3.u32;  // Object to wait on
+    int32_t timeout = ctx.r4.s32;    // Timeout value
+    
+    if (s_count <= 20 || s_count % 100 == 0)
+    {
+        LOGF_IMPL(Utility, "WaitHelper", "sub_829A9738 #{} obj=0x{:08X} timeout={}", 
+                  s_count, waitObj, timeout);
+    }
+    
+    __imp__sub_829A9738(ctx, base);
+    
+    if (s_count <= 20 || s_count % 100 == 0)
+    {
+        LOGF_IMPL(Utility, "WaitHelper", "sub_829A9738 #{} returned r3=0x{:08X}", 
+                  s_count, ctx.r3.u32);
+    }
+}
+
+// Hook sub_829D5388 - D3D Present wrapper that calls VdSwap
+extern "C" void __imp__sub_829D5388(PPCContext& ctx, uint8_t* base);
+PPC_FUNC(sub_829D5388)
+{
+    static int s_count = 0;
+    ++s_count;
+    
+    if (s_count <= 20 || s_count % 60 == 0)
+    {
+        LOGF_IMPL(Utility, "Present", "sub_829D5388 #{} - calling VdSwap!", s_count);
+    }
+    
+    __imp__sub_829D5388(ctx, base);
+    
+    if (s_count <= 5)
+    {
+        LOGF_IMPL(Utility, "Present", "sub_829D5388 #{} - returned from VdSwap", s_count);
+    }
+}
+
+// Hook sub_829D4C48 - Frame swap/Present function called from VBlank
+extern "C" void __imp__sub_829D4C48(PPCContext& ctx, uint8_t* base);
+PPC_FUNC(sub_829D4C48)
+{
+    static int s_count = 0;
+    ++s_count;
+    
+    // r3 = userData pointer (0x8006CB00)
+    // The swap callback is at userData + 16528 (0x4090)
+    uint32_t userData = ctx.r3.u32;
+    uint32_t swapCallbackAddr = userData + 16528;
+    uint32_t swapCallback = ByteSwap(*reinterpret_cast<uint32_t*>(base + swapCallbackAddr));
+    
+    if (s_count <= 10 || s_count % 60 == 0)
+    {
+        LOGF_IMPL(Utility, "FrameSwap", "#{} userData=0x{:08X} swapCallback@0x{:08X}=0x{:08X}", 
+                  s_count, userData, swapCallbackAddr, swapCallback);
+    }
+    
+    // The internal logic of sub_829D4C48 has complex conditions that prevent
+    // the swap callback from being called on subsequent frames.
+    // Force VdSwap to be called directly on every frame to complete the frame cycle.
+    
+    // Call the original function first
+    __imp__sub_829D4C48(ctx, base);
+    
+    // Then force VdSwap to ensure frame completion
+    static int s_vdSwapForced = 0;
+    ++s_vdSwapForced;
+    
+    if (s_vdSwapForced <= 10 || s_vdSwapForced % 60 == 0)
+    {
+        LOGF_IMPL(Utility, "FrameSwap", "Forcing VdSwap call #{} to complete frame", s_vdSwapForced);
+    }
+    
+    // Call VdSwap directly
+    VdSwap();
+}
+
+// Hook sub_829D7368 - VBlank interrupt callback
+extern "C" void __imp__sub_829D7368(PPCContext& ctx, uint8_t* base);
+PPC_FUNC(sub_829D7368)
+{
+    static int s_count = 0;
+    ++s_count;
+    
+    uint32_t interruptType = ctx.r3.u32;
+    uint32_t userData = ctx.r4.u32;
+    
+    // Check the flag at 0x7FC86544 that controls frame swap
+    uint32_t flagAddr = 0x7FC86544;
+    uint32_t flagValue = ByteSwap(*reinterpret_cast<uint32_t*>(base + flagAddr));
+    
+    if (s_count <= 10 || s_count % 60 == 0)
+    {
+        LOGF_IMPL(Utility, "VBlankCallback", "#{} type={} userData=0x{:08X} flag@0x{:08X}=0x{:08X}",
+                  s_count, interruptType, userData, flagAddr, flagValue);
+    }
+    
+    // Force the flag to enable frame swap if it's not set
+    if ((flagValue & 1) == 0)
+    {
+        *reinterpret_cast<uint32_t*>(base + flagAddr) = ByteSwap(flagValue | 1);
+        if (s_count <= 10)
+        {
+            LOGF_IMPL(Utility, "VBlankCallback", "Forced flag bit 0 -> 0x{:08X}", flagValue | 1);
+        }
+    }
+    
+    __imp__sub_829D7368(ctx, base);
+}
+
+// Hook sub_829A3318 - Boot orchestrator (calls XamTaskShouldExit in loop)
+extern "C" void __imp__sub_829A3318(PPCContext& ctx, uint8_t* base);
+PPC_FUNC(sub_829A3318)
+{
+    static int s_count = 0;
+    ++s_count;
+    
+    if (s_count <= 10 || s_count % 100 == 0)
+    {
+        LOGF_IMPL(Utility, "BootOrchestrator", "sub_829A3318 #{}", s_count);
+    }
+    
+    __imp__sub_829A3318(ctx, base);
+}
+
+// Hook sub_828529B0 - Main loop orchestrator (calls VdSwap path)
+extern "C" void __imp__sub_828529B0(PPCContext& ctx, uint8_t* base);
+PPC_FUNC(sub_828529B0)
+{
+    static int s_count = 0;
+    ++s_count;
+    
+    if (s_count <= 10 || s_count % 100 == 0)
+    {
+        LOGF_IMPL(Utility, "MainLoop", "sub_828529B0 ENTER #{}", s_count);
+    }
+    
+    __imp__sub_828529B0(ctx, base);
+    
+    if (s_count <= 10 || s_count % 100 == 0)
+    {
+        LOGF_IMPL(Utility, "MainLoop", "sub_828529B0 EXIT #{}", s_count);
+    }
+}
+
+// Hook sub_828507F8 - Frame presentation wrapper (calls VdSwap)
+extern "C" void __imp__sub_828507F8(PPCContext& ctx, uint8_t* base);
+PPC_FUNC(sub_828507F8)
+{
+    static int s_count = 0;
+    ++s_count;
+    
+    if (s_count <= 10 || s_count % 60 == 0)
+    {
+        LOGF_IMPL(Utility, "Present", "sub_828507F8 (Present) #{}", s_count);
+    }
+    
+    __imp__sub_828507F8(ctx, base);
+}
+
 // Hook sub_82192100 - skip dirty disc error UI and limit retries
 PPC_FUNC(sub_82192100)
 {
@@ -4816,17 +5294,40 @@ PPC_FUNC(sub_829A1F00)
         }
         
         // For async reads, set completion flags BEFORE returning (static recomp playbook)
+        // Xbox 360 IO_STATUS_BLOCK / OVERLAPPED structure (big-endian):
+        //   Offset 0: Status (NTSTATUS) - 0 = STATUS_SUCCESS, 0x103 = STATUS_PENDING
+        //   Offset 4: Information (bytes transferred)
+        // The guest is POLLING this memory address waiting for Status != STATUS_PENDING
         if (asyncInfo != 0 && asyncInfo < 0x20000000)
         {
             volatile uint32_t* asyncPtr = reinterpret_cast<volatile uint32_t*>(base + asyncInfo);
-            asyncPtr[0] = 0;                    // Error = 0 (ERROR_SUCCESS)
-            asyncPtr[1] = ByteSwap(bytesRead);  // Length = bytes transferred
-            asyncPtr[6] = 0;                    // dwExtendedError = 0
-            std::atomic_thread_fence(std::memory_order_seq_cst);
             
+            // Log BEFORE state for debugging
             if (count <= 20)
             {
-                LOGF_IMPL(Utility, "GTA4_FileLoad", "ASYNC: Set completion: Error=0, Length={}", bytesRead);
+                uint32_t beforeStatus = asyncPtr[0];
+                uint32_t beforeInfo = asyncPtr[1];
+                LOGF_IMPL(Utility, "GTA4_FileLoad", 
+                          "ASYNC: BEFORE @0x{:08X}: Status=0x{:08X}, Info=0x{:08X}", 
+                          asyncInfo, beforeStatus, beforeInfo);
+            }
+            
+            // CRITICAL: Write with correct byte order for big-endian Xbox 360
+            // Guest reads memory as big-endian, so we must store in big-endian format
+            asyncPtr[1] = ByteSwap(bytesRead);  // Information = bytes transferred (offset 4)
+            std::atomic_thread_fence(std::memory_order_seq_cst);
+            asyncPtr[0] = 0;                    // Status = STATUS_SUCCESS (0) - write LAST!
+            std::atomic_thread_fence(std::memory_order_seq_cst);
+            
+            // Log AFTER state
+            if (count <= 20)
+            {
+                uint32_t afterStatus = asyncPtr[0];
+                uint32_t afterInfo = asyncPtr[1];
+                uint32_t eventHandle = ByteSwap(asyncPtr[2]);
+                LOGF_IMPL(Utility, "GTA4_FileLoad", 
+                          "ASYNC: AFTER  @0x{:08X}: Status=0x{:08X}, Info=0x{:08X}, hEvent=0x{:08X}", 
+                          asyncInfo, afterStatus, afterInfo, eventHandle);
             }
         }
         

@@ -6,46 +6,52 @@ This document describes the shader extraction, conversion, and caching pipeline 
 
 ## Overview
 
-GTA IV for Xbox 360 uses RAGE engine shaders stored in a proprietary `.fxc` container format. These shaders must be converted to platform-native formats for use on modern graphics APIs:
+GTA IV for Xbox 360 uses RAGE engine shaders stored in a proprietary `.fxc` container format. These shaders are **pre-compiled at build time** using XenosRecomp and embedded directly into the binary for optimal runtime performance.
 
-| Platform | Graphics API | Shader Format | Install Directory |
-|----------|-------------|---------------|-------------------|
-| Windows | Direct3D 12 | DXIL | `%LOCALAPPDATA%\LibertyRecomp\` |
-| Linux | Vulkan | SPIR-V | `~/.local/share/LibertyRecomp/` |
-| macOS | Metal | AIR | `~/Library/Application Support/LibertyRecomp/` |
+| Platform | Graphics API | Shader Format | Cache Location |
+|----------|-------------|---------------|----------------|
+| Windows | Direct3D 12 | DXIL | Embedded in binary (`g_compressedDxilCache`) |
+| Linux | Vulkan | SPIR-V | Embedded in binary (`g_compressedSpirvCache`) |
+| macOS | Metal | AIR | Embedded in binary (`g_compressedAirCache`) |
 
 ## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                      Installation Flow                          │
+│                    BUILD-TIME Shader Pipeline                   │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│  1. User selects ISO/folder ──► installer.cpp                   │
-│                                     │                           │
-│  2. Copy game files ◄───────────────┘                           │
-│                                     │                           │
-│  3. Shader conversion ◄─────────────┘                           │
-│         │                                                       │
-│         ▼                                                       │
-│  ┌─────────────────┐    ┌─────────────────┐                    │
-│  │ shader_converter │───►│ RAGE FXC Parser │                    │
-│  │      .cpp        │    │                 │                    │
-│  └─────────────────┘    └────────┬────────┘                    │
-│                                  │                              │
-│                                  ▼                              │
+│  1. Extract shaders ──► tools/rage_fxc_extractor/               │
+│                              │                                  │
+│                              ▼                                  │
 │                    ┌─────────────────────────┐                  │
 │                    │ Xbox 360 Shader Binary  │                  │
 │                    │   (0x102A11XX magic)    │                  │
 │                    └───────────┬─────────────┘                  │
 │                                │                                │
-│                                ▼                                │
+│  2. Recompile shaders ◄────────┘                                │
+│         │                                                       │
+│         ▼                                                       │
+│  ┌─────────────────┐    ┌─────────────────┐                    │
+│  │   XenosRecomp   │───►│ HLSL conversion │                    │
+│  └─────────────────┘    └────────┬────────┘                    │
+│                                  │                              │
+│                                  ▼                              │
 │                    ┌─────────────────────────┐                  │
-│                    │     shader_cache/       │                  │
-│                    │   ├── extracted/        │                  │
-│                    │   │   └── *.bin         │                  │
-│                    │   └── shader_cache.marker                  │
-│                    └─────────────────────────┘                  │
+│                    │ Platform-native compile │                  │
+│                    │  DXIL / SPIR-V / AIR    │                  │
+│                    └───────────┬─────────────┘                  │
+│                                │                                │
+│  3. Embed in binary ◄──────────┘                                │
+│         │                                                       │
+│         ▼                                                       │
+│  ┌──────────────────────────────────────────┐                  │
+│  │ LibertyRecompLib/shader/shader_cache.cpp │                  │
+│  │  ├── g_shaderCacheEntries[1132]          │                  │
+│  │  ├── g_compressedDxilCache               │                  │
+│  │  ├── g_compressedSpirvCache              │                  │
+│  │  └── g_compressedAirCache (8MB → 29MB)   │                  │
+│  └──────────────────────────────────────────┘                  │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -178,41 +184,45 @@ ShaderPlatform ShaderConverter::detectPlatform() {
 
 ## Cache Structure
 
-After installation, shaders are cached at:
+Shaders are embedded in the binary at build time:
 
 ```
-<install_dir>/
-├── game/
-│   └── shaders/
-│       └── *.fxc (original RAGE FXC files)
-└── shader_cache/
-    ├── extracted/
-    │   ├── gta_default/
-    │   │   ├── gta_default_vs0.bin
-    │   │   ├── gta_default_vs1.bin
-    │   │   ├── gta_default_ps0.bin
-    │   │   └── ...
-    │   ├── gta_vehicle_paint1/
-    │   │   └── ...
-    │   └── ...
-    └── shader_cache.marker
+LibertyRecompLib/shader/
+├── shader_cache.h          # ShaderCacheEntry struct definition
+└── shader_cache.cpp        # Generated by XenosRecomp
+    ├── g_shaderCacheEntries[1132]     # Shader metadata (hash, offsets, sizes)
+    ├── g_compressedDxilCache          # DXIL bytecode (Windows)
+    ├── g_compressedSpirvCache         # SPIR-V bytecode (Linux)
+    └── g_compressedAirCache           # AIR bytecode (macOS, 8MB compressed)
 ```
 
 ## Runtime Usage
 
-At runtime, `video.cpp` loads shaders from the cache:
+At runtime, `video.cpp` looks up shaders by hash from the embedded cache:
 
 ```cpp
-// In video.cpp
-const ShaderCacheEntry* entry = findShaderCacheEntry(hash);
-if (entry) {
-    // Use pre-compiled shader from cache
-    loadCompiledShader(entry);
-} else {
-    // Fallback: runtime compilation (slower)
-    compileShaderAtRuntime(shaderData);
+// In video.cpp - FindShaderCacheEntry()
+static ShaderCacheEntry* FindShaderCacheEntry(XXH64_hash_t hash)
+{
+    auto end = g_shaderCacheEntries + g_shaderCacheEntryCount;
+    auto findResult = std::lower_bound(g_shaderCacheEntries, end, hash, 
+        [](ShaderCacheEntry& lhs, XXH64_hash_t rhs) {
+            return lhs.hash < rhs;
+        });
+    return findResult != end && findResult->hash == hash ? findResult : nullptr;
 }
+
+// In CreateShader()
+auto findResult = FindShaderCacheEntry(hash);
+if (findResult == nullptr) {
+    // Shader not in cache - fatal error (no runtime fallback)
+    LOG_ERROR("Shader not found: {:x}", hash);
+    std::_Exit(1);
+}
+// Use pre-compiled shader from embedded cache
 ```
+
+> **Note:** There is no runtime fallback. All shaders must be pre-compiled at build time.
 
 ## Statistics
 
@@ -224,14 +234,18 @@ From the 79 `.fxc` files in GTA IV:
 | Total extracted shaders | 1132 |
 | Vertex shaders | ~600 |
 | Pixel shaders | ~530 |
-| Compressed cache size | ~31 MB |
+| AIR cache (macOS) | 8 MB compressed → 29 MB decompressed |
+| SPIR-V cache (Linux) | 703 KB compressed → 5.5 MB decompressed |
 
 ## Error Handling
 
-Shader conversion failures are **non-fatal**:
-- Missing shader directory: Logged, installation continues
+Shader lookup failures are **fatal** at runtime:
+- Missing shader: `std::_Exit(1)` - game cannot continue
+- All shaders must be pre-compiled at build time via XenosRecomp
+
+Build-time extraction failures are non-fatal:
+- Missing shader directory: Logged, build continues
 - Parse failures: Individual file skipped, others processed
-- Compilation failures: Runtime fallback available
 
 ## Building the Tools
 
