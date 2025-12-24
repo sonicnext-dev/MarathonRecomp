@@ -9,9 +9,9 @@ namespace Sonicteam
     class NamedActor : public Actor
     {
     public:
-        stdx::string m_Name;
+        stdx::string m_AttachPoint;
     };
 
-    MARATHON_ASSERT_OFFSETOF(NamedActor, m_Name, 0x58);
+    MARATHON_ASSERT_OFFSETOF(NamedActor, m_AttachPoint, 0x58);
     MARATHON_ASSERT_SIZEOF(NamedActor, 0x74);
 }

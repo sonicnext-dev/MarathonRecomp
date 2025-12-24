@@ -268,3 +268,63 @@ bool ObjectVehicleBike_EnemyShot_DisableVehicleCollisionLayer(PPCRegister& r3)
 
     return true;
 }
+
+bool ShouldApplyFPSFix()
+{
+    return Config::FPS == -1 || Config::FPS > 60.0f;
+}
+
+// Shadow KDV Glider Bug Fix
+// General Fix To Any Vehicle & More
+PPC_FUNC_IMPL(__imp__sub_821ED418);
+PPC_FUNC(sub_821ED418)
+{
+    auto pZock = (Sonicteam::Player::Zock*)(base + ctx.r3.u32);
+    if (pZock->m_spPhantomA.get() && pZock->m_spPhantomA->m_pRigidBody.get() && pZock->m_spPhantomA->m_pRigidBody->m_collidable.m_shape.get())
+    {
+        auto pShapeBV = (hk330::hkpBvShape*)(pZock->m_spPhantomA->m_pRigidBody->m_collidable.m_shape.get());
+        auto pChildShape = (hk330::hkpShapeSphere*)(pShapeBV->m_childShape.get());
+
+        if (Config::FPS > 59 || Config::FPS == -1)
+        {
+            float targetFPS = 1.0f / App::s_deltaTime;
+            float fpsAbove59 = std::max(targetFPS - 59.0f, 0.0f);
+            float normalized = std::min(fpsAbove59 / 61.0f, 1.0f);
+            float radiusIncrease = normalized * 0.1f;
+            pChildShape->m_radius = 0.5f + radiusIncrease;
+        }
+    }
+    __imp__sub_821ED418(ctx, base);
+}
+
+void BodyHavok_ApplyForce2(PPCRegister& Vector, PPCRegister& Body)
+{
+    if (!ShouldApplyFPSFix())
+        return;
+
+    auto pBody = (Sonicteam::SoX::Physics::Body*)(Body.u32 + g_memory.base);
+    auto pVector = (Sonicteam::SoX::Math::Vector*)(Vector.u32 + g_memory.base);
+    float speedMultiplier = REFERENCE_DELTA_TIME / App::s_deltaTime;
+    *pVector = *pVector * speedMultiplier;
+}
+
+void BodyHavok_ApplyForce1(PPCRegister& Vector, PPCRegister& Body)
+{
+    if (!ShouldApplyFPSFix())
+        return;
+
+    auto pBody = (Sonicteam::SoX::Physics::Body*)(Body.u32 + g_memory.base);
+    auto pVector = (Sonicteam::SoX::Math::Vector*)(Vector.u32 + g_memory.base);
+    float speedMultiplier = REFERENCE_DELTA_TIME / App::s_deltaTime;
+    *pVector = *pVector * speedMultiplier;
+}
+
+bool DocMarathonState_Update_DocSpeedFix(PPCRegister& delta)
+{
+    auto speed = App::s_pApp->m_pDoc->m_DocSpeed.get();
+    if (Config::FPS <= 60 || speed == 1.0 || speed == 0.0)
+        return false;
+
+    delta.f64 = delta.f64 * (speed / REFERENCE_DELTA_TIME);
+    return true;
+}

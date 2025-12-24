@@ -7,7 +7,12 @@ namespace Sonicteam::Player
     class IVariable
     {
     public:
-        xpointer<void> m_pVftable;
+        struct Vftable
+        {
+            be<uint32_t> fpImportVariable;
+        };
+
+        xpointer<Vftable> m_pVftable;
     };
 
     MARATHON_ASSERT_OFFSETOF(IVariable, m_pVftable, 0x00);

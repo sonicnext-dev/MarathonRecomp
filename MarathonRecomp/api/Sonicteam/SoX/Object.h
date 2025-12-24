@@ -10,6 +10,7 @@ namespace Sonicteam::SoX
         struct Vftable
         {
             be<uint32_t> fpGetName;
+            be<uint32_t> fpDestroy;
         };
 
         xpointer<Vftable> m_pVftable;
