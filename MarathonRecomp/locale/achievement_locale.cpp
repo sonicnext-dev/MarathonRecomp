@@ -18,9 +18,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "ソニックエピソードクリア",
+                    "ソニックのエピソードをクリアして！",
+                    "ソニックのエピソードをクリアした。"
                 }
             },
             {
@@ -34,9 +34,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Episode de Sonic : réussi",
+                    "Réussir l'épisode de Sonic!",
+                    "Réussissez l'épisode de Sonic."
                 }
             },
             {
@@ -73,9 +73,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "シャドウエピソードクリア",
+                    "シャドウのエピソードをクリアして！",
+                    "シャドウのエピソードをクリアした。"
                 }
             },
             {
@@ -89,9 +89,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Episode de Shadow : réussi",
+                    "Réussir l'épisode de Shadow!",
+                    "Réussissez l'épisode de Shadow."
                 }
             },
             {
@@ -128,9 +128,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "シルバーエピソードクリア",
+                    "シルバーのエピソードをクリアして！",
+                    "シルバーのエピソードをクリアした。"
                 }
             },
             {
@@ -144,9 +144,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Episode de Silver : réussi",
+                    "Réussir l'épisode de Silver!",
+                    "Réussissez l'épisode de Silver."
                 }
             },
             {
@@ -183,9 +183,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "終わりを刻む者",
+                    "ラスト隠れたエピソードをクリアして！。",
+                    "ラストエピソードをクリアした。"
                 }
             },
             {
@@ -199,9 +199,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "A atteint la fin",
+                    "Réussir dans l'épisode secret final!",
+                    "Réussissez dans l'épisode final."
                 }
             },
             {
@@ -238,9 +238,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "ソニックエピソードコンプリート",
+                    "ソニックのACTミッションを全てクリアして。",
+                    "ソニックのACTミッションを全てクリアした。"
                 }
             },
             {
@@ -254,9 +254,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Episode de Sonic : terminé",
+                    "Réussir toutes les missions ACTE difficiles de Sonic.",
+                    "Réussissez toutes les missions ACTE de Sonic."
                 }
             },
             {
@@ -293,9 +293,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "シャドウエピソードコンプリート",
+                    "シャドウのACTミッションを全てクリアして。",
+                    "シャドウのACTミッションを全てクリアした。"
                 }
             },
             {
@@ -309,9 +309,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Episode de Shadow : terminé",
+                    "Réussir toutes les missions ACTE difficiles de Shadow.",
+                    "Réussissez toutes les missions ACTE difficiles de Shadow."
                 }
             },
             {
@@ -348,9 +348,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "シルバーエピソードコンプリート",
+                    "シルバーのACTミッションを全てクリアして。",
+                    "シルバーのACTミッションを全てクリアした。"
                 }
             },
             {
@@ -364,9 +364,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Episode de Silver : terminé",
+                    "Réussir toutes les missions ACTE difficiles de Silver.",
+                    "Réussissez toutes les missions ACTE difficiles de Silver."
                 }
             },
             {
@@ -403,9 +403,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "シャドウエピソードマスター",
+                    "シャドウのACTミッションを全てランクSでクリアして。",
+                    "シャドウのACTミッションを全てランクSでクリアした。"
                 }
             },
             {
@@ -419,9 +419,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Episode de Shadow : dominé",
+                    "Terminez toutes les missions ACTE de Shadow avec un rang S.",
+                    "Obtenu un rang S dans toutes les missions ACTE de Shadow."
                 }
             },
             {
@@ -458,9 +458,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "ソニックエピソードマスター",
+                    "ソニックのACTミッションを全てランクSでクリアして。",
+                    "ソニックのACTミッションを全てランクSでクリアした。"
                 }
             },
             {
@@ -474,9 +474,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Episode de Sonic : dominé",
+                    "Terminez toutes les missions ACTE de Sonic avec un rang S.",
+                    "Obtenu un rang S dans toutes les missions ACTE de Sonic."
                 }
             },
             {
@@ -513,9 +513,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "シルバーエピソードマスター",
+                    "シルバーのACTミッションを全てランクSでクリアして。",
+                    "シルバーのACTミッションを全てランクSでクリアした。"
                 }
             },
             {
@@ -529,9 +529,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Episode de Silver : dominé",
+                    "Terminez toutes les missions ACTE de Silver avec un rang S.",
+                    "Obtenu un rang S dans toutes les missions ACTE de Silver."
                 }
             },
             {
@@ -568,9 +568,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "ナイツオブクロノス",
+                    "ラスト隠れたエピソードを全てランクSでクリアして。",
+                    "ラストエピソードを全てランクSでクリアした。"
                 }
             },
             {
@@ -584,9 +584,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Chevaliers de Kronos",
+                    "Terminez toutes l'épisode secret final avec un rang S.",
+                    "Obtenu un rang S dans toutes l'épisode secret final."
                 }
             },
             {
@@ -623,9 +623,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "ソレアナの伝説",
+                    "全てのACTミッションをランクSでクリアして。",
+                    "全てのACTミッションをランクSでクリアした。"
                 }
             },
             {
@@ -639,9 +639,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Légende de Soleanna",
+                    "Terminez toutes les missions ACTE avec un rang S.",
+                    "Obtenu un rang S dans toutes les missions ACTE."
                 }
             },
             {
@@ -678,9 +678,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "シルバーメダリスト",
+                    "ソレアナのシルバーメダルを全て取得して。",
+                    "ソレアナのシルバーメダルを全て取得した。"
                 }
             },
             {
@@ -694,9 +694,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Médaillé d'argent",
+                    "Collectionnez toutes les médailles d'argent dispersées autour de Soleanna.",
+                    "Collectionné toutes les médailles d'argent à Soleanna."
                 }
             },
             {
@@ -733,9 +733,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "ゴールドメダリスト",
+                    "ソレアナのゴールドメダルを全て取得して。",
+                    "ソレアナのゴールドメダルを全て取得した。"
                 }
             },
             {
@@ -749,9 +749,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Médaillé d'or",
+                    "Collectionnez toutes les médailles d'or légendaires de Soleanna.",
+                    "Collectionné toutes les médailles d'or légendaires de Soleanna."
                 }
             },
             {
@@ -788,9 +788,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "蒼き幻影",
+                    "ソニックのアクションを全て習得して。",
+                    "ソニックのアクションを全て習得した。"
                 }
             },
             {
@@ -804,9 +804,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Fantôme bleu",
+                    "Débloquez toutes les capacités de Sonic.",
+                    "Appris toutes les capacités de Sonic."
                 }
             },
             {
@@ -843,9 +843,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "究極の生命体",
+                    "シャドウのアクションを全て習得して。",
+                    "シャドウのアクションを全て習得した。"
                 }
             },
             {
@@ -859,9 +859,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Forme de vie ultime",
+                    "Débloquez toutes les capacités de Shadow.",
+                    "Appris toutes les capacités de Shadow."
                 }
             },
             {
@@ -898,9 +898,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "サイキックソルジャー",
+                    "シルバーのアクションを全て習得して。",
+                    "シルバーのアクションを全て習得した。"
                 }
             },
             {
@@ -914,9 +914,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Soldat psychique",
+                    "Débloquez toutes les capacités de Silver.",
+                    "Appris toutes les capacités de Silver."
                 }
             },
             {
@@ -953,9 +953,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "ソレアナの英雄",
+                    "ソニックのタウンミッションを全てクリアして。",
+                    "ソニックのタウンミッションを全てクリアした。"
                 }
             },
             {
@@ -969,9 +969,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Héros de Soleanna",
+                    "Terminez toutes les missions VILLE de Sonic.",
+                    "Terminé toutes les missions VILLE de Sonic."
                 }
             },
             {
@@ -1008,9 +1008,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "エリートエージェント",
+                    "シャドウのタウンミッションを全てクリアして。",
+                    "シャドウのタウンミッションを全てクリアした。"
                 }
             },
             {
@@ -1024,9 +1024,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Agent d'élite",
+                    "Terminez toutes les missions VILLE de Shadow.",
+                    "Terminé toutes les missions VILLE de Shadow."
                 }
             },
             {
@@ -1063,9 +1063,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "シルバーの解放者",
+                    "シルバーのタウンミッションを全てクリアして。",
+                    "シルバーのタウンミッションを全てクリアした。"
                 }
             },
             {
@@ -1079,9 +1079,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Silver le libérateur",
+                    "Terminez toutes les missions VILLE de Silver.",
+                    "Terminé toutes les missions VILLE de Silver."
                 }
             },
             {
@@ -1118,9 +1118,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "ソレアナの蒼き風",
+                    "ソニックのタウンミッションを全てランクSでクリアして。",
+                    "ソニックのタウンミッションを全てランクSでクリアした。"
                 }
             },
             {
@@ -1134,9 +1134,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Vent bleu de Soleanna",
+                    "Terminez toutes les missions VILLE de Sonic avec un rang S.",
+                    "Obtenu un rang S dans toutes les missions VILLE de Sonic."
                 }
             },
             {
@@ -1173,9 +1173,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "ダーク英雄",
+                    "シャドウのタウンミッションを全てランクSでクリアして。",
+                    "シャドウのタウンミッションを全てランクSでクリアした。"
                 }
             },
             {
@@ -1189,9 +1189,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Héros des ténèbres",
+                    "Terminez toutes les missions VILLE de Shadow avec un rang S.",
+                    "Obtenu un rang S dans toutes les missions VILLE de Shadow."
                 }
             },
             {
@@ -1228,9 +1228,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "シルバーの救世主",
+                    "シルバーのタウンミッションを全てランクSでクリアして。",
+                    "シルバーのタウンミッションを全てランクSでクリアした。"
                 }
             },
             {
@@ -1244,9 +1244,9 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::French,
                 {
-                    "DUMMY",
-                    "DUMMY",
-                    "DUMMY"
+                    "Silver le sauveur",
+                    "Terminez toutes les missions VILLE de Silver avec un rang S.",
+                    "Obtenu un rang S dans toutes les missions VILLE de Silver."
                 }
             },
             {
