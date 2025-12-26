@@ -21,7 +21,7 @@ g_mainMenuCameraUpdateEvent{};
 
 void CameraPatches::Init()
 {
-    MainMenuTaskPatches::Events.push_back(&g_mainMenuCameraUpdateEvent);
+    MainMenuTaskPatches::s_events.push_back(&g_mainMenuCameraUpdateEvent);
 }
 
 void CameraImp_SetFOV(PPCRegister& f1)

@@ -725,3 +725,18 @@ jump_address_on_true = 0x8226AB70
 name = "InfiniteLives"
 address = 0x821857B0
 jump_address_on_true = 0x821857B4
+
+[[midasm_hook]]
+name = "UnlockAchievement"
+address = 0x825B0960
+registers = ["r29"]
+
+[[midasm_hook]]
+name = "HUDGoldMedal_ShouldDestroyTable"
+address = 0x824D6720
+jump_address_on_false = 0x824D6724
+
+[[midasm_hook]]
+name = "MainMenuTask_GoldMedalResults_SkipOutro"
+address = 0x82502E14
+jump_address_on_true = 0x82502E90

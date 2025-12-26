@@ -1,4 +1,5 @@
 #include "text_patches.h"
+#include <api/Marathon.h>
 #include <hid/hid.h>
 #include <kernel/heap.h>
 #include <kernel/memory.h>
@@ -26,10 +27,55 @@ PPC_FUNC(sub_825ECB48)
 
     __imp__sub_825ECB48(ctx, base);
 
-    if (!pNewMessage)
-        return;
+    if (pNewMessage)
+        g_userHeap.Free(pNewMessage);
 
-    g_userHeap.Free(pNewMessage);
+    static uint16_t* s_replacementStringPool{};
+    static ELanguage s_replacementStringPoolLanguage{};
+
+    if (s_replacementStringPoolLanguage != Config::Language)
+    {
+        auto length = 0;
+
+        // Compute string pool length.
+        for (auto& replacement : TextPatches::s_replacedMessages)
+            length += (Localise(replacement.second.pKey).length() * 2) + 2;
+
+        if (s_replacementStringPool)
+            g_userHeap.Free(s_replacementStringPool);
+
+        s_replacementStringPool = (uint16_t*)g_userHeap.Alloc(length);
+        s_replacementStringPoolLanguage = Config::Language;
+
+        auto stringPoolPos = s_replacementStringPool;
+
+        for (auto& replacement : TextPatches::s_replacedMessages)
+        {
+            auto& message = Localise(replacement.second.pKey);
+            auto  wideMessage = TransformUTF8ToWString(message);
+            auto  wideMessageLen = wideMessage.length() + 1;
+
+            replacement.second.pGuestText = stringPoolPos;
+
+            for (size_t i = 0; i < wideMessageLen; i++)
+            {
+                *stringPoolPos = ByteSwap(wideMessage.c_str()[i]);
+                stringPoolPos++;
+            }
+        }
+    }
+
+    auto pspTextCard = (boost::shared_ptr<Sonicteam::TextCard>*)(base + ctx.r3.u32);
+    
+    for (auto& replacement : TextPatches::s_replacedMessages)
+    {
+        if (HashStr(pMessage) != replacement.first)
+            continue;
+
+        pspTextCard->get()->m_spResource = boost::make_shared<uint8_t>(0, 0x820334C4);
+        pspTextCard->get()->m_pText = replacement.second.pGuestText;
+        pspTextCard->get()->m_pVariables = (const char*)0x8200139C;
+    }
 }
 
 // Load text book.

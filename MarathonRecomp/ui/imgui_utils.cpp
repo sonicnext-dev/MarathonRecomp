@@ -234,7 +234,7 @@ double ComputeLinearMotion(double time, double offset, double total, bool revers
 {
     auto result = std::clamp((ImGui::GetTime() - time - offset / 60.0) / total * 60.0, 0.0, 1.0);
 
-    return reverse ? 1.0f - result : result;
+    return reverse ? 1.0 - result : result;
 }
 
 double ComputeMotion(double time, double offset, double total, bool reverse)
@@ -724,6 +724,173 @@ void DrawVersionString(const ImU32 colour)
     // TODO: remove this line after v1 release.
     drawList->AddText(g_pFntNewRodin, fontSize, { textMargin, textY }, colour, "WORK IN PROGRESS");
     drawList->AddText(g_pFntNewRodin, fontSize, { res.x - textSize.x - textMargin, textY }, colour, g_versionString);
+}
+
+static void DrawWindowArrow(const ImVec2 pos, float scale, float rotation, uint32_t colour)
+{
+    auto arrowRadius = Scale(63.0f * scale, true);
+
+    std::array<ImVec2, 4> vertices =
+    {
+        pos,                                          // Top Left
+        { pos.x + arrowRadius, pos.y },               // Top Right
+        { pos.x + arrowRadius, pos.y + arrowRadius }, // Bottom Right
+        { pos.x, pos.y + arrowRadius }                // Bottom Left
+    };
+
+    // Adjust base rotation, since the texture
+    // points the arrow to the bottom left.
+    auto adjRotation = rotation + 90.0f;
+
+    auto radians = adjRotation * (IM_PI / 180.0f);
+    auto c = cosf(radians);
+    auto s = sinf(radians);
+
+    auto& pivot = vertices[3];
+
+    // Rotate around bottom left.
+    for (auto& v : vertices)
+    {
+        float dx = v.x - pivot.x;
+        float dy = v.y - pivot.y;
+
+        v.x = pivot.x + dx * c - dy * s;
+        v.y = pivot.y + dx * s + dy * c;
+    }
+
+    // Adjust height to pivot.
+    for (auto& v : vertices)
+        v.y -= arrowRadius;
+
+    auto drawList = ImGui::GetBackgroundDrawList();
+    auto arrowUVs = PIXELS_TO_UV_COORDS(128, 128, 65, 0, 63, 63);
+
+    auto& uvMin = std::get<0>(arrowUVs);
+    auto& uvMax = std::get<1>(arrowUVs);
+
+    drawList->AddImageQuad(g_upTexWindow.get(), vertices[0], vertices[1], vertices[2], vertices[3], uvMin, { uvMax.x, uvMin.y }, { uvMax.x, uvMax.y }, { uvMin.x, uvMax.y }, colour);
+}
+
+double DrawWindow(const ImVec2 min, const ImVec2 max, bool isAnimated, double time, bool isClosing)
+{
+    auto drawList = ImGui::GetBackgroundDrawList();
+    auto motionTime = 1.0;
+
+    auto _min = min;
+    auto _max = max;
+
+    if (isAnimated)
+    {
+        motionTime = ComputeLinearMotion(time, 0, 8, isClosing);
+
+        auto centre = ImVec2{ min.x + ((max.x - min.x) / 2), min.y + ((max.y - min.y) / 2) };
+
+        _min = Lerp(centre, min, motionTime);
+        _max = Lerp(centre, max, motionTime);
+    }
+
+    constexpr auto containerTopColour = IM_COL32(20, 56, 130, 200);
+    constexpr auto containerBottomColour = IM_COL32(8, 22, 51, 200);
+
+    drawList->AddRectFilledMultiColor(_min, _max, containerTopColour, containerTopColour, containerBottomColour, containerBottomColour);
+
+    auto lineHorzUVs = PIXELS_TO_UV_COORDS(128, 128, 2, 0, 60, 5);
+    auto lineVertUVs = PIXELS_TO_UV_COORDS(128, 128, 0, 66, 5, 60);
+
+    auto lineScale = Scale(1, true);
+    auto lineOffsetRight = Scale(3, true);
+
+    // Top
+    drawList->AddImage(g_upTexWindow.get(), _min, { _max.x, _min.y + lineScale }, GET_UV_COORDS(lineHorzUVs));
+
+    // Bottom
+    drawList->AddImage(g_upTexWindow.get(), { _min.x, _max.y - lineOffsetRight }, { _max.x, (_max.y - lineOffsetRight) + lineScale }, GET_UV_COORDS(lineHorzUVs));
+
+    // Left
+    drawList->AddImage(g_upTexWindow.get(), _min, { _min.x + lineScale, _max.y }, GET_UV_COORDS(lineVertUVs));
+
+    // Right
+    drawList->AddImage(g_upTexWindow.get(), { _max.x - lineOffsetRight, _min.y }, { (_max.x - lineOffsetRight) + lineScale, _max.y }, GET_UV_COORDS(lineVertUVs));
+
+    SetAdditive(true);
+
+    constexpr auto arrowPixelRadius = 63.0f;
+    constexpr auto arrowInnerScale = 0.16f;
+    constexpr auto arrowOuterScale = 0.225f;
+    constexpr auto arrowOuterColour = IM_COL32(255, 255, 255, 45);
+
+    auto arrowOuterOffset = Scale(arrowPixelRadius * arrowOuterScale, true) / 2;
+
+    // Top Left (Inner)
+    DrawWindowArrow(_min, arrowInnerScale, 0.0f, containerTopColour);
+
+    // Top Right (Inner)
+    DrawWindowArrow({ _max.x, _min.y }, arrowInnerScale, 90.0f, containerTopColour);
+
+    // Bottom Right (Inner)
+    DrawWindowArrow(_max, arrowInnerScale, 180.0f, containerTopColour);
+
+    // Bottom Left (Inner)
+    DrawWindowArrow({ _min.x, _max.y }, arrowInnerScale, 270.0f, containerTopColour);
+
+    // Top Left (Outer)
+    DrawWindowArrow({ _min.x - arrowOuterOffset, _min.y - arrowOuterOffset }, arrowOuterScale, 0.0f, arrowOuterColour);
+
+    // Top Right (Outer)
+    DrawWindowArrow({ _max.x + arrowOuterOffset, _min.y - arrowOuterOffset }, arrowOuterScale, 90.0f, arrowOuterColour);
+
+    // Bottom Right (Outer)
+    DrawWindowArrow({ _max.x + arrowOuterOffset, _max.y + arrowOuterOffset }, arrowOuterScale, 180.0f, arrowOuterColour);
+
+    // Bottom Left (Outer)
+    DrawWindowArrow({ _min.x - arrowOuterOffset, _max.y + arrowOuterOffset }, arrowOuterScale, 270.0f, arrowOuterColour);
+
+    ResetAdditive();
+
+    drawList->PushClipRect(_min, _max);
+
+    return motionTime;
+}
+
+void DrawScrollArrows(ImVec2 min, ImVec2 max, float scale, double& time, bool top, bool bottom)
+{
+    auto drawList = ImGui::GetBackgroundDrawList();
+
+    auto scrollArrowUVs = PIXELS_TO_UV_COORDS(1024, 1024, 500, 450, 50, 50);
+    auto scrollArrowOffsetX = Scale(64, true);
+    auto scrollArrowAlphaMotionInTime = ComputeLinearMotion(time, 0, 3);
+    auto scrollArrowAlphaMotionPauseTime = ComputeLinearMotion(time, 3, 11);
+    auto scrollArrowAlphaMotionOutTime = ComputeLinearMotion(time, 11, 4, true);
+    auto scrollArrowAlphaMotionLoopTime = ComputeLinearMotion(time, 15, 50);
+    auto scrollArrowAlphaMotion = 255;
+
+    if (scrollArrowAlphaMotionPauseTime >= 1.0)
+    {
+        // Fade out arrows.
+        scrollArrowAlphaMotion = 255 * scrollArrowAlphaMotionOutTime;
+
+        // Reset loop.
+        if (scrollArrowAlphaMotionLoopTime >= 1.0)
+            time = ImGui::GetTime();
+    }
+    else
+    {
+        // Fade in arrows.
+        scrollArrowAlphaMotion = 255 * scrollArrowAlphaMotionInTime;
+    }
+
+    auto scrollArrowColourMotion = IM_COL32(255, 255, 255, scrollArrowAlphaMotion);
+
+    ImVec2 scrollArrowTopMin = min;
+    ImVec2 scrollArrowTopMax = { scrollArrowTopMin.x + scale, scrollArrowTopMin.y + scale };
+    ImVec2 scrollArrowBottomMin = { scrollArrowTopMin.x, max.y - scale };
+    ImVec2 scrollArrowBottomMax = { scrollArrowTopMax.x, scrollArrowBottomMin.y + scale };
+
+    if (top)
+        AddImageFlipped(g_upTexMainMenu1.get(), scrollArrowTopMin, scrollArrowTopMax, GET_UV_COORDS(scrollArrowUVs), scrollArrowColourMotion, false, true);
+
+    if (bottom)
+        drawList->AddImage(g_upTexMainMenu1.get(), scrollArrowBottomMin, scrollArrowBottomMax, GET_UV_COORDS(scrollArrowUVs), scrollArrowColourMotion);
 }
 
 // Taken from ImGui because we need to modify to break for '\u200B\ too

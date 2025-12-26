@@ -99,6 +99,7 @@ CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreSonicActionGauge, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, SkipIntroLogos, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, TailsGauge, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, UnlimitedAntigravity, false, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, UseOfficialAchievementText, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, UseOfficialTitleOnTitleBar, false, true);
 
 CONFIG_DEFINE("Update", time_t, LastChecked, 0, false);
