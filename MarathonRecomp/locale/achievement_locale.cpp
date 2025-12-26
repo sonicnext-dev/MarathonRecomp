@@ -184,7 +184,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "終わりを刻む者",
-                    "ラスト隠れたエピソードをクリアして！。",
+                    "ラスト隠れたエピソードをクリアして！",
                     "ラストエピソードをクリアした。"
                 }
             },
