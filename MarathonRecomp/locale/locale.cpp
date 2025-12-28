@@ -297,9 +297,9 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "MainMenu_GoldMedalResults_Name",
         {
             { ELanguage::English,  "STATISTICS" },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "スタティスティックス" },
             { ELanguage::German,   "STATISTIKEN" },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "STATISTIQUES" },
             { ELanguage::Spanish,  "ESTADÍSTICAS" },
             { ELanguage::Italian,  "STATISTICHE" }
         }
@@ -310,7 +310,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Statistics: Displays lists of Gold Medals and Achievements" },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Statistiken: Zeigt eine Liste von Gold Medaillen und Erfolgen an" },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "Statistiques : Affiche une liste des Médailles d'Or et des Accomplissements" },
             { ELanguage::Spanish,  "Estadísticas: Muestra los listados de las medallas y los logros" },
             { ELanguage::Italian,  "Statistiche: mostra gli elenchi delle medaglie d'oro e gli obiettivi" }
         }
@@ -321,7 +321,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Achievements" },
             { ELanguage::Japanese, "実績" },
             { ELanguage::German,   "Erfolge" },
-            { ELanguage::French,   "Succès" },
+            { ELanguage::French,   "Accomplissements" },
             { ELanguage::Spanish,  "Logros" },
             { ELanguage::Italian,  "Obiettivi" }
         }
@@ -332,7 +332,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "ACHIEVEMENTS" },
             { ELanguage::Japanese, "実績" },
             { ELanguage::German,   "ERFOLGE" },
-            { ELanguage::French,   "SUCCÈS" },
+            { ELanguage::French,   "ACCOMPLISSEMENTS" },
             { ELanguage::Spanish,  "LOGROS" },
             { ELanguage::Italian,  "OBIETTIVI" }
         }
@@ -343,7 +343,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Gold Medals" },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Gold Medaillen" },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "Médailles d'or" },
             { ELanguage::Spanish,  "Medallas de oro" },
             { ELanguage::Italian,  "Medaglie d'oro" }
         }
@@ -354,7 +354,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "GOLD MEDALS" },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "GOLD MEDAILLEN" },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "MÉDAILLES D'OR" },
             { ELanguage::Spanish,  "MEDALLAS DE ORO" },
             { ELanguage::Italian,  "MEDAGLIE D'ORO" }
         }
@@ -695,7 +695,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Load failed. Achievement data is corrupted.\nIf you continue your achievement progress will\nbe lost." },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Laden fehlgeschlagen. Erfolgs dateien sind\nkorrupt. Wenn du fortfährst wird dein Erfolgs\nfortschritt gelöscht." },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "Chargement échoué. Les données d'Accomplissements\nsont corrompus. Si vous continuez, vos\naccomplissements seront perdus." },
             { ELanguage::Spanish,  "Error al cargar. Los datos de los logros están\ndañados. Si continúas, se perderá el progreso\nde tus logros." },
             { ELanguage::Italian,  "Caricamento fallito. I dati degli obiettivi\nsono danneggiati. Se continui perderai tutti\ni tuoi obiettivi." }
         }
@@ -708,7 +708,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Load failed. Achievement data cannot be loaded.\nIf you continue you will not be able to save\nyour achievement progress." },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Laden fehlgeschlagen. Erfolgs dateien können nicht\ngeladen werden. Wenn du fortfährst wirst du deinen\nErfolgs fortschritt nicht speichern können." },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "Chargement échoué. Les données d'Accomplissements\nn'ont pas pu être chargé. Si vous continuez, vos\naccomplissements seront perdus." },
             { ELanguage::Spanish,  "Error al cargar. No se pueden cargar los datos\nde los logros. Si continúas, no podrás guardar\nel progreso de tus logros." },
             { ELanguage::Italian,  "Caricamento fallito. Impossibile caricare i dati\ndegli obiettivi. Se continui non potrai salvare\ni tuoi obiettivi." }
         }
@@ -721,7 +721,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Save failed. Achievement data cannot be saved.\nIf you continue you will not be able to save\nyour achievement progress." },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "Speichern fehlgeschlagen. Erfolgs dateien können\nnicht gespeichert werden. Wenn du fortfährst wirst\ndu deinen Erfolgs fortschritt nicht speichern können." },
-            { ELanguage::French,   "DUMMY" },
+            { ELanguage::French,   "Sauvegarde échoué. Les données d'Accomplissements\nn'ont pas pu être sauvegardé. Si vous continuez, vos\naccomplissements seront perdus." },
             { ELanguage::Spanish,  "Error al guardar. No se pueden guardar los datos\nde los logros. Si continúas, no podrás guardar\ntu progreso en los logros." },
             { ELanguage::Italian,  "Salvataggio fallito. Impossibile salvare i dati\ndegli obiettivi. Se continui non potrai salvare\ni tuoi obiettivi." }
         }
