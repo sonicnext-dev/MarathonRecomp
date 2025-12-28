@@ -69,7 +69,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Options_Desc_Category_System",
         {
             { ELanguage::English,  "Adjust system settings." },
-            { ELanguage::Japanese, "システムの設定変更します" },
+            { ELanguage::Japanese, "システムの設定を変更します" },
             { ELanguage::German,   "Verändere System-Einstellungen." },
             { ELanguage::French,   "Modifier les paramètres système." },
             { ELanguage::Spanish,  "Ajustar la configuración del sistema." },
@@ -91,7 +91,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Options_Desc_Category_Input",
         {
             { ELanguage::English,  "Adjust input settings." },
-            { ELanguage::Japanese, "入力の設定変更します" },
+            { ELanguage::Japanese, "入力の設定を変更します" },
             { ELanguage::German,   "Verändere Eingabe-Einstellungen." },
             { ELanguage::French,   "Modifier les paramètres d'entrée." },
             { ELanguage::Spanish,  "Ajustar la configuración de entrada." },

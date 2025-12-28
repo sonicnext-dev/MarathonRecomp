@@ -1063,7 +1063,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "シルバーの解放者",
+                    "解放者シルバー",
                     "シルバーのタウンミッションを全てクリアして",
                     "シルバーのタウンミッションを全てクリアした"
                 }
@@ -1228,7 +1228,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
             {
                 ELanguage::Japanese,
                 {
-                    "シルバーの救世主",
+                    "救世主シルバー",
                     "シルバーのタウンミッションを全てランクSでクリアして",
                     "シルバーのタウンミッションを全てランクSでクリアした"
                 }
