@@ -308,7 +308,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "MainMenu_GoldMedalResults_Description",
         {
             { ELanguage::English,  "Statistics: Displays lists of Gold Medals and Achievements" },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "スタティスティックス: ゴールドメダルと実績のリストを表示する" },
             { ELanguage::German,   "Statistiken: Zeigt eine Liste von Gold Medaillen und Erfolgen an" },
             { ELanguage::French,   "Statistiques : Affiche une liste des Médailles d'Or et des Accomplissements" },
             { ELanguage::Spanish,  "Estadísticas: Muestra los listados de las medallas y los logros" },
@@ -341,7 +341,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Achievements_GoldMedals",
         {
             { ELanguage::English,  "Gold Medals" },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "ゴールドメダル" },
             { ELanguage::German,   "Gold Medaillen" },
             { ELanguage::French,   "Médailles d'or" },
             { ELanguage::Spanish,  "Medallas de oro" },
@@ -352,7 +352,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Achievements_GoldMedals_Uppercase",
         {
             { ELanguage::English,  "GOLD MEDALS" },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "ゴールドメダル" },
             { ELanguage::German,   "GOLD MEDAILLEN" },
             { ELanguage::French,   "MÉDAILLES D'OR" },
             { ELanguage::Spanish,  "MEDALLAS DE ORO" },
@@ -693,7 +693,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Title_Message_LoadAchievementDataCorrupt",
         {
             { ELanguage::English,  "Load failed. Achievement data is corrupted.\nIf you continue your achievement progress will\nbe lost." },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "ロード失敗。業績のデータが破損している。\nセーブしていない進行状況は失われます" },
             { ELanguage::German,   "Laden fehlgeschlagen. Erfolgs dateien sind\nkorrupt. Wenn du fortfährst wird dein Erfolgs\nfortschritt gelöscht." },
             { ELanguage::French,   "Chargement échoué. Les données d'Accomplissements\nsont corrompus. Si vous continuez, vos\naccomplissements seront perdus." },
             { ELanguage::Spanish,  "Error al cargar. Los datos de los logros están\ndañados. Si continúas, se perderá el progreso\nde tus logros." },
@@ -706,9 +706,9 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Title_Message_LoadAchievementDataIOError",
         {
             { ELanguage::English,  "Load failed. Achievement data cannot be loaded.\nIf you continue you will not be able to save\nyour achievement progress." },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "ロード失敗。業績のデータがロードできません。\n進行状況は失われますセーブしません" },
             { ELanguage::German,   "Laden fehlgeschlagen. Erfolgs dateien können nicht\ngeladen werden. Wenn du fortfährst wirst du deinen\nErfolgs fortschritt nicht speichern können." },
-            { ELanguage::French,   "Chargement échoué. Les données d'Accomplissements\nn'ont pas pu être chargé. Si vous continuez, vos\naccomplissements seront perdus." },
+            { ELanguage::French,   "Chargement échoué. Les données d'Accomplissements\nn'ont pas pu être chargé. Si vous continuez, vous ne\npourrez pas sauvegarder vos accomplissements." },
             { ELanguage::Spanish,  "Error al cargar. No se pueden cargar los datos\nde los logros. Si continúas, no podrás guardar\nel progreso de tus logros." },
             { ELanguage::Italian,  "Caricamento fallito. Impossibile caricare i dati\ndegli obiettivi. Se continui non potrai salvare\ni tuoi obiettivi." }
         }
@@ -719,9 +719,9 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Title_Message_SaveAchievementDataIOError",
         {
             { ELanguage::English,  "Save failed. Achievement data cannot be saved.\nIf you continue you will not be able to save\nyour achievement progress." },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "セーブ失敗。業績のデータがセーブできません。\n進行状況は失われますセーブしません" },
             { ELanguage::German,   "Speichern fehlgeschlagen. Erfolgs dateien können\nnicht gespeichert werden. Wenn du fortfährst wirst\ndu deinen Erfolgs fortschritt nicht speichern können." },
-            { ELanguage::French,   "Sauvegarde échoué. Les données d'Accomplissements\nn'ont pas pu être sauvegardé. Si vous continuez, vos\naccomplissements seront perdus." },
+            { ELanguage::French,   "Sauvegarde échoué. Les données d'Accomplissements\nn'ont pas pu être sauvegardé. Si vous continuez, vous ne\npourrez pas sauvegarder vos accomplissements." },
             { ELanguage::Spanish,  "Error al guardar. No se pueden guardar los datos\nde los logros. Si continúas, no podrás guardar\ntu progreso en los logros." },
             { ELanguage::Italian,  "Salvataggio fallito. Impossibile salvare i dati\ndegli obiettivi. Se continui non potrai salvare\ni tuoi obiettivi." }
         }
