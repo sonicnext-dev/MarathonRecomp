@@ -734,7 +734,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "ゴールドメダリスト",
-                    "ソレアナのゴールドメダルを全て取得して",
+                    "ソレアナの伝説的なゴールドメダルを全て取得して",
                     "ソレアナのゴールドメダルを全て取得した"
                 }
             },
