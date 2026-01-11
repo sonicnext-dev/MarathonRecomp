@@ -14,7 +14,6 @@ inline std::unordered_map<std::string, std::filesystem::path> g_pathCache;
 bool CheckPortable();
 std::filesystem::path BuildUserPath();
 const std::filesystem::path& GetUserPath();
-
 inline std::filesystem::path GetGamePath()
 {
 #ifdef __APPLE__
@@ -22,6 +21,33 @@ inline std::filesystem::path GetGamePath()
     // /Applications/, and the bundle should not be modified. Thus we need
     // to install game files to the user directory instead of next to the app.
     return GetUserPath();
+#elif defined(__linux__)
+    // On Linux, and some other Unix-like systems like FreeBSD, 
+    // following freedesktop's XDG Base Directory Specification is encouraged.
+    // https://specifications.freedesktop.org/basedir/latest/
+    // basically, user-specific files should be installed to a user-set variable of $XDG_DATA_HOME
+    // If $XDG_DATA_HOME is either not set or empty, a default of $HOME/.local/share should be used.
+    const char* homeDir = getenv("HOME");
+    if (homeDir == nullptr)
+    {
+        homeDir = getpwuid(getuid())->pw_dir;
+    }
+    std::filesystem::path homePath = "";
+    if (homeDir != nullptr) {
+        // Prefer to store in the .config directory if it exists. Use the home directory otherwise.
+        homePath = homeDir;
+    }
+    const char* dataDir = getenv("XDG_DATA_HOME");
+    std::filesystem::path dataPath = "";
+    if (dataDir != nullptr)
+    {
+        dataPath = dataDir;
+    } else
+    {
+        dataPath = homePath / ".local" / "share";
+    }
+    std::filesystem::path gamePath = dataPath / "MarathonRecomp";
+    return gamePath;
 #else
     return GAME_INSTALL_DIRECTORY;
 #endif

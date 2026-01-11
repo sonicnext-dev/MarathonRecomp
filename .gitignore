@@ -404,3 +404,4 @@ FodyWeavers.xsd
 
 UnleashedRecompLib/build
 UnleashedRecompLib/ppc*
+.vscode
