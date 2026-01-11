@@ -27,6 +27,10 @@ inline std::filesystem::path GetGamePath()
     // https://specifications.freedesktop.org/basedir/latest/
     // basically, user-specific files should be installed to a user-set variable of $XDG_DATA_HOME
     // If $XDG_DATA_HOME is either not set or empty, a default of $HOME/.local/share should be used.
+    if (CheckPortable())
+    {
+        return GAME_INSTALL_DIRECTORY;
+    }
     const char* homeDir = getenv("HOME");
     if (homeDir == nullptr)
     {
