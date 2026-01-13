@@ -751,3 +751,9 @@ address = 0x825B2474
 name = "WorldIntersectionCSM_SetCameraAspectRatio"
 address = 0x826146D4
 registers = ["r4"]
+
+[[midasm_hook]]
+name = "AlwaysHoldPhysicsObjects"
+address = 0x8221ACBC
+jump_address_on_true = 0x8221ACC0
+

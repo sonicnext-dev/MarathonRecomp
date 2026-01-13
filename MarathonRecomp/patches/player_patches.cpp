@@ -441,3 +441,8 @@ bool DisableLives()
 {
     return Config::DisableLives;
 }
+
+bool AlwaysHoldPhysicsObjects()
+{
+    return Config::AlwaysHoldPhysicsObjects;
+}
