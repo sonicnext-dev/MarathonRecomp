@@ -523,3 +523,8 @@ bool InfiniteLives()
 {
     return Config::InfiniteLives;
 }
+
+bool AlwaysHoldPhysicsObjects()
+{
+    return Config::AlwaysHoldPhysicsObjects;
+}

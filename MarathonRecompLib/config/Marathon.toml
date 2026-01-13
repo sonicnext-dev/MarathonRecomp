@@ -725,3 +725,9 @@ jump_address_on_true = 0x8226AB70
 name = "InfiniteLives"
 address = 0x821857B0
 jump_address_on_true = 0x821857B4
+
+[[midasm_hook]]
+name = "AlwaysHoldPhysicsObjects"
+address = 0x8221ACBC
+jump_address_on_true = 0x8221ACC0
+
