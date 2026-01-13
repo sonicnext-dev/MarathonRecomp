@@ -131,14 +131,14 @@ namespace plume
 #ifdef MARATHON_RECOMP_METAL
 extern std::unique_ptr<RenderInterface> CreateMetalInterface();
 #endif
-#ifdef SDL_VULKAN_ENABLED
+#ifdef PLUME_SDL_VULKAN_ENABLED
     extern std::unique_ptr<RenderInterface> CreateVulkanInterface(RenderWindow sdlWindow);
 #else
     extern std::unique_ptr<RenderInterface> CreateVulkanInterface();
 #endif
 
     static std::unique_ptr<RenderInterface> CreateVulkanInterfaceWrapper() {
-#ifdef SDL_VULKAN_ENABLED
+#ifdef PLUME_SDL_VULKAN_ENABLED
         return CreateVulkanInterface(GameWindow::s_renderWindow);
 #else
         return CreateVulkanInterface();

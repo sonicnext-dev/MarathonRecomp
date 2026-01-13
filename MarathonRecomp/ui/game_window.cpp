@@ -212,7 +212,7 @@ void GameWindow::Init(const char* sdlVideoDriver)
         DWM_WINDOW_CORNER_PREFERENCE wcp = DWMWCP_DONOTROUND;
         DwmSetWindowAttribute(s_renderWindow, DWMWA_WINDOW_CORNER_PREFERENCE, &wcp, sizeof(wcp));
     }
-#elif defined(SDL_VULKAN_ENABLED)
+#elif defined(PLUME_SDL_VULKAN_ENABLED)
     s_renderWindow = s_pWindow;
 #elif defined(__linux__)
     s_renderWindow = { info.info.x11.display, info.info.x11.window };
@@ -439,7 +439,7 @@ uint32_t GameWindow::GetWindowFlags()
     if (Config::Fullscreen)
         flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 
-#ifdef SDL_VULKAN_ENABLED
+#ifdef PLUME_SDL_VULKAN_ENABLED
     flags |= SDL_WINDOW_VULKAN;
 #endif
 
