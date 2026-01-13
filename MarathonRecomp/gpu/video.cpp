@@ -131,14 +131,14 @@ namespace plume
 #ifdef MARATHON_RECOMP_METAL
 extern std::unique_ptr<RenderInterface> CreateMetalInterface();
 #endif
-#ifdef SDL_VULKAN_ENABLED
+#ifdef PLUME_SDL_VULKAN_ENABLED
     extern std::unique_ptr<RenderInterface> CreateVulkanInterface(RenderWindow sdlWindow);
 #else
     extern std::unique_ptr<RenderInterface> CreateVulkanInterface();
 #endif
 
     static std::unique_ptr<RenderInterface> CreateVulkanInterfaceWrapper() {
-#ifdef SDL_VULKAN_ENABLED
+#ifdef PLUME_SDL_VULKAN_ENABLED
         return CreateVulkanInterface(GameWindow::s_renderWindow);
 #else
         return CreateVulkanInterface();
@@ -2061,7 +2061,14 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
         break;
     }
 
-    g_swapChain = g_queue->createSwapChain(GameWindow::s_renderWindow, bufferCount, BACKBUFFER_FORMAT, Config::MaxFrameLatency);
+    RenderSwapChainDesc swapChainDesc;
+    swapChainDesc.renderWindow = GameWindow::s_renderWindow;
+    swapChainDesc.textureCount = bufferCount;
+    swapChainDesc.format = BACKBUFFER_FORMAT;
+    swapChainDesc.maxFrameLatency = Config::MaxFrameLatency;
+    swapChainDesc.enablePresentWait = g_capabilities.presentWait;
+
+    g_swapChain = g_queue->createSwapChain(swapChainDesc);
     g_swapChain->setVsyncEnabled(Config::VSync);
     g_swapChainValid = !g_swapChain->needsResize();
 
