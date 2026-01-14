@@ -11,11 +11,11 @@ namespace Sonicteam
     public:
         MARATHON_INSERT_PADDING(0x24);
         boost::shared_ptr<SoX::Scenery::Camera> m_spSelectCamera;
-        xpointer<SoX::Graphics::FrameGP> m_pFrameGP;
+        xpointer<SoX::Graphics::FrameGP> m_pFrameGPStandard;
         MARATHON_INSERT_PADDING(0x0C);
     };
 
     MARATHON_ASSERT_OFFSETOF(MainMode, m_spSelectCamera, 0x74);
-    MARATHON_ASSERT_OFFSETOF(MainMode, m_pFrameGP, 0x7C);
+    MARATHON_ASSERT_OFFSETOF(MainMode, m_pFrameGPStandard, 0x7C);
     MARATHON_ASSERT_SIZEOF(MainMode, 0x8C);
 }

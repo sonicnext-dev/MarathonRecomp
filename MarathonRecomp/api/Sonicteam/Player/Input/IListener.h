@@ -1,16 +1,32 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/SoX/Input/Listener.h>
+#include <Sonicteam/SoX/LinkNode.h>
+#include <Sonicteam/SoX/Math/Math.h>
 
 namespace Sonicteam::Player::Input
 {
-    class IListener
+    class IListener : public SoX::Input::Listener
     {
     public:
-        xpointer<void> m_pVftable;
-        MARATHON_INSERT_PADDING(0x14);
-    };
+        struct Vftable: public SoX::Object::Vftable
+        {
+            be<uint32_t> fpStep;
+            be<uint32_t> fpGetPadQuat;
+            be<uint32_t> fpGetPadMagnitude;
+            be<uint32_t> fpGetPadButtons;
+            be<uint32_t> fpIsEnabled;
+        };
 
-    MARATHON_ASSERT_OFFSETOF(IListener, m_pVftable, 0x00);
-    MARATHON_ASSERT_SIZEOF(IListener, 0x18);
+        SoX::Math::Quaternion& GetPadQuat();
+
+        float GetPadMagnitude();
+
+        uint32_t GetPadButtons();
+
+        bool IsEnabled();
+    };
 }
+
+#include "IListener.inl"

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/SoX/LinkNode.h>
+#include <Sonicteam/SoX/Input/Listener.h>
 
 namespace Sonicteam::SoX::Input
 {
@@ -48,7 +50,7 @@ namespace Sonicteam::SoX::Input
     {
     public:
         be<uint32_t> m_PadID;
-        MARATHON_INSERT_PADDING(0x0C);
+        SoX::LinkedList<Listener> m_llListeners;
         PadState m_PadState;
         MARATHON_INSERT_PADDING(0x28);
     };
@@ -67,6 +69,7 @@ namespace Sonicteam::SoX::Input
     MARATHON_ASSERT_OFFSETOF(PadState, RightStickVerticalS16, 0x26);
 
     MARATHON_ASSERT_OFFSETOF(Manager, m_PadID, 0x00);
+    MARATHON_ASSERT_OFFSETOF(Manager, m_llListeners, 0x4);
     MARATHON_ASSERT_OFFSETOF(Manager, m_PadState, 0x10);
 }
 

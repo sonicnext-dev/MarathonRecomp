@@ -4,10 +4,12 @@
 
 namespace Sonicteam::SoX::Graphics
 {
+    class Shader;
+
     class Technique : public RefCountObject
     {
     public:
-        xpointer<void> m_pShader;
+        xpointer<Shader> m_pShader;
     };
 
     MARATHON_ASSERT_OFFSETOF(Technique, m_pShader, 0x08);

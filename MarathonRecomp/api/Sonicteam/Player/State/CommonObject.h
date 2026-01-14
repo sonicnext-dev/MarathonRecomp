@@ -5,5 +5,11 @@
 
 namespace Sonicteam::Player::State
 {
-    class CommonObject : public Object2 {};
+    class CommonContext;
+
+    class CommonObject : public Object2 
+    {
+    public:
+        xpointer<CommonContext> m_pContext;
+    };
 }

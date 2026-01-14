@@ -15,6 +15,7 @@ namespace Sonicteam::SoX
     template <const uint32_t id>
     struct Message : IMessage
     {
+    public:
         Message()
         {
             ID = id;

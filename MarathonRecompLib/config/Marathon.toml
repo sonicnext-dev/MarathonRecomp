@@ -725,3 +725,61 @@ jump_address_on_true = 0x8226AB70
 name = "InfiniteLives"
 address = 0x821857B0
 jump_address_on_true = 0x821857B4
+
+# Apply FPS scaling to physics forces to maintain consistent behavior across framerates
+[[midasm_hook]]
+name = "BodyHavok_ApplyForce2"
+address = 0x8289DF00
+registers = ["r3","r31"]
+
+# Apply FPS scaling to physics forces to maintain consistent behavior across framerates
+[[midasm_hook]]
+name = "BodyHavok_ApplyForce1"
+address = 0x8289DC20
+registers = ["r3","r31"]
+
+# Adjust Doc Speed Delta
+[[midasm_hook]]
+name = "DocMarathonState_Update_DocSpeedFix"
+registers = ["f31"]
+address = 0x825EA664
+jump_address_on_true = 0x825EA680
+
+# Spindash Jump
+[[midasm_hook]]
+name = "SonicSpindash_UpdateJump"
+address = 0x82217B30
+registers = ["r31"]
+jump_address_on_true = 0x82217C34
+
+# MachState (No More Input Lock)
+[[midasm_hook]]
+name = "SonicMachSpeed_UpdateNoMoreLock"
+address = 0x821A2EBC
+registers = ["f3"]
+jump_address_on_true = 0x821A2EC0
+
+# MachState (No More Input Lock)
+[[midasm_hook]]
+name = "SonicContext_UpdateAlwaysABlueGem"
+address = 0x822195C4
+registers = ["r31"]
+
+# Unlock All Upgrades for Player
+[[midasm_hook]]
+name = "SonicObject_OnUpgradeUpdate"
+address = 0x82196920
+jump_address_on_true = 0x82196924
+
+# Accurate Model Swap
+[[midasm_hook]]
+name = "ModelSonic_OnContextFlagGPFix"
+address = 0x82237804
+registers = ["r3","r30"]
+jump_address_on_true = 0x82237808
+
+# Block Sonic GP Frame, cause there better way to fix ( Particles position for Shoes Model)
+[[midasm_hook]]
+name = "ModelSonic_BlockGPFrameGPFix"
+address = 0x822379B0
+jump_address_on_true = 0x822379F4
