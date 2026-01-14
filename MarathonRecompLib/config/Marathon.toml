@@ -731,3 +731,12 @@ name = "AlwaysHoldPhysicsObjects"
 address = 0x8221ACBC
 jump_address_on_true = 0x8221ACC0
 
+[[midasm_hook]]
+name = "ControllableHomingRecovery"
+address = 0x82217600
+jump_address_on_true = 0x82217618
+
+[[midasm_hook]]
+name = "RestoreHomingSpam"
+address = 0x822175D8
+jump_address_on_true = 0x822175E4
