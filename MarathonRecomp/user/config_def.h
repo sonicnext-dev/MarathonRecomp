@@ -108,6 +108,7 @@ CONFIG_DEFINE_HIDDEN("Codes", bool, AntigravityRetainsMomentum, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, BootDirectlyToTitle, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, BootDirectlyToDevTitle, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, ControllableBoundAttack, false, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, ControllableHomingRecovery, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, ControllableSpinkick, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, ControllableTeleportDash, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, DisableDWMRoundedCorners, false, true);
@@ -126,6 +127,7 @@ CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreChaosBoostJump, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreChaosSpearFlips, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreContextualHUDColours, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreDemoCameraMode, false, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreHomingSpam, false, false)
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreLoadingTransition, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestorePauseMissionText, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreSonicActionGauge, false, false);

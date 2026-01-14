@@ -446,3 +446,13 @@ bool AlwaysHoldPhysicsObjects()
 {
     return Config::AlwaysHoldPhysicsObjects;
 }
+
+bool ControllableHomingRecovery()
+{
+    return Config::ControllableHomingRecovery;
+}
+
+bool RestoreHomingSpam()
+{
+    return Config::RestoreHomingSpam;
+}
