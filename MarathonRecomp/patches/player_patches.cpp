@@ -523,3 +523,18 @@ bool InfiniteLives()
 {
     return Config::InfiniteLives;
 }
+
+bool AlwaysHoldPhysicsObjects()
+{
+    return Config::AlwaysHoldPhysicsObjects;
+}
+
+bool ControllableHomingRecovery()
+{
+    return Config::ControllableHomingRecovery;
+}
+
+bool RestoreHomingSpam()
+{
+    return Config::RestoreHomingSpam;
+}
