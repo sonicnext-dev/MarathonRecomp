@@ -19,7 +19,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "ソニックエピソードクリア",
-                    "ソニックのエピソードをクリアして！",
+                    "ソニックのエピソードをクリアせよ！",
                     "ソニックのエピソードをクリアした"
                 }
             },
@@ -74,7 +74,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "シャドウエピソードクリア",
-                    "シャドウのエピソードをクリアして！",
+                    "シャドウのエピソードをクリアせよ！",
                     "シャドウのエピソードをクリアした"
                 }
             },
@@ -129,7 +129,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "シルバーエピソードクリア",
-                    "シルバーのエピソードをクリアして！",
+                    "シルバーのエピソードをクリアせよ！",
                     "シルバーのエピソードをクリアした"
                 }
             },
@@ -184,7 +184,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "終わりを刻む者",
-                    "ラスト隠れたエピソードをクリアして！",
+                    "ラスト隠れたエピソードをクリアせよ！",
                     "ラストエピソードをクリアした"
                 }
             },
@@ -239,7 +239,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "ソニックエピソードコンプリート",
-                    "ソニックのACTミッションを全てクリアして",
+                    "ソニックのACTミッションを全てクリアせよ",
                     "ソニックのACTミッションを全てクリアした"
                 }
             },
@@ -294,7 +294,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "シャドウエピソードコンプリート",
-                    "シャドウのACTミッションを全てクリアして",
+                    "シャドウのACTミッションを全てクリアせよ",
                     "シャドウのACTミッションを全てクリアした"
                 }
             },
@@ -349,7 +349,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "シルバーエピソードコンプリート",
-                    "シルバーのACTミッションを全てクリアして",
+                    "シルバーのACTミッションを全てクリアせよ",
                     "シルバーのACTミッションを全てクリアした"
                 }
             },
@@ -404,7 +404,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "シャドウエピソードマスター",
-                    "シャドウのACTミッションを全てランクSでクリアして",
+                    "シャドウのACTミッションを全てランクSでクリアせよ",
                     "シャドウのACTミッションを全てランクSでクリアした"
                 }
             },
@@ -459,7 +459,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "ソニックエピソードマスター",
-                    "ソニックのACTミッションを全てランクSでクリアして",
+                    "ソニックのACTミッションを全てランクSでクリアせよ",
                     "ソニックのACTミッションを全てランクSでクリアした"
                 }
             },
@@ -514,7 +514,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "シルバーエピソードマスター",
-                    "シルバーのACTミッションを全てランクSでクリアして",
+                    "シルバーのACTミッションを全てランクSでクリアせよ",
                     "シルバーのACTミッションを全てランクSでクリアした"
                 }
             },
@@ -569,7 +569,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "ナイツオブクロノス",
-                    "ラスト隠れたエピソードを全てランクSでクリアして",
+                    "ラスト隠れたエピソードを全てランクSでクリアせよ",
                     "ラストエピソードを全てランクSでクリアした"
                 }
             },
@@ -624,7 +624,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "ソレアナの伝説",
-                    "全てのACTミッションをランクSでクリアして",
+                    "全てのACTミッションをランクSでクリアせよ",
                     "全てのACTミッションをランクSでクリアした"
                 }
             },
@@ -679,7 +679,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "シルバーメダリスト",
-                    "ソレアナのシルバーメダルを全て取得して",
+                    "ソレアナのシルバーメダルを全て取得せよ",
                     "ソレアナのシルバーメダルを全て取得した"
                 }
             },
@@ -734,7 +734,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "ゴールドメダリスト",
-                    "ソレアナの伝説的なゴールドメダルを全て取得して",
+                    "ソレアナの伝説的なゴールドメダルを全て取得せよ",
                     "ソレアナのゴールドメダルを全て取得した"
                 }
             },
@@ -789,7 +789,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "蒼き幻影",
-                    "ソニックのアクションを全て習得して",
+                    "ソニックのアクションを全て習得せよ",
                     "ソニックのアクションを全て習得した"
                 }
             },
@@ -844,7 +844,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "究極の生命体",
-                    "シャドウのアクションを全て習得して",
+                    "シャドウのアクションを全て習得せよ",
                     "シャドウのアクションを全て習得した"
                 }
             },
@@ -899,7 +899,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "サイキックソルジャー",
-                    "シルバーのアクションを全て習得して",
+                    "シルバーのアクションを全て習得せよ",
                     "シルバーのアクションを全て習得した"
                 }
             },
@@ -954,7 +954,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "ソレアナの英雄",
-                    "ソニックのタウンミッションを全てクリアして",
+                    "ソニックのタウンミッションを全てクリアせよ",
                     "ソニックのタウンミッションを全てクリアした"
                 }
             },
@@ -1009,7 +1009,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "エリートエージェント",
-                    "シャドウのタウンミッションを全てクリアして",
+                    "シャドウのタウンミッションを全てクリアせよ",
                     "シャドウのタウンミッションを全てクリアした"
                 }
             },
@@ -1064,7 +1064,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "解放者シルバー",
-                    "シルバーのタウンミッションを全てクリアして",
+                    "シルバーのタウンミッションを全てクリアせよ",
                     "シルバーのタウンミッションを全てクリアした"
                 }
             },
@@ -1119,7 +1119,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "ソレアナの蒼き風",
-                    "ソニックのタウンミッションを全てランクSでクリアして",
+                    "ソニックのタウンミッションを全てランクSでクリアせよ",
                     "ソニックのタウンミッションを全てランクSでクリアした"
                 }
             },
@@ -1174,7 +1174,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "ダーク英雄",
-                    "シャドウのタウンミッションを全てランクSでクリアして",
+                    "シャドウのタウンミッションを全てランクSでクリアせよ",
                     "シャドウのタウンミッションを全てランクSでクリアした"
                 }
             },
@@ -1229,7 +1229,7 @@ std::unordered_map<int, std::unordered_map<ELanguage, AchievementLocale>> g_achL
                 ELanguage::Japanese,
                 {
                     "救世主シルバー",
-                    "シルバーのタウンミッションを全てランクSでクリアして",
+                    "シルバーのタウンミッションを全てランクSでクリアせよ",
                     "シルバーのタウンミッションを全てランクSでクリアした"
                 }
             },
