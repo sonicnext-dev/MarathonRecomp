@@ -2,6 +2,7 @@
 #include <locale/locale.h>
 #include <patches/aspect_ratio_patches.h>
 #include <patches/audio_patches.h>
+#include <patches/MainMenuTask_patches.h>
 #include <res/images/common/main_menu7.dds.h>
 #include <res/images/common/main_menu8.dds.h>
 #include <res/images/common/main_menu9.dds.h>
@@ -124,7 +125,7 @@ static void MoveCursor(int& cursorIndex, double& cursorTime, int min = 0, int ma
     if (scrollUp || scrollDown)
         g_lastTappedTime = time;
 
-    static constexpr auto FAST_SCROLL_THRESHOLD = 0.6;
+    static constexpr auto FAST_SCROLL_THRESHOLD = 0.3;
     static constexpr auto FAST_SCROLL_SPEED = 1.0 / 6.5;
 
     auto fastScroll = (time - g_lastTappedTime) > FAST_SCROLL_THRESHOLD;
@@ -480,14 +481,15 @@ static void DrawOption
         auto setValueDescription = [=]()
         {
             auto valueDescription = config->GetValueDescription(Config::Language);
+            auto isLanguageOption = (ConfigDef<ELanguage>*)config == &Config::Language;
 
             if (valueDescription.empty())
             {
-                OptionsMenu::s_commonMenu.SetDescription(config->GetDescription(Config::Language));
+                OptionsMenu::s_commonMenu.SetDescription(config->GetDescription(Config::Language), !isLanguageOption);
             }
             else
             {
-                OptionsMenu::s_commonMenu.SetDescription(valueDescription);
+                OptionsMenu::s_commonMenu.SetDescription(valueDescription, !isLanguageOption);
             }
         };
 
@@ -819,7 +821,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
             DrawOption(rowCount++, &Config::Hints, true);
             DrawOption(rowCount++, &Config::ControlTutorial, true);
             DrawOption(rowCount++, &Config::Autosave, true);
-            DrawOption(rowCount++, &Config::AchievementNotifications, false, devReason);               // TODO: implement achievements. DrawOption(rowCount++, &Config::AchievementNotifications, true);
+            DrawOption(rowCount++, &Config::AchievementNotifications, true);
             break;
 
         case OptionsMenuCategory::Input:
@@ -898,42 +900,10 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
 
     if (g_optionCount > 3 && OptionsMenu::s_flowState == OptionsMenuFlowState::OptionCursor)
     {
-        auto scrollArrowUVs = PIXELS_TO_UV_COORDS(1024, 1024, 500, 450, 50, 50);
-        auto scrollArrowOffsetX = Scale(64, true);
-        auto scrollArrowScale = Scale(20, true);
-        auto scrollArrowAlphaMotionInTime = ComputeLinearMotion(g_scrollArrowsTime, 0, 3);
-        auto scrollArrowAlphaMotionPauseTime = ComputeLinearMotion(g_scrollArrowsTime, 3, 11);
-        auto scrollArrowAlphaMotionOutTime = ComputeLinearMotion(g_scrollArrowsTime, 11, 4, true);
-        auto scrollArrowAlphaMotionLoopTime = ComputeLinearMotion(g_scrollArrowsTime, 15, 50);
-        auto scrollArrowAlphaMotion = 255;
+        ImVec2 scrollArrowsMin = { max.x - BlackBar::s_pillarboxWidth - Scale(84, true), min.y + Scale(12, true) };
+        ImVec2 scrollArrowsMax = { max.x, max.y - Scale(16, true) };
 
-        if (scrollArrowAlphaMotionPauseTime >= 1.0)
-        {
-            // Fade out arrows.
-            scrollArrowAlphaMotion = 255 * scrollArrowAlphaMotionOutTime;
-
-            // Reset loop.
-            if (scrollArrowAlphaMotionLoopTime >= 1.0)
-                g_scrollArrowsTime = ImGui::GetTime();
-        }
-        else
-        {
-            // Fade in arrows.
-            scrollArrowAlphaMotion = 255 * scrollArrowAlphaMotionInTime;
-        }
-
-        auto scrollArrowColourMotion = IM_COL32(255, 255, 255, scrollArrowAlphaMotion);
-
-        ImVec2 scrollArrowTopMin = { max.x - scrollArrowScale - scrollArrowOffsetX - BlackBar::s_pillarboxWidth, min.y + Scale(12, true) };
-        ImVec2 scrollArrowTopMax = { scrollArrowTopMin.x + scrollArrowScale, scrollArrowTopMin.y + scrollArrowScale };
-        ImVec2 scrollArrowBottomMin = { scrollArrowTopMin.x, max.y - scrollArrowScale - Scale(16, true) };
-        ImVec2 scrollArrowBottomMax = { scrollArrowTopMax.x, scrollArrowBottomMin.y + scrollArrowScale };
-
-        // Draw top arrow.
-        AddImageFlipped(g_upTexMainMenu1.get(), scrollArrowTopMin, scrollArrowTopMax, GET_UV_COORDS(scrollArrowUVs), scrollArrowColourMotion, false, true);
-
-        // Draw bottom arrow.
-        drawList->AddImage(g_upTexMainMenu1.get(), scrollArrowBottomMin, scrollArrowBottomMax, GET_UV_COORDS(scrollArrowUVs), scrollArrowColourMotion);
+        DrawScrollArrows(scrollArrowsMin, scrollArrowsMax, Scale(20, true), g_scrollArrowsTime, g_optionIndex > 1, g_optionIndex < rowCount - 2);
     }
 }
 
@@ -1038,25 +1008,25 @@ void OptionsMenu::Draw()
                 {
                     auto& rPadState = spInputManager->m_PadState;
 
-                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadUp) || -rPadState.LeftStickVertical > 0.5f)
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DPadUp) || -rPadState.LeftStickVertical > 0.5f)
                         upIsHeld = true;
 
                     if (!g_upWasHeld && upIsHeld)
                         g_up = true;
 
-                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadDown) || -rPadState.LeftStickVertical < -0.5f)
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DPadDown) || -rPadState.LeftStickVertical < -0.5f)
                         downIsHeld = true;
 
                     if (!g_downWasHeld && downIsHeld)
                         g_down = true;
 
-                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadLeft) || -rPadState.LeftStickHorizontal > 0.5f)
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DPadLeft) || -rPadState.LeftStickHorizontal > 0.5f)
                         leftIsHeld = true;
 
                     if (!g_leftWasHeld && leftIsHeld)
                         g_left = true;
 
-                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadRight) || -rPadState.LeftStickHorizontal < -0.5f)
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DPadRight) || -rPadState.LeftStickHorizontal < -0.5f)
                         rightIsHeld = true;
 
                     if (!g_rightWasHeld && rightIsHeld)
@@ -1095,6 +1065,7 @@ void OptionsMenu::Draw()
             {
                 if (closingTime >= 1.0)
                 {
+                    MainMenuTaskPatches::s_hideButtonWindow = false;
                     g_isClosingButtonWindow = true;
                     s_isProcessedMessages = false;
                     s_pMainMenuTask = nullptr;
@@ -1104,22 +1075,22 @@ void OptionsMenu::Draw()
 
                 if (!s_isProcessedMessages && s_pMainMenuTask)
                 {
-                    guest_stack_var<Sonicteam::Message::MsgHUDMainMenuSetCursor> msgHUDMainMenuSetCursor
+                    guest_stack_var<Sonicteam::Message::HUDMainMenu::MsgSetCursor> msgSetCursor
                     (
                         Sonicteam::HUDMainMenu::HUDMainMenuState_MainCursorIntro,
                         s_pMainMenuTask->m_MainMenuSelectedIndex
                     );
 
                     // Play cursor intro animation.
-                    s_pMainMenuTask->m_pHUDMainMenu->ProcessMessage(msgHUDMainMenuSetCursor.get());
+                    s_pMainMenuTask->m_pHUDMainMenu->ProcessMessage(msgSetCursor.get());
 
-                    guest_stack_var<Sonicteam::Message::MsgHUDMainMenuTransition> msgHUDMainMenuTransition
+                    guest_stack_var<Sonicteam::Message::HUDMainMenu::MsgTransition> msgTransition
                     (
                         Sonicteam::HUDMainMenu::HUDMainMenuState_OptionsIntro, 3
                     );
 
                     // Play options -> main menu transition.
-                    s_pMainMenuTask->m_pHUDMainMenu->ProcessMessage(msgHUDMainMenuTransition.get());
+                    s_pMainMenuTask->m_pHUDMainMenu->ProcessMessage(msgTransition.get());
 
                     s_isProcessedMessages = true;
                 }
@@ -1226,6 +1197,7 @@ void OptionsMenu::Draw()
             MoveCursor(g_optionIndex, g_flowStateTime, 0, g_optionCount, []()
             {
                 g_cursorArrowsTime = ImGui::GetTime();
+                g_scrollArrowsTime = g_cursorArrowsTime;
             });
 
             if (CheckAndDiscard(g_isDeclined))
@@ -1290,6 +1262,7 @@ void OptionsMenu::Open(bool isPause)
     ResetSelection();
 
     ButtonWindow::Open("Button_SelectBack", s_isPause);
+    MainMenuTaskPatches::s_hideButtonWindow = true;
 }
 
 void OptionsMenu::Close()

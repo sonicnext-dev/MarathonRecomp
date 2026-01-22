@@ -69,7 +69,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Options_Desc_Category_System",
         {
             { ELanguage::English,  "Adjust system settings." },
-            { ELanguage::Japanese, "システムの設定変更します" },
+            { ELanguage::Japanese, "システムの設定を変更します" },
             { ELanguage::German,   "Verändere System-Einstellungen." },
             { ELanguage::French,   "Modifier les paramètres système." },
             { ELanguage::Spanish,  "Ajustar la configuración del sistema." },
@@ -91,7 +91,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Options_Desc_Category_Input",
         {
             { ELanguage::English,  "Adjust input settings." },
-            { ELanguage::Japanese, "入力の設定変更します" },
+            { ELanguage::Japanese, "入力の設定を変更します" },
             { ELanguage::German,   "Verändere Eingabe-Einstellungen." },
             { ELanguage::French,   "Modifier les paramètres d'entrée." },
             { ELanguage::Spanish,  "Ajustar la configuración de entrada." },
@@ -294,27 +294,69 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         }
     },
     {
-        // Notes: used for the button guide at the pause menu.
-        "Achievements_Name",
+        "MainMenu_GoldMedalResults_Name",
+        {
+            { ELanguage::English,  "STATISTICS" },
+            { ELanguage::Japanese, "STATISTICS" },
+            { ELanguage::German,   "STATISTIKEN" },
+            { ELanguage::French,   "STATISTIQUES" },
+            { ELanguage::Spanish,  "ESTADÍSTICAS" },
+            { ELanguage::Italian,  "STATISTICHE" }
+        }
+    },
+    {
+        "MainMenu_GoldMedalResults_Description",
+        {
+            { ELanguage::English,  "Statistics: Displays lists of Gold Medals and Achievements" },
+            { ELanguage::Japanese, "スタティスティックス: ゴールドメダルと実績のリストを表示する" },
+            { ELanguage::German,   "Statistiken: Zeigt eine Liste von Gold Medaillen und Erfolgen an" },
+            { ELanguage::French,   "Statistiques : Affiche une liste des Médailles d'Or et des Accomplissements" },
+            { ELanguage::Spanish,  "Estadísticas: Muestra los listados de las medallas y los logros" },
+            { ELanguage::Italian,  "Statistiche: mostra gli elenchi delle medaglie d'oro e gli obiettivi" }
+        }
+    },
+    {
+        "Achievements_Title",
         {
             { ELanguage::English,  "Achievements" },
             { ELanguage::Japanese, "実績" },
             { ELanguage::German,   "Erfolge" },
-            { ELanguage::French,   "Succès" },
+            { ELanguage::French,   "Accomplissements" },
             { ELanguage::Spanish,  "Logros" },
             { ELanguage::Italian,  "Obiettivi" }
         }
     },
     {
-        // Notes: used for the header in the achievements menu.
-        "Achievements_Name_Uppercase",
+        "Achievements_Title_Uppercase",
         {
             { ELanguage::English,  "ACHIEVEMENTS" },
             { ELanguage::Japanese, "実績" },
             { ELanguage::German,   "ERFOLGE" },
-            { ELanguage::French,   "SUCCÈS" },
+            { ELanguage::French,   "ACCOMPLISSEMENTS" },
             { ELanguage::Spanish,  "LOGROS" },
             { ELanguage::Italian,  "OBIETTIVI" }
+        }
+    },
+    {
+        "Achievements_GoldMedals",
+        {
+            { ELanguage::English,  "Gold Medals" },
+            { ELanguage::Japanese, "ゴールドメダル" },
+            { ELanguage::German,   "Gold Medaillen" },
+            { ELanguage::French,   "Médailles d'or" },
+            { ELanguage::Spanish,  "Medallas de oro" },
+            { ELanguage::Italian,  "Medaglie d'oro" }
+        }
+    },
+    {
+        "Achievements_GoldMedals_Uppercase",
+        {
+            { ELanguage::English,  "GOLD MEDALS" },
+            { ELanguage::Japanese, "ゴールドメダル" },
+            { ELanguage::German,   "GOLD MEDAILLEN" },
+            { ELanguage::French,   "MÉDAILLES D'OR" },
+            { ELanguage::Spanish,  "MEDALLAS DE ORO" },
+            { ELanguage::Italian,  "MEDAGLIE D'ORO" }
         }
     },
     {
@@ -326,6 +368,17 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::French,   "Succès déverrouillé !" },
             { ELanguage::Spanish,  "¡Logro desbloqueado!" },
             { ELanguage::Italian,  "Obiettivo sbloccato!" }
+        }
+    },
+    {
+        "Achievements_Progress",
+        {
+            { ELanguage::English,  "PROGRESS %d/%d" },
+            { ELanguage::Japanese, "PROGRESS %d/%d" },
+            { ELanguage::German,   "FORTSCHRITT %d/%d" },
+            { ELanguage::French,   "PROGRESSION %d/%d" },
+            { ELanguage::Spanish,  "PROGRESO %d/%d" },
+            { ELanguage::Italian,  "PROGRESSI %d/%d" }
         }
     },
     {
@@ -635,29 +688,42 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         }
     },
     {
-        // Notes: message appears when ACH-DATA is corrupted (mismatching file size, bad signature, incorrect version or invalid checksum) upon pressing start at the title screen.
+        // Notes: message appears when SonicNextAchievementData.bin is corrupted (mismatching file size, bad signature, incorrect version or invalid checksum) upon loading save data.
         // To make this occur, open the file in any editor and just remove a large chunk of data.
-        "Title_Message_AchievementDataCorrupt",
+        "Title_Message_LoadAchievementDataCorrupt",
         {
-            { ELanguage::English,  "The achievement data appears to be\ncorrupted and cannot be loaded.\n\nProceeding from this point will\nclear your achievement data." },
-            { ELanguage::Japanese, "実績データが破損しているため\n読み込むことができません\n\nこの先に進むと実績データが\n消去されます" },
-            { ELanguage::German,   "Die Erfolgsdaten sind möglicherweise\nfehlerhaft und können nicht\ngeladen werden.\n\nDurch das Fortfahren werden\ndeine bisherigen Erfolgsdaten gelöscht." },
-            { ELanguage::French,   "Les données des succès semblent être\nendommagées et ne peuvent être\nchargées.\n\nSi vous continuez, vos données\nseront écrasées." },
-            { ELanguage::Spanish,  "Los datos de logros parecen estar\ncorruptos y no pueden cargarse.\n\nContinuar a partir de este punto\neliminará los datos de logros." },
-            { ELanguage::Italian,  "I file degli obiettivi sembrano danneggiati\ne non possono essere caricati.\n\nSe prosegui da questo punto\ni tuoi obiettivi verranno cancellati." }
+            { ELanguage::English,  "Load failed. Achievement data is corrupted.\nIf you continue your achievement progress will\nbe lost." },
+            { ELanguage::Japanese, "ロード失敗。業績のデータが破損している。\nセーブしていない進行状況は失われます" },
+            { ELanguage::German,   "Laden fehlgeschlagen. Erfolgs dateien sind\nkorrupt. Wenn du fortfährst wird dein Erfolgs\nfortschritt gelöscht." },
+            { ELanguage::French,   "Chargement échoué. Les données d'Accomplissements\nsont corrompus. Si vous continuez, vos\naccomplissements seront perdus." },
+            { ELanguage::Spanish,  "Error al cargar. Los datos de los logros están\ndañados. Si continúas, se perderá el progreso\nde tus logros." },
+            { ELanguage::Italian,  "Caricamento fallito. I dati degli obiettivi\nsono danneggiati. Se continui perderai tutti\ni tuoi obiettivi." }
         }
     },
     {
-        // Notes: message appears when ACH-DATA cannot be loaded upon pressing start at the title screen.
-        // To make this occur, lock the ACH-DATA file using an external program so that it cannot be accessed by the game.
-        "Title_Message_AchievementDataIOError",
+        // Notes: message appears when SonicNextAchievementData.bin cannot be loaded upon loading save data.
+        // To make this occur, lock the SonicNextAchievementData.bin file using an external program so that it cannot be accessed by the game.
+        "Title_Message_LoadAchievementDataIOError",
         {
-            { ELanguage::English,  "The achievement data could not be loaded.\nYour achievements will not be saved." },
-            { ELanguage::Japanese, "実績データを読み込めませんでした\n実績は保存されません" },
-            { ELanguage::German,   "Die Erfolgsdaten konnten nicht geladen werden.\nDeine Erfolge werden nicht gespeichert." },
-            { ELanguage::French,   "Les données des succès ne\npeuvent être chargées.\nVos succès ne seront pas\nsauvegardés." },
-            { ELanguage::Spanish,  "Los datos de logros no pueden cargarse.\nTus logros no serán guardados." },
-            { ELanguage::Italian,  "I file degli obiettivi non possono essere caricati.\nI tuoi obiettivi non verranno salvati." }
+            { ELanguage::English,  "Load failed. Achievement data cannot be loaded.\nIf you continue you will not be able to save\nyour achievement progress." },
+            { ELanguage::Japanese, "ロード失敗。業績のデータがロードできません。\n進行状況は失われますセーブしません" },
+            { ELanguage::German,   "Laden fehlgeschlagen. Erfolgs dateien können nicht\ngeladen werden. Wenn du fortfährst wirst du deinen\nErfolgs fortschritt nicht speichern können." },
+            { ELanguage::French,   "Chargement échoué. Les données d'Accomplissements\nn'ont pas pu être chargé. Si vous continuez, vous ne\npourrez pas sauvegarder vos accomplissements." },
+            { ELanguage::Spanish,  "Error al cargar. No se pueden cargar los datos\nde los logros. Si continúas, no podrás guardar\nel progreso de tus logros." },
+            { ELanguage::Italian,  "Caricamento fallito. Impossibile caricare i dati\ndegli obiettivi. Se continui non potrai salvare\ni tuoi obiettivi." }
+        }
+    },
+    {
+        // Notes: message appears when SonicNextAchievementData.bin cannot be saved upon saving save data.
+        // To make this occur, lock the SonicNextAchievementData.bin file using an external program so that it cannot be accessed by the game.
+        "Title_Message_SaveAchievementDataIOError",
+        {
+            { ELanguage::English,  "Save failed. Achievement data cannot be saved.\nIf you continue you will not be able to save\nyour achievement progress." },
+            { ELanguage::Japanese, "セーブ失敗。業績のデータがセーブできません。\n進行状況は失われますセーブしません" },
+            { ELanguage::German,   "Speichern fehlgeschlagen. Erfolgs dateien können\nnicht gespeichert werden. Wenn du fortfährst wirst\ndu deinen Erfolgs fortschritt nicht speichern können." },
+            { ELanguage::French,   "Sauvegarde échoué. Les données d'Accomplissements\nn'ont pas pu être sauvegardé. Si vous continuez, vous ne\npourrez pas sauvegarder vos accomplissements." },
+            { ELanguage::Spanish,  "Error al guardar. No se pueden guardar los datos\nde los logros. Si continúas, no podrás guardar\ntu progreso en los logros." },
+            { ELanguage::Italian,  "Salvataggio fallito. Impossibile salvare i dati\ndegli obiettivi. Se continui non potrai salvare\ni tuoi obiettivi." }
         }
     },
     {
@@ -709,8 +775,8 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Installation check has finished.\n\nAll files seem to be correct.\n\nThe game will now close. Remove the launch argument to play the game." },
             { ELanguage::Japanese, "インストールチェックが終了しました\n\nすべてのファイルは正しいようです\n\nゲームは終了します、ゲームをプレイするには起動引数を削除してください" },
-            { ELanguage::German,  "Die Installation wurde überprüft.\n\nAlle Dateien scheinen korrekt zu sein.\n\nDas Spiel wird nun geschlossen. Entferne die Startoption, um das Spiel zu spielen." },
-            { ELanguage::French,  "La vérification de l'installation est terminée.\n\nTous les fichiers semblent corrects.\n\nL'application va maintenant se fermer. Retirez l'argument de lancement pour pouvoir lancer le jeu." },
+            { ELanguage::German,   "Die Installation wurde überprüft.\n\nAlle Dateien scheinen korrekt zu sein.\n\nDas Spiel wird nun geschlossen. Entferne die Startoption, um das Spiel zu spielen." },
+            { ELanguage::French,   "La vérification de l'installation est terminée.\n\nTous les fichiers semblent corrects.\n\nL'application va maintenant se fermer. Retirez l'argument de lancement pour pouvoir lancer le jeu." },
             { ELanguage::Spanish,  "La verificación de la instalación ha terminado.\n\nTodos los archivos parecen correctos.\n\nEl juego se cerrará ahora. Elimina el argumento de lanzamiento para jugar al juego." },
             { ELanguage::Italian,  "La verifica dei file d'installazione è terminata.\n\nTutti i file sembrano corretti.\n\nIl gioco si chiuderà. Rimuovi l'argomento di avvio per poter giocare." }
         }
@@ -720,8 +786,8 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Installation check has failed.\n\nError: %s\n\nThe game will now close. Try reinstalling the game by using the --install launch argument." },
             { ELanguage::Japanese, "インストールチェックに失敗しました\n\nエラー：%s\n\nゲームは終了します、--install 起動引数を使用してゲームを再インストールしてください" },
-            { ELanguage::German,  "Die Installationsprüfung ist fehlgeschlagen.\n\nFehler: %s\n\nDas Spiel wird nun geschlossen. Versuche das Spiel durch Verwendung der Startoption --install neu zu installieren." },
-            { ELanguage::French,  "La vérification de l'installation a échoué.\n\nErreur : %s\n\nL'application va maintenant se fermer. Essayez de réinstaller le jeu en utilisant l'argument de lancement --install." },
+            { ELanguage::German,   "Die Installationsprüfung ist fehlgeschlagen.\n\nFehler: %s\n\nDas Spiel wird nun geschlossen. Versuche das Spiel durch Verwendung der Startoption --install neu zu installieren." },
+            { ELanguage::French,   "La vérification de l'installation a échoué.\n\nErreur : %s\n\nL'application va maintenant se fermer. Essayez de réinstaller le jeu en utilisant l'argument de lancement --install." },
             { ELanguage::Spanish,  "La verificación de la instalación ha fallado.\n\nError: %s\n\nEl juego se cerrará ahora. Intenta reinstalar el juego utilizando el argumento de lanzamiento --install." },
             { ELanguage::Italian,  "La verifica dei file d'installazione non è andata a buon fine.\n\nErrore: %s\n\nIl gioco si chiuderà. Prova a reinstallare il gioco utilizzando l'argomento di avvio --install." }
         }
@@ -859,6 +925,28 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         }
     },
     {
+        "Common_Retry",
+        {
+            { ELanguage::English,  "Retry" },
+            { ELanguage::Japanese, "リトライ" },
+            { ELanguage::German,   "Wiederholen" },
+            { ELanguage::French,   "Réessayer" },
+            { ELanguage::Spanish,  "Reintentar" },
+            { ELanguage::Italian,  "Riprova" }
+        }
+    },
+    {
+        "Common_ContinueWithoutSaving",
+        {
+            { ELanguage::English,  "Continue without saving." },
+            { ELanguage::Japanese, "セーブせずにゲームを続けます" },
+            { ELanguage::German,   "Fortsetzen ohne zu speichern." },
+            { ELanguage::French,   "Continuer sans sauvegarder." },
+            { ELanguage::Spanish,  "Continuar sin guardar." },
+            { ELanguage::Italian,  "Continua senza salvare." }
+        }
+    },
+    {
         "Button_Cancel",
         {
             { ELanguage::English, "${picture(button_b)}${locale(Common_Cancel)}" },
@@ -903,14 +991,32 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Spanish, "${picture(button_x)} ${locale(Common_Reset)}  ${picture(button_a)} ${locale(Common_Select)}  ${picture(button_b)} ${locale(Common_Back)}" },
         }
     },
+    {
+        "Button_GoldMedalsBack",
+        {
+            { ELanguage::English, "${picture(button_y)}${locale(Achievements_GoldMedals)}  ${picture(button_b)}${locale(Common_Back)}" },
+            { ELanguage::German,  "${picture(button_y)}${locale(Achievements_GoldMedals)}　　${picture(button_b)}${locale(Common_Back)}" },
+            { ELanguage::Spanish, "${picture(button_y)} ${locale(Achievements_GoldMedals)}  ${picture(button_b)} ${locale(Common_Back)}" }
+        }
+    },
+    {
+        "Button_AchievementsBack",
+        {
+            { ELanguage::English, "${picture(button_y)}${locale(Achievements_Title)}  ${picture(button_b)}${locale(Common_Back)}" },
+            { ELanguage::German,  "${picture(button_y)}${locale(Achievements_Title)}　　${picture(button_b)}${locale(Common_Back)}" },
+            { ELanguage::Spanish, "${picture(button_y)} ${locale(Achievements_Title)}  ${picture(button_b)} ${locale(Common_Back)}" }
+        }
+    }
 };
 
 std::string& Localise(const std::string_view& key)
 {
     auto localeFindResult = g_locale.find(key);
+
     if (localeFindResult != g_locale.end())
     {
         auto languageFindResult = localeFindResult->second.find(Config::Language);
+
         if (languageFindResult == localeFindResult->second.end())
             languageFindResult = localeFindResult->second.find(ELanguage::English);
 

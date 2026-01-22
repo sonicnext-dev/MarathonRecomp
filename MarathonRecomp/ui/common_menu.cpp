@@ -110,7 +110,7 @@ void CommonMenu::Draw()
     auto titleFontSize = Scale(33, true);
     auto titleSize = g_pFntNewRodin->CalcTextSizeA(titleFontSize, FLT_MAX, 0.0f, titleText);
     auto titleOffsetX = redStripCornerMax.x - Scale(105, true);
-    auto titleOffsetY = redStripMotion + Scale(3.25, true);
+    auto titleOffsetY = redStripMotion + Scale(3.5, true);
     auto titleMotionTime = ComputeLinearMotion(m_titleTime, PlayTransitions && !m_isClosing ? 10 : 0, 10, m_isClosing);
     auto titleOffsetXMotion = Lerp(max.x + titleSize.x, titleOffsetX, titleMotionTime);
 
@@ -154,143 +154,146 @@ void CommonMenu::Draw()
         }
     }
 
-    auto textCoverCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 801, 400, 150, 150);
-    auto textCoverCornerExtendUVs = PIXELS_TO_UV_COORDS(1024, 1024, 801, 400, 125, 150);
-    auto textCoverCentreUVs = PIXELS_TO_UV_COORDS(1024, 1024, 950, 400, 50, 150);
-    auto textCoverCornerUVCompensation = Scale(2, true);
-    auto textCoverOffsetY = Scale(16.4, true);
-    auto textCoverWidth = Scale(149.5, true);
-    auto textCoverHeight = Scale(150, true);
-    auto textCoverMotion = Lerp(max.y + textCoverHeight, max.y - textCoverOffsetY - textCoverHeight, borderMotionTime);
-    auto textCoverColour = IM_COL32(0, 23, 57, 255);
-
-    ImVec2 textCoverCornerLeftMin = { min.x, textCoverMotion };
-    ImVec2 textCoverCornerLeftMax = { textCoverCornerLeftMin.x + textCoverWidth, textCoverCornerLeftMin.y + textCoverHeight };
-    ImVec2 textCoverCentreMin = { textCoverCornerLeftMax.x, textCoverCornerLeftMin.y };
-    ImVec2 textCoverCentreMax = { max.x - textCoverWidth, textCoverCornerLeftMax.y };
-    ImVec2 textCoverCornerRightMin = { max.x - textCoverWidth, textCoverCornerLeftMin.y };
-    ImVec2 textCoverCornerRightMax = { max.x, textCoverCornerLeftMax.y };
-
-    if (ReduceDraw)
+    if (ShowDescription)
     {
-        auto horzMargin = Scale(128, true);
+        auto textCoverCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 801, 400, 150, 150);
+        auto textCoverCornerExtendUVs = PIXELS_TO_UV_COORDS(1024, 1024, 801, 400, 125, 150);
+        auto textCoverCentreUVs = PIXELS_TO_UV_COORDS(1024, 1024, 950, 400, 50, 150);
+        auto textCoverCornerUVCompensation = Scale(2, true);
+        auto textCoverOffsetY = Scale(16.4, true);
+        auto textCoverWidth = Scale(149.5, true);
+        auto textCoverHeight = Scale(150, true);
+        auto textCoverMotion = Lerp(max.y + textCoverHeight, max.y - textCoverOffsetY - textCoverHeight, borderMotionTime);
+        auto textCoverColour = IM_COL32(0, 23, 57, 255);
 
-        ImVec2 textCoverClipMin = { textCoverCornerLeftMin.x + horzMargin, textCoverCornerLeftMin.y + Scale(14, true) };
-        ImVec2 textCoverClipMax = { textCoverCornerRightMax.x - horzMargin, textCoverCornerRightMax.y - Scale(90, true) };
+        ImVec2 textCoverCornerLeftMin = { min.x, textCoverMotion };
+        ImVec2 textCoverCornerLeftMax = { textCoverCornerLeftMin.x + textCoverWidth, textCoverCornerLeftMin.y + textCoverHeight };
+        ImVec2 textCoverCentreMin = { textCoverCornerLeftMax.x, textCoverCornerLeftMin.y };
+        ImVec2 textCoverCentreMax = { max.x - textCoverWidth, textCoverCornerLeftMax.y };
+        ImVec2 textCoverCornerRightMin = { max.x - textCoverWidth, textCoverCornerLeftMin.y };
+        ImVec2 textCoverCornerRightMax = { max.x, textCoverCornerLeftMax.y };
 
-        drawList->PushClipRect(textCoverClipMin, textCoverClipMax);
-    }
-
-    if (!Description.empty())
-    {
-        auto descFadeScale = Scale(20, true);
-        auto descFontSize = Scale(Config::Language == ELanguage::Japanese ? 28 : 27, true);
-        auto descSize = g_pFntRodin->CalcTextSizeA(descFontSize, FLT_MAX, 0.0f, Description.data());
-
-        ImVec2 descBoundsMin = { textCoverCentreMin.x - Scale(18, true), textCoverCentreMin.y + Scale(20, true) };
-        ImVec2 descBoundsMax = { textCoverCentreMax.x + Scale(18, true), textCoverCentreMax.y - Scale(90, true) };
-        auto descBoundsWidth = descBoundsMax.x - descBoundsMin.x;
-
-        m_descPos =
+        if (ReduceDraw)
         {
-            descBoundsMin.x + ((descBoundsMax.x - descBoundsMin.x) / 2) - (descSize.x / 2),
-            descBoundsMin.y + ((descBoundsMax.y - descBoundsMin.y) / 2) - (descSize.y / 2)
-        };
+            auto horzMargin = Scale(128, true);
 
-        if (descSize.x > descBoundsWidth)
-        {
-            auto descScrollMax = descSize.x - (descBoundsWidth - descFadeScale * 2);
-            auto descScrollSpeed = Scale(150, true);
-            auto descScrollDelay = 1.2f;
+            ImVec2 textCoverClipMin = { textCoverCornerLeftMin.x + horzMargin, textCoverCornerLeftMin.y + Scale(14, true) };
+            ImVec2 textCoverClipMax = { textCoverCornerRightMax.x - horzMargin, textCoverCornerRightMax.y - Scale(90, true) };
 
-            if (descScrollMax > 0.0f)
-            {
-                auto horz = -m_inputListener.RightStickX;
-
-                if (fabs(horz) > 0.25f)
-                {
-                    m_isDescManualScrolling = true;
-                    m_descScrollOffset += horz * descScrollSpeed * App::s_deltaTime;
-                }
-                else if (m_isDescManualScrolling && fabs(horz) <= 0.25f)
-                {
-                    m_isDescScrolling = false;
-                    m_isDescManualScrolling = false;
-                    m_descScrollTimer = 0.0f;
-                    m_descScrollDirection = horz > 0.0f ? 1.0f : -1.0f;
-                }
-
-                if (!m_isDescManualScrolling)
-                {
-                    if (!m_isDescScrolling)
-                    {
-                        m_descScrollTimer += App::s_deltaTime;
-
-                        if (m_descScrollTimer >= descScrollDelay)
-                            m_isDescScrolling = true;
-                    }
-
-                    if (m_isDescScrolling)
-                    {
-                        m_descScrollOffset += descScrollSpeed * m_descScrollDirection * App::s_deltaTime;
-
-                        if (m_descScrollOffset >= descScrollMax)
-                        {
-                            m_isDescScrolling = false;
-                            m_descScrollOffset = descScrollMax;
-                            m_descScrollTimer = 0.0f;
-                            m_descScrollDirection = -1.0f;
-                        }
-                        else if (m_descScrollOffset <= 0.0f)
-                        {
-                            m_isDescScrolling = false;
-                            m_descScrollOffset = 0;
-                            m_descScrollTimer = 0.0f;
-                            m_descScrollDirection = 1.0f;
-                        }
-                    }
-                }
-
-                m_descScrollOffset = std::clamp(m_descScrollOffset, 0.0f, descScrollMax);
-            }
-            else
-            {
-                m_isDescScrolling = false;
-                m_descScrollOffset = 0.0f;
-                m_descScrollTimer = 0.0f;
-                m_descScrollDirection = 1.0f;
-            }
-
-            m_descPos.x = (descBoundsMin.x + descFadeScale) - m_descScrollOffset;
+            drawList->PushClipRect(textCoverClipMin, textCoverClipMax);
         }
 
-        auto descAlphaMotionTime = ComputeLinearMotion(m_descTime, PlayTransitions ? 10 : 0, 15, m_isClosing);
+        if (!Description.empty())
+        {
+            auto descFadeScale = Scale(20, true);
+            auto descFontSize = Scale(Config::Language == ELanguage::Japanese ? 28 : 27, true);
+            auto descSize = g_pFntRodin->CalcTextSizeA(descFontSize, FLT_MAX, 0.0f, Description.data());
 
-        // Draw text cover backdrop.
-        drawList->AddRectFilled({ 0.0f, textCoverMotion }, { res.x, textCoverMotion + textCoverHeight }, IM_COL32(0, 0, 0, 65));
+            ImVec2 descBoundsMin = { textCoverCentreMin.x - Scale(18, true), textCoverCentreMin.y + Scale(20, true) };
+            ImVec2 descBoundsMax = { textCoverCentreMax.x + Scale(18, true), textCoverCentreMax.y - Scale(90, true) };
+            auto descBoundsWidth = descBoundsMax.x - descBoundsMin.x;
 
-        // Draw previous description fading out.
-        if (!m_previousDesc.empty())
-            drawList->AddText(g_pFntRodin, descFontSize, m_previousDescPos, IM_COL32(255, 255, 255, Lerp(255, 0, descAlphaMotionTime)), m_previousDesc.data());
+            m_descPos =
+            {
+                descBoundsMin.x + ((descBoundsMax.x - descBoundsMin.x) / 2) - (descSize.x / 2),
+                descBoundsMin.y + ((descBoundsMax.y - descBoundsMin.y) / 2) - (descSize.y / 2)
+            };
 
-        // Draw description.
-        drawList->AddText(g_pFntRodin, descFontSize, m_descPos, IM_COL32(255, 255, 255, Lerp(0, 255, descAlphaMotionTime)), Description.data());
+            if (descSize.x > descBoundsWidth)
+            {
+                auto descScrollMax = descSize.x - (descBoundsWidth - descFadeScale * 2);
+                auto descScrollSpeed = Scale(150, true);
+                auto descScrollDelay = 1.2f;
 
-        // Draw left text cover.
-        drawList->AddImage(g_upTexMainMenu1.get(), { 0.0f, textCoverCornerLeftMin.y }, { textCoverCornerLeftMin.x + textCoverCornerUVCompensation, textCoverCornerLeftMax.y }, GET_UV_COORDS(textCoverCornerExtendUVs), textCoverColour);
-        drawList->AddImage(g_upTexMainMenu1.get(), textCoverCornerLeftMin, textCoverCornerLeftMax, GET_UV_COORDS(textCoverCornerUVs), textCoverColour);
+                if (descScrollMax > 0.0f)
+                {
+                    auto horz = -m_inputListener.RightStickX;
 
-        // Draw centre text cover.
-        drawList->AddImage(g_upTexMainMenu1.get(), textCoverCentreMin, textCoverCentreMax, GET_UV_COORDS(textCoverCentreUVs), textCoverColour);
+                    if (fabs(horz) > 0.25f)
+                    {
+                        m_isDescManualScrolling = true;
+                        m_descScrollOffset += horz * descScrollSpeed * App::s_deltaTime;
+                    }
+                    else if (m_isDescManualScrolling && fabs(horz) <= 0.25f)
+                    {
+                        m_isDescScrolling = false;
+                        m_isDescManualScrolling = false;
+                        m_descScrollTimer = 0.0f;
+                        m_descScrollDirection = horz > 0.0f ? 1.0f : -1.0f;
+                    }
 
-        // Draw right text cover.
-        AddImageFlipped(g_upTexMainMenu1.get(), { textCoverCornerRightMax.x - textCoverCornerUVCompensation, textCoverCornerRightMin.y }, { res.x, textCoverCornerRightMax.y }, GET_UV_COORDS(textCoverCornerExtendUVs), textCoverColour);
-        AddImageFlipped(g_upTexMainMenu1.get(), textCoverCornerRightMin, textCoverCornerRightMax, GET_UV_COORDS(textCoverCornerUVs), textCoverColour, true);
-    }
-    else
-    {
-        // Draw blank text cover.
-        drawList->AddRectFilled({ 0.0f, textCoverCornerLeftMin.y }, { res.x, textCoverCornerLeftMax.y }, textCoverColour);
+                    if (!m_isDescManualScrolling)
+                    {
+                        if (!m_isDescScrolling)
+                        {
+                            m_descScrollTimer += App::s_deltaTime;
+
+                            if (m_descScrollTimer >= descScrollDelay)
+                                m_isDescScrolling = true;
+                        }
+
+                        if (m_isDescScrolling)
+                        {
+                            m_descScrollOffset += descScrollSpeed * m_descScrollDirection * App::s_deltaTime;
+
+                            if (m_descScrollOffset >= descScrollMax)
+                            {
+                                m_isDescScrolling = false;
+                                m_descScrollOffset = descScrollMax;
+                                m_descScrollTimer = 0.0f;
+                                m_descScrollDirection = -1.0f;
+                            }
+                            else if (m_descScrollOffset <= 0.0f)
+                            {
+                                m_isDescScrolling = false;
+                                m_descScrollOffset = 0;
+                                m_descScrollTimer = 0.0f;
+                                m_descScrollDirection = 1.0f;
+                            }
+                        }
+                    }
+
+                    m_descScrollOffset = std::clamp(m_descScrollOffset, 0.0f, descScrollMax);
+                }
+                else
+                {
+                    m_isDescScrolling = false;
+                    m_descScrollOffset = 0.0f;
+                    m_descScrollTimer = 0.0f;
+                    m_descScrollDirection = 1.0f;
+                }
+
+                m_descPos.x = (descBoundsMin.x + descFadeScale) - m_descScrollOffset;
+            }
+
+            auto descAlphaMotionTime = ComputeLinearMotion(m_descTime, PlayTransitions ? 10 : 0, 15, m_isClosing);
+
+            // Draw text cover backdrop.
+            drawList->AddRectFilled({ 0.0f, textCoverMotion }, { res.x, textCoverMotion + textCoverHeight }, IM_COL32(0, 0, 0, 65));
+
+            // Draw previous description fading out.
+            if (!m_isClosing && !m_previousDesc.empty())
+                drawList->AddText(g_pFntRodin, descFontSize, m_previousDescPos, IM_COL32(255, 255, 255, Lerp(255, 0, descAlphaMotionTime)), m_previousDesc.data());
+
+            // Draw description.
+            drawList->AddText(g_pFntRodin, descFontSize, m_descPos, IM_COL32(255, 255, 255, Lerp(0, 255, descAlphaMotionTime)), Description.data());
+
+            // Draw left text cover.
+            drawList->AddImage(g_upTexMainMenu1.get(), { 0.0f, textCoverCornerLeftMin.y }, { textCoverCornerLeftMin.x + textCoverCornerUVCompensation, textCoverCornerLeftMax.y }, GET_UV_COORDS(textCoverCornerExtendUVs), textCoverColour);
+            drawList->AddImage(g_upTexMainMenu1.get(), textCoverCornerLeftMin, textCoverCornerLeftMax, GET_UV_COORDS(textCoverCornerUVs), textCoverColour);
+
+            // Draw centre text cover.
+            drawList->AddImage(g_upTexMainMenu1.get(), textCoverCentreMin, textCoverCentreMax, GET_UV_COORDS(textCoverCentreUVs), textCoverColour);
+
+            // Draw right text cover.
+            AddImageFlipped(g_upTexMainMenu1.get(), { textCoverCornerRightMax.x - textCoverCornerUVCompensation, textCoverCornerRightMin.y }, { res.x, textCoverCornerRightMax.y }, GET_UV_COORDS(textCoverCornerExtendUVs), textCoverColour);
+            AddImageFlipped(g_upTexMainMenu1.get(), textCoverCornerRightMin, textCoverCornerRightMax, GET_UV_COORDS(textCoverCornerUVs), textCoverColour, true);
+        }
+        else
+        {
+            // Draw blank text cover.
+            drawList->AddRectFilled({ 0.0f, textCoverCornerLeftMin.y }, { res.x, textCoverCornerLeftMax.y }, textCoverColour);
+        }
     }
 
     if (ReduceDraw)

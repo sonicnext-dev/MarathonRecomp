@@ -1,11 +1,12 @@
 #pragma once
 
-#include "hook_event.h"
 #include <api/Marathon.h>
+#include <patches/hook_event.h>
 
 class MainMenuTaskPatches
 {
 public:
-    static inline Sonicteam::MainMenuTask::MainMenuState State{};
-    static inline std::vector<IContextHookEvent<Sonicteam::MainMenuTask>*> Events{};
+    static inline bool s_hideButtonWindow{};
+    static inline Sonicteam::MainMenuTask::MainMenuState s_state{};
+    static inline std::vector<IContextHookEvent<Sonicteam::MainMenuTask>*> s_events{};
 };
