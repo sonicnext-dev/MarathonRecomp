@@ -110,8 +110,8 @@ inline bool strcmpWildcard(const char* str, const char* pattern)
     return false;
 }
 
-inline std::wstring TransformUTF8ToWString(const std::string& str)
+inline std::u16string TransformUTF8ToWString(const std::string& str)
 {
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
     return converter.from_bytes(str);
 }
