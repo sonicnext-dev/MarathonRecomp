@@ -297,7 +297,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "MainMenu_GoldMedalResults_Name",
         {
             { ELanguage::English,  "STATISTICS" },
-            { ELanguage::Japanese, "スタティスティックス" },
+            { ELanguage::Japanese, "STATISTICS" },
             { ELanguage::German,   "STATISTIKEN" },
             { ELanguage::French,   "STATISTIQUES" },
             { ELanguage::Spanish,  "ESTADÍSTICAS" },
