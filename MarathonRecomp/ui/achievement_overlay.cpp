@@ -56,21 +56,23 @@ void AchievementOverlay::Draw()
     auto fontSize = Scale(Config::Language == ELanguage::Japanese ? 28 : 27, true);
     auto headerSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, strAchievementUnlocked.c_str());
     auto nameSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, strAchievementName.c_str());
-    auto maxSize = std::max(headerSize.x, nameSize.x) + Scale(5);
+    auto nameOffsetY = Scale(6);
+    auto maxWidth = std::max(headerSize.x, nameSize.x) + Scale(5);
+    auto maxHeight = headerSize.y + nameSize.y + nameOffsetY;
 
-    // Calculate image margins.
+    // Calculate margins.
     auto imageMarginX = Scale(25);
     auto imageMarginY = Scale(20);
     auto imageSize = Scale(64);
-
-    // Calculate text margins.
     auto textMarginX = imageMarginX * 2 + imageSize - Scale(5);
-    auto textMarginY = imageMarginY + Scale(1);
-
-    auto containerWidth = imageMarginX + textMarginX + maxSize;
+    auto containerWidth = imageMarginX + textMarginX + maxWidth;
+    auto containerHeight = Scale(105);
 
     ImVec2 min = { (res.x / 2) - (containerWidth / 2), Scale(55) };
-    ImVec2 max = { min.x + containerWidth, min.y + Scale(105) };
+    ImVec2 max = { min.x + containerWidth, min.y + containerHeight };
+
+    // Calculate centred vertical text offset.
+    auto textMarginY = (min.y + (containerHeight / 2)) - (maxHeight / 2);
 
     auto windowMotion = DrawWindow(min, max, true, g_appearTime, g_isClosing);
 
@@ -97,7 +99,7 @@ void AchievementOverlay::Draw()
         (
             g_pFntRodin,
             fontSize,
-            { /* X */ min.x + textMarginX + (maxSize - headerSize.x) / 2, /* Y */ min.y + textMarginY },
+            { /* X */ min.x + textMarginX + (maxWidth - headerSize.x) / 2, /* Y */ textMarginY },
             headerColour,
             strAchievementUnlocked.c_str()
         );
@@ -107,7 +109,7 @@ void AchievementOverlay::Draw()
         (
             g_pFntRodin,
             fontSize,
-            { /* X */ min.x + textMarginX + (maxSize - nameSize.x) / 2, /* Y */ min.y + textMarginY + nameSize.y + Scale(6) },
+            { /* X */ min.x + textMarginX + (maxWidth - nameSize.x) / 2, /* Y */ textMarginY + nameSize.y + nameOffsetY },
             IM_COL32(255, 255, 255, 255),
             strAchievementName.c_str()
         );
