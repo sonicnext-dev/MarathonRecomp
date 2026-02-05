@@ -17,13 +17,13 @@
 
 static const std::string GameDirectory = "game";
 static const std::string DLCDirectory = "dlc";
-static const std::string EpisodeSonicDirectory = DLCDirectory + "/Episode Sonic Boss Attack";
-static const std::string EpisodeShadowDirectory = DLCDirectory + "/Episode Shadow Boss Attack";
-static const std::string EpisodeSilverDirectory = DLCDirectory + "/Episode Silver Boss Attack";
-static const std::string EpisodeAmigoDirectory = DLCDirectory + "/Team Attack Amigo";
-static const std::string MissionSonicDirectory = DLCDirectory + "/Mission Pack Sonic Very Hard";
-static const std::string MissionShadowDirectory = DLCDirectory + "/Mission Pack Shadow Very Hard";
-static const std::string MissionSilverDirectory = DLCDirectory + "/Mission Pack Silver Very Hard";
+static const std::string EpisodeSonicDirectory = DLCDirectory + "/Additional Episode - Sonic Boss Attack";
+static const std::string EpisodeShadowDirectory = DLCDirectory + "/Additional Episode - Shadow Boss Attack";
+static const std::string EpisodeSilverDirectory = DLCDirectory + "/Additional Episode - Silver Boss Attack";
+static const std::string EpisodeAmigoDirectory = DLCDirectory + "/Additional Episode - Team Attack Amigo";
+static const std::string MissionSonicDirectory = DLCDirectory + "/Additional Mission Pack - Sonic Very Hard";
+static const std::string MissionShadowDirectory = DLCDirectory + "/Additional Mission Pack - Shadow Very Hard";
+static const std::string MissionSilverDirectory = DLCDirectory + "/Additional Mission Pack - Silver Very Hard";
 static const std::string GameExecutableFile = "default.xex";
 static const std::string DLCValidationFile = "download.arc";
 static const std::string ISOExtension = ".iso";
@@ -70,7 +70,7 @@ static bool checkFile(const FilePair &pair, const uint64_t *fileHashes, const st
     if (!std::filesystem::exists(filePath))
     {
         journal.lastResult = Journal::Result::FileMissing;
-        journal.lastErrorMessage = fmt::format("File {} does not exist.", fileName);
+        journal.lastErrorMessage = fmt::format("File \"{}\" does not exist.", fileName);
         return false;
     }
 
@@ -79,7 +79,7 @@ static bool checkFile(const FilePair &pair, const uint64_t *fileHashes, const st
     if (ec)
     {
         journal.lastResult = Journal::Result::FileReadFailed;
-        journal.lastErrorMessage = fmt::format("Failed to read file size for {}.", fileName);
+        journal.lastErrorMessage = fmt::format("Failed to read file size for \"{}\".", fileName);
         return false;
     }
 
@@ -99,7 +99,7 @@ static bool checkFile(const FilePair &pair, const uint64_t *fileHashes, const st
         if (!fileStream.is_open() || fileStream.bad())
         {
             journal.lastResult = Journal::Result::FileReadFailed;
-            journal.lastErrorMessage = fmt::format("Failed to read file {}.", fileName);
+            journal.lastErrorMessage = fmt::format("Failed to read file \"{}\".", fileName);
             return false;
         }
 
@@ -113,7 +113,7 @@ static bool checkFile(const FilePair &pair, const uint64_t *fileHashes, const st
         if (!fileHashFound)
         {
             journal.lastResult = Journal::Result::FileHashFailed;
-            journal.lastErrorMessage = fmt::format("File {} did not match any of the known hashes.", fileName);
+            journal.lastErrorMessage = fmt::format("File \"{}\" did not match any of the known hashes.", fileName);
             return false;
         }
 
@@ -136,14 +136,14 @@ static bool copyFile(const FilePair &pair, const uint64_t *fileHashes, VirtualFi
     if (!sourceVfs.exists(filename))
     {
         journal.lastResult = Journal::Result::FileMissing;
-        journal.lastErrorMessage = fmt::format("File {} does not exist in {}.", filename, sourceVfs.getName());
+        journal.lastErrorMessage = fmt::format("File \"{}\" does not exist in \"{}\".", filename, sourceVfs.getName());
         return false;
     }
 
     if (!sourceVfs.load(filename, fileData))
     {
         journal.lastResult = Journal::Result::FileReadFailed;
-        journal.lastErrorMessage = fmt::format("Failed to read file {} from {}.", filename, sourceVfs.getName());
+        journal.lastErrorMessage = fmt::format("Failed to read file \"{}\" from \"{}\".", filename, sourceVfs.getName());
         return false;
     }
 
@@ -159,7 +159,7 @@ static bool copyFile(const FilePair &pair, const uint64_t *fileHashes, VirtualFi
         if (!fileHashFound)
         {
             journal.lastResult = Journal::Result::FileHashFailed;
-            journal.lastErrorMessage = fmt::format("File {} from {} did not match any of the known hashes.", filename, sourceVfs.getName());
+            journal.lastErrorMessage = fmt::format("File \"{}\" from \"{}\" did not match any of the known hashes.", filename, sourceVfs.getName());
             return false;
         }
     }
@@ -187,7 +187,7 @@ static bool copyFile(const FilePair &pair, const uint64_t *fileHashes, VirtualFi
     if (!outStream.is_open())
     {
         journal.lastResult = Journal::Result::FileCreationFailed;
-        journal.lastErrorMessage = fmt::format("Failed to create file at {}.", fromPath(targetPath));
+        journal.lastErrorMessage = fmt::format("Failed to create file at \"{}\".", fromPath(targetPath));
         return false;
     }
 
@@ -197,7 +197,7 @@ static bool copyFile(const FilePair &pair, const uint64_t *fileHashes, VirtualFi
     if (outStream.bad())
     {
         journal.lastResult = Journal::Result::FileWriteFailed;
-        journal.lastErrorMessage = fmt::format("Failed to create file at {}.", fromPath(targetPath));
+        journal.lastErrorMessage = fmt::format("Failed to create file at \"{}\".", fromPath(targetPath));
         return false;
     }
 
@@ -253,7 +253,7 @@ static DLC detectDLC(const std::filesystem::path &sourcePath, VirtualFileSystem 
     }
 
     journal.lastResult = Journal::Result::UnknownDLCType;
-    journal.lastErrorMessage = fmt::format("DLC type for {} is unknown.", name);
+    journal.lastErrorMessage = fmt::format("DLC type for \"{}\" is unknown.", name);
     return DLC::Unknown;
 }
 
@@ -384,7 +384,7 @@ bool Installer::computeTotalSize(std::span<const FilePair> filePairs, const uint
         if (!sourceVfs.exists(filename))
         {
             journal.lastResult = Journal::Result::FileMissing;
-            journal.lastErrorMessage = fmt::format("File {} does not exist in {}.", filename, sourceVfs.getName());
+            journal.lastErrorMessage = fmt::format("File \"{}\" does not exist in \"{}\".", filename, sourceVfs.getName());
             return false;
         }
 
@@ -421,7 +421,7 @@ bool Installer::copyFiles(std::span<const FilePair> filePairs, const uint64_t *f
     if (!std::filesystem::exists(targetDirectory) && !std::filesystem::create_directories(targetDirectory, ec))
     {
         journal.lastResult = Journal::Result::DirectoryCreationFailed;
-        journal.lastErrorMessage = "Unable to create directory at " + fromPath(targetDirectory);
+        journal.lastErrorMessage = "Unable to create directory at \"" + fromPath(targetDirectory) + "\".";
         return false;
     }
 
@@ -452,7 +452,7 @@ bool Installer::parseContent(const std::filesystem::path &sourcePath, std::uniqu
     else
     {
         journal.lastResult = Journal::Result::VirtualFileSystemFailed;
-        journal.lastErrorMessage = "Unable to open " + fromPath(sourcePath);
+        journal.lastErrorMessage = "Unable to open \"" + fromPath(sourcePath) + "\".";
         return false;
     }
 }

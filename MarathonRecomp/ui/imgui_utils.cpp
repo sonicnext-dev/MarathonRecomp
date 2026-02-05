@@ -13,10 +13,14 @@
 #include <res/images/common/window.dds.h>
 #include <res/images/common/select_arrow.dds.h>
 #include <res/images/common/main_menu1.dds.h>
+#include <res/images/common/main_menu7.dds.h>
+#include <res/images/common/main_menu8.dds.h>
 #include <res/images/common/arrow.dds.h>
 
 ImFont* g_pFntRodin;
 ImFont* g_pFntNewRodin;
+
+float g_fntRodinSize{};
 
 std::unique_ptr<GuestTexture> g_upTexButtonWindow;
 std::unique_ptr<GuestTexture> g_upTexController;
@@ -24,6 +28,8 @@ std::unique_ptr<GuestTexture> g_upTexKbm;
 std::unique_ptr<GuestTexture> g_upTexWindow;
 std::unique_ptr<GuestTexture> g_upTexSelectArrow;
 std::unique_ptr<GuestTexture> g_upTexMainMenu1;
+std::unique_ptr<GuestTexture> g_upTexMainMenu7;
+std::unique_ptr<GuestTexture> g_upTexMainMenu8;
 std::unique_ptr<GuestTexture> g_upTexArrow;
 
 void InitImGuiUtils()
@@ -37,7 +43,14 @@ void InitImGuiUtils()
     g_upTexWindow = LOAD_ZSTD_TEXTURE(g_window);
     g_upTexSelectArrow = LOAD_ZSTD_TEXTURE(g_select_arrow);
     g_upTexMainMenu1 = LOAD_ZSTD_TEXTURE(g_main_menu1);
+    g_upTexMainMenu7 = LOAD_ZSTD_TEXTURE(g_main_menu7);
+    g_upTexMainMenu8 = LOAD_ZSTD_TEXTURE(g_main_menu8);
     g_upTexArrow = LOAD_ZSTD_TEXTURE(g_arrow);
+}
+
+void UpdateImGuiUtils()
+{
+    g_fntRodinSize = Scale(Config::Language == ELanguage::Japanese ? 28 : 27, true);
 }
 
 void SetGradient(const ImVec2& min, const ImVec2& max, ImU32 top, ImU32 bottom)
@@ -380,25 +393,21 @@ void DrawContainerBox(ImVec2 min, ImVec2 max, float alpha)
     auto commonHeight = Scale(50);
     auto bottomHeight = Scale(5);
 
-    auto tl = PIXELS_TO_UV_COORDS(1024, 1024, 0, 400, 50, 50);
-    auto tc = PIXELS_TO_UV_COORDS(1024, 1024, 50, 400, 50, 50);
-    auto cl = PIXELS_TO_UV_COORDS(1024, 1024, 0, 450, 50, 50);
-    auto cc = PIXELS_TO_UV_COORDS(1024, 1024, 50, 450, 50, 50);
-    auto bl = PIXELS_TO_UV_COORDS(1024, 1024, 0, 500, 50, 50);
-    auto bc = PIXELS_TO_UV_COORDS(1024, 1024, 50, 500, 50, 50);
+    auto tl = PIXELS_TO_UV_COORDS(1024, 1024, 1, 400, 50, 50);
+    auto tc = PIXELS_TO_UV_COORDS(1024, 1024, 51, 400, 50, 50);
+    auto cl = PIXELS_TO_UV_COORDS(1024, 1024, 1, 450, 50, 50);
+    auto cc = PIXELS_TO_UV_COORDS(1024, 1024, 51, 450, 50, 50);
+    auto bl = PIXELS_TO_UV_COORDS(1024, 1024, 1, 500, 50, 50);
+    auto bc = PIXELS_TO_UV_COORDS(1024, 1024, 51, 500, 50, 50);
 
-    auto color = IM_COL32(255, 255, 255, 100 * alpha);
+    auto colour = IM_COL32(255, 255, 255, 100 * alpha);
 
-    SetHorizontalGradient({ max.x - commonWidth, min.y }, max, IM_COL32_WHITE, IM_COL32(255, 255, 255, 0));
-
-    drawList->AddImage(g_upTexMainMenu1.get(), min, { min.x + commonWidth, min.y + commonHeight }, GET_UV_COORDS(tl), color);
-    drawList->AddImage(g_upTexMainMenu1.get(), { min.x + commonWidth, min.y }, { max.x, min.y + commonHeight }, GET_UV_COORDS(tc), color);
-    drawList->AddImage(g_upTexMainMenu1.get(), { min.x, min.y + commonHeight }, { min.x + commonWidth, max.y - commonHeight }, GET_UV_COORDS(cl), color);
-    drawList->AddImage(g_upTexMainMenu1.get(), { min.x + commonWidth, min.y + commonHeight }, { max.x, max.y - commonHeight }, GET_UV_COORDS(cc), color);
-    drawList->AddImage(g_upTexMainMenu1.get(), { min.x, max.y - commonHeight }, { min.x + commonWidth, max.y + bottomHeight }, GET_UV_COORDS(bl), color);
-    drawList->AddImage(g_upTexMainMenu1.get(), { min.x + commonWidth, max.y - commonHeight }, { max.x, max.y + bottomHeight }, GET_UV_COORDS(bc), color);
-
-    ResetGradient();
+    drawList->AddImage(g_upTexMainMenu1.get(), min, { min.x + commonWidth, min.y + commonHeight }, GET_UV_COORDS(tl), colour);
+    drawList->AddImage(g_upTexMainMenu1.get(), { min.x + commonWidth, min.y }, { max.x, min.y + commonHeight }, GET_UV_COORDS(tc), colour);
+    drawList->AddImage(g_upTexMainMenu1.get(), { min.x, min.y + commonHeight }, { min.x + commonWidth, max.y - commonHeight }, GET_UV_COORDS(cl), colour);
+    drawList->AddImage(g_upTexMainMenu1.get(), { min.x + commonWidth, min.y + commonHeight }, { max.x, max.y - commonHeight }, GET_UV_COORDS(cc), colour);
+    drawList->AddImage(g_upTexMainMenu1.get(), { min.x, max.y - commonHeight }, { min.x + commonWidth, max.y + bottomHeight }, GET_UV_COORDS(bl), colour);
+    drawList->AddImage(g_upTexMainMenu1.get(), { min.x + commonWidth, max.y - commonHeight }, { max.x, max.y + bottomHeight }, GET_UV_COORDS(bc), colour);
 }
 
 void DrawTextBasic(const ImFont* font, float fontSize, const ImVec2& pos, ImU32 colour, const char* text)
@@ -1235,7 +1244,8 @@ ImGuiTextInterpData GetHidInterpTextData()
             hid::g_inputDevice == hid::EInputDevice::Mouse)
         {
             buttonTexture = &g_upTexKbm;
-            buttonTextureWidth = uint16_t(384);
+            buttonTextureWidth = uint16_t(84);
+            buttonTextureHeight = uint16_t(28);
         }
 
         if (hid::g_inputDevice == hid::EInputDevice::Keyboard)
@@ -1281,12 +1291,12 @@ const xxHashMap<ImGuiTextPictureCrop> g_buttonCropsPS3 =
 
 const xxHashMap<ImGuiTextPictureCrop> g_buttonCropsMouse =
 {
-    { HashStr("button_a"), { 128, 0, 128, 128 } },
-    { HashStr("button_b"), { 256, 0, 128, 128 } }
+    { HashStr("button_a"), { 0, 0, 28, 28 } },
+    { HashStr("button_b"), { 56, 0, 28, 28 } }
 };
 
 const xxHashMap<ImGuiTextPictureCrop> g_buttonCropsKeyboard =
 {
-    { HashStr("button_a"), { 0, 0, 128, 128 } },
-    { HashStr("button_b"), { 256, 0, 128, 128 } }
+    { HashStr("button_a"), { 28, 0, 28, 28 } },
+    { HashStr("button_b"), { 56, 0, 28, 28 } }
 };

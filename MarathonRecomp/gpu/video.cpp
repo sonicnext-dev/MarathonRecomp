@@ -2915,6 +2915,7 @@ static void DrawImGui()
     ImGui::End();
 #endif
 
+    UpdateImGuiUtils();
     AchievementMenu::Draw();
     OptionsMenu::Draw();
     InstallerWizard::Draw();

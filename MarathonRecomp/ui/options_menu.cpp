@@ -3,8 +3,6 @@
 #include <patches/aspect_ratio_patches.h>
 #include <patches/audio_patches.h>
 #include <patches/MainMenuTask_patches.h>
-#include <res/images/common/main_menu7.dds.h>
-#include <res/images/common/main_menu8.dds.h>
 #include <res/images/common/main_menu9.dds.h>
 #include <ui/black_bar.h>
 #include <ui/button_window.h>
@@ -48,11 +46,7 @@ static int g_optionCount{};
 static IConfigDef* g_optionCurrent{};
 static bool g_optionCanReset{};
 
-static std::unique_ptr<GuestTexture> g_upTexMainMenu7{};
-static std::unique_ptr<GuestTexture> g_upTexMainMenu8{};
 static std::unique_ptr<GuestTexture> g_upTexMainMenu9{};
-
-static float g_fntRodinSize{};
 
 static std::string& GetCategoryName(OptionsMenuCategory category)
 {
@@ -947,8 +941,6 @@ void OptionsMenu::Draw()
         return;
     }
 
-    g_fntRodinSize = Scale(Config::Language == ELanguage::Japanese ? 28 : 27, true);
-
     // Draw faded letterbox at tall aspect ratios.
     if (g_aspectRatio < NARROW_ASPECT_RATIO)
     {
@@ -1235,8 +1227,6 @@ void OptionsMenu::Draw()
 
 void OptionsMenu::Init()
 {
-    g_upTexMainMenu7 = LOAD_ZSTD_TEXTURE(g_main_menu7);
-    g_upTexMainMenu8 = LOAD_ZSTD_TEXTURE(g_main_menu8);
     g_upTexMainMenu9 = LOAD_ZSTD_TEXTURE(g_main_menu9);
 }
 

@@ -5,20 +5,22 @@
 #include <res/music/installer.ogg.h>
 #include <res/sounds/window_open.ogg.h>
 #include <res/sounds/window_close.ogg.h>
-#include <res/sounds/cursor2.ogg.h>
+#include <res/sounds/cursor.ogg.h>
 #include <res/sounds/deside.ogg.h>
 #include <res/sounds/move.ogg.h>
 #include <res/sounds/main_deside.ogg.h>
+#include <res/sounds/cannot_deside.ogg.h>
 
 enum class EmbeddedSound
 {
     WindowOpen,
     WindowClose,
-    Cursor2,
+    Cursor,
     Deside,
     Move,
     MainDeside,
-    Count,
+    CannotDeside,
+    Count
 };
 
 struct EmbeddedSoundData
@@ -31,10 +33,11 @@ static const std::unordered_map<std::string_view, EmbeddedSound> g_embeddedSound
 {
     { "window_open", EmbeddedSound::WindowOpen },
     { "window_close", EmbeddedSound::WindowClose },
-    { "cursor2", EmbeddedSound::Cursor2 },
+    { "cursor", EmbeddedSound::Cursor },
     { "deside", EmbeddedSound::Deside },
     { "move", EmbeddedSound::Move },
     { "main_deside", EmbeddedSound::MainDeside },
+    { "cannot_deside", EmbeddedSound::CannotDeside },
 };
 
 static size_t g_channelIndex;
@@ -57,9 +60,9 @@ static void PlayEmbeddedSound(EmbeddedSound s)
             soundData = g_window_close;
             soundDataSize = sizeof(g_window_close);
             break;
-        case EmbeddedSound::Cursor2:
-            soundData = g_cursor2;
-            soundDataSize = sizeof(g_cursor2);
+        case EmbeddedSound::Cursor:
+            soundData = g_cursor;
+            soundDataSize = sizeof(g_cursor);
             break;
         case EmbeddedSound::Deside:
             soundData = g_deside;
@@ -72,6 +75,10 @@ static void PlayEmbeddedSound(EmbeddedSound s)
         case EmbeddedSound::MainDeside:
             soundData = g_main_deside;
             soundDataSize = sizeof(g_main_deside);
+            break;
+        case EmbeddedSound::CannotDeside:
+            soundData = g_cannot_deside;
+            soundDataSize = sizeof(g_cannot_deside);
             break;
         default:
             assert(false && "Unknown embedded sound.");
