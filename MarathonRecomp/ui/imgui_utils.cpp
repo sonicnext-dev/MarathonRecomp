@@ -718,8 +718,8 @@ ImU32 ColourLerp(ImU32 c0, ImU32 c1, float t)
 
 void DrawVersionString(const ImU32 colour)
 {
-    auto drawList = ImGui::GetBackgroundDrawList();
     auto& res = ImGui::GetIO().DisplaySize;
+    auto  drawList = ImGui::GetBackgroundDrawList();
 
     auto fontSize = Scale(12, true);
     auto textSize = g_pFntNewRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, g_versionString);
@@ -728,7 +728,7 @@ void DrawVersionString(const ImU32 colour)
     auto textY = res.y - textSize.y - textMargin;
 
     if (g_aspectRatio < NARROW_ASPECT_RATIO)
-        textY -= BlackBar::s_letterboxHeight - BlackBar::s_margin;
+        textY -= g_vertCentre;
 
     // TODO: remove this line after v1 release.
     drawList->AddText(g_pFntNewRodin, fontSize, { textMargin, textY }, colour, "WORK IN PROGRESS");

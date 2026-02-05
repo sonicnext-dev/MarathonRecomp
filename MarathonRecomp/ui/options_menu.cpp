@@ -941,13 +941,6 @@ void OptionsMenu::Draw()
         return;
     }
 
-    // Draw faded letterbox at tall aspect ratios.
-    if (g_aspectRatio < NARROW_ASPECT_RATIO)
-    {
-        BlackBar::Show(true);
-        BlackBar::SetBorderMargin(Scale(BlackBar::ms_MenuBorderMargin, true));
-    }
-
     auto* drawList = ImGui::GetBackgroundDrawList();
     auto& res = ImGui::GetIO().DisplaySize;
 

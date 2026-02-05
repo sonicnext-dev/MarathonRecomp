@@ -1,5 +1,6 @@
 #include "common_menu.h"
 #include <patches/aspect_ratio_patches.h>
+#include <ui/black_bar.h>
 #include <ui/imgui_utils.h>
 #include <app.h>
 
@@ -352,6 +353,13 @@ void CommonMenu::Draw()
         auto verAlphaMotionTime = PlayTransitions ? ComputeLinearMotion(m_time, 0, m_isClosing ? 3 : 10, m_isClosing) : 1.0;
 
         DrawVersionString(IM_COL32(0, 0, 0, 70 * verAlphaMotionTime));
+    }
+
+    // Draw faded letterbox at narrow aspect ratios.
+    if (g_aspectRatio < NARROW_ASPECT_RATIO)
+    {
+        BlackBar::Show(true);
+        BlackBar::SetBorderMargin(Scale(BlackBar::ms_MenuBorderMargin, true));
     }
 }
 

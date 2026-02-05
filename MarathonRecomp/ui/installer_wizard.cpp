@@ -1131,6 +1131,9 @@ static void DrawMusicCredits()
     auto offsetX = Scale(8, true);
     auto offsetY = Scale(5, true);
 
+    if (g_aspectRatio < NARROW_ASPECT_RATIO)
+        offsetY += g_vertCentre;
+
     drawList->AddText(g_pFntNewRodin, fontSize, { offsetX, offsetY }, fadeAlphaMotion, Localise("Installer_MusicCredits").c_str());
 }
 
