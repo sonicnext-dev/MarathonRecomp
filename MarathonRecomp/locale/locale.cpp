@@ -502,7 +502,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Installer_Step_Game",
         {
             { ELanguage::English,  "Game Data" },
-            { ELanguage::Japanese, "DUMMY" },
+            { ELanguage::Japanese, "ゲームデータ" },
             { ELanguage::German,   "Spieldaten" },
             { ELanguage::French,   "Fichiers du jeu" },
             { ELanguage::Spanish,  "Archivos del juego" },
