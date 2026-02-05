@@ -29,6 +29,9 @@
 #include <res/images/common/sonicnext-dev.dds.h>
 #include <res/credits.h>
 
+static constexpr float COMMON_MENU_INTRO_TIME = 10.0f;
+static constexpr float COMMON_FADE_TIME = 25.0f;
+
 static constexpr float NAV_BUTTON_OFFSET_Y = 39.0f;
 static constexpr float NAV_BUTTON_MARGIN = 48.0f;
 
@@ -41,6 +44,10 @@ static double g_chevronTime{};
 static double g_cursorArrowsTime{};
 static double g_appearTime{};
 
+static double g_alphaTime{};
+static double g_alphaMotion{};
+
+static bool g_isIntroAnim{ true };
 static bool g_isDisappearing{};
 static bool g_isQuitting{};
 
@@ -443,6 +450,7 @@ static void DrawProgressBar(ImVec2 originMin, ImVec2 originMax, float progress)
     auto stretchUVs = PIXELS_TO_UV_COORDS(256, 256, 51, 0, 51, 45);
     auto edgeWidth = Scale(50, true);
     auto edgeHeight = Scale(45, true);
+    auto colour = IM_COL32(255, 255, 255, 255 * g_alphaMotion);
 
     auto leftEdgeMin = pos;
     auto leftEdgeMax = ImVec2(leftEdgeMin.x + edgeWidth, leftEdgeMin.y + edgeHeight);
@@ -451,17 +459,17 @@ static void DrawProgressBar(ImVec2 originMin, ImVec2 originMax, float progress)
     auto rightEdgeMin = ImVec2(stretchMax.x, stretchMin.y);
     auto rightEdgeMax = ImVec2(rightEdgeMin.x + edgeWidth, rightEdgeMin.y + edgeHeight);
 
-    drawList->AddImage(g_upTexMainMenu8.get(), leftEdgeMin, leftEdgeMax, GET_UV_COORDS(edgeUVs));
-    drawList->AddImage(g_upTexMainMenu8.get(), stretchMin, stretchMax, GET_UV_COORDS(stretchUVs));
-    AddImageFlipped(g_upTexMainMenu8.get(), rightEdgeMin, rightEdgeMax, GET_UV_COORDS(edgeUVs), IM_COL32_WHITE, true);
+    drawList->AddImage(g_upTexMainMenu8.get(), leftEdgeMin, leftEdgeMax, GET_UV_COORDS(edgeUVs), colour);
+    drawList->AddImage(g_upTexMainMenu8.get(), stretchMin, stretchMax, GET_UV_COORDS(stretchUVs), colour);
+    AddImageFlipped(g_upTexMainMenu8.get(), rightEdgeMin, rightEdgeMax, GET_UV_COORDS(edgeUVs), colour, true);
 
     auto gaugeOffsetX = Scale(41, true);
     auto gaugeHeight = Scale(11, true);
     auto gaugeMin = ImVec2(leftEdgeMin.x + gaugeOffsetX, (rightEdgeMin.y + edgeHeight / 2) - (gaugeHeight / 2) + Scale(1, true));
     auto gaugeMax = ImVec2(rightEdgeMax.x - gaugeOffsetX, gaugeMin.y + gaugeHeight / 2);
 
-    drawList->AddRectFilled(gaugeMin, gaugeMax, IM_COL32_BLACK, Scale(10, true));
-    drawList->AddRectFilled(gaugeMin, { gaugeMin.x + (gaugeMax.x - gaugeMin.x) * progress, gaugeMax.y }, IM_COL32(112, 250, 255, 255), Scale(10, true));
+    drawList->AddRectFilled(gaugeMin, gaugeMax, IM_COL32(0, 0, 0, 255 * g_alphaMotion), Scale(10, true));
+    drawList->AddRectFilled(gaugeMin, { gaugeMin.x + (gaugeMax.x - gaugeMin.x) * progress, gaugeMax.y }, IM_COL32(112, 250, 255, 255 * g_alphaMotion), Scale(10, true));
 }
 
 static bool ConvertPathSet(const nfdpathset_t *pathSet, std::list<std::filesystem::path> &filePaths)
@@ -748,10 +756,19 @@ static void CheckCancelAction()
 
 static void DrawMessagePrompt()
 {
+    static auto s_messageWindowOpened = false;
+
     if (g_currentMessagePrompt.empty())
         return;
 
     auto messageWindowReturned = false;
+
+    if (!s_messageWindowOpened)
+    {
+        // Update alpha time to fade out.
+        g_alphaTime = ImGui::GetTime();
+        s_messageWindowOpened = true;
+    }
 
     if (g_currentMessagePromptConfirmation)
     {
@@ -803,6 +820,11 @@ static void DrawMessagePrompt()
         g_currentMessagePrompt.clear();
         g_currentMessagePromptSource = MessagePromptSource::Unknown;
         g_currentMessageResult = -1;
+
+        // Update alpha time to fade in.
+        g_alphaTime = ImGui::GetTime();
+
+        s_messageWindowOpened = false;
     }
 }
 
@@ -865,7 +887,6 @@ static void DrawLeftImage()
         installTextureIndex += int(installTime);
     }
 
-    auto imageAlphaMotion = 1.0f; // ComputeMotionInstaller(g_appearTime, g_disappearTime, 0, 10);
     auto pTexture = g_installTextures[installTextureIndex % g_installTextures.size()].get();
 
     constexpr float imageSize = 1000.0f;
@@ -874,7 +895,7 @@ static void DrawLeftImage()
     auto min = ImVec2(g_aspectRatioOffsetX + Scale(pos.x, true), g_aspectRatioOffsetY + Scale(pos.y, true));
     auto max = ImVec2(min.x + Scale(imageSize, true), min.y + Scale(imageSize, true));
 
-    drawList->AddImage(pTexture, min, max, { 0, 0 }, { 1, 1 }, IM_COL32(255, 255, 255, std::lround(140.0 * imageAlphaMotion)));
+    drawList->AddImage(pTexture, min, max, { 0, 0 }, { 1, 1 }, IM_COL32(255, 255, 255, std::lround(140.0 * g_alphaMotion)));
 }
 
 static std::string& GetWizardText(WizardPage page)
@@ -899,36 +920,40 @@ static bool DrawButton(ImVec2 pos, const char* text, bool& isHovered, bool isEna
     auto& res = ImGui::GetIO().DisplaySize;
     auto  drawList = ImGui::GetBackgroundDrawList();
 
-    auto bgEdgeUVs = PIXELS_TO_UV_COORDS(256, 256, 1, 0, 51, 45);
-    auto bgStretchUVs = PIXELS_TO_UV_COORDS(256, 256, 51, 0, 51, 45);
-    auto bgWidth = Scale(50, true);
-    auto bgHeight = Scale(45, true);
-    auto bgColourMotion = isHovered && isEnabled ? 255 : 0;
-    auto bgColour = IM_COL32(bgColourMotion, bgColourMotion, bgColourMotion, 245);
-    auto bgFadeColour = IM_COL32(bgColourMotion, bgColourMotion, bgColourMotion, 45);
+    auto edgeUVs = PIXELS_TO_UV_COORDS(256, 256, 1, 0, 51, 45);
+    auto stretchUVs = PIXELS_TO_UV_COORDS(256, 256, 51, 0, 51, 45);
+    auto width = Scale(50, true);
+    auto height = Scale(45, true);
+    auto colourMotion = isHovered && isEnabled ? 255 : 0;
+    auto colour = IM_COL32(colourMotion, colourMotion, colourMotion, 245 * g_alphaMotion);
+    auto fadeColour = IM_COL32(colourMotion, colourMotion, colourMotion, 45 * g_alphaMotion);
 
-    ImVec2 titleBgEdgeMin = { pos.x - Scale(8, true), pos.y };
-    ImVec2 titleBgEdgeMax = { titleBgEdgeMin.x + bgWidth, titleBgEdgeMin.y + bgHeight };
-    ImVec2 titleBgStretchMin = { titleBgEdgeMax.x, titleBgEdgeMin.y };
-    ImVec2 titleBgStretchMax = { res.x, titleBgEdgeMax.y };
-    ImVec2 titleBgFadeMin = { titleBgStretchMax.x - ((titleBgStretchMax.x - titleBgEdgeMin.x) / 2), titleBgStretchMax.y};
-    ImVec2 titleBgFadeMax = titleBgStretchMax;
+    auto edgeMin = ImVec2(pos.x - Scale(8, true), pos.y);
+    auto edgeMax = ImVec2(edgeMin.x + width, edgeMin.y + height);
+    auto stretchMin = ImVec2(edgeMax.x, edgeMin.y);
+    auto stretchMax = ImVec2(res.x, edgeMax.y);
+    auto fadeMin = ImVec2(stretchMax.x - ((stretchMax.x - edgeMin.x) / 2), stretchMax.y);
+    auto fadeMax = stretchMax;
 
-    SetHorizontalGradient(titleBgFadeMin, titleBgFadeMax, bgColour, bgFadeColour);
-    drawList->AddImage(g_upTexMainMenu8.get(), titleBgEdgeMin, titleBgEdgeMax, GET_UV_COORDS(bgEdgeUVs), bgColour);
-    drawList->AddImage(g_upTexMainMenu8.get(), titleBgStretchMin, titleBgStretchMax, GET_UV_COORDS(bgStretchUVs), bgColour);
+    SetHorizontalGradient(fadeMin, fadeMax, colour, fadeColour);
+    drawList->AddImage(g_upTexMainMenu8.get(), edgeMin, edgeMax, GET_UV_COORDS(edgeUVs), colour);
+    drawList->AddImage(g_upTexMainMenu8.get(), stretchMin, stretchMax, GET_UV_COORDS(stretchUVs), colour);
     ResetGradient();
 
-    auto titlePos = ImVec2(titleBgEdgeMin.x + Scale(51, true), titleBgEdgeMin.y + Scale(8, true));
+    auto textPos = ImVec2(edgeMin.x + Scale(51, true), edgeMin.y + Scale(8, true));
 
-    drawList->AddText(g_pFntRodin, g_fntRodinSize, titlePos, isEnabled ? IM_COL32_WHITE : IM_COL32(137, 137, 137, 255), text);
+    auto textColour = isEnabled
+        ? IM_COL32(255, 255, 255, 255 * g_alphaMotion)
+        : IM_COL32(137, 137, 137, 255 * g_alphaMotion);
 
-    if (isHovered)
-        DrawArrowCursor({ titleBgEdgeMin.x + Scale(8, true), titleBgEdgeMin.y + Scale(9, true) }, g_cursorArrowsTime, true, false);
+    drawList->AddText(g_pFntRodin, g_fntRodinSize, textPos, textColour, text);
+
+    if (isHovered && g_alphaMotion >= 1.0f)
+        DrawArrowCursor({ edgeMin.x + Scale(8, true), edgeMin.y + Scale(9, true) }, g_cursorArrowsTime, true, false);
 
     auto isPressed = false;
 
-    isHovered = PushCursorRect(titleBgEdgeMin, titleBgFadeMax, isPressed, isDefault);
+    isHovered = PushCursorRect(edgeMin, fadeMax, isPressed, isDefault);
 
     if (isPressed)
         Game_PlaySound(isEnabled ? "main_deside" : "cannot_deside");
@@ -945,15 +970,16 @@ static void DrawSource(ImVec2 pos, const char* text, bool isEnabled)
     auto unselectedUVs = PIXELS_TO_UV_COORDS(1024, 1024, 443, 579, 560, 47);
     auto categoryWidth = Scale(560, true);
     auto categoryHeight = Scale(47, true);
+    auto colour = IM_COL32(255, 255, 255, 255 * g_alphaMotion);
 
     ImVec2 categoryMin = { pos.x + Scale(42, true), pos.y + Scale(147, true) };
     ImVec2 categoryMax = { categoryMin.x + categoryWidth, categoryMin.y + categoryHeight };
 
-    SetHorizontalGradient(categoryMin, categoryMax, IM_COL32_WHITE, IM_COL32_WHITE_TRANS);
+    SetHorizontalGradient(categoryMin, categoryMax, colour, IM_COL32_WHITE_TRANS);
     drawList->AddImage(g_upTexMainMenu7.get(), categoryMin, categoryMax, GET_UV_COORDS(isEnabled ? selectedUVs : unselectedUVs));
     ResetGradient();
 
-    drawList->AddText(g_pFntRodin, g_fntRodinSize, { categoryMin.x + Scale(129, true), categoryMin.y + Scale(6, true) }, IM_COL32_WHITE, text);
+    drawList->AddText(g_pFntRodin, g_fntRodinSize, { categoryMin.x + Scale(129, true), categoryMin.y + Scale(6, true) }, colour, text);
 
     if (isEnabled)
     {
@@ -1087,7 +1113,7 @@ static void DrawMusicCredits()
 {
     auto drawList = ImGui::GetBackgroundDrawList();
 
-    constexpr auto fadeTime = 24;
+    constexpr auto fadeTime = COMMON_FADE_TIME;
 
     // Wait 12 seconds before displaying music credits,
     // as that's when the main melody begins.
@@ -1096,8 +1122,8 @@ static void DrawMusicCredits()
     // Wait 10 seconds after fade in before fading out music credits.
     constexpr auto fadeOutOffset = fadeInOffset + fadeTime + 600;
 
-    auto fadeInMotion = ComputeMotion(g_appearTime, fadeInOffset, fadeTime);
-    auto fadeOutMotion = ComputeMotion(g_appearTime, fadeOutOffset, fadeTime);
+    auto fadeInMotion = ComputeLinearMotion(g_appearTime, fadeInOffset, fadeTime);
+    auto fadeOutMotion = ComputeLinearMotion(g_appearTime, fadeOutOffset, fadeTime);
     auto fadeMotion = fadeInMotion - fadeOutMotion;
     auto fadeAlphaMotion = IM_COL32(0, 0, 0, 70 * fadeMotion);
 
@@ -1135,6 +1161,12 @@ void InstallerWizard::Draw()
     if (!s_isVisible)
         return;
 
+    g_alphaMotion = ComputeLinearMotion(g_alphaTime, g_isIntroAnim ? COMMON_MENU_INTRO_TIME : 0, COMMON_MENU_INTRO_TIME, !g_currentMessagePrompt.empty());
+
+    // Only offset fade motion for common menu intro.
+    if (g_alphaMotion >= 1.0)
+        g_isIntroAnim = false;
+
     auto& res = ImGui::GetIO().DisplaySize;
     auto  drawList = ImGui::GetBackgroundDrawList();
 
@@ -1152,154 +1184,143 @@ void InstallerWizard::Draw()
     g_currentCursorRects.clear();
 
     DrawArrows({ 0, 0 }, res, g_chevronTime);
-
-    // Hide left image when a message window
-    // is open for better text readability.
-    if (!isMessageWindowOpen)
-        DrawLeftImage();
+    DrawLeftImage();
 
     g_commonMenu.Draw();
 
     DrawMusicCredits();
 
-    // Hide container when a message window
-    // is open for better text readability.
-    if (!isMessageWindowOpen)
+    auto containerWidth = Scale(640, true);
+    auto containerHeight = Scale(405, true);
+    auto containerOffsetY = Scale(135, true);
+    auto containerMin = ImVec2(max.x - containerWidth, min.y + containerOffsetY);
+    auto containerMax = ImVec2(res.x, containerMin.y + containerHeight);
+
+    DrawContainerBox(containerMin, containerMax, g_alphaMotion);
+
+    auto originMargin = Scale(38, true);
+    auto originMin = ImVec2(containerMin.x + originMargin, containerMin.y + originMargin);
+    auto originMax = ImVec2(max.x - originMargin, containerMax.y - originMargin);
+
+    auto text = GetWizardText(g_currentPage);
+    auto textMaxWidth = originMax.x - (g_fntRodinSize / 2.0f) - originMin.x;
+    auto textMargin = 5.0f;
+    auto textSize = MeasureCentredParagraph(g_pFntRodin, g_fntRodinSize, textMaxWidth, textMargin, text.c_str());
+
+    if (g_currentPage == WizardPage::Installing)
     {
-        auto containerWidth = Scale(640, true);
-        auto containerHeight = Scale(405, true);
-        auto containerOffsetY = Scale(135, true);
-        auto containerMin = ImVec2(max.x - containerWidth, min.y + containerOffsetY);
-        auto containerMax = ImVec2(res.x, containerMin.y + containerHeight);
+        DrawInstallingPage(originMin, originMax);
+    }
+    else
+    {
+        auto isNavButtonSkip = false;
+        auto isNavButtonEnabled = true;
+        std::function<void()> navButtonFunction = []() { SetCurrentPage(WizardPage(int(g_currentPage) + 1)); };
 
-        DrawContainerBox(containerMin, containerMax);
-
-        auto originMargin = Scale(38, true);
-        auto originMin = ImVec2(containerMin.x + originMargin, containerMin.y + originMargin);
-        auto originMax = ImVec2(max.x - originMargin, containerMax.y - originMargin);
-
-        auto text = GetWizardText(g_currentPage);
-        auto textMaxWidth = originMax.x - (g_fntRodinSize / 2.0f) - originMin.x;
-        auto textMargin = 5.0f;
-        auto textSize = MeasureCentredParagraph(g_pFntRodin, g_fntRodinSize, textMaxWidth, textMargin, text.c_str());
-
-        if (g_currentPage == WizardPage::Installing)
+        switch (g_currentPage)
         {
-            DrawInstallingPage(originMin, originMax);
-        }
-        else
-        {
-            auto isNavButtonSkip = false;
-            auto isNavButtonEnabled = true;
-            std::function<void()> navButtonFunction = []() { SetCurrentPage(WizardPage(int(g_currentPage) + 1)); };
+            case WizardPage::SelectLanguage:
+                DrawSelectLanguagePage(originMin, originMax);
+                break;
 
-            switch (g_currentPage)
+            case WizardPage::SelectGame:
+                DrawSourcePickerPage(min, max, originMin, originMax);
+                isNavButtonEnabled = !g_gameSourcePath.empty();
+                break;
+
+            case WizardPage::SelectDLC:
             {
-                case WizardPage::SelectLanguage:
-                    DrawSelectLanguagePage(originMin, originMax);
-                    break;
+                DrawSourcePickerPage(min, max, originMin, originMax);
 
-                case WizardPage::SelectGame:
-                    DrawSourcePickerPage(min, max, originMin, originMax);
-                    isNavButtonEnabled = !g_gameSourcePath.empty();
-                    break;
+                isNavButtonSkip = std::all_of(g_dlcSourcePaths.begin(), g_dlcSourcePaths.end(), [](const std::filesystem::path& path) { return path.empty(); });
 
-                case WizardPage::SelectDLC:
+                navButtonFunction = [&]()
                 {
-                    DrawSourcePickerPage(min, max, originMin, originMax);
+                    auto isDLCInstallerMode = g_gameSourcePath.empty();
 
-                    isNavButtonSkip = std::all_of(g_dlcSourcePaths.begin(), g_dlcSourcePaths.end(), [](const std::filesystem::path& path) { return path.empty(); });
+                    std::string sourcesErrorMessage{};
 
-                    navButtonFunction = [&]()
+                    if (!InstallerParseSources(sourcesErrorMessage))
                     {
-                        auto isDLCInstallerMode = g_gameSourcePath.empty();
+                        // Some of the sources that were provided to the installer
+                        // are not valid. Restart the file selection process.
+                        std::stringstream stringStream{};
 
-                        std::string sourcesErrorMessage{};
+                        stringStream << Localise("Installer_Message_InvalidFiles");
 
-                        if (!InstallerParseSources(sourcesErrorMessage))
-                        {
-                            // Some of the sources that were provided to the installer
-                            // are not valid. Restart the file selection process.
-                            std::stringstream stringStream{};
+                        if (!sourcesErrorMessage.empty())
+                            stringStream << std::endl << std::endl << sourcesErrorMessage;
 
-                            stringStream << Localise("Installer_Message_InvalidFiles");
+                        g_currentMessagePrompt = stringStream.str();
+                        g_currentMessagePromptConfirmation = false;
 
-                            if (!sourcesErrorMessage.empty())
-                                stringStream << std::endl << std::endl << sourcesErrorMessage;
+                        SetCurrentPage(isDLCInstallerMode ? WizardPage::SelectDLC : WizardPage::SelectGame);
+                    }
+                    else if (isNavButtonSkip && isDLCInstallerMode)
+                    {
+                        LeaveInstallerWizard();
+                    }
+                    else
+                    {
+                        SetCurrentPage(WizardPage::CheckSpace);
+                    }
+                };
 
-                            g_currentMessagePrompt = stringStream.str();
-                            g_currentMessagePromptConfirmation = false;
-
-                            SetCurrentPage(isDLCInstallerMode ? WizardPage::SelectDLC : WizardPage::SelectGame);
-                        }
-                        else if (isNavButtonSkip && isDLCInstallerMode)
-                        {
-                            LeaveInstallerWizard();
-                        }
-                        else
-                        {
-                            SetCurrentPage(WizardPage::CheckSpace);
-                        }
-                    };
-
-                    break;
-                }
-
-                case WizardPage::CheckSpace:
-                {
-                    char descriptionText[512]{};
-                    char requiredSpaceText[128]{};
-                    char availableSpaceText[128]{};
-
-                    constexpr auto divisor = 1024.0 * 1024.0 * 1024.0;
-                    auto requiredGiB = double(g_installerSources.totalSize) / divisor;
-                    auto availableGiB = double(g_installerAvailableSize) / divisor;
-
-                    snprintf(requiredSpaceText, sizeof(requiredSpaceText), Localise("Installer_Step_RequiredSpace").c_str(), requiredGiB);
-                    snprintf(availableSpaceText, sizeof(availableSpaceText), g_installerAvailableSize > 0 ? Localise("Installer_Step_AvailableSpace").c_str() : "", availableGiB);
-                    snprintf(descriptionText, sizeof(descriptionText), "%s%s\n%s", text.c_str(), requiredSpaceText, availableSpaceText);
-
-                    text = descriptionText;
-                    navButtonFunction = []() { InstallerStart(); };
-
-                    break;
-                }
-
-                case WizardPage::InstallSucceeded:
-                    DrawInstallSucceededPage(originMin, originMax, textSize);
-                    navButtonFunction = []() { LeaveInstallerWizard(); };
-                    break;
-
-                case WizardPage::InstallFailed:
-                    text += g_installerErrorMessage.c_str();
-                    navButtonFunction = []() { SetCurrentPage(g_firstPage); };
-                    break;
+                break;
             }
 
-            if (g_currentPage != WizardPage::SelectLanguage)
+            case WizardPage::CheckSpace:
             {
-                std::string navButtonText{};
+                char descriptionText[512]{};
+                char requiredSpaceText[128]{};
+                char availableSpaceText[128]{};
 
-                if (isNavButtonSkip)
-                    navButtonText = Localise("Installer_Button_Skip");
-                else
-                    navButtonText = Localise("Installer_Button_Next");
+                constexpr auto divisor = 1024.0 * 1024.0 * 1024.0;
+                auto requiredGiB = double(g_installerSources.totalSize) / divisor;
+                auto availableGiB = double(g_installerAvailableSize) / divisor;
 
-                static auto s_isNavButtonHovered = false;
+                snprintf(requiredSpaceText, sizeof(requiredSpaceText), Localise("Installer_Step_RequiredSpace").c_str(), requiredGiB);
+                snprintf(availableSpaceText, sizeof(availableSpaceText), g_installerAvailableSize > 0 ? Localise("Installer_Step_AvailableSpace").c_str() : "", availableGiB);
+                snprintf(descriptionText, sizeof(descriptionText), "%s%s\n%s", text.c_str(), requiredSpaceText, availableSpaceText);
 
-                if (DrawButton({ originMin.x, originMax.y - Scale(NAV_BUTTON_OFFSET_Y, true) }, navButtonText.c_str(), s_isNavButtonHovered, isNavButtonEnabled, true) && navButtonFunction)
-                    navButtonFunction();
+                text = descriptionText;
+                navButtonFunction = []() { InstallerStart(); };
+
+                break;
             }
+
+            case WizardPage::InstallSucceeded:
+                DrawInstallSucceededPage(originMin, originMax, textSize);
+                navButtonFunction = []() { LeaveInstallerWizard(); };
+                break;
+
+            case WizardPage::InstallFailed:
+                text += g_installerErrorMessage.c_str();
+                navButtonFunction = []() { SetCurrentPage(g_firstPage); };
+                break;
         }
 
-        DrawTextParagraph(g_pFntRodin, g_fntRodinSize, textMaxWidth, originMin, textMargin, text.c_str(),
-            [&](const char* str, ImVec2 pos) { DrawTextBasic(g_pFntRodin, g_fntRodinSize, pos, IM_COL32_WHITE, str); });
+        if (g_currentPage != WizardPage::SelectLanguage)
+        {
+            std::string navButtonText{};
 
-        CheckCancelAction();
+            if (isNavButtonSkip)
+                navButtonText = Localise("Installer_Button_Skip");
+            else
+                navButtonText = Localise("Installer_Button_Next");
+
+            static auto s_isNavButtonHovered = false;
+
+            if (DrawButton({ originMin.x, originMax.y - Scale(NAV_BUTTON_OFFSET_Y, true) }, navButtonText.c_str(), s_isNavButtonHovered, isNavButtonEnabled, true) && navButtonFunction)
+                navButtonFunction();
+        }
     }
 
-    DrawMessagePrompt();
+    DrawTextParagraph(g_pFntRodin, g_fntRodinSize, textMaxWidth, originMin, textMargin, text.c_str(),
+        [&](const char* str, ImVec2 pos) { DrawTextBasic(g_pFntRodin, g_fntRodinSize, pos, IM_COL32(255, 255, 255, 255 * g_alphaMotion), str); });
 
+    CheckCancelAction();
+    DrawMessagePrompt();
     PickerDrawForeground();
     PickerCheckTutorial();
     PickerCheckResults();
@@ -1358,7 +1379,6 @@ bool InstallerWizard::Run(std::filesystem::path installPath, bool skipGame)
 
     GameWindow::SetFullscreenCursorVisibility(true);
 
-    g_installerEndTime = ImGui::GetTime();
     s_isVisible = true;
 
     while (s_isVisible)
