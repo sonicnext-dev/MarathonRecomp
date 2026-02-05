@@ -504,9 +504,9 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Game Data" },
             { ELanguage::Japanese, "DUMMY" },
             { ELanguage::German,   "DUMMY" },
-            { ELanguage::French,   "DUMMY" },
-            { ELanguage::Spanish,  "DUMMY" },
-            { ELanguage::Italian,  "DUMMY" }
+            { ELanguage::French,   "Fichiers du jeu" },
+            { ELanguage::Spanish,  "Archivos del juego" },
+            { ELanguage::Italian,  "Dati del gioco" }
         }
     },
     {
@@ -559,9 +559,9 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Add Files" },
             { ELanguage::Japanese, "ファイルを追加" },
             { ELanguage::German,   "Dateien Hinzufügen" },
-            { ELanguage::French,   "Ajouter des Fichiers" },
-            { ELanguage::Spanish,  "Añadir Archivos" },
-            { ELanguage::Italian,  "Aggiungi File" }
+            { ELanguage::French,   "Ajouter des fichiers" },
+            { ELanguage::Spanish,  "Añadir archivos" },
+            { ELanguage::Italian,  "Aggiungi file" }
         }
     },
     {
@@ -570,9 +570,9 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Add Folder" },
             { ELanguage::Japanese, "フォルダを追加" },
             { ELanguage::German,   "Ordner Hinzufügen" },
-            { ELanguage::French,   "Ajouter un Dossier" },
-            { ELanguage::Spanish,  "Añadir Carpeta" },
-            { ELanguage::Italian,  "Aggiungi Cartella" }
+            { ELanguage::French,   "Ajouter un dossier" },
+            { ELanguage::Spanish,  "Añadir carpeta" },
+            { ELanguage::Italian,  "Aggiungi cartella" }
         }
     },
     {
@@ -606,9 +606,9 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Select a digital dump with content from the game.\n\nThese files can be obtained from your Xbox 360 hard drive by following the instructions on the GitHub page.\n\nFor choosing a folder with extracted and unmodified game files, use the \"Add Folder\" option instead." },
             { ELanguage::Japanese, "ゲームのコンテンツを含む デジタルダンプを選択してください\n\nこれらのファイルは GitHubページの指示に従って\nXbox 360ハードドライブから取得できます\n\n抽出された変更されていないゲームファイルを含むフォルダーを選択するには代わりに「フォルダの追加」オプションを使用してください" },
             { ELanguage::German,   "Wähle einen digitalen Dump von dem Spiel.\n\nDie Dateien können über die Festplatte deiner\nXbox 360 erlangt werden. Folge hierfür den Anweisungen auf der GitHub Seite.\n\nUm einen Ordner mit unmodifizierten Spieldateien auszuwählen, benutze die \"Ordner Hinzufügen\" Option stattdessen." },
-            { ELanguage::French,   "Sélectionnez une copie dématérialisée avec le contenu du jeu de base.\n\nCes fichiers peuvent être obtenus à partir du disque dur de votre Xbox 360 en suivant les instructions de la page GitHub.\n\nPour choisir un dossier contenant les fichiers de jeu extraits et non modifiés, utilisez plutôt l'option \"Ajouter un Dossier\"." },
-            { ELanguage::Spanish,  "Selecciona una copia digital con contenido del juego.\n\nPuedes obtener los archivos de tu disco duro de\nXbox 360 siguiendo las instrucciones de la página de GitHub.\n\nPara elegir una carpeta con archivos extraídos sin modificar, utiliza la opción \"Añadir Carpeta\"." },
-            { ELanguage::Italian,  "Seleziona una copia digitale con i contenuti del gioco.\n\nQuesti file possono essere ottenuti dall'hard drive della tua Xbox 360 seguendo le istruzioni sulla pagina GitHub.\n\nPer selezionare una cartella con file estratti e non modificati usa l'opzione \"Aggiungi Cartella\"." }
+            { ELanguage::French,   "Sélectionnez une copie dématérialisée avec le contenu du jeu de base.\n\nCes fichiers peuvent être obtenus à partir du disque dur de votre Xbox 360 en suivant les instructions de la page GitHub.\n\nPour choisir un dossier contenant les fichiers de jeu extraits et non modifiés, utilisez plutôt l'option \"Ajouter un dossier\"." },
+            { ELanguage::Spanish,  "Selecciona una copia digital con contenido del juego.\n\nPuedes obtener los archivos de tu disco duro de\nXbox 360 siguiendo las instrucciones de la página de GitHub.\n\nPara elegir una carpeta con archivos extraídos sin modificar, utiliza la opción \"Añadir carpeta\"." },
+            { ELanguage::Italian,  "Seleziona una copia digitale con i contenuti del gioco.\n\nQuesti file possono essere ottenuti dall'hard drive della tua Xbox 360 seguendo le istruzioni sulla pagina GitHub.\n\nPer selezionare una cartella con file estratti e non modificati usa l'opzione \"Aggiungi cartella\"." }
         }
     },
     {
@@ -618,9 +618,9 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Select a folder that contains the unmodified files that have been extracted from the game.\n\nThese files can be obtained from your Xbox 360 hard drive by following the instructions on the GitHub page.\n\nFor choosing a digital dump, use the \"Add Files\" option instead." },
             { ELanguage::Japanese, "ゲームから抽出された変更されていないファイルを含むフォルダを選択してください\n\nこれらのファイルは GitHubページの指示に従って\nXbox 360ハードドライブから取得できます\n\nデジタルダンプを選択するには\n代わりに「ファイルの追加」オプションを使用してください" },
             { ELanguage::German,   "Wähle einen Ordner, der unmodifizierte Dateien, die vom Spiel extrahiert wurden enthält.\n\nDie Dateien können über die Festplatte deiner\nXbox 360 erlangt werden. Folge hierfür den Anweisungen auf der GitHub Seite.\n\nUm einen digitalen Dump auszuwählen, benutze die \"Dateien Hinzufügen\" Option stattdessen." },
-            { ELanguage::French,   "Sélectionnez un dossier contenant les fichiers extraits du jeu de base.\n\nCes fichiers peuvent être obtenus à partir du disque dur de votre Xbox 360 en suivant les instructions de la page GitHub.\n\nPour choisir une copie dématérialisée, utilisez plutôt l'option \"Ajouter des Fichiers\"." },
-            { ELanguage::Spanish,  "Selecciona una carpeta que contenga los archivos sin modificar extraídos del juego.\n\nPuedes obtener los archivos de tu disco duro de\nXbox 360 siguiendo las instrucciones de la página de GitHub.\n\nPara elegir una copia digital, utiliza la opción \"Añadir Archivos\"." },
-            { ELanguage::Italian,  "Seleziona una cartella che contiene i file non modificati che sono stati estratti dal gioco.\n\nQuesti file possono essere ottenuti dall'hard drive della tua Xbox 360 seguendo le istruzioni sulla pagina GitHub.\n\nPer selezionare una copia digitale usa l'opzione \"Aggiungi File\"." }
+            { ELanguage::French,   "Sélectionnez un dossier contenant les fichiers extraits du jeu de base.\n\nCes fichiers peuvent être obtenus à partir du disque dur de votre Xbox 360 en suivant les instructions de la page GitHub.\n\nPour choisir une copie dématérialisée, utilisez plutôt l'option \"Ajouter des fichiers\"." },
+            { ELanguage::Spanish,  "Selecciona una carpeta que contenga los archivos sin modificar extraídos del juego.\n\nPuedes obtener los archivos de tu disco duro de\nXbox 360 siguiendo las instrucciones de la página de GitHub.\n\nPara elegir una copia digital, utiliza la opción \"Añadir archivos\"." },
+            { ELanguage::Italian,  "Seleziona una cartella che contiene i file non modificati che sono stati estratti dal gioco.\n\nQuesti file possono essere ottenuti dall'hard drive della tua Xbox 360 seguendo le istruzioni sulla pagina GitHub.\n\nPer selezionare una copia digitale usa l'opzione \"Aggiungi file\"." }
         }
     },
     {
