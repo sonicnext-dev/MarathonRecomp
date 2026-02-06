@@ -724,15 +724,16 @@ void DrawVersionString(const ImU32 colour)
     auto fontSize = Scale(12, true);
     auto textSize = g_pFntNewRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, g_versionString);
 
-    auto textMargin = Scale(2, true);
-    auto textY = res.y - textSize.y - textMargin;
+    auto textMarginX = Scale(8, true);
+    auto textMarginY = Scale(5, true);
+    auto textY = res.y - textSize.y - textMarginY;
 
     if (g_aspectRatio < NARROW_ASPECT_RATIO)
         textY -= g_vertCentre;
 
     // TODO: remove this line after v1 release.
-    drawList->AddText(g_pFntNewRodin, fontSize, { textMargin, textY }, colour, "WORK IN PROGRESS");
-    drawList->AddText(g_pFntNewRodin, fontSize, { res.x - textSize.x - textMargin, textY }, colour, g_versionString);
+    drawList->AddText(g_pFntNewRodin, fontSize, { textMarginX, textY }, colour, "WORK IN PROGRESS");
+    drawList->AddText(g_pFntNewRodin, fontSize, { res.x - textSize.x - textMarginX, textY }, colour, g_versionString);
 }
 
 static void DrawWindowArrow(const ImVec2 pos, float scale, float rotation, uint32_t colour)
