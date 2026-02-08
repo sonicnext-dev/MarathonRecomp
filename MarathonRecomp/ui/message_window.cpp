@@ -157,8 +157,7 @@ void DrawButton(int rowIndex, float yOffset, float yPadding, float width, float 
             DrawArrowCursor(min, g_time, false, true);
     }
 
-    auto fontSize = Scale(27, true);
-    auto textSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, text.c_str());
+    auto textSize = g_pFntRodin->CalcTextSizeA(g_fntRodinSize, FLT_MAX, 0, text.c_str());
 
     // Show low quality text in-game.
     if (App::s_isInit)
@@ -167,7 +166,7 @@ void DrawButton(int rowIndex, float yOffset, float yPadding, float width, float 
     DrawTextBasic
     (
         g_pFntRodin,
-        fontSize,
+        g_fntRodinSize,
         { /* X */ min.x + ((max.x - min.x) - textSize.x) / 2, /* Y */ min.y + ((max.y - min.y) - textSize.y) / 2 },
         textColour,
         text.c_str()
@@ -245,10 +244,20 @@ void MessageWindow::Draw()
     if (App::s_isInit)
         SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
 
-    auto fontSize = Scale(27, true);
-    auto textSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, g_text.c_str());
+    auto textMargin = Scale(270, true);
+    auto textMaxWidth = msgMax.x - msgMin.x - textMargin;
+    auto textSize = g_pFntRodin->CalcTextSizeA(g_fntRodinSize, textMaxWidth, textMaxWidth, g_text.c_str());
 
-    DrawTextBasic(g_pFntRodin, fontSize, { msgCentre.x - textSize.x / 2, msgCentre.y - textSize.y / 2 }, IM_COL32_WHITE, g_text.c_str());
+    DrawTextParagraph
+    (
+        g_pFntRodin,
+        g_fntRodinSize,
+        textMaxWidth,
+        { msgCentre.x - textSize.x / 2, msgCentre.y - textSize.y / 2 },
+        1.0f,
+        g_text.c_str(),
+        [&](const char* str, ImVec2 pos) { DrawTextBasic(g_pFntRodin, g_fntRodinSize, pos, IM_COL32_WHITE, str); }
+    );
 
     // Reset the shader modifier.
     if (App::s_isInit)

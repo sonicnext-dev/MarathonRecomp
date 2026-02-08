@@ -20,12 +20,16 @@
 extern ImFont* g_pFntRodin;
 extern ImFont* g_pFntNewRodin;
 
+extern float g_fntRodinSize;
+
 extern std::unique_ptr<GuestTexture> g_upTexButtonWindow;
 extern std::unique_ptr<GuestTexture> g_upTexController;
 extern std::unique_ptr<GuestTexture> g_upTexKbm;
 extern std::unique_ptr<GuestTexture> g_upTexWindow;
 extern std::unique_ptr<GuestTexture> g_upTexSelectArrow;
 extern std::unique_ptr<GuestTexture> g_upTexMainMenu1;
+extern std::unique_ptr<GuestTexture> g_upTexMainMenu7;
+extern std::unique_ptr<GuestTexture> g_upTexMainMenu8;
 
 struct ImGuiTextPicture
 {
@@ -54,6 +58,7 @@ struct ImGuiTextInterpData
 };
 
 void InitImGuiUtils();
+void UpdateImGuiUtils();
 
 void SetGradient(const ImVec2& min, const ImVec2& max, ImU32 top, ImU32 bottom);
 void SetHorizontalGradient(const ImVec2& min, const ImVec2& max, ImU32 left, ImU32 right);
