@@ -1,7 +1,5 @@
 #pragma once
 
-#include <api/Marathon.h>
-
 struct InstallerWizard
 {
     static inline bool s_isVisible = false;
