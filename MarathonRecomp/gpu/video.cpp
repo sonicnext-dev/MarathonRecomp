@@ -3515,7 +3515,7 @@ static GuestTexture* CreateTexture(uint32_t width, uint32_t height, uint32_t dep
 
 static RenderHeapType GetBufferHeapType()
 {
-    return g_capabilities.gpuUploadHeap ? RenderHeapType::GPU_UPLOAD : RenderHeapType::DEFAULT;
+    return g_capabilities.gpuUploadHeap && !g_capabilities.uma ? RenderHeapType::GPU_UPLOAD : RenderHeapType::UPLOAD;
 }
 
 static GuestBuffer* CreateVertexBuffer(uint32_t length) 
