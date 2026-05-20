@@ -40,10 +40,12 @@
 #include <magic_enum/magic_enum.hpp>
 #endif
 
+#define MARATHON_RECOMP
 #include "../../tools/XenosRecomp/XenosRecomp/shader_common.h"
 
 #ifdef MARATHON_RECOMP_D3D12
 #include "shader/hlsl/blend_color_alpha_ps.hlsl.dxil.h"
+#include "shader/hlsl/conditional_survey_ps.hlsl.dxil.h"
 #include "shader/hlsl/copy_vs.hlsl.dxil.h"
 #include "shader/hlsl/copy_color_ps.hlsl.dxil.h"
 #include "shader/hlsl/copy_depth_ps.hlsl.dxil.h"
@@ -69,6 +71,7 @@
 
 #ifdef MARATHON_RECOMP_METAL
 #include "shader/msl/blend_color_alpha_ps.metal.metallib.h"
+#include "shader/msl/conditional_survey_ps.metal.metallib.h"
 #include "shader/msl/copy_vs.metal.metallib.h"
 #include "shader/msl/copy_color_ps.metal.metallib.h"
 #include "shader/msl/copy_depth_ps.metal.metallib.h"
@@ -93,6 +96,7 @@
 #endif
 
 #include "shader/hlsl/blend_color_alpha_ps.hlsl.spirv.h"
+#include "shader/hlsl/conditional_survey_ps.hlsl.spirv.h"
 #include "shader/hlsl/copy_vs.hlsl.spirv.h"
 #include "shader/hlsl/copy_color_ps.hlsl.spirv.h"
 #include "shader/hlsl/copy_depth_ps.hlsl.spirv.h"
@@ -188,6 +192,7 @@ struct PipelineState
     RenderFormat depthStencilFormat{};
     RenderSampleCounts sampleCount = RenderSampleCount::COUNT_1;
     bool enableAlphaToCoverage = false;
+    bool enableConditionalSurvey = false;
     uint32_t specConstants = 0;
 };
 #pragma pack(pop)
@@ -1488,6 +1493,8 @@ static GuestShader* g_csdShader;
 static std::unique_ptr<GuestShader> g_enhancedBurnoutBlurVSShader;
 static std::unique_ptr<GuestShader> g_enhancedBurnoutBlurPSShader;
 
+static std::unique_ptr<GuestShader> g_conditionalSurveyPSShader;
+
 #if defined(MARATHON_RECOMP_D3D12)
 
 #define CREATE_SHADER(NAME) \
@@ -2244,6 +2251,9 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
 
     g_enhancedBurnoutBlurPSShader = std::make_unique<GuestShader>(ResourceType::PixelShader);
     g_enhancedBurnoutBlurPSShader->shader = CREATE_SHADER(enhanced_burnout_blur_ps);
+
+    g_conditionalSurveyPSShader = std::make_unique<GuestShader>(ResourceType::PixelShader);
+    g_conditionalSurveyPSShader->shader = CREATE_SHADER(conditional_survey_ps);
 
     CreateImGuiBackend();
 
@@ -4518,7 +4528,12 @@ static std::unique_ptr<RenderPipeline> CreateGraphicsPipeline(const PipelineStat
     RenderGraphicsPipelineDesc desc;
     desc.pipelineLayout = g_pipelineLayout.get();
     desc.vertexShader = GetOrLinkShader(pipelineState.vertexShader, pipelineState.specConstants);
-    desc.pixelShader = pipelineState.pixelShader != nullptr ? GetOrLinkShader(pipelineState.pixelShader, pipelineState.specConstants) : nullptr;
+    if (pipelineState.enableConditionalSurvey)
+        desc.pixelShader = GetOrLinkShader(g_conditionalSurveyPSShader.get(), pipelineState.specConstants);
+    else if (pipelineState.pixelShader != nullptr)
+        desc.pixelShader = GetOrLinkShader(pipelineState.pixelShader, pipelineState.specConstants);
+    else
+        desc.pixelShader = nullptr;
     desc.depthFunction = pipelineState.zFunc;
     desc.depthEnabled = pipelineState.zEnable;
     desc.depthWriteEnabled = pipelineState.zWriteEnable;
@@ -4666,6 +4681,7 @@ static RenderPipeline* CreateGraphicsPipelineInRenderThread(PipelineState pipeli
                 "  depthStencilFormat: {}\n"
                 "  sampleCount: {}\n"
                 "  enableAlphaToCoverage: {}\n"
+                "  enableConditionalSurvey: {}\n"
                 "  specConstants: {:X}\n",
                 hash,
                 pipelineState.vertexShader->name,
@@ -4708,6 +4724,7 @@ static RenderPipeline* CreateGraphicsPipelineInRenderThread(PipelineState pipeli
                 magic_enum::enum_name(pipelineState.depthStencilFormat),
                 pipelineState.sampleCount,
                 pipelineState.enableAlphaToCoverage,
+                pipelineState.enableConditionalSurvey,
                 pipelineState.specConstants)
                 + g_pipelineDebugText;
         }
@@ -5720,7 +5737,6 @@ static void EndConditionalSurvey(GuestDevice* device)
 
 static void ProcSetConditionalSurvey(const RenderCommand& cmd)
 {
-    uint32_t specConstants = g_pipelineState.specConstants;
     if (cmd.setConditionalSurvey.enabled)
     {
         // Clear previous survey result first.
@@ -5734,13 +5750,9 @@ static void ProcSetConditionalSurvey(const RenderCommand& cmd)
         commandList->barriers(RenderBarrierStage::GRAPHICS, RenderBufferBarrier(g_conditionalSurveyBuffer.get(), RenderBufferAccess::READ | RenderBufferAccess::WRITE));
 
         g_tempBuffers[g_frame].emplace_back(std::move(uploadBuffer));
-
-        specConstants |= SPEC_CONSTANT_CONDITIONAL_SURVEY;
     }
-    else
-        specConstants &= ~SPEC_CONSTANT_CONDITIONAL_SURVEY;
 
-    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.specConstants, specConstants);
+    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.enableConditionalSurvey, cmd.setConditionalSurvey.enabled);
     SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.conditionalSurveyIndex, cmd.setConditionalSurvey.index);
 }
 
@@ -7694,6 +7706,7 @@ public:
                     "RenderFormat::{},"
                     "{},"
                     "{},"
+                    "{},"
                     "0x{:X} }},",
                     pipelineState.vertexShader->shaderCacheEntry->hash,
                     pipelineState.pixelShader != nullptr ? pipelineState.pixelShader->shaderCacheEntry->hash : 0,
@@ -7747,6 +7760,7 @@ public:
                     magic_enum::enum_name(pipelineState.depthStencilFormat),
                     pipelineState.sampleCount,
                     pipelineState.enableAlphaToCoverage,
+                    pipelineState.enableConditionalSurvey,
                     pipelineState.specConstants);
             }
 

@@ -481,6 +481,7 @@ function(compile_pixel_shader FILE_PATH)
 endfunction()
 
 compile_pixel_shader(blend_color_alpha_ps)
+compile_pixel_shader(conditional_survey_ps)
 compile_vertex_shader(copy_vs)
 compile_pixel_shader(copy_color_ps)
 compile_pixel_shader(copy_depth_ps)
