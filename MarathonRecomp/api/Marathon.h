@@ -208,6 +208,7 @@
 #include "Sonicteam/SoX/Graphics/FrameObserver.h"
 #include "Sonicteam/SoX/Graphics/Technique.h"
 #include "Sonicteam/SoX/Graphics/TechniqueFXL.h"
+#include "Sonicteam/SoX/Graphics/Texture.h"
 #include "Sonicteam/SoX/Graphics/Transforms.h"
 #include "Sonicteam/SoX/Graphics/Vertex.h"
 #include "Sonicteam/SoX/Graphics/Xenon/DeviceXenon.h"
