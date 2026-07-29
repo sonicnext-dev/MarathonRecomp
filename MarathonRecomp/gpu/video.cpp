@@ -726,6 +726,69 @@ struct PrimitiveIndexData
 static PrimitiveIndexData<D3DPT_TRIANGLEFAN> g_triangleFanIndexData;
 static PrimitiveIndexData<D3DPT_QUADLIST> g_quadIndexData;
 
+// Host render target storage for guest surfaces, identified by EDRAM placement.
+struct SurfaceVariant
+{
+    uint32_t base = 0;
+    uint32_t width = 0;
+    uint32_t height = 0;
+    uint32_t guestFormat = 0;
+    RenderSampleCounts sampleCount = RenderSampleCount::COUNT_1;
+    RenderFormat format = RenderFormat::UNKNOWN;
+    std::unique_ptr<RenderTexture> textureHolder;
+    std::unique_ptr<RenderTextureView> textureView;
+    uint32_t descriptorIndex = 0;
+    // Barrier state is shared by all views, as they render to the same texture.
+    RenderTextureLayout layout = RenderTextureLayout::UNKNOWN;
+    // Framebuffers are cached here instead of on the guest surface so they don't
+    // outlive the host texture when views are destroyed.
+    ankerl::unordered_dense::map<const RenderTexture*, std::unique_ptr<RenderFramebuffer>> framebuffers;
+    uint32_t refCount = 0;
+
+    uint32_t deferredClearFlags = 0;
+    float deferredClearColor[4]{};
+    float deferredClearZ = 1.0f;
+    uint32_t deferredClearStencil = 0;
+};
+
+static Mutex g_surfaceVariantMutex;
+static std::vector<std::unique_ptr<SurfaceVariant>> g_surfaceVariants;
+
+static ankerl::unordered_dense::set<GuestSurface*> g_pendingSurfaceCopies;
+static ankerl::unordered_dense::set<GuestSurface*> g_pendingResolves;
+
+static void ReleaseSurfaceVariant(SurfaceVariant* variant)
+{
+    std::lock_guard lock(g_surfaceVariantMutex);
+
+    assert(variant->refCount != 0);
+    if (--variant->refCount != 0)
+        return;
+
+    g_textureDescriptorSet->setTexture(variant->descriptorIndex, nullptr, {});
+    g_textureDescriptorAllocator.free(variant->descriptorIndex);
+
+    for (auto& other : g_surfaceVariants)
+    {
+        if (other.get() != variant)
+            other->framebuffers.erase(variant->textureHolder.get());
+    }
+
+    g_framebuffer = nullptr;
+
+    std::erase_if(g_surfaceVariants, [variant](auto& entry) { return entry.get() == variant; });
+}
+
+static void PurgeSurfaceVariantFramebuffers()
+{
+    std::lock_guard lock(g_surfaceVariantMutex);
+
+    for (auto& variant : g_surfaceVariants)
+        variant->framebuffers.clear();
+
+    g_framebuffer = nullptr;
+}
+
 static void DestructTempResources()
 {
     for (auto resource : g_tempResources[g_frame])
@@ -737,6 +800,9 @@ static void DestructTempResources()
         case ResourceType::ArrayTexture:
         {
             const auto texture = reinterpret_cast<GuestTexture*>(resource);
+
+            if (texture->sourceSurface != nullptr)
+                texture->sourceSurface->destinationTextures.erase(texture);
 
             if (texture->mappedMemory != nullptr) {
                 g_userHeap.Free(texture->mappedMemory);
@@ -773,7 +839,29 @@ static void DestructTempResources()
         {
             const auto surface = reinterpret_cast<GuestSurface*>(resource);
 
-            if (surface->descriptorIndex != NULL)
+            g_pendingSurfaceCopies.erase(surface);
+            g_pendingResolves.erase(surface);
+
+            if (g_renderTarget == surface)
+            {
+                g_renderTarget = nullptr;
+                g_dirtyStates.renderTargetAndDepthStencil = true;
+            }
+
+            if (g_depthStencil == surface)
+            {
+                g_depthStencil = nullptr;
+                g_dirtyStates.renderTargetAndDepthStencil = true;
+            }
+
+            for (const auto& [texture, _] : surface->destinationTextures)
+                texture->sourceSurface = nullptr;
+
+            if (surface->variant != nullptr)
+            {
+                ReleaseSurfaceVariant(surface->variant);
+            }
+            else if (surface->descriptorIndex != NULL)
             {
                 g_textureDescriptorSet->setTexture(surface->descriptorIndex, nullptr, {});
                 g_textureDescriptorAllocator.free(surface->descriptorIndex);
@@ -815,12 +903,28 @@ static std::atomic<bool> g_readyForCommands;
 
 static ankerl::unordered_dense::map<RenderTexture*, RenderTextureLayout> g_barrierMap;
 
+static RenderTextureLayout& GetLayoutRef(GuestBaseTexture* texture)
+{
+    if (texture->type == ResourceType::RenderTarget || texture->type == ResourceType::DepthStencil)
+    {
+        const auto surface = reinterpret_cast<GuestSurface*>(texture);
+        if (surface->variant != nullptr)
+            return surface->variant->layout;
+    }
+
+    return texture->layout;
+}
+
 static void AddBarrier(GuestBaseTexture* texture, RenderTextureLayout layout)
 {
-    if (texture != nullptr && texture->layout != layout)
+    if (texture != nullptr)
     {
-        g_barrierMap[texture->texture] = layout;
-        texture->layout = layout;
+        auto& layoutRef = GetLayoutRef(texture);
+        if (layoutRef != layout)
+        {
+            g_barrierMap[texture->texture] = layout;
+            layoutRef = layout;
+        }
     }
 }
 
@@ -877,9 +981,6 @@ enum class CsdFilterState
 };
 
 static CsdFilterState g_csdFilterState;
-
-static ankerl::unordered_dense::set<GuestSurface*> g_pendingSurfaceCopies;
-static ankerl::unordered_dense::set<GuestSurface*> g_pendingResolves;
 
 enum class RenderCommandType
 {
@@ -1742,6 +1843,7 @@ static void CheckSwapChain()
     {
         Video::WaitForGPU();
         g_backBuffer->framebuffers.clear();
+        PurgeSurfaceVariantFramebuffers();
         g_swapChainValid = g_swapChain->resize();
         g_needsResize = g_swapChainValid;
     }
@@ -1789,6 +1891,7 @@ static void BeginCommandList()
             g_intermediaryBackBufferTextureHeight = height;
 
             g_backBuffer->framebuffers.clear();
+            PurgeSurfaceVariantFramebuffers();
         }
 
         g_backBuffer->texture = g_intermediaryBackBufferTexture.get();
@@ -2380,16 +2483,8 @@ static uint32_t CreateDevice(uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4,
     return 0;
 }
 
-static void DestructResource(GuestResource* resource) 
+static void DestructResource(GuestResource* resource)
 {
-    // Needed for hack in CreateSurface (remove if fix it)
-    if (resource->type == ResourceType::RenderTarget || resource->type == ResourceType::DepthStencil)
-    {
-        const auto surface = reinterpret_cast<GuestSurface*>(resource);
-        if (surface->wasCached) {
-            return;
-        }
-    }
     RenderCommand cmd;
     cmd.type = RenderCommandType::DestructResource;
     cmd.destructResource.resource = resource;
@@ -3420,10 +3515,11 @@ static void DiscardTexture(GuestBaseTexture* texture, RenderTextureLayout layout
         std::lock_guard lock(g_discardMutex);
 
         g_discardCommandList->begin();
-        if (texture->layout != layout)
+        auto& layoutRef = GetLayoutRef(texture);
+        if (layoutRef != layout)
         {
             g_discardCommandList->barriers(RenderBarrierStage::GRAPHICS, RenderTextureBarrier(texture->texture, layout));
-            texture->layout = layout;
+            layoutRef = layout;
         }
 
         g_discardCommandList->discardTexture(texture->texture);
@@ -3552,76 +3648,141 @@ static GuestBuffer* CreateIndexBuffer(uint32_t length, uint32_t, uint32_t format
     return buffer;
 }
 
-static std::vector<std::pair<GuestSurface*, uint32_t>> g_surfaceCache;
-
-// TODO: Singleplayer (possibly) uses the same memory location in EDRAM for HDR and FB0 surfaces,
-// so we just remember who was created first and use that instead of creating a new one.
-static GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t format, uint32_t multiSample, GuestSurfaceCreateParams* params) 
+static RenderTextureDesc MakeSurfaceTextureDesc(uint32_t width, uint32_t height, RenderFormat format, RenderSampleCounts sampleCount)
 {
-    GuestSurface* surface = nullptr;
-    uint32_t baseValue = params ? params->base.get() : -1;
-    if (params) {
-        for (auto& entry : g_surfaceCache) {
-            GuestSurface* cachedSurface = entry.first;
-            uint32_t cachedBase = entry.second;
-            if (cachedSurface &&
-                cachedSurface->width == width &&
-                cachedSurface->height == height &&
-                cachedSurface->guestFormat == format &&
-                cachedBase == baseValue) {
-                surface = cachedSurface;
-                break;
-            }
+    RenderTextureDesc desc;
+    desc.dimension = RenderTextureDimension::TEXTURE_2D;
+    desc.width = width;
+    desc.height = height;
+    desc.depth = 1;
+    desc.mipLevels = 1;
+    desc.arraySize = 1;
+    desc.multisampling.sampleCount = sampleCount;
+    desc.format = format;
+    desc.flags = RenderFormatIsDepth(format) ? RenderTextureFlag::DEPTH_TARGET : RenderTextureFlag::RENDER_TARGET;
+    return desc;
+}
+
+const char* g_surfaceCreationName;
+
+static SurfaceVariant* AcquireSurfaceVariant(uint32_t base, uint32_t width, uint32_t height,
+    uint32_t guestFormat, RenderSampleCounts sampleCount, bool& created)
+{
+    std::lock_guard lock(g_surfaceVariantMutex);
+
+    for (auto& variant : g_surfaceVariants)
+    {
+        if (variant->base == base &&
+            variant->width == width &&
+            variant->height == height &&
+            variant->guestFormat == guestFormat &&
+            variant->sampleCount == sampleCount)
+        {
+            variant->refCount++;
+            created = false;
+
+#ifdef _DEBUG
+            LOGF_UTILITY("[surface] shared variant: base {} {}x{} format {:X} refs {} name {}",
+                base, width, height, guestFormat, variant->refCount,
+                g_surfaceCreationName ? g_surfaceCreationName : "<none>");
+#endif
+
+            return variant.get();
         }
     }
-    if (!surface) {
-        // printf("CreateSurface: w: %d, h: %d, f: %d, ms: %d\n", width, height, format, multiSample);
-        RenderTextureDesc desc;
-        desc.dimension = RenderTextureDimension::TEXTURE_2D;
-        desc.width = width;
-        desc.height = height;
-        desc.depth = 1;
-        desc.mipLevels = 1;
-        desc.arraySize = 1;
-        // desc.multisampling.sampleCount = multiSample != 0 && Config::AntiAliasing != EAntiAliasing::None ? int32_t(Config::AntiAliasing.Value) : RenderSampleCount::COUNT_1;
-        if (multiSample == 0) {
-            desc.multisampling.sampleCount = RenderSampleCount::COUNT_1;
-        } else {
-            desc.multisampling.sampleCount = multiSample == 1 ? RenderSampleCount::COUNT_2 : RenderSampleCount::COUNT_4;
-        }
-        desc.format = ConvertFormat(format);
-        desc.flags = RenderFormatIsDepth(desc.format) ? RenderTextureFlag::DEPTH_TARGET : RenderTextureFlag::RENDER_TARGET;
 
-        surface = g_userHeap.AllocPhysical<GuestSurface>(RenderFormatIsDepth(desc.format) ?
-            ResourceType::DepthStencil : ResourceType::RenderTarget);
+#ifdef _DEBUG
+    LOGF_UTILITY("[surface] new variant: base {} {}x{} format {:X} samples {} name {}",
+        base, width, height, guestFormat, uint32_t(sampleCount),
+        g_surfaceCreationName ? g_surfaceCreationName : "<none>");
+#endif
 
+    auto& variant = g_surfaceVariants.emplace_back(std::make_unique<SurfaceVariant>());
+    variant->base = base;
+    variant->width = width;
+    variant->height = height;
+    variant->guestFormat = guestFormat;
+    variant->sampleCount = sampleCount;
+    variant->format = ConvertFormat(guestFormat);
+    variant->refCount = 1;
+
+    const auto desc = MakeSurfaceTextureDesc(width, height, variant->format, sampleCount);
+    variant->textureHolder = g_device->createTexture(desc);
+
+    RenderTextureViewDesc viewDesc;
+    viewDesc.dimension = RenderTextureViewDimension::TEXTURE_2D;
+    viewDesc.format = variant->format;
+    viewDesc.mipLevels = 1;
+    variant->textureView = variant->textureHolder->createTextureView(viewDesc);
+    variant->descriptorIndex = g_textureDescriptorAllocator.allocate();
+    g_textureDescriptorSet->setTexture(variant->descriptorIndex, variant->textureHolder.get(), RenderTextureLayout::SHADER_READ, variant->textureView.get());
+
+#ifdef _DEBUG
+    variant->textureHolder->setName(fmt::format("{} EDRAM {} {}x{} {}x",
+        RenderFormatIsDepth(variant->format) ? "Depth Stencil" : "Render Target",
+        base, width, height, int32_t(sampleCount)));
+#endif
+
+    created = true;
+    return variant.get();
+}
+
+static GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t format, uint32_t multiSample, GuestSurfaceCreateParams* params)
+{
+    RenderSampleCounts sampleCount;
+    if (multiSample == 0) {
+        sampleCount = RenderSampleCount::COUNT_1;
+    } else {
+        sampleCount = multiSample == 1 ? RenderSampleCount::COUNT_2 : RenderSampleCount::COUNT_4;
+    }
+
+    const RenderFormat renderFormat = ConvertFormat(format);
+    const bool isDepthStencil = RenderFormatIsDepth(renderFormat);
+
+    const auto surface = g_userHeap.AllocPhysical<GuestSurface>(isDepthStencil ?
+        ResourceType::DepthStencil : ResourceType::RenderTarget);
+
+    surface->width = width;
+    surface->height = height;
+    surface->format = renderFormat;
+    surface->guestFormat = format;
+    surface->sampleCount = sampleCount;
+
+    bool created = false;
+
+    if (params != nullptr)
+    {
+        // The view shares the variant's host resources without owning them.
+        surface->variant = AcquireSurfaceVariant(params->base, width, height, format, sampleCount, created);
+        surface->texture = surface->variant->textureHolder.get();
+        surface->descriptorIndex = surface->variant->descriptorIndex;
+    }
+    else
+    {
+        // No EDRAM placement information: the surface owns its host texture.
+        const auto desc = MakeSurfaceTextureDesc(width, height, renderFormat, sampleCount);
         surface->textureHolder = g_device->createTexture(desc);
         surface->texture = surface->textureHolder.get();
-        surface->width = width;
-        surface->height = height;
-        surface->format = desc.format;
-        surface->guestFormat = format;
-        surface->sampleCount = desc.multisampling.sampleCount;
 
         RenderTextureViewDesc viewDesc;
         viewDesc.dimension = RenderTextureViewDimension::TEXTURE_2D;
-        viewDesc.format = desc.format;
+        viewDesc.format = renderFormat;
         viewDesc.mipLevels = 1;
         surface->textureView = surface->textureHolder->createTextureView(viewDesc);
         surface->descriptorIndex = g_textureDescriptorAllocator.allocate();
         g_textureDescriptorSet->setTexture(surface->descriptorIndex, surface->textureHolder.get(), RenderTextureLayout::SHADER_READ, surface->textureView.get());
 
-    #ifdef _DEBUG 
-        surface->texture->setName(fmt::format("{} {:X}", desc.flags & RenderTextureFlag::RENDER_TARGET ? "Render Target" : "Depth Stencil", g_memory.MapVirtual(surface)));
+    #ifdef _DEBUG
+        surface->texture->setName(fmt::format("{} {:X}", isDepthStencil ? "Depth Stencil" : "Render Target", g_memory.MapVirtual(surface)));
     #endif
 
-        DiscardTexture(surface, desc.flags == RenderTextureFlag::RENDER_TARGET ?
-            RenderTextureLayout::COLOR_WRITE : RenderTextureLayout::DEPTH_WRITE);
+        created = true;
+    }
 
-        if (params) {
-            surface->wasCached = true;
-            g_surfaceCache.emplace_back(surface, baseValue);
-        }
+    if (created)
+    {
+        DiscardTexture(surface, isDepthStencil ?
+            RenderTextureLayout::DEPTH_WRITE : RenderTextureLayout::COLOR_WRITE);
     }
 
     return surface;
@@ -4045,7 +4206,10 @@ static void SetFramebuffer(GuestSurface* renderTarget, GuestSurface* depthStenci
 
         if (framebufferContainer != nullptr)
         {
-            auto& framebuffer = framebufferContainer->framebuffers[framebufferKey];
+            auto& framebuffers = framebufferContainer->variant != nullptr ?
+                framebufferContainer->variant->framebuffers : framebufferContainer->framebuffers;
+
+            auto& framebuffer = framebuffers[framebufferKey];
 
             if (framebuffer == nullptr)
             {
@@ -4099,15 +4263,44 @@ static void Clear(GuestDevice* device, uint32_t flags, uint32_t, be<float>* colo
     g_renderQueue.enqueue(cmd);
 }
 
+static bool SharesStorage(const GuestSurface* lhs, const GuestSurface* rhs)
+{
+    return lhs != nullptr && rhs != nullptr && lhs->texture == rhs->texture;
+}
+
+static void FlushPendingCopiesForAliasedStorage(GuestSurface* renderTarget, GuestSurface* depthStencil)
+{
+    bool foundAny = false;
+
+    for (const auto surface : g_pendingSurfaceCopies)
+    {
+        if (SharesStorage(surface, renderTarget) || SharesStorage(surface, depthStencil))
+        {
+            const bool isDepthStencil = RenderFormatIsDepth(surface->format);
+            foundAny |= PopulateBarriersForStretchRect(isDepthStencil ? nullptr : surface, isDepthStencil ? surface : nullptr);
+        }
+    }
+
+    if (foundAny)
+    {
+        FlushBarriers();
+
+        for (const auto surface : g_pendingSurfaceCopies)
+        {
+            if (SharesStorage(surface, renderTarget) || SharesStorage(surface, depthStencil))
+            {
+                const bool isDepthStencil = RenderFormatIsDepth(surface->format);
+                ExecutePendingStretchRectCommands(isDepthStencil ? nullptr : surface, isDepthStencil ? surface : nullptr);
+            }
+        }
+    }
+}
+
 static void ProcClear(const RenderCommand& cmd)
 {
     const auto& args = cmd.clear;
 
-    if (PopulateBarriersForStretchRect(g_renderTarget, g_depthStencil))
-    {
-        FlushBarriers();
-        ExecutePendingStretchRectCommands(g_renderTarget, g_depthStencil);
-    }
+    FlushPendingCopiesForAliasedStorage(g_renderTarget, g_depthStencil);
 
     AddBarrier(g_renderTarget, RenderTextureLayout::COLOR_WRITE);
     AddBarrier(g_depthStencil, RenderTextureLayout::DEPTH_WRITE);
@@ -4123,7 +4316,29 @@ static void ProcClear(const RenderCommand& cmd)
 
     auto& commandList = g_commandLists[g_frame];
 
-    if (g_renderTarget != nullptr && (args.flags & D3DCLEAR_TARGET) != 0)
+    bool clearColor = (args.flags & D3DCLEAR_TARGET) != 0;
+    bool clearDepth = (args.flags & D3DCLEAR_ZBUFFER) != 0;
+    bool clearStencil = (args.flags & D3DCLEAR_STENCIL) != 0;
+
+    // Try to propogate clears to aliased texture variants.
+    // Note, this contains a bit of a hack to avoid the main depth buf
+    // getting cleared to a value that makes every pixel fail depth test.
+    if (g_renderTarget != nullptr && g_renderTarget->variant != nullptr &&
+        (g_renderTarget->variant->deferredClearFlags & D3DCLEAR_TARGET) != 0)
+    {
+        clearColor = true;
+        g_renderTarget->variant->deferredClearFlags &= ~D3DCLEAR_TARGET;
+    }
+
+    if (g_depthStencil != nullptr && g_depthStencil->variant != nullptr &&
+        (g_depthStencil->variant->deferredClearFlags & (D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL)) != 0)
+    {
+        clearDepth |= (g_depthStencil->variant->deferredClearFlags & D3DCLEAR_ZBUFFER) != 0;
+        clearStencil |= (g_depthStencil->variant->deferredClearFlags & D3DCLEAR_STENCIL) != 0;
+        g_depthStencil->variant->deferredClearFlags &= ~(D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL);
+    }
+
+    if (g_renderTarget != nullptr && clearColor)
     {
         if (!canClearInOnePass) {
             SetFramebuffer(g_renderTarget, nullptr, true);
@@ -4132,8 +4347,6 @@ static void ProcClear(const RenderCommand& cmd)
         commandList->clearColor(0, RenderColor(args.color[0], args.color[1], args.color[2], args.color[3]));
     }
 
-    const bool clearDepth = (args.flags & D3DCLEAR_ZBUFFER) != 0;
-    const bool clearStencil = (args.flags & D3DCLEAR_STENCIL) != 0;
     if (g_depthStencil != nullptr && (clearDepth || clearStencil))
     {
         if (!canClearInOnePass) {
@@ -4141,6 +4354,72 @@ static void ProcClear(const RenderCommand& cmd)
         }
 
         commandList->clearDepthStencil(clearDepth, clearStencil, args.z, args.stencil);
+    }
+
+    {
+        std::lock_guard lock(g_surfaceVariantMutex);
+
+        for (const auto boundSurface : { g_renderTarget, g_depthStencil })
+        {
+            if (boundSurface == nullptr || boundSurface->variant == nullptr)
+                continue;
+
+            const bool boundIsDepth = RenderFormatIsDepth(boundSurface->format);
+            const uint32_t flags = args.flags & (boundIsDepth ? (D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL) : D3DCLEAR_TARGET);
+            if (flags == 0)
+                continue;
+
+            // The variant the game just cleared itself needs no deferred clear.
+            boundSurface->variant->deferredClearFlags &= ~flags;
+
+            for (auto& variant : g_surfaceVariants)
+            {
+                if (variant.get() == boundSurface->variant ||
+                    variant->base != boundSurface->variant->base ||
+                    RenderFormatIsDepth(variant->format) != boundIsDepth ||
+                    variant->width > boundSurface->variant->width ||
+                    variant->height > boundSurface->variant->height)
+                {
+                    continue;
+                }
+
+                variant->deferredClearFlags |= flags;
+                variant->deferredClearColor[0] = args.color[0];
+                variant->deferredClearColor[1] = args.color[1];
+                variant->deferredClearColor[2] = args.color[2];
+                variant->deferredClearColor[3] = args.color[3];
+                variant->deferredClearZ = args.z;
+                variant->deferredClearStencil = args.stencil;
+            }
+        }
+    }
+}
+
+static void ApplyDeferredVariantClears(GuestSurface* renderTarget, GuestSurface* depthStencil)
+{
+    auto& commandList = g_commandLists[g_frame];
+
+    if (renderTarget != nullptr && renderTarget->variant != nullptr &&
+        (renderTarget->variant->deferredClearFlags & D3DCLEAR_TARGET) != 0)
+    {
+        auto variant = renderTarget->variant;
+
+        commandList->clearColor(0, RenderColor(variant->deferredClearColor[0], variant->deferredClearColor[1],
+            variant->deferredClearColor[2], variant->deferredClearColor[3]));
+
+        variant->deferredClearFlags &= ~D3DCLEAR_TARGET;
+    }
+
+    if (depthStencil != nullptr && depthStencil->variant != nullptr &&
+        (depthStencil->variant->deferredClearFlags & (D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL)) != 0)
+    {
+        auto variant = depthStencil->variant;
+        const bool clearDepth = (variant->deferredClearFlags & D3DCLEAR_ZBUFFER) != 0;
+        const bool clearStencil = (variant->deferredClearFlags & D3DCLEAR_STENCIL) != 0;
+
+        commandList->clearDepthStencil(clearDepth, clearStencil, variant->deferredClearZ, variant->deferredClearStencil);
+
+        variant->deferredClearFlags &= ~(D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL);
     }
 }
 
@@ -4972,6 +5251,21 @@ static void FlushRenderStateForRenderThread()
 
     bool foundAny = PopulateBarriersForStretchRect(renderTarget, depthStencil);
 
+    auto aliasesBoundStorage = [&](GuestSurface* surface)
+    {
+        return surface != renderTarget && surface != depthStencil &&
+            (SharesStorage(surface, renderTarget) || SharesStorage(surface, depthStencil));
+    };
+
+    for (const auto surface : g_pendingSurfaceCopies)
+    {
+        if (aliasesBoundStorage(surface))
+        {
+            bool isDepthStencil = RenderFormatIsDepth(surface->format);
+            foundAny |= PopulateBarriersForStretchRect(isDepthStencil ? nullptr : surface, isDepthStencil ? surface : nullptr);
+        }
+    }
+
     for (const auto surface : g_pendingResolves)
     {
         bool isDepthStencil = RenderFormatIsDepth(surface->format);
@@ -4982,6 +5276,15 @@ static void FlushRenderStateForRenderThread()
     {
         FlushBarriers();
         ExecutePendingStretchRectCommands(renderTarget, depthStencil);
+
+        for (const auto surface : g_pendingSurfaceCopies)
+        {
+            if (aliasesBoundStorage(surface))
+            {
+                bool isDepthStencil = RenderFormatIsDepth(surface->format);
+                ExecutePendingStretchRectCommands(isDepthStencil ? nullptr : surface, isDepthStencil ? surface : nullptr);
+            }
+        }
 
         for (const auto surface : g_pendingResolves)
         {
@@ -4999,6 +5302,7 @@ static void FlushRenderStateForRenderThread()
     FlushBarriers();
 
     SetFramebuffer(renderTarget, depthStencil, false);
+    ApplyDeferredVariantClears(renderTarget, depthStencil);
     FlushViewport();
 
     auto& commandList = g_commandLists[g_frame];
