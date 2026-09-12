@@ -217,6 +217,7 @@
 #include "Sonicteam/SoX/IResourceMgr.h"
 #include "Sonicteam/SoX/Input/Manager.h"
 #include "Sonicteam/SoX/LinkNode.h"
+#include "Sonicteam/SoX/LinkNodeA.h"
 #include "Sonicteam/SoX/Math/Matrix.h"
 #include "Sonicteam/SoX/Math/Quaternion.h"
 #include "Sonicteam/SoX/Math/Vector.h"
