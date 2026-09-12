@@ -10,7 +10,7 @@
 #include <unordered_set>
 #include "xxHashMap.h"
 #include <user/paths.h>
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 struct XamListener : KernelObject
 {

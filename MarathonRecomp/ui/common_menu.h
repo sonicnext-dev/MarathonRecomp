@@ -28,8 +28,8 @@ class CommonMenu
 
         bool OnSDLEvent(SDL_Event* event) override
         {
-            if (event->type == SDL_CONTROLLERAXISMOTION && event->caxis.axis == SDL_CONTROLLER_AXIS_RIGHTX)
-                RightStickX = event->caxis.value / 32767.0f;
+            if (event->type == SDL_EVENT_GAMEPAD_AXIS_MOTION && event->gaxis.axis == SDL_GAMEPAD_AXIS_RIGHTX)
+                RightStickX = event->gaxis.value / 32767.0f;
 
             return false;
         }
