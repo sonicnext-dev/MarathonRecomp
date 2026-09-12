@@ -23,12 +23,12 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
       - name: Checkout Private Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: ${{ secrets.ASSET_REPO }}
           token: ${{ secrets.ASSET_REPO_TOKEN }}
@@ -40,7 +40,7 @@ jobs:
           key: ccache-${{ runner.os }}-${{ matrix.preset }}
   
       - name: Cache vcpkg
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ./thirdparty/vcpkg/downloads
@@ -55,7 +55,7 @@ jobs:
           sudo apt install -y ninja-build llvm-${{ env.LLVM_VERSION }}-dev libgtk-3-dev libasound2-dev libpulse-dev libpipewire-0.3-dev
 
       - name: Cache ccache Directory
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: /tmp/ccache
           key: ccache-${{ runner.os }}-${{ matrix.preset }}
@@ -74,7 +74,7 @@ jobs:
         run: cmake --build ./out/build/${{ env.CMAKE_PRESET }} --target MarathonRecomp
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: MarathonRecomp-Linux-${{ env.CMAKE_PRESET }}
           path: ./out/build/${{ env.CMAKE_PRESET }}/MarathonRecomp/MarathonRecomp
@@ -89,12 +89,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
       - name: Checkout private repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: ${{ secrets.ASSET_REPO }}
           token: ${{ secrets.ASSET_REPO_TOKEN }}
@@ -106,7 +106,7 @@ jobs:
           key: ccache-${{ runner.os }}-${{ matrix.preset }}
 
       - name: Cache vcpkg
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ./thirdparty/vcpkg/downloads
@@ -121,7 +121,9 @@ jobs:
           Remove-Item -Path "C:\ProgramData\Chocolatey\bin\ccache.exe" -Force -ErrorAction SilentlyContinue
       
       - name: Configure Developer Command Prompt
-        uses: ilammy/msvc-dev-cmd@v1
+        uses: TheMrMilchmann/setup-msvc-dev@v4
+        with:
+          arch: x64
 
       - name: Prepare Project
         run: |
@@ -146,13 +148,13 @@ jobs:
           Move-Item -Path ".\out\build\${{ env.CMAKE_PRESET }}\MarathonRecomp\MarathonRecomp.exe" -Destination ".\release\MarathonRecomp.exe"
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: MarathonRecomp-Windows-${{ env.CMAKE_PRESET }}
           path: .\release
 
       - name: Upload PDB
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: ${{ matrix.preset != 'x64-Clang-Release' }}
         with:
           name: MarathonRecomp-Windows-${{ env.CMAKE_PRESET }}-PDB
@@ -167,12 +169,12 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
       - name: Checkout Private Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: ${{ secrets.ASSET_REPO }}
           token: ${{ secrets.ASSET_REPO_TOKEN }}
@@ -184,7 +186,7 @@ jobs:
           sudo apt install -y flatpak-builder ccache
 
       - name: Setup ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: /tmp/ccache
           key: ccache-${{ runner.os }}
@@ -206,7 +208,7 @@ jobs:
           flatpak build-bundle repo ./${{ env.FLATPAK_ID }}.flatpak ${{ env.FLATPAK_ID }} --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: MarathonRecomp-Flatpak
           path: ./${{ env.FLATPAK_ID }}.flatpak
@@ -222,12 +224,12 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
       - name: Checkout Private Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: ${{ secrets.ASSET_REPO }}
           token: ${{ secrets.ASSET_REPO_TOKEN }}
@@ -239,7 +241,7 @@ jobs:
           key: ccache-${{ runner.os }}-${{ matrix.arch }}-${{ matrix.preset }}
 
       - name: Cache vcpkg
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ./thirdparty/vcpkg/downloads
@@ -253,7 +255,7 @@ jobs:
           brew install ninja
 
       - name: Cache ccache Directory
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: /tmp/ccache
           key: ccache-${{ runner.os }}-${{ matrix.arch }}-${{ matrix.preset }}
@@ -278,7 +280,7 @@ jobs:
           tar -czf MarathonRecomp-macOS-${{ matrix.arch }}-${{ env.CMAKE_PRESET }}.tar.gz -C ./out/build/${{ env.CMAKE_PRESET }}/MarathonRecomp "Marathon Recompiled.app"
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: MarathonRecomp-macOS-${{ matrix.arch }}-${{ env.CMAKE_PRESET }}
           path: MarathonRecomp-macOS-${{ matrix.arch }}-${{ env.CMAKE_PRESET }}.tar.gz
