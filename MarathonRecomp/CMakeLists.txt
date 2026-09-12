@@ -127,7 +127,7 @@ set(MARATHON_RECOMP_APU_CXX_SOURCES
     "apu/audio.cpp"
     "apu/xma_decoder.cpp"
     "apu/embedded_player.cpp"
-    "apu/driver/sdl2_driver.cpp"
+    "apu/driver/sdl3_driver.cpp"
 )
 
 set(MARATHON_RECOMP_HID_CXX_SOURCES
@@ -200,7 +200,7 @@ set(MARATHON_RECOMP_UTILS_CXX_SOURCES
 )
 
 set(MARATHON_RECOMP_THIRDPARTY_SOURCES
-    "${MARATHON_RECOMP_THIRDPARTY_ROOT}/imgui/backends/imgui_impl_sdl2.cpp"
+    "${MARATHON_RECOMP_THIRDPARTY_ROOT}/imgui/backends/imgui_impl_sdl3.cpp"
     "${MARATHON_RECOMP_THIRDPARTY_ROOT}/imgui/imgui.cpp"
     "${MARATHON_RECOMP_THIRDPARTY_ROOT}/imgui/imgui_demo.cpp"
     "${MARATHON_RECOMP_THIRDPARTY_ROOT}/imgui/imgui_draw.cpp"
@@ -410,8 +410,8 @@ target_link_libraries(MarathonRecomp PRIVATE
     nfd::nfd
     o1heap
     XenonUtils
-    SDL2::SDL2-static
-    SDL2_mixer
+    SDL3::SDL3-static
+    SDL3_mixer::SDL3_mixer
     tomlplusplus::tomlplusplus
     MarathonRecompLib
     xxHash::xxhash
