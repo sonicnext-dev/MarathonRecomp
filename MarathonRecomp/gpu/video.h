@@ -25,12 +25,27 @@ struct Video
     static inline uint32_t s_viewportWidth;
     static inline uint32_t s_viewportHeight;
 
+    // Size of the actual render output (swap chain drawable / window) in pixels.
+    // This can differ from the viewport, which is the resolution the guest renders
+    // at and is fixed once the guest has initialised its renderer.
+    static inline uint32_t s_outputWidth;
+    static inline uint32_t s_outputHeight;
+
     static bool CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry);
     static void WaitOnSwapChain();
     static void Present();
     static void StartPipelinePrecompilation();
     static void WaitForGPU();
     static void ComputeViewportDimensions();
+
+    // Called once the guest has been told its render resolution. The guest cannot
+    // re-create its render targets at a new size at runtime, so the viewport must
+    // stay fixed from this point on and the result is scaled to the window instead.
+    static void LockGuestResolution();
+
+    // Computes the aspect ratio preserving destination rectangle used to scale the
+    // guest's rendered image into the render output.
+    static void ComputePresentRect(int32_t& offsetX, int32_t& offsetY, int32_t& width, int32_t& height);
 };
 
 enum class Backend {

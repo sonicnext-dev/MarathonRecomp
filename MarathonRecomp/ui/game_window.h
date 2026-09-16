@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <plume_render_interface_types.h>
 #include <user/config.h>
 #include <sdl_events.h>
@@ -20,6 +21,13 @@ public:
     static inline int s_width = DEFAULT_WIDTH;
     static inline int s_height = DEFAULT_HEIGHT;
 
+    // Authoritative output size in pixels, as reported by SDL on the main thread.
+    // Used to drive the render output dimensions because some backends (e.g. macOS
+    // Metal) query the window size from the render thread and can return a stale
+    // cached value after a resize, fullscreen toggle or monitor change.
+    static inline std::atomic<uint32_t> s_pixelWidth = DEFAULT_WIDTH;
+    static inline std::atomic<uint32_t> s_pixelHeight = DEFAULT_HEIGHT;
+
     static inline EPlayerCharacter s_playerCharacter;
 
     static inline bool s_isFocused;
@@ -39,6 +47,7 @@ public:
     static EWindowState SetMaximised(bool isEnabled);
     static SDL_Rect GetDimensions();
     static void GetSizeInPixels(int *w, int *h);
+    static void UpdatePixelSize();
     static void SetDimensions(int w, int h, int x = SDL_WINDOWPOS_CENTERED, int y = SDL_WINDOWPOS_CENTERED);
     static void ResetDimensions();
     static uint32_t GetWindowFlags();

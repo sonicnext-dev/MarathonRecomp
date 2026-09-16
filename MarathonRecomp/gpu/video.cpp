@@ -1834,6 +1834,38 @@ static void CreateImGuiBackend()
 #endif
 }
 
+// Tracks the last render output size we applied, so we can detect changes that the
+// swap chain's own needsResize() does not report (see CheckSwapChain on macOS).
+static uint32_t g_lastOutputWidth;
+static uint32_t g_lastOutputHeight;
+
+// Set once the guest has been given its render resolution; see Video::LockGuestResolution.
+static bool g_guestResolutionLocked;
+
+// Returns the authoritative render output size in pixels. On macOS the Metal swap
+// chain queries the window size from the render thread and can return a stale value
+// after a resize/fullscreen/monitor change, so we use SDL's main-thread pixel size
+// (which tracks the CAMetalLayer drawable) as the source of truth. The Metal drawable
+// itself is already resized correctly, so this keeps the viewport and present blit in
+// sync with it. On other backends this simply mirrors the swap chain size.
+static void GetOutputDimensions(uint32_t& width, uint32_t& height)
+{
+#ifdef __APPLE__
+    uint32_t pixelWidth = GameWindow::s_pixelWidth.load();
+    uint32_t pixelHeight = GameWindow::s_pixelHeight.load();
+
+    if (pixelWidth != 0 && pixelHeight != 0)
+    {
+        width = pixelWidth;
+        height = pixelHeight;
+        return;
+    }
+#endif
+
+    width = g_swapChain->getWidth();
+    height = g_swapChain->getHeight();
+}
+
 static void CheckSwapChain()
 {
     g_swapChain->setVsyncEnabled(Config::VSync);
@@ -1854,6 +1886,36 @@ static void CheckSwapChain()
         g_swapChainValid = g_swapChain->acquireTexture(g_acquireSemaphores[g_frame].get(), &g_backBufferIndex);
         g_swapChainAcquireProfiler.End();
     }
+
+#ifdef __APPLE__
+    // On macOS the Metal swap chain reports its size from a stale cached window
+    // query on the render thread, so g_swapChain->needsResize() can miss window
+    // resizes, fullscreen toggles and monitor moves entirely. Detect the change
+    // ourselves using SDL's authoritative pixel size and force the viewport (and
+    // intermediary back buffer in BeginCommandList) to be recomputed.
+    {
+        uint32_t outputWidth = 0;
+        uint32_t outputHeight = 0;
+        GetOutputDimensions(outputWidth, outputHeight);
+
+        if (outputWidth != g_lastOutputWidth || outputHeight != g_lastOutputHeight)
+        {
+            // Skip the GPU flush on the very first call (nothing has been rendered
+            // yet); it is only needed to safely recreate framebuffers on a change.
+            if (g_lastOutputWidth != 0 && g_lastOutputHeight != 0)
+            {
+                Video::WaitForGPU();
+                g_backBuffer->framebuffers.clear();
+                PurgeSurfaceVariantFramebuffers();
+            }
+
+            g_lastOutputWidth = outputWidth;
+            g_lastOutputHeight = outputHeight;
+
+            g_needsResize = true;
+        }
+    }
+#endif
 
     if (g_needsResize)
         Video::ComputeViewportDimensions();
@@ -2972,15 +3034,26 @@ static void DrawImGui()
     auto& io = ImGui::GetIO();
     io.DisplaySize = { float(Video::s_viewportWidth), float(Video::s_viewportHeight) };
 
-    // ImGui doesn't know that we center the screen for specific aspect ratio
-    // settings, which causes mouse events to not work correctly. To fix this, 
+    // ImGui doesn't know that we scale and centre the guest's image inside the
+    // window, which causes mouse events to not work correctly. To fix this,
     // we can adjust the mouse events before ImGui processes them.
-    uint32_t width = g_swapChain->getWidth();
-    uint32_t height = g_swapChain->getHeight();
+    uint32_t width = Video::s_outputWidth;
+    uint32_t height = Video::s_outputHeight;
+
+    if (width == 0 || height == 0)
+        GetOutputDimensions(width, height);
+
+    int32_t presentOffsetX, presentOffsetY, presentWidth, presentHeight;
+    Video::ComputePresentRect(presentOffsetX, presentOffsetY, presentWidth, presentHeight);
+
+    // Convert from window (logical) coordinates to render output pixels.
     float mousePosScaleX = float(width) / float(GameWindow::s_width);
     float mousePosScaleY = float(height) / float(GameWindow::s_height);
-    float mousePosOffsetX = (width - Video::s_viewportWidth) / 2.0f;
-    float mousePosOffsetY = (height - Video::s_viewportHeight) / 2.0f;
+
+    // Then from the scaled destination rectangle back into viewport space.
+    float viewportScaleX = presentWidth > 0 ? float(Video::s_viewportWidth) / float(presentWidth) : 1.0f;
+    float viewportScaleY = presentHeight > 0 ? float(Video::s_viewportHeight) / float(presentHeight) : 1.0f;
+
     for (int i = 0; i < io.Ctx->InputEventsQueue.Size; i++)
     {
         auto& e = io.Ctx->InputEventsQueue[i];
@@ -2989,13 +3062,13 @@ static void DrawImGui()
             if (e.MousePos.PosX != -FLT_MAX)
             {
                 e.MousePos.PosX *= mousePosScaleX;
-                e.MousePos.PosX -= mousePosOffsetX;
+                e.MousePos.PosX = (e.MousePos.PosX - float(presentOffsetX)) * viewportScaleX;
             }
 
             if (e.MousePos.PosY != -FLT_MAX)
             {
                 e.MousePos.PosY *= mousePosScaleY;
-                e.MousePos.PosY -= mousePosOffsetY;
+                e.MousePos.PosY = (e.MousePos.PosY - float(presentOffsetY)) * viewportScaleY;
             }
         }
     }
@@ -3329,6 +3402,19 @@ static void ProcExecuteCommandList(const RenderCommand& cmd)
     if (g_swapChainValid)
     {
         auto swapChainTexture = g_swapChain->getTexture(g_backBufferIndex);
+
+        // Use the authoritative output size (see GetOutputDimensions) so the present
+        // blit covers the full drawable. On macOS g_swapChain->getWidth()/getHeight()
+        // can be stale, which would confine rendering to the top-left corner.
+        uint32_t outputWidth = 0;
+        uint32_t outputHeight = 0;
+        GetOutputDimensions(outputWidth, outputHeight);
+
+        // Keep the tracked output size in sync so the destination rectangle below is
+        // computed against exactly the area we rasterise over.
+        Video::s_outputWidth = outputWidth;
+        Video::s_outputHeight = outputHeight;
+
         if (g_backBuffer->texture == g_intermediaryBackBufferTexture.get())
         {
             struct
@@ -3340,6 +3426,9 @@ static void ProcExecuteCommandList(const RenderCommand& cmd)
                 int32_t viewportOffsetY;
                 int32_t viewportWidth;
                 int32_t viewportHeight;
+
+                int32_t sourceWidth;
+                int32_t sourceHeight;
             } constants;
 
             constants.gamma = 0.85f;
@@ -3349,10 +3438,17 @@ static void ProcExecuteCommandList(const RenderCommand& cmd)
             constants.gamma = 1.0f / std::clamp(constants.gamma + offset, 0.1f, 4.0f);
             constants.textureDescriptorIndex = g_intermediaryBackBufferTextureDescriptorIndex;
 
-            constants.viewportOffsetX = (int32_t(g_swapChain->getWidth()) - int32_t(Video::s_viewportWidth)) / 2;
-            constants.viewportOffsetY = (int32_t(g_swapChain->getHeight()) - int32_t(Video::s_viewportHeight)) / 2;
-            constants.viewportWidth = Video::s_viewportWidth;
-            constants.viewportHeight = Video::s_viewportHeight;
+            // The guest renders at a fixed resolution, so scale that image up to the
+            // window while preserving its aspect ratio instead of copying it 1:1 into
+            // the corner of a larger drawable.
+            Video::ComputePresentRect(
+                constants.viewportOffsetX,
+                constants.viewportOffsetY,
+                constants.viewportWidth,
+                constants.viewportHeight);
+
+            constants.sourceWidth = int32_t(Video::s_viewportWidth);
+            constants.sourceHeight = int32_t(Video::s_viewportHeight);
 
             auto &framebuffer = g_backBuffer->framebuffers[swapChainTexture];
             if (!framebuffer)
@@ -3376,8 +3472,8 @@ static void ProcExecuteCommandList(const RenderCommand& cmd)
             commandList->setGraphicsDescriptorSet(g_textureDescriptorSet.get(), 0);
             SetRootDescriptor(g_uploadAllocators[g_frame].allocate<false>(&constants, sizeof(constants), 0x100), 2);
             commandList->setFramebuffer(framebuffer.get());
-            commandList->setViewports(RenderViewport(0.0f, 0.0f, g_swapChain->getWidth(), g_swapChain->getHeight()));
-            commandList->setScissors(RenderRect(0, 0, g_swapChain->getWidth(), g_swapChain->getHeight()));
+            commandList->setViewports(RenderViewport(0.0f, 0.0f, outputWidth, outputHeight));
+            commandList->setScissors(RenderRect(0, 0, outputWidth, outputHeight));
             commandList->drawInstanced(6, 1, 0, 0);
             commandList->barriers(RenderBarrierStage::GRAPHICS, RenderTextureBarrier(swapChainTexture, RenderTextureLayout::PRESENT));
         }
@@ -3433,10 +3529,80 @@ static GuestSurface* GetDepthStencil()
     return g_depthStencil;
 }
 
+void Video::LockGuestResolution()
+{
+    g_guestResolutionLocked = true;
+}
+
+// Fits the guest's rendered image (s_viewportWidth/Height) into the render output
+// (s_outputWidth/Height).
+//
+// EAspectRatio::Auto fills the whole output so the image reaches every corner of the
+// window, which is what you want on ultrawide displays: the HUD extends to the edges
+// and in-game cutscenes are not letterboxed (see Config::UIAlignmentMode and
+// Config::CutsceneAspectRatio). Note that the guest can only render at the aspect
+// ratio it was launched with, so if the window aspect changed after startup this
+// stretches the image; launching at the target resolution renders it natively.
+//
+// EAspectRatio::Original preserves the guest's aspect ratio and letterboxes instead.
+void Video::ComputePresentRect(int32_t& offsetX, int32_t& offsetY, int32_t& width, int32_t& height)
+{
+    uint32_t outputWidth = s_outputWidth;
+    uint32_t outputHeight = s_outputHeight;
+
+    if (outputWidth == 0 || outputHeight == 0 || s_viewportWidth == 0 || s_viewportHeight == 0)
+    {
+        offsetX = 0;
+        offsetY = 0;
+        width = int32_t(s_viewportWidth);
+        height = int32_t(s_viewportHeight);
+        return;
+    }
+
+    // Fill the entire window, no black bars.
+    if (Config::AspectRatio == EAspectRatio::Auto)
+    {
+        offsetX = 0;
+        offsetY = 0;
+        width = int32_t(outputWidth);
+        height = int32_t(outputHeight);
+        return;
+    }
+
+    double scale = std::min(
+        double(outputWidth) / double(s_viewportWidth),
+        double(outputHeight) / double(s_viewportHeight));
+
+    width = std::max(1, int32_t(std::lround(s_viewportWidth * scale)));
+    height = std::max(1, int32_t(std::lround(s_viewportHeight * scale)));
+
+    offsetX = (int32_t(outputWidth) - width) / 2;
+    offsetY = (int32_t(outputHeight) - height) / 2;
+}
+
 void Video::ComputeViewportDimensions()
 {
-    uint32_t width = g_swapChain->getWidth();
-    uint32_t height = g_swapChain->getHeight();
+    uint32_t width = 0;
+    uint32_t height = 0;
+    GetOutputDimensions(width, height);
+
+    // Always track the real output size; the present blit scales the guest's image
+    // into it.
+    s_outputWidth = width;
+    s_outputHeight = height;
+
+    // The guest is told its render resolution once, when it initialises its renderer,
+    // and cannot re-create its render targets at a different size afterwards (see the
+    // unimplemented buffer resize behind Config::ResolutionScale). Growing the
+    // viewport after that point would make the guest draw a smaller image into the
+    // corner of a larger render target, leaving the rest of the window black. Keep the
+    // viewport fixed instead and let the present blit scale it up to the window.
+    if (g_guestResolutionLocked)
+    {
+        AspectRatioPatches::ComputeOffsets();
+        return;
+    }
+
     float aspectRatio = float(width) / float(height);
 
     switch (Config::AspectRatio)

@@ -51,6 +51,11 @@ PPC_FUNC(sub_8262A568)
     pRenderConfig->Width = Video::s_viewportWidth;
     pRenderConfig->Height = Video::s_viewportHeight;
 
+    // The guest creates its render targets from this resolution and cannot re-create
+    // them at a different size at runtime, so the viewport must stay fixed from here
+    // on. Window resizes are handled by scaling the result in the present blit.
+    Video::LockGuestResolution();
+
     auto pAudioEngine = Sonicteam::AudioEngineXenon::GetInstance();
     pAudioEngine->m_MusicVolume = Config::MusicVolume * Config::MasterVolume;
     pAudioEngine->m_EffectsVolume = Config::EffectsVolume * Config::MasterVolume;

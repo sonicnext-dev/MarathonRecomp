@@ -133,7 +133,16 @@ int Window_OnSDLEvent(void*, SDL_Event* event)
                     Config::WindowSize = -1;
                     GameWindow::s_width = event->window.data1;
                     GameWindow::s_height = event->window.data2;
+                    GameWindow::UpdatePixelSize();
                     GameWindow::SetTitle(fmt::format("{} - [{}x{}]", GameWindow::GetTitle(), GameWindow::s_width, GameWindow::s_height).c_str());
+                    break;
+
+                // The pixel/drawable size can change without a windowed-mode resize
+                // event, e.g. entering fullscreen or moving between monitors with
+                // different DPI scaling. Keep the authoritative pixel size in sync.
+                case SDL_WINDOWEVENT_SIZE_CHANGED:
+                case SDL_WINDOWEVENT_DISPLAY_CHANGED:
+                    GameWindow::UpdatePixelSize();
                     break;
 
                 case SDL_WINDOWEVENT_MOVED:
@@ -226,10 +235,17 @@ void GameWindow::Init(const char* sdlVideoDriver)
     SetTitleBarColour();
 
     SDL_ShowWindow(s_pWindow);
+
+    UpdatePixelSize();
 }
 
 void GameWindow::Update()
 {
+    // Keep the authoritative output size in sync every frame on the main thread.
+    // This is a robust catch-all for size changes that may not emit a dedicated
+    // SDL window event (e.g. certain fullscreen/monitor transitions on macOS).
+    UpdatePixelSize();
+
     if (!GameWindow::IsFullscreen() && !GameWindow::IsMaximised() && !s_isChangingDisplay)
     {
         Config::WindowX = GameWindow::s_x;
@@ -400,6 +416,26 @@ SDL_Rect GameWindow::GetDimensions()
 void GameWindow::GetSizeInPixels(int *w, int *h)
 {
     SDL_GetWindowSizeInPixels(s_pWindow, w, h);
+}
+
+// Refreshes the cached authoritative output size in pixels. Must be called on the
+// main thread (SDL window queries are only reliable there). On macOS this reflects
+// the CAMetalLayer drawable size that SDL maintains, which is the true render target
+// size the render thread must use.
+void GameWindow::UpdatePixelSize()
+{
+    if (!s_pWindow)
+        return;
+
+    int w = 0;
+    int h = 0;
+    SDL_GetWindowSizeInPixels(s_pWindow, &w, &h);
+
+    if (w > 0 && h > 0)
+    {
+        s_pixelWidth = static_cast<uint32_t>(w);
+        s_pixelHeight = static_cast<uint32_t>(h);
+    }
 }
 
 void GameWindow::SetDimensions(int w, int h, int x, int y)

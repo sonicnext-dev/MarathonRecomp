@@ -853,7 +853,11 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
                 monitorReason = &Localise("Options_Desc_NotAvailableHardware");
 
             DrawOption(rowCount++, &Config::Monitor, false, devReason, 0, 0, 1, false);                // TODO: implement buffer resize. DrawOption(rowCount++, &Config::Monitor, canChangeMonitor, monitorReason, 0, 0, displayCount - 1, false);
-            DrawOption(rowCount++, &Config::AspectRatio, false, devReason);                            // TODO: implement buffer resize. DrawOption(rowCount++, &Config::AspectRatio, true);
+            // Controls how the rendered image is fit into the window: Auto fills the
+            // whole window (no letterboxing, best for ultrawide), Original preserves
+            // the game's aspect ratio. This no longer needs a buffer resize because it
+            // is applied when presenting.
+            DrawOption(rowCount++, &Config::AspectRatio, true);
             DrawOption(rowCount++, &Config::ResolutionScale, false, devReason);                        // TODO: implement buffer resize. DrawOption(rowCount++, &Config::ResolutionScale, true, nullptr, 0.25f, 1.0f, 2.0f);
             DrawOption(rowCount++, &Config::Fullscreen, false, devReason);                             // TODO: implement buffer resize. DrawOption(rowCount++, &Config::Fullscreen, true);
             DrawOption(rowCount++, &Config::VSync, true);
