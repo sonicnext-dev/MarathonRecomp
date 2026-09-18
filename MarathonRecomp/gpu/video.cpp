@@ -3535,16 +3535,17 @@ void Video::LockGuestResolution()
 }
 
 // Fits the guest's rendered image (s_viewportWidth/Height) into the render output
-// (s_outputWidth/Height).
+// (s_outputWidth/Height), always preserving the guest's aspect ratio so the image is
+// never stretched or cropped.
 //
-// EAspectRatio::Auto fills the whole output so the image reaches every corner of the
-// window, which is what you want on ultrawide displays: the HUD extends to the edges
-// and in-game cutscenes are not letterboxed (see Config::UIAlignmentMode and
-// Config::CutsceneAspectRatio). Note that the guest can only render at the aspect
-// ratio it was launched with, so if the window aspect changed after startup this
-// stretches the image; launching at the target resolution renders it natively.
+// The guest can only render at the aspect ratio it was launched with. When the window
+// matches that aspect (e.g. launched directly at the target size/fullscreen) the image
+// fills the whole window edge to edge, using the full width of an ultrawide display.
+// When the window aspect differs (e.g. it was resized to a different shape after
+// launch, which the guest cannot re-render for) the image is letterboxed/pillarboxed
+// rather than distorted.
 //
-// EAspectRatio::Original preserves the guest's aspect ratio and letterboxes instead.
+// Both EAspectRatio::Auto and EAspectRatio::Original use this aspect preserving fit.
 void Video::ComputePresentRect(int32_t& offsetX, int32_t& offsetY, int32_t& width, int32_t& height)
 {
     uint32_t outputWidth = s_outputWidth;
@@ -3559,16 +3560,10 @@ void Video::ComputePresentRect(int32_t& offsetX, int32_t& offsetY, int32_t& widt
         return;
     }
 
-    // Fill the entire window, no black bars.
-    if (Config::AspectRatio == EAspectRatio::Auto)
-    {
-        offsetX = 0;
-        offsetY = 0;
-        width = int32_t(outputWidth);
-        height = int32_t(outputHeight);
-        return;
-    }
-
+    // Preserve the guest's aspect ratio (contain fit): never stretch or crop. When the
+    // window matches the aspect the guest was launched at, this fills the whole window;
+    // when it differs (e.g. the window was resized to a different shape after launch,
+    // which the guest cannot re-render for) it is letterboxed instead of distorted.
     double scale = std::min(
         double(outputWidth) / double(s_viewportWidth),
         double(outputHeight) / double(s_viewportHeight));

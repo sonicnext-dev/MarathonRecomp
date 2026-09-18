@@ -14,6 +14,8 @@
 
 #include <res/images/game_icon.bmp.h>
 
+#include <cmath>
+
 bool m_isFullscreenKeyReleased = true;
 bool m_isResizing = false;
 
@@ -262,6 +264,56 @@ void GameWindow::Update()
 
     if (g_needsResize)
         s_isChangingDisplay = false;
+
+    MaybeRestartForAspectChange();
+}
+
+// The guest builds its 3D render targets once, at the resolution it is given at launch,
+// and cannot re-create them at a different size at runtime (see Video::LockGuestResolution
+// and app.cpp). A window whose aspect ratio differs from the launch aspect can therefore
+// only be presented by scaling the fixed guest image, which either distorts it or adds
+// black bars. The only way to make the guest render natively at a new aspect is to relaunch
+// so its render targets are rebuilt at the new size (Config::WindowSize/Fullscreen are
+// persisted across the restart).
+//
+// In EAspectRatio::Auto we relaunch immediately once the window aspect differs, so the
+// game fills the whole window with no distortion and no bars. It is suppressed while
+// saving, loading, installing or before the game has finished initialising so a relaunch
+// never interrupts that state.
+void GameWindow::MaybeRestartForAspectChange()
+{
+    // Only Auto adapts the guest resolution to the window; Original keeps a fixed 16:9.
+    if (Config::AspectRatio != EAspectRatio::Auto)
+        return;
+
+    // Do not disrupt the game while it is still starting up or busy with state that must
+    // not be interrupted by a relaunch.
+    if (!App::s_isInit || App::s_isLoading || App::s_isSaving || s_isChangingDisplay)
+        return;
+
+    uint32_t outputWidth = s_pixelWidth.load();
+    uint32_t outputHeight = s_pixelHeight.load();
+    uint32_t guestWidth = Video::s_viewportWidth;
+    uint32_t guestHeight = Video::s_viewportHeight;
+
+    if (outputWidth == 0 || outputHeight == 0 || guestWidth == 0 || guestHeight == 0)
+        return;
+
+    double outputAspect = double(outputWidth) / double(outputHeight);
+    double guestAspect = double(guestWidth) / double(guestHeight);
+
+    // Relative difference so the threshold is scale-independent. ~1.5% ignores rounding
+    // and DPI jitter while still catching real aspect changes (e.g. 16:9 -> 21:9).
+    double aspectDelta = std::abs(outputAspect - guestAspect) / guestAspect;
+
+    constexpr double kAspectTolerance = 0.015;
+
+    if (aspectDelta <= kAspectTolerance)
+        return;
+
+    // The window aspect ratio differs from what the guest was launched at: relaunch so the
+    // guest rebuilds its render targets at the new size and fills the window natively.
+    App::Restart();
 }
 
 SDL_Surface* GameWindow::GetIconSurface(void* pIconBmp, size_t iconSize)

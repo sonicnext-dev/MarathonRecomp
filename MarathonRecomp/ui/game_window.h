@@ -59,4 +59,10 @@ public:
     static bool IsPositionValid();
     static void Init(const char* sdlVideoDriver = nullptr);
     static void Update();
+
+private:
+    // Relaunches the game to rebuild the guest render targets at the current window
+    // aspect ratio when it differs from the launch aspect (Auto mode only). See the
+    // implementation for the rationale and constraints.
+    static void MaybeRestartForAspectChange();
 };
