@@ -271,48 +271,110 @@ void GameWindow::Update()
 // The guest builds its 3D render targets once, at the resolution it is given at launch,
 // and cannot re-create them at a different size at runtime (see Video::LockGuestResolution
 // and app.cpp). A window whose aspect ratio differs from the launch aspect can therefore
-// only be presented by scaling the fixed guest image, which either distorts it or adds
-// black bars. The only way to make the guest render natively at a new aspect is to relaunch
-// so its render targets are rebuilt at the new size (Config::WindowSize/Fullscreen are
-// persisted across the restart).
+// only be presented by scaling the fixed guest image (aspect-preserving, never distorted;
+// see Video::ComputePresentRect). To make the guest render natively at a new aspect we
+// relaunch so its render targets are rebuilt at the new size (Config::WindowSize/Fullscreen
+// persist across the restart).
 //
-// In EAspectRatio::Auto we relaunch immediately once the window aspect differs, so the
-// game fills the whole window with no distortion and no bars. It is suppressed while
-// saving, loading, installing or before the game has finished initialising so a relaunch
-// never interrupts that state.
+// The trigger is the RENDER OUTPUT aspect ratio changing and then settling — this catches
+// every way the output shape can change (windowed resize, our ALT+ENTER toggle, and the
+// macOS green title-bar button, which enters a native fullscreen Space that does NOT set
+// any SDL fullscreen flag but does change the drawable size). Comparing against the last
+// observed OUTPUT aspect (not the guest aspect) makes it loop-safe: after the relaunch the
+// output aspect is stable, so the baseline matches and it does not fire again. A short
+// settle delay avoids relaunching on every intermediate size during a drag or transition.
 void GameWindow::MaybeRestartForAspectChange()
 {
-    // Only Auto adapts the guest resolution to the window; Original keeps a fixed 16:9.
+    // Only Auto adapts the guest resolution to the window; Original keeps a fixed 16:9
+    // and simply letterboxes, so no relaunch is needed.
     if (Config::AspectRatio != EAspectRatio::Auto)
-        return;
-
-    // Do not disrupt the game while it is still starting up or busy with state that must
-    // not be interrupted by a relaunch.
-    if (!App::s_isInit || App::s_isLoading || App::s_isSaving || s_isChangingDisplay)
         return;
 
     uint32_t outputWidth = s_pixelWidth.load();
     uint32_t outputHeight = s_pixelHeight.load();
-    uint32_t guestWidth = Video::s_viewportWidth;
-    uint32_t guestHeight = Video::s_viewportHeight;
 
-    if (outputWidth == 0 || outputHeight == 0 || guestWidth == 0 || guestHeight == 0)
+    if (outputWidth == 0 || outputHeight == 0)
         return;
 
     double outputAspect = double(outputWidth) / double(outputHeight);
-    double guestAspect = double(guestWidth) / double(guestHeight);
+
+    // Baseline the observed aspect on the first valid call without triggering. This is the
+    // aspect the guest was launched at, so matching it means "already native".
+    if (!s_aspectInitialised)
+    {
+        s_aspectInitialised = true;
+        s_lastObservedAspect = outputAspect;
+        return;
+    }
 
     // Relative difference so the threshold is scale-independent. ~1.5% ignores rounding
     // and DPI jitter while still catching real aspect changes (e.g. 16:9 -> 21:9).
-    double aspectDelta = std::abs(outputAspect - guestAspect) / guestAspect;
-
     constexpr double kAspectTolerance = 0.015;
+    bool aspectDiffers = std::abs(outputAspect - s_lastObservedAspect) / s_lastObservedAspect > kAspectTolerance;
 
-    if (aspectDelta <= kAspectTolerance)
+    if (!aspectDiffers)
+    {
+        // Stable at the current (native) aspect: cancel any pending relaunch.
+        s_pendingAspectRestart = false;
+        return;
+    }
+
+    // The output aspect differs from the last one the guest rendered at. Wait until it
+    // stops changing (settles) before relaunching, so a resize drag or an in-progress
+    // fullscreen transition does not relaunch repeatedly.
+    uint32_t now = SDL_GetTicks();
+
+    if (!s_pendingAspectRestart || std::abs(outputAspect - s_pendingAspect) / s_pendingAspect > kAspectTolerance)
+    {
+        // First detection, or the target aspect is still moving: (re)start the timer.
+        s_pendingAspectRestart = true;
+        s_pendingAspect = outputAspect;
+        s_aspectRestartStartTicks = now;
+        return;
+    }
+
+    constexpr uint32_t kAspectSettleMs = 400;
+
+    if (now - s_aspectRestartStartTicks < kAspectSettleMs)
         return;
 
-    // The window aspect ratio differs from what the guest was launched at: relaunch so the
-    // guest rebuilds its render targets at the new size and fills the window natively.
+    // Do not relaunch while the game is busy with state that must not be interrupted.
+    if (!App::s_isInit || App::s_isLoading || App::s_isSaving)
+        return;
+
+    // The output has settled at a new aspect ratio. Persist the fullscreen state so the
+    // relaunched instance reproduces it. Our ALT+ENTER path sets an SDL fullscreen flag
+    // (IsFullscreen()), but the macOS green title-bar button enters a native fullscreen
+    // Space that sets NO SDL flag — so also treat "the drawable now covers the whole
+    // display" as fullscreen. In both cases the relaunch comes back as borderless desktop
+    // fullscreen at the new aspect.
+    bool coversDisplay = false;
+    {
+        int displayIndex = GetDisplay();
+        SDL_Rect bounds{};
+        int winW = 0, winH = 0;
+
+        SDL_GetWindowSize(s_pWindow, &winW, &winH);
+
+        if (displayIndex >= 0 && SDL_GetDisplayBounds(displayIndex, &bounds) == 0 &&
+            bounds.w > 0 && bounds.h > 0 && winW > 0 && winH > 0)
+        {
+            // Both queries are in points. In a macOS native fullscreen Space the content
+            // height is a little smaller than the display bounds (menu bar / notch inset),
+            // so require the width to essentially match and the height to fill most of the
+            // display rather than an exact match.
+            double widthRatio = double(winW) / double(bounds.w);
+            double heightRatio = double(winH) / double(bounds.h);
+            coversDisplay = widthRatio >= 0.98 && heightRatio >= 0.90;
+        }
+    }
+
+    Config::Fullscreen = IsFullscreen() || coversDisplay;
+
+    if (Config::Fullscreen)
+        Config::Monitor = GetDisplay();
+
+    s_pendingAspectRestart = false;
     App::Restart();
 }
 
@@ -398,7 +460,11 @@ void GameWindow::SetTitleBarColour()
 
 bool GameWindow::IsFullscreen()
 {
-    return SDL_GetWindowFlags(s_pWindow) & SDL_WINDOW_FULLSCREEN_DESKTOP;
+    // Match both borderless desktop fullscreen (SDL_WINDOW_FULLSCREEN_DESKTOP, used by
+    // our ALT+ENTER toggle) and native/exclusive fullscreen (SDL_WINDOW_FULLSCREEN,
+    // which the macOS green title-bar button enters). FULLSCREEN_DESKTOP includes the
+    // FULLSCREEN bit, so masking FULLSCREEN alone covers both.
+    return (SDL_GetWindowFlags(s_pWindow) & SDL_WINDOW_FULLSCREEN) != 0;
 }
 
 bool GameWindow::SetFullscreen(bool isEnabled)

@@ -34,6 +34,14 @@ public:
     static inline bool s_isFullscreenCursorVisible;
     static inline bool s_isChangingDisplay;
 
+    // State for the loop-safe auto-restart that adapts the guest render resolution to a
+    // new window/output aspect ratio in EAspectRatio::Auto (see MaybeRestartForAspectChange).
+    static inline bool s_aspectInitialised;
+    static inline bool s_pendingAspectRestart;
+    static inline double s_lastObservedAspect;
+    static inline double s_pendingAspect;
+    static inline uint32_t s_aspectRestartStartTicks;
+
     static SDL_Surface* GetIconSurface(void* pIconBmp, size_t iconSize);
     static void SetIcon(void* pIconBmp, size_t iconSize);
     static void SetIcon(EPlayerCharacter player = EPlayerCharacter::Sonic);
