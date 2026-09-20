@@ -326,33 +326,6 @@ elseif (APPLE)
             MACOSX_BUNDLE_SHORT_VERSION_STRING ${MACOS_BUNDLE_VERSION}
             MACOSX_BUNDLE_ICON_FILE "game_icon.icns"
     )
-
-    # Linking with MoltenVK directly would prevent using the system Vulkan loader to load with debug layers.
-    # Instead, copy the MoltenVK dylib to the app bundle along with an ICD file for the loader to find it.
-    # In the event the loader is not installed, the MoltenVK dylib can still be picked up directly in the app bundle.
-    set(MVK_BUNDLED_PATH "Resources/vulkan/icd.d")
-    set(MVK_DST "${CMAKE_CURRENT_BINARY_DIR}/Marathon Recompiled.app/Contents/${MVK_BUNDLED_PATH}")
-    set_property(TARGET MarathonRecomp APPEND PROPERTY BUILD_RPATH "@executable_path/../${MVK_BUNDLED_PATH}")
-
-    set(MVK_ICD_SRC "${MARATHON_RECOMP_THIRDPARTY_ROOT}/MoltenVK/MoltenVK/MoltenVK/icd/MoltenVK_icd.json")
-    set(MVK_ICD_DST "${MVK_DST}/MoltenVK_icd.json")
-    set(MVK_DYLIB_SRC "${CMAKE_BINARY_DIR}/thirdparty/MoltenVK/libMoltenVK.dylib")
-    set(MVK_DYLIB_DST "${MVK_DST}/libMoltenVK.dylib")
-
-    add_custom_command(
-            OUTPUT ${MVK_DST}
-            COMMAND ${CMAKE_COMMAND} -E make_directory ${MVK_DST})
-    add_custom_command(
-            OUTPUT ${MVK_ICD_DST}
-            DEPENDS ${MVK_ICD_SRC} ${MVK_DST}
-            COMMAND ${CMAKE_COMMAND} -E copy ${MVK_ICD_SRC} ${MVK_ICD_DST})
-    add_custom_command(
-            OUTPUT ${MVK_DYLIB_DST}
-            DEPENDS ${MVK_DYLIB_SRC} ${MVK_DST}
-            COMMAND ${CMAKE_COMMAND} -E copy ${MVK_DYLIB_SRC} ${MVK_DYLIB_DST})
-    add_custom_target(CopyMoltenVK DEPENDS ${MVK_ICD_DST} ${MVK_DYLIB_DST})
-    add_dependencies(CopyMoltenVK MoltenVK)
-    add_dependencies(MarathonRecomp CopyMoltenVK)
 else()
     add_executable(MarathonRecomp ${MARATHON_RECOMP_CXX_SOURCES})
 endif()

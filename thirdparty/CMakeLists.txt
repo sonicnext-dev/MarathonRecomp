@@ -47,7 +47,3 @@ add_subdirectory("${MARATHON_RECOMP_THIRDPARTY_ROOT}/SDL")
 add_subdirectory("${MARATHON_RECOMP_THIRDPARTY_ROOT}/SDL_mixer")
 add_subdirectory("${MARATHON_RECOMP_THIRDPARTY_ROOT}/plume")
 add_subdirectory("${MARATHON_RECOMP_THIRDPARTY_ROOT}/ffmpeg-core")
-
-if (APPLE)
-    add_subdirectory("${MARATHON_RECOMP_THIRDPARTY_ROOT}/MoltenVK")
-endif()
