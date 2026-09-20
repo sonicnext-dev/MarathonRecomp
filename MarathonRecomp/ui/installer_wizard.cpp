@@ -183,7 +183,7 @@ public:
 
         auto noModals = g_currentMessagePrompt.empty() && !g_currentPickerVisible;
 
-        if (event->type == SDL_QUIT && g_currentPage == WizardPage::Installing)
+        if (event->type == SDL_EVENT_QUIT && g_currentPage == WizardPage::Installing)
         {
             // Pretend the back button was pressed if the user tried quitting during installation.
             // This condition is above the rest of the event processing as we want to block the exit
@@ -204,18 +204,18 @@ public:
 
         switch (event->type)
         {
-            case SDL_KEYDOWN:
+            case SDL_EVENT_KEY_DOWN:
             {
-                switch (event->key.keysym.scancode)
+                switch (event->key.scancode)
                 {
                     case SDL_SCANCODE_LEFT:
                     case SDL_SCANCODE_RIGHT:
-                        tapDirection.x = (event->key.keysym.scancode == SDL_SCANCODE_RIGHT) ? 1.0f : -1.0f;
+                        tapDirection.x = (event->key.scancode == SDL_SCANCODE_RIGHT) ? 1.0f : -1.0f;
                         break;
 
                     case SDL_SCANCODE_UP:
                     case SDL_SCANCODE_DOWN:
-                        tapDirection.y = (event->key.keysym.scancode == SDL_SCANCODE_DOWN) ? 1.0f : -1.0f;
+                        tapDirection.y = (event->key.scancode == SDL_SCANCODE_DOWN) ? 1.0f : -1.0f;
                         break;
 
                     case SDL_SCANCODE_RETURN:
@@ -231,31 +231,31 @@ public:
                 break;
             }
 
-            case SDL_CONTROLLERBUTTONDOWN:
+            case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
             {
-                switch (event->cbutton.button)
+                switch (event->gbutton.button)
                 {
-                    case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+                    case SDL_GAMEPAD_BUTTON_DPAD_LEFT:
                         tapDirection = { -1.0f, 0.0f };
                         break;
 
-                    case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+                    case SDL_GAMEPAD_BUTTON_DPAD_RIGHT:
                         tapDirection = { 1.0f, 0.0f };
                         break;
 
-                    case SDL_CONTROLLER_BUTTON_DPAD_UP:
+                    case SDL_GAMEPAD_BUTTON_DPAD_UP:
                         tapDirection = { 0.0f, -1.0f };
                         break;
 
-                    case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+                    case SDL_GAMEPAD_BUTTON_DPAD_DOWN:
                         tapDirection = { 0.0f, 1.0f };
                         break;
 
-                    case SDL_CONTROLLER_BUTTON_A:
+                    case SDL_GAMEPAD_BUTTON_SOUTH:
                         g_currentCursorAccepted = (g_currentCursorIndex >= 0);
                         break;
 
-                    case SDL_CONTROLLER_BUTTON_B:
+                    case SDL_GAMEPAD_BUTTON_EAST:
                         g_currentCursorBack = true;
                         break;
                 }
@@ -263,26 +263,26 @@ public:
                 break;
             }
 
-            case SDL_CONTROLLERAXISMOTION:
+            case SDL_EVENT_GAMEPAD_AXIS_MOTION:
             {
-                if (event->caxis.axis < 2)
+                if (event->gaxis.axis < 2)
                 {
-                    auto newAxisValue = event->caxis.value / axisValueRange;
-                    auto sameDirection = (newAxisValue * m_joypadAxis[event->caxis.axis]) > 0.0f;
-                    auto wasInRange = abs(m_joypadAxis[event->caxis.axis]) > axisTapRange;
+                    auto newAxisValue = event->gaxis.value / axisValueRange;
+                    auto sameDirection = (newAxisValue * m_joypadAxis[event->gaxis.axis]) > 0.0f;
+                    auto wasInRange = abs(m_joypadAxis[event->gaxis.axis]) > axisTapRange;
                     auto isInRange = abs(newAxisValue) > axisTapRange;
 
                     if (sameDirection && !wasInRange && isInRange)
-                        tapDirection[event->caxis.axis] = newAxisValue;
+                        tapDirection[event->gaxis.axis] = newAxisValue;
 
-                    m_joypadAxis[event->caxis.axis] = newAxisValue;
+                    m_joypadAxis[event->gaxis.axis] = newAxisValue;
                 }
 
                 break;
             }
 
-            case SDL_MOUSEBUTTONDOWN:
-            case SDL_MOUSEMOTION:
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
+            case SDL_EVENT_MOUSE_MOTION:
             {
                 for (size_t i = 0; i < g_currentCursorRects.size(); i++)
                 {
@@ -292,7 +292,7 @@ public:
                     {
                         newCursorIndex = int(i);
 
-                        if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT)
+                        if (event->type == SDL_EVENT_MOUSE_BUTTON_DOWN && event->button.button == SDL_BUTTON_LEFT)
                             g_currentCursorAccepted = true;
 
                         break;
@@ -1388,7 +1388,7 @@ bool InstallerWizard::Run(std::filesystem::path installPath, bool skipGame)
         Video::WaitOnSwapChain();
         EmbeddedPlayer::PlayMusic();
         SDL_PumpEvents();
-        SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+        SDL_FlushEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
         GameWindow::Update();
         Video::Present();
     }
