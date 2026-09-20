@@ -740,3 +740,9 @@ jump_address_on_false = 0x824D6724
 name = "MainMenuTask_GoldMedalResults_SkipOutro"
 address = 0x82502E14
 jump_address_on_true = 0x82502E90
+
+[[midasm_hook]]
+name = "RestoreLoadingTransition"
+address = 0x82167DEC
+registers = ["r30"]
+jump_address_on_true = 0x82167E2C
