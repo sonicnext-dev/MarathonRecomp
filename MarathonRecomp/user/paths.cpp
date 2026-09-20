@@ -36,7 +36,16 @@ std::filesystem::path BuildUserPath()
         // Prefer to store in the .config directory if it exists. Use the home directory otherwise.
         std::filesystem::path homePath = homeDir;
 #if defined(__linux__)
-        std::filesystem::path configPath = homePath / ".config";
+        const char* configDir = getenv("XDG_CONFIG_HOME");
+        std::filesystem::path configPath = "";
+        if (configDir == nullptr)
+        {
+            configPath = homePath / ".config";
+        } else
+        {
+            configPath = configDir;
+        }
+
 #else
         std::filesystem::path configPath = homePath / "Library" / "Application Support";
 #endif
