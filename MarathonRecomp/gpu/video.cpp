@@ -2005,7 +2005,7 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
 
 #ifdef MARATHON_RECOMP_D3D12
         // Wrap the device creation in __try/__except to survive from driver crashes.
-        __try
+        // __try
 #endif
         {
             g_interface = interfaceFunction();
@@ -2060,20 +2060,20 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
             }
         }
 #ifdef MARATHON_RECOMP_D3D12
-        __except (EXCEPTION_EXECUTE_HANDLER)
-        {
-            if (graphicsApiRetry)
-            {
-                // If we were retrying, and this also failed, then we'll show the user neither of the graphics APIs succeeded.
-                return false;
-            }
-            else
-            {
-                // If this is the first crash we ran into, reboot and try the other graphics API.
-                os::process::StartProcess(os::process::GetExecutablePath(), { "--graphics-api-retry" });
-                std::_Exit(0);
-            }
-        }
+        // __except (EXCEPTION_EXECUTE_HANDLER)
+        // {
+        //     if (graphicsApiRetry)
+        //     {
+        //         // If we were retrying, and this also failed, then we'll show the user neither of the graphics APIs succeeded.
+        //         return false;
+        //     }
+        //     else
+        //     {
+        //         // If this is the first crash we ran into, reboot and try the other graphics API.
+        //         os::process::StartProcess(os::process::GetExecutablePath(), { "--graphics-api-retry" });
+        //         std::_Exit(0);
+        //     }
+        // }
 #endif
     }
 
@@ -2490,6 +2490,14 @@ static void DestructResource(GuestResource* resource)
     cmd.type = RenderCommandType::DestructResource;
     cmd.destructResource.resource = resource;
     g_renderQueue.enqueue(cmd);
+}
+
+static void DestructResourceImm(GuestResource* resource)
+{
+    resource->~GuestResource();
+    resource = 0;
+
+    g_userHeap.Free(resource);
 }
 
 static void ProcDestructResource(const RenderCommand& cmd)
@@ -3489,7 +3497,6 @@ void Video::Present()
 
             if (it->first->refCount.get() == 0 && it->first != g_depthStencil && it->first != g_backBuffer)
             {
-                it->first->wasCached = false;
                 DestructResourceImm(it->first);
                 it = g_surfaceCache.erase(it);
             }
@@ -3982,7 +3989,7 @@ static RenderFormat ConvertFormat(uint32_t format)
     }
 }
 
-static void DiscardTexture(static GuestBaseTexture* texture, RenderTextureLayout layout)
+static void DiscardTexture(GuestBaseTexture* texture, RenderTextureLayout layout)
 {
     if (g_backend == Backend::D3D12)
     {

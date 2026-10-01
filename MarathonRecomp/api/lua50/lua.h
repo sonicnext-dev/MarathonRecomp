@@ -4,8 +4,8 @@
 
 namespace lua50
 {
-    typedef xpointer<void> lua_State;
-    typedef be<uint32_t> lua_CFunction;
+    using lua_State = xpointer<void>;
+    using lua_CFunction = be<uint32_t>;
 
     struct luaL_reg
     {
