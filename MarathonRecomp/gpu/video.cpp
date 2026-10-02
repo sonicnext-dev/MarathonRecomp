@@ -3454,8 +3454,8 @@ void Video::Present()
         if (!pRenderTargetContainer || !pMyGraphicsDevice)
             goto PostResize;
 
-        auto width = s_viewportWidth;
-        auto height = s_viewportHeight;
+        auto width = uint32_t(s_viewportWidth * Config::ResolutionScale);
+        auto height = uint32_t(s_viewportHeight * Config::ResolutionScale);
 
         struct BufferSize
         {
@@ -8564,7 +8564,8 @@ void VideoConfigValueChangedCallback(IConfigDef* config)
         config == &Config::AspectRatio ||
         config == &Config::ResolutionScale ||
         config == &Config::AntiAliasing ||
-        config == &Config::ShadowResolution;
+        config == &Config::ShadowResolution ||
+        config == &Config::ReflectionResolution;
 
     if (g_needsResize)
         Video::ComputeViewportDimensions();

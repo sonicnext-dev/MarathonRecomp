@@ -851,15 +851,15 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
 
             DrawOption(rowCount++, &Config::Monitor, canChangeMonitor, monitorReason, 0, 0, displayCount - 1, false);
             DrawOption(rowCount++, &Config::AspectRatio, true);
-            DrawOption(rowCount++, &Config::ResolutionScale, false, devReason);                        // TODO: implement buffer resize. DrawOption(rowCount++, &Config::ResolutionScale, true, nullptr, 0.25f, 1.0f, 2.0f);
+            DrawOption(rowCount++, &Config::ResolutionScale, true, nullptr, 0.25f, 1.0f, 2.0f);
             DrawOption(rowCount++, &Config::Fullscreen, true);
             DrawOption(rowCount++, &Config::VSync, true);
             DrawOption(rowCount++, &Config::FPS, true, nullptr, FPS_MIN, 120, FPS_MAX);
             DrawOption(rowCount++, &Config::Brightness, true);
             DrawOption(rowCount++, &Config::AntiAliasing, false, devReason);                           // TODO: implement MSAA.          DrawOption(rowCount++, &Config::AntiAliasing, Config::AntiAliasing.InaccessibleValues.size() != 3, &Localise("Options_Desc_NotAvailableHardware"));
             DrawOption(rowCount++, &Config::TransparencyAntiAliasing, false, devReason);               // TODO: implement MSAA.          DrawOption(rowCount++, &Config::TransparencyAntiAliasing, Config::AntiAliasing != EAntiAliasing::Off, &Localise("Options_Desc_NotAvailableMSAA"));
-            DrawOption(rowCount++, &Config::ShadowResolution, !OptionsMenu::s_isPause, cmnReason);     // TODO: allow changes on demand. DrawOption(rowCount++, &Config::ShadowResolution, true);    
-            DrawOption(rowCount++, &Config::ReflectionResolution, !OptionsMenu::s_isPause, cmnReason); // TODO: allow changes on demand. DrawOption(rowCount++, &Config::ReflectionResolution, true);
+            DrawOption(rowCount++, &Config::ShadowResolution, true);
+            DrawOption(rowCount++, &Config::ReflectionResolution, true);
             DrawOption(rowCount++, &Config::RadialBlur, true);
             DrawOption(rowCount++, &Config::CutsceneAspectRatio, true);
             DrawOption(rowCount++, &Config::UIAlignmentMode, true);
