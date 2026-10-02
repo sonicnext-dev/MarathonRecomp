@@ -3477,7 +3477,7 @@ void Video::Present()
         buffers["framebuffer_1_16_1"] = { width >> 4, height >> 4, 0, 2 };
         buffers["framebuffer_1_32_0"] = { width >> 5, height >> 5, 3, 2 };
         buffers["framebuffer_1_32_1"] = { width >> 5, height >> 5, 0, 2 };
-        buffers["depthstencil_1_4"] = { width >> 2, height >> 2, 6, 0 };
+        buffers["depthstencil_1_4"] = { width, height, 6, 0 };
 
         auto pCreationDeviceData = &pApp->m_DeviceInfo;
 
@@ -3598,9 +3598,8 @@ void Video::Present()
                 surfaceParams = (params.R10 & 2) == 0 ? &pMyGraphicsDevice->m_SurfaceParamsA : &pMyGraphicsDevice->m_SurfaceParamsC;
             }
 
-            // TODO: Until cache system is gone for good
-            // auto gSurface = CreateSurface(params.width, params.height, pFormatConfig[params.r8].SurfaceFormat, 0, (GuestSurfaceCreateParams*)surfaceParams);
-            // GuestToHostFunction<void>(sub_82592E98, surface.second.get(), gSurface, params.width, params.height);
+            auto gSurface = CreateSurface(params.Width, params.Height, pFormatConfig[params.R8].SurfaceFormat, 0, (GuestSurfaceCreateParams*)surfaceParams);
+            GuestToHostFunction<void>(sub_82592E98, surface.second.get(), gSurface, params.Width, params.Height);
         }
 
         LOGN_UTILITY("----------------------------[Textures]-----------------------------------");
