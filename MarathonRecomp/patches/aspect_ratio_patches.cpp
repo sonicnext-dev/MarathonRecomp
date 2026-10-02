@@ -5,6 +5,7 @@
 #include <patches/hook_event.h>
 #include <patches/loading_patches.h>
 #include <patches/MainMenuTask_patches.h>
+#include <ui/achievement_menu.h>
 #include <ui/black_bar.h>
 #include <ui/game_window.h>
 #include <ui/imgui_utils.h>
@@ -1549,7 +1550,17 @@ PPC_FUNC(sub_8262D868)
     auto textModifier = *(uint64_t*)(base + ctx.r3.u32 + sizeof(Sonicteam::TextEntity));
 
     if ((textModifier & CSD_SKIP) != 0)
+    {
+        for (size_t i = 0; i < pTextEntity->m_CharacterVertexCount; i++)
+        {
+            auto& vertex = pTextEntity->m_pCharacterVertices[i];
+
+            // Mask out alpha bits.
+            vertex.Colour = vertex.Colour.get() & 0x00FFFFFF;
+        }
+
         return;
+    }
 
     auto x = pTextEntity->m_X;
     auto y = pTextEntity->m_Y;
@@ -1745,6 +1756,25 @@ PPC_FUNC(sub_8263CC40)
 
     g_fontPictureWidth = pTextFontPicture->m_TextureWidth;
     g_fontPictureHeight = pTextFontPicture->m_TextureHeight;
+}
+
+// Sonicteam::HUDGoldMedal::Update
+PPC_FUNC_IMPL(__imp__sub_824D5C08);
+PPC_FUNC(sub_824D5C08)
+{
+    auto pHUDGoldMedal = static_cast<Sonicteam::HUDGoldMedal*>(reinterpret_cast<Sonicteam::SoX::Engine::Task*>(base + ctx.r3.u32));
+
+    for (auto& spTextEntity : pHUDGoldMedal->m_aspTextEntities)
+    {
+        auto flags = CSD_ALIGN_CENTER | CSD_SCALE;
+
+        if (AchievementMenu::s_state == AchievementMenuState::Achievements)
+            flags |= CSD_SKIP;
+
+        SetTextEntityModifier(spTextEntity.get(), flags);
+    }
+
+    __imp__sub_824D5C08(ctx, base);
 }
 
 // -------------- CSD MODIFIERS --------------- //
