@@ -481,4 +481,3 @@ static GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t for
 extern std::unique_ptr<GuestTexture> LoadTexture(const uint8_t* data, size_t dataSize, RenderComponentMapping componentMapping = RenderComponentMapping());
 
 extern void VideoConfigValueChangedCallback(class IConfigDef* config);
-

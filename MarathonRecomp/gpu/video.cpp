@@ -381,7 +381,6 @@ static std::unique_ptr<RenderCommandSemaphore> g_renderSemaphores[NUM_FRAMES];
 static uint32_t g_backBufferIndex;
 static std::unique_ptr<GuestSurface> g_backBufferHolder;
 static GuestSurface* g_backBuffer;
-static std::vector<std::pair<GuestSurface*, uint32_t>> g_surfaceCache;
 
 static std::unique_ptr<RenderTexture> g_intermediaryBackBufferTexture;
 static uint32_t g_intermediaryBackBufferTextureWidth;
@@ -3489,27 +3488,9 @@ void Video::Present()
             be<uint32_t> Usage;
         };
 
-        // Clear cache (experimental).
-        auto it = g_surfaceCache.begin();
-        while (it != g_surfaceCache.end())
-        {
-            printf("Cache Surface : %d\n", it->first->refCount.get());
-
-            if (it->first->refCount.get() == 0 && it->first != g_depthStencil && it->first != g_backBuffer)
-            {
-                DestructResourceImm(it->first);
-                it = g_surfaceCache.erase(it);
-            }
-            else
-            {
-                ++it;
-            }
-        }
-
         auto pFormatConfig = (GraphicsFormatConfig*)(g_memory.base + 0x82B7BD20);
 
         // Kill Auto Surfaces
-
         if (g_backBuffer && g_backBuffer != pApp->m_pBackBufferSurface.get())
             DestructResourceImm(g_backBuffer);
 
