@@ -25,6 +25,8 @@ struct Video
     static inline uint32_t s_viewportWidth;
     static inline uint32_t s_viewportHeight;
 
+    static inline bool s_needsResize;
+
     static bool CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry);
     static void WaitOnSwapChain();
     static void Present();
@@ -468,8 +470,6 @@ enum GuestTextureAddress
     D3DTADDRESS_MIRRORONCE = 3,
     D3DTADDRESS_BORDER = 6
 };
-
-inline bool g_needsResize;
 
 static GuestSurface* GetBackBuffer();
 

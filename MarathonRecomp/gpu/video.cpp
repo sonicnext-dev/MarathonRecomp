@@ -1845,7 +1845,7 @@ static void CheckSwapChain()
         g_backBuffer->framebuffers.clear();
         PurgeSurfaceVariantFramebuffers();
         g_swapChainValid = g_swapChain->resize();
-        g_needsResize = g_swapChainValid;
+        Video::s_needsResize = g_swapChainValid;
     }
 
     if (g_swapChainValid)
@@ -1855,7 +1855,7 @@ static void CheckSwapChain()
         g_swapChainAcquireProfiler.End();
     }
 
-    if (g_needsResize)
+    if (Video::s_needsResize)
         Video::ComputeViewportDimensions();
 
     g_backBuffer->width = Video::s_viewportWidth;
@@ -3434,9 +3434,9 @@ void Video::Present()
     }
 
     // NOTICE: guest_stack_var may cause stack corruption here.
-    if (App::s_pApp && g_needsResize)
+    if (App::s_pApp && Video::s_needsResize)
     {
-        g_needsResize = false;
+        Video::s_needsResize = false;
 
         auto pApp = App::s_pApp;
         auto pDocState = pApp->m_pDoc.get();
@@ -8541,14 +8541,14 @@ SDLEventListenerForPSOCaching g_sdlEventListenerForPSOCaching;
 void VideoConfigValueChangedCallback(IConfigDef* config)
 {
     // Config options that require internal resolution resize
-    g_needsResize |=
+    Video::s_needsResize |=
         config == &Config::AspectRatio ||
         config == &Config::ResolutionScale ||
         config == &Config::AntiAliasing ||
         config == &Config::ShadowResolution ||
         config == &Config::ReflectionResolution;
 
-    if (g_needsResize)
+    if (Video::s_needsResize)
         Video::ComputeViewportDimensions();
         
     // Config options that require pipeline recompilation

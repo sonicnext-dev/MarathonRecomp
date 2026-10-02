@@ -244,7 +244,7 @@ void GameWindow::Update()
         g_isResizing = false;
     }
 
-    if (g_needsResize)
+    if (Video::s_needsResize)
         s_isChangingDisplay = false;
 }
 
