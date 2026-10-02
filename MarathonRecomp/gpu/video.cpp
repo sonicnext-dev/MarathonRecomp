@@ -2491,12 +2491,12 @@ static void DestructResource(GuestResource* resource)
     g_renderQueue.enqueue(cmd);
 }
 
-static void DestructResourceImm(GuestResource* resource)
+static void ReleaseResource(GuestResource* resource)
 {
-    resource->~GuestResource();
-    resource = 0;
+    resource->Release();
 
-    g_userHeap.Free(resource);
+    if (resource->refCount == 0)
+        DestructResource(resource);
 }
 
 static void ProcDestructResource(const RenderCommand& cmd)
@@ -3228,24 +3228,17 @@ static std::atomic<bool> g_executedCommandList;
 
 void CreateTextureLocal(Sonicteam::SoX::Graphics::Xenon::TextureXenon* pTextureXenon, uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, uint32_t usage, uint32_t format, uint32_t pool, uint32_t type)
 {
-    // Save current reference count to preserve it
     auto pGuestTexture = (GuestTexture*)pTextureXenon->m_pTexture.get();
-    auto refCount = pGuestTexture->refCount;
+    auto pGuestTextureNew = CreateTexture(width, height, depth, levels, usage, format, pool, type);
 
-    // Destroy the existing texture
-    pGuestTexture->~GuestTexture();
+    // Swap host state in place so guest references stay valid, then destroy the old state through the deferred path.
+    alignas(GuestTexture) uint8_t temp[sizeof(GuestTexture)];
+    memcpy(temp, pGuestTexture, sizeof(GuestTexture));
+    memcpy(pGuestTexture, pGuestTextureNew, sizeof(GuestTexture));
+    memcpy(pGuestTextureNew, temp, sizeof(GuestTexture));
 
-    // Create a new texture with the specified parameters
-    GuestTexture* pGuestTextureNew = CreateTexture(width, height, depth, levels, usage, format, pool, type);
-
-    // Copy the new texture data over the old texture memory
-    memcpy((void*)pGuestTexture, pGuestTextureNew, sizeof(GuestTexture));
-
-    // Free the temporary texture buffer
-    g_userHeap.Free(pGuestTextureNew);
-
-    // Restore the original reference count to prevent issues with Release() calls
-    pGuestTexture->refCount = refCount;
+    std::swap(pGuestTexture->refCount, pGuestTextureNew->refCount);
+    DestructResource(pGuestTextureNew);
 
     // Update the XenonTexture dimensions
     pTextureXenon->m_Width = width;
@@ -3492,21 +3485,19 @@ void Video::Present()
 
         // Kill Auto Surfaces
         if (g_backBuffer && g_backBuffer != pApp->m_pBackBufferSurface.get())
-            DestructResourceImm(g_backBuffer);
+            g_backBuffer->Release();
 
         if (g_depthStencil && g_depthStencil != pApp->m_pDepthStencilSurface.get())
-            DestructResourceImm(g_depthStencil);
+            g_depthStencil->Release();
 
         // Recreate main buffers
-        DestructResourceImm((GuestTexture*)pApp->m_pFrontBufferTexture.get());
+        ReleaseResource((GuestTexture*)pApp->m_pFrontBufferTexture.get());
         pApp->m_pFrontBufferTexture = CreateTexture(width, height, 1, 1, 1, D3DFMT_LE_X8R8G8B8, 0, 3);
-        //((GuestTexture*)pApp->m_pFrontBufferTexture.get())->AddRef();
 
         auto surfaceParams = g_userHeap.AllocPhysical<D3DXBSURFACE_PARAMETERS>(0, 0, 0);
 
-        DestructResourceImm((GuestSurface*)pApp->m_pBackBufferSurface.get());
+        ReleaseResource((GuestSurface*)pApp->m_pBackBufferSurface.get());
         pApp->m_pBackBufferSurface = CreateSurface(width, height, D3DFMT_A8R8G8B8, 0, (GuestSurfaceCreateParams*)surfaceParams);
-        //((GuestSurface*)pApp->m_pBackBufferSurface.get())->AddRef();
 
         pCreationDeviceData->SurfaceParamsA = *(D3DXBSURFACE_PARAMETERS*)surfaceParams;
 
@@ -3515,9 +3506,8 @@ void Video::Present()
 
         surfaceParams->Base = surfaceParams->Base + cSurfaceBase;
 
-        DestructResourceImm((GuestSurface*)pApp->m_pDepthStencilSurface.get());
+        ReleaseResource((GuestSurface*)pApp->m_pDepthStencilSurface.get());
         pApp->m_pDepthStencilSurface = CreateSurface(width, height, D3DFMT_D24FS8, 0, (GuestSurfaceCreateParams*)surfaceParams);
-        //((GuestSurface*)pApp->m_pDepthStencilSurface.get())->AddRef();
 
         pCreationDeviceData->SurfaceParamsB = *(D3DXBSURFACE_PARAMETERS*)surfaceParams;
         pCreationDeviceData->SurfaceParamsC = pCreationDeviceData->SurfaceParamsB;
