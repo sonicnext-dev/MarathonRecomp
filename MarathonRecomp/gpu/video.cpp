@@ -3753,14 +3753,6 @@ void Video::Present()
                 }
             }
         }
-
-        if (auto pMainMode = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::MainMode>())
-        {
-            auto pMainTask = (Sonicteam::MainMenuTask*)pMainMode->m_pMainTask.get();
-
-            if (pMainTask && strcmp(pMainTask->GetName(), "MainMenuTask") == 0)
-                pMainTask->m_spMainMenuExpositionTask->m_TextMotionState = 1;
-        }
     }
 PostResize:
 
