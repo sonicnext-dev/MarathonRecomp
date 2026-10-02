@@ -3456,15 +3456,15 @@ void Video::Present()
         auto width = uint32_t(s_viewportWidth * Config::ResolutionScale);
         auto height = uint32_t(s_viewportHeight * Config::ResolutionScale);
 
-        struct BufferSize
+        struct BufferInfo
         {
             uint32_t Width;
             uint32_t Height;
-            uint32_t R8;
-            uint32_t R10;
+            uint32_t Index;
+            uint32_t Flags;
         };
 
-        static std::map<std::string, BufferSize> buffers;
+        static std::map<std::string, BufferInfo> buffers{};
 
         // Update dimensions.
         buffers["framebuffer0"] = { width, height, 0, 4 };
@@ -3528,7 +3528,6 @@ void Video::Present()
         SetRenderTarget((GuestDevice*)pApp->m_pDevice.get(), 0, (GuestSurface*)pApp->m_pBackBufferSurface.get());
         SetDepthStencilSurface((GuestDevice*)pApp->m_pDevice.get(), (GuestSurface*)pApp->m_pDepthStencilSurface.get());
 
-
         g_backBuffer = (GuestSurface*)pApp->m_pBackBufferSurface.get();
         g_depthStencil = (GuestSurface*)pApp->m_pDepthStencilSurface.get();
 
@@ -3587,19 +3586,21 @@ void Video::Present()
                 continue;
 
             auto params = buffers[surfaceName];
-            D3DXBSURFACE_PARAMETERS* surfaceParams = nullptr;
+            D3DXBSURFACE_PARAMETERS* surfaceParams;
 
-            if (pFormatConfig[params.R8].Usage != 1 || (params.R10 & 1) != 0)
+            if (pFormatConfig[params.Index].Usage != 1 || (params.Flags & 1) != 0)
             {
                 surfaceParams = &pMyGraphicsDevice->m_SurfaceParamsB;
             }
             else
             {
-                surfaceParams = (params.R10 & 2) == 0 ? &pMyGraphicsDevice->m_SurfaceParamsA : &pMyGraphicsDevice->m_SurfaceParamsC;
+                surfaceParams = (params.Flags & 2) == 0 ? &pMyGraphicsDevice->m_SurfaceParamsA : &pMyGraphicsDevice->m_SurfaceParamsC;
             }
 
-            auto gSurface = CreateSurface(params.Width, params.Height, pFormatConfig[params.R8].SurfaceFormat, 0, (GuestSurfaceCreateParams*)surfaceParams);
+            auto gSurface = CreateSurface(params.Width, params.Height, pFormatConfig[params.Index].SurfaceFormat, 0, (GuestSurfaceCreateParams*)surfaceParams);
             GuestToHostFunction<void>(sub_82592E98, surface.second.get(), gSurface, params.Width, params.Height);
+
+            LOGFN_UTILITY("  Surface ({:08X}) ({}x{}) {:08X}", (uint64_t)surface.second.get(), surface.second->m_Width.get(), surface.second->m_Height.get(), (uint64_t)surface.second->m_spTexture.get());
         }
 
         LOGN_UTILITY("----------------------------[Textures]-----------------------------------");
@@ -3615,22 +3616,22 @@ void Video::Present()
             auto& texturePtr = texture.second;
             auto params = buffers[textureName];
 
-            CreateTextureLocal(texturePtr.get(), params.Width, params.Height, 1, 1, pFormatConfig[params.R8].Usage, pFormatConfig[params.R8].TextureFormat, 0, 3);
+            CreateTextureLocal(texturePtr.get(), params.Width, params.Height, 1, 1, pFormatConfig[params.Index].Usage, pFormatConfig[params.Index].TextureFormat, 0, 3);
             // GuestToHostFunction<void>(sub_82592FD8, texturePtr.get(), tex, params.width, params.height);
 
             // Determine surface type
-            auto s2 = (params.R10 & 4) == 0 ? params.R8 : 3;
+            auto s2 = (params.Flags & 4) == 0 ? params.Index : 3;
             auto surface = texturePtr->m_aspSurfaces[0].get();
 
             // Determine surface parameters
             D3DXBSURFACE_PARAMETERS* surfaceParams = nullptr;
-            if (pFormatConfig[s2].Usage != 1 || (params.R10 & 1) != 0)
+            if (pFormatConfig[s2].Usage != 1 || (params.Flags & 1) != 0)
             {
                 surfaceParams = &pMyGraphicsDevice->m_SurfaceParamsB;
             }
             else
             {
-                surfaceParams = (params.R10 & 2) == 0 ? &pMyGraphicsDevice->m_SurfaceParamsA : &pMyGraphicsDevice->m_SurfaceParamsC;
+                surfaceParams = (params.Flags & 2) == 0 ? &pMyGraphicsDevice->m_SurfaceParamsA : &pMyGraphicsDevice->m_SurfaceParamsC;
             }
 
             // Create and configure guest surface
