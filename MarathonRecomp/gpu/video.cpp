@@ -3245,55 +3245,73 @@ void CreateTextureLocal(Sonicteam::SoX::Graphics::Texture* pTexture, uint32_t wi
     pTexture->m_Height = height;
 }
 
-static std::vector<std::pair<stdx::string, boost::shared_ptr<Sonicteam::SoX::Engine::RenderProcess>>> g_renderProcessCache;
+static std::vector<std::pair<stdx::string, boost::shared_ptr<Sonicteam::SoX::Engine::RenderProcess>>> g_renderProcessCache{};
 
+static bool CacheRenderProcess(Sonicteam::SoX::Engine::RenderScheduler* pRenderScheduler, const char* pName)
+{
+    for (auto& rRenderProcess : pRenderScheduler->m_lRenderProcesses)
+    {
+        if (rRenderProcess.first != pName)
+            continue;
+
+        g_renderProcessCache.push_back(rRenderProcess);
+
+        return true;
+    }
+
+    return false;
+}
+
+static bool FindRenderProcess(lua50::lua_State* L, const char* pName)
+{
+    auto pCallbackData = reinterpret_cast<Sonicteam::RenderAction::CallbackData*>(lua50::lua_topointer(L, 1));
+
+    auto it = std::find_if(g_renderProcessCache.begin(), g_renderProcessCache.end(), [&](const auto& rRenderProcess)
+    {
+        return rRenderProcess.first == pName;
+    });
+
+    if (it == g_renderProcessCache.end())
+        return false;
+
+    // Cache hit, push cached render process to scheduler.
+    pCallbackData->pRenderScheduler->m_lRenderProcesses.push_back(*it);
+
+    // Drop cached render process.
+    g_renderProcessCache.erase(it);
+
+    return true;
+}
+
+// RenderGE1Particle callback
+PPC_FUNC_IMPL(__imp__sub_8260AAB0);
+PPC_FUNC(sub_8260AAB0)
+{
+    auto L = reinterpret_cast<lua50::lua_State*>(ctx.r3.u32 + base);
+
+    if (FindRenderProcess(L, "GE1Particle"))
+    {
+        ctx.r3.u32 = 1;
+    }
+    else
+    {
+        __imp__sub_8260AAB0(ctx, base);
+    }
+}
+
+// RenderSpanverse callback
 PPC_FUNC_IMPL(__imp__sub_8260A9D0);
 PPC_FUNC(sub_8260A9D0)
 {
-    auto L = (lua50::lua_State*)(ctx.r3.u32 + base);
-    auto data = (Sonicteam::RenderAction::CallbackData*)lua50::lua_topointer(L, 1);
+    auto L = reinterpret_cast<lua50::lua_State*>(ctx.r3.u32 + base);
 
-    auto it = std::find_if(g_renderProcessCache.begin(), g_renderProcessCache.end(), [](const auto& pair)
+    if (FindRenderProcess(L, "Spanverse"))
     {
-        return pair.first == "Spanverse";
-    });
-
-    if (it != g_renderProcessCache.end())
-    {
-        data->pRenderScheduler->m_lRenderProcesses.push_back(*it);
-
-        g_renderProcessCache.erase(it);
-
         ctx.r3.u32 = 1;
     }
     else 
     {
         __imp__sub_8260A9D0(ctx, base);
-    }
-}
-
-PPC_FUNC_IMPL(__imp__sub_8260AAB0);
-PPC_FUNC(sub_8260AAB0)
-{
-    auto L = (lua50::lua_State*)(ctx.r3.u32 + base);
-    auto data = (Sonicteam::RenderAction::CallbackData*)lua50::lua_topointer(L, 1);
-
-    auto it = std::find_if(g_renderProcessCache.begin(), g_renderProcessCache.end(), [](const auto& pair)
-    {
-        return pair.first == "GE1Particle";
-    });
-
-    if (it != g_renderProcessCache.end())
-    {
-        data->pRenderScheduler->m_lRenderProcesses.push_back(*it);
-
-        g_renderProcessCache.erase(it);
-
-        ctx.r3.u32 = 1;
-    }
-    else 
-    {
-        __imp__sub_8260AAB0(ctx, base);
     }
 }
 
@@ -3313,7 +3331,7 @@ void Video::Present()
     // All the shaders are available at this point. We can precompile embedded PSOs then.
     if (g_shouldPrecompilePipelines)
     {
-//        EnqueuePipelineTask(PipelineTaskType::PrecompilePipelines, {});
+        // EnqueuePipelineTask(PipelineTaskType::PrecompilePipelines, {});
         g_shouldPrecompilePipelines = false;
     }
 
@@ -3391,16 +3409,16 @@ void Video::Present()
         s_needsResize = false;
 
         auto pApp = App::s_pApp;
-        auto pDocState = pApp->m_pDoc.get();
+        auto pDoc = pApp->m_pDoc.get();
         auto pResourceManager = Sonicteam::SoX::ResourceManager::GetInstance();
         auto pSurfaceMgr = Sonicteam::SoX::Graphics::SurfaceMgr::GetInstance();
         auto pTextureMgr = Sonicteam::SoX::Graphics::TextureMgr::GetInstance();
 
-        if (!pDocState || !pResourceManager || !pSurfaceMgr || !pTextureMgr)
+        if (!pDoc || !pResourceManager || !pSurfaceMgr || !pTextureMgr)
             goto PostResize;
 
-        auto pRenderTargetContainer = pDocState->m_pRenderTargetContainer.get();
-        auto pMyGraphicsDevice = pDocState->m_pMyGraphicsDevice.get();
+        auto pRenderTargetContainer = pDoc->m_pRenderTargetContainer.get();
+        auto pMyGraphicsDevice = pDoc->m_pMyGraphicsDevice.get();
 
         if (!pRenderTargetContainer || !pMyGraphicsDevice)
             goto PostResize;
@@ -3585,40 +3603,27 @@ void Video::Present()
             }
         }
 
-        auto CacheRenderProcess = [&](const char* name)
-            {
-                bool found = false;
-                for (auto& it : pDocState->m_pRenderScheduler->m_lRenderProcesses)
-                {
-                    if (it.first == name)
-                    {
-                        g_renderProcessCache.push_back(it);
-                        found = true;
-                    }
-                }
-                return found;
-            };
-
         // Cache particles.
-        CacheRenderProcess("Spanverse");
-        CacheRenderProcess("GE1Particle");
+        CacheRenderProcess(pDoc->m_pRenderScheduler, "GE1Particle");
+        CacheRenderProcess(pDoc->m_pRenderScheduler, "Spanverse");
 
-        auto sfx1 = pDocState->m_pSFXAgent->m_aSFXMatrices1;
-        auto sfx2 = pDocState->m_pSFXAgent->m_aSFXMatrices2;
-        pDocState->m_pSFXAgent->m_aSFXMatrices1 = 0;
-        pDocState->m_pSFXAgent->m_aSFXMatrices2 = 0;
+        auto sfx1 = pDoc->m_pSFXAgent->m_aSFXMatrices1;
+        auto sfx2 = pDoc->m_pSFXAgent->m_aSFXMatrices2;
+        pDoc->m_pSFXAgent->m_aSFXMatrices1 = 0;
+        pDoc->m_pSFXAgent->m_aSFXMatrices2 = 0;
 
-        GuestToHostFunction<void>(sub_8260DF88, pDocState, 0x82B814F8, 1);
+        // Reload current render script.
+        GuestToHostFunction<void>(sub_8260DF88, pDoc, Sonicteam::Globals::ms_pCurrentRenderScript, 1);
         g_renderProcessCache.clear();
 
-        if (pDocState->m_pSFXAgent->m_aSFXMatrices1)
-            g_userHeap.Free(pDocState->m_pSFXAgent->m_aSFXMatrices1->GetArray());
+        if (pDoc->m_pSFXAgent->m_aSFXMatrices1)
+            g_userHeap.Free(pDoc->m_pSFXAgent->m_aSFXMatrices1->GetArray());
 
-        if (pDocState->m_pSFXAgent->m_aSFXMatrices2)
-            g_userHeap.Free(pDocState->m_pSFXAgent->m_aSFXMatrices2->GetArray());
+        if (pDoc->m_pSFXAgent->m_aSFXMatrices2)
+            g_userHeap.Free(pDoc->m_pSFXAgent->m_aSFXMatrices2->GetArray());
 
-        pDocState->m_pSFXAgent->m_aSFXMatrices1 = sfx1;
-        pDocState->m_pSFXAgent->m_aSFXMatrices2 = sfx2;
+        pDoc->m_pSFXAgent->m_aSFXMatrices1 = sfx1;
+        pDoc->m_pSFXAgent->m_aSFXMatrices2 = sfx2;
 
         // Fix radermap.
         auto SetResource = [&](auto* spTextureTo, const char* name)
