@@ -1777,6 +1777,18 @@ PPC_FUNC(sub_824D5C08)
     __imp__sub_824D5C08(ctx, base);
 }
 
+// Sonicteam::MainMenuExpositionTask::Update
+PPC_FUNC_IMPL(__imp__sub_824FD868);
+PPC_FUNC(sub_824FD868)
+{
+    auto pMainMenuExpositionTask = static_cast<Sonicteam::MainMenuExpositionTask*>(reinterpret_cast<Sonicteam::SoX::Engine::Task*>(base + ctx.r3.u32));
+
+    SetTextEntityModifier(pMainMenuExpositionTask->m_spDescriptionEntity.get(), CSD_ALIGN_CENTER | CSD_SCALE);
+    SetTextEntityModifier(pMainMenuExpositionTask->m_spPrevDescriptionEntity.get(), CSD_ALIGN_CENTER | CSD_SCALE);
+
+    __imp__sub_824FD868(ctx, base);
+}
+
 // -------------- CSD MODIFIERS --------------- //
 
 const xxHashMap<CsdModifier> g_csdModifiers =
