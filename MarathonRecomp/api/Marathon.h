@@ -145,6 +145,7 @@
 #include "Sonicteam/RenderAction/ApplyDevice.h"
 #include "Sonicteam/RenderAction/ApplySceneParams.h"
 #include "Sonicteam/RenderAction/AutoSetAspect.h"
+#include "Sonicteam/RenderAction/CallbackData.h"
 #include "Sonicteam/RenderAction/Capture.h"
 #include "Sonicteam/RenderAction/ClearRenderTarget.h"
 #include "Sonicteam/RenderAction/ColorFill.h"
