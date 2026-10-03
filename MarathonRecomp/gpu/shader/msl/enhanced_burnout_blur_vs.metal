@@ -24,6 +24,7 @@ Interpolators shaderMain(VertexShaderInput input [[stage_in]],
     Interpolators output;
 
     output.oPos = input.iPosition0;
+    output.oPos.xy += g_HalfPixelOffset * output.oPos.w;
     output.oTexCoord0 = input.iTexCoord0;
 
     float2 centeredUV;
@@ -35,7 +36,7 @@ Interpolators shaderMain(VertexShaderInput input [[stage_in]],
 
     float2 scaledVec = output.oVelocity * g_Velocity.w;
     output.oVelScale.x = scaledVec.x * 0.00002;
-    output.oVelScale.y = -scaledVec.y * 0.00001;
+    output.oVelScale.y = -scaledVec.y * 0.00002;
 
     return output;
 }
