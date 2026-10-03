@@ -25,9 +25,9 @@ namespace Sonicteam::SoX
             return (T*)m_pParent.get();
         }
 
-        void Update(float deltaTime)
+        void Update(float in_deltaTime = 0.0f)
         {
-            GuestToHostFunction<void>(((Vftable*)m_pVftable.get())->fpUpdate, this, deltaTime);
+            GuestToHostFunction<void>(((Vftable*)m_pVftable.get())->fpUpdate, this, in_deltaTime);
         }
     };
 

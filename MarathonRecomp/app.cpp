@@ -10,8 +10,10 @@
 #include <user/config.h>
 #include <user/paths.h>
 #include <user/registry.h>
+#include <xxHashMap.h>
 
 static std::thread::id g_mainThreadId = std::this_thread::get_id();
+extern std::array<XXH64_hash_t, 29> g_taskUpdatesOnPause;
 
 void App::Restart(std::vector<std::string> restartArgs)
 {
@@ -64,142 +66,12 @@ PPC_FUNC(sub_8262A568)
     InitPatches();
 }
 
-std::array<const char*, 46> g_PauseModeTaskList =
-{
-    "root",
-    "TL_Debug",
-    "TL_PrepareMain",
-    "TL_Main",
-    //"TL_Particle",
-    "TL_HeadUpDisplay",
-    "TL_PrepareRender",
-    "TL_NonStopTask",
-
-    "ResumeWorkerThreadTask",
-    "ThreadResumeTask",
-
-    //"Cameras",
-    "Cameraman",
-    //"DependCameras",
-    //"SystemDependCameras",
-
-    "PrepareShadowTask",
-    "GameRootTask",
-    //"SpkManageTask",
-    "Task",
-    "TaskAdapter",
-    "HUDMainDisplay",
-    "PostprocessControllerTask",
-    "PrepareRenderTask",
-    "PrepareFrameSynchronizerTask",
-    "FrameSynchronizerTask",
-    "BoundingBoxSynchronizerTask",
-    "FrustumCullingTask",
-    "UpdateResourceInFrustumTask",
-    "GameModeNonStop",
-
-    //AQA
-    "ObjectAqaMercurySmall",
-    "ObjectAqaPond",
-    "ObjectAqaPond", // Duplicate entry
-    "ReflectionManager",
-    "ReflectionArea",
-
-    //
-    "HintWindowTask",
-    "HUDMessageWindow"
-
-    //"DocModeExecutor",
-    //"GameMode",
-    //"DependGame",
-    //"PhysicsMaterialMgrRunner",
-    //"StageSetManagerRunner",
-    //"ActivationMgrRunner",
-    // 
-    //"ImpactManager",
-    //"Entities",
-    //"RadarMapIcon",
-    //"CTownsKeeper",
-    //"CTownsmanActor",
-    //"ObjParticle",
-    //"CommonPathObj",
-    //"BellObj",
-    //"WarpGateObj",
-    //"TownsDoorObj",
-    //"ObjSpring",
-    //"ObjectPhysicsSingle",
-    //"ObjRadarMapMark",
-    //"ObjectPointSample",
-    //"StartObj",
-    //"Townsman(townsman998)",
-    //"CObjBalloonIcon",
-    //"ObjWideSpring",
-    //"Townsman(townsman021)",
-    //"CObjBalloonIcon",
-    //"ObjEventCollision",
-    //"BellObj",
-    //"Townsman(townsman070)",
-    //"CObjBalloonIcon",
-    //"GondolaObj",
-    //"ObjectPointSample",
-    //"ObjCameraCollision",
-    //"ObjSpring",
-    //"Townsman(gondolaman31)",
-    //"CTownsmanEquipmentObject",
-    //"Townsman(gondolaman29)",
-    //"Townsman(gondolaman30)",
-    //"ObjSpring",
-    //"ObjectPointSample",
-    //"TownsDoorObj",
-    //"EnemyThread",
-    //"Players",
-    //"class Sonicteam::Player::Object",
-    //"KhronoController",
-    //"SceneParamManagerTask",
-    //"CommonObjectLensFlare",
-    //"KynapseRunnerTask",
-    //"KynapseMessenger",
-    //"RaderMapManager",
-    //"EnemyLifeTask",
-    //"MainDisplayTask",
-    //"HUDLimitTime",
-    //"InputListenTask",
-    //"AudioRunner",
-    //"PauseTask",
-    //"HUDPause"
-};
-
-
-void UpateSpecificTasksPause(Sonicteam::SoX::Engine::Task* ttask)
-{
-    for (auto& task : *ttask)
-    {
-        const char* taskName = (&task)->GetName();
-
-        if ((task.m_Flag1 & 4) == 0)
-        {
-
-            auto shouldIgnore = std::find_if(g_PauseModeTaskList.begin(), g_PauseModeTaskList.end(),
-                [taskName](const char* task) 
-                {
-                    return strcmp(task ? task : "", taskName) == 0;
-                });
-
-            if (shouldIgnore != g_PauseModeTaskList.end())
-            {
-                (&task)->Update(0.0);
-            }
-
-            if (task.m_pDependencies.get())
-                UpateSpecificTasksPause(task.m_pDependencies.get());
-        }
-    }
-}
-
 // Sonicteam::DocMarathonState::Update
 PPC_FUNC_IMPL(__imp__sub_825EA610);
 PPC_FUNC(sub_825EA610)
 {
+    auto pDoc = reinterpret_cast<Sonicteam::DocMarathonState*>(base + ctx.r3.u32);
+
     Video::WaitOnSwapChain();
 
     // Correct small delta time errors.
@@ -225,25 +97,30 @@ PPC_FUNC(sub_825EA610)
 
         GameWindow::Update();
     }
-    auto pDocState = App::s_pApp->m_pDoc;
 
     // Allow variable FPS when config is not 60 FPS.
-    App::s_pApp->m_pDoc->m_VFrame = Config::FPS != 60;
+    pDoc->m_VFrame = Config::FPS != 60;
 
     AudioPatches::Update(App::s_deltaTime);
 
     __imp__sub_825EA610(ctx, base);
 
-
-    //Always Do Specic Tasks during pause, to not 
-    if (pDocState->m_PauseFlags.get() != 0)
+    if (pDoc->m_PauseFlags.get())
     {
+        // Update visual tasks for resizing buffers on pause.
+        pDoc->m_pRootTask->WalkSiblings([](Sonicteam::SoX::Engine::Task* in_pTask) -> bool
+        {
+            if ((in_pTask->m_Flags & 4) != 0)
+                return true;
 
-        GuestToHostFunction<void>(sub_825D49E0, &pDocState->m_CriticalSection1);
-        UpateSpecificTasksPause(pDocState->m_pRootTask.get());
-        GuestToHostFunction<void>(sub_82580920, &pDocState->m_CriticalSection1);
+            const auto taskNameHash = HashStr(in_pTask->GetName());
+
+            if (std::find(g_taskUpdatesOnPause.begin(), g_taskUpdatesOnPause.end(), taskNameHash) != g_taskUpdatesOnPause.end())
+                in_pTask->Update();
+
+            return true;
+        });
     }
-
 }
 
 PPC_FUNC_IMPL(__imp__sub_82582648);
@@ -329,3 +206,36 @@ PPC_FUNC(sub_825822D0)
     __imp__sub_825822D0(ctx, base);
 }
 #endif
+
+std::array<XXH64_hash_t, 29> g_taskUpdatesOnPause =
+{
+    HashStr("root"),
+    HashStr("TL_Debug"),
+    HashStr("TL_PrepareMain"),
+    HashStr("TL_Main"),
+    HashStr("TL_HeadUpDisplay"),
+    HashStr("TL_PrepareRender"),
+    HashStr("TL_NonStopTask"),
+    HashStr("ResumeWorkerThreadTask"),
+    HashStr("ThreadResumeTask"),
+    HashStr("Cameraman"),
+    HashStr("PrepareShadowTask"),
+    HashStr("GameRootTask"),
+    HashStr("Task"),
+    HashStr("TaskAdapter"),
+    HashStr("HUDMainDisplay"),
+    HashStr("PostprocessControllerTask"),
+    HashStr("PrepareRenderTask"),
+    HashStr("PrepareFrameSynchronizerTask"),
+    HashStr("FrameSynchronizerTask"),
+    HashStr("BoundingBoxSynchronizerTask"),
+    HashStr("FrustumCullingTask"),
+    HashStr("UpdateResourceInFrustumTask"),
+    HashStr("GameModeNonStop"),
+    HashStr("ObjectAqaMercurySmall"),
+    HashStr("ObjectAqaPond"),
+    HashStr("ReflectionManager"),
+    HashStr("ReflectionArea"),
+    HashStr("HintWindowTask"),
+    HashStr("HUDMessageWindow")
+};
