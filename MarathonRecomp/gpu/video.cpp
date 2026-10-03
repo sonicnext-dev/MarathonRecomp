@@ -3432,10 +3432,9 @@ void Video::Present()
         auto pApp = App::s_pApp;
         auto pDoc = pApp->m_pDoc.get();
         auto pResourceManager = Sonicteam::SoX::ResourceManager::GetInstance();
-        auto pSurfaceMgr = Sonicteam::SoX::Graphics::SurfaceMgr::GetInstance();
         auto pTextureMgr = Sonicteam::SoX::Graphics::TextureMgr::GetInstance();
 
-        if (!pDoc || !pResourceManager || !pSurfaceMgr || !pTextureMgr)
+        if (!pDoc || !pResourceManager || !pTextureMgr)
             goto PostResize;
 
         auto pRenderTargetContainer = pDoc->m_pRenderTargetContainer.get();
@@ -3492,25 +3491,24 @@ void Video::Present()
         ReleaseResource((GuestTexture*)pApp->m_pFrontBufferTexture.get());
         pApp->m_pFrontBufferTexture = CreateTexture(width, height, 1, 1, 1, D3DFMT_LE_X8R8G8B8, 0, 3);
 
-        auto surfaceParams = g_userHeap.AllocPhysical<D3DXBSURFACE_PARAMETERS>(0, 0, 0);
+        auto surfaceParams = D3DXBSURFACE_PARAMETERS(0, 0, 0);
 
         ReleaseResource((GuestSurface*)pApp->m_pBackBufferSurface.get());
-        pApp->m_pBackBufferSurface = CreateSurface(width, height, D3DFMT_A8R8G8B8, 0, (GuestSurfaceCreateParams*)surfaceParams);
+        pApp->m_pBackBufferSurface = CreateSurface(width, height, D3DFMT_A8R8G8B8, 0, (GuestSurfaceCreateParams*)&surfaceParams);
 
-        pCreationDeviceData->SurfaceParamsA = *surfaceParams;
+        pCreationDeviceData->SurfaceParamsA = surfaceParams;
 
-        // 0x340 default (for 720 mb?)
-        uint32_t cSurfaceBase = height * 1.155555555555556;
+        // 720p: 0x340
+        const auto surfaceBase = uint32_t(height * 1.155555555555556);
 
-        surfaceParams->Base = surfaceParams->Base + cSurfaceBase;
+        surfaceParams.Base = surfaceParams.Base + surfaceBase;
 
         ReleaseResource((GuestSurface*)pApp->m_pDepthStencilSurface.get());
-        pApp->m_pDepthStencilSurface = CreateSurface(width, height, D3DFMT_D24FS8, 0, (GuestSurfaceCreateParams*)surfaceParams);
+        pApp->m_pDepthStencilSurface = CreateSurface(width, height, D3DFMT_D24FS8, 0, (GuestSurfaceCreateParams*)&surfaceParams);
 
-        pCreationDeviceData->SurfaceParamsB = *surfaceParams;
+        pCreationDeviceData->SurfaceParamsB = surfaceParams;
         pCreationDeviceData->SurfaceParamsC = pCreationDeviceData->SurfaceParamsB;
-        pCreationDeviceData->SurfaceParamsC.Base = pCreationDeviceData->SurfaceParamsB.Base + cSurfaceBase;
-        g_userHeap.Free(surfaceParams);
+        pCreationDeviceData->SurfaceParamsC.Base = pCreationDeviceData->SurfaceParamsB.Base + surfaceBase;
 
         // Viewport is reset here because we're using the game's backbuffer directly (Auto mode disabled)
         SetRenderTarget((GuestDevice*)pApp->m_pDevice.get(), 0, (GuestSurface*)pApp->m_pBackBufferSurface.get());
@@ -3554,8 +3552,9 @@ void Video::Present()
             if (!buffers.contains(surfaceName))
                 continue;
 
-            auto params = buffers[surfaceName];
-            D3DXBSURFACE_PARAMETERS* surfaceParams;
+            const auto& params = buffers[surfaceName];
+
+            D3DXBSURFACE_PARAMETERS* surfaceParams{};
 
             if (pFormatConfig[params.Index].Usage != 1 || (params.Flags & 1) != 0)
             {
@@ -3579,7 +3578,7 @@ void Video::Present()
                 continue;
 
             auto& texturePtr = texture.second;
-            auto params = buffers[textureName];
+            const auto& params = buffers[textureName];
 
             CreateTextureLocal(texturePtr.get(), params.Width, params.Height, 1, 1, pFormatConfig[params.Index].Usage, pFormatConfig[params.Index].TextureFormat, 0, 3);
 
