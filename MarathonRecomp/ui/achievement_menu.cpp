@@ -336,7 +336,7 @@ void AchievementMenu::Draw()
 
     if (s_pMainMenuTask && s_pMainMenuTask->m_State == Sonicteam::MainMenuTask::MainMenuState_GoldMedalResults)
     {
-        if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManager[0])
+        if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManagers[0])
         {
             auto& rPadState = spInputManager->m_PadState;
 
@@ -447,7 +447,7 @@ void AchievementMenu::Draw()
                 auto upIsHeld = false;
                 auto downIsHeld = false;
 
-                for (auto& spInputManager : App::s_pApp->m_pDoc->m_vspInputManager)
+                for (auto& spInputManager : App::s_pApp->m_pDoc->m_vspInputManagers)
                 {
                     auto& rPadState = spInputManager->m_PadState;
 
