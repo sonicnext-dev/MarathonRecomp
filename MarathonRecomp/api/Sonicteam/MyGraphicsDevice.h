@@ -9,7 +9,7 @@ namespace Sonicteam
     class MyGraphicsDevice : public SoX::Graphics::Xenon::DeviceXenon
     {
     public:
-        // Info : sub_8289CF60(this, CreationDeviceLocal*)
+        // Info: sub_8289CF60(this, CreationDeviceLocal*)
         struct CreationDeviceLocal
         {
             xpointer<void> pDevice;

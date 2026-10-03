@@ -13,18 +13,18 @@ namespace Sonicteam::SoX::Graphics::Xenon
     class DeviceXenon : public Device
     {
     public:
-        SoX::RefSharedPointer<Graphics::Surface> m_spBackBuffer;
-        SoX::RefSharedPointer<Graphics::Surface> m_spDepthStencil;
+        RefSharedPointer<Surface> m_spBackBuffer;
+        RefSharedPointer<Surface> m_spDepthStencil;
         MARATHON_INSERT_PADDING(0x30);
-        SoX::Array<xpointer<void>, 10> m_apTextures;
+        Array<xpointer<void>, 10> m_apTextures;
         MARATHON_INSERT_PADDING(0x28);
         D3DXBSURFACE_PARAMETERS m_SurfaceParamsA;
         D3DXBSURFACE_PARAMETERS m_SurfaceParamsB;
         D3DXBSURFACE_PARAMETERS m_SurfaceParamsC;
-        SoX::RefSharedPointer<Graphics::Surface> m_spColorTile2X;
-        SoX::RefSharedPointer<Graphics::Surface> m_spDepthTile2X;
-        SoX::RefSharedPointer<Graphics::Surface> m_spColorTile4X;
-        SoX::RefSharedPointer<Graphics::Surface> m_spDepthTile4X;
+        RefSharedPointer<Surface> m_spColorTile2x;
+        RefSharedPointer<Surface> m_spDepthTile2x;
+        RefSharedPointer<Surface> m_spColorTile4x;
+        RefSharedPointer<Surface> m_spDepthTile4x;
     };
 
     MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_spBackBuffer, 0xD0);
@@ -33,9 +33,9 @@ namespace Sonicteam::SoX::Graphics::Xenon
     MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_SurfaceParamsA, 0x158);
     MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_SurfaceParamsB, 0x164);
     MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_SurfaceParamsC, 0x170);
-    MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_spColorTile2X, 0x17C);
-    MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_spDepthTile2X, 0x180);
-    MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_spColorTile4X, 0x184);
-    MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_spDepthTile4X, 0x188);
+    MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_spColorTile2x, 0x17C);
+    MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_spDepthTile2x, 0x180);
+    MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_spColorTile4x, 0x184);
+    MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_spDepthTile4x, 0x188);
     MARATHON_ASSERT_SIZEOF(DeviceXenon, 0x18C);
 }

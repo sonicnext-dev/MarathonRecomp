@@ -42,7 +42,7 @@ namespace Sonicteam::SoX::Engine
             return m_pDependencies.get();
         }
 
-        template <typename T = Engine::Doc>
+        template <typename T = Doc>
         T* GetDoc()
         {
             return (T*)m_pDoc.get();

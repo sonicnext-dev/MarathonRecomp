@@ -3226,9 +3226,9 @@ void Video::WaitOnSwapChain()
 static bool g_shouldPrecompilePipelines;
 static std::atomic<bool> g_executedCommandList;
 
-void CreateTextureLocal(Sonicteam::SoX::Graphics::Xenon::TextureXenon* pTextureXenon, uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, uint32_t usage, uint32_t format, uint32_t pool, uint32_t type)
+void CreateTextureLocal(Sonicteam::SoX::Graphics::Texture* pTexture, uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, uint32_t usage, uint32_t format, uint32_t pool, uint32_t type)
 {
-    auto pGuestTexture = (GuestTexture*)pTextureXenon->m_pTexture.get();
+    auto pGuestTexture = (GuestTexture*)pTexture->m_pTexture.get();
     auto pGuestTextureNew = CreateTexture(width, height, depth, levels, usage, format, pool, type);
 
     // Swap host state in place so guest references stay valid, then destroy the old state through the deferred path.
@@ -3240,9 +3240,9 @@ void CreateTextureLocal(Sonicteam::SoX::Graphics::Xenon::TextureXenon* pTextureX
     std::swap(pGuestTexture->refCount, pGuestTextureNew->refCount);
     DestructResource(pGuestTextureNew);
 
-    // Update the XenonTexture dimensions
-    pTextureXenon->m_Width = width;
-    pTextureXenon->m_Height = height;
+    // Update the texture dimensions
+    pTexture->m_Width = width;
+    pTexture->m_Height = height;
 }
 
 struct CallbackData

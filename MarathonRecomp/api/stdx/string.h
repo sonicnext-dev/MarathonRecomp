@@ -1,8 +1,9 @@
 #pragma once
 
+#include <algorithm>
+
 #include <kernel/heap.h>
 #include <kernel/function.h>
-#include <algorithm> 
 
 namespace stdx
 {

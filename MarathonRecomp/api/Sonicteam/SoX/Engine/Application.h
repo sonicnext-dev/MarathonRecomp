@@ -10,7 +10,7 @@ namespace Sonicteam::SoX::Engine
     {
     public:
         bool IsField04;
-        xpointer<SoX::Engine::Doc> m_pParent;
+        xpointer<Doc> m_pParent;
     };
 
     MARATHON_ASSERT_SIZEOF(Application, 0x0C);
