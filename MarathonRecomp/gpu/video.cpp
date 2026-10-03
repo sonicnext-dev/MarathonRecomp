@@ -3245,54 +3245,13 @@ void CreateTextureLocal(Sonicteam::SoX::Graphics::Texture* pTexture, uint32_t wi
     pTexture->m_Height = height;
 }
 
-struct CallbackData
-{
-    xpointer<Sonicteam::DocMarathonImp> pDoc;
-    xpointer<Sonicteam::MyGraphicsDevice> pDevice;
-    xpointer<Sonicteam::RenderTargetContainer> pRenderTargetContainer;
-    xpointer<Sonicteam::SoX::Engine::RenderScheduler> pRenderScheduler;
-    Sonicteam::SoX::RefSharedPointer<> Field04;
-    stdx::string customName;
-    be<uint32_t> Field30;
-    be<uint32_t> Field34;
-    be<uint32_t> Field38;
-    stdx::map<stdx::string, xpointer<void>> mMap; //?????
-
-    CallbackData
-    (
-        xpointer<Sonicteam::DocMarathonImp> doc,
-        xpointer<Sonicteam::MyGraphicsDevice> device,
-        xpointer<Sonicteam::RenderTargetContainer> renderTarget,
-        xpointer<Sonicteam::SoX::Engine::RenderScheduler> scheduler,
-        Sonicteam::SoX::RefSharedPointer<> field04,
-        be<uint32_t> field30,
-        be<uint32_t> field34,
-        be<uint32_t> field38,
-        const char* name
-    )
-    : pDoc(doc),
-      pDevice(device),
-      pRenderTargetContainer(renderTarget),
-      pRenderScheduler(scheduler),
-      Field04(field04),
-      Field30(field30),
-      Field34(field34),
-      Field38(field38),
-      customName(name),
-      mMap()
-    {
-
-    }
-
-};
-
 static std::vector<std::pair<stdx::string, boost::shared_ptr<Sonicteam::SoX::Engine::RenderProcess>>> g_renderProcessCache;
 
 PPC_FUNC_IMPL(__imp__sub_8260A9D0);
 PPC_FUNC(sub_8260A9D0)
 {
     auto L = (lua50::lua_State*)(ctx.r3.u32 + base);
-    auto data = (CallbackData*)lua50::lua_topointer(L, 1);
+    auto data = (Sonicteam::RenderAction::CallbackData*)lua50::lua_topointer(L, 1);
 
     auto it = std::find_if(g_renderProcessCache.begin(), g_renderProcessCache.end(), [](const auto& pair)
     {
@@ -3317,7 +3276,7 @@ PPC_FUNC_IMPL(__imp__sub_8260AAB0);
 PPC_FUNC(sub_8260AAB0)
 {
     auto L = (lua50::lua_State*)(ctx.r3.u32 + base);
-    auto data = (CallbackData*)lua50::lua_topointer(L, 1);
+    auto data = (Sonicteam::RenderAction::CallbackData*)lua50::lua_topointer(L, 1);
 
     auto it = std::find_if(g_renderProcessCache.begin(), g_renderProcessCache.end(), [](const auto& pair)
     {
