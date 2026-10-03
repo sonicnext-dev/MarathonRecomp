@@ -3264,7 +3264,7 @@ static bool CacheRenderProcess(Sonicteam::SoX::Engine::RenderScheduler* pRenderS
 
 static bool FindRenderProcess(lua50::lua_State* L, const char* pName)
 {
-    auto pCallbackData = reinterpret_cast<Sonicteam::RenderAction::CallbackData*>(lua50::lua_topointer(L, 1));
+    const auto pCallbackData = reinterpret_cast<Sonicteam::RenderAction::CallbackData*>(lua50::lua_topointer(L, 1));
 
     auto it = std::find_if(g_renderProcessCache.begin(), g_renderProcessCache.end(), [&](const auto& rRenderProcess)
     {
@@ -3277,7 +3277,7 @@ static bool FindRenderProcess(lua50::lua_State* L, const char* pName)
     // Cache hit, push cached render process to scheduler.
     pCallbackData->pRenderScheduler->m_lRenderProcesses.push_back(*it);
 
-    // Drop cached render process.
+    // Remove cached render process.
     g_renderProcessCache.erase(it);
 
     return true;
@@ -3287,7 +3287,7 @@ static bool FindRenderProcess(lua50::lua_State* L, const char* pName)
 PPC_FUNC_IMPL(__imp__sub_8260AAB0);
 PPC_FUNC(sub_8260AAB0)
 {
-    auto L = reinterpret_cast<lua50::lua_State*>(ctx.r3.u32 + base);
+    const auto L = reinterpret_cast<lua50::lua_State*>(ctx.r3.u32 + base);
 
     if (FindRenderProcess(L, "GE1Particle"))
     {
@@ -3303,7 +3303,7 @@ PPC_FUNC(sub_8260AAB0)
 PPC_FUNC_IMPL(__imp__sub_8260A9D0);
 PPC_FUNC(sub_8260A9D0)
 {
-    auto L = reinterpret_cast<lua50::lua_State*>(ctx.r3.u32 + base);
+    const auto L = reinterpret_cast<lua50::lua_State*>(ctx.r3.u32 + base);
 
     if (FindRenderProcess(L, "Spanverse"))
     {
@@ -3408,22 +3408,22 @@ void Video::Present()
     {
         s_needsResize = false;
 
-        auto pApp = App::s_pApp;
-        auto pDoc = pApp->m_pDoc.get();
-        auto pResourceManager = Sonicteam::SoX::ResourceManager::GetInstance();
-        auto pTextureMgr = Sonicteam::SoX::Graphics::TextureMgr::GetInstance();
+        const auto pApp = App::s_pApp;
+        const auto pDoc = pApp->m_pDoc.get();
+        const auto pResourceManager = Sonicteam::SoX::ResourceManager::GetInstance();
+        const auto pTextureMgr = Sonicteam::SoX::Graphics::TextureMgr::GetInstance();
 
         if (!pDoc || !pResourceManager || !pTextureMgr)
             goto PostResize;
 
-        auto pRenderTargetContainer = pDoc->m_pRenderTargetContainer.get();
-        auto pMyGraphicsDevice = pDoc->m_pMyGraphicsDevice.get();
+        const auto pRenderTargetContainer = pDoc->m_pRenderTargetContainer.get();
+        const auto pMyGraphicsDevice = pDoc->m_pMyGraphicsDevice.get();
 
         if (!pRenderTargetContainer || !pMyGraphicsDevice)
             goto PostResize;
 
-        auto width = uint32_t(s_viewportWidth * Config::ResolutionScale);
-        auto height = uint32_t(s_viewportHeight * Config::ResolutionScale);
+        const auto width = uint32_t(s_viewportWidth * Config::ResolutionScale);
+        const auto height = uint32_t(s_viewportHeight * Config::ResolutionScale);
 
         struct BufferInfo
         {
@@ -3435,7 +3435,7 @@ void Video::Present()
 
         static std::map<std::string, BufferInfo> buffers{};
 
-        // Update dimensions.
+        // Update buffer dimensions.
         buffers["framebuffer0"] = { width, height, 0, 4 };
         buffers["framebuffer1"] = { width, height, 0, 0 };
         buffers["framebuffer_1_4_0"] = { width >> 2, height >> 2, 3, 2 };
@@ -3448,171 +3448,158 @@ void Video::Present()
         buffers["framebuffer_1_32_1"] = { width >> 5, height >> 5, 0, 2 };
         buffers["depthstencil_1_4"] = { width, height, 6, 0 };
 
-        auto pCreationDeviceData = &pApp->m_DeviceInfo;
-
-        struct GraphicsFormatConfig
-        {
-            be<GuestFormat> SurfaceFormat;
-            be<GuestFormat> TextureFormat;
-            be<uint32_t> Usage;
-        };
-
-        auto pFormatConfig = (GraphicsFormatConfig*)(g_memory.base + 0x82B7BD20);
-
-        // Kill Auto Surfaces
         if (g_backBuffer && g_backBuffer != pApp->m_pBackBufferSurface.get())
             g_backBuffer->Release();
 
         if (g_depthStencil && g_depthStencil != pApp->m_pDepthStencilSurface.get())
             g_depthStencil->Release();
 
-        // Recreate main buffers
-        ReleaseResource((GuestTexture*)pApp->m_pFrontBufferTexture.get());
-        pApp->m_pFrontBufferTexture = CreateTexture(width, height, 1, 1, 1, D3DFMT_LE_X8R8G8B8, 0, 3);
+        auto& rDeviceInfo = pApp->m_DeviceInfo;
 
         auto surfaceParams = D3DXBSURFACE_PARAMETERS(0, 0, 0);
+        const auto surfaceBase = uint32_t(height * 1.155555555555556); // 720p: 0x340
 
-        ReleaseResource((GuestSurface*)pApp->m_pBackBufferSurface.get());
-        pApp->m_pBackBufferSurface = CreateSurface(width, height, D3DFMT_A8R8G8B8, 0, (GuestSurfaceCreateParams*)&surfaceParams);
+        // Recreate main buffers.
+        ReleaseResource(reinterpret_cast<GuestTexture*>(pApp->m_pFrontBufferTexture.get()));
+        pApp->m_pFrontBufferTexture = CreateTexture(width, height, 1, 1, 1, D3DFMT_LE_X8R8G8B8, 0, 3);
+        ReleaseResource(reinterpret_cast<GuestSurface*>(pApp->m_pBackBufferSurface.get()));
+        pApp->m_pBackBufferSurface = CreateSurface(width, height, D3DFMT_A8R8G8B8, 0, reinterpret_cast<GuestSurfaceCreateParams*>(&surfaceParams));
 
-        pCreationDeviceData->SurfaceParamsA = surfaceParams;
-
-        // 720p: 0x340
-        const auto surfaceBase = uint32_t(height * 1.155555555555556);
-
+        rDeviceInfo.SurfaceParamsA = surfaceParams;
         surfaceParams.Base = surfaceParams.Base + surfaceBase;
 
-        ReleaseResource((GuestSurface*)pApp->m_pDepthStencilSurface.get());
-        pApp->m_pDepthStencilSurface = CreateSurface(width, height, D3DFMT_D24FS8, 0, (GuestSurfaceCreateParams*)&surfaceParams);
+        ReleaseResource(reinterpret_cast<GuestSurface*>(pApp->m_pDepthStencilSurface.get()));
+        pApp->m_pDepthStencilSurface = CreateSurface(width, height, D3DFMT_D24FS8, 0, reinterpret_cast<GuestSurfaceCreateParams*>(&surfaceParams));
 
-        pCreationDeviceData->SurfaceParamsB = surfaceParams;
-        pCreationDeviceData->SurfaceParamsC = pCreationDeviceData->SurfaceParamsB;
-        pCreationDeviceData->SurfaceParamsC.Base = pCreationDeviceData->SurfaceParamsB.Base + surfaceBase;
+        rDeviceInfo.SurfaceParamsB = surfaceParams;
+        rDeviceInfo.SurfaceParamsC = rDeviceInfo.SurfaceParamsB;
+        rDeviceInfo.SurfaceParamsC.Base = rDeviceInfo.SurfaceParamsB.Base + surfaceBase;
 
-        // Viewport is reset here because we're using the game's backbuffer directly (Auto mode disabled)
-        SetRenderTarget((GuestDevice*)pApp->m_pDevice.get(), 0, (GuestSurface*)pApp->m_pBackBufferSurface.get());
-        SetDepthStencilSurface((GuestDevice*)pApp->m_pDevice.get(), (GuestSurface*)pApp->m_pDepthStencilSurface.get());
+        // Viewport is reset here because we're using the game's backbuffer directly.
+        SetRenderTarget(reinterpret_cast<GuestDevice*>(pApp->m_pDevice.get()), 0, reinterpret_cast<GuestSurface*>(pApp->m_pBackBufferSurface.get()));
+        SetDepthStencilSurface(reinterpret_cast<GuestDevice*>(pApp->m_pDevice.get()), reinterpret_cast<GuestSurface*>(pApp->m_pDepthStencilSurface.get()));
 
-        g_backBuffer = (GuestSurface*)pApp->m_pBackBufferSurface.get();
-        g_depthStencil = (GuestSurface*)pApp->m_pDepthStencilSurface.get();
+        g_backBuffer = reinterpret_cast<GuestSurface*>(pApp->m_pBackBufferSurface.get());
+        g_depthStencil = reinterpret_cast<GuestSurface*>(pApp->m_pDepthStencilSurface.get());
 
-        // Secondary reference only - no reference counting needed
-        pCreationDeviceData->PresentParameters.BackBufferWidth = width;
-        pCreationDeviceData->PresentParameters.BackBufferHeight = height;
-        pCreationDeviceData->pColorTile2x = pApp->m_pColorTile2x;
-        pCreationDeviceData->pDepthTile2x = pApp->m_pDepthTile2x;
-        pCreationDeviceData->pColorTile4x = pApp->m_pColorTile4x;
-        pCreationDeviceData->pDepthTile4x = pApp->m_pDepthTile4x;
+        rDeviceInfo.PresentParameters.BackBufferWidth = width;
+        rDeviceInfo.PresentParameters.BackBufferHeight = height;
+        rDeviceInfo.pColorTile2x = pApp->m_pColorTile2x;
+        rDeviceInfo.pDepthTile2x = pApp->m_pDepthTile2x;
+        rDeviceInfo.pColorTile4x = pApp->m_pColorTile4x;
+        rDeviceInfo.pDepthTile4x = pApp->m_pDepthTile4x;
 
-        pMyGraphicsDevice->m_SurfaceParamsA = pCreationDeviceData->SurfaceParamsA;
-        pMyGraphicsDevice->m_SurfaceParamsB = pCreationDeviceData->SurfaceParamsB;
-        pMyGraphicsDevice->m_SurfaceParamsC = pCreationDeviceData->SurfaceParamsC;
+        pMyGraphicsDevice->m_SurfaceParamsA = rDeviceInfo.SurfaceParamsA;
+        pMyGraphicsDevice->m_SurfaceParamsB = rDeviceInfo.SurfaceParamsB;
+        pMyGraphicsDevice->m_SurfaceParamsC = rDeviceInfo.SurfaceParamsC;
 
-        auto SetSurface = [&](Sonicteam::SoX::Graphics::Surface* surface, GuestSurface* guestSurface)
+        const auto setSurface = [&](Sonicteam::SoX::Graphics::Surface* pSurface, GuestSurface* pGuestSurface)
         {
-            if (surface)
-            {
-                GuestToHostFunction<void>(sub_82593038, surface, guestSurface);
-            }
+            if (!pSurface)
+                return;
+
+            GuestToHostFunction<void>(sub_82593038, pSurface, pGuestSurface);
         };
 
-        SetSurface(pMyGraphicsDevice->m_spBackBuffer.get(), (GuestSurface*)pApp->m_pBackBufferSurface.get());
-        SetSurface(pMyGraphicsDevice->m_spDepthStencil.get(), (GuestSurface*)pApp->m_pDepthStencilSurface.get());
+        setSurface(pMyGraphicsDevice->m_spBackBuffer.get(), reinterpret_cast<GuestSurface*>(pApp->m_pBackBufferSurface.get()));
+        setSurface(pMyGraphicsDevice->m_spDepthStencil.get(), reinterpret_cast<GuestSurface*>(pApp->m_pDepthStencilSurface.get()));
 
+        // Refresh graphics device and configure FBO surfaces.
         GuestToHostFunction<void>(sub_82637418, pMyGraphicsDevice);
         GuestToHostFunction<void>(sub_825BAE48, pMyGraphicsDevice->m_FrameBufferObject.get(), 0, &pMyGraphicsDevice->m_spBackBuffer);
         GuestToHostFunction<void>(sub_825BAEB8, pMyGraphicsDevice->m_FrameBufferObject.get(), &pMyGraphicsDevice->m_spDepthStencil);
 
-        // Update surfaces and textures
-        for (auto& surface : pRenderTargetContainer->m_mspDepthStencil_1_4)
+        struct FormatConfig
         {
-            const auto surfaceName = surface.first.c_str();
+            be<GuestFormat> SurfaceFormat;
+            be<GuestFormat> TextureFormat;
+            be<uint32_t> Usage;
+        };
 
-            if (!buffers.contains(surfaceName))
+        const auto pFormatConfigs = reinterpret_cast<FormatConfig*>(g_memory.base + 0x82B7BD20);
+
+        const auto getSurfaceParams = [&](uint32_t index, uint32_t flags) -> D3DXBSURFACE_PARAMETERS*
+        {
+            if (pFormatConfigs[index].Usage != 1 || (flags & 1) != 0)
+                return &pMyGraphicsDevice->m_SurfaceParamsB;
+
+            return (flags & 2) == 0
+                ? &pMyGraphicsDevice->m_SurfaceParamsA
+                : &pMyGraphicsDevice->m_SurfaceParamsC;
+        };
+
+        // Update depth stencil surfaces.
+        for (auto& rSurface : pRenderTargetContainer->m_mspDepthStencil_1_4)
+        {
+            const auto pSurfaceName = rSurface.first.c_str();
+
+            if (!buffers.contains(pSurfaceName))
                 continue;
 
-            const auto& params = buffers[surfaceName];
+            const auto& rBufferInfo = buffers[pSurfaceName];
 
-            D3DXBSURFACE_PARAMETERS* surfaceParams{};
+            auto pSurfaceParams = getSurfaceParams(rBufferInfo.Index, rBufferInfo.Flags);
+            auto pNewSurface = CreateSurface(rBufferInfo.Width, rBufferInfo.Height, pFormatConfigs[rBufferInfo.Index].SurfaceFormat, 0, reinterpret_cast<GuestSurfaceCreateParams*>(pSurfaceParams));
 
-            if (pFormatConfig[params.Index].Usage != 1 || (params.Flags & 1) != 0)
-            {
-                surfaceParams = &pMyGraphicsDevice->m_SurfaceParamsB;
-            }
-            else
-            {
-                surfaceParams = (params.Flags & 2) == 0 ? &pMyGraphicsDevice->m_SurfaceParamsA : &pMyGraphicsDevice->m_SurfaceParamsC;
-            }
-
-            auto gSurface = CreateSurface(params.Width, params.Height, pFormatConfig[params.Index].SurfaceFormat, 0, (GuestSurfaceCreateParams*)surfaceParams);
-            GuestToHostFunction<void>(sub_82592E98, surface.second.get(), gSurface, params.Width, params.Height);
+            GuestToHostFunction<void>(sub_82592E98, rSurface.second.get(), pNewSurface, rBufferInfo.Width, rBufferInfo.Height);
         }
 
-        // Update textures
-        for (auto& texture : pRenderTargetContainer->m_mspFrameBuffer)
+        // Update frame buffer textures.
+        for (auto& rTexture : pRenderTargetContainer->m_mspFrameBuffer)
         {
-            const auto textureName = texture.first.c_str();
+            const auto pTextureName = rTexture.first.c_str();
 
-            if (!buffers.contains(textureName))
+            if (!buffers.contains(pTextureName))
                 continue;
 
-            auto& texturePtr = texture.second;
-            const auto& params = buffers[textureName];
+            const auto& rBufferInfo = buffers[pTextureName];
 
-            CreateTextureLocal(texturePtr.get(), params.Width, params.Height, 1, 1, pFormatConfig[params.Index].Usage, pFormatConfig[params.Index].TextureFormat, 0, 3);
+            CreateTextureLocal(rTexture.second.get(), rBufferInfo.Width, rBufferInfo.Height, 1, 1, pFormatConfigs[rBufferInfo.Index].Usage, pFormatConfigs[rBufferInfo.Index].TextureFormat, 0, 3);
 
-            // Determine surface type
-            auto s2 = (params.Flags & 4) == 0 ? params.Index : 3;
-            auto surface = texturePtr->m_aspSurfaces[0].get();
+            const auto surfaceFormatIndex = (rBufferInfo.Flags & 4) == 0
+                ? rBufferInfo.Index
+                : 3;
 
-            // Determine surface parameters
-            D3DXBSURFACE_PARAMETERS* surfaceParams = nullptr;
-            if (pFormatConfig[s2].Usage != 1 || (params.Flags & 1) != 0)
-            {
-                surfaceParams = &pMyGraphicsDevice->m_SurfaceParamsB;
-            }
-            else
-            {
-                surfaceParams = (params.Flags & 2) == 0 ? &pMyGraphicsDevice->m_SurfaceParamsA : &pMyGraphicsDevice->m_SurfaceParamsC;
-            }
+            auto pSurfaceParams = getSurfaceParams(surfaceFormatIndex, rBufferInfo.Flags);
+            auto pNewSurface = CreateSurface(rBufferInfo.Width, rBufferInfo.Height, pFormatConfigs[surfaceFormatIndex].SurfaceFormat, 0, reinterpret_cast<GuestSurfaceCreateParams*>(pSurfaceParams));
 
-            // Create and configure guest surface
-            auto gSurface = CreateSurface(params.Width, params.Height, pFormatConfig[s2].SurfaceFormat, 0, (GuestSurfaceCreateParams*)surfaceParams);
-            GuestToHostFunction<void>(sub_82592E98, surface, gSurface, params.Width, params.Height);
+            GuestToHostFunction<void>(sub_82592E98, rTexture.second->m_aspSurfaces[0].get(), pNewSurface, rBufferInfo.Width, rBufferInfo.Height);
         }
 
-        // Clear Post Buffers
+        // Clear post-process buffers.
         pRenderTargetContainer->m_mspDepthStencil_256.clear();
         pRenderTargetContainer->m_mspPostEffect.clear();
         pRenderTargetContainer->m_mspPostEffectAfter.clear();
 
-        //Reset radermap, textures
+        Sonicteam::HUDRaderMap* pHUDRaderMap{};
+
         auto& rmTextureResources = pResourceManager->m_mResources[pTextureMgr->m_MgrIndex];
-        auto* pGame = pApp->GetGame();
-        if (pGame)
+
+        if (const auto pGame = pApp->GetGame(); rmTextureResources.find("radermap") != rmTextureResources.end())
         {
-            if (auto it = rmTextureResources.find("radermap"); it != rmTextureResources.end())
+            if (const auto pPopupScreenTask = pGame->m_lrPopupScreenTask.m_pElement)
             {
-                if (auto pPopupScreenTask = pGame->m_lrPopupScreenTask.m_pElement)
-                {
-                    auto pHUDRaderMap = pPopupScreenTask->GetHUDPopupScreen<Sonicteam::HUDRaderMap>();
-                    pHUDRaderMap->m_pMainTexture.reset();
-                    pHUDRaderMap->m_pMaskTexture.reset();
-                }
+                pHUDRaderMap = pPopupScreenTask->GetHUDPopupScreen<Sonicteam::HUDRaderMap>();
+
+                // Release "radermap" textures.
+                pHUDRaderMap->m_pMainTexture.reset();
+                pHUDRaderMap->m_pMaskTexture.reset();
             }
         }
 
-        // Cache particles.
-        CacheRenderProcess(pDoc->m_pRenderScheduler, "GE1Particle");
-        CacheRenderProcess(pDoc->m_pRenderScheduler, "Spanverse");
-
-        auto sfx1 = pDoc->m_pSFXAgent->m_aSFXMatrices1;
-        auto sfx2 = pDoc->m_pSFXAgent->m_aSFXMatrices2;
+        const auto sfxMatrices1 = pDoc->m_pSFXAgent->m_aSFXMatrices1;
+        const auto sfxMatrices2 = pDoc->m_pSFXAgent->m_aSFXMatrices2;
         pDoc->m_pSFXAgent->m_aSFXMatrices1 = 0;
         pDoc->m_pSFXAgent->m_aSFXMatrices2 = 0;
 
+        // Cache particle render processes.
+        CacheRenderProcess(pDoc->m_pRenderScheduler, "GE1Particle");
+        CacheRenderProcess(pDoc->m_pRenderScheduler, "Spanverse");
+
         // Reload current render script.
         GuestToHostFunction<void>(sub_8260DF88, pDoc, Sonicteam::Globals::ms_pCurrentRenderScript, 1);
+
+        // Drop cached render processes, no longer needed after reloading render script.
         g_renderProcessCache.clear();
 
         if (pDoc->m_pSFXAgent->m_aSFXMatrices1)
@@ -3621,28 +3608,20 @@ void Video::Present()
         if (pDoc->m_pSFXAgent->m_aSFXMatrices2)
             g_userHeap.Free(pDoc->m_pSFXAgent->m_aSFXMatrices2->GetArray());
 
-        pDoc->m_pSFXAgent->m_aSFXMatrices1 = sfx1;
-        pDoc->m_pSFXAgent->m_aSFXMatrices2 = sfx2;
+        pDoc->m_pSFXAgent->m_aSFXMatrices1 = sfxMatrices1;
+        pDoc->m_pSFXAgent->m_aSFXMatrices2 = sfxMatrices2;
 
-        // Fix radermap.
-        auto SetResource = [&](auto* spTextureTo, const char* name)
+        if (pHUDRaderMap)
         {
-            if (auto it = rmTextureResources.find(name); it != rmTextureResources.end())
-                *spTextureTo = static_cast<Sonicteam::MyTexture*>(it->second.get());
-        };
-
-        if (pGame)
-        {
-            if (rmTextureResources.find("radermap") != rmTextureResources.end())
+            const auto setTexture = [&](const char* pName, auto* spTexture)
             {
-                if (auto pPopupScreenTask = pGame->m_lrPopupScreenTask.m_pElement)
-                {
-                    auto pHUDRaderMap = pPopupScreenTask->GetHUDPopupScreen<Sonicteam::HUDRaderMap>();
+                if (auto it = rmTextureResources.find(pName); it != rmTextureResources.end())
+                    *spTexture = static_cast<Sonicteam::MyTexture*>(it->second.get());
+            };
 
-                    SetResource(&pHUDRaderMap->m_pMainTexture, "radermap");
-                    SetResource(&pHUDRaderMap->m_pMaskTexture, "radermap_mask");
-                }
-            }
+            // Set new "radermap" textures after Lua script reload.
+            setTexture("radermap", &pHUDRaderMap->m_pMainTexture);
+            setTexture("radermap_mask", &pHUDRaderMap->m_pMaskTexture);
         }
     }
 PostResize:
