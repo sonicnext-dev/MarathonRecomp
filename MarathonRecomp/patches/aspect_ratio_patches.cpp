@@ -5,6 +5,7 @@
 #include <patches/hook_event.h>
 #include <patches/loading_patches.h>
 #include <patches/MainMenuTask_patches.h>
+#include <ui/achievement_menu.h>
 #include <ui/black_bar.h>
 #include <ui/game_window.h>
 #include <ui/imgui_utils.h>
@@ -341,8 +342,7 @@ PPC_FUNC(sub_828C8F60)
         if ((g_sceneModifier->Flags & CSD_MODIFIER_ULTRAWIDE_ONLY) != 0 && g_aspectRatio <= WIDE_ASPECT_RATIO)
             g_sceneModifier->Flags &= (~g_sceneModifier->Flags) | CSD_MODIFIER_ULTRAWIDE_ONLY;
 
-        if ((g_sceneModifier->Flags & CSD_SCENE_DISABLE_MOTION) != 0)
-            pScene->FPS = 0;
+        pScene->FPS = ((g_sceneModifier->Flags & CSD_SCENE_DISABLE_MOTION) != 0) ? 0 : 60;
 
         if (g_aspectRatio > WIDE_ASPECT_RATIO)
         {
@@ -1550,7 +1550,17 @@ PPC_FUNC(sub_8262D868)
     auto textModifier = *(uint64_t*)(base + ctx.r3.u32 + sizeof(Sonicteam::TextEntity));
 
     if ((textModifier & CSD_SKIP) != 0)
+    {
+        for (size_t i = 0; i < pTextEntity->m_CharacterVertexCount; i++)
+        {
+            auto& vertex = pTextEntity->m_pCharacterVertices[i];
+
+            // Mask out alpha bits.
+            vertex.Colour = vertex.Colour.get() & 0x00FFFFFF;
+        }
+
         return;
+    }
 
     auto x = pTextEntity->m_X;
     auto y = pTextEntity->m_Y;
@@ -1746,6 +1756,37 @@ PPC_FUNC(sub_8263CC40)
 
     g_fontPictureWidth = pTextFontPicture->m_TextureWidth;
     g_fontPictureHeight = pTextFontPicture->m_TextureHeight;
+}
+
+// Sonicteam::HUDGoldMedal::Update
+PPC_FUNC_IMPL(__imp__sub_824D5C08);
+PPC_FUNC(sub_824D5C08)
+{
+    auto pHUDGoldMedal = static_cast<Sonicteam::HUDGoldMedal*>(reinterpret_cast<Sonicteam::SoX::Engine::Task*>(base + ctx.r3.u32));
+
+    for (auto& spTextEntity : pHUDGoldMedal->m_aspTextEntities)
+    {
+        auto flags = CSD_ALIGN_CENTER | CSD_SCALE;
+
+        if (AchievementMenu::s_state == AchievementMenuState::Achievements)
+            flags |= CSD_SKIP;
+
+        SetTextEntityModifier(spTextEntity.get(), flags);
+    }
+
+    __imp__sub_824D5C08(ctx, base);
+}
+
+// Sonicteam::MainMenuExpositionTask::Update
+PPC_FUNC_IMPL(__imp__sub_824FD868);
+PPC_FUNC(sub_824FD868)
+{
+    auto pMainMenuExpositionTask = static_cast<Sonicteam::MainMenuExpositionTask*>(reinterpret_cast<Sonicteam::SoX::Engine::Task*>(base + ctx.r3.u32));
+
+    SetTextEntityModifier(pMainMenuExpositionTask->m_spDescriptionEntity.get(), CSD_ALIGN_CENTER | CSD_SCALE);
+    SetTextEntityModifier(pMainMenuExpositionTask->m_spPrevDescriptionEntity.get(), CSD_ALIGN_CENTER | CSD_SCALE);
+
+    __imp__sub_824FD868(ctx, base);
 }
 
 // -------------- CSD MODIFIERS --------------- //

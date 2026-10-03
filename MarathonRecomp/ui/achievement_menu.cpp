@@ -577,15 +577,4 @@ void AchievementMenu::SetGoldMedalResultsVisible(bool isVisible)
         guest_stack_var<Sonicteam::Message::HUDGoldMedal::MsgChangeState> msgChangeState(state, s_pMainMenuTask->m_GoldMedalEpisodeIndex);
         s_pMainMenuTask->m_pHUDGoldMedal->ProcessMessage(msgChangeState.get());
     }
-
-    for (int i = 0; i < 5; i++)
-    {
-        auto& spTextEntity = s_pMainMenuTask->m_pHUDGoldMedal->m_aspTextEntities[i];
-
-        if (auto pTextEntity = spTextEntity.get())
-        {
-            for (size_t i = 0; i < pTextEntity->m_CharacterVertexCount; i++)
-                pTextEntity->m_pCharacterVertices[i].Colour = isVisible ? 0xFFFFFFFF : 0x00FFFFFF;
-        }
-    }
 }
