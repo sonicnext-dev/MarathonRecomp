@@ -23,16 +23,16 @@ namespace Sonicteam
 
     struct Globals
     {
-        static inline be<float>* ms_pMainDisplayColours[9]{};
-
         static inline stdx::string* ms_pCurrentRenderScript{};
+
+        static inline be<float>* ms_apMainDisplayColours[9]{};
 
         static void Init()
         {
-            for (int i = 0; i < 9; i++)
-                ms_pMainDisplayColours[i] = reinterpret_cast<be<float>*>(MmGetHostAddress(0x82036BE4 + (i * 4)));
-
             ms_pCurrentRenderScript = reinterpret_cast<stdx::string*>(MmGetHostAddress(0x82B814F8));
+
+            for (int i = 0; i < 9; i++)
+                ms_apMainDisplayColours[i] = reinterpret_cast<be<float>*>(MmGetHostAddress(0x82036BE4 + (i * 4)));
         }
     };
 }
