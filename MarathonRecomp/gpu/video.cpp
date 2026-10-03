@@ -1960,27 +1960,10 @@ static void ApplyLowEndDefaults()
     }
 }
 
-bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
+using RenderInterfaceFunction = std::unique_ptr<RenderInterface>(void);
+
+static bool TryCreateHostDevice(std::vector<RenderInterfaceFunction*>& interfaceFunctions, bool graphicsApiRetry)
 {
-    for (uint32_t i = 0; i < 16; i++)
-        g_inputSlots[i].index = i;
-
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImPlot::CreateContext();
-
-    GameWindow::Init(sdlVideoDriver);
-
-#if defined(MARATHON_RECOMP_D3D12)
-    g_backend = (DetectWine() || Config::GraphicsAPI == EGraphicsAPI::Vulkan) ? Backend::VULKAN : Backend::D3D12;
-#elif defined(MARATHON_RECOMP_METAL)
-    g_backend = Config::GraphicsAPI == EGraphicsAPI::Vulkan ? Backend::VULKAN : Backend::METAL;
-#endif
-
-    // Attempt to create the possible backends using a vector of function pointers. Whichever succeeds first will be the chosen API.
-    using RenderInterfaceFunction = std::unique_ptr<RenderInterface>(void);
-    std::vector<RenderInterfaceFunction *> interfaceFunctions;
-
 #ifdef MARATHON_RECOMP_D3D12
     bool allowVulkanRedirection = true;
 
@@ -1993,14 +1976,6 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
         // so the user can at least boot the game with D3D12 if Vulkan fails to work.
         allowVulkanRedirection = false;
     }
-
-    interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateVulkanInterfaceWrapper : CreateD3D12Interface);
-    interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateD3D12Interface : CreateVulkanInterfaceWrapper);
-#elif defined(MARATHON_RECOMP_METAL)
-    interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateVulkanInterfaceWrapper : CreateMetalInterface);
-    interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateMetalInterface : CreateVulkanInterfaceWrapper);
-#else
-    interfaceFunctions.push_back(CreateVulkanInterfaceWrapper);
 #endif
 
     for (size_t i = 0; i < interfaceFunctions.size(); i++)
@@ -2079,6 +2054,44 @@ bool Video::CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry)
             }
         }
 #endif
+    }
+
+    return true;
+}
+
+bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
+{
+    for (uint32_t i = 0; i < 16; i++)
+        g_inputSlots[i].index = i;
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImPlot::CreateContext();
+
+    GameWindow::Init(sdlVideoDriver);
+
+#if defined(MARATHON_RECOMP_D3D12)
+    g_backend = (DetectWine() || Config::GraphicsAPI == EGraphicsAPI::Vulkan) ? Backend::VULKAN : Backend::D3D12;
+#elif defined(MARATHON_RECOMP_METAL)
+    g_backend = Config::GraphicsAPI == EGraphicsAPI::Vulkan ? Backend::VULKAN : Backend::METAL;
+#endif
+
+    // Attempt to create the possible backends using a vector of function pointers. Whichever succeeds first will be the chosen API.
+    std::vector<RenderInterfaceFunction*> interfaceFunctions;
+
+#ifdef MARATHON_RECOMP_D3D12
+    interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateVulkanInterfaceWrapper : CreateD3D12Interface);
+    interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateD3D12Interface : CreateVulkanInterfaceWrapper);
+#elif defined(MARATHON_RECOMP_METAL)
+    interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateVulkanInterfaceWrapper : CreateMetalInterface);
+    interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateMetalInterface : CreateVulkanInterfaceWrapper);
+#else
+    interfaceFunctions.push_back(CreateVulkanInterfaceWrapper);
+#endif
+
+    if (!TryCreateHostDevice(interfaceFunctions, graphicsApiRetry))
+    {
+        return false;
     }
 
     if (g_device == nullptr)
