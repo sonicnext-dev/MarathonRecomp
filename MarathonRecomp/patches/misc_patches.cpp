@@ -25,12 +25,12 @@ void SetLifeBarAnimation(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5, PPCR
 
         if (Config::RestoreContextualHUDColours)
         {
-            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Shadow] = 1.0f;
-            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Omega] = 1.0f;
-            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Rouge] = 1.0f;
-            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Silver] = 2.0f;
-            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Amy] = 2.0f;
-            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Blaze] = 2.0f;
+            *Sonicteam::Globals::ms_apMainDisplayColours[Sonicteam::Character_Shadow] = 1.0f;
+            *Sonicteam::Globals::ms_apMainDisplayColours[Sonicteam::Character_Omega] = 1.0f;
+            *Sonicteam::Globals::ms_apMainDisplayColours[Sonicteam::Character_Rouge] = 1.0f;
+            *Sonicteam::Globals::ms_apMainDisplayColours[Sonicteam::Character_Silver] = 2.0f;
+            *Sonicteam::Globals::ms_apMainDisplayColours[Sonicteam::Character_Amy] = 2.0f;
+            *Sonicteam::Globals::ms_apMainDisplayColours[Sonicteam::Character_Blaze] = 2.0f;
         }
 
         s_initContextualHUD = true;
@@ -42,8 +42,8 @@ void SetLifeBarAnimation(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5, PPCR
 
     // Redirect "life_ber_anime" to "life_bar_anime", as they
     // actually spelt "bar" correctly in the tag XNCP scene names...
-    if ((pCsdObject->m_pCsdResource->m_FilePath == "sprite/tagdisplay_1p" ||
-        pCsdObject->m_pCsdResource->m_FilePath == "sprite/tagdisplay_2p") &&
+    if ((pCsdObject->m_pCsdResource->m_MgrResourceName == "sprite/tagdisplay_1p" ||
+        pCsdObject->m_pCsdResource->m_MgrResourceName == "sprite/tagdisplay_2p") &&
         strcmp(pSceneName, "life_ber_anime") == 0)
     {
         r4.u32 = g_memory.MapVirtual(s_lifeBarSceneName);

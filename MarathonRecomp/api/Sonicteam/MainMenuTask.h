@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Marathon.inl>
-#include <Sonicteam/SoX/Math/Vector.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
 #include <Sonicteam/Player/Object.h>
 #include <Sonicteam/ButtonWindowTask.h>
