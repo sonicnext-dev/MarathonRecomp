@@ -8,6 +8,7 @@
 #include <Sonicteam/SoX/Scenery/Camera.h>
 #include <Sonicteam/SoX/Scenery/CameraImp.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
+#include <Sonicteam/SoX/LinkNodeA.h>
 #include <Sonicteam/Game.h>
 #include <Sonicteam/TextBook.h>
 #include <stdx/vector.h>
@@ -84,7 +85,10 @@ namespace Sonicteam
         xpointer<TextBook> m_pHintTextBook;
         MARATHON_INSERT_PADDING(4);
         xpointer<Mission::Core> m_pMissionCore;
-        MARATHON_INSERT_PADDING(0x2A4);
+        MARATHON_INSERT_PADDING(0x25C);
+        SoX::LinkNodeA<SoX::Engine::Task> m_GamePopupScreenTask2;
+        SoX::LinkNodeA<SoX::Engine::Task> m_GamePopupScreenTask3;
+        MARATHON_INSERT_PADDING(0x28);
         SoX::RefSharedPointer<SoX::Physics::World> m_spPhysicsWorld;
         xpointer<void> m_pMyCollisionFilter;
         MARATHON_INSERT_PADDING(0x0C);
@@ -157,6 +161,8 @@ namespace Sonicteam
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pBgmCue, 0x139C);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pHintTextBook, 0x170C);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pMissionCore, 0x1714);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_GamePopupScreenTask2, 0x1974);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_GamePopupScreenTask3, 0x1984);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_spPhysicsWorld, 0x19BC);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pMyCollisionFilter, 0x19C0);
     MARATHON_ASSERT_SIZEOF(GameImp, 0x19D0);
