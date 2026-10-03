@@ -19,6 +19,6 @@ namespace Sonicteam::SoX::Engine
         };
 
         xpointer<Vftable> m_pVftable;
-        stdx::list<std::pair<stdx::string,boost::shared_ptr<RenderProcess>>> m_lRenderProcesses;
+        stdx::list<std::pair<stdx::string, boost::shared_ptr<RenderProcess>>> m_lRenderProcesses;
     };
 }

@@ -20,10 +20,10 @@ namespace Sonicteam
 
         xpointer<Vftable> m_pVftable;
         xpointer<SoX::Graphics::Device> m_pDevice;
-        stdx::map<stdx::string, SoX::RefSharedPointer<SoX::Graphics::Xenon::SurfaceXenon>> m_mspDepthStencil_1_4;
-        stdx::map<stdx::string, SoX::RefSharedPointer<SoX::Graphics::Xenon::SurfaceXenon>> m_mspDepthStencil_256;
-        stdx::map<stdx::string, SoX::RefSharedPointer<SoX::Graphics::Xenon::TextureXenon>> m_mspFrameBuffer;
-        stdx::map<stdx::string, SoX::RefSharedPointer<SoX::Graphics::Xenon::TextureXenon>> m_mspPostEffect;      // reflection, csm, radermap
-        stdx::map<stdx::string, SoX::RefSharedPointer<SoX::Graphics::Xenon::TextureXenon>> m_mspPostEffectAfter; // radermap_mask
+        stdx::map<stdx::string, SoX::RefSharedPointer<SoX::Graphics::Surface>> m_mspDepthStencil_1_4;
+        stdx::map<stdx::string, SoX::RefSharedPointer<SoX::Graphics::Surface>> m_mspDepthStencil_256;
+        stdx::map<stdx::string, SoX::RefSharedPointer<SoX::Graphics::Texture>> m_mspFrameBuffer;
+        stdx::map<stdx::string, SoX::RefSharedPointer<SoX::Graphics::Texture>> m_mspPostEffect;      // reflection, csm, radermap
+        stdx::map<stdx::string, SoX::RefSharedPointer<SoX::Graphics::Texture>> m_mspPostEffectAfter; // radermap_mask
     };
 }
