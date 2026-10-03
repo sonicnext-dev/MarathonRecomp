@@ -13,8 +13,8 @@ namespace lua50
         lua_CFunction func;
     };
 
-    inline const void* lua_topointer(lua_State* L, int idx)
+    inline void* lua_topointer(lua_State* L, int idx)
     {
-        return GuestToHostFunction<const void*>(sub_825D5800, L, idx);
+        return GuestToHostFunction<void*>(sub_825D5800, L, idx);
     }
 }
