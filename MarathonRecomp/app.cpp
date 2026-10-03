@@ -89,7 +89,7 @@ PPC_FUNC(sub_825EA610)
     if (std::this_thread::get_id() == g_mainThreadId)
     {
         SDL_PumpEvents();
-        SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+        SDL_FlushEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
         GameWindow::Update();
     }
 

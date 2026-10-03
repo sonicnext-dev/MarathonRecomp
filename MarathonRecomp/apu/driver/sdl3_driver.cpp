@@ -7,47 +7,46 @@
 
 static PPCFunc* g_clientCallback{};
 static uint32_t g_clientCallbackParam{}; // pointer in guest memory
-static SDL_AudioDeviceID g_audioDevice{};
+static SDL_AudioStream* g_audioStream{};
 static bool g_downMixToStereo;
 
 static void CreateAudioDevice()
 {
-    if (g_audioDevice != NULL)
-        SDL_CloseAudioDevice(g_audioDevice);
-
-    bool surround = Config::ChannelConfiguration == EChannelConfiguration::Surround;
-    int allowedChanges = surround ? SDL_AUDIO_ALLOW_CHANNELS_CHANGE : 0;
-
-    SDL_AudioSpec desired{}, obtained{};
-    desired.freq = XAUDIO_SAMPLES_HZ;
-    desired.format = AUDIO_F32SYS;
-    desired.channels = surround ? XAUDIO_NUM_CHANNELS : 2;
-    desired.samples = XAUDIO_NUM_SAMPLES;
-    g_audioDevice = SDL_OpenAudioDevice(nullptr, 0, &desired, &obtained, allowedChanges);
-
-    if (obtained.channels != 2 && obtained.channels != XAUDIO_NUM_CHANNELS) // This check may fail only when surround sound is enabled.
+    if (g_audioStream != nullptr)
     {
-        SDL_CloseAudioDevice(g_audioDevice);
-        g_audioDevice = SDL_OpenAudioDevice(nullptr, 0, &desired, &obtained, 0);
+        SDL_DestroyAudioStream(g_audioStream);
+        g_audioStream = nullptr;
     }
 
-    if (!g_audioDevice)
+    bool surround = Config::ChannelConfiguration == EChannelConfiguration::Surround;
+
+    SDL_AudioSpec deviceSpec{};
+    if (surround && SDL_GetAudioDeviceFormat(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &deviceSpec, nullptr))
+        surround = deviceSpec.channels >= XAUDIO_NUM_CHANNELS;
+
+    SDL_AudioSpec desired{};
+    desired.freq = XAUDIO_SAMPLES_HZ;
+    desired.format = SDL_AUDIO_F32;
+    desired.channels = surround ? XAUDIO_NUM_CHANNELS : 2;
+    g_audioStream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &desired, nullptr, nullptr);
+
+    if (!g_audioStream)
         LOGFN_ERROR("Failed to open audio device: {}", SDL_GetError());
 
-    g_downMixToStereo = (obtained.channels == 2);
+    g_downMixToStereo = (desired.channels == 2);
 }
 
 void XAudioInitializeSystem()
 {
 #ifdef _WIN32
     // Force wasapi on Windows.
-    SDL_setenv("SDL_AUDIODRIVER", "wasapi", true);
+    SDL_SetHint(SDL_HINT_AUDIO_DRIVER, "wasapi");
 #endif
 
     SDL_SetHint(SDL_HINT_AUDIO_CATEGORY, "playback");
-    SDL_SetHint(SDL_HINT_AUDIO_DEVICE_APP_NAME, "Marathon Recompiled");
+    SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING, "Marathon Recompiled");
 
-    if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
+    if (!SDL_InitSubSystem(SDL_INIT_AUDIO))
     {
         LOGFN_ERROR("Failed to init audio subsystem: {}", SDL_GetError());
         return;
@@ -69,11 +68,11 @@ static void AudioThread()
 
     while (!g_audioThreadShouldExit)
     {
-        uint32_t queuedAudioSize = SDL_GetQueuedAudioSize(g_audioDevice);
+        int queuedAudioSize = SDL_GetAudioStreamQueued(g_audioStream);
         constexpr size_t MAX_LATENCY = 10;
         const size_t callbackAudioSize = channels * XAUDIO_NUM_SAMPLES * sizeof(float);
 
-        if ((queuedAudioSize / callbackAudioSize) <= MAX_LATENCY)
+        if (queuedAudioSize >= 0 && (queuedAudioSize / callbackAudioSize) <= MAX_LATENCY)
         {
             ctx.ppcContext.r3.u32 = g_clientCallbackParam;
             g_clientCallback(ctx.ppcContext, g_memory.base);
@@ -92,7 +91,7 @@ static void AudioThread()
 
 static void CreateAudioThread()
 {
-    SDL_PauseAudioDevice(g_audioDevice, 0);
+    SDL_ResumeAudioStreamDevice(g_audioStream);
     g_audioThreadShouldExit = false;
     g_audioThread = std::make_unique<std::thread>(AudioThread);
 }
@@ -143,7 +142,7 @@ void XAudioSubmitFrame(void* samples)
             audioFrames[i * 2 + 1] = isnan(samp1) ? 0.0f : samp1;
         }
 
-        SDL_QueueAudio(g_audioDevice, &audioFrames, sizeof(audioFrames));
+        SDL_PutAudioStreamData(g_audioStream, &audioFrames, sizeof(audioFrames));
     }
     else
     {
@@ -158,7 +157,7 @@ void XAudioSubmitFrame(void* samples)
             }
         }
 
-        SDL_QueueAudio(g_audioDevice, &audioFrames, sizeof(audioFrames));
+        SDL_PutAudioStreamData(g_audioStream, &audioFrames, sizeof(audioFrames));
     }
 }
 

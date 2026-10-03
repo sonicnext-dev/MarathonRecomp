@@ -1696,7 +1696,7 @@ static void CreateImGuiBackend()
     OptionsMenu::Init();
     InstallerWizard::Init();
 
-    ImGui_ImplSDL2_InitForOther(GameWindow::s_pWindow);
+    ImGui_ImplSDL3_InitForOther(GameWindow::s_pWindow);
 
 #ifdef ENABLE_IM_FONT_ATLAS_SNAPSHOT
     g_imFontTexture = LoadTexture(
@@ -2975,7 +2975,7 @@ static void DrawFPS()
 
 static void DrawImGui()
 {
-    ImGui_ImplSDL2_NewFrame();
+    ImGui_ImplSDL3_NewFrame();
 
     auto& io = ImGui::GetIO();
     io.DisplaySize = { float(Video::s_viewportWidth), float(Video::s_viewportHeight) };
