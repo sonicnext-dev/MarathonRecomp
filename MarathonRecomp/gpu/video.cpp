@@ -6022,8 +6022,7 @@ static void ProcSetPixelShader(const RenderCommand& cmd)
             if (Config::RadialBlur == ERadialBlur::Enhanced)
                 shader = g_enhancedBurnoutBlurPSShader.get();
         }
-
-        if (shader->shaderCacheEntry->hash == 0x88EB0AA82E4257B0)
+        else if (shader->shaderCacheEntry->hash == 0x88EB0AA82E4257B0)
         {
             shader = g_MoviePSShader.get();
         }
