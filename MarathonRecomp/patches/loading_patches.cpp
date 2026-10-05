@@ -1,4 +1,6 @@
 #include "loading_patches.h"
+#include <api/Marathon.h>
+#include <user/config.h>
 #include <app.h>
 
 void DocMarathon_SetLoading_StartThread()
@@ -33,4 +35,29 @@ void DocMarathon_SetLoading_JoinThread_Prefix()
 void DocMarathon_SetLoading_JoinThread_Postfix()
 {
     App::s_isLoading = false;
+}
+
+// Sonicteam::GameImp::LoadingStartEnd
+bool RestoreLoadingTransition(PPCRegister& r30)
+{
+    if (!Config::RestoreLoadingTransition)
+        return false;
+
+    auto pGameImp = (Sonicteam::GameImp*)g_memory.Translate(r30.u32);
+    auto pTaskNode = &pGameImp->m_lrPopupScreenTask2;
+
+    if (GuestToHostFunction<uint8_t>(sub_82581100, pTaskNode, 0))
+    {
+        auto task = GuestToHostFunction<uint32_t>(sub_82615D60, pTaskNode);
+
+        if (task)
+        {
+            auto pTask = (Sonicteam::SoX::Engine::Task*)g_memory.Translate(task);
+
+            guest_stack_var<Sonicteam::SoX::IMessage> message(0x1B000);
+            pTask->ProcessMessage(message.get());
+        }
+    }
+
+    return true;
 }

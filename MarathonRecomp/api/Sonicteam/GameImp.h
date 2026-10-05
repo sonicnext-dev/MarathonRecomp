@@ -88,7 +88,10 @@ namespace Sonicteam
         xpointer<Mission::Core> m_pMissionCore;
         MARATHON_INSERT_PADDING(0x248);
         SoX::LinkRef<PopupScreenTask> m_lrPopupScreenTask;
-        MARATHON_INSERT_PADDING(0x4C);
+        MARATHON_INSERT_PADDING(4);
+        SoX::LinkRef<PopupScreenTask> m_lrPopupScreenTask2;
+        SoX::LinkRef<PopupScreenTask> m_lrPopupScreenTask3;
+        MARATHON_INSERT_PADDING(0x28);
         SoX::RefSharedPointer<SoX::Physics::World> m_spPhysicsWorld;
         xpointer<void> m_pMyCollisionFilter;
         MARATHON_INSERT_PADDING(0x0C);
