@@ -912,7 +912,7 @@ static RenderTextureLayout& GetLayoutRef(GuestBaseTexture* texture)
     if (texture->type == ResourceType::RenderTarget || texture->type == ResourceType::DepthStencil)
     {
         const auto surface = reinterpret_cast<GuestSurface*>(texture);
-        if (surface->variant != nullptr)
+        if (surface->variant != nullptr && surface->texture == surface->variant->textureHolder.get())
             return surface->variant->layout;
     }
 
