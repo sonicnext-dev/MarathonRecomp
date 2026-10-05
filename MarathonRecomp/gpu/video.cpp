@@ -358,6 +358,7 @@ static constexpr size_t NUM_QUERIES = 2;
 
 static uint32_t g_frame = 0;
 static uint32_t g_nextFrame = 1;
+static uint32_t g_renderFrame = 0;
 
 static std::unique_ptr<RenderCommandQueue> g_queue;
 static std::unique_ptr<RenderCommandList> g_commandLists[NUM_FRAMES];
@@ -2528,7 +2529,7 @@ static void ReleaseResource(GuestResource* resource)
 static void ProcDestructResource(const RenderCommand& cmd)
 {
     const auto& args = cmd.destructResource;
-    g_tempResources[g_frame].push_back(args.resource);
+    g_tempResources[g_renderFrame].push_back(args.resource);
 }
 
 static uint32_t ComputeTexturePitch(GuestTexture* texture)
@@ -3762,6 +3763,7 @@ static void ProcExecuteCommandList(const RenderCommand& cmd)
 
 static void ProcBeginCommandList(const RenderCommand& cmd)
 {
+    g_renderFrame = g_frame;
     DestructTempResources();
     BeginCommandList();
 }
