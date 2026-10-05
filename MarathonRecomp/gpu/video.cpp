@@ -380,7 +380,7 @@ static bool g_swapChainValid;
 static constexpr RenderFormat BACKBUFFER_FORMAT = RenderFormat::B8G8R8A8_UNORM;
 
 static std::unique_ptr<RenderCommandSemaphore> g_acquireSemaphores[NUM_FRAMES];
-static std::unique_ptr<RenderCommandSemaphore> g_renderSemaphores[NUM_FRAMES];
+static std::vector<std::unique_ptr<RenderCommandSemaphore>> g_renderSemaphores;
 static uint32_t g_backBufferIndex;
 static std::unique_ptr<GuestSurface> g_backBufferHolder;
 static GuestSurface* g_backBuffer;
@@ -1851,6 +1851,9 @@ static void CheckSwapChain()
         PurgeSurfaceVariantFramebuffers();
         g_swapChainValid = g_swapChain->resize();
         Video::s_needsResize = g_swapChainValid;
+
+        while (g_renderSemaphores.size() < g_swapChain->getTextureCount())
+            g_renderSemaphores.emplace_back(g_device->createCommandSemaphore());
     }
 
     if (g_swapChainValid)
@@ -2200,6 +2203,8 @@ bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
 
     for (auto& acquireSemaphore : g_acquireSemaphores)
         acquireSemaphore = g_device->createCommandSemaphore();
+
+    g_renderSemaphores.resize(g_swapChain->getTextureCount());
     
     for (auto& renderSemaphore : g_renderSemaphores)
         renderSemaphore = g_device->createCommandSemaphore();
@@ -3368,7 +3373,7 @@ void Video::Present()
             g_presentWaitProfiler.End();
         }
 
-        RenderCommandSemaphore* signalSemaphores[] = { g_renderSemaphores[g_frame].get() };
+        RenderCommandSemaphore* signalSemaphores[] = { g_renderSemaphores[g_backBufferIndex].get() };
         g_swapChainValid = g_swapChain->present(g_backBufferIndex, signalSemaphores, std::size(signalSemaphores));
     }
 
@@ -3395,34 +3400,6 @@ void Video::Present()
     g_intermediaryUploadAllocator.reset();
     g_triangleFanIndexData.reset();
     g_quadIndexData.reset();
-
-    CheckSwapChain();
-
-    cmd.type = RenderCommandType::BeginCommandList;
-    g_renderQueue.enqueue(cmd);
-
-    if (Config::FPS >= FPS_MIN && Config::FPS < FPS_MAX)
-    {
-        using namespace std::chrono_literals;
-
-        static std::chrono::steady_clock::time_point s_next;
-
-        auto now = std::chrono::steady_clock::now();
-
-        if (now < s_next)
-        {
-            std::this_thread::sleep_for(std::chrono::floor<std::chrono::milliseconds>(s_next - now - 2ms));
-
-            while ((now = std::chrono::steady_clock::now()) < s_next)
-                std::this_thread::yield();
-        }
-        else
-        {
-            s_next = now;
-        }
-
-        s_next += 1000000000ns / Config::FPS;
-    }
 
     // NOTICE: guest_stack_var may cause stack corruption here.
     if (App::s_pApp && s_needsResize)
@@ -3481,15 +3458,15 @@ void Video::Present()
         const auto surfaceBase = uint32_t(height * 1.155555555555556); // 720p: 0x340
 
         // Recreate main buffers.
-        ReleaseResource(reinterpret_cast<GuestTexture*>(pApp->m_pFrontBufferTexture.get()));
+        ReleaseResource(static_cast<GuestTexture*>(pApp->m_pFrontBufferTexture.get()));
         pApp->m_pFrontBufferTexture = CreateTexture(width, height, 1, 1, 1, D3DFMT_LE_X8R8G8B8, 0, 3);
-        ReleaseResource(reinterpret_cast<GuestSurface*>(pApp->m_pBackBufferSurface.get()));
+        ReleaseResource(static_cast<GuestSurface*>(pApp->m_pBackBufferSurface.get()));
         pApp->m_pBackBufferSurface = CreateSurface(width, height, D3DFMT_A8R8G8B8, 0, reinterpret_cast<GuestSurfaceCreateParams*>(&surfaceParams));
 
         rDeviceInfo.SurfaceParamsA = surfaceParams;
         surfaceParams.Base = surfaceParams.Base + surfaceBase;
 
-        ReleaseResource(reinterpret_cast<GuestSurface*>(pApp->m_pDepthStencilSurface.get()));
+        ReleaseResource(static_cast<GuestSurface*>(pApp->m_pDepthStencilSurface.get()));
         pApp->m_pDepthStencilSurface = CreateSurface(width, height, D3DFMT_D24FS8, 0, reinterpret_cast<GuestSurfaceCreateParams*>(&surfaceParams));
 
         rDeviceInfo.SurfaceParamsB = surfaceParams;
@@ -3497,11 +3474,11 @@ void Video::Present()
         rDeviceInfo.SurfaceParamsC.Base = rDeviceInfo.SurfaceParamsB.Base + surfaceBase;
 
         // Viewport is reset here because we're using the game's backbuffer directly.
-        SetRenderTarget(reinterpret_cast<GuestDevice*>(pApp->m_pDevice.get()), 0, reinterpret_cast<GuestSurface*>(pApp->m_pBackBufferSurface.get()));
-        SetDepthStencilSurface(reinterpret_cast<GuestDevice*>(pApp->m_pDevice.get()), reinterpret_cast<GuestSurface*>(pApp->m_pDepthStencilSurface.get()));
+        SetRenderTarget(static_cast<GuestDevice*>(pApp->m_pDevice.get()), 0, static_cast<GuestSurface*>(pApp->m_pBackBufferSurface.get()));
+        SetDepthStencilSurface(static_cast<GuestDevice*>(pApp->m_pDevice.get()), static_cast<GuestSurface*>(pApp->m_pDepthStencilSurface.get()));
 
-        g_backBuffer = reinterpret_cast<GuestSurface*>(pApp->m_pBackBufferSurface.get());
-        g_depthStencil = reinterpret_cast<GuestSurface*>(pApp->m_pDepthStencilSurface.get());
+        g_backBuffer = static_cast<GuestSurface*>(pApp->m_pBackBufferSurface.get());
+        g_depthStencil = static_cast<GuestSurface*>(pApp->m_pDepthStencilSurface.get());
 
         rDeviceInfo.PresentParameters.BackBufferWidth = width;
         rDeviceInfo.PresentParameters.BackBufferHeight = height;
@@ -3522,8 +3499,8 @@ void Video::Present()
             GuestToHostFunction<void>(sub_82593038, pSurface, pGuestSurface);
         };
 
-        setSurface(pMyGraphicsDevice->m_spBackBuffer.get(), reinterpret_cast<GuestSurface*>(pApp->m_pBackBufferSurface.get()));
-        setSurface(pMyGraphicsDevice->m_spDepthStencil.get(), reinterpret_cast<GuestSurface*>(pApp->m_pDepthStencilSurface.get()));
+        setSurface(pMyGraphicsDevice->m_spBackBuffer.get(), static_cast<GuestSurface*>(pApp->m_pBackBufferSurface.get()));
+        setSurface(pMyGraphicsDevice->m_spDepthStencil.get(), static_cast<GuestSurface*>(pApp->m_pDepthStencilSurface.get()));
 
         // Refresh graphics device and configure FBO surfaces.
         GuestToHostFunction<void>(sub_82637418, pMyGraphicsDevice);
@@ -3637,7 +3614,7 @@ void Video::Present()
             const auto setTexture = [&](const char* pName, auto* spTexture)
             {
                 if (auto it = rmTextureResources.find(pName); it != rmTextureResources.end())
-                    *spTexture = static_cast<Sonicteam::MyTexture*>(it->second.get());
+                    *spTexture = reinterpret_cast<Sonicteam::MyTexture*>(it->second.get());
             };
 
             // Set new "radermap" textures after Lua script reload.
@@ -3646,6 +3623,33 @@ void Video::Present()
         }
     }
 PostResize:
+    CheckSwapChain();
+
+    cmd.type = RenderCommandType::BeginCommandList;
+    g_renderQueue.enqueue(cmd);
+
+    if (Config::FPS >= FPS_MIN && Config::FPS < FPS_MAX)
+    {
+        using namespace std::chrono_literals;
+
+        static std::chrono::steady_clock::time_point s_next;
+
+        auto now = std::chrono::steady_clock::now();
+
+        if (now < s_next)
+        {
+            std::this_thread::sleep_for(std::chrono::floor<std::chrono::milliseconds>(s_next - now - 2ms));
+
+            while ((now = std::chrono::steady_clock::now()) < s_next)
+                std::this_thread::yield();
+        }
+        else
+        {
+            s_next = now;
+        }
+
+        s_next += 1000000000ns / Config::FPS;
+    }
 
     g_presentProfiler.Reset();
 }
@@ -3737,7 +3741,7 @@ static void ProcExecuteCommandList(const RenderCommand& cmd)
     {
         const RenderCommandList *commandLists[] = { commandList.get() };
         RenderCommandSemaphore *waitSemaphores[] = { g_acquireSemaphores[g_frame].get() };
-        RenderCommandSemaphore *signalSemaphores[] = { g_renderSemaphores[g_frame].get() };
+        RenderCommandSemaphore *signalSemaphores[] = { g_renderSemaphores[g_backBufferIndex].get() };
 
         g_queue->executeCommandLists(
             commandLists, std::size(commandLists),
