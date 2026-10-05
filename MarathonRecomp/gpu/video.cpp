@@ -1901,8 +1901,16 @@ static void BeginCommandList()
 
             g_backBuffer->framebuffers.clear();
             PurgeSurfaceVariantFramebuffers();
+
+            g_backBuffer->texture = g_intermediaryBackBufferTexture.get();
+            g_backBuffer->layout = RenderTextureLayout::UNKNOWN;
+            DiscardTexture(g_backBuffer, RenderTextureLayout::COLOR_WRITE);
         }
 
+        g_backBuffer->texture = g_intermediaryBackBufferTexture.get();
+    }
+    else if (g_intermediaryBackBufferTexture != nullptr)
+    {
         g_backBuffer->texture = g_intermediaryBackBufferTexture.get();
     }
     else

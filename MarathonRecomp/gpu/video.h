@@ -475,6 +475,7 @@ static GuestSurface* GetBackBuffer();
 
 static void SetRenderTarget(GuestDevice* device, uint32_t index, GuestSurface* renderTarget);
 static void SetDepthStencilSurface(GuestDevice* device, GuestSurface* depthStencil);
+static void DiscardTexture(GuestBaseTexture* texture, RenderTextureLayout layout);
 static GuestTexture* CreateTexture(uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, uint32_t usage, uint32_t format, uint32_t pool, uint32_t type);
 static GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t format, uint32_t multiSample, GuestSurfaceCreateParams* params);
 
