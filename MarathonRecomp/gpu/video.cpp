@@ -753,6 +753,7 @@ struct SurfaceVariant
     float deferredClearColor[4]{};
     float deferredClearZ = 1.0f;
     uint32_t deferredClearStencil = 0;
+    bool pendingAliasResolve = false;
 };
 
 static Mutex g_surfaceVariantMutex;
@@ -929,6 +930,15 @@ static void AddBarrier(GuestBaseTexture* texture, RenderTextureLayout layout)
             g_barrierMap[texture->texture] = layout;
             layoutRef = layout;
         }
+    }
+}
+
+static void AddVariantBarrier(SurfaceVariant* variant, RenderTextureLayout layout)
+{
+    if (variant->layout != layout)
+    {
+        g_barrierMap[variant->textureHolder.get()] = layout;
+        variant->layout = layout;
     }
 }
 
@@ -2708,14 +2718,7 @@ static void GetSurfaceDesc(GuestSurface* surface, GuestSurfaceDesc* desc)
     desc->height = surface->height;
     desc->format = surface->guestFormat;
     desc->type = 4; // D3DRTYPE_SURFACE
-    // desc->multiSampleType = 0;
-    if (surface->sampleCount == RenderSampleCount::COUNT_1) {
-        desc->multiSampleType = 0;
-    } else if (surface->sampleCount == RenderSampleCount::COUNT_2) {
-        desc->multiSampleType = 1;
-    } else {
-        desc->multiSampleType = 2;
-    }
+    desc->multiSampleType = 0;
     desc->multiSampleQuality = 0;
     desc->usage = 0;
 }
@@ -4103,14 +4106,33 @@ static SurfaceVariant* AcquireSurfaceVariant(uint32_t base, uint32_t width, uint
     return variant.get();
 }
 
+static RenderSampleCounts GetHostSampleCount()
+{
+    if (g_surfaceCreationName == nullptr ||
+        (strcmp(g_surfaceCreationName, "framebuffer_hdr") != 0 &&
+         strcmp(g_surfaceCreationName, "depthstencil_texture") != 0))
+    {
+        return RenderSampleCount::COUNT_1;
+    }
+
+    switch (Config::AntiAliasing)
+    {
+    case EAntiAliasing::MSAA2x:
+        return RenderSampleCount::COUNT_2;
+    case EAntiAliasing::MSAA4x:
+        return RenderSampleCount::COUNT_4;
+    case EAntiAliasing::MSAA8x:
+        return RenderSampleCount::COUNT_8;
+    default:
+        return RenderSampleCount::COUNT_1;
+    }
+}
+
 static GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t format, uint32_t multiSample, GuestSurfaceCreateParams* params)
 {
-    RenderSampleCounts sampleCount;
-    if (multiSample == 0) {
-        sampleCount = RenderSampleCount::COUNT_1;
-    } else {
-        sampleCount = multiSample == 1 ? RenderSampleCount::COUNT_2 : RenderSampleCount::COUNT_4;
-    }
+    // The guest always runs without MSAA, it is applied on the host instead.
+    assert(multiSample == 0);
+    RenderSampleCounts sampleCount = GetHostSampleCount();
 
     const RenderFormat renderFormat = ConvertFormat(format);
     const bool isDepthStencil = RenderFormatIsDepth(renderFormat);
@@ -4215,6 +4237,8 @@ static void ProcStretchRect(const RenderCommand& cmd)
     const bool isDepthStencil = (args.flags & 0x4) != 0;
     const auto surface = isDepthStencil ? g_depthStencil : g_renderTarget;
 
+    ResolveAliasedVariant(surface);
+
     // Erase previous pending command so it doesn't cause the texture to be overriden.
     if (args.texture->sourceSurface != nullptr)
         args.texture->sourceSurface->destinationTextures.erase(args.texture);
@@ -4293,7 +4317,6 @@ static void ProcSetRenderTarget(const RenderCommand& cmd)
     const auto& args = cmd.setRenderTarget;
     SetDirtyValue(g_dirtyStates.renderTargetAndDepthStencil, g_renderTarget, args.renderTarget);
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.renderTargetFormat, args.renderTarget != nullptr ? args.renderTarget->format : RenderFormat::UNKNOWN);
-    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.sampleCount, args.renderTarget != nullptr ? args.renderTarget->sampleCount : RenderSampleCount::COUNT_1);
 
     // When alpha to coverage is enabled, update the alpha test mode as it's dependent on sample count.
     SetAlphaTestMode((g_pipelineState.specConstants & (SPEC_CONSTANT_ALPHA_TEST | SPEC_CONSTANT_ALPHA_TO_COVERAGE)) != 0);
@@ -4317,6 +4340,20 @@ static void ProcSetDepthStencilSurface(const RenderCommand& cmd)
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.depthStencilFormat, args.depthStencil != nullptr ? args.depthStencil->format : RenderFormat::UNKNOWN);
 }
 
+static bool CanHardwareResolve(GuestSurface* surface)
+{
+    if (RenderFormatIsDepth(surface->format))
+        return g_capabilities.resolveModes;
+
+    for (const auto& [texture, _] : surface->destinationTextures)
+    {
+        if (texture->format != surface->format)
+            return false;
+    }
+
+    return true;
+}
+
 static bool PopulateBarriersForStretchRect(GuestSurface* renderTarget, GuestSurface* depthStencil)
 {
     bool addedAny = false;
@@ -4333,7 +4370,7 @@ static bool PopulateBarriersForStretchRect(GuestSurface* renderTarget, GuestSurf
 
             if (multiSampling)
             {
-                if (!RenderFormatIsDepth(surface->format) || g_capabilities.resolveModes)
+                if (CanHardwareResolve(surface))
                 {
                     srcLayout = RenderTextureLayout::RESOLVE_SOURCE;
                     dstLayout = RenderTextureLayout::RESOLVE_DEST;
@@ -4369,6 +4406,7 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
         {
             const bool multiSampling = surface->sampleCount != RenderSampleCount::COUNT_1;
             const bool isDepthStencil = RenderFormatIsDepth(surface->format);
+            const bool hardwareResolve = CanHardwareResolve(surface);
 
             for (const auto [texture, slice] : surface->destinationTextures)
             {
@@ -4376,7 +4414,7 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
 
                 if (multiSampling)
                 {
-                    if (!isDepthStencil || g_capabilities.resolveModes)
+                    if (hardwareResolve)
                     {
                         if (isDepthStencil)
                             commandList->resolveTextureRegion(texture->texture, 0, 0, surface->texture, nullptr, RenderResolveMode::MIN);
@@ -4417,7 +4455,7 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
                         }
                         else
                         {
-                            auto& resolveMsaaColorPipeline = g_resolveMsaaColorPipelines[surface->format][pipelineIndex];
+                            auto& resolveMsaaColorPipeline = g_resolveMsaaColorPipelines[texture->format][pipelineIndex];
                             if (resolveMsaaColorPipeline == nullptr)
                             {
                                 RenderGraphicsPipelineDesc desc;
@@ -4552,6 +4590,97 @@ static void ProcExecutePendingStretchRectCommands(const RenderCommand& cmd)
 
     g_pendingSurfaceCopies.clear();
     g_pendingResolves.clear();
+}
+
+static void ResolveAliasedVariant(GuestSurface* surface)
+{
+    if (surface == nullptr || surface->variant == nullptr ||
+        surface->sampleCount != RenderSampleCount::COUNT_1 ||
+        surface->texture != surface->variant->textureHolder.get())
+    {
+        return;
+    }
+
+    const auto destination = surface->variant;
+    SurfaceVariant* source = nullptr;
+
+    {
+        std::lock_guard lock(g_surfaceVariantMutex);
+
+        for (auto& variant : g_surfaceVariants)
+        {
+            if (variant->pendingAliasResolve &&
+                variant->base == destination->base &&
+                variant->format == destination->format &&
+                variant->width == destination->width &&
+                variant->height == destination->height)
+            {
+                source = variant.get();
+                break;
+            }
+        }
+    }
+
+    if (source == nullptr)
+        return;
+
+    source->pendingAliasResolve = false;
+
+    auto& commandList = g_commandLists[g_frame];
+    const bool isDepthStencil = RenderFormatIsDepth(source->format);
+
+    destination->deferredClearFlags &= ~(isDepthStencil ? D3DCLEAR_ZBUFFER : D3DCLEAR_TARGET);
+
+    if (!isDepthStencil || g_capabilities.resolveModes)
+    {
+        AddVariantBarrier(source, RenderTextureLayout::RESOLVE_SOURCE);
+        AddVariantBarrier(destination, RenderTextureLayout::RESOLVE_DEST);
+        FlushBarriers();
+
+        if (isDepthStencil)
+            commandList->resolveTextureRegion(destination->textureHolder.get(), 0, 0, source->textureHolder.get(), nullptr, RenderResolveMode::MIN);
+        else
+            commandList->resolveTexture(destination->textureHolder.get(), source->textureHolder.get());
+
+        return;
+    }
+
+    AddVariantBarrier(source, RenderTextureLayout::SHADER_READ);
+    AddVariantBarrier(destination, RenderTextureLayout::DEPTH_WRITE);
+    FlushBarriers();
+
+    auto& framebuffer = destination->framebuffers[nullptr];
+    if (framebuffer == nullptr)
+    {
+        RenderFramebufferDesc desc;
+        desc.depthAttachment = destination->textureHolder.get();
+        framebuffer = g_device->createFramebuffer(desc);
+    }
+
+    if (g_framebuffer != framebuffer.get())
+    {
+        commandList->setFramebuffer(framebuffer.get());
+        g_framebuffer = framebuffer.get();
+    }
+
+    const uint32_t pipelineIndex = source->sampleCount == RenderSampleCount::COUNT_2 ? 0 : source->sampleCount == RenderSampleCount::COUNT_4 ? 1 : 2;
+
+    commandList->setPipeline(g_resolveMsaaDepthPipelines[pipelineIndex].get());
+    commandList->setViewports(RenderViewport(0.0f, 0.0f, float(destination->width), float(destination->height), 0.0f, 1.0f));
+    commandList->setScissors(RenderRect(0, 0, destination->width, destination->height));
+    commandList->setGraphicsPushConstants(0, &source->descriptorIndex, 0, sizeof(uint32_t));
+    commandList->drawInstanced(6, 1, 0, 0);
+
+    g_dirtyStates.renderTargetAndDepthStencil = true;
+    g_dirtyStates.viewport = true;
+    g_dirtyStates.pipelineState = true;
+    g_dirtyStates.scissorRect = true;
+
+    if (g_backend != Backend::D3D12)
+    {
+        g_dirtyStates.vertexShaderConstants = true;
+        g_dirtyStates.depthBias = true;
+    }
 }
 
 static void SetFramebuffer(GuestSurface* renderTarget, GuestSurface* depthStencil, bool settingForClear)
@@ -4760,6 +4889,7 @@ static void ProcClear(const RenderCommand& cmd)
                 }
 
                 variant->deferredClearFlags |= flags;
+                variant->pendingAliasResolve = false;
                 variant->deferredClearColor[0] = args.color[0];
                 variant->deferredClearColor[1] = args.color[1];
                 variant->deferredClearColor[2] = args.color[2];
@@ -5624,6 +5754,12 @@ static void FlushRenderStateForRenderThread()
 {
     auto renderTarget = g_pipelineState.colorWriteEnable ? g_renderTarget : nullptr;
     auto depthStencil = g_pipelineState.zEnable || g_pipelineState.stencilEnable ? g_depthStencil : nullptr;
+    auto sampleSource = renderTarget != nullptr ? renderTarget : depthStencil;
+
+    ResolveAliasedVariant(renderTarget);
+    ResolveAliasedVariant(depthStencil);
+
+    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.sampleCount, sampleSource != nullptr ? sampleSource->sampleCount : RenderSampleCount::COUNT_1);
 
     bool foundAny = PopulateBarriersForStretchRect(renderTarget, depthStencil);
 
@@ -5679,6 +5815,13 @@ static void FlushRenderStateForRenderThread()
 
     SetFramebuffer(renderTarget, depthStencil, false);
     ApplyDeferredVariantClears(renderTarget, depthStencil);
+
+    for (const auto surface : { renderTarget, depthStencil })
+    {
+        if (surface != nullptr && surface->variant != nullptr && surface->sampleCount != RenderSampleCount::COUNT_1)
+            surface->variant->pendingAliasResolve = true;
+    }
+
     FlushViewport();
 
     auto& commandList = g_commandLists[g_frame];
