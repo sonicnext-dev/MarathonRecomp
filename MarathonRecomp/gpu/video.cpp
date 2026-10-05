@@ -3481,6 +3481,8 @@ void Video::Present()
         g_backBuffer = static_cast<GuestSurface*>(pApp->m_pBackBufferSurface.get());
         g_depthStencil = static_cast<GuestSurface*>(pApp->m_pDepthStencilSurface.get());
 
+        g_backBuffer->format = BACKBUFFER_FORMAT;
+
         rDeviceInfo.PresentParameters.BackBufferWidth = width;
         rDeviceInfo.PresentParameters.BackBufferHeight = height;
         rDeviceInfo.pColorTile2x = pApp->m_pColorTile2x;
