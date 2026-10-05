@@ -3258,12 +3258,14 @@ void CreateTextureLocal(Sonicteam::SoX::Graphics::Texture* pTexture, uint32_t wi
     auto pGuestTexture = (GuestTexture*)pTexture->m_pTexture.get();
     auto pGuestTextureNew = CreateTexture(width, height, depth, levels, usage, format, pool, type);
 
-    // Swap host state in place so guest references stay valid, then destroy the old state through the deferred path.
-    alignas(GuestTexture) uint8_t temp[sizeof(GuestTexture)];
-    memcpy(temp, pGuestTexture, sizeof(GuestTexture));
-    memcpy(pGuestTexture, pGuestTextureNew, sizeof(GuestTexture));
-    memcpy(pGuestTextureNew, temp, sizeof(GuestTexture));
+    if (pGuestTexture->sourceSurface != nullptr)
+    {
+        pGuestTexture->sourceSurface->destinationTextures.erase(pGuestTexture);
+        pGuestTexture->sourceSurface = nullptr;
+    }
 
+    // Swap host state in place so guest references stay valid, then destroy the old state through the deferred path.
+    std::swap(*pGuestTexture, *pGuestTextureNew);
     std::swap(pGuestTexture->refCount, pGuestTextureNew->refCount);
     DestructResource(pGuestTextureNew);
 
