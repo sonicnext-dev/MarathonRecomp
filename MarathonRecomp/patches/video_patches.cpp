@@ -3,6 +3,7 @@
 #include <os/logger.h>
 #include <patches/aspect_ratio_patches.h>
 #include <user/config.h>
+#include <gpu/render_resolution.h>
 
 const char* g_pBlockName{};
 
@@ -11,6 +12,13 @@ extern const char* g_surfaceCreationName;
 void SetMSAALevel(PPCRegister& val)
 {
     val.u32 = 0;
+}
+
+void ScaleDepthStencilMidAsmHook(PPCRegister& width, PPCRegister& height)
+{
+    const auto internalSize = RenderResolution::GetInternalSize();
+    width.u32 = internalSize.Width;
+    height.u32 = internalSize.Height;
 }
 
 void BeginBlockGetName(PPCRegister& r3)
@@ -37,18 +45,12 @@ PPC_FUNC(sub_826078D8)
     __imp__sub_826078D8(ctx, base);
 }
 
-float ReflectionScaleFactor(EReflectionResolution ref) {
-    switch (ref) {
-        case EReflectionResolution::Eighth:
-            return 0.5f;
-        case EReflectionResolution::Quarter:
-            return 1.0f;
-        case EReflectionResolution::Half:
-            return 2.0f;
-        case EReflectionResolution::Full:
-            return 4.0f;
-        default:
-            return 1.0f;
+static void ApplyBufferSize(PPCContext& ctx, const char* pName)
+{
+    if (auto size = RenderResolution::FindBufferSize(pName, g_pBlockName))
+    {
+        ctx.r5.u32 = size->Width;
+        ctx.r6.u32 = size->Height;
     }
 }
 
@@ -57,27 +59,7 @@ PPC_FUNC_IMPL(__imp__sub_82619D00);
 PPC_FUNC(sub_82619D00)
 {
     auto pName = (stdx::string*)g_memory.Translate(ctx.r4.u32);
-
-    if (*pName == "radermap")
-    {
-        ctx.r5.u32 = g_radarMapScale;
-        ctx.r6.u32 = g_radarMapScale;
-    }
-
-    if (*pName == "reflection0")
-    {
-        ctx.r5.u32 = static_cast<int>(static_cast<float>(ctx.r5.u32) *
-            ReflectionScaleFactor(Config::ReflectionResolution));
-        ctx.r6.u32 = static_cast<int>(static_cast<float>(ctx.r6.u32) *
-            ReflectionScaleFactor(Config::ReflectionResolution));
-    }
-
-    // RenderMefiress
-    if (*pName == "user0")
-    {
-        ctx.r5.u32 = static_cast<int>(Config::ShadowResolution.Value);
-        ctx.r6.u32 = static_cast<int>(Config::ShadowResolution.Value);
-    }
+    ApplyBufferSize(ctx, pName->c_str());
 
 #if _DEBUG
     auto width = ctx.r5.u32;
@@ -98,30 +80,7 @@ PPC_FUNC_IMPL(__imp__sub_82619B88);
 PPC_FUNC(sub_82619B88)
 {
     auto pName = (stdx::string*)g_memory.Translate(ctx.r4.u32);
-
-    if (g_pBlockName)
-    {
-        if (strcmp(g_pBlockName, "radermap0") == 0)
-        {
-            ctx.r5.u32 = g_radarMapScale;
-            ctx.r6.u32 = g_radarMapScale;
-        }
-
-        // RenderMefiress
-        if (strcmp(g_pBlockName, "user0") == 0 && *pName == "depthstencil_256")
-        {
-            ctx.r5.u32 = static_cast<int>(Config::ShadowResolution.Value);
-            ctx.r6.u32 = static_cast<int>(Config::ShadowResolution.Value);
-        }
-    }
-
-    if (*pName == "depthstencil_1_4")
-    {
-        ctx.r5.u32 = static_cast<int>(static_cast<float>(ctx.r5.u32) *
-            ReflectionScaleFactor(Config::ReflectionResolution));
-        ctx.r6.u32 = static_cast<int>(static_cast<float>(ctx.r6.u32) *
-            ReflectionScaleFactor(Config::ReflectionResolution));
-    }
+    ApplyBufferSize(ctx, pName->c_str());
     
 #if _DEBUG
     auto width = ctx.r5.u32;
@@ -144,36 +103,12 @@ PPC_FUNC(sub_82619B88)
 #endif
 }
 
-float ShadowScaleFactor(EShadowResolution ref) {
-    switch (ref) {
-        case EShadowResolution::x512:
-            return 0.5f;
-        case EShadowResolution::x1024:
-            return 1.0f;
-        case EShadowResolution::x2048:
-            return 2.0f;
-        case EShadowResolution::x4096:
-            return 4.0f;
-        case EShadowResolution::x8192:
-            return 8.0f;
-        default:
-            return 1.0f;
-    }
-}
-
 // CreateArrayTexture
 PPC_FUNC_IMPL(__imp__sub_82619FF0);
 PPC_FUNC(sub_82619FF0)
 {
     auto pName = (stdx::string*)g_memory.Translate(ctx.r4.u32);
-
-    if (*pName == "csm")
-    {
-        ctx.r5.u32 = static_cast<int>(static_cast<float>(ctx.r5.u32) *
-            ShadowScaleFactor(Config::ShadowResolution));
-        ctx.r6.u32 = static_cast<int>(static_cast<float>(ctx.r6.u32) *
-            ShadowScaleFactor(Config::ShadowResolution));
-    }
+    ApplyBufferSize(ctx, pName->c_str());
 
     g_surfaceCreationName = pName->c_str();
     __imp__sub_82619FF0(ctx, base);

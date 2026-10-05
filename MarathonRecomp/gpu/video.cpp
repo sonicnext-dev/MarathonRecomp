@@ -35,6 +35,7 @@
 #include <sdl_listener.h>
 #include <xxHashMap.h>
 #include <os/process.h>
+#include <gpu/render_resolution.h>
 
 #if defined(ASYNC_PSO_DEBUG) || defined(PSO_CACHING)
 #include <magic_enum/magic_enum.hpp>
@@ -3472,10 +3473,9 @@ void Video::Resize(uint32_t width, uint32_t height)
     if (!pRenderTargetContainer || !pMyGraphicsDevice)
         return;
 
-    width *= Config::ResolutionScale;
-    height *= Config::ResolutionScale;
+    const auto internalSize = RenderResolution::GetInternalSize();
 
-    if (!width || !height)
+    if (!internalSize.Width || !internalSize.Height)
     {
         LOGN_ERROR("Attempting to resize buffers to 0x0.");
         return;
@@ -3483,8 +3483,6 @@ void Video::Resize(uint32_t width, uint32_t height)
 
     struct BufferInfo
     {
-        uint32_t Width;
-        uint32_t Height;
         uint32_t Index;
         uint32_t Flags;
     };
@@ -3492,17 +3490,17 @@ void Video::Resize(uint32_t width, uint32_t height)
     static std::map<std::string, BufferInfo> buffers{};
 
     // Update buffer dimensions.
-    buffers["framebuffer0"] = { width, height, 0, 4 };
-    buffers["framebuffer1"] = { width, height, 0, 0 };
-    buffers["framebuffer_1_4_0"] = { width >> 2, height >> 2, 3, 2 };
-    buffers["framebuffer_1_4_1"] = { width >> 2, height >> 2, 0, 2 };
-    buffers["framebuffer_1_8_0"] = { width >> 3, height >> 3, 3, 2 };
-    buffers["framebuffer_1_8_1"] = { width >> 3, height >> 3, 0, 2 };
-    buffers["framebuffer_1_16_0"] = { width >> 4, height >> 4, 3, 2 };
-    buffers["framebuffer_1_16_1"] = { width >> 4, height >> 4, 0, 2 };
-    buffers["framebuffer_1_32_0"] = { width >> 5, height >> 5, 3, 2 };
-    buffers["framebuffer_1_32_1"] = { width >> 5, height >> 5, 0, 2 };
-    buffers["depthstencil_1_4"] = { width, height, 6, 0 };
+    buffers["framebuffer0"] = { 0, 4 };
+    buffers["framebuffer1"] = { 0, 0 };
+    buffers["framebuffer_1_4_0"] = { 3, 2 };
+    buffers["framebuffer_1_4_1"] = { 0, 2 };
+    buffers["framebuffer_1_8_0"] = { 3, 2 };
+    buffers["framebuffer_1_8_1"] = { 0, 2 };
+    buffers["framebuffer_1_16_0"] = { 3, 2 };
+    buffers["framebuffer_1_16_1"] = { 0, 2 };
+    buffers["framebuffer_1_32_0"] = { 3, 2 };
+    buffers["framebuffer_1_32_1"] = { 0, 2 };
+    buffers["depthstencil_1_4"] = { 6, 0 };
 
     if (g_backBuffer && g_backBuffer != pApp->m_pBackBufferSurface.get())
         g_backBuffer->Release();
@@ -3513,7 +3511,7 @@ void Video::Resize(uint32_t width, uint32_t height)
     auto& rDeviceInfo = pApp->m_DeviceInfo;
 
     auto surfaceParams = D3DXBSURFACE_PARAMETERS(0, 0, 0);
-    const auto surfaceBase = uint32_t(height * 1.155555555555556); // 720p: 0x340
+    const auto surfaceBase = uint32_t(internalSize.Height * 1.155555555555556); // 720p: 0x340
 
     // Recreate main buffers.
     ReleaseResource(static_cast<GuestTexture*>(pApp->m_pFrontBufferTexture.get()));
@@ -3525,7 +3523,7 @@ void Video::Resize(uint32_t width, uint32_t height)
     surfaceParams.Base = surfaceParams.Base + surfaceBase;
 
     ReleaseResource(static_cast<GuestSurface*>(pApp->m_pDepthStencilSurface.get()));
-    pApp->m_pDepthStencilSurface = CreateSurface(width, height, D3DFMT_D24FS8, 0, reinterpret_cast<GuestSurfaceCreateParams*>(&surfaceParams));
+    pApp->m_pDepthStencilSurface = CreateSurface(internalSize.Width, internalSize.Height, D3DFMT_D24FS8, 0, reinterpret_cast<GuestSurfaceCreateParams*>(&surfaceParams));
 
     rDeviceInfo.SurfaceParamsB = surfaceParams;
     rDeviceInfo.SurfaceParamsC = rDeviceInfo.SurfaceParamsB;
@@ -3595,11 +3593,12 @@ void Video::Resize(uint32_t width, uint32_t height)
             continue;
 
         const auto& rBufferInfo = buffers[pSurfaceName];
+        const auto size = *RenderResolution::FindBufferSize(pSurfaceName, nullptr);
 
         auto pSurfaceParams = getSurfaceParams(rBufferInfo.Index, rBufferInfo.Flags);
-        auto pNewSurface = CreateSurface(rBufferInfo.Width, rBufferInfo.Height, pFormatConfigs[rBufferInfo.Index].SurfaceFormat, 0, reinterpret_cast<GuestSurfaceCreateParams*>(pSurfaceParams));
+        auto pNewSurface = CreateSurface(size.Width, size.Height, pFormatConfigs[rBufferInfo.Index].SurfaceFormat, 0, reinterpret_cast<GuestSurfaceCreateParams*>(pSurfaceParams));
 
-        GuestToHostFunction<void>(sub_82592E98, rSurface.second.get(), pNewSurface, rBufferInfo.Width, rBufferInfo.Height);
+        GuestToHostFunction<void>(sub_82592E98, rSurface.second.get(), pNewSurface, size.Width, size.Height);
     }
 
     // Update frame buffer textures.
@@ -3611,17 +3610,18 @@ void Video::Resize(uint32_t width, uint32_t height)
             continue;
 
         const auto& rBufferInfo = buffers[pTextureName];
+        const auto size = *RenderResolution::FindBufferSize(pTextureName, nullptr);
 
-        CreateTextureLocal(rTexture.second.get(), rBufferInfo.Width, rBufferInfo.Height, 1, 1, pFormatConfigs[rBufferInfo.Index].Usage, pFormatConfigs[rBufferInfo.Index].TextureFormat, 0, 3);
+        CreateTextureLocal(rTexture.second.get(), size.Width, size.Height, 1, 1, pFormatConfigs[rBufferInfo.Index].Usage, pFormatConfigs[rBufferInfo.Index].TextureFormat, 0, 3);
 
         const auto surfaceFormatIndex = (rBufferInfo.Flags & 4) == 0
             ? rBufferInfo.Index
             : 3;
 
         auto pSurfaceParams = getSurfaceParams(surfaceFormatIndex, rBufferInfo.Flags);
-        auto pNewSurface = CreateSurface(rBufferInfo.Width, rBufferInfo.Height, pFormatConfigs[surfaceFormatIndex].SurfaceFormat, 0, reinterpret_cast<GuestSurfaceCreateParams*>(pSurfaceParams));
+        auto pNewSurface = CreateSurface(size.Width, size.Height, pFormatConfigs[surfaceFormatIndex].SurfaceFormat, 0, reinterpret_cast<GuestSurfaceCreateParams*>(pSurfaceParams));
 
-        GuestToHostFunction<void>(sub_82592E98, rTexture.second->m_aspSurfaces[0].get(), pNewSurface, rBufferInfo.Width, rBufferInfo.Height);
+        GuestToHostFunction<void>(sub_82592E98, rTexture.second->m_aspSurfaces[0].get(), pNewSurface, size.Width, size.Height);
     }
 
     // Clear post-process buffers.
@@ -4130,8 +4130,6 @@ static RenderSampleCounts GetHostSampleCount()
 
 static GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t format, uint32_t multiSample, GuestSurfaceCreateParams* params)
 {
-    // The guest always runs without MSAA, it is applied on the host instead.
-    assert(multiSample == 0);
     RenderSampleCounts sampleCount = GetHostSampleCount();
 
     const RenderFormat renderFormat = ConvertFormat(format);
