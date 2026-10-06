@@ -1301,20 +1301,30 @@ PPC_FUNC(sub_824F1538)
 PPC_FUNC_IMPL(__imp__sub_82352220);
 PPC_FUNC(sub_82352220)
 {
-    auto pCObjBalloonIconDrawable = (Sonicteam::CObjBalloonIconDrawable*)(base + ctx.r3.u32);
-    auto scale = g_aspectRatioScale;
+    const auto pCObjBalloonIconDrawable = reinterpret_cast<Sonicteam::CObjBalloonIconDrawable*>(base + ctx.r3.u32);
+
+    auto scaleX = 1.0f * g_aspectRatioGameplayScale;
+    auto scaleY = g_aspectRatio * g_aspectRatioGameplayScale;
 
     if (g_aspectRatio > WIDE_ASPECT_RATIO)
-        scale = g_aspectRatio / WIDE_ASPECT_RATIO;
+    {
+        const auto ratio = g_aspectRatio / WIDE_ASPECT_RATIO;
 
-    pCObjBalloonIconDrawable->m_aVertices[0].X = -1.0f / scale;
+        scaleX /= ratio;
+        scaleY /= ratio;
+    }
+
+    pCObjBalloonIconDrawable->m_aVertices[0].X = -scaleX;
     pCObjBalloonIconDrawable->m_aVertices[0].Y = 0.0f;
-    pCObjBalloonIconDrawable->m_aVertices[1].X = -1.0f / scale;
-    pCObjBalloonIconDrawable->m_aVertices[1].Y = g_aspectRatio / scale;
-    pCObjBalloonIconDrawable->m_aVertices[2].X = 1.0f / scale;
+
+    pCObjBalloonIconDrawable->m_aVertices[1].X = -scaleX;
+    pCObjBalloonIconDrawable->m_aVertices[1].Y = scaleY;
+
+    pCObjBalloonIconDrawable->m_aVertices[2].X = scaleX;
     pCObjBalloonIconDrawable->m_aVertices[2].Y = 0.0f;
-    pCObjBalloonIconDrawable->m_aVertices[3].X = 1.0f / scale;
-    pCObjBalloonIconDrawable->m_aVertices[3].Y = g_aspectRatio / scale;
+
+    pCObjBalloonIconDrawable->m_aVertices[3].X = scaleX;
+    pCObjBalloonIconDrawable->m_aVertices[3].Y = scaleY;
 
     __imp__sub_82352220(ctx, base);
 }
