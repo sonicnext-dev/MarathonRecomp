@@ -4875,6 +4875,9 @@ static void ProcClear(const RenderCommand& cmd)
             // The variant the game just cleared itself needs no deferred clear.
             boundSurface->variant->deferredClearFlags &= ~flags;
 
+            if (boundSurface->sampleCount != RenderSampleCount::COUNT_1)
+                boundSurface->variant->pendingAliasResolve = true;
+
             for (auto& variant : g_surfaceVariants)
             {
                 if (variant.get() == boundSurface->variant ||
