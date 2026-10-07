@@ -34,7 +34,7 @@ public:
 #define CONFIG_LOCK_CALLBACK(name)  if (name.LockCallback) name.LockCallback(&name)
 #define CONFIG_APPLY_CALLBACK(name) if (name.ApplyCallback) name.ApplyCallback(&name)
 
-#define WINDOWPOS_CENTRED        0x2FFF0000
+#define CONFIG_WINDOWPOS_CENTRED 0x2FFF0000
 
 extern std::vector<IConfigDef*> g_configDefinitions;
 

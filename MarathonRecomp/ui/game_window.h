@@ -4,21 +4,21 @@
 #include <user/config.h>
 #include <sdl_events.h>
 
-#define DEFAULT_WIDTH 1280
-#define DEFAULT_HEIGHT 720
-#define MIN_WIDTH 640
-#define MIN_HEIGHT 480
-
 class GameWindow
 {
 public:
+    static constexpr int k_defaultWidth = 1280;
+    static constexpr int k_defaultHeight = 720;
+    static constexpr int k_minWidth = 640;
+    static constexpr int k_minHeight = 480;
+
     static inline SDL_Window* s_pWindow = nullptr;
     static inline plume::RenderWindow s_renderWindow;
 
     static inline int s_x;
     static inline int s_y;
-    static inline int s_width = DEFAULT_WIDTH;
-    static inline int s_height = DEFAULT_HEIGHT;
+    static inline int s_width = k_defaultWidth;
+    static inline int s_height = k_defaultHeight;
 
     static inline EPlayerCharacter s_playerCharacter;
 

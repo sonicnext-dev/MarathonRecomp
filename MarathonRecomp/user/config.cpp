@@ -781,16 +781,15 @@ void Config::CreateCallbacks()
 
     Config::WindowSize.ApplyCallback = [](ConfigDef<int32_t>* def)
     {
-        auto displayModes = GameWindow::GetDisplayModes();
+        const auto displayModes = GameWindow::GetDisplayModes();
 
         // Use largest supported resolution if overflowed.
         if (def->Value >= displayModes.size())
             def->Value = displayModes.size() - 1;
 
-        auto& mode = displayModes[def->Value];
-        auto centre = SDL_WINDOWPOS_CENTERED_DISPLAY(GameWindow::GetDisplay());
+        const auto& mode = displayModes[def->Value];
 
-        GameWindow::SetDimensions(mode.w, mode.h, centre, centre);
+        GameWindow::SetDimensions(mode.w, mode.h);
     };
 
     Config::Monitor.Callback = [](ConfigDef<int32_t>* def)

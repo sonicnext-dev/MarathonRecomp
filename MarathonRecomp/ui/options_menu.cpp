@@ -532,13 +532,17 @@ static void DrawOption
                 {
                     config->Value = s_oldValue;
 
-                    VideoConfigValueChangedCallback(config);
+                    // Don't run callbacks if Window Size change is cancelled.
+                    if (static_cast<void*>(config) != &Config::WindowSize)
+                    {
+                        VideoConfigValueChangedCallback(config);
 
-                    if (config->Callback)
-                        config->Callback(config);
+                        if (config->Callback)
+                            config->Callback(config);
 
-                    if (config->ApplyCallback)
-                        config->ApplyCallback(config);
+                        if (config->ApplyCallback)
+                            config->ApplyCallback(config);
+                    }
                 }
 
                 OptionsMenu::SetFlowState(OptionsMenuFlowState::OptionCursor);

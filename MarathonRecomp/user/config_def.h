@@ -49,8 +49,8 @@ CONFIG_DEFINE_LOCALISED("Audio", bool, MusicAttenuation, false, false);
 
 CONFIG_DEFINE("Video", std::string, GraphicsDevice, "", true);
 CONFIG_DEFINE_ENUM("Video", EGraphicsAPI, GraphicsAPI, EGraphicsAPI::Auto, true);
-CONFIG_DEFINE("Video", int32_t, WindowX, WINDOWPOS_CENTRED, false);
-CONFIG_DEFINE("Video", int32_t, WindowY, WINDOWPOS_CENTRED, false);
+CONFIG_DEFINE("Video", int32_t, WindowX, CONFIG_WINDOWPOS_CENTRED, false);
+CONFIG_DEFINE("Video", int32_t, WindowY, CONFIG_WINDOWPOS_CENTRED, false);
 CONFIG_DEFINE_LOCALISED("Video", int32_t, WindowSize, -1, false);
 CONFIG_DEFINE("Video", int32_t, WindowWidth, 1280, false);
 CONFIG_DEFINE("Video", int32_t, WindowHeight, 720, false);

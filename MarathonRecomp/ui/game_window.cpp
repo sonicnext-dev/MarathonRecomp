@@ -196,13 +196,7 @@ void GameWindow::Init(const char* sdlVideoDriver)
     SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
 #endif
 
-    s_x = Config::WindowX;
-    s_y = Config::WindowY;
-    s_width = Config::WindowWidth;
-    s_height = Config::WindowHeight;
-
-    if (s_x == -1 && s_y == -1)
-        s_x = s_y = SDL_WINDOWPOS_CENTERED;
+    SetDimensions(Config::WindowWidth, Config::WindowHeight, Config::WindowX, Config::WindowY);
 
     if (!IsPositionValid())
         GameWindow::ResetDimensions();
@@ -217,7 +211,7 @@ void GameWindow::Init(const char* sdlVideoDriver)
     SetIcon();
     SetTitle();
 
-    SDL_SetWindowMinimumSize(s_pWindow, MIN_WIDTH, MIN_HEIGHT);
+    SDL_SetWindowMinimumSize(s_pWindow, k_minWidth, k_minHeight);
 
 #if defined(_WIN32)
     s_renderWindow = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(s_pWindow), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
@@ -429,22 +423,53 @@ void GameWindow::SetDimensions(int w, int h, int x, int y)
 {
     s_width = w;
     s_height = h;
-    s_x = x;
-    s_y = y;
 
-    SDL_SetWindowSize(s_pWindow, w, h);
-    SDL_ResizeEvent(s_pWindow, w, h);
+    const auto isCentredX = SDL_WINDOWPOS_ISCENTERED(x);
+    const auto isCentredY = SDL_WINDOWPOS_ISCENTERED(y);
 
-    SDL_SetWindowPosition(s_pWindow, x, y);
-    SDL_MoveEvent(s_pWindow, x, y);
+    if (isCentredX || isCentredY)
+    {
+        SDL_Rect bounds{};
+        SDL_DisplayID display = SDL_GetDisplayForWindow(s_pWindow);
+
+        if (!display)
+            display = SDL_GetPrimaryDisplay();
+
+        if (SDL_GetDisplayBounds(display, &bounds))
+        {
+            s_x = isCentredX
+                ? bounds.x + (bounds.w / 2 - s_width / 2)
+                : x;
+
+            s_y = isCentredY
+                ? bounds.y + (bounds.h / 2 - s_height / 2)
+                : y;
+        }
+        else
+        {
+            s_x = isCentredX ? 0 : x;
+            s_y = isCentredY ? 0 : y;
+        }
+    }
+    else
+    {
+        s_x = x;
+        s_y = y;
+    }
+
+    if (!s_pWindow)
+        return;
+
+    SDL_SetWindowSize(s_pWindow, s_width, s_height);
+    SDL_ResizeEvent(s_pWindow, s_width, s_height);
+
+    SDL_SetWindowPosition(s_pWindow, s_x, s_y);
+    SDL_MoveEvent(s_pWindow, s_x, s_y);
 }
 
 void GameWindow::ResetDimensions()
 {
-    s_x = SDL_WINDOWPOS_CENTERED;
-    s_y = SDL_WINDOWPOS_CENTERED;
-    s_width = DEFAULT_WIDTH;
-    s_height = DEFAULT_HEIGHT;
+    SetDimensions(k_defaultWidth, k_defaultHeight);
 
     Config::WindowX = s_x;
     Config::WindowY = s_y;
@@ -550,7 +575,7 @@ std::vector<SDL_DisplayMode> GameWindow::GetDisplayModes(bool ignoreInvalidModes
 
         if (ignoreInvalidModes)
         {
-            if (mode.w < MIN_WIDTH || mode.h < MIN_HEIGHT)
+            if (mode.w < k_minWidth || mode.h < k_minHeight)
                 continue;
 
             auto desktopMode = SDL_GetDesktopDisplayMode(displayID);
@@ -582,21 +607,29 @@ std::vector<SDL_DisplayMode> GameWindow::GetDisplayModes(bool ignoreInvalidModes
 
 int GameWindow::FindNearestDisplayMode()
 {
-    auto result = -1;
-    auto displayModes = GetDisplayModes();
-    auto currentDiff = std::numeric_limits<int>::max();
+    int result = -1;
+    int smallestDiff{};
+
+    const auto displayModes = GetDisplayModes();
 
     for (int i = 0; i < displayModes.size(); i++)
     {
-        auto& mode = displayModes[i];
+        const auto& mode = displayModes[i];
 
-        auto widthDiff = abs(mode.w - s_width);
-        auto heightDiff = abs(mode.h - s_height);
-        auto totalDiff = widthDiff + heightDiff;
+        const auto widthDiff = abs(mode.w - s_width);
+        const auto heightDiff = abs(mode.h - s_height);
+        const auto currentDiff = widthDiff + heightDiff;
 
-        if (totalDiff < currentDiff)
+        // Display mode matches exact resolution.
+        if (!currentDiff)
         {
-            currentDiff = totalDiff;
+            result = i;
+            break;
+        }
+
+        if (currentDiff < smallestDiff)
+        {
+            smallestDiff = currentDiff;
             result = i;
         }
     }
@@ -606,38 +639,30 @@ int GameWindow::FindNearestDisplayMode()
 
 bool GameWindow::IsPositionValid()
 {
-    int displayCount = 0;
-    auto displays = SDL_GetDisplays(&displayCount);
+    bool result{};
+
+    int displayCount{};
+    const auto displays = SDL_GetDisplays(&displayCount);
 
     if (!displays)
-        return false;
-
-    auto result = false;
+        return result;
 
     for (int i = 0; i < displayCount; i++)
     {
-        SDL_Rect bounds;
+        SDL_Rect bounds{};
 
         if (!SDL_GetDisplayBounds(displays[i], &bounds))
             continue;
 
-        auto x = s_x;
-        auto y = s_y;
-
-        // Window spans across the entire display in windowed mode, which is invalid.
-        if (!Config::Fullscreen && s_width == bounds.w && s_height == bounds.h)
-            break;
-
-        if (x == SDL_WINDOWPOS_CENTERED_DISPLAY(displays[i]))
-            x = bounds.w / 2 - s_width / 2;
-
-        if (y == SDL_WINDOWPOS_CENTERED_DISPLAY(displays[i]))
-            y = bounds.h / 2 - s_height / 2;
-
-        if (x >= bounds.x && x < bounds.x + bounds.w &&
-            y >= bounds.y && y < bounds.y + bounds.h)
+        if (s_x >= bounds.x && s_x < bounds.x + bounds.w &&
+            s_y >= bounds.y && s_y < bounds.y + bounds.h)
         {
+            // Window covers the display in windowed mode, which is invalid.
+            if (!Config::Fullscreen && s_width == bounds.w && s_height == bounds.h)
+                break;
+
             result = true;
+
             break;
         }
     }
