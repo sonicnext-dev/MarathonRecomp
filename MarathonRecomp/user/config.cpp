@@ -789,6 +789,7 @@ void Config::CreateCallbacks()
 
         const auto& mode = windowModes[def->Value];
 
+        GameWindow::SetMaximised(false);
         GameWindow::SetDimensions(mode.w, mode.h);
     };
 
