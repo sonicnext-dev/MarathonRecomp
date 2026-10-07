@@ -256,7 +256,7 @@ void DrawSelectionArrows(ImVec2 min, ImVec2 max, bool isSelected)
     auto arrowOffsetXMin = Scale(30, true);
     auto arrowOffsetXMax = Scale(20, true);
 
-    auto arrowOffsetX = Lerp(arrowOffsetXMin, arrowOffsetXMax, sin(motionTime * M_PI));
+    auto arrowOffsetX = Lerp(arrowOffsetXMin, arrowOffsetXMax, sin(motionTime * std::numbers::pi));
     auto arrowOffsetY = Scale(10, true);
 
     auto arrowLeftOffsetX = s_isLeftArrowMotion ? arrowOffsetX : arrowOffsetXMin;

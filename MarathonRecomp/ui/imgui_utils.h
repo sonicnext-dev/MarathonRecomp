@@ -1,5 +1,6 @@
 #pragma once
 
+#include <numbers>
 #include <gpu/imgui/imgui_common.h>
 #include <gpu/video.h>
 #include <xxHashMap.h>
@@ -13,7 +14,7 @@
 #define CENTRE_TEXT_HORZ(min, max, textSize) min.x + ((max.x - min.x) - textSize.x) / 2
 #define CENTRE_TEXT_VERT(min, max, textSize) min.y + ((max.y - min.y) - textSize.y) / 2
 
-#define BREATHE_MOTION(start, end, time, rate) Lerp(start, end, (sin((ImGui::GetTime() - time) * (2.0f * M_PI / rate)) + 1.0f) / 2.0f)
+#define BREATHE_MOTION(start, end, time, rate) Lerp(start, end, (sin((ImGui::GetTime() - time) * (2.0f * std::numbers::pi / rate)) + 1.0f) / 2.0f)
 
 #define IM_COL32_WHITE_TRANS IM_COL32(255, 255, 255, 0)
 
