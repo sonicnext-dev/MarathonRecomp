@@ -33,7 +33,7 @@ public:
     static void SetIcon(EPlayerCharacter player = EPlayerCharacter::Sonic);
     static const char* GetTitle();
     static void SetTitle(const char* title = nullptr);
-    static void SetTitleBarColour();
+    static void ConfigurePlatformWindow();
     static bool IsFullscreen();
     static bool SetFullscreen(bool isEnabled);
     static void SetFullscreenCursorVisibility(bool isVisible);

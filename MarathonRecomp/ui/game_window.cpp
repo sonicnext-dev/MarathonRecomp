@@ -226,12 +226,6 @@ void GameWindow::Init(const char* sdlVideoDriver)
 
 #if defined(_WIN32)
     s_renderWindow = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties(s_pWindow), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
-
-    if (Config::DisableDWMRoundedCorners)
-    {
-        DWM_WINDOW_CORNER_PREFERENCE wcp = DWMWCP_DONOTROUND;
-        DwmSetWindowAttribute(s_renderWindow, DWMWA_WINDOW_CORNER_PREFERENCE, &wcp, sizeof(wcp));
-    }
 #elif defined(PLUME_SDL_VULKAN_ENABLED)
     s_renderWindow = s_pWindow;
 #elif defined(__linux__)
@@ -246,7 +240,7 @@ void GameWindow::Init(const char* sdlVideoDriver)
     static_assert(false, "Unknown platform.");
 #endif
 
-    SetTitleBarColour();
+    ConfigurePlatformWindow();
 
     SDL_ShowWindow(s_pWindow);
 }
@@ -331,9 +325,9 @@ void GameWindow::SetTitle(const char* title)
     SDL_SetWindowTitle(s_pWindow, title ? title : GetTitle());
 }
 
-void GameWindow::SetTitleBarColour()
+void GameWindow::ConfigurePlatformWindow()
 {
-#if _WIN32
+#ifdef _WIN32
     if (os::user::IsDarkTheme())
     {
         auto version = os::version::GetOSVersion();
@@ -347,6 +341,12 @@ void GameWindow::SetTitleBarColour()
 
         const DWORD useImmersiveDarkMode = 1;
         DwmSetWindowAttribute(s_renderWindow, flag, &useImmersiveDarkMode, sizeof(useImmersiveDarkMode));
+    }
+
+    if (Config::DisableDWMRoundedCorners)
+    {
+        DWM_WINDOW_CORNER_PREFERENCE wcp = DWMWCP_DONOTROUND;
+        DwmSetWindowAttribute(GameWindow::s_renderWindow, DWMWA_WINDOW_CORNER_PREFERENCE, &wcp, sizeof(wcp));
     }
 #endif
 }
@@ -375,6 +375,7 @@ bool GameWindow::SetFullscreen(bool isEnabled)
 
         SetIcon(GameWindow::s_playerCharacter);
         SetDimensions(Config::WindowWidth, Config::WindowHeight, Config::WindowX, Config::WindowY);
+        ConfigurePlatformWindow();
     }
 
     return isEnabled;
