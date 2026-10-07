@@ -20,6 +20,8 @@ public:
     static inline int s_width = k_defaultWidth;
     static inline int s_height = k_defaultHeight;
 
+    static inline std::vector<SDL_DisplayMode> s_windowModes{};
+
     static inline EPlayerCharacter s_playerCharacter;
 
     static inline bool s_isFocused;
@@ -46,7 +48,9 @@ public:
     static int GetDisplay();
     static void SetDisplay(int displayIndex);
     static std::vector<SDL_DisplayMode> GetDisplayModes(bool ignoreInvalidModes = true, bool ignoreRefreshRates = true);
-    static int FindNearestDisplayMode();
+    static int FindNearestDisplayMode(const std::vector<SDL_DisplayMode>& displayModes);
+    static int FindNearestDisplayMode(bool ignoreInvalidModes = true, bool ignoreRefreshRates = true);
+    static int FindNearestWindowMode();
     static bool IsPositionValid();
     static void Init(const char* sdlVideoDriver = nullptr);
     static void Update();

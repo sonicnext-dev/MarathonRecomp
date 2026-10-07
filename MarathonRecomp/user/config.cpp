@@ -776,18 +776,18 @@ void Config::CreateCallbacks()
     {
         // Try matching the current window size with a known configuration.
         if (def->Value < 0)
-            def->Value = GameWindow::FindNearestDisplayMode();
+            def->Value = GameWindow::FindNearestWindowMode();
     };
 
     Config::WindowSize.ApplyCallback = [](ConfigDef<int32_t>* def)
     {
-        const auto displayModes = GameWindow::GetDisplayModes();
+        const auto& windowModes = GameWindow::s_windowModes;
 
         // Use largest supported resolution if overflowed.
-        if (def->Value >= displayModes.size())
-            def->Value = displayModes.size() - 1;
+        if (def->Value >= windowModes.size())
+            def->Value = windowModes.size() - 1;
 
-        const auto& mode = displayModes[def->Value];
+        const auto& mode = windowModes[def->Value];
 
         GameWindow::SetDimensions(mode.w, mode.h);
     };

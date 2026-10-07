@@ -33,6 +33,11 @@ static SDL_DisplayID GetDisplayID(int displayIndex)
     return result;
 }
 
+static void OnWindowDisplayChanged()
+{
+    GameWindow::s_windowModes = GameWindow::GetDisplayModes(true, true);
+}
+
 bool Window_OnSDLEvent(void*, SDL_Event* event)
 {
     if (ImGui::GetIO().BackendPlatformUserData != nullptr)
@@ -160,6 +165,10 @@ bool Window_OnSDLEvent(void*, SDL_Event* event)
             GameWindow::s_y = event->window.data2;
             break;
 
+        case SDL_EVENT_WINDOW_DISPLAY_CHANGED:
+            OnWindowDisplayChanged();
+            break;
+
         case SDL_EVENT_USER_PLAYER_CHAR:
             GameWindow::s_playerCharacter = static_cast<EPlayerCharacter>(event->user.code);
             GameWindow::SetIcon(GameWindow::s_playerCharacter);
@@ -203,6 +212,8 @@ void GameWindow::Init(const char* sdlVideoDriver)
 
     s_pWindow = SDL_CreateWindow("Marathon Recompiled", s_width, s_height, GetWindowFlags());
     SDL_SetWindowPosition(s_pWindow, s_x, s_y);
+
+    OnWindowDisplayChanged();
 
     if (IsFullscreen())
         SDL_HideCursor();
@@ -605,12 +616,10 @@ std::vector<SDL_DisplayMode> GameWindow::GetDisplayModes(bool ignoreInvalidModes
     return result;
 }
 
-int GameWindow::FindNearestDisplayMode()
+int GameWindow::FindNearestDisplayMode(const std::vector<SDL_DisplayMode>& displayModes)
 {
     int result = -1;
     int smallestDiff{};
-
-    const auto displayModes = GetDisplayModes();
 
     for (int i = 0; i < displayModes.size(); i++)
     {
@@ -635,6 +644,16 @@ int GameWindow::FindNearestDisplayMode()
     }
 
     return result;
+}
+
+int GameWindow::FindNearestDisplayMode(bool ignoreInvalidModes, bool ignoreRefreshRates)
+{
+    return FindNearestDisplayMode(GetDisplayModes(ignoreInvalidModes, ignoreRefreshRates));
+}
+
+int GameWindow::FindNearestWindowMode()
+{
+    return FindNearestDisplayMode(s_windowModes);
 }
 
 bool GameWindow::IsPositionValid()

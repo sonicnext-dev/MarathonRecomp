@@ -732,13 +732,13 @@ static void DrawOption
             }
             else
             {
-                auto displayModes = GameWindow::GetDisplayModes();
+                const auto& windowModes = GameWindow::s_windowModes;
 
-                if (config->Value >= 0 && config->Value < displayModes.size())
+                if (config->Value >= 0 && config->Value < windowModes.size())
                 {
-                    auto& displayMode = displayModes[config->Value];
+                    const auto& windowMode = windowModes[config->Value];
 
-                    valueText = fmt::format("{}x{}", displayMode.w, displayMode.h);
+                    valueText = fmt::format("{}x{}", windowMode.w, windowMode.h);
                 }
                 else
                 {
@@ -844,7 +844,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
         {
             DrawOption(rowCount++, &Config::WindowSize, !Config::Fullscreen,
                 &Localise("Options_Desc_NotAvailableFullscreen"),
-                0, 0, (int)GameWindow::GetDisplayModes().size() - 1, false);
+                0, 0, (int)GameWindow::s_windowModes.size() - 1, false);
 
             auto displayCount = GameWindow::GetDisplayCount();
             auto canChangeMonitor = Config::Fullscreen && displayCount > 1;
