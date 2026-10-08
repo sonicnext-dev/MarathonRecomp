@@ -158,21 +158,8 @@ struct MovieModifier
 };
 
 extern const xxHashMap<MovieModifier> g_movieModifiers;
-MovieModifier FindMovieModifier(XXH64_hash_t nameHash);
 
-static void SetTextEntityModifier(Sonicteam::TextEntity* pTextEntity, uint64_t flags)
-{
-    if (!pTextEntity)
-        return;
-
-    const auto pTextModifier = reinterpret_cast<uint64_t *>(
-        reinterpret_cast<uint8_t *>(pTextEntity) + sizeof(Sonicteam::TextEntity));
-
-    *pTextModifier = flags;
-
-    pTextEntity->m_FieldDD = true;
-    pTextEntity->Update();
-}
+void SetTextEntityModifier(Sonicteam::TextEntity* pTextEntity, uint64_t flags);
 
 #undef MAKE_BITFLAG64
 #undef MAKE_BITFLAG32

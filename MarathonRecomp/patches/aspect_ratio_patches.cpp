@@ -10,6 +10,7 @@
 #include <ui/imgui_utils.h>
 #include <ui/options_menu.h>
 #include <user/config.h>
+#include <app.h>
 
 // #define CORNER_DEBUG
 
@@ -1539,6 +1540,20 @@ void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity)
 
         variablesIndex++;
     }
+}
+
+void SetTextEntityModifier(Sonicteam::TextEntity* pTextEntity, uint64_t flags)
+{
+    if (!pTextEntity)
+        return;
+
+    const auto pTextModifier = reinterpret_cast<uint64_t*>(
+        reinterpret_cast<uint8_t*>(pTextEntity) + sizeof(Sonicteam::TextEntity));
+
+    *pTextModifier = flags;
+
+    pTextEntity->m_FieldDD = true;
+    pTextEntity->Update();
 }
 
 void TextEntityAlloc(PPCRegister& r3)
