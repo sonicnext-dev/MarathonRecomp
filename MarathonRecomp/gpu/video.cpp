@@ -138,19 +138,7 @@ namespace plume
 #ifdef MARATHON_RECOMP_METAL
 extern std::unique_ptr<RenderInterface> CreateMetalInterface();
 #endif
-#ifdef PLUME_SDL_VULKAN_ENABLED
-    extern std::unique_ptr<RenderInterface> CreateVulkanInterface(RenderWindow sdlWindow);
-#else
     extern std::unique_ptr<RenderInterface> CreateVulkanInterface();
-#endif
-
-    static std::unique_ptr<RenderInterface> CreateVulkanInterfaceWrapper() {
-#ifdef PLUME_SDL_VULKAN_ENABLED
-        return CreateVulkanInterface(GameWindow::s_renderWindow);
-#else
-        return CreateVulkanInterface();
-#endif
-    }
 }
 
 using namespace plume;
@@ -2039,9 +2027,9 @@ static bool TryCreateHostDevice(std::vector<RenderInterfaceFunction*>& interface
                     }
                 }
 
-                g_backend = (interfaceFunction == CreateVulkanInterfaceWrapper) ? Backend::VULKAN : Backend::D3D12;
+                g_backend = (interfaceFunction == CreateVulkanInterface) ? Backend::VULKAN : Backend::D3D12;
 #elif defined(MARATHON_RECOMP_METAL)
-                g_backend = (interfaceFunction == CreateVulkanInterfaceWrapper) ? Backend::VULKAN : Backend::METAL;
+                g_backend = (interfaceFunction == CreateVulkanInterface) ? Backend::VULKAN : Backend::METAL;
 #endif
                 // Enable triangle strip workaround if we are on AMD, as there is a bug where
                 // restart indices cause triangles to be culled incorrectly. Converting them to degenerate triangles fixes it.
@@ -2092,13 +2080,13 @@ bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
     std::vector<RenderInterfaceFunction*> interfaceFunctions;
 
 #ifdef MARATHON_RECOMP_D3D12
-    interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateVulkanInterfaceWrapper : CreateD3D12Interface);
-    interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateD3D12Interface : CreateVulkanInterfaceWrapper);
+    interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateVulkanInterface : CreateD3D12Interface);
+    interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateD3D12Interface : CreateVulkanInterface);
 #elif defined(MARATHON_RECOMP_METAL)
-    interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateVulkanInterfaceWrapper : CreateMetalInterface);
-    interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateMetalInterface : CreateVulkanInterfaceWrapper);
+    interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateVulkanInterface : CreateMetalInterface);
+    interfaceFunctions.push_back((g_backend == Backend::VULKAN) ? CreateMetalInterface : CreateVulkanInterface);
 #else
-    interfaceFunctions.push_back(CreateVulkanInterfaceWrapper);
+    interfaceFunctions.push_back(CreateVulkanInterface);
 #endif
 
     if (!TryCreateHostDevice(interfaceFunctions, graphicsApiRetry))
