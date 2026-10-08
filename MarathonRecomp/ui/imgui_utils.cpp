@@ -1077,7 +1077,7 @@ ImVec2 MeasureInterpolatedText(const ImFont* pFont, float fontSize, const char* 
 {
     ImVec2 result{};
 
-    auto parsed = ParseInterpolatedString(pText);
+    const auto parsed = ParseInterpolatedString(pText);
 
     auto measureText = [&](float paddingX, std::string_view str)
     {
@@ -1089,33 +1089,33 @@ ImVec2 MeasureInterpolatedText(const ImFont* pFont, float fontSize, const char* 
 
     for (size_t i = 0; i < parsed.size(); i++)
     {
-        auto& str = parsed[i];
-        auto  paddingX = i == parsed.size() - 1 ? 0 : Scale(2, true);
+        const auto& str = parsed[i];
+        const auto  paddingX = i == parsed.size() - 1 ? 0 : Scale(2, true);
 
         if (IsInterpolatedString(str))
         {
-            auto parsedSingleNoTokens = ParseInterpolatedString(str.data(), false);
+            const auto parsedSingleNoTokens = ParseInterpolatedString(str.data(), false);
 
             if (!parsedSingleNoTokens.size())
                 continue;
 
-            auto variableMapSingle = MapTextVariables(parsedSingleNoTokens[0].data());
+            const auto variableMapSingle = MapTextVariables(parsedSingleNoTokens[0].data());
 
             if (!variableMapSingle.size())
                 continue;
 
-            auto& variable = variableMapSingle[0];
-            auto& variableType = variable.first;
-            auto& variableValue = variable.second;
+            const auto& variable = variableMapSingle[0];
+            const auto& variableType = variable.first;
+            const auto& variableValue = variable.second;
 
             if (variableType == "picture")
             {
-                auto& pictureName = variableValue;
-                auto  pictureNameHash = HashStr(pictureName);
+                const auto& pictureName = variableValue;
+                const auto  pictureNameHash = HashStr(pictureName);
 
                 if (!pInterpData || !pInterpData->Picture.pupTexture || !pInterpData->pPictureCrops || !pInterpData->pPictureCrops->contains(pictureNameHash))
                 {
-                    auto placeholderScale = Scale(28, true);
+                    const auto placeholderScale = Scale(28, true);
 
                     result.x += placeholderScale;
                     result.y = std::max(result.y, placeholderScale);
@@ -1123,16 +1123,20 @@ ImVec2 MeasureInterpolatedText(const ImFont* pFont, float fontSize, const char* 
                     continue;
                 }
 
-                auto pictureCrop = FindHash<ImGuiTextPictureCrop>(*pInterpData->pPictureCrops, pictureNameHash);
-                auto pictureWidth = Scale(pictureCrop.Width, true);
-                auto pictureHeight = Scale(pictureCrop.Height, true);
+                const auto pPictureCrop = FindHash(*pInterpData->pPictureCrops, pictureNameHash);
+
+                if (!pPictureCrop)
+                    continue;
+
+                const auto pictureWidth = Scale(pPictureCrop->Width, true);
+                const auto pictureHeight = Scale(pPictureCrop->Height, true);
 
                 result.x += pictureWidth + paddingX;
                 result.y = std::max(result.y, pictureHeight);
             }
             else if (variableType == "locale")
             {
-                auto& localeName = variableValue;
+                const auto& localeName = variableValue;
 
                 measureText(paddingX, Localise(localeName));
             }
@@ -1148,10 +1152,11 @@ ImVec2 MeasureInterpolatedText(const ImFont* pFont, float fontSize, const char* 
 
 void DrawInterpolatedText(const ImFont* pFont, float fontSize, const ImVec2& pos, ImU32 colour, const char* pText, ImGuiTextInterpData* pInterpData)
 {
-    auto drawList = ImGui::GetBackgroundDrawList();
-    auto parsed = ParseInterpolatedString(pText);
+    const auto drawList = ImGui::GetBackgroundDrawList();
+    const auto parsed = ParseInterpolatedString(pText);
+    const auto marginY = Config::Language == ELanguage::Japanese ? 0 : Scale(1, true);
+
     auto advanceX = 0.0f;
-    auto marginY = Config::Language == ELanguage::Japanese ? 0 : Scale(1, true);
 
     auto drawText = [&](const ImVec2& pos, float paddingX, std::string_view str)
     {
@@ -1164,37 +1169,37 @@ void DrawInterpolatedText(const ImFont* pFont, float fontSize, const ImVec2& pos
 
     for (size_t i = 0; i < parsed.size(); i++)
     {
-        auto& str = parsed[i];
-        auto  curPos = ImVec2{ pos.x + advanceX, pos.y + marginY };
-        auto  paddingX = i == parsed.size() - 1 ? 0 : Scale(2, true);
+        const auto& str = parsed[i];
+        const auto  curPos = ImVec2{ pos.x + advanceX, pos.y + marginY };
+        const auto  paddingX = i == parsed.size() - 1 ? 0 : Scale(2, true);
 
         if (IsInterpolatedString(str))
         {
-            auto parsedSingleNoTokens = ParseInterpolatedString(str.data(), false);
+            const auto parsedSingleNoTokens = ParseInterpolatedString(str.data(), false);
         
             if (!parsedSingleNoTokens.size())
                 continue;
 
-            auto variableMapSingle = MapTextVariables(parsedSingleNoTokens[0].data());
+            const auto variableMapSingle = MapTextVariables(parsedSingleNoTokens[0].data());
         
             if (!variableMapSingle.size())
                 continue;
         
-            auto& variable = variableMapSingle[0];
-            auto& variableType = variable.first;
-            auto& variableValue = variable.second;
+            const auto& variable = variableMapSingle[0];
+            const auto& variableType = variable.first;
+            const auto& variableValue = variable.second;
         
             if (variableType == "picture")
             {
-                auto& pictureName = variableValue;
-                auto  pictureNameHash = HashStr(pictureName);
+                const auto& pictureName = variableValue;
+                const auto  pictureNameHash = HashStr(pictureName);
 
                 if (!pInterpData || !pInterpData->Picture.pupTexture || !pInterpData->pPictureCrops || !pInterpData->pPictureCrops->contains(pictureNameHash))
                 {
-                    auto placeholderScale = Scale(28, true);
+                    const auto placeholderScale = Scale(28, true);
 
-                    ImVec2 placeholderMin = { pos.x + advanceX, pos.y };
-                    ImVec2 placeholderMax = { placeholderMin.x + placeholderScale, placeholderMin.y + placeholderScale };
+                    const ImVec2 placeholderMin = { pos.x + advanceX, pos.y };
+                    const ImVec2 placeholderMax = { placeholderMin.x + placeholderScale, placeholderMin.y + placeholderScale };
 
                     advanceX += placeholderScale;
 
@@ -1203,13 +1208,17 @@ void DrawInterpolatedText(const ImFont* pFont, float fontSize, const ImVec2& pos
                     continue;
                 }
 
-                auto pictureCrop = FindHash<ImGuiTextPictureCrop>(*pInterpData->pPictureCrops, pictureNameHash);
-                auto pictureUVs = PIXELS_TO_UV_COORDS(pInterpData->Picture.Width, pInterpData->Picture.Height, pictureCrop.X, pictureCrop.Y, pictureCrop.Width, pictureCrop.Height);
-                auto pictureWidth = Scale(pictureCrop.Width, true);
-                auto pictureHeight = Scale(pictureCrop.Height, true);
+                const auto pPictureCrop = FindHash(*pInterpData->pPictureCrops, pictureNameHash);
 
-                ImVec2 pictureMin = { pos.x + advanceX, pos.y };
-                ImVec2 pictureMax = { pictureMin.x + pictureWidth, pictureMin.y + pictureHeight };
+                if (!pPictureCrop)
+                    continue;
+
+                const auto pictureUVs = PIXELS_TO_UV_COORDS(pInterpData->Picture.Width, pInterpData->Picture.Height, pPictureCrop->X, pPictureCrop->Y, pPictureCrop->Width, pPictureCrop->Height);
+                const auto pictureWidth = Scale(pPictureCrop->Width, true);
+                const auto pictureHeight = Scale(pPictureCrop->Height, true);
+
+                const ImVec2 pictureMin = { pos.x + advanceX, pos.y };
+                const ImVec2 pictureMax = { pictureMin.x + pictureWidth, pictureMin.y + pictureHeight };
 
                 advanceX += pictureWidth + paddingX;
 
@@ -1217,7 +1226,7 @@ void DrawInterpolatedText(const ImFont* pFont, float fontSize, const ImVec2& pos
             }
             else if (variableType == "locale")
             {
-                auto& localeName = variableValue;
+                const auto& localeName = variableValue;
 
                 drawText(curPos, paddingX, Localise(localeName));
             }

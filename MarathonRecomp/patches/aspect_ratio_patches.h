@@ -158,7 +158,5 @@ struct MovieModifier
 
 extern const xxHashMap<MovieModifier> g_movieModifiers;
 
-MovieModifier FindMovieModifier(XXH64_hash_t nameHash);
-
 #undef MAKE_BITFLAG64
 #undef MAKE_BITFLAG32

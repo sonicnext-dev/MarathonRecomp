@@ -19,12 +19,12 @@ inline XXH64_hash_t HashStr(const std::string_view& value)
 }
 
 template <typename T>
-inline T FindHash(const xxHashMap<T>& map, const XXH64_hash_t hash)
+inline const T* FindHash(const xxHashMap<T>& map, const XXH64_hash_t hash)
 {
     auto findResult = map.find(hash);
 
     if (findResult != map.end())
-        return findResult->second;
+        return &findResult->second;
 
-    return {};
+    return nullptr;
 }

@@ -1356,8 +1356,6 @@ PPC_FUNC(sub_8264CC90)
         LOGFN_UTILITY("Movie: {} - {}x{}", pMovieObjectWmv->m_FilePath.c_str(), pMovieObjectWmv->m_Width.get(), pMovieObjectWmv->m_Height.get());
     }
 
-    auto movieModifier = FindHash<MovieModifier>(g_movieModifiers, movieNameHash);
-
     g_aspectRatioMovie = (float)pMovieObjectWmv->m_Width / (float)pMovieObjectWmv->m_Height;
 
     float width, height, left, right, top, bottom;
@@ -1397,6 +1395,11 @@ PPC_FUNC(sub_8264CC90)
     {
         width = 2.0f;
         height = 2.0f;
+
+        MovieModifier movieModifier{};
+
+        if (const auto pMovieModifier = FindHash(g_movieModifiers, movieNameHash))
+            movieModifier = *pMovieModifier;
 
         if (g_aspectRatio > g_aspectRatioMovie)
         {
@@ -1445,14 +1448,14 @@ void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity)
     if (!pTextEntity || !pTextEntity->m_ImageVertexCount)
         return;
 
-    auto variables = MapTextVariables(pTextEntity->m_pVariables);
+    const auto variables = MapTextVariables(pTextEntity->m_pVariables);
+
     auto variablesIndex = 0;
     auto pictureIndex = 0;
 
     for (int i = 0; i < pTextEntity->m_Text.size(); i++)
     {
-        auto str = pTextEntity->m_Text.c_str();
-        auto c = ByteSwap(str[i]);
+        const auto c = ByteSwap(pTextEntity->m_Text.c_str()[i]);
 
         if (c != L'$')
             continue;
@@ -1462,7 +1465,7 @@ void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity)
         if (variablesIndex >= variables.size())
             break;
 
-        auto& variable = variables[variablesIndex];
+        const auto& variable = variables[variablesIndex];
 
         if (variable.first == "picture")
         {
@@ -1471,62 +1474,67 @@ void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity)
             if (Config::ControllerIcons == EControllerIcons::Auto)
                 isPlayStation = hid::g_inputDeviceController == hid::EInputDevice::PlayStation;
 
-            auto& pftModifier = isPlayStation
+            const auto& pftModifier = isPlayStation
                 ? g_buttonCropsPS3
                 : g_buttonCropsXenon;
 
-            auto hash = HashStr(variable.second);
-            auto baseParams = FindHash<ImGuiTextPictureCrop>(g_buttonCropsXenon, hash);
-            auto newParams = FindHash<ImGuiTextPictureCrop>(pftModifier, hash);
+            const auto hash = HashStr(variable.second);
 
-            auto  uv = PIXELS_TO_UV_COORDS(g_fontPictureWidth, g_fontPictureHeight, newParams.X, newParams.Y, newParams.Width, newParams.Height);
-            auto& min = std::get<0>(uv);
-            auto& max = std::get<1>(uv);
+            const auto pBaseParams = FindHash(g_buttonCropsXenon, hash);
+            const auto pNewParams = FindHash(pftModifier, hash);
 
-            auto  vi = pictureIndex * 6;
-            auto& v0 = pTextEntity->m_pImageVertices[vi + 0];
-            auto& v1 = pTextEntity->m_pImageVertices[vi + 1];
-            auto& v2 = pTextEntity->m_pImageVertices[vi + 2];
-            auto& v3 = pTextEntity->m_pImageVertices[vi + 3];
-            auto& v4 = pTextEntity->m_pImageVertices[vi + 4];
-            auto& v5 = pTextEntity->m_pImageVertices[vi + 5];
-
-            auto centreX = (v0.X + v2.X) / 2.0f;
-            auto widthAdjust = (float)newParams.Width / (float)baseParams.Width;
-            auto adjust = [&](auto& vertex)
+            if (pBaseParams && pNewParams)
             {
-                vertex.X = centreX + (vertex.X - centreX) * widthAdjust;
-            };
+                const auto  uv = PIXELS_TO_UV_COORDS(g_fontPictureWidth, g_fontPictureHeight, pNewParams->X, pNewParams->Y, pNewParams->Width, pNewParams->Height);
+                const auto& min = std::get<0>(uv);
+                const auto& max = std::get<1>(uv);
 
-            // Bottom Left (Triangle 1)
-            adjust(v0);
-            v0.U = min.x;
-            v0.V = min.y;
+                const auto vi = pictureIndex * 6;
+                auto& v0 = pTextEntity->m_pImageVertices[vi + 0];
+                auto& v1 = pTextEntity->m_pImageVertices[vi + 1];
+                auto& v2 = pTextEntity->m_pImageVertices[vi + 2];
+                auto& v3 = pTextEntity->m_pImageVertices[vi + 3];
+                auto& v4 = pTextEntity->m_pImageVertices[vi + 4];
+                auto& v5 = pTextEntity->m_pImageVertices[vi + 5];
 
-            // Top Left (Triangle 1)
-            adjust(v1);
-            v1.U = min.x;
-            v1.V = max.y;
+                const auto centreX = (v0.X + v2.X) / 2.0f;
+                const auto widthAdjust = (float)pNewParams->Width / (float)pBaseParams->Width;
 
-            // Top Right (Triangle 1)
-            adjust(v2);
-            v2.U = max.x;
-            v2.V = max.y;
+                auto adjust = [&](auto& vertex)
+                {
+                    vertex.X = centreX + (vertex.X - centreX) * widthAdjust;
+                };
 
-            // Bottom Left (Triangle 2)
-            adjust(v3);
-            v3.U = min.x;
-            v3.V = min.y;
+                // Bottom Left (Triangle 1)
+                adjust(v0);
+                v0.U = min.x;
+                v0.V = min.y;
 
-            // Top Right (Triangle 2)
-            adjust(v4);
-            v4.U = max.x;
-            v4.V = max.y;
+                // Top Left (Triangle 1)
+                adjust(v1);
+                v1.U = min.x;
+                v1.V = max.y;
 
-            // Bottom Right (Triangle 2)
-            adjust(v5);
-            v5.U = max.x;
-            v5.V = min.y;
+                // Top Right (Triangle 1)
+                adjust(v2);
+                v2.U = max.x;
+                v2.V = max.y;
+
+                // Bottom Left (Triangle 2)
+                adjust(v3);
+                v3.U = min.x;
+                v3.V = min.y;
+
+                // Top Right (Triangle 2)
+                adjust(v4);
+                v4.U = max.x;
+                v4.V = max.y;
+
+                // Bottom Right (Triangle 2)
+                adjust(v5);
+                v5.U = max.x;
+                v5.V = min.y;
+            }
 
             pictureIndex++;
         }
