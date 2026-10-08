@@ -48,7 +48,7 @@
 	url = https://github.com/sonicnext-dev/MarathonRecompResources
 [submodule "thirdparty/plume"]
 	path = thirdparty/plume
-	url = https://github.com/renderbag/plume
+	url = https://github.com/IsaacMarovitz/plume
 [submodule "thirdparty/ffmpeg-core"]
 	path = thirdparty/ffmpeg-core
 	url = https://github.com/sonicnext-dev/ffmpeg-core
