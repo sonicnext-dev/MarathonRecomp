@@ -1793,6 +1793,9 @@ PPC_FUNC(sub_824FD868)
 {
     auto pMainMenuExpositionTask = static_cast<Sonicteam::MainMenuExpositionTask*>(reinterpret_cast<Sonicteam::SoX::Engine::Task*>(base + ctx.r3.u32));
 
+    // Default fade speed is 15 frames at 60 FPS.
+    pMainMenuExpositionTask->m_FadeSpeed = (1.0f / 15.0f) * (60.0 * App::s_deltaTime);
+
     SetTextEntityModifier(pMainMenuExpositionTask->m_spDescriptionEntity.get(), CSD_ALIGN_CENTER | CSD_SCALE);
     SetTextEntityModifier(pMainMenuExpositionTask->m_spPrevDescriptionEntity.get(), CSD_ALIGN_CENTER | CSD_SCALE);
 
