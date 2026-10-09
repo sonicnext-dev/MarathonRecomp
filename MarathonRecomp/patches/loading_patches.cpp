@@ -1,12 +1,17 @@
 #include "loading_patches.h"
 #include <api/Marathon.h>
 #include <user/config.h>
+#include <app.h>
 
 // Sonicteam::HUDLoading::Update
 PPC_FUNC_IMPL(__imp__sub_824D7340);
 PPC_FUNC(sub_824D7340)
 {
-    auto pHUDLoading = (Sonicteam::HUDLoading*)(base + ctx.r3.u32);
+    const auto pHUDLoading = static_cast<Sonicteam::HUDLoading*>(reinterpret_cast<Sonicteam::SoX::Engine::Task*>(base + ctx.r3.u32));
+
+    // Fix loading CSD priority in GameMode.
+    if (App::s_pApp && App::s_pApp->m_pDoc->GetDocMode("GameMode"))
+        pHUDLoading->m_spCsdObject->m_Priority = 1002.0f;
 
     if ((pHUDLoading->m_Flags.get() & Sonicteam::HUDLoading::HUDLoadingFlags_Finished) == 0)
     {
