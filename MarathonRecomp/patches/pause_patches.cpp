@@ -58,7 +58,7 @@ PPC_FUNC(sub_82170E48)
 
     if (pPauseAdapter->m_SelectedID == 6)
     {
-        OptionsMenu::s_pBgmCue = pPauseAdapter->GetGame()->GetBgmCue();
+        OptionsMenu::s_pBgmCue = static_cast<Sonicteam::GameImp*>(pPauseAdapter->m_pOwner.get())->GetBgmCue();
         OptionsMenu::Open(true);
         return;
     }
