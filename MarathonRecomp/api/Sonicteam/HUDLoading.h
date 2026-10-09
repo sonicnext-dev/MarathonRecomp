@@ -1,6 +1,10 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/SoX/Engine/Task.h>
+#include <Sonicteam/SoX/RefCountObject.h>
+#include <Sonicteam/SoX/RefSharedPointer.h>
+#include <Sonicteam/CsdObject.h>
 
 namespace Sonicteam
 {
@@ -14,11 +18,13 @@ namespace Sonicteam
             HUDLoadingFlags_End = 0x400
         };
 
-        MARATHON_INSERT_PADDING(0x5C);
+        SoX::RefSharedPointer<CsdObject> m_spCsdObject;
+        MARATHON_INSERT_PADDING(0x58);
         be<uint32_t> m_Flags;
-        MARATHON_INSERT_PADDING(8);
+        MARATHON_INSERT_PADDING(0x08);
     };
 
+    MARATHON_ASSERT_OFFSETOF(HUDLoading, m_spCsdObject, 0x54);
     MARATHON_ASSERT_OFFSETOF(HUDLoading, m_Flags, 0xB0);
     MARATHON_ASSERT_SIZEOF(HUDLoading, 0xBC);
 }
