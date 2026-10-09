@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/HUDPause.h>
+#include <Sonicteam/TextEntity.h>
 
 namespace Sonicteam
 {
@@ -17,8 +19,8 @@ namespace Sonicteam
             PauseTaskState_Closed
         };
 
-        MARATHON_INSERT_PADDING(4);
-        xpointer<void> m_pHUDPause;
+        MARATHON_INSERT_PADDING(0x04);
+        xpointer<HUDPause> m_pHUDPause;
         MARATHON_INSERT_PADDING(0x18);
         be<PauseTaskState> m_State;
         be<uint32_t> m_Flags;
@@ -27,7 +29,7 @@ namespace Sonicteam
         be<uint32_t> m_Buttons;
         MARATHON_INSERT_PADDING(0x1D8);
         xpointer<TextEntity> m_pMissionText;
-        MARATHON_INSERT_PADDING(0x4);
+        MARATHON_INSERT_PADDING(0x04);
         be<uint32_t> m_ItemCount;
         MARATHON_INSERT_PADDING(0x12C);
     };
