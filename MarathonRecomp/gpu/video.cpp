@@ -31,6 +31,8 @@
 #include <ui/game_window.h>
 #include <ui/black_bar.h>
 #include <patches/aspect_ratio_patches.h>
+#include <patches/hook_event.h>
+#include <patches/loading_patches.h>
 #include <user/config.h>
 #include <sdl_listener.h>
 #include <xxHashMap.h>
@@ -469,6 +471,30 @@ struct PipelineTask
 
 static Mutex g_pipelineTaskMutex;
 static std::vector<PipelineTask> g_pipelineTaskQueue;
+
+static std::thread::id g_mainThreadId = std::this_thread::get_id();
+
+class LoadingPipelineCompilationEvent : public HookEvent
+{
+public:
+    void Postfix() override
+    {
+        assert(std::this_thread::get_id() == g_mainThreadId);
+
+        // Wait for pipeline compilations to finish.
+        uint32_t value;
+        while ((value = g_compilingPipelineTaskCount.load()) != 0)
+        {
+            // Pump SDL events to prevent the OS
+            // from thinking the process is unresponsive.
+            SDL_PumpEvents();
+            SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+
+            g_compilingPipelineTaskCount.wait(value);
+        }
+    }
+}
+g_loadingPipelineCompilationEvent{};
 
 static void EnqueuePipelineTask(PipelineTaskType type)
 {
@@ -3696,6 +3722,8 @@ void Video::Resize(uint32_t width, uint32_t height)
 
 void Video::StartPipelinePrecompilation()
 {
+    LoadingPatches::Events.push_back(&g_loadingPipelineCompilationEvent);
+
     EnqueuePipelineTask(PipelineTaskType::PrecompilePipelines);
 }
 

@@ -751,5 +751,9 @@ name = "DocMarathon_SetLoading_StartThread"
 address = 0x825EA9AC
 
 [[midasm_hook]]
-name = "DocMarathon_SetLoading_JoinedThread"
+name = "DocMarathon_SetLoading_JoinThread_Prefix"
+address = 0x825EA9D0
+
+[[midasm_hook]]
+name = "DocMarathon_SetLoading_JoinThread_Postfix"
 address = 0x825EA9D4
