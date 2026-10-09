@@ -5295,17 +5295,15 @@ static RenderPipeline* CreateGraphicsPipelineInRenderThread(PipelineState pipeli
         pipeline = CreateGraphicsPipeline(pipelineState);
 
 #ifdef ASYNC_PSO_DEBUG
-        bool loading = App::s_isLoading;
-
-        if (loading)
+        if (App::s_isLoading)
             ++g_pipelinesCreatedAsynchronously;
         else
             ++g_pipelinesCreatedInRenderThread;
 
-        pipeline->setName(fmt::format("{} {} {} {:X}", loading ? "ASYNC" : "",
+        pipeline->setName(fmt::format("{} {} {} {:X}", App::s_isLoading ? "ASYNC" : "",
             pipelineState.vertexShader->name, pipelineState.pixelShader != nullptr ? pipelineState.pixelShader->name : "<none>", hash));
         
-        if (!loading)
+        if (!App::s_isLoading)
         {
             std::lock_guard lock(g_debugMutex);
             g_pipelineDebugText = fmt::format(
@@ -7216,8 +7214,7 @@ static void PipelineCompilerThread()
 #ifdef _WIN32
         int newThreadPriority = threadPriority;
 
-        bool loading = App::s_isLoading;
-        if (loading)
+        if (App::s_isLoading)
             newThreadPriority = THREAD_PRIORITY_HIGHEST;
         else
             newThreadPriority = THREAD_PRIORITY_LOWEST;
@@ -7277,8 +7274,7 @@ static void EnqueueGraphicsPipelineCompilation(
 
     if (shouldCompile)
     {
-        bool loading = App::s_isLoading;
-        if (!loading && isPrecompiledPipeline)
+        if (!App::s_isLoading && isPrecompiledPipeline)
         {
             // We can just compile here during the logos.
             CompilePipeline(hash, pipelineState
