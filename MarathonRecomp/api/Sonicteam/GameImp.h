@@ -10,7 +10,10 @@
 #include <Sonicteam/SoX/LinkNode.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
 #include <Sonicteam/Game.h>
+#include <Sonicteam/LoadingTask.h>
+#include <Sonicteam/PauseAdapter.h>
 #include <Sonicteam/PopupScreenTask.h>
+#include <Sonicteam/TaskAdapter.h>
 #include <Sonicteam/TextBook.h>
 #include <stdx/vector.h>
 
@@ -48,29 +51,35 @@ namespace Sonicteam
         {
             be<uint32_t> ActorID;
             be<uint32_t> RingCount;
-            MARATHON_INSERT_PADDING(4);
+            MARATHON_INSERT_PADDING(0x04);
             be<uint32_t> LifeCount;
             be<uint32_t> ScoreCount;
             be<float> AliveTime;
             be<float> Time;
-            MARATHON_INSERT_PADDING(4);
+            MARATHON_INSERT_PADDING(0x04);
             be<float> SectionTime;
             be<float> GaugeValue;
             be<uint32_t> MaturityLevel;
             be<float> MaturityValue;
-            MARATHON_INSERT_PADDING(4);
+            MARATHON_INSERT_PADDING(0x04);
             be<uint32_t> ExtendRingCount;
             be<uint32_t> GemIndex;
             MARATHON_INSERT_PADDING(0x10);
         };
 
-        MARATHON_INSERT_PADDING(4);
+        MARATHON_INSERT_PADDING(0x04);
         be<GameState> m_State;
         xpointer<DocMarathonState> m_pDoc;
         be<GameFlags> m_Flags;
-        MARATHON_INSERT_PADDING(0xE2C);
+        MARATHON_INSERT_PADDING(0x420);
+        xpointer<PauseAdapter> m_pPauseAdapter;
+        MARATHON_INSERT_PADDING(0xA08);
         PlayerData m_PlayerData[4];
-        MARATHON_INSERT_PADDING(0x200);
+        MARATHON_INSERT_PADDING(0x130);
+        xpointer<TaskAdapter> m_pHeadUpDisplayAdapter;
+        MARATHON_INSERT_PADDING(0x0C);
+        xpointer<TaskAdapter> m_pNonStopTaskAdapter;
+        MARATHON_INSERT_PADDING(0xBC);
         bool m_IsStage;
         MARATHON_INSERT_PADDING(0x0C);
         be<uint32_t> m_Field1180;
@@ -78,17 +87,20 @@ namespace Sonicteam
         be<uint32_t> m_aObjPlayerActorID[0x0F];
         boost::shared_ptr<ActorManager> m_spActorManager;
         xpointer<TextBook> m_pSystemTextBook;
-        MARATHON_INSERT_PADDING(8);
+        MARATHON_INSERT_PADDING(0x08);
         stdx::vector<stdx::vector<boost::shared_ptr<SoX::Scenery::Camera>>> m_vvspCameras;
         MARATHON_INSERT_PADDING(0x1B4);
         xpointer<SoX::Audio::Cue> m_pBgmCue;
         MARATHON_INSERT_PADDING(0x36C);
         xpointer<TextBook> m_pHintTextBook;
-        MARATHON_INSERT_PADDING(4);
+        MARATHON_INSERT_PADDING(0x04);
         xpointer<Mission::Core> m_pMissionCore;
         MARATHON_INSERT_PADDING(0x248);
         SoX::LinkRef<PopupScreenTask> m_lrPopupScreenTask;
-        MARATHON_INSERT_PADDING(0x4C);
+        MARATHON_INSERT_PADDING(0x04);
+        SoX::LinkRef<LoadingTask> m_lrLoadingTask;
+        SoX::LinkRef<void> m_lrStageTitleTask;
+        MARATHON_INSERT_PADDING(0x28);
         SoX::RefSharedPointer<SoX::Physics::World> m_spPhysicsWorld;
         xpointer<void> m_pMyCollisionFilter;
         MARATHON_INSERT_PADDING(0x0C);
@@ -150,7 +162,10 @@ namespace Sonicteam
     MARATHON_ASSERT_OFFSETOF(GameImp, m_State, 0x08);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pDoc, 0x0C);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_Flags, 0x10);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_pPauseAdapter, 0x434);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_PlayerData, 0xE40);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_pHeadUpDisplayAdapter, 0x10A0);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_pNonStopTaskAdapter, 0x10B0);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_IsStage, 0x1170);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_Field1180, 0x1180);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pGameScript, 0x1184);
@@ -161,6 +176,9 @@ namespace Sonicteam
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pBgmCue, 0x139C);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pHintTextBook, 0x170C);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pMissionCore, 0x1714);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_lrPopupScreenTask, 0x1960);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_lrLoadingTask, 0x1974);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_lrStageTitleTask, 0x1984);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_spPhysicsWorld, 0x19BC);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pMyCollisionFilter, 0x19C0);
     MARATHON_ASSERT_SIZEOF(GameImp, 0x19D0);

@@ -87,17 +87,6 @@ struct ChevronAnim
 static std::unordered_map<int32_t, ChevronAnim> g_bgArrows{};
 static std::unordered_map<int32_t, ChevronAnim> g_fgArrows{};
 
-static class LoadingPillarboxEvent : public HookEvent
-{
-public:
-    void Update(float deltaTime) override
-    {
-        if (g_aspectRatio > WIDE_ASPECT_RATIO)
-            BlackBar::Show();
-    }
-}
-g_loadingPillarboxEvent{};
-
 static class ChevronAnimResetEvent : public ContextHookEvent<Sonicteam::MainMenuTask>
 {
     float m_chevronAspectRatio{};
@@ -140,7 +129,6 @@ float ComputeScale(float aspectRatio)
 
 void AspectRatioPatches::Init()
 {
-    LoadingPatches::Events.push_back(&g_loadingPillarboxEvent);
     MainMenuTaskPatches::s_events.push_back(&g_chevronAnimResetEvent);
 }
 
@@ -1963,9 +1951,9 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     // loading
     { HashStr("sprite/loading/loading/Scene_0000/Loading"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
     { HashStr("sprite/loading/loading/Scene_0000/Loading_02"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
-    { HashStr("sprite/loading/loading/Scene_0000/arrow_01"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
-    { HashStr("sprite/loading/loading/Scene_0000/arrow_02"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
-    { HashStr("sprite/loading/loading/Scene_0000/arrow_03"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
+    { HashStr("sprite/loading/loading/Scene_0000/arrow_01"), { .Flags = CSD_ALIGN_BOTTOM_RIGHT | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
+    { HashStr("sprite/loading/loading/Scene_0000/arrow_02"), { .Flags = CSD_ALIGN_BOTTOM_RIGHT | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
+    { HashStr("sprite/loading/loading/Scene_0000/arrow_03"), { .Flags = CSD_ALIGN_BOTTOM_RIGHT | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
 
     // maindisplay
     { HashStr("sprite/maindisplay/power"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },

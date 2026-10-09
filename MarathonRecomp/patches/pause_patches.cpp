@@ -58,7 +58,7 @@ PPC_FUNC(sub_82170E48)
 
     if (pPauseAdapter->m_SelectedID == 6)
     {
-        OptionsMenu::s_pBgmCue = pPauseAdapter->GetGame()->GetBgmCue();
+        OptionsMenu::s_pBgmCue = static_cast<Sonicteam::GameImp*>(pPauseAdapter->m_pOwner.get())->GetBgmCue();
         OptionsMenu::Open(true);
         return;
     }
@@ -149,38 +149,46 @@ PPC_FUNC(sub_82509870)
         }
     }
 
-    if (Config::RestorePauseMissionText)
+    if (Config::RestoreLoadingTransition || Config::RestorePauseMissionText)
     {
-        SetTextEntityModifier(pPauseTask->m_pMissionText.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
-
         App::s_pApp->m_pDoc->m_pRootTask->WalkSiblings([&](Sonicteam::SoX::Engine::Task* in_pTask) -> bool
         {
-            if (strcmp(in_pTask->GetName(), "HUDMessageWindow") != 0)
-                return true;
+            const auto pTaskName = in_pTask->GetName();
 
-            const auto pHUDMessageWindow = static_cast<Sonicteam::HUDMessageWindow*>(in_pTask);
-
-            switch (pPauseTask->m_State)
+            if (Config::RestoreLoadingTransition && strcmp(pTaskName, "HUDLoading") == 0)
             {
-                case Sonicteam::PauseTask::PauseTaskState_Opening:
+                in_pTask->Update(ctx.f1.f64);
+            }
+            else if (Config::RestorePauseMissionText && strcmp(pTaskName, "HUDMessageWindow") == 0)
+            {
+                switch (pPauseTask->m_State)
                 {
-                    // Update message window for closing animation.
-                    pHUDMessageWindow->Update(ctx.f1.f64);
-                    break;
-                }
+                    case Sonicteam::PauseTask::PauseTaskState_Opening:
+                    {
+                        // Update message window for closing animation.
+                        in_pTask->Update(ctx.f1.f64);
+                        break;
+                    }
 
-                case Sonicteam::PauseTask::PauseTaskState_Closed:
-                {
-                    // Restore message window upon unpausing.
-                    guest_stack_var<Sonicteam::Message::HUDMessageWindow::MsgChangeState> msgChangeState(0);
-                    pHUDMessageWindow->ProcessMessage(msgChangeState.get());
-                    break;
+                    case Sonicteam::PauseTask::PauseTaskState_Closed:
+                    {
+                        // Restore message window upon unpausing.
+                        guest_stack_var<Sonicteam::Message::HUDMessageWindow::MsgChangeState> msgChangeState(0);
+                        in_pTask->ProcessMessage(msgChangeState.get());
+                        break;
+                    }
                 }
+            }
+            else
+            {
+                return true;
             }
 
             return false;
         });
     }
+
+    SetTextEntityModifier(pPauseTask->m_pMissionText.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
 
     __imp__sub_82509870(ctx, base);
 }
