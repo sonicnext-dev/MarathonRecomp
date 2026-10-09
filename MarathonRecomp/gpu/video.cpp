@@ -2751,7 +2751,7 @@ static const char *DeviceTypeName(RenderDeviceType type)
 
 static void DrawProfiler()
 {
-    bool toggleProfiler = SDL_GetKeyboardState(nullptr)[SDL_SCANCODE_F1] != 0;
+    const auto toggleProfiler = SDL_GetKeyboardState(nullptr)[SDL_SCANCODE_F1] != 0;
 
     if (!g_profilerWasToggled && toggleProfiler)
     {
@@ -2766,26 +2766,30 @@ static void DrawProfiler()
         return;
 
     ImFont* font = ImFontAtlasSnapshot::GetFont("FOT-RodinPro-DB.otf");
-    float defaultScale = font->Scale;
+    const auto defaultFontScale = font->Scale;
     font->Scale = ImGui::GetDefaultFont()->FontSize / font->FontSize;
     ImGui::PushFont(font);
 
 #define IMGUI_GENERIC_ROW(name, value, ...) \
-    ImGui::TableNextColumn(); \
-    ImGui::Text(name); \
-    ImGui::TableNextColumn(); \
-    ImGui::Text(value, __VA_ARGS__);
+    do                                      \
+    {                                       \
+        ImGui::TableNextColumn();           \
+        ImGui::Text(name);                  \
+        ImGui::TableNextColumn();           \
+        ImGui::Text(value, __VA_ARGS__);    \
+    }                                       \
+    while (false);
 
     if (ImGui::Begin("Profiler", &g_profilerVisible))
     {
         g_applicationValues[g_profilerValueIndex] = App::s_deltaTime * 1000.0;
 
-        const double applicationAvg = std::accumulate(g_applicationValues, g_applicationValues + PROFILER_VALUE_COUNT, 0.0) / PROFILER_VALUE_COUNT;
-        double gpuFrameAvg = g_gpuFrameProfiler.UpdateAndReturnAverage();
-        double presentAvg = g_presentProfiler.UpdateAndReturnAverage();
-        double frameFenceAvg = g_frameFenceProfiler.UpdateAndReturnAverage();
-        double presentWaitAvg = g_presentWaitProfiler.UpdateAndReturnAverage();
-        double swapChainAcquireAvg = g_swapChainAcquireProfiler.UpdateAndReturnAverage();
+        const auto applicationAvg = std::accumulate(g_applicationValues, g_applicationValues + PROFILER_VALUE_COUNT, 0.0) / PROFILER_VALUE_COUNT;
+        const auto gpuFrameAvg = g_gpuFrameProfiler.UpdateAndReturnAverage();
+        const auto presentAvg = g_presentProfiler.UpdateAndReturnAverage();
+        const auto frameFenceAvg = g_frameFenceProfiler.UpdateAndReturnAverage();
+        const auto presentWaitAvg = g_presentWaitProfiler.UpdateAndReturnAverage();
+        const auto swapChainAcquireAvg = g_swapChainAcquireProfiler.UpdateAndReturnAverage();
 
         if (ImGui::CollapsingHeader("Performance", ImGuiTreeNodeFlags_DefaultOpen))
         {
@@ -2848,24 +2852,20 @@ static void DrawProfiler()
             ImGui::Checkbox("Show FPS", &Config::ShowFPS.Value);
         }
 
-        if (g_userHeap.heap != nullptr && g_userHeap.physicalHeap != nullptr)
+        if (g_userHeap.heap && g_userHeap.physicalHeap)
         {
             if (ImGui::CollapsingHeader("Memory", ImGuiTreeNodeFlags_DefaultOpen))
             {
-                O1HeapDiagnostics diagnostics, physicalDiagnostics;
-                {
-                    std::lock_guard lock(g_userHeap.mutex);
-                    diagnostics = o1heapGetDiagnostics(g_userHeap.heap);
-                }
-                {
-                    std::lock_guard lock(g_userHeap.physicalMutex);
-                    physicalDiagnostics = o1heapGetDiagnostics(g_userHeap.physicalHeap);
-                }
+                std::lock_guard heapLock(g_userHeap.mutex);
+                O1HeapDiagnostics heapDiagnostics = o1heapGetDiagnostics(g_userHeap.heap);
+
+                std::lock_guard physicalHeapLock(g_userHeap.physicalMutex);
+                O1HeapDiagnostics physicalHeapDiagnostics = o1heapGetDiagnostics(g_userHeap.physicalHeap);
 
                 if (ImGui::BeginTable("Memory", 2))
                 {
-                    IMGUI_GENERIC_ROW("Heap Allocated", "%d MB", int32_t(diagnostics.allocated / (1024 * 1024)));
-                    IMGUI_GENERIC_ROW("Physical Heap Allocated", "%d MB", int32_t(diagnostics.allocated / (1024 * 1024)));
+                    IMGUI_GENERIC_ROW("Heap Allocated", "%.2f MiB", double(heapDiagnostics.allocated / (1024.0 * 1024.0)));
+                    IMGUI_GENERIC_ROW("Physical Heap Allocated", "%.2f MiB", double(physicalHeapDiagnostics.allocated / (1024.0 * 1024.0)));
 
                     ImGui::EndTable();
                 }
@@ -2874,7 +2874,7 @@ static void DrawProfiler()
 
         if (ImGui::CollapsingHeader("GPU", ImGuiTreeNodeFlags_DefaultOpen))
         {
-            std::string backend;
+            const char* backend{};
 
             switch (g_backend)
             {
@@ -2889,24 +2889,26 @@ static void DrawProfiler()
                 case Backend::METAL:
                     backend = "Metal";
                     break;
+
+                default:
+                    backend = "Unknown";
+                    break;
             }
 
             if (ImGui::BeginTable("GPU", 2))
             {
-                IMGUI_GENERIC_ROW("API", "%s", backend.c_str());
+                IMGUI_GENERIC_ROW("API", "%s", backend);
 
-                if (auto pSDLVideoDriver = SDL_GetCurrentVideoDriver())
-                {
+                if (const auto pSDLVideoDriver = SDL_GetCurrentVideoDriver())
                     IMGUI_GENERIC_ROW("SDL Video Driver", "%s", pSDLVideoDriver);
-                }
 
                 IMGUI_GENERIC_ROW("Device", "%s", g_device->getDescription().name.c_str());
                 IMGUI_GENERIC_ROW("Device Type", "%s", DeviceTypeName(g_device->getDescription().type));
-                IMGUI_GENERIC_ROW("VRAM", "%.2f MiB", (double)(g_device->getDescription().dedicatedVideoMemory) / (1024.0 * 1024.0));
-                IMGUI_GENERIC_ROW("GPU Waits", "%d", int32_t(g_waitForGPUCount));
-                IMGUI_GENERIC_ROW("Buffer Uploads", "%d", int32_t(g_bufferUploadCount));
+                IMGUI_GENERIC_ROW("VRAM", "%.2f MiB", double(g_device->getDescription().dedicatedVideoMemory) / (1024.0 * 1024.0));
+                IMGUI_GENERIC_ROW("GPU Waits", "%u", g_waitForGPUCount);
+                IMGUI_GENERIC_ROW("Buffer Uploads", "%u", g_bufferUploadCount.load());
 
-                IMGUI_GENERIC_ROW("Resolution", "%dx%d (%dx%d)",
+                IMGUI_GENERIC_ROW("Resolution", "%ux%u (%ux%u)",
                     Video::s_viewportWidth, Video::s_viewportHeight,
                     uint32_t(round(Video::s_viewportWidth * Config::ResolutionScale)),
                     uint32_t(round(Video::s_viewportHeight * Config::ResolutionScale)));
@@ -2915,6 +2917,41 @@ static void DrawProfiler()
             }
 
             ImGui::Separator();
+
+#ifdef ASYNC_PSO_DEBUG
+            if (ImGui::TreeNode("Async PSO"))
+            {
+                ImGui::Indent();
+
+                if (ImGui::BeginTable("Async PSO", 2))
+                {
+                    IMGUI_GENERIC_ROW("Pipelines created in render thread", "%u", g_pipelinesCreatedInRenderThread.load());
+                    IMGUI_GENERIC_ROW("Pipelines created asynchronously", "%u", g_pipelinesCreatedAsynchronously.load());
+                    IMGUI_GENERIC_ROW("Pipelines dropped", "%u", g_pipelinesDropped.load());
+                    IMGUI_GENERIC_ROW("Pipelines currently compiling", "%u", g_pipelinesCurrentlyCompiling.load());
+                    IMGUI_GENERIC_ROW("Compiling pipeline tasks", "%u", g_compilingPipelineTaskCount.load());
+                    IMGUI_GENERIC_ROW("Pending pipeline tasks", "%u", g_pendingPipelineTaskCount.load());
+
+                    ImGui::EndTable();
+                }
+
+                ImGui::Separator();
+                
+                if (ImGui::TreeNode("Pipeline States"))
+                {
+                    ImGui::Indent();
+
+                    std::lock_guard lock(g_debugMutex);
+                    ImGui::TextUnformatted(g_pipelineDebugText.c_str());
+
+                    ImGui::Unindent();
+                    ImGui::TreePop();
+                }
+
+                ImGui::Unindent();
+                ImGui::TreePop();
+            }
+#endif
 
             if (ImGui::TreeNode("Devices"))
             {
@@ -2968,7 +3005,7 @@ static void DrawProfiler()
     ImGui::End();
     ImGui::PopFont();
 
-    font->Scale = defaultScale;
+    font->Scale = defaultFontScale;
 }
 
 static void DrawFPS()
@@ -3046,22 +3083,6 @@ static void DrawImGui()
     ImGui::NewFrame();
 
     ResetImGuiCallbacks();
-
-#ifdef ASYNC_PSO_DEBUG
-    if (ImGui::Begin("Async PSO Stats"))
-    {
-        ImGui::Text("Pipelines Created In Render Thread: %d", g_pipelinesCreatedInRenderThread.load());
-        ImGui::Text("Pipelines Created Asynchronously: %d", g_pipelinesCreatedAsynchronously.load());
-        ImGui::Text("Pipelines Dropped: %d", g_pipelinesDropped.load());
-        ImGui::Text("Pipelines Currently Compiling: %d", g_pipelinesCurrentlyCompiling.load());
-        ImGui::Text("Compiling Pipeline Task Count: %d", g_compilingPipelineTaskCount.load());
-        ImGui::Text("Pending Pipeline Task Count: %d", g_pendingPipelineTaskCount.load());
-
-        std::lock_guard lock(g_debugMutex);
-        ImGui::TextUnformatted(g_pipelineDebugText.c_str());
-    }
-    ImGui::End();
-#endif
 
     UpdateImGuiUtils();
     AchievementMenu::Draw();
@@ -5288,49 +5309,49 @@ static RenderPipeline* CreateGraphicsPipelineInRenderThread(PipelineState pipeli
         {
             std::lock_guard lock(g_debugMutex);
             g_pipelineDebugText = fmt::format(
-                "PipelineState {:X}:\n"
-                "  vertexShader: {}\n"
-                "  pixelShader: {}\n"
-                "  vertexDeclaration: {:X}\n"
-                "  zEnable: {}\n"
-                "  zWriteEnable: {}\n"
-                "  stencilEnable: {}\n"
-                "  stencilTwoSided: {}\n"
-                "  srcBlend: {}\n"
-                "  destBlend: {}\n"
-                "  cullMode: {}\n"
-                "  frontFace: {}\n"
-                "  zFunc: {}\n"
-                "  stencilFunc: {}\n"
-                "  stencilFail: {}\n"
-                "  stencilZFail: {}\n"
-                "  stencilPass: {}\n"
-                "  stencilFuncCCW: {}\n"
-                "  stencilFailCCW: {}\n"
-                "  stencilZFailCCW: {}\n"
-                "  stencilPassCCW: {}\n"
-                "  stencilMask: {}\n"
-                "  stencilWriteMask: {}\n"
-                "  stencilRef: {}\n"
-                "  alphaBlendEnable: {}\n"
-                "  blendOp: {}\n"
-                "  slopeScaledDepthBias: {}\n"
-                "  depthBias: {}\n"
-                "  srcBlendAlpha: {}\n"
-                "  destBlendAlpha: {}\n"
-                "  blendOpAlpha: {}\n"
-                "  colorWriteEnable: {:X}\n"
-                "  primitiveTopology: {}\n"
-                "  vertexStrides[0]: {}\n"
-                "  vertexStrides[1]: {}\n"
-                "  vertexStrides[2]: {}\n"
-                "  vertexStrides[3]: {}\n"
-                "  renderTargetFormat: {}\n"
-                "  depthStencilFormat: {}\n"
-                "  sampleCount: {}\n"
-                "  enableAlphaToCoverage: {}\n"
-                "  enableConditionalSurvey: {}\n"
-                "  specConstants: {:X}\n",
+                "{:X}\n"
+                "    vertexShader: {}\n"
+                "    pixelShader: {}\n"
+                "    vertexDeclaration: {:X}\n"
+                "    zEnable: {}\n"
+                "    zWriteEnable: {}\n"
+                "    stencilEnable: {}\n"
+                "    stencilTwoSided: {}\n"
+                "    srcBlend: {}\n"
+                "    destBlend: {}\n"
+                "    cullMode: {}\n"
+                "    frontFace: {}\n"
+                "    zFunc: {}\n"
+                "    stencilFunc: {}\n"
+                "    stencilFail: {}\n"
+                "    stencilZFail: {}\n"
+                "    stencilPass: {}\n"
+                "    stencilFuncCCW: {}\n"
+                "    stencilFailCCW: {}\n"
+                "    stencilZFailCCW: {}\n"
+                "    stencilPassCCW: {}\n"
+                "    stencilMask: {}\n"
+                "    stencilWriteMask: {}\n"
+                "    stencilRef: {}\n"
+                "    alphaBlendEnable: {}\n"
+                "    blendOp: {}\n"
+                "    slopeScaledDepthBias: {}\n"
+                "    depthBias: {}\n"
+                "    srcBlendAlpha: {}\n"
+                "    destBlendAlpha: {}\n"
+                "    blendOpAlpha: {}\n"
+                "    colorWriteEnable: {:X}\n"
+                "    primitiveTopology: {}\n"
+                "    vertexStrides[0]: {}\n"
+                "    vertexStrides[1]: {}\n"
+                "    vertexStrides[2]: {}\n"
+                "    vertexStrides[3]: {}\n"
+                "    renderTargetFormat: {}\n"
+                "    depthStencilFormat: {}\n"
+                "    sampleCount: {}\n"
+                "    enableAlphaToCoverage: {}\n"
+                "    enableConditionalSurvey: {}\n"
+                "    specConstants: {:X}\n\n",
                 hash,
                 pipelineState.vertexShader->name,
                 pipelineState.pixelShader != nullptr ? pipelineState.pixelShader->name : "<none>",
@@ -7532,7 +7553,7 @@ public:
         if (g_pipelineStatesToCache.empty())
             return false;
 
-        std::string path = GetUserPath() / "pso_caching.txt";
+        std::string path = (GetUserPath() / "pso_caching.txt").string();
         FILE* f = fopen(path.c_str(), "ab");
         if (f != nullptr)
         {
