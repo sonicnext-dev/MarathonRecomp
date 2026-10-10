@@ -733,12 +733,46 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
     auto r3 = ctx.r3;
     auto r5 = ctx.r5;
 
-    auto drawOriginal = [&]()
+    auto targetScaleX = 1.0f;
+    auto targetScaleY = 1.0f;
+
+    if (App::s_pApp && App::s_pApp->m_pDevice)
+    {
+        auto pDevice = static_cast<GuestDevice*>(App::s_pApp->m_pDevice.get());
+        targetScaleX = float(pDevice->viewport.width) / vpWidth;
+        targetScaleY = float(pDevice->viewport.height) / vpHeight;
+    }
+
+    auto needsTargetScale = targetScaleX != 1.0f || targetScaleY != 1.0f;
+
+    auto drawOriginal = [&]
     {
         ctx.r3 = r3;
         ctx.r4 = ctx.r1;
         ctx.r5 = r5;
+
+        if (!needsTargetScale)
+        {
+            original(ctx, base);
+            return;
+        }
+
+        auto scaledSize = (size + 0xF) & ~0xF;
+        ctx.r1.u32 -= scaledSize;
+        ctx.r4 = ctx.r1;
+
+        auto scaled = base + ctx.r1.u32;
+        memcpy(scaled, stack, size);
+
+        for (size_t i = 0; i < r5.u32; i++)
+        {
+            auto vertex = reinterpret_cast<CSDVertex*>(scaled + (i * stride));
+            vertex->X = round(vertex->X * targetScaleX);
+            vertex->Y = round(vertex->Y * targetScaleY);
+        }
+
         original(ctx, base);
+        ctx.r1.u32 += scaledSize;
     };
 
     if (isRepeatLeft || isRepeatRight)
