@@ -190,6 +190,7 @@ void UpdateLoopStatus(XmaPlayback *playback) {
     }
 
     playback->inputBufferReadOffset = loop_start;
+    playback->numSubframesToSkip = playback->loopSubframeSkip;
 
     if (playback->numLoops != 255) {
         playback->numLoops--;
@@ -310,7 +311,10 @@ void Decode(XmaPlayback *playback) {
             }
         }
     }
-    playback->currentFrameRemainingSubframes = 4 * playback->channelCount;
+
+    playback->currentFrameRemainingSubframes = (4 - std::min<uint32_t>(playback->numSubframesToSkip, 4))
+                                           * playback->channelCount;
+    playback->numSubframesToSkip = 0;
 
     if (!packetInfo.IsLastFrameInPacket()) {
         const uint32_t nextFrameOffset = (playback->inputBufferReadOffset + bitsToCopy) % kBitsPerPacket;
