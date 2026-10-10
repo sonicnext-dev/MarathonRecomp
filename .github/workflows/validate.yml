@@ -79,13 +79,20 @@ jobs:
           name: MarathonRecomp-Linux-${{ env.CMAKE_PRESET }}
           path: ./out/build/${{ env.CMAKE_PRESET }}/MarathonRecomp/MarathonRecomp
   build-windows:
-    name: Build Windows
-    runs-on: windows-latest
+    name: Build Windows (${{ matrix.preset.name }})
+    runs-on: ${{ matrix.preset.runner }}
     strategy:
       matrix:
-        preset: ["x64-Clang-Debug", "x64-Clang-Release", "x64-Clang-RelWithDebInfo"]
+        preset: [
+          {"name": "x64-Clang-Debug", "arch": "x64", "runner": "windows-latest"},
+          {"name": "x64-Clang-Release", "arch": "x64", "runner": "windows-latest"},
+          {"name": "x64-Clang-RelWithDebInfo", "arch": "x64", "runner": "windows-latest"},
+          {"name": "arm64-Clang-Debug", "arch": "arm64", "runner": "windows-11-arm"},
+          {"name": "arm64-Clang-Release", "arch": "arm64", "runner": "windows-11-arm"},
+          {"name": "arm64-Clang-RelWithDebInfo", "arch": "arm64", "runner": "windows-11-arm"},
+        ]
     env:
-      CMAKE_PRESET: ${{ matrix.preset }}
+      CMAKE_PRESET: ${{ matrix.preset.name }}
 
     steps:
       - name: Checkout repository
@@ -103,7 +110,7 @@ jobs:
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: ccache-${{ runner.os }}-${{ matrix.preset }}
+          key: ccache-${{ runner.os }}-${{ matrix.preset.name }}
 
       - name: Cache vcpkg
         uses: actions/cache@v6
@@ -111,9 +118,9 @@ jobs:
           path: |
             ./thirdparty/vcpkg/downloads
             ./thirdparty/vcpkg/packages
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
+          key: vcpkg-${{ runner.os }}-${{ matrix.preset.arch }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: |
-              vcpkg-${{ runner.os }}-
+              vcpkg-${{ runner.os }}-${{ matrix.preset.arch }}-
 
       - name: Install dependencies
         run: |
@@ -123,7 +130,7 @@ jobs:
       - name: Configure Developer Command Prompt
         uses: TheMrMilchmann/setup-msvc-dev@v4
         with:
-          arch: x64
+          arch: ${{ matrix.preset.arch }}
 
       - name: Prepare Project
         run: |
@@ -155,7 +162,7 @@ jobs:
 
       - name: Upload PDB
         uses: actions/upload-artifact@v7
-        if: ${{ matrix.preset != 'x64-Clang-Release' }}
+        if: ${{ (matrix.preset.name != 'x64-Clang-Release') && (matrix.preset.name != 'arm64-Clang-Release') }}
         with:
           name: MarathonRecomp-Windows-${{ env.CMAKE_PRESET }}-PDB
           path: .\out\build\${{ env.CMAKE_PRESET }}\MarathonRecomp\MarathonRecomp.pdb

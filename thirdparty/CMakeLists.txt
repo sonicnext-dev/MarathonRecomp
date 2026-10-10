@@ -40,6 +40,11 @@ else()
     message(FATAL_ERROR "Unsupported CPU architecture: ${BASE_ARCHITECTURE}")
 endif()
 
+if (WIN32 AND ARCHITECTURE STREQUAL "arm64")
+    # Workaround for https://github.com/libsdl-org/SDL/issues/16481
+    set(SDL_LIBC ON CACHE BOOL "" FORCE)
+endif()
+
 add_subdirectory("${MARATHON_RECOMP_THIRDPARTY_ROOT}/msdf-atlas-gen")
 add_subdirectory("${MARATHON_RECOMP_THIRDPARTY_ROOT}/nativefiledialog-extended")
 add_subdirectory("${MARATHON_RECOMP_THIRDPARTY_ROOT}/o1heap")
