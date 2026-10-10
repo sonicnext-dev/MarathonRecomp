@@ -323,9 +323,11 @@ int main(int argc, char *argv[])
             std::_Exit(1);
         }
     }
+
+    Video::StartPipelinePrecompilation();
+
     LOGN_WARNING("Start Guest Thread");
     LOGN_WARNING(modulePath.string());
-    // Video::StartPipelinePrecompilation();
 
     GuestThread::Start({ entry, 0, 0 });
 

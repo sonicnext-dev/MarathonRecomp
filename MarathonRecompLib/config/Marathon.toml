@@ -745,3 +745,15 @@ jump_address_on_false = 0x824D6724
 name = "MainMenuTask_GoldMedalResults_SkipOutro"
 address = 0x82502E14
 jump_address_on_true = 0x82502E90
+
+[[midasm_hook]]
+name = "DocMarathon_SetLoading_StartThread"
+address = 0x825EA9AC
+
+[[midasm_hook]]
+name = "DocMarathon_SetLoading_JoinThread_Prefix"
+address = 0x825EA9D0
+
+[[midasm_hook]]
+name = "DocMarathon_SetLoading_JoinThread_Postfix"
+address = 0x825EA9D4
