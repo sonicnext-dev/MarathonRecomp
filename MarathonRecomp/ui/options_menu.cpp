@@ -256,7 +256,7 @@ void DrawSelectionArrows(ImVec2 min, ImVec2 max, bool isSelected)
     auto arrowOffsetXMin = Scale(30, true);
     auto arrowOffsetXMax = Scale(20, true);
 
-    auto arrowOffsetX = Lerp(arrowOffsetXMin, arrowOffsetXMax, sin(motionTime * M_PI));
+    auto arrowOffsetX = Lerp(arrowOffsetXMin, arrowOffsetXMax, sin(motionTime * std::numbers::pi));
     auto arrowOffsetY = Scale(10, true);
 
     auto arrowLeftOffsetX = s_isLeftArrowMotion ? arrowOffsetX : arrowOffsetXMin;
@@ -532,13 +532,17 @@ static void DrawOption
                 {
                     config->Value = s_oldValue;
 
-                    VideoConfigValueChangedCallback(config);
+                    // Don't run callbacks if Window Size change is cancelled.
+                    if (static_cast<void*>(config) != &Config::WindowSize)
+                    {
+                        VideoConfigValueChangedCallback(config);
 
-                    if (config->Callback)
-                        config->Callback(config);
+                        if (config->Callback)
+                            config->Callback(config);
 
-                    if (config->ApplyCallback)
-                        config->ApplyCallback(config);
+                        if (config->ApplyCallback)
+                            config->ApplyCallback(config);
+                    }
                 }
 
                 OptionsMenu::SetFlowState(OptionsMenuFlowState::OptionCursor);
@@ -728,13 +732,13 @@ static void DrawOption
             }
             else
             {
-                auto displayModes = GameWindow::GetDisplayModes();
+                const auto& windowModes = GameWindow::s_windowModes;
 
-                if (config->Value >= 0 && config->Value < displayModes.size())
+                if (config->Value >= 0 && config->Value < windowModes.size())
                 {
-                    auto& displayMode = displayModes[config->Value];
+                    const auto& windowMode = windowModes[config->Value];
 
-                    valueText = fmt::format("{}x{}", displayMode.w, displayMode.h);
+                    valueText = fmt::format("{}x{}", windowMode.w, windowMode.h);
                 }
                 else
                 {
@@ -840,7 +844,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
         {
             DrawOption(rowCount++, &Config::WindowSize, !Config::Fullscreen,
                 &Localise("Options_Desc_NotAvailableFullscreen"),
-                0, 0, (int)GameWindow::GetDisplayModes().size() - 1, false);
+                0, 0, (int)GameWindow::s_windowModes.size() - 1, false);
 
             auto displayCount = GameWindow::GetDisplayCount();
             auto canChangeMonitor = Config::Fullscreen && displayCount > 1;

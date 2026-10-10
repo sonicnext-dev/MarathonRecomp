@@ -47,9 +47,9 @@ public:
 
         switch (event->type)
         {
-            case SDL_KEYDOWN:
+            case SDL_EVENT_KEY_DOWN:
             {
-                switch (event->key.keysym.scancode)
+                switch (event->key.scancode)
                 {
                     case SDL_SCANCODE_UP:
                         g_joypadAxis.y = 1.0f;
@@ -72,7 +72,7 @@ public:
                 break;
             }
 
-            case SDL_MOUSEBUTTONDOWN:
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
             {
                 // Only accept left mouse button.
                 if (event->button.button != SDL_BUTTON_LEFT)
@@ -87,23 +87,23 @@ public:
                 break;
             }
 
-            case SDL_CONTROLLERBUTTONDOWN:
+            case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
             {
-                switch (event->cbutton.button)
+                switch (event->gbutton.button)
                 {
-                    case SDL_CONTROLLER_BUTTON_DPAD_UP:
+                    case SDL_GAMEPAD_BUTTON_DPAD_UP:
                         g_joypadAxis = { 0.0f, 1.0f };
                         break;
 
-                    case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+                    case SDL_GAMEPAD_BUTTON_DPAD_DOWN:
                         g_joypadAxis = { 0.0f, -1.0f };
                         break;
 
-                    case SDL_CONTROLLER_BUTTON_A:
+                    case SDL_GAMEPAD_BUTTON_SOUTH:
                         g_isAccepted = true;
                         break;
 
-                    case SDL_CONTROLLER_BUTTON_B:
+                    case SDL_GAMEPAD_BUTTON_EAST:
                         g_isDeclined = true;
                         break;
                 }
@@ -111,19 +111,19 @@ public:
                 break;
             }
 
-            case SDL_CONTROLLERAXISMOTION:
+            case SDL_EVENT_GAMEPAD_AXIS_MOTION:
             {
-                if (event->caxis.axis < 2)
+                if (event->gaxis.axis < 2)
                 {
-                    float newAxisValue = -(event->caxis.value / axisValueRange);
-                    bool sameDirection = (newAxisValue * g_joypadAxis[event->caxis.axis]) > 0.0f;
-                    bool wasInRange = abs(g_joypadAxis[event->caxis.axis]) > axisTapRange;
+                    float newAxisValue = -(event->gaxis.value / axisValueRange);
+                    bool sameDirection = (newAxisValue * g_joypadAxis[event->gaxis.axis]) > 0.0f;
+                    bool wasInRange = abs(g_joypadAxis[event->gaxis.axis]) > axisTapRange;
                     bool isInRange = abs(newAxisValue) > axisTapRange;
 
                     if (sameDirection && !wasInRange && isInRange)
-                        tapDirection[event->caxis.axis] = newAxisValue;
+                        tapDirection[event->gaxis.axis] = newAxisValue;
 
-                    g_joypadAxis[event->caxis.axis] = newAxisValue;
+                    g_joypadAxis[event->gaxis.axis] = newAxisValue;
                 }
 
                 break;
