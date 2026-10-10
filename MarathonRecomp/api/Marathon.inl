@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cpu/guest_stack_var.h>
+#include <cpu/guest_heap_var.h>
 #include <kernel/function.h>
 
 constexpr float RAD2DEGf = 57.2958f;
