@@ -144,19 +144,6 @@ PPC_FUNC(sub_82582648)
     __imp__sub_82582648(ctx, base);
 }
 
-#if _DEBUG
-// Sonicteam::SoX::Thread::Thread
-PPC_FUNC_IMPL(__imp__sub_825867A8);
-PPC_FUNC(sub_825867A8)
-{
-    auto pThreadName = (const char*)g_memory.Translate(ctx.r4.u32);
-
-    os::logger::Log(fmt::format("Created thread: {}", pThreadName), os::logger::ELogType::Utility, "Sonicteam::SoX::Thread");
-
-    __imp__sub_825867A8(ctx, base);
-}
-#endif
-
 PPC_FUNC_IMPL(__imp__sub_82744840);
 PPC_FUNC(sub_82744840)
 {
