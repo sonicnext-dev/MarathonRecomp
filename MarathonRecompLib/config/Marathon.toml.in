@@ -757,3 +757,12 @@ address = 0x825EA9D0
 [[midasm_hook]]
 name = "DocMarathon_SetLoading_JoinThread_Postfix"
 address = 0x825EA9D4
+
+[[midasm_hook]]
+name = "SceneEnvMapLoadTexture"
+address = 0x825F7190
+
+[[midasm_hook]]
+name = "ResourceMgrKeyOverride"
+address = 0x825823C8
+registers = ["r1", "r28"]

@@ -205,3 +205,22 @@ bool DisableKingdomValleyMist()
 {
     return Config::DisableKingdomValleyMist;
 }
+
+static thread_local bool g_isLoadingEnvMap = false;
+
+void SceneEnvMapLoadTexture()
+{
+    if (Config::FixEnvironmentMaps)
+        g_isLoadingEnvMap = true;
+}
+
+void ResourceMgrKeyOverride(PPCRegister& r1, PPCRegister& r28)
+{
+    if (!g_isLoadingEnvMap)
+        return;
+
+    g_isLoadingEnvMap = false;
+
+    // std::string::assign(const std::string&, uint, uint)
+    GuestToHostFunction<void>(0x82161D10, r1.u32 + 0x60, r28.u32, 0, 0xFFFFFFFF);
+}
