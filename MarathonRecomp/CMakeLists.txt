@@ -171,6 +171,7 @@ set(MARATHON_RECOMP_UI_CXX_SOURCES
     "ui/installer_wizard.cpp"
     "ui/message_window.cpp"
     "ui/options_menu.cpp"
+    "ui/dev_title_menu.cpp"
 )
 
 set(MARATHON_RECOMP_INSTALL_CXX_SOURCES

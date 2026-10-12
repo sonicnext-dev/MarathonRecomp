@@ -30,6 +30,7 @@
 #include <ui/options_menu.h>
 #include <ui/game_window.h>
 #include <ui/black_bar.h>
+#include <ui/dev_title_menu.h>
 #include <patches/aspect_ratio_patches.h>
 #include <patches/hook_event.h>
 #include <patches/loading_patches.h>
@@ -1662,6 +1663,7 @@ static void CreateImGuiBackend()
     InitImGuiUtils();
     OptionsMenu::Init();
     InstallerWizard::Init();
+    DevTitleMenu::Init();
 
     ImGui_ImplSDL3_InitForOther(GameWindow::s_pWindow);
 
@@ -3035,6 +3037,7 @@ static void DrawImGui()
     ResetImGuiCallbacks();
 
     UpdateImGuiUtils();
+    DevTitleMenu::Draw();
     AchievementMenu::Draw();
     OptionsMenu::Draw();
     InstallerWizard::Draw();
