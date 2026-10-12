@@ -397,9 +397,12 @@ target_link_libraries(MarathonRecomp PRIVATE
 
 target_link_libraries(MarathonRecomp PRIVATE ffmpeg)
 
+set(GENERATED_SOURCE_PATH ${CMAKE_CURRENT_BINARY_DIR}/generated)
+
 target_include_directories(MarathonRecomp PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     "${CMAKE_CURRENT_SOURCE_DIR}/api"
+    ${GENERATED_SOURCE_PATH}
     ${MARATHON_RECOMP_THIRDPARTY_INCLUDES}
 )
 
@@ -414,38 +417,47 @@ endif()
 
 target_precompile_headers(MarathonRecomp PUBLIC ${MARATHON_RECOMP_PRECOMPILED_HEADERS})
 
+set(HLSL_SHADERS_IN_PATH ${CMAKE_CURRENT_SOURCE_DIR}/gpu/shader/hlsl)
+set(MSL_SHADERS_IN_PATH ${CMAKE_CURRENT_SOURCE_DIR}/gpu/shader/msl)
+set(HLSL_SHADERS_OUT_PATH ${GENERATED_SOURCE_PATH}/gpu/shader/hlsl)
+set(MSL_SHADERS_OUT_PATH ${GENERATED_SOURCE_PATH}/gpu/shader/msl)
+file(MAKE_DIRECTORY ${HLSL_SHADERS_OUT_PATH})
+file(MAKE_DIRECTORY ${MSL_SHADERS_OUT_PATH})
+
 function(compile_shader FILE_PATH TARGET_NAME)
-    set(HLSL_FILE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/gpu/shader/hlsl/${FILE_PATH}.hlsl)
-    set(MSL_FILE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/gpu/shader/msl/${FILE_PATH}.metal)
+    set(HLSL_FILE_PATH ${HLSL_SHADERS_IN_PATH}/${FILE_PATH}.hlsl)
+    set(MSL_FILE_PATH ${MSL_SHADERS_IN_PATH}/${FILE_PATH}.metal)
+    set(HLSL_FILE_OUT_PATH ${HLSL_SHADERS_OUT_PATH}/${FILE_PATH}.hlsl)
+    set(MSL_FILE_OUT_PATH ${MSL_SHADERS_OUT_PATH}/${FILE_PATH}.metal)
     cmake_path(GET HLSL_FILE_PATH STEM HLSL_NAME)
     cmake_path(GET MSL_FILE_PATH STEM MSL_NAME)
     if (MARATHON_RECOMP_METAL)
         add_custom_command(
-                OUTPUT ${MSL_FILE_PATH}.ir
-                COMMAND ${XCRUN_TOOL} -sdk macosx metal -o ${MSL_FILE_PATH}.ir -c ${MSL_FILE_PATH} -D__air__ -DMARATHON_RECOMP -frecord-sources -gline-tables-only
+                OUTPUT ${MSL_FILE_OUT_PATH}.ir
+                COMMAND ${XCRUN_TOOL} -sdk macosx metal -o ${MSL_FILE_OUT_PATH}.ir -c ${MSL_FILE_PATH} -D__air__ -DMARATHON_RECOMP -frecord-sources -gline-tables-only
                 DEPENDS ${MSL_FILE_PATH}
         )
         add_custom_command(
-                OUTPUT ${MSL_FILE_PATH}.metallib
-                COMMAND ${XCRUN_TOOL} -sdk macosx metallib -o ${MSL_FILE_PATH}.metallib ${MSL_FILE_PATH}.ir
-                DEPENDS ${MSL_FILE_PATH}.ir
+                OUTPUT ${MSL_FILE_OUT_PATH}.metallib
+                COMMAND ${XCRUN_TOOL} -sdk macosx metallib -o ${MSL_FILE_OUT_PATH}.metallib ${MSL_FILE_OUT_PATH}.ir
+                DEPENDS ${MSL_FILE_OUT_PATH}.ir
         )
-        BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${MSL_FILE_PATH}.metallib" DEST_FILE "${MSL_FILE_PATH}.metallib" ARRAY_NAME "g_${MSL_NAME}_air")
+        BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${MSL_FILE_OUT_PATH}.metallib" DEST_FILE "${MSL_FILE_OUT_PATH}.metallib" ARRAY_NAME "g_${MSL_NAME}_air")
     endif()
     if (MARATHON_RECOMP_D3D12)
         add_custom_command(
-            OUTPUT ${HLSL_FILE_PATH}.dxil.h
-            COMMAND ${DIRECTX_DXC_TOOL} -T ${TARGET_NAME} -HV 2021 -all-resources-bound -Wno-ignored-attributes -DMARATHON_RECOMP -E shaderMain -Fh ${HLSL_FILE_PATH}.dxil.h ${HLSL_FILE_PATH} -Vn g_${HLSL_NAME}_dxil
+            OUTPUT ${HLSL_FILE_OUT_PATH}.dxil.h
+            COMMAND ${DIRECTX_DXC_TOOL} -T ${TARGET_NAME} -HV 2021 -all-resources-bound -Wno-ignored-attributes -DMARATHON_RECOMP -E shaderMain -Fh ${HLSL_FILE_OUT_PATH}.dxil.h ${HLSL_FILE_PATH} -Vn g_${HLSL_NAME}_dxil
             DEPENDS ${HLSL_FILE_PATH}
         )
-        target_sources(MarathonRecomp PRIVATE ${HLSL_FILE_PATH}.dxil.h)
+        target_sources(MarathonRecomp PRIVATE ${HLSL_FILE_OUT_PATH}.dxil.h)
     endif()
     add_custom_command(
-        OUTPUT ${HLSL_FILE_PATH}.spirv.h
-        COMMAND ${DIRECTX_DXC_TOOL} -T ${TARGET_NAME} -HV 2021 -all-resources-bound -spirv -fvk-use-dx-layout ${ARGN} -DMARATHON_RECOMP -E shaderMain -Fh ${HLSL_FILE_PATH}.spirv.h ${HLSL_FILE_PATH} -Vn g_${HLSL_NAME}_spirv
+        OUTPUT ${HLSL_FILE_OUT_PATH}.spirv.h
+        COMMAND ${DIRECTX_DXC_TOOL} -T ${TARGET_NAME} -HV 2021 -all-resources-bound -spirv -fvk-use-dx-layout ${ARGN} -DMARATHON_RECOMP -E shaderMain -Fh ${HLSL_FILE_OUT_PATH}.spirv.h ${HLSL_FILE_PATH} -Vn g_${HLSL_NAME}_spirv
         DEPENDS ${HLSL_FILE_PATH}
     )
-    target_sources(MarathonRecomp PRIVATE ${HLSL_FILE_PATH}.spirv.h)
+    target_sources(MarathonRecomp PRIVATE ${HLSL_FILE_OUT_PATH}.spirv.h)
 endfunction()
 
 function(compile_vertex_shader FILE_PATH)
@@ -456,21 +468,13 @@ function(compile_pixel_shader FILE_PATH)
     compile_shader(${FILE_PATH} ps_6_0)
 endfunction()
 
-compile_pixel_shader(blend_color_alpha_ps)
 compile_pixel_shader(conditional_survey_ps)
 compile_vertex_shader(copy_vs)
 compile_pixel_shader(copy_color_ps)
 compile_pixel_shader(copy_depth_ps)
-compile_pixel_shader(csd_filter_ps)
-compile_vertex_shader(csd_no_tex_vs)
-compile_vertex_shader(csd_vs)
 compile_vertex_shader(enhanced_burnout_blur_vs)
 compile_pixel_shader(enhanced_burnout_blur_ps)
 compile_pixel_shader(movie_ps)
-compile_pixel_shader(gaussian_blur_3x3)
-compile_pixel_shader(gaussian_blur_5x5)
-compile_pixel_shader(gaussian_blur_7x7)
-compile_pixel_shader(gaussian_blur_9x9)
 compile_pixel_shader(gamma_correction_ps)
 compile_pixel_shader(imgui_ps)
 compile_vertex_shader(imgui_vs)

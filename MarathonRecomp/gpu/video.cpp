@@ -48,83 +48,59 @@
 #include "../../tools/XenosRecomp/XenosRecomp/shader_common.h"
 
 #ifdef MARATHON_RECOMP_D3D12
-#include "shader/hlsl/blend_color_alpha_ps.hlsl.dxil.h"
-#include "shader/hlsl/conditional_survey_ps.hlsl.dxil.h"
-#include "shader/hlsl/copy_vs.hlsl.dxil.h"
-#include "shader/hlsl/copy_color_ps.hlsl.dxil.h"
-#include "shader/hlsl/copy_depth_ps.hlsl.dxil.h"
-#include "shader/hlsl/csd_filter_ps.hlsl.dxil.h"
-#include "shader/hlsl/csd_no_tex_vs.hlsl.dxil.h"
-#include "shader/hlsl/csd_vs.hlsl.dxil.h"
-#include "shader/hlsl/enhanced_burnout_blur_vs.hlsl.dxil.h"
-#include "shader/hlsl/enhanced_burnout_blur_ps.hlsl.dxil.h"
-#include "shader/hlsl/movie_ps.hlsl.dxil.h"
-#include "shader/hlsl/gamma_correction_ps.hlsl.dxil.h"
-#include "shader/hlsl/gaussian_blur_3x3.hlsl.dxil.h"
-#include "shader/hlsl/gaussian_blur_5x5.hlsl.dxil.h"
-#include "shader/hlsl/gaussian_blur_7x7.hlsl.dxil.h"
-#include "shader/hlsl/gaussian_blur_9x9.hlsl.dxil.h"
-#include "shader/hlsl/imgui_ps.hlsl.dxil.h"
-#include "shader/hlsl/imgui_vs.hlsl.dxil.h"
-#include "shader/hlsl/resolve_msaa_color_2x.hlsl.dxil.h"
-#include "shader/hlsl/resolve_msaa_color_4x.hlsl.dxil.h"
-#include "shader/hlsl/resolve_msaa_color_8x.hlsl.dxil.h"
-#include "shader/hlsl/resolve_msaa_depth_2x.hlsl.dxil.h"
-#include "shader/hlsl/resolve_msaa_depth_4x.hlsl.dxil.h"
-#include "shader/hlsl/resolve_msaa_depth_8x.hlsl.dxil.h"
+#include "gpu/shader/hlsl/conditional_survey_ps.hlsl.dxil.h"
+#include "gpu/shader/hlsl/copy_vs.hlsl.dxil.h"
+#include "gpu/shader/hlsl/copy_color_ps.hlsl.dxil.h"
+#include "gpu/shader/hlsl/copy_depth_ps.hlsl.dxil.h"
+#include "gpu/shader/hlsl/enhanced_burnout_blur_vs.hlsl.dxil.h"
+#include "gpu/shader/hlsl/enhanced_burnout_blur_ps.hlsl.dxil.h"
+#include "gpu/shader/hlsl/movie_ps.hlsl.dxil.h"
+#include "gpu/shader/hlsl/gamma_correction_ps.hlsl.dxil.h"
+#include "gpu/shader/hlsl/imgui_ps.hlsl.dxil.h"
+#include "gpu/shader/hlsl/imgui_vs.hlsl.dxil.h"
+#include "gpu/shader/hlsl/resolve_msaa_color_2x.hlsl.dxil.h"
+#include "gpu/shader/hlsl/resolve_msaa_color_4x.hlsl.dxil.h"
+#include "gpu/shader/hlsl/resolve_msaa_color_8x.hlsl.dxil.h"
+#include "gpu/shader/hlsl/resolve_msaa_depth_2x.hlsl.dxil.h"
+#include "gpu/shader/hlsl/resolve_msaa_depth_4x.hlsl.dxil.h"
+#include "gpu/shader/hlsl/resolve_msaa_depth_8x.hlsl.dxil.h"
 #endif
 
 #ifdef MARATHON_RECOMP_METAL
-#include "shader/msl/blend_color_alpha_ps.metal.metallib.h"
-#include "shader/msl/conditional_survey_ps.metal.metallib.h"
-#include "shader/msl/copy_vs.metal.metallib.h"
-#include "shader/msl/copy_color_ps.metal.metallib.h"
-#include "shader/msl/copy_depth_ps.metal.metallib.h"
-#include "shader/msl/csd_filter_ps.metal.metallib.h"
-#include "shader/msl/csd_no_tex_vs.metal.metallib.h"
-#include "shader/msl/csd_vs.metal.metallib.h"
-#include "shader/msl/enhanced_burnout_blur_vs.metal.metallib.h"
-#include "shader/msl/enhanced_burnout_blur_ps.metal.metallib.h"
-#include "shader/msl/movie_ps.metal.metallib.h"
-#include "shader/msl/gamma_correction_ps.metal.metallib.h"
-#include "shader/msl/gaussian_blur_3x3.metal.metallib.h"
-#include "shader/msl/gaussian_blur_5x5.metal.metallib.h"
-#include "shader/msl/gaussian_blur_7x7.metal.metallib.h"
-#include "shader/msl/gaussian_blur_9x9.metal.metallib.h"
-#include "shader/msl/imgui_ps.metal.metallib.h"
-#include "shader/msl/imgui_vs.metal.metallib.h"
-#include "shader/msl/resolve_msaa_color_2x.metal.metallib.h"
-#include "shader/msl/resolve_msaa_color_4x.metal.metallib.h"
-#include "shader/msl/resolve_msaa_color_8x.metal.metallib.h"
-#include "shader/msl/resolve_msaa_depth_2x.metal.metallib.h"
-#include "shader/msl/resolve_msaa_depth_4x.metal.metallib.h"
-#include "shader/msl/resolve_msaa_depth_8x.metal.metallib.h"
+#include "gpu/shader/msl/conditional_survey_ps.metal.metallib.h"
+#include "gpu/shader/msl/copy_vs.metal.metallib.h"
+#include "gpu/shader/msl/copy_color_ps.metal.metallib.h"
+#include "gpu/shader/msl/copy_depth_ps.metal.metallib.h"
+#include "gpu/shader/msl/enhanced_burnout_blur_vs.metal.metallib.h"
+#include "gpu/shader/msl/enhanced_burnout_blur_ps.metal.metallib.h"
+#include "gpu/shader/msl/movie_ps.metal.metallib.h"
+#include "gpu/shader/msl/gamma_correction_ps.metal.metallib.h"
+#include "gpu/shader/msl/imgui_ps.metal.metallib.h"
+#include "gpu/shader/msl/imgui_vs.metal.metallib.h"
+#include "gpu/shader/msl/resolve_msaa_color_2x.metal.metallib.h"
+#include "gpu/shader/msl/resolve_msaa_color_4x.metal.metallib.h"
+#include "gpu/shader/msl/resolve_msaa_color_8x.metal.metallib.h"
+#include "gpu/shader/msl/resolve_msaa_depth_2x.metal.metallib.h"
+#include "gpu/shader/msl/resolve_msaa_depth_4x.metal.metallib.h"
+#include "gpu/shader/msl/resolve_msaa_depth_8x.metal.metallib.h"
 #endif
 
-#include "shader/hlsl/blend_color_alpha_ps.hlsl.spirv.h"
-#include "shader/hlsl/conditional_survey_ps.hlsl.spirv.h"
-#include "shader/hlsl/copy_vs.hlsl.spirv.h"
-#include "shader/hlsl/copy_color_ps.hlsl.spirv.h"
-#include "shader/hlsl/copy_depth_ps.hlsl.spirv.h"
-#include "shader/hlsl/csd_filter_ps.hlsl.spirv.h"
-#include "shader/hlsl/csd_no_tex_vs.hlsl.spirv.h"
-#include "shader/hlsl/csd_vs.hlsl.spirv.h"
-#include "shader/hlsl/enhanced_burnout_blur_vs.hlsl.spirv.h"
-#include "shader/hlsl/enhanced_burnout_blur_ps.hlsl.spirv.h"
-#include "shader/hlsl/movie_ps.hlsl.spirv.h"
-#include "shader/hlsl/gamma_correction_ps.hlsl.spirv.h"
-#include "shader/hlsl/gaussian_blur_3x3.hlsl.spirv.h"
-#include "shader/hlsl/gaussian_blur_5x5.hlsl.spirv.h"
-#include "shader/hlsl/gaussian_blur_7x7.hlsl.spirv.h"
-#include "shader/hlsl/gaussian_blur_9x9.hlsl.spirv.h"
-#include "shader/hlsl/imgui_ps.hlsl.spirv.h"
-#include "shader/hlsl/imgui_vs.hlsl.spirv.h"
-#include "shader/hlsl/resolve_msaa_color_2x.hlsl.spirv.h"
-#include "shader/hlsl/resolve_msaa_color_4x.hlsl.spirv.h"
-#include "shader/hlsl/resolve_msaa_color_8x.hlsl.spirv.h"
-#include "shader/hlsl/resolve_msaa_depth_2x.hlsl.spirv.h"
-#include "shader/hlsl/resolve_msaa_depth_4x.hlsl.spirv.h"
-#include "shader/hlsl/resolve_msaa_depth_8x.hlsl.spirv.h"
+#include "gpu/shader/hlsl/conditional_survey_ps.hlsl.spirv.h"
+#include "gpu/shader/hlsl/copy_vs.hlsl.spirv.h"
+#include "gpu/shader/hlsl/copy_color_ps.hlsl.spirv.h"
+#include "gpu/shader/hlsl/copy_depth_ps.hlsl.spirv.h"
+#include "gpu/shader/hlsl/enhanced_burnout_blur_vs.hlsl.spirv.h"
+#include "gpu/shader/hlsl/enhanced_burnout_blur_ps.hlsl.spirv.h"
+#include "gpu/shader/hlsl/movie_ps.hlsl.spirv.h"
+#include "gpu/shader/hlsl/gamma_correction_ps.hlsl.spirv.h"
+#include "gpu/shader/hlsl/imgui_ps.hlsl.spirv.h"
+#include "gpu/shader/hlsl/imgui_vs.hlsl.spirv.h"
+#include "gpu/shader/hlsl/resolve_msaa_color_2x.hlsl.spirv.h"
+#include "gpu/shader/hlsl/resolve_msaa_color_4x.hlsl.spirv.h"
+#include "gpu/shader/hlsl/resolve_msaa_color_8x.hlsl.spirv.h"
+#include "gpu/shader/hlsl/resolve_msaa_depth_2x.hlsl.spirv.h"
+#include "gpu/shader/hlsl/resolve_msaa_depth_4x.hlsl.spirv.h"
+#include "gpu/shader/hlsl/resolve_msaa_depth_8x.hlsl.spirv.h"
 
 #ifdef _WIN32
 extern "C"
@@ -991,15 +967,6 @@ static void LoadEmbeddedResources()
     g_buttonBcDiff = decompressZstd(g_button_bc_diff, g_button_bc_diff_uncompressed_size);
 }
 
-enum class CsdFilterState
-{
-    Unknown,
-    On,
-    Off
-};
-
-static CsdFilterState g_csdFilterState;
-
 enum class RenderCommandType
 {
     SetRenderState,
@@ -1166,7 +1133,6 @@ struct RenderCommand
             uint8_t* vertexStreamZeroData;
             uint32_t vertexStreamZeroSize;
             uint32_t vertexStreamZeroStride;
-            CsdFilterState csdFilterState;
         } drawPrimitiveUP;
 
         struct 
@@ -1594,24 +1560,6 @@ static std::unique_ptr<RenderPipeline> g_copyDepthPipeline;
 static std::unique_ptr<RenderShader> g_resolveMsaaColorShaders[3];
 static ankerl::unordered_dense::map<RenderFormat, std::array<std::unique_ptr<RenderPipeline>, 3>> g_resolveMsaaColorPipelines;
 static std::unique_ptr<RenderPipeline> g_resolveMsaaDepthPipelines[3];
-
-enum
-{
-    GAUSSIAN_BLUR_3X3,
-    GAUSSIAN_BLUR_5X5,
-    GAUSSIAN_BLUR_7X7,
-    GAUSSIAN_BLUR_9X9,
-    GAUSSIAN_BLUR_COUNT
-};
-
-static std::unique_ptr<GuestShader> g_gaussianBlurShaders[GAUSSIAN_BLUR_COUNT];
-
-static std::unique_ptr<GuestShader> g_blendColorAlphaPSShader;
-
-static std::unique_ptr<GuestShader> g_csdFilterShader;
-static std::unique_ptr<GuestShader> g_csdVSShader;
-static std::unique_ptr<GuestShader> g_csdNoTexVSShader;
-static GuestShader* g_csdShader;
 
 static std::unique_ptr<GuestShader> g_enhancedBurnoutBlurVSShader;
 static std::unique_ptr<GuestShader> g_enhancedBurnoutBlurPSShader;
@@ -2387,26 +2335,6 @@ bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
         desc.depthTargetFormat = RenderFormat::D32_FLOAT_S8_UINT;
         g_resolveMsaaDepthPipelines[i] = g_device->createGraphicsPipeline(desc);
     }
-
-    for (auto& shader : g_gaussianBlurShaders)
-        shader = std::make_unique<GuestShader>(ResourceType::PixelShader);
-
-    g_gaussianBlurShaders[GAUSSIAN_BLUR_3X3]->shader = CREATE_SHADER(gaussian_blur_3x3);
-    g_gaussianBlurShaders[GAUSSIAN_BLUR_5X5]->shader = CREATE_SHADER(gaussian_blur_5x5);
-    g_gaussianBlurShaders[GAUSSIAN_BLUR_7X7]->shader = CREATE_SHADER(gaussian_blur_7x7);
-    g_gaussianBlurShaders[GAUSSIAN_BLUR_9X9]->shader = CREATE_SHADER(gaussian_blur_9x9);
-
-    g_blendColorAlphaPSShader = std::make_unique<GuestShader>(ResourceType::PixelShader);
-    g_blendColorAlphaPSShader->shader = CREATE_SHADER(blend_color_alpha_ps);
-
-    g_csdFilterShader = std::make_unique<GuestShader>(ResourceType::PixelShader);
-    g_csdFilterShader->shader = CREATE_SHADER(csd_filter_ps);
-
-    g_csdVSShader = std::make_unique<GuestShader>(ResourceType::VertexShader);
-    g_csdVSShader->shader = CREATE_SHADER(csd_vs);
-
-    g_csdNoTexVSShader = std::make_unique<GuestShader>(ResourceType::VertexShader);
-    g_csdNoTexVSShader->shader = CREATE_SHADER(csd_no_tex_vs);
 
     g_enhancedBurnoutBlurVSShader = std::make_unique<GuestShader>(ResourceType::VertexShader);
     g_enhancedBurnoutBlurVSShader->shader = CREATE_SHADER(enhanced_burnout_blur_vs);
@@ -5873,7 +5801,6 @@ static void DrawPrimitiveUP(GuestDevice* device, uint32_t primitiveType, uint32_
     cmd.drawPrimitiveUP.vertexStreamZeroData = g_intermediaryUploadAllocator.allocate(vertexStreamZeroData, primitiveCount * vertexStreamZeroStride);
     cmd.drawPrimitiveUP.vertexStreamZeroSize = primitiveCount * vertexStreamZeroStride;
     cmd.drawPrimitiveUP.vertexStreamZeroStride = vertexStreamZeroStride;
-    cmd.drawPrimitiveUP.csdFilterState = g_csdFilterState;
     
     queue.submit();
 }
@@ -5899,13 +5826,6 @@ static void ProcDrawPrimitiveUP(const RenderCommand& cmd)
         indexCount = g_quadIndexData.prepare(args.primitiveCount);
     else if (!g_capabilities.triangleFan && args.primitiveType == D3DPT_TRIANGLEFAN)
         indexCount = g_triangleFanIndexData.prepare(args.primitiveCount);
-
-    if (args.csdFilterState != CsdFilterState::Unknown &&
-        (g_pipelineState.pixelShader == g_csdShader || g_pipelineState.pixelShader == g_csdFilterShader.get()))
-    {
-        SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.pixelShader,
-            args.csdFilterState == CsdFilterState::On ? g_csdFilterShader.get() : g_csdShader);
-    }
 
     FlushRenderStateForRenderThread();
 
@@ -6316,9 +6236,6 @@ static GuestShader* GetOrCreateShader(XXH64_hash_t hash, ResourceType resourceTy
     else
         shader->AddRef();
 
-    if (hash == 0x31173204A896098A)
-        g_csdShader = shader;
-
     return shader;
 }
 
@@ -6355,14 +6272,6 @@ static void ProcSetVertexShader(const RenderCommand& cmd)
         {
             if (Config::RadialBlur == ERadialBlur::Enhanced)
                 shader = g_enhancedBurnoutBlurVSShader.get();
-        }
-        else if (shader->shaderCacheEntry->hash == 0xB1086A4947A797DE)
-        {
-            shader = g_csdNoTexVSShader.get();
-        }
-        else if (shader->shaderCacheEntry->hash == 0xB4CAFC034A37C8A8)
-        {
-            shader = g_csdVSShader.get();
         }
 
 #ifdef ASYNC_PSO_DEBUG
@@ -6453,10 +6362,6 @@ static void ProcSetPixelShader(const RenderCommand& cmd)
         else if (shader->shaderCacheEntry->hash == 0x88EB0AA82E4257B0)
         {
             shader = g_MoviePSShader.get();
-        }
-        else if (shader->shaderCacheEntry->hash == 0x85ED723035ECF535)
-        {
-            shader = g_blendColorAlphaPSShader.get();
         }
 
 #ifdef ASYNC_PSO_DEBUG
@@ -7494,13 +7399,6 @@ static void PipelineTaskConsumerThread()
                     }
 
                     createGraphicsPipeline(pipelineState, "Precompiled Pipeline");
-
-                    // Compile the CSD filter shader that we pass to the game when point filtering is used.
-                    if (pipelineState.pixelShader == g_csdShader)
-                    {
-                        pipelineState.pixelShader = g_csdFilterShader.get();
-                        createGraphicsPipeline(pipelineState, "Precompiled CSD Filter Pipeline");
-                    }
                 }
 
                 type = PipelineTaskType::Null;
