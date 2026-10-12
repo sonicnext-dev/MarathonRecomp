@@ -1561,10 +1561,10 @@ static std::unique_ptr<RenderShader> g_resolveMsaaColorShaders[3];
 static ankerl::unordered_dense::map<RenderFormat, std::array<std::unique_ptr<RenderPipeline>, 3>> g_resolveMsaaColorPipelines;
 static std::unique_ptr<RenderPipeline> g_resolveMsaaDepthPipelines[3];
 
-static std::unique_ptr<GuestShader> g_enhancedBurnoutBlurVSShader;
-static std::unique_ptr<GuestShader> g_enhancedBurnoutBlurPSShader;
+static std::unique_ptr<RenderShader> g_enhancedBurnoutBlurVSShader;
+static std::unique_ptr<RenderShader> g_enhancedBurnoutBlurPSShader;
 
-static std::unique_ptr<GuestShader> g_MoviePSShader;
+static std::unique_ptr<RenderShader> g_MoviePSShader;
 
 static std::unique_ptr<GuestShader> g_conditionalSurveyPSShader;
 
@@ -2336,14 +2336,9 @@ bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
         g_resolveMsaaDepthPipelines[i] = g_device->createGraphicsPipeline(desc);
     }
 
-    g_enhancedBurnoutBlurVSShader = std::make_unique<GuestShader>(ResourceType::VertexShader);
-    g_enhancedBurnoutBlurVSShader->shader = CREATE_SHADER(enhanced_burnout_blur_vs);
-
-    g_enhancedBurnoutBlurPSShader = std::make_unique<GuestShader>(ResourceType::PixelShader);
-    g_enhancedBurnoutBlurPSShader->shader = CREATE_SHADER(enhanced_burnout_blur_ps);
-
-    g_MoviePSShader = std::make_unique<GuestShader>(ResourceType::PixelShader);
-    g_MoviePSShader->shader = CREATE_SHADER(movie_ps);
+    g_enhancedBurnoutBlurVSShader = CREATE_SHADER(enhanced_burnout_blur_vs);
+    g_enhancedBurnoutBlurPSShader = CREATE_SHADER(enhanced_burnout_blur_ps);
+    g_MoviePSShader = CREATE_SHADER(movie_ps);
 
     g_conditionalSurveyPSShader = std::make_unique<GuestShader>(ResourceType::PixelShader);
     g_conditionalSurveyPSShader->shader = CREATE_SHADER(conditional_survey_ps);
@@ -4902,6 +4897,27 @@ static void ProcSetScissorRect(const RenderCommand& cmd)
 
 static RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specConstants)
 {
+    if (guestShader->shaderCacheEntry != nullptr)
+    {
+        switch (guestShader->shaderCacheEntry->hash)
+        {
+        case 0x3687D038CE7D0BEA:
+        case 0xB4DA7A442DBB16CC:
+            if (Config::RadialBlur == ERadialBlur::Enhanced)
+                return g_enhancedBurnoutBlurVSShader.get();
+            break;
+        case 0xDA58F0110A8595D9:
+        case 0x845A4EF989446C01:
+            if (Config::RadialBlur == ERadialBlur::Enhanced)
+                return g_enhancedBurnoutBlurPSShader.get();
+            break;
+        case 0x88EB0AA82E4257B0:
+            return g_MoviePSShader.get();
+        default:
+            break;
+        }
+    }
+
     if (g_backend != Backend::D3D12 ||
         guestShader->shaderCacheEntry == nullptr ||
         guestShader->shaderCacheEntry->specConstantsMask == 0)
@@ -6261,26 +6277,6 @@ static void SetVertexShader(GuestDevice* device, GuestShader* shader)
 static void ProcSetVertexShader(const RenderCommand& cmd)
 {
     GuestShader* shader = cmd.setVertexShader.shader;
-
-    if (shader != nullptr && shader->shaderCacheEntry != nullptr)
-    {
-#ifdef ASYNC_PSO_DEBUG
-        GuestShader *originalShader = shader;
-#endif
-
-        if (shader->shaderCacheEntry->hash == 0x3687D038CE7D0BEA || shader->shaderCacheEntry->hash == 0xB4DA7A442DBB16CC)
-        {
-            if (Config::RadialBlur == ERadialBlur::Enhanced)
-                shader = g_enhancedBurnoutBlurVSShader.get();
-        }
-
-#ifdef ASYNC_PSO_DEBUG
-        if (shader != originalShader && shader->name.empty()) {
-            shader->name = fmt::format("{} (REPLACED)", originalShader->name);
-        }
-#endif
-    }
-
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.vertexShader, shader);
 }
 
@@ -6347,30 +6343,6 @@ static void SetPixelShader(GuestDevice* device, GuestShader* shader)
 static void ProcSetPixelShader(const RenderCommand& cmd)
 {
     GuestShader* shader = cmd.setPixelShader.shader;
-
-    if (shader != nullptr && shader->shaderCacheEntry != nullptr)
-    {
-#ifdef ASYNC_PSO_DEBUG
-        GuestShader *originalShader = shader;
-#endif
-
-        if (shader->shaderCacheEntry->hash == 0xDA58F0110A8595D9 || shader->shaderCacheEntry->hash == 0x845A4EF989446C01)
-        {
-            if (Config::RadialBlur == ERadialBlur::Enhanced)
-                shader = g_enhancedBurnoutBlurPSShader.get();
-        }
-        else if (shader->shaderCacheEntry->hash == 0x88EB0AA82E4257B0)
-        {
-            shader = g_MoviePSShader.get();
-        }
-
-#ifdef ASYNC_PSO_DEBUG
-        if (shader != originalShader && shader->name.empty()) {
-            shader->name = fmt::format("{} (REPLACED)", originalShader->name);
-        }
-#endif
-    }
-
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.pixelShader, shader);
 }
 
@@ -7643,7 +7615,8 @@ void VideoConfigValueChangedCallback(IConfigDef* config)
     // Config options that require pipeline recompilation
     bool shouldRecompile =
         config == &Config::AntiAliasing ||
-        config == &Config::TransparencyAntiAliasing;
+        config == &Config::TransparencyAntiAliasing ||
+        config == &Config::RadialBlur;
 
     if (shouldRecompile)
         EnqueuePipelineTask(PipelineTaskType::RecompilePipelines);
