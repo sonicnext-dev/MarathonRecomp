@@ -21,7 +21,7 @@ PPC_FUNC(sub_824D7340)
     if (App::s_pApp && App::s_pApp->m_pDoc->GetDocMode("GameMode"))
         pHUDLoading->m_spCsdObject->m_Priority = 1002.0f;
 
-    if (App:s_isLoading)
+    if (App::s_isLoading)
     {
         for (auto& event : LoadingPatches::Events)
             event->Update(ctx.f1.f64);
