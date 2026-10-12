@@ -85,8 +85,8 @@ CONFIG_DEFINE_HIDDEN("Codes", bool, DisableLowResolutionFontOnCustomUI, false, f
 CONFIG_DEFINE_HIDDEN("Codes", bool, DisablePushState, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, DisableTitleInputDelay, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, EnableDebugMode, false, false);
-CONFIG_DEFINE_HIDDEN("Codes", bool, FixEnvironmentMaps, false, false);
-CONFIG_DEFINE_HIDDEN("Codes", bool, FixPowerUpJingleDuration, false, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, FixEnvironmentMaps, true, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, FixPowerUpJingleDuration, true, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, HUDToggleKey, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, InfiniteLives, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, MidairControlForMachSpeed, false, false);
