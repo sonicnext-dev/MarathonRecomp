@@ -7574,7 +7574,7 @@ class SDLEventListenerForPSOCaching : public SDLEventListener
 public:
     bool OnSDLEvent(SDL_Event* event) override 
     {
-        if (event->type != SDL_QUIT)
+        if (event->type != SDL_EVENT_QUIT)
             return false;
 
         std::lock_guard lock(g_pipelineCacheMutex);
