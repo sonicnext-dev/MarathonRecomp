@@ -7406,9 +7406,10 @@ static bool CheckMadeAll(const T& modelData)
 
 static void PipelineTaskConsumerThread()
 {
+    os::thread::SetCurrentThreadName("Pipeline Task Consumer Thread");
+
 #ifdef _WIN32
     SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_IDLE);
-    GuestThread::SetThreadName(GetCurrentThreadId(), "Pipeline Task Consumer Thread");
 #endif
 
     std::vector<PipelineTask> localPipelineTaskQueue;
