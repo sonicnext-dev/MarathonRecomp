@@ -218,57 +218,90 @@ void GuestThread::SetLastError(uint32_t error)
     *(uint32_t*)(thread + TEB_OFFSET + 0x160) = ByteSwap(error);
 }
 
-void GuestThread::SetThreadName(uint32_t threadId, const char* name)
+void GuestThread::SetThreadName(const char* name)
 {
-#ifdef _WIN32
-#pragma pack(push,8)
-    const DWORD MS_VC_EXCEPTION = 0x406D1388;
+#if defined(_WIN32)
 
-    typedef struct tagTHREADNAME_INFO
+    //
+    // Reference: https://learn.microsoft.com/visualstudio/debugger/how-to-set-a-thread-name-in-native-code
+    //
+
+#if defined(NTDDI_VERSION) && (NTDDI_VERSION < NTDDI_WIN10_RS1)
+
+    //
+    // Legacy thread naming for Windows 10 1511 or earlier.
+    //
+
+#pragma pack(push, 8)
+    struct THREADNAME_INFO
     {
-        DWORD dwType; // Must be 0x1000.
-        LPCSTR szName; // Pointer to name (in user addr space).
-        DWORD dwThreadID; // Thread ID (-1=caller thread).
-        DWORD dwFlags; // Reserved for future use, must be zero.
-    } THREADNAME_INFO;
+        DWORD dwType{ 0x1000 };
+        LPCSTR szName{};
+        DWORD dwThreadID{};
+        DWORD dwFlags{};
+    };
 #pragma pack(pop)
 
-    THREADNAME_INFO info;
-    info.dwType = 0x1000;
-    info.szName = name;
-    info.dwThreadID = threadId;
-    info.dwFlags = 0;
+    THREADNAME_INFO info
+    {
+        .szName = name,
+        .dwThreadID = GetCurrentThreadId()
+    };
 
     __try
     {
-        RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR*)&info);
+        RaiseException(0x406D1388, 0, sizeof(info) / sizeof(ULONG_PTR), reinterpret_cast<ULONG_PTR*>(&info));
     }
-    __except (EXCEPTION_EXECUTE_HANDLER)
-    {
-    }
+    __except (EXCEPTION_EXECUTE_HANDLER) { }
+
+#else
+
+    //
+    // Modern thread naming for Windows 10 1607 or later.
+    // This method allows for thread names to be written to crash dumps.
+    //
+
+    // I doubt we'll ever need Unicode in thread names.
+    const auto nameView = std::string_view(name);
+    const auto nameW = std::wstring(nameView.begin(), nameView.end());
+
+    SetThreadDescription(GetCurrentThread(), nameW.c_str());
+
+#endif // defined(NTDDI_VERSION) && (NTDDI_VERSION < NTDDI_WIN10_RS1)
+
+#else
+
+#if defined(__linux__)
+
+    // Linux limits thread names to 15 characters, and will
+    // reject any attempt to set a longer name with ERANGE.
+    const auto nameView = std::string_view(name, std::min(strlen(name), size_t(15)));
+
+    pthread_setname_np(pthread_self(), nameView.data());
+
+#elif defined(__APPLE__)
+
+    // macOS does not take in a thread handle for this function.
+    // The thread name is automatically truncated to 64 characters.
+    pthread_setname_np(name);
+
 #endif
+
+#endif // defined(_WIN32)
+}
+
+// Sonicteam::SoX::Thread::ThreadProc
+PPC_FUNC_IMPL(__imp__sub_825866A8);
+PPC_FUNC(sub_825866A8)
+{
+    GuestThread::SetThreadName(reinterpret_cast<Sonicteam::SoX::Thread*>(base + ctx.r3.u32)->m_pName.get());
+
+    __imp__sub_825866A8(ctx, base);
 }
 
 uint32_t XSetThreadProcessor(GuestThreadHandle* hThread, uint32_t dwIdealProcessor)
 {
     return 0;
-}
-
-// Sonicteam::SoX::Thread::Thread
-PPC_FUNC_IMPL(__imp__sub_825867A8);
-PPC_FUNC(sub_825867A8)
-{
-    const auto pThread = reinterpret_cast<Sonicteam::SoX::Thread*>(base + ctx.r3.u32);
-
-    __imp__sub_825867A8(ctx, base);
-
-#if _DEBUG
-    LOGFN_UTILITY("Created thread: \"{}\" (ID: 0x{:08X}) (Handle: 0x{:08X})", pThread->m_pName.get(), pThread->m_ID.get(), pThread->m_Handle.get());
-#endif
-
-#ifdef _WIN32
-    GuestThread::SetThreadName(pThread->m_ID, pThread->m_pName.get());
-#endif
 }
 
 GUEST_FUNCTION_HOOK(sub_82537F80, XSetThreadProcessor);
