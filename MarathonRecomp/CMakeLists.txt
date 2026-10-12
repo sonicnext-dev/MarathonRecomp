@@ -91,6 +91,7 @@ if (WIN32)
         "os/win32/logger_win32.cpp"
         "os/win32/media_win32.cpp"
         "os/win32/process_win32.cpp"
+        "os/win32/thread_win32.cpp"
         "os/win32/user_win32.cpp"
         "os/win32/version_win32.cpp"
     )
@@ -99,6 +100,7 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Linux")
         "os/linux/logger_linux.cpp"
         "os/linux/media_linux.cpp"
         "os/linux/process_linux.cpp"
+        "os/linux/thread_linux.cpp"
         "os/linux/user_linux.cpp"
         "os/linux/version_linux.cpp"
     )
@@ -107,6 +109,7 @@ elseif (APPLE)
         "os/macos/logger_macos.cpp"
         "os/macos/media_macos.cpp"
         "os/macos/process_macos.cpp"
+        "os/macos/thread_macos.cpp"
         "os/macos/user_macos.cpp"
         "os/macos/version_macos.cpp"
     )

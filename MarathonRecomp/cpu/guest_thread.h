@@ -7,7 +7,7 @@
 #define USE_PTHREAD 1
 #endif
 
-#if defined(__APPLE__) || defined(__linux__)
+#ifdef USE_PTHREAD
 #include <pthread.h>
 #endif
 
@@ -56,6 +56,4 @@ struct GuestThread
 
     static uint32_t GetCurrentThreadId();
     static void SetLastError(uint32_t error);
-
-    static void SetThreadName(const char* name);
 };

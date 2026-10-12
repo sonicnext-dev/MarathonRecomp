@@ -5,7 +5,7 @@
 #include <kernel/memory.h>
 #include <kernel/heap.h>
 #include <kernel/function.h>
-#include <os/logger.h>
+#include <os/thread.h>
 #include "ppc_context.h"
 
 constexpr size_t PCR_SIZE = 0xAB0;
@@ -218,83 +218,11 @@ void GuestThread::SetLastError(uint32_t error)
     *(uint32_t*)(thread + TEB_OFFSET + 0x160) = ByteSwap(error);
 }
 
-void GuestThread::SetThreadName(const char* name)
-{
-#if defined(_WIN32)
-
-    //
-    // Reference: https://learn.microsoft.com/visualstudio/debugger/how-to-set-a-thread-name-in-native-code
-    //
-
-#if defined(NTDDI_VERSION) && (NTDDI_VERSION < NTDDI_WIN10_RS1)
-
-    //
-    // Legacy thread naming for Windows 10 1511 or earlier.
-    //
-
-#pragma pack(push, 8)
-    struct THREADNAME_INFO
-    {
-        DWORD dwType{ 0x1000 };
-        LPCSTR szName{};
-        DWORD dwThreadID{};
-        DWORD dwFlags{};
-    };
-#pragma pack(pop)
-
-    THREADNAME_INFO info
-    {
-        .szName = name,
-        .dwThreadID = GetCurrentThreadId()
-    };
-
-    __try
-    {
-        RaiseException(0x406D1388, 0, sizeof(info) / sizeof(ULONG_PTR), reinterpret_cast<ULONG_PTR*>(&info));
-    }
-    __except (EXCEPTION_EXECUTE_HANDLER) { }
-
-#else
-
-    //
-    // Modern thread naming for Windows 10 1607 or later.
-    // This method allows for thread names to be written to crash dumps.
-    //
-
-    // I doubt we'll ever need Unicode in thread names.
-    const auto nameView = std::string_view(name);
-    const auto nameW = std::wstring(nameView.begin(), nameView.end());
-
-    SetThreadDescription(GetCurrentThread(), nameW.c_str());
-
-#endif // defined(NTDDI_VERSION) && (NTDDI_VERSION < NTDDI_WIN10_RS1)
-
-#else
-
-#if defined(__linux__)
-
-    // Linux limits thread names to 15 characters, and will
-    // reject any attempt to set a longer name with ERANGE.
-    const auto nameView = std::string_view(name, std::min(strlen(name), size_t(15)));
-
-    pthread_setname_np(pthread_self(), nameView.data());
-
-#elif defined(__APPLE__)
-
-    // macOS does not take in a thread handle for this function.
-    // The thread name is automatically truncated to 64 characters.
-    pthread_setname_np(name);
-
-#endif
-
-#endif // defined(_WIN32)
-}
-
 // Sonicteam::SoX::Thread::ThreadProc
 PPC_FUNC_IMPL(__imp__sub_825866A8);
 PPC_FUNC(sub_825866A8)
 {
-    GuestThread::SetThreadName(reinterpret_cast<Sonicteam::SoX::Thread*>(base + ctx.r3.u32)->m_pName.get());
+    os::thread::SetCurrentThreadName(reinterpret_cast<Sonicteam::SoX::Thread*>(base + ctx.r3.u32)->m_pName.get());
 
     __imp__sub_825866A8(ctx, base);
 }
