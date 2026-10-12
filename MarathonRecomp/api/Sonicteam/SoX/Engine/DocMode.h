@@ -8,7 +8,7 @@ namespace Sonicteam::SoX::Engine
     class DocMode : public Task
     {
     public:
-        MARATHON_INSERT_PADDING(4);
+        be<uint32_t> m_type;
     };
 
     MARATHON_ASSERT_SIZEOF(DocMode, 0x50);
