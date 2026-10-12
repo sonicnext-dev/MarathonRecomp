@@ -123,6 +123,7 @@ set(MARATHON_RECOMP_CPU_CXX_SOURCES
 )
 
 set(MARATHON_RECOMP_GPU_CXX_SOURCES
+    "gpu/render_resolution.cpp"
     "gpu/video.cpp"
     "gpu/resources.cpp"
     "gpu/guest_convert.cpp"
