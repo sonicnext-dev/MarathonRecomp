@@ -5,13 +5,18 @@
 #include <os/version.h>
 #include <app.h>
 #include <sdl_listener.h>
+#include <stdafx.h>
 
 #if _WIN32
 #include <dwmapi.h>
 #include <shellscalingapi.h>
 #endif
 
+#ifdef __APPLE__
+#include <res/images/game_icon_mac.png.h>
+#else
 #include <res/images/game_icon.bmp.h>
+#endif
 
 static bool g_isFullscreenKeyReleased = true;
 static bool g_isResizing = false;
@@ -265,10 +270,27 @@ void GameWindow::Update()
         s_isChangingDisplay = false;
 }
 
-SDL_Surface* GameWindow::GetIconSurface(void* pIconBmp, size_t iconSize)
+SDL_Surface* GameWindow::GetIconSurface(void* pIcon, size_t iconSize)
 {
-    auto io = SDL_IOFromMem(pIconBmp, iconSize);
-    auto surface = SDL_LoadBMP_IO(io, true);
+    SDL_Surface* surface = nullptr;
+
+    static constexpr uint8_t PNG_MAGIC[4] = {0x89, 0x50, 0x4E, 0x47};
+    if (memcmp(pIcon, PNG_MAGIC, sizeof(PNG_MAGIC)) == 0) {
+        int width, height;
+        void* stbImage = stbi_load_from_memory(static_cast<const uint8_t *>(pIcon), static_cast<int>(iconSize),
+            &width, &height, nullptr, 4);
+        if (!stbImage)
+        {
+            LOGF_ERROR("Failed to parse icon PNG: {}", stbi_failure_reason());
+            return nullptr;
+        }
+
+        surface = SDL_CreateSurfaceFrom(width, height, SDL_PIXELFORMAT_RGBA32, stbImage, width * 4);
+        stbi_image_free(stbImage);
+    } else {
+        auto io = SDL_IOFromMem(pIcon, iconSize);
+        surface = io ? SDL_LoadBMP_IO(io, true) : nullptr;
+    }
 
     if (!surface)
         LOGF_ERROR("Failed to load icon: {}", SDL_GetError());
@@ -276,9 +298,9 @@ SDL_Surface* GameWindow::GetIconSurface(void* pIconBmp, size_t iconSize)
     return surface;
 }
 
-void GameWindow::SetIcon(void* pIconBmp, size_t iconSize)
+void GameWindow::SetIcon(void* pIcon, size_t iconSize)
 {
-    if (auto icon = GetIconSurface(pIconBmp, iconSize))
+    if (auto icon = GetIconSurface(pIcon, iconSize))
     {
         SDL_SetWindowIcon(s_pWindow, icon);
         SDL_DestroySurface(icon);
