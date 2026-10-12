@@ -489,7 +489,7 @@ public:
             // Pump SDL events to prevent the OS
             // from thinking the process is unresponsive.
             SDL_PumpEvents();
-            SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+            SDL_FlushEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
 
             g_compilingPipelineTaskCount.wait(value);
         }
