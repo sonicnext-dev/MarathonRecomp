@@ -54,6 +54,7 @@
 #include "gpu/shader/hlsl/copy_depth_ps.hlsl.dxil.h"
 #include "gpu/shader/hlsl/enhanced_burnout_blur_vs.hlsl.dxil.h"
 #include "gpu/shader/hlsl/enhanced_burnout_blur_ps.hlsl.dxil.h"
+#include "gpu/shader/hlsl/particle_depth_fade_ps.hlsl.dxil.h"
 #include "gpu/shader/hlsl/movie_ps.hlsl.dxil.h"
 #include "gpu/shader/hlsl/gamma_correction_ps.hlsl.dxil.h"
 #include "gpu/shader/hlsl/imgui_ps.hlsl.dxil.h"
@@ -73,6 +74,7 @@
 #include "gpu/shader/msl/copy_depth_ps.metal.metallib.h"
 #include "gpu/shader/msl/enhanced_burnout_blur_vs.metal.metallib.h"
 #include "gpu/shader/msl/enhanced_burnout_blur_ps.metal.metallib.h"
+#include "gpu/shader/msl/particle_depth_fade_ps.metal.metallib.h"
 #include "gpu/shader/msl/movie_ps.metal.metallib.h"
 #include "gpu/shader/msl/gamma_correction_ps.metal.metallib.h"
 #include "gpu/shader/msl/imgui_ps.metal.metallib.h"
@@ -91,6 +93,7 @@
 #include "gpu/shader/hlsl/copy_depth_ps.hlsl.spirv.h"
 #include "gpu/shader/hlsl/enhanced_burnout_blur_vs.hlsl.spirv.h"
 #include "gpu/shader/hlsl/enhanced_burnout_blur_ps.hlsl.spirv.h"
+#include "gpu/shader/hlsl/particle_depth_fade_ps.hlsl.spirv.h"
 #include "gpu/shader/hlsl/movie_ps.hlsl.spirv.h"
 #include "gpu/shader/hlsl/gamma_correction_ps.hlsl.spirv.h"
 #include "gpu/shader/hlsl/imgui_ps.hlsl.spirv.h"
@@ -195,6 +198,8 @@ struct SharedConstants
     float alphaThreshold{};
     uint32_t conditionalSurveyIndex{};
     uint32_t conditionalRenderingIndex{};
+    float depthFadeParams[4]{};
+    uint32_t depthFadeTextureIndex{};
 };
 
 // Depth bias values here are only used when the render device has 
@@ -1568,6 +1573,12 @@ static std::unique_ptr<RenderShader> g_MoviePSShader;
 
 static std::unique_ptr<GuestShader> g_conditionalSurveyPSShader;
 
+static constexpr float DEPTH_FADE_DISTANCE = 100.0f;
+
+static std::unique_ptr<RenderShader> g_particleDepthFadePSShader;
+static GuestTexture* g_depthFadeTexture;
+static bool g_depthFadeTextureDirty = true;
+
 #if defined(MARATHON_RECOMP_D3D12)
 
 #define CREATE_SHADER(NAME) \
@@ -2342,6 +2353,8 @@ bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
 
     g_conditionalSurveyPSShader = std::make_unique<GuestShader>(ResourceType::PixelShader);
     g_conditionalSurveyPSShader->shader = CREATE_SHADER(conditional_survey_ps);
+
+    g_particleDepthFadePSShader = CREATE_SHADER(particle_depth_fade_ps);
 
     CreateImGuiBackend();
 
@@ -4281,6 +4294,7 @@ static void ProcSetDepthStencilSurface(const RenderCommand& cmd)
 
     SetDirtyValue(g_dirtyStates.renderTargetAndDepthStencil, g_depthStencil, args.depthStencil);
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.depthStencilFormat, args.depthStencil != nullptr ? args.depthStencil->format : RenderFormat::UNKNOWN);
+    g_depthFadeTextureDirty = true;
 }
 
 static bool PopulateBarriersForStretchRect(GuestSurface* renderTarget, GuestSurface* depthStencil)
@@ -4696,6 +4710,7 @@ static void ProcClear(const RenderCommand& cmd)
         }
 
         commandList->clearDepthStencil(clearDepth, clearStencil, args.z, args.stencil);
+        g_depthFadeTextureDirty = true;
     }
 
     {
@@ -4916,6 +4931,10 @@ static RenderShader* GetReplacementShader(GuestShader* guestShader)
             break;
         case 0x88EB0AA82E4257B0:
             return g_MoviePSShader.get();
+        case 0x402F6C3CD7D5B52E:
+            if (Config::ParticleFade == EParticleFade::Soft)
+                return g_particleDepthFadePSShader.get();
+            break;
         default:
             break;
         }
@@ -5632,10 +5651,107 @@ static void ProcAddPipeline(const RenderCommand& cmd)
 static constexpr int32_t COMMON_DEPTH_BIAS_VALUE = int32_t((1 << 24) * 0.002f);
 static constexpr float COMMON_SLOPE_SCALED_DEPTH_BIAS_VALUE = 1.0f;
 
+static void CopyDepthForDepthFade(GuestSurface* depthStencil)
+{
+    if (g_depthFadeTexture == nullptr ||
+        g_depthFadeTexture->width != depthStencil->width ||
+        g_depthFadeTexture->height != depthStencil->height)
+    {
+        if (g_depthFadeTexture != nullptr)
+            g_tempResources[g_renderFrame].push_back(g_depthFadeTexture);
+
+        g_depthFadeTexture = CreateTexture(depthStencil->width, depthStencil->height, 1, 1, 0, D3DFMT_D24FS8, 0, 3);
+    }
+
+    AddBarrier(depthStencil, RenderTextureLayout::SHADER_READ);
+    AddBarrier(g_depthFadeTexture, RenderTextureLayout::DEPTH_WRITE);
+    FlushBarriers();
+
+    RenderPipeline* pipeline;
+
+    switch (depthStencil->sampleCount)
+    {
+    case RenderSampleCount::COUNT_2:
+        pipeline = g_resolveMsaaDepthPipelines[0].get();
+        break;
+    case RenderSampleCount::COUNT_4:
+        pipeline = g_resolveMsaaDepthPipelines[1].get();
+        break;
+    case RenderSampleCount::COUNT_8:
+        pipeline = g_resolveMsaaDepthPipelines[2].get();
+        break;
+    default:
+        pipeline = g_copyDepthPipeline.get();
+        break;
+    }
+
+    auto& framebuffer = g_depthFadeTexture->framebuffers[0];
+    if (framebuffer == nullptr)
+    {
+        RenderFramebufferDesc desc;
+        desc.depthAttachment = g_depthFadeTexture->texture;
+        framebuffer = g_device->createFramebuffer(desc);
+    }
+
+    auto& commandList = g_commandLists[g_frame];
+
+    if (g_framebuffer != framebuffer.get())
+    {
+        commandList->setFramebuffer(framebuffer.get());
+        g_framebuffer = framebuffer.get();
+    }
+
+    commandList->setPipeline(pipeline);
+    commandList->setViewports(RenderViewport(0.0f, 0.0f, float(g_depthFadeTexture->width), float(g_depthFadeTexture->height), 0.0f, 1.0f));
+    commandList->setScissors(RenderRect(0, 0, g_depthFadeTexture->width, g_depthFadeTexture->height));
+    commandList->setGraphicsPushConstants(0, &depthStencil->descriptorIndex, 0, sizeof(uint32_t));
+    commandList->drawInstanced(6, 1, 0, 0);
+
+    g_dirtyStates.renderTargetAndDepthStencil = true;
+    g_dirtyStates.viewport = true;
+    g_dirtyStates.pipelineState = true;
+    g_dirtyStates.scissorRect = true;
+
+    if (g_backend != Backend::D3D12)
+    {
+        g_dirtyStates.vertexShaderConstants = true; // The push constant call invalidates vertex shader constants.
+        g_dirtyStates.depthBias = true; // Static depth bias in copy pipeline invalidates dynamic depth bias.
+    }
+}
+
+static void SetDepthFadeConstants()
+{
+    // Clip z and clip w rows of g_MatVP (c90, c91) in the particle vertex shader.
+    auto clipZ = [](uint32_t i) { return std::bit_cast<float>(ByteSwap(g_vertexShaderConstants[90 * 4 + i])); };
+    auto clipW = [](uint32_t i) { return std::bit_cast<float>(ByteSwap(g_vertexShaderConstants[91 * 4 + i])); };
+
+    // clip.z = A * clip.w + B, take A from the largest component for precision.
+    uint32_t component = 0;
+    for (uint32_t i = 1; i < 3; i++)
+    {
+        if (std::abs(clipW(i)) > std::abs(clipW(component)))
+            component = i;
+    }
+
+    float a = clipZ(component) / clipW(component);
+    float b = clipZ(3) - a * clipW(3);
+
+    // Fold the viewport depth range in so the shader can linearize window depth directly.
+    float depthRange = g_viewport.maxDepth - g_viewport.minDepth;
+
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.depthFadeParams[0], g_viewport.minDepth + a * depthRange);
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.depthFadeParams[1], b * depthRange);
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.depthFadeParams[2], 1.0f / DEPTH_FADE_DISTANCE);
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.depthFadeTextureIndex, g_depthFadeTexture->descriptorIndex);
+}
+
 static void FlushRenderStateForRenderThread()
 {
     auto renderTarget = g_pipelineState.colorWriteEnable ? g_renderTarget : nullptr;
     auto depthStencil = g_pipelineState.zEnable || g_pipelineState.stencilEnable ? g_depthStencil : nullptr;
+
+    if (depthStencil != nullptr && g_pipelineState.zWriteEnable)
+        g_depthFadeTextureDirty = true;
 
     bool foundAny = PopulateBarriersForStretchRect(renderTarget, depthStencil);
 
@@ -5683,6 +5799,20 @@ static void FlushRenderStateForRenderThread()
 
     if (!g_pendingResolves.empty())
         g_pendingResolves.clear();
+
+    if (Config::ParticleFade == EParticleFade::Soft &&
+        g_pipelineState.pixelShader != nullptr &&
+        g_pipelineState.pixelShader->shaderCacheEntry->hash == 0x402F6C3CD7D5B52E)
+    {
+        if (g_depthFadeTextureDirty)
+        {
+            CopyDepthForDepthFade(depthStencil);
+            g_depthFadeTextureDirty = false;
+        }
+
+        AddBarrier(g_depthFadeTexture, RenderTextureLayout::SHADER_READ);
+        SetDepthFadeConstants();
+    }
 
     AddBarrier(renderTarget, RenderTextureLayout::COLOR_WRITE);
     AddBarrier(depthStencil, RenderTextureLayout::DEPTH_WRITE);
@@ -7643,7 +7773,8 @@ void VideoConfigValueChangedCallback(IConfigDef* config)
     bool shouldRecompile =
         config == &Config::AntiAliasing ||
         config == &Config::TransparencyAntiAliasing ||
-        config == &Config::RadialBlur;
+        config == &Config::RadialBlur ||
+        config == &Config::ParticleFade;
 
     if (shouldRecompile)
         EnqueuePipelineTask(PipelineTaskType::RecompilePipelines);
