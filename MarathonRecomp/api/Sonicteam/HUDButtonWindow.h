@@ -18,9 +18,8 @@ namespace Sonicteam
     class HUDButtonWindowNextObserver : public SoX::RefCountObject, public Chao::CSD::CSceneObserver
     {
     public:
-        MARATHON_INSERT_PADDING(4);
         xpointer<HUDButtonWindow> m_pHUDButtonWindow;
-        MARATHON_INSERT_PADDING(4);
+        MARATHON_INSERT_PADDING(0x04);
     };
 
     class HUDButtonWindow : public SoX::RefCountObject, public SoX::Engine::Task

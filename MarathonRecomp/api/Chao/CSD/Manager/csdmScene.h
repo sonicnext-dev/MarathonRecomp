@@ -104,20 +104,37 @@ namespace Chao::CSD
         MotionRepeatType_PlayThenDestroy
     };
 
+    class CSceneMotionRepeat : public CSceneObserver
+    {
+    public:
+        be<MotionRepeatType> m_EndRepeatType;
+        be<MotionRepeatType> m_StartRepeatType;
+    };
+
     class CScene : public CResourceBase<Scene>, SubjectBase<CSceneObserver, CScene>, CBase
     {
     public:
-        MARATHON_INSERT_PADDING(0x60);
+        struct NodeCastSearch
+        {
+            be<int> GroupIndex;
+            be<int> CastIndex;
+        };
+
+        MARATHON_INSERT_PADDING(0x58);
         be<float> m_PrevMotionFrame;
         be<float> m_MotionFrame;
         be<float> m_MotionSpeed;
         be<float> m_MotionStartFrame;
         be<float> m_MotionEndFrame;
         MARATHON_INSERT_PADDING(0x0C);
-        be<uint32_t> m_MotionDisableFlag;
-        MARATHON_INSERT_PADDING(0x10);
-        be<MotionRepeatType> m_MotionRepeatType;
-        MARATHON_INSERT_PADDING(0x2C);
+        CSceneMotionRepeat m_MotionRepeat;
+        be<int> m_MotionIndex;
+        be<float> m_SortOrder;
+        stdx::map<NodeCastSearch, xpointer<CNode>> m_ActiveNodes;
+        xpointer<const char> m_pName;
+        MARATHON_INSERT_PADDING(0x04);
+        xpointer<CProject> m_pProject;
+        MARATHON_INSERT_PADDING(0x04);
     };
 
     MARATHON_ASSERT_OFFSETOF(CastLink, ChildCastIndex, 0x00);
@@ -156,11 +173,20 @@ namespace Chao::CSD
     MARATHON_ASSERT_OFFSETOF(SceneNode, pSceneNodes, 0x20);
     MARATHON_ASSERT_OFFSETOF(SceneNode, pSceneNodeIndices, 0x28);
 
-    MARATHON_ASSERT_OFFSETOF(CScene, m_PrevMotionFrame, 0x7C);
-    MARATHON_ASSERT_OFFSETOF(CScene, m_MotionFrame, 0x80);
-    MARATHON_ASSERT_OFFSETOF(CScene, m_MotionSpeed, 0x84);
-    MARATHON_ASSERT_OFFSETOF(CScene, m_MotionStartFrame, 0x88);
-    MARATHON_ASSERT_OFFSETOF(CScene, m_MotionEndFrame, 0x8C);
-    MARATHON_ASSERT_OFFSETOF(CScene, m_MotionDisableFlag, 0x9C);
-    MARATHON_ASSERT_OFFSETOF(CScene, m_MotionRepeatType, 0xB0);
+    MARATHON_ASSERT_OFFSETOF(CSceneMotionRepeat, m_EndRepeatType, 0x14);
+    MARATHON_ASSERT_OFFSETOF(CSceneMotionRepeat, m_StartRepeatType, 0x18);
+    MARATHON_ASSERT_SIZEOF(CSceneMotionRepeat, 0x1C);
+
+    MARATHON_ASSERT_OFFSETOF(CScene, m_PrevMotionFrame, 0x74);
+    MARATHON_ASSERT_OFFSETOF(CScene, m_MotionFrame, 0x78);
+    MARATHON_ASSERT_OFFSETOF(CScene, m_MotionSpeed, 0x7C);
+    MARATHON_ASSERT_OFFSETOF(CScene, m_MotionStartFrame, 0x80);
+    MARATHON_ASSERT_OFFSETOF(CScene, m_MotionEndFrame, 0x84);
+    MARATHON_ASSERT_OFFSETOF(CScene, m_MotionRepeat, 0x94);
+    MARATHON_ASSERT_OFFSETOF(CScene, m_MotionIndex, 0xB0);
+    MARATHON_ASSERT_OFFSETOF(CScene, m_SortOrder, 0xB4);
+    MARATHON_ASSERT_OFFSETOF(CScene, m_ActiveNodes, 0xB8);
+    MARATHON_ASSERT_OFFSETOF(CScene, m_pName, 0xC4);
+    MARATHON_ASSERT_OFFSETOF(CScene, m_pProject, 0xCC);
+    MARATHON_ASSERT_SIZEOF(CScene, 0xD4);
 }

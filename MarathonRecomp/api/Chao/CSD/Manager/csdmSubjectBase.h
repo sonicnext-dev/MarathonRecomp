@@ -17,6 +17,4 @@ namespace Chao::CSD
         xpointer<Vftable> m_pVftable;
         MARATHON_INSERT_PADDING(0x0C);
     };
-
-    static_assert(__builtin_offsetof(SubjectBase<void, void>, m_pVftable) == 0x00);
 }
