@@ -17,9 +17,12 @@ PPC_FUNC(sub_824D7340)
 {
     const auto pHUDLoading = static_cast<Sonicteam::HUDLoading*>(reinterpret_cast<Sonicteam::SoX::Engine::Task*>(base + ctx.r3.u32));
 
-    // Fix loading CSD priority in GameMode.
-    if (App::s_pApp && App::s_pApp->m_pDoc->GetDocMode("GameMode"))
-        pHUDLoading->m_spCsdObject->m_Priority = 1002.0f;
+    if (Config::RestoreLoadingTransition)
+    {
+        // Fix loading CSD priority in GameMode.
+        if (pHUDLoading->GetDoc<Sonicteam::DocMarathonState>()->GetDocMode("GameMode"))
+            pHUDLoading->m_spCsdObject->m_Priority = 1002.0f;
+    }
 
     if (App::s_isLoading)
     {
@@ -57,7 +60,7 @@ bool RestoreLoadingTransition(PPCRegister& r30)
         pLoadingTask->ProcessMessage(msg.get());
     }
 
-    // Prevent Sonicteam::LoadingTask from being destroyed.
-    // TODO: ensure this doesn't cause a leak.
+    // Prevent LoadingTask from being deleted here, as
+    // the game deletes it when the outro animation ends.
     return true;
 }
