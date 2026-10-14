@@ -763,3 +763,12 @@ name = "RestoreLoadingTransition"
 address = 0x82167DEC
 registers = ["r30"]
 jump_address_on_true = 0x82167E2C
+
+[[midasm_hook]]
+name = "SceneEnvMapLoadTexture"
+address = 0x825F7190
+
+[[midasm_hook]]
+name = "ResourceMgrKeyOverride"
+address = 0x825823C8
+registers = ["r1", "r28"]

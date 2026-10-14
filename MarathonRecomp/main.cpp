@@ -130,12 +130,24 @@ uint32_t LdrLoadModule(const std::filesystem::path &path)
         return 0;
     }
 
-    const auto image = Image::ParseImage(loadResult.data(), loadResult.size());
+    DecryptedExecutableHeader header{};
+    memcpy(&header, loadResult.data(), std::min(sizeof(header), loadResult.size()));
+    if (header.magic == DECRYPTED_EXECUTABLE_MAGIC) {
+        LOG_UTILITY("Loading pre-decrypted executable");
+        memcpy(g_memory.Translate(header.base), loadResult.data() + sizeof(DecryptedExecutableHeader),
+               loadResult.size() - sizeof(DecryptedExecutableHeader));
+        g_xdbfWrapper = XDBFWrapper(static_cast<uint8_t*>(g_memory.Translate(header.resource_offset)), header.resource_size);
 
-    memcpy(g_memory.Translate(image.base), image.data.get(), image.size);
-    g_xdbfWrapper = XDBFWrapper(static_cast<uint8_t*>(g_memory.Translate(image.resource_offset)), image.resource_size);
+        return header.entry_point;
+    } else {
+        LOG_UTILITY("Loading XEX executable");
+        const auto image = Image::ParseImage(loadResult.data(), loadResult.size());
 
-    return image.entry_point;
+        memcpy(g_memory.Translate(image.base), image.data.get(), image.size);
+        g_xdbfWrapper = XDBFWrapper(static_cast<uint8_t*>(g_memory.Translate(image.resource_offset)), image.resource_size);
+
+        return image.entry_point;
+    }
 }
 
 #ifdef __x86_64__

@@ -1,5 +1,7 @@
 #include "installer.h"
 
+#include <file.h>
+#include <image.h>
 #include <xxh3.h>
 
 #include "directory_file_system.h"
@@ -17,6 +19,7 @@
 
 static const std::string GameDirectory = "game";
 static const std::string DLCDirectory = "dlc";
+static const std::string DecryptedDirectory = "decrypted";
 static const std::string EpisodeSonicDirectory = DLCDirectory + "/Additional Episode - Sonic Boss Attack";
 static const std::string EpisodeShadowDirectory = DLCDirectory + "/Additional Episode - Shadow Boss Attack";
 static const std::string EpisodeSilverDirectory = DLCDirectory + "/Additional Episode - Silver Boss Attack";
@@ -25,6 +28,7 @@ static const std::string MissionSonicDirectory = DLCDirectory + "/Additional Mis
 static const std::string MissionShadowDirectory = DLCDirectory + "/Additional Mission Pack - Shadow Very Hard";
 static const std::string MissionSilverDirectory = DLCDirectory + "/Additional Mission Pack - Silver Very Hard";
 static const std::string GameExecutableFile = "default.xex";
+static const std::string DecryptedGameExecutableFile = "default.bin";
 static const std::string DLCValidationFile = "download.arc";
 static const std::string ISOExtension = ".iso";
 
@@ -130,6 +134,37 @@ static bool checkFile(const FilePair &pair, const uint64_t *fileHashes, const st
     return true;
 }
 
+static bool writeFile(const std::filesystem::path &targetPath, const std::vector<uint8_t>& fileData, Journal &journal, const std::function<bool()> &progressCallback) {
+    std::ofstream outStream(targetPath, std::ios::binary);
+    if (!outStream.is_open())
+    {
+        journal.lastResult = Journal::Result::FileCreationFailed;
+        journal.lastErrorMessage = fmt::format("Failed to create file at \"{}\".", fromPath(targetPath));
+        return false;
+    }
+
+    journal.createdFiles.push_back(targetPath);
+
+    outStream.write((const char *)(fileData.data()), fileData.size());
+    if (outStream.bad())
+    {
+        journal.lastResult = Journal::Result::FileWriteFailed;
+        journal.lastErrorMessage = fmt::format("Failed to create file at \"{}\".", fromPath(targetPath));
+        return false;
+    }
+
+    journal.progressCounter += fileData.size();
+
+    if (!progressCallback())
+    {
+        journal.lastResult = Journal::Result::Cancelled;
+        journal.lastErrorMessage = "Installation was cancelled.";
+        return false;
+    }
+
+    return true;
+}
+
 static bool copyFile(const FilePair &pair, const uint64_t *fileHashes, VirtualFileSystem &sourceVfs, const std::filesystem::path &targetDirectory, bool skipHashChecks, std::vector<uint8_t> &fileData, Journal &journal, const std::function<bool()> &progressCallback) {
     const std::string filename(pair.first);
     const uint32_t hashCount = pair.second;
@@ -183,34 +218,7 @@ static bool copyFile(const FilePair &pair, const uint64_t *fileHashes, VirtualFi
         }
     }
 
-    std::ofstream outStream(targetPath, std::ios::binary);
-    if (!outStream.is_open())
-    {
-        journal.lastResult = Journal::Result::FileCreationFailed;
-        journal.lastErrorMessage = fmt::format("Failed to create file at \"{}\".", fromPath(targetPath));
-        return false;
-    }
-
-    journal.createdFiles.push_back(targetPath);
-
-    outStream.write((const char *)(fileData.data()), fileData.size());
-    if (outStream.bad())
-    {
-        journal.lastResult = Journal::Result::FileWriteFailed;
-        journal.lastErrorMessage = fmt::format("Failed to create file at \"{}\".", fromPath(targetPath));
-        return false;
-    }
-
-    journal.progressCounter += fileData.size();
-    
-    if (!progressCallback())
-    {
-        journal.lastResult = Journal::Result::Cancelled;
-        journal.lastErrorMessage = "Installation was cancelled.";
-        return false;
-    }
-
-    return true;
+    return writeFile(targetPath, fileData, journal, progressCallback);
 }
 
 static DLC detectDLC(const std::filesystem::path &sourcePath, VirtualFileSystem &sourceVfs, Journal &journal)
@@ -303,12 +311,23 @@ static bool fillDLCSource(DLC dlc, Installer::DLCSource &dlcSource)
 
 bool Installer::checkGameInstall(const std::filesystem::path &baseDirectory, std::filesystem::path &modulePath)
 {
-    modulePath = baseDirectory / GameDirectory / GameExecutableFile;
+    auto decryptedPath = baseDirectory / DecryptedDirectory / DecryptedGameExecutableFile;
+    if (std::filesystem::exists(decryptedPath))
+    {
+        modulePath = std::move(decryptedPath);
+        return true;
+    }
 
-    if (!std::filesystem::exists(modulePath))
-        return false;
+    auto originalPath = baseDirectory / GameDirectory / GameExecutableFile;
+    if (std::filesystem::exists(originalPath))
+    {
+        modulePath = std::move(originalPath);
+        return true;
+    }
 
-    return true;
+    // Install is needed and should output decrypted file, use that.
+    modulePath = std::move(decryptedPath);
+    return false;
 }
 
 bool Installer::checkDLCInstall(const std::filesystem::path &baseDirectory, DLC dlc)
@@ -457,6 +476,8 @@ bool Installer::parseContent(const std::filesystem::path &sourcePath, std::uniqu
     }
 }
 
+constexpr uint32_t ExpectedDecryptedSize = 0xD98000;
+
 bool Installer::parseSources(const Input &input, Journal &journal, Sources &sources)
 {
     journal = Journal();
@@ -474,6 +495,9 @@ bool Installer::parseSources(const Input &input, Journal &journal, Sources &sour
         {
             return false;
         }
+
+        // Add an extra amount for the expected decrypted executable output size.
+        sources.totalSize += ExpectedDecryptedSize;
     }
 
     // Parse the contents of the DLC Packs.
@@ -534,7 +558,48 @@ bool Installer::install(const Sources &sources, const std::filesystem::path &tar
     {
         return false;
     }
-    
+
+    // Create the directory where the decrypted and decompressed executable will be stored.
+    std::error_code ec;
+    std::filesystem::path decryptedDirectory = targetDirectory / DecryptedDirectory;
+    if (!std::filesystem::exists(decryptedDirectory) && !std::filesystem::create_directories(decryptedDirectory, ec))
+    {
+        journal.lastResult = Journal::Result::DirectoryCreationFailed;
+        journal.lastErrorMessage = "Unable to create directory at " + fromPath(decryptedDirectory);
+        return false;
+    }
+
+    journal.createdDirectories.insert(decryptedDirectory);
+
+    // Patch the executable with the update's file.
+    std::filesystem::path baseXexPath = targetDirectory / GameDirectory / GameExecutableFile;
+    const auto loadResult = LoadFile(baseXexPath);
+    if (loadResult.empty())
+    {
+        journal.lastResult = Journal::Result::FileReadFailed;
+        journal.lastErrorMessage = "Failed to read game executable from " + fromPath(baseXexPath);
+        return false;
+    }
+
+    const auto image = Image::ParseImage(loadResult.data(), loadResult.size());
+    DecryptedExecutableHeader decryptedHeader = {
+        .magic = DECRYPTED_EXECUTABLE_MAGIC,
+        .base = image.base,
+        .entry_point = image.entry_point,
+        .resource_offset = image.resource_offset,
+        .resource_size = image.resource_size,
+    };
+
+    std::vector<uint8_t> image_data(image.size + sizeof(DecryptedExecutableHeader));
+    memcpy(image_data.data(), &decryptedHeader, sizeof(DecryptedExecutableHeader));
+    memcpy(image_data.data() + sizeof(DecryptedExecutableHeader), image.data.get(), image.size);
+
+    std::filesystem::path decryptedPath = decryptedDirectory / DecryptedGameExecutableFile;
+    if (!writeFile(decryptedPath, image_data, journal, progressCallback))
+    {
+        return false;
+    }
+
     for (uint32_t i = 0; i < 2; i++)
     {
         if (!progressCallback())

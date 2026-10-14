@@ -17,6 +17,18 @@ enum class DLC {
     Count = MissionSilver
 };
 
+constexpr uint32_t DECRYPTED_EXECUTABLE_MAGIC = 0xDECDECDE;
+
+#pragma pack(push, 1)
+struct DecryptedExecutableHeader {
+    uint32_t magic{};
+    uint64_t base{};
+    uint64_t entry_point{};
+    uint64_t resource_offset{};
+    uint64_t resource_size{};
+};
+#pragma pack(pop)
+
 struct Journal
 {
     enum class Result

@@ -30,10 +30,6 @@ configure_file("${XENON_RECOMP_IN_CONFIG}" "${XENON_RECOMP_OUT_CONFIG}")
 
 set(XENON_RECOMP_IN_PPC_CONTEXT "${MARATHON_RECOMP_TOOLS_ROOT}/XenonRecomp/XenonUtils/ppc_context.h")
 
-target_compile_definitions(XenonRecomp PRIVATE 
-    XENON_RECOMP_CONFIG_FILE_PATH=\"${XENON_RECOMP_OUT_CONFIG}\"
-    XENON_RECOMP_HEADER_FILE_PATH=\"${XENON_RECOMP_IN_PPC_CONTEXT}\")
-
 set(MARATHON_RECOMP_PPC_RECOMPILED_SOURCES
     "${XENON_RECOMP_OUT_DIR}/ppc_config.h"
     "${XENON_RECOMP_OUT_DIR}/ppc_context.h"
@@ -49,12 +45,13 @@ add_custom_command(
     OUTPUT 
         ${MARATHON_RECOMP_PPC_RECOMPILED_SOURCES}
     COMMAND 
-        $<TARGET_FILE:XenonRecomp>
+        $<TARGET_FILE:XenonRecomp> "${XENON_RECOMP_OUT_CONFIG}" "${XENON_RECOMP_IN_PPC_CONTEXT}"
     DEPENDS
         XenonRecomp
-        "${XENON_RECOMP_IN_XEX}"
-        "${XENON_RECOMP_IN_PPC_CONTEXT}"
         "${XENON_RECOMP_OUT_CONFIG}"
+        "${XENON_RECOMP_IN_PPC_CONTEXT}"
+        "${XENON_RECOMP_IN_SWITCH_TABLE}"
+        "${XENON_RECOMP_IN_XEX}"
     USES_TERMINAL
 )
 
@@ -80,27 +77,16 @@ add_custom_command(
 set(XENOS_RECOMP_ROOT "${MARATHON_RECOMP_TOOLS_ROOT}/XenosRecomp/XenosRecomp")
 set(XENOS_RECOMP_INCLUDE "${XENOS_RECOMP_ROOT}/shader_common.h")
 
-target_compile_definitions(XenosRecomp PRIVATE 
-    XENOS_RECOMP_INPUT=\"${XENOS_RECOMP_IN_DIR}\"
-    XENOS_RECOMP_OUTPUT=\"${XENOS_RECOMP_OUT_FILE}\"
-    XENOS_RECOMP_INCLUDE_INPUT=\"${XENOS_RECOMP_INCLUDE}\"
-    MARATHON_RECOMP
-)
-
-file(GLOB XENOS_RECOMP_SOURCES 
-    "${XENOS_RECOMP_ROOT}/*.h"
-    "${XENOS_RECOMP_ROOT}/*.cpp"
-)
+target_compile_definitions(XenosRecomp PRIVATE MARATHON_RECOMP)
 
 add_custom_command(
     OUTPUT 
         "${XENOS_RECOMP_OUT_FILE}"
     COMMAND
-        $<TARGET_FILE:XenosRecomp>
+        $<TARGET_FILE:XenosRecomp> "${XENOS_RECOMP_IN_DIR}" "${XENOS_RECOMP_OUT_FILE}" "${XENOS_RECOMP_INCLUDE}"
     DEPENDS
         XenosRecomp
         "${XENOS_RECOMP_IN_DIR}"
-        ${XENOS_RECOMP_SOURCES}
         ${XENOS_RECOMP_INCLUDE}
     USES_TERMINAL
 )

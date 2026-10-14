@@ -551,7 +551,7 @@ uint32_t XMAPlaybackQueryAvailableData(XmaPlayback *playback, uint32_t stream) {
 }
 
 
-uint32_t XMAPlaybackAccessDecodedData(XmaPlayback *playback, uint32_t stream, uint32_t **data) {
+uint32_t XMAPlaybackAccessDecodedData(XmaPlayback *playback, uint32_t stream, be<uint32_t>* data) {
     if (!playback->isLocked)
         return 0;
 
@@ -562,7 +562,7 @@ uint32_t XMAPlaybackAccessDecodedData(XmaPlayback *playback, uint32_t stream, ui
                     ((playback->outputBufferReadOffset << 8) & 0x1F00) +
                     partialBytesRead;
 
-    *data = (uint32_t *)__builtin_bswap32(addr);
+    *data = addr;
 
     uint32_t writeBufferOffsetRead = playback->outputBufferReadOffset & 0x1F;
     uint32_t offsetWrite = playback->outputBufferWriteOffset;
@@ -592,7 +592,7 @@ uint32_t XMAPlaybackAccessDecodedData(XmaPlayback *playback, uint32_t stream, ui
     return totalBytes >> bytesPerSample;
 }
 
-uint32_t XMAPlaybackConsumeDecodedData(XmaPlayback *playback, uint32_t stream, uint32_t maxSamples, uint32_t **data) {
+uint32_t XMAPlaybackConsumeDecodedData(XmaPlayback *playback, uint32_t stream, uint32_t maxSamples, be<uint32_t>* data) {
     if (!playback->isLocked) {
         return 0;
     }
@@ -605,7 +605,7 @@ uint32_t XMAPlaybackConsumeDecodedData(XmaPlayback *playback, uint32_t stream, u
                     ((playback->outputBufferReadOffset << 8) & 0x1F00) +
                     partialBytesRead;
 
-    *data = (uint32_t *)__builtin_bswap32(addr);
+    *data = addr;
     uint32_t bytesPerSample = playback->channelCount;
     uint32_t bytesDesired = maxSamples << bytesPerSample;
     if (partialBytesRead) {
