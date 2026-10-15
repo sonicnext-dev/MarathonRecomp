@@ -14,12 +14,18 @@ namespace Sonicteam::Player::State
         be<float> m_LockButtons;
         be<uint32_t> m_LastVelocityForward;
         be<uint32_t> m_LastVelocityVertical;
-        be<uint32_t> m_LastLockButtons;
+        be<float> m_LastLockButtons;
         be<uint32_t> m_Buttons;
-		be<float> m_CurrentStickBorder;
+    	be<float> m_CurrentStickBorder;
         MARATHON_INSERT_PADDING(4);
-		be<uint32_t> m_AnimationState;
-		MARATHON_INSERT_PADDING(0x2C);
+    	SoX::Math::Quaternion m_PadRotation;
+    	be<uint32_t> m_AnimationState;
+    	MARATHON_INSERT_PADDING(0x1C);
+
+    	uint32_t GetButtons()
+    	{
+    	    return m_LockButtons.get() > 0.0 ? 0u : m_Buttons.get();
+    	}
     };
 
     MARATHON_ASSERT_OFFSETOF(ICommonContext, m_AnimationID, 0x40);
@@ -29,6 +35,7 @@ namespace Sonicteam::Player::State
     MARATHON_ASSERT_OFFSETOF(ICommonContext, m_LastLockButtons, 0x50);
     MARATHON_ASSERT_OFFSETOF(ICommonContext, m_Buttons, 0x54);
     MARATHON_ASSERT_OFFSETOF(ICommonContext, m_CurrentStickBorder, 0x58);
-    MARATHON_ASSERT_OFFSETOF(ICommonContext, m_AnimationState, 0x60);
+    MARATHON_ASSERT_OFFSETOF(ICommonContext, m_PadRotation, 0x60);
+    MARATHON_ASSERT_OFFSETOF(ICommonContext, m_AnimationState, 0x70);
     MARATHON_ASSERT_SIZEOF(ICommonContext, 0x90);
 }

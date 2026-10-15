@@ -5,5 +5,11 @@
 
 namespace Sonicteam::Player::State
 {
-    class CommonObject : public Object2 {};
+    class CommonObject : public Object2 {
+    public:
+        xpointer<CommonContext> m_pContext;
+    };
+
+    MARATHON_ASSERT_OFFSETOF(CommonObject, m_pContext, 0x8);
+    MARATHON_ASSERT_SIZEOF(CommonObject, 0xC);
 }
