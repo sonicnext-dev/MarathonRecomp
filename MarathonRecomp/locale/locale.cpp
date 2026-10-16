@@ -69,7 +69,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Options_Desc_Category_System",
         {
             { ELanguage::English,  "Adjust system settings." },
-            { ELanguage::Japanese, "システムの設定変更します" },
+            { ELanguage::Japanese, "システムの設定を変更します" },
             { ELanguage::German,   "Verändere System-Einstellungen." },
             { ELanguage::French,   "Modifier les paramètres système." },
             { ELanguage::Spanish,  "Ajustar la configuración del sistema." },
@@ -91,7 +91,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Options_Desc_Category_Input",
         {
             { ELanguage::English,  "Adjust input settings." },
-            { ELanguage::Japanese, "入力の設定変更します" },
+            { ELanguage::Japanese, "入力の設定を変更します" },
             { ELanguage::German,   "Verändere Eingabe-Einstellungen." },
             { ELanguage::French,   "Modifier les paramètres d'entrée." },
             { ELanguage::Spanish,  "Ajustar la configuración de entrada." },
@@ -294,27 +294,69 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         }
     },
     {
-        // Notes: used for the button guide at the pause menu.
-        "Achievements_Name",
+        "MainMenu_GoldMedalResults_Name",
+        {
+            { ELanguage::English,  "STATISTICS" },
+            { ELanguage::Japanese, "STATISTICS" },
+            { ELanguage::German,   "STATISTIKEN" },
+            { ELanguage::French,   "STATISTIQUES" },
+            { ELanguage::Spanish,  "ESTADÍSTICAS" },
+            { ELanguage::Italian,  "STATISTICHE" }
+        }
+    },
+    {
+        "MainMenu_GoldMedalResults_Description",
+        {
+            { ELanguage::English,  "Statistics: Displays lists of Gold Medals and Achievements" },
+            { ELanguage::Japanese, "スタティスティックス: ゴールドメダルと実績のリストを表示する" },
+            { ELanguage::German,   "Statistiken: Zeigt eine Liste von Gold Medaillen und Erfolgen an" },
+            { ELanguage::French,   "Statistiques : Affiche une liste des Médailles d'Or et des Accomplissements" },
+            { ELanguage::Spanish,  "Estadísticas: Muestra los listados de las medallas y los logros" },
+            { ELanguage::Italian,  "Statistiche: mostra gli elenchi delle medaglie d'oro e gli obiettivi" }
+        }
+    },
+    {
+        "Achievements_Title",
         {
             { ELanguage::English,  "Achievements" },
             { ELanguage::Japanese, "実績" },
             { ELanguage::German,   "Erfolge" },
-            { ELanguage::French,   "Succès" },
+            { ELanguage::French,   "Accomplissements" },
             { ELanguage::Spanish,  "Logros" },
             { ELanguage::Italian,  "Obiettivi" }
         }
     },
     {
-        // Notes: used for the header in the achievements menu.
-        "Achievements_Name_Uppercase",
+        "Achievements_Title_Uppercase",
         {
             { ELanguage::English,  "ACHIEVEMENTS" },
             { ELanguage::Japanese, "実績" },
             { ELanguage::German,   "ERFOLGE" },
-            { ELanguage::French,   "SUCCÈS" },
+            { ELanguage::French,   "ACCOMPLISSEMENTS" },
             { ELanguage::Spanish,  "LOGROS" },
             { ELanguage::Italian,  "OBIETTIVI" }
+        }
+    },
+    {
+        "Achievements_GoldMedals",
+        {
+            { ELanguage::English,  "Gold Medals" },
+            { ELanguage::Japanese, "ゴールドメダル" },
+            { ELanguage::German,   "Gold Medaillen" },
+            { ELanguage::French,   "Médailles d'or" },
+            { ELanguage::Spanish,  "Medallas de oro" },
+            { ELanguage::Italian,  "Medaglie d'oro" }
+        }
+    },
+    {
+        "Achievements_GoldMedals_Uppercase",
+        {
+            { ELanguage::English,  "GOLD MEDALS" },
+            { ELanguage::Japanese, "ゴールドメダル" },
+            { ELanguage::German,   "GOLD MEDAILLEN" },
+            { ELanguage::French,   "MÉDAILLES D'OR" },
+            { ELanguage::Spanish,  "MEDALLAS DE ORO" },
+            { ELanguage::Italian,  "MEDAGLIE D'ORO" }
         }
     },
     {
@@ -327,6 +369,24 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Spanish,  "¡Logro desbloqueado!" },
             { ELanguage::Italian,  "Obiettivo sbloccato!" }
         }
+    },
+    {
+        "Achievements_Progress",
+        {
+            { ELanguage::English,  "PROGRESS %d/%d" },
+            { ELanguage::Japanese, "PROGRESS %d/%d" },
+            { ELanguage::German,   "FORTSCHRITT %d/%d" },
+            { ELanguage::French,   "PROGRESSION %d/%d" },
+            { ELanguage::Spanish,  "PROGRESO %d/%d" },
+            { ELanguage::Italian,  "PROGRESSI %d/%d" }
+        }
+    },
+    {
+        // Locale required for font atlas generation.
+        "Installer_MusicCredits",
+        {
+            { ELanguage::English,  "♬ Result & Chill Lofi - Hotline Sehwani & SilverIceSound" },
+        },
     },
     {
         "Installer_Header_Installer",
@@ -365,7 +425,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Installer_Page_Introduction",
         {
             { ELanguage::English,  "Welcome to Marathon Recompiled!\n\nYou'll need an Xbox 360 copy of\nSONIC THE HEDGEHOG in order to proceed with the installation." },
-            { ELanguage::Japanese, "Marathon Recompiledへようこそ！\nインストールにはXbox 360版の\n「ソニック・ザ・ヘッジホッグ」\nが必要です" },
+            { ELanguage::Japanese, "Marathon Recompiledへようこそ！\n\nインストールにはXbox 360版の\n「ソニック・ザ・ヘッジホッグ」\nが必要です" },
             { ELanguage::German,   "Willkommen zu Marathon Recompiled!\n\nEs wird eine Xbox 360 Kopie von\nSONIC THE HEDGEHOG benötigt um mit der Installation fortfahren zu können." },
             { ELanguage::French,   "Bienvenue sur Marathon Recompiled !\n\nVous aurez besoin d'une copie de\nSONIC THE HEDGEHOG pour\nXbox 360 pour procéder à l'installation." },
             { ELanguage::Spanish,  "¡Bienvenido a Marathon Recompiled!\n\nNecesitas una copia de\nSONIC THE HEDGEHOG de\nXbox 360 para continuar con la instalación." },
@@ -398,9 +458,9 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "Installer_Page_CheckSpace",
         {
             { ELanguage::English,  "The content will be installed to the program's folder.\n\n" },
-            { ELanguage::Japanese, "コンテンツはプログラムのフォルダに\nインストールされます\n" },
-            { ELanguage::German,   "Der Inhalt wird in dem Ordner des Programms installiert.\n" },
-            { ELanguage::French,   "Le contenu sera installé dans le même dossier que le programme.\n" },
+            { ELanguage::Japanese, "コンテンツはプログラムのフォルダに\nインストールされます\n\n" },
+            { ELanguage::German,   "Der Inhalt wird in dem Ordner des Programms installiert.\n\n" },
+            { ELanguage::French,   "Le contenu sera installé dans le même dossier que le programme.\n\n" },
             { ELanguage::Spanish,  "El contenido será instalado a la carpeta del programa.\n\n" },
             { ELanguage::Italian,  "Il contenuto verrà installato nella cartella di questo programma.\n\n" }
         }
@@ -419,34 +479,34 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
     {
         "Installer_Page_InstallSucceeded",
         {
-            { ELanguage::English,  "Installation complete!\nThis project is brought to you by:" },
-            { ELanguage::Japanese, "インストール完了！\nプロジェクト制作：" },
-            { ELanguage::German,   "Installation abgeschlossen!\nDieses Projekt wird präsentiert von:" },
-            { ELanguage::French,   "Installation terminée !\nCe projet vous est présenté\npar :" },
-            { ELanguage::Spanish,  "¡Instalación completada!\nEste proyecto ha sido posible gracias a:" },
-            { ELanguage::Italian,  "Installazione completata!\nQuesto progetto è stato creato da:" }
+            { ELanguage::English,  "Installation complete!\n\nThis project is brought to you by:" },
+            { ELanguage::Japanese, "インストール完了！\n\nプロジェクト制作：" },
+            { ELanguage::German,   "Installation abgeschlossen!\n\nDieses Projekt wird präsentiert von:" },
+            { ELanguage::French,   "Installation terminée !\n\nCe projet vous est présenté par :" },
+            { ELanguage::Spanish,  "¡Instalación completada!\n\nEste proyecto ha sido posible gracias a:" },
+            { ELanguage::Italian,  "Installazione completata!\n\nQuesto progetto è stato creato da:" }
         }
     },
     {
         "Installer_Page_InstallFailed",
         {
-            { ELanguage::English,  "Installation failed.\n\nError: " },
-            { ELanguage::Japanese, "インストールに失敗しました\n\nエラー： " },
-            { ELanguage::German,   "Installation fehlgeschlagen.\n\nFehler: " },
-            { ELanguage::French,   "L'installation a échoué.\n\nErreur : " },
-            { ELanguage::Spanish,  "La instalación falló.\n\nError: " },
-            { ELanguage::Italian,  "Installazione fallita.\n\nErrore: " }
+            { ELanguage::English,  "Installation failed.\n\n" },
+            { ELanguage::Japanese, "インストールに失敗しました\n\n" },
+            { ELanguage::German,   "Installation fehlgeschlagen.\n\n" },
+            { ELanguage::French,   "L'installation a échoué.\n\n" },
+            { ELanguage::Spanish,  "La instalación falló.\n\n" },
+            { ELanguage::Italian,  "Installazione fallita.\n\n" }
         }
     },
     {
         "Installer_Step_Game",
         {
-            { ELanguage::English,  "GAME" },
-            { ELanguage::Japanese, "ゲーム" },
-            { ELanguage::German,   "SPIEL" },
-            { ELanguage::French,   "JEU" },
-            { ELanguage::Spanish,  "JUEGO" },
-            { ELanguage::Italian,  "GIOCO" }
+            { ELanguage::English,  "Game Data" },
+            { ELanguage::Japanese, "ゲームデータ" },
+            { ELanguage::German,   "Spieldaten" },
+            { ELanguage::French,   "Fichiers du jeu" },
+            { ELanguage::Spanish,  "Archivos del juego" },
+            { ELanguage::Italian,  "Dati del gioco" }
         }
     },
     {
@@ -454,8 +514,8 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Required space: %2.2f GiB" },
             { ELanguage::Japanese, "必要な容量: %2.2f GiB" },
-            { ELanguage::German,   "Benötigter Speicherplatz:\n%2.2f GiB" },
-            { ELanguage::French,   "Espace nécessaire :\n%2.2f Gio" },
+            { ELanguage::German,   "Benötigter Speicherplatz:\n%2.2f GiB\n" },
+            { ELanguage::French,   "Espace nécessaire : %2.2f Gio" },
             { ELanguage::Spanish,  "Espacio necesario: %2.2f GiB" },
             { ELanguage::Italian,  "Spazio necessario: %2.2f GiB" }
         }
@@ -465,8 +525,8 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Available space: %2.2f GiB" },
             { ELanguage::Japanese, "使用可能な容量: %2.2f GiB" },
-            { ELanguage::German,   "Verfügbarer Speicherplatz:\n%2.2f GiB" },
-            { ELanguage::French,   "Espace disponible :\n%2.2f Gio" },
+            { ELanguage::German,   "Verfügbarer Speicherplatz:\n%2.2f GiB\n" },
+            { ELanguage::French,   "Espace disponible : %2.2f Gio" },
             { ELanguage::Spanish,  "Espacio disponible: %2.2f GiB" },
             { ELanguage::Italian,  "Spazio disponibile: %2.2f GiB" }
         }
@@ -474,56 +534,45 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
     {
         "Installer_Button_Next",
         {
-            { ELanguage::English,  "NEXT" },
+            { ELanguage::English,  "Next" },
             { ELanguage::Japanese, "次へ" },
-            { ELanguage::German,   "WEITER" },
-            { ELanguage::French,   "SUIVANT" },
-            { ELanguage::Spanish,  "SIGUIENTE" },
-            { ELanguage::Italian,  "CONTINUA" }
+            { ELanguage::German,   "Weiter" },
+            { ELanguage::French,   "Suivant" },
+            { ELanguage::Spanish,  "Siguiente" },
+            { ELanguage::Italian,  "Continua" }
         }
     },
     {
         "Installer_Button_Skip",
         {
-            { ELanguage::English,  "SKIP" },
+            { ELanguage::English,  "Skip" },
             { ELanguage::Japanese, "スキップ" },
-            { ELanguage::German,   "ÜBERSPRINGEN" },
-            { ELanguage::French,   "IGNORER" },
-            { ELanguage::Spanish,  "SALTAR" },
-            { ELanguage::Italian,  "SALTA" }
-        }
-    },
-    {
-        "Installer_Button_Retry",
-        {
-            { ELanguage::English,  "RETRY" },
-            { ELanguage::Japanese, "リトライ" },
-            { ELanguage::German,   "ERNEUT VERSUCHEN" },
-            { ELanguage::French,   "RÉESSAYER" },
-            { ELanguage::Spanish,  "REINTENTAR" },
-            { ELanguage::Italian,  "RIPROVA" }
+            { ELanguage::German,   "Überspringen" },
+            { ELanguage::French,   "Ignorer" },
+            { ELanguage::Spanish,  "Saltar" },
+            { ELanguage::Italian,  "Salta" }
         }
     },
     {
         "Installer_Button_AddFiles",
         {
-            { ELanguage::English,  "ADD FILES" },
+            { ELanguage::English,  "Add Files" },
             { ELanguage::Japanese, "ファイルを追加" },
-            { ELanguage::German,   "DATEIEN HINZUFÜGEN" },
-            { ELanguage::French,   "AJOUTER DES FICHIERS" },
-            { ELanguage::Spanish,  "AÑADIR ARCHIVOS" },
-            { ELanguage::Italian,  "AGGIUNGI FILE" }
+            { ELanguage::German,   "Dateien hinzufügen" },
+            { ELanguage::French,   "Ajouter des fichiers" },
+            { ELanguage::Spanish,  "Añadir archivos" },
+            { ELanguage::Italian,  "Aggiungi file" }
         }
     },
     {
         "Installer_Button_AddFolder",
         {
-            { ELanguage::English,  "ADD FOLDER" },
+            { ELanguage::English,  "Add Folder" },
             { ELanguage::Japanese, "フォルダを追加" },
-            { ELanguage::German,   "ORDNER HINZUFÜGEN" },
-            { ELanguage::French,   "AJOUTER UN DOSSIER" },
-            { ELanguage::Spanish,  "AÑADIR CARPETA" },
-            { ELanguage::Italian,  "AGGIUNGI CARTELLA" }
+            { ELanguage::German,   "Ordner hinzufügen" },
+            { ELanguage::French,   "Ajouter un dossier" },
+            { ELanguage::Spanish,  "Añadir carpeta" },
+            { ELanguage::Italian,  "Aggiungi cartella" }
         }
     },
     {
@@ -542,40 +591,41 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         // Notes: message appears in the event there are some invalid files after adding the DLC and moving onto the next step.
         "Installer_Message_InvalidFiles",
         {
-            { ELanguage::English,  "Some of the files that have\nbeen provided are not valid.\n\nPlease make sure all the\nspecified files are correct\nand try again." },
-            { ELanguage::Japanese, "提供されたファイルの一部が有効ではありません\n指定されたファイルがすべて正しいことを確認して\nもう一度お試しください" },
-            { ELanguage::German,   "Einige Dateien, die bereitgestellt\nwurden sind ungültig.\n\nBitte stelle sicher, dass\ndie angegebenen Dateien korrekt\nsind und versuche es erneut." },
-            { ELanguage::French,   "Certains fichiers fournis ne\nsont pas valides.\n\nVeuillez vous assurer que tous\nles fichiers spécifiés sont\ncorrects et réessayez." },
-            { ELanguage::Spanish,  "Algunos de los archivos\nseleccionados no son válidos.\n\nPor favor, asegúrate de que\ntodos los archivos son correctos\ne inténtalo de nuevo.\n" },
-            { ELanguage::Italian,  "Alcuni dei file che sono stati\nselezionati non sono validi.\n\nAssicurati che tutti\ni file sono quelli corretti\ne riprova." }
+            { ELanguage::English,  "Some of the files that have been provided are not valid. Please make sure all the specified files are correct and try again." },
+            { ELanguage::Japanese, "提供されたファイルの一部が有効ではありません指定されたファイルがすべて正しいことを確認してもう一度お試しください" },
+            { ELanguage::German,   "Einige Dateien, die bereitgestellt wurden sind ungültig. Bitte stelle sicher, dass die angegebenen Dateien korrekt sind und versuche es erneut." },
+            { ELanguage::French,   "Certains fichiers fournis ne sont pas valides. Veuillez vous assurer que tous les fichiers spécifiés sont corrects et réessayez." },
+            { ELanguage::Spanish,  "Algunos de los archivos seleccionados no son válidos. Por favor, asegúrate de que todos los archivos son correctos e inténtalo de nuevo." },
+            { ELanguage::Italian,  "Alcuni dei file che sono stati selezionati non sono validi. Assicurati che tutti i file sono quelli corretti e riprova." }
         }
     },
     {
         // Notes: message appears when clicking the "Add Files" option for the first time.
         "Installer_Message_FilePickerTutorial",
         {
-            { ELanguage::English,  "Select a digital dump with\ncontent from the game.\n\nThese files can be obtained from\nyour Xbox 360 hard drive by\nfollowing the instructions on\nthe GitHub page.\n\nFor choosing a folder with extracted\nand unmodified game files, use\nthe \"Add Folder\" option instead." },
-            { ELanguage::Japanese, "ゲームのコンテンツを含む デジタルダンプを選択してください\n\nこれらのファイルは GitHubページの指示に従って\nXbox 360ハードドライブから取得できます\n\n抽出された変更されていない\nゲームファイルを含むフォルダーを選択するには\n代わりに「フォルダの追加」オプションを使用してください" },
-            { ELanguage::German,   "Wähle einen digitalen Dump von dem Spiel.\n\nDie Dateien können über die Festplatte deiner\nXbox 360 erlangt werden.\nFolge hierfür den Anweisungen auf der GitHub Seite.\n\nUm einen Ordner mit unmodifizierten Spieldateien auszuwählen, benutze die \"Ordner Hinzufügen\" Option stattdessen." },
-            { ELanguage::French,   "Sélectionnez une copie\ndématérialisée avec le contenu du\njeu de base.\n\nCes fichiers peuvent être obtenus\nà partir du disque dur de votre\nXbox 360 en suivant les\ninstructions de la page GitHub.\n\nPour choisir un dossier contenant\nles fichiers de jeu extraits et\nnon modifiés, utilisez plutôt\nl'option \"Ajouter un dossier\"." },
-            { ELanguage::Spanish,  "Selecciona una copia digital\ncon contenido del juego.\n\nPuedes obtener los archivos\nde tu disco duro de Xbox 360\nsiguiendo las instrucciones de\nla página de GitHub.\n\nPara elegir una carpeta con\narchivos extraídos sin modificar,\nutiliza la opción \"Añadir Carpeta\"." },
-            { ELanguage::Italian,  "Seleziona una copia digitale\ncon i contenuti del gioco.\n\nQuesti file possono essere ottenuti\ndall'hard drive della tua Xbox 360\nseguendo le istruzioni\nsulla pagina GitHub.\n\nPer selezionare una cartella\ncon file estratti e non modificati\nusa l'opzione \"Aggiungi cartella\"." }
+            { ELanguage::English,  "Select a digital dump with content from the game.\n\nThese files can be obtained from your Xbox 360 hard drive by following the instructions on the GitHub page.\n\nFor choosing a folder with extracted and unmodified game files, use the \"Add Folder\" option instead." },
+            { ELanguage::Japanese, "ゲームのコンテンツを含む デジタルダンプを選択してください\n\nこれらのファイルは GitHubページの指示に従って\nXbox 360ハードドライブから取得できます\n\n抽出された変更されていないゲームファイルを含むフォルダーを選択するには代わりに「フォルダの追加」オプションを使用してください" },
+            { ELanguage::German,   "Wähle einen digitalen Dump von dem Spiel.\n\nDie Dateien können über die Festplatte deiner\nXbox 360 erlangt werden. Folge hierfür den Anweisungen auf der GitHub Seite.\n\nUm einen Ordner mit unmodifizierten Spieldateien auszuwählen, benutze die \"Ordner hinzufügen\" Option stattdessen." },
+            { ELanguage::French,   "Sélectionnez une copie dématérialisée avec le contenu du jeu de base.\n\nCes fichiers peuvent être obtenus à partir du disque dur de votre Xbox 360 en suivant les instructions de la page GitHub.\n\nPour choisir un dossier contenant les fichiers de jeu extraits et non modifiés, utilisez plutôt l'option \"Ajouter un dossier\"." },
+            { ELanguage::Spanish,  "Selecciona una copia digital con contenido del juego.\n\nPuedes obtener los archivos de tu disco duro de\nXbox 360 siguiendo las instrucciones de la página de GitHub.\n\nPara elegir una carpeta con archivos extraídos sin modificar, utiliza la opción \"Añadir carpeta\"." },
+            { ELanguage::Italian,  "Seleziona una copia digitale con i contenuti del gioco.\n\nQuesti file possono essere ottenuti dall'hard drive della tua Xbox 360 seguendo le istruzioni sulla pagina GitHub.\n\nPer selezionare una cartella con file estratti e non modificati usa l'opzione \"Aggiungi cartella\"." }
         }
     },
     {
         // Notes: message appears when clicking the "Add Folder" option for the first time.
         "Installer_Message_FolderPickerTutorial",
         {
-            { ELanguage::English,  "Select a folder that contains the\nunmodified files that have been\nextracted from the game.\n\nThese files can be obtained from\nyour Xbox 360 hard drive by\nfollowing the instructions on\nthe GitHub page.\n\nFor choosing a digital dump,\nuse the \"Add Files\" option instead." },
-            { ELanguage::Japanese, "ゲームから抽出された変更されていない\nファイルを含むフォルダを選択してください\n\nこれらのファイルは GitHubページの指示に従って\nXbox 360ハードドライブから取得できます\n\nデジタルダンプを選択するには\n代わりに「ファイルの追加」オプションを使用してください" },
-            { ELanguage::German,   "Wähle einen Ordner, der unmodifizierte Dateien, die vom Spiel extrahiert wurden enthält.\n\nDie Dateien können über die Festplatte deiner\nXbox 360 erlangt werden.\nFolge hierfür den Anweisungen auf der GitHub Seite.\n\nUm einen digitalen Dump auszuwählen, benutze die \"Datei Hinzufügen\" Option stattdessen." },
-            { ELanguage::French,   "Sélectionnez un dossier contenant\nles fichiers extraits du jeu de\nbase.\n\nCes fichiers peuvent être obtenus\nà partir du disque dur de votre\nXbox 360 en suivant les\ninstructions de la page GitHub.\n\nPour choisir une copie\ndématérialisée, utilisez plutôt\nl'option \"Ajouter des fichiers\"." },
-            { ELanguage::Spanish,  "Selecciona una carpeta que\ncontenga los archivos sin\nmodificar extraídos del juego.\n\nPuedes obtener los archivos\nde tu disco duro de Xbox 360\nsiguiendo las instrucciones de\nla página de GitHub.\n\nPara elegir una copia digital,\nutiliza la opción \"Añadir Archivos\"." },
-            { ELanguage::Italian,  "Seleziona una cartella che contiene\ni file non modificati che sono stati\nestratti dal gioco.\n\nQuesti file possono essere ottenuti\ndall'hard drive della tua Xbox 360\nseguendo le istruzioni\nsulla pagina GitHub.\n\nPer selezionare una copia digitale\nusa l'opzione \"Aggiungi file\"." }
+            { ELanguage::English,  "Select a folder that contains the unmodified files that have been extracted from the game.\n\nThese files can be obtained from your Xbox 360 hard drive by following the instructions on the GitHub page.\n\nFor choosing a digital dump, use the \"Add Files\" option instead." },
+            { ELanguage::Japanese, "ゲームから抽出された変更されていないファイルを含むフォルダを選択してください\n\nこれらのファイルは GitHubページの指示に従って\nXbox 360ハードドライブから取得できます\n\nデジタルダンプを選択するには\n代わりに「ファイルの追加」オプションを使用してください" },
+            { ELanguage::German,   "Wähle einen Ordner, der unmodifizierte Dateien, die vom Spiel extrahiert wurden enthält.\n\nDie Dateien können über die Festplatte deiner\nXbox 360 erlangt werden. Folge hierfür den Anweisungen auf der GitHub Seite.\n\nUm einen digitalen Dump auszuwählen, benutze die \"Dateien hinzufügen\" Option stattdessen." },
+            { ELanguage::French,   "Sélectionnez un dossier contenant les fichiers extraits du jeu de base.\n\nCes fichiers peuvent être obtenus à partir du disque dur de votre Xbox 360 en suivant les instructions de la page GitHub.\n\nPour choisir une copie dématérialisée, utilisez plutôt l'option \"Ajouter des fichiers\"." },
+            { ELanguage::Spanish,  "Selecciona una carpeta que contenga los archivos sin modificar extraídos del juego.\n\nPuedes obtener los archivos de tu disco duro de\nXbox 360 siguiendo las instrucciones de la página de GitHub.\n\nPara elegir una copia digital, utiliza la opción \"Añadir archivos\"." },
+            { ELanguage::Italian,  "Seleziona una cartella che contiene i file non modificati che sono stati estratti dal gioco.\n\nQuesti file possono essere ottenuti dall'hard drive della tua Xbox 360 seguendo le istruzioni sulla pagina GitHub.\n\nPer selezionare una copia digitale usa l'opzione \"Aggiungi file\"." }
         }
     },
     {
         // Notes: message appears when choosing the Install option at the title screen when the user is missing DLC content.
+        // TODO: adjust line breaks for new message window.
         "Installer_Message_TitleMissingDLC",
         {
             { ELanguage::English,  "This will restart the game to\nallow you to install any DLC\nthat you are missing.\n\nWould you like to install missing\ncontent?" },
@@ -588,6 +638,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
     },
     {
         // Notes: message appears when choosing the Install option at the title screen when the user is not missing any content.
+        // TODO: adjust line breaks for new message window.
         "Installer_Message_Title",
         {
             { ELanguage::English,  "This restarts the game to\nallow you to install any DLC\nthat you may be missing.\n\nYou are not currently\nmissing any DLC.\n\nWould you like to proceed\nanyway?" },
@@ -635,29 +686,42 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         }
     },
     {
-        // Notes: message appears when ACH-DATA is corrupted (mismatching file size, bad signature, incorrect version or invalid checksum) upon pressing start at the title screen.
+        // Notes: message appears when SonicNextAchievementData.bin is corrupted (mismatching file size, bad signature, incorrect version or invalid checksum) upon loading save data.
         // To make this occur, open the file in any editor and just remove a large chunk of data.
-        "Title_Message_AchievementDataCorrupt",
+        "Title_Message_LoadAchievementDataCorrupt",
         {
-            { ELanguage::English,  "The achievement data appears to be\ncorrupted and cannot be loaded.\n\nProceeding from this point will\nclear your achievement data." },
-            { ELanguage::Japanese, "実績データが破損しているため\n読み込むことができません\n\nこの先に進むと実績データが\n消去されます" },
-            { ELanguage::German,   "Die Erfolgsdaten sind möglicherweise\nfehlerhaft und können nicht\ngeladen werden.\n\nDurch das Fortfahren werden\ndeine bisherigen Erfolgsdaten gelöscht." },
-            { ELanguage::French,   "Les données des succès semblent être\nendommagées et ne peuvent être\nchargées.\n\nSi vous continuez, vos données\nseront écrasées." },
-            { ELanguage::Spanish,  "Los datos de logros parecen estar\ncorruptos y no pueden cargarse.\n\nContinuar a partir de este punto\neliminará los datos de logros." },
-            { ELanguage::Italian,  "I file degli obiettivi sembrano danneggiati\ne non possono essere caricati.\n\nSe prosegui da questo punto\ni tuoi obiettivi verranno cancellati." }
+            { ELanguage::English,  "Load failed. Achievement data is corrupted.\nIf you continue your achievement progress will\nbe lost." },
+            { ELanguage::Japanese, "ロード失敗。業績のデータが破損している。\nセーブしていない進行状況は失われます" },
+            { ELanguage::German,   "Laden fehlgeschlagen. Erfolgs dateien sind\nkorrupt. Wenn du fortfährst wird dein Erfolgs\nfortschritt gelöscht." },
+            { ELanguage::French,   "Chargement échoué. Les données d'Accomplissements\nsont corrompus. Si vous continuez, vos\naccomplissements seront perdus." },
+            { ELanguage::Spanish,  "Error al cargar. Los datos de los logros están\ndañados. Si continúas, se perderá el progreso\nde tus logros." },
+            { ELanguage::Italian,  "Caricamento fallito. I dati degli obiettivi\nsono danneggiati. Se continui perderai tutti\ni tuoi obiettivi." }
         }
     },
     {
-        // Notes: message appears when ACH-DATA cannot be loaded upon pressing start at the title screen.
-        // To make this occur, lock the ACH-DATA file using an external program so that it cannot be accessed by the game.
-        "Title_Message_AchievementDataIOError",
+        // Notes: message appears when SonicNextAchievementData.bin cannot be loaded upon loading save data.
+        // To make this occur, lock the SonicNextAchievementData.bin file using an external program so that it cannot be accessed by the game.
+        "Title_Message_LoadAchievementDataIOError",
         {
-            { ELanguage::English,  "The achievement data could not be loaded.\nYour achievements will not be saved." },
-            { ELanguage::Japanese, "実績データを読み込めませんでした\n実績は保存されません" },
-            { ELanguage::German,   "Die Erfolgsdaten konnten nicht geladen werden.\nDeine Erfolge werden nicht gespeichert." },
-            { ELanguage::French,   "Les données des succès ne\npeuvent être chargées.\nVos succès ne seront pas\nsauvegardés." },
-            { ELanguage::Spanish,  "Los datos de logros no pueden cargarse.\nTus logros no serán guardados." },
-            { ELanguage::Italian,  "I file degli obiettivi non possono essere caricati.\nI tuoi obiettivi non verranno salvati." }
+            { ELanguage::English,  "Load failed. Achievement data cannot be loaded.\nIf you continue you will not be able to save\nyour achievement progress." },
+            { ELanguage::Japanese, "ロード失敗。業績のデータがロードできません。\n進行状況は失われますセーブしません" },
+            { ELanguage::German,   "Laden fehlgeschlagen. Erfolgs dateien können nicht\ngeladen werden. Wenn du fortfährst wirst du deinen\nErfolgs fortschritt nicht speichern können." },
+            { ELanguage::French,   "Chargement échoué. Les données d'Accomplissements\nn'ont pas pu être chargé. Si vous continuez, vous ne\npourrez pas sauvegarder vos accomplissements." },
+            { ELanguage::Spanish,  "Error al cargar. No se pueden cargar los datos\nde los logros. Si continúas, no podrás guardar\nel progreso de tus logros." },
+            { ELanguage::Italian,  "Caricamento fallito. Impossibile caricare i dati\ndegli obiettivi. Se continui non potrai salvare\ni tuoi obiettivi." }
+        }
+    },
+    {
+        // Notes: message appears when SonicNextAchievementData.bin cannot be saved upon saving save data.
+        // To make this occur, lock the SonicNextAchievementData.bin file using an external program so that it cannot be accessed by the game.
+        "Title_Message_SaveAchievementDataIOError",
+        {
+            { ELanguage::English,  "Save failed. Achievement data cannot be saved.\nIf you continue you will not be able to save\nyour achievement progress." },
+            { ELanguage::Japanese, "セーブ失敗。業績のデータがセーブできません。\n進行状況は失われますセーブしません" },
+            { ELanguage::German,   "Speichern fehlgeschlagen. Erfolgs dateien können\nnicht gespeichert werden. Wenn du fortfährst wirst\ndu deinen Erfolgs fortschritt nicht speichern können." },
+            { ELanguage::French,   "Sauvegarde échoué. Les données d'Accomplissements\nn'ont pas pu être sauvegardé. Si vous continuez, vous ne\npourrez pas sauvegarder vos accomplissements." },
+            { ELanguage::Spanish,  "Error al guardar. No se pueden guardar los datos\nde los logros. Si continúas, no podrás guardar\ntu progreso en los logros." },
+            { ELanguage::Italian,  "Salvataggio fallito. Impossibile salvare i dati\ndegli obiettivi. Se continui non potrai salvare\ni tuoi obiettivi." }
         }
     },
     {
@@ -709,8 +773,8 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Installation check has finished.\n\nAll files seem to be correct.\n\nThe game will now close. Remove the launch argument to play the game." },
             { ELanguage::Japanese, "インストールチェックが終了しました\n\nすべてのファイルは正しいようです\n\nゲームは終了します、ゲームをプレイするには起動引数を削除してください" },
-            { ELanguage::German,  "Die Installation wurde überprüft.\n\nAlle Dateien scheinen korrekt zu sein.\n\nDas Spiel wird nun geschlossen. Entferne die Startoption, um das Spiel zu spielen." },
-            { ELanguage::French,  "La vérification de l'installation est terminée.\n\nTous les fichiers semblent corrects.\n\nL'application va maintenant se fermer. Retirez l'argument de lancement pour pouvoir lancer le jeu." },
+            { ELanguage::German,   "Die Installation wurde überprüft.\n\nAlle Dateien scheinen korrekt zu sein.\n\nDas Spiel wird nun geschlossen. Entferne die Startoption, um das Spiel zu spielen." },
+            { ELanguage::French,   "La vérification de l'installation est terminée.\n\nTous les fichiers semblent corrects.\n\nL'application va maintenant se fermer. Retirez l'argument de lancement pour pouvoir lancer le jeu." },
             { ELanguage::Spanish,  "La verificación de la instalación ha terminado.\n\nTodos los archivos parecen correctos.\n\nEl juego se cerrará ahora. Elimina el argumento de lanzamiento para jugar al juego." },
             { ELanguage::Italian,  "La verifica dei file d'installazione è terminata.\n\nTutti i file sembrano corretti.\n\nIl gioco si chiuderà. Rimuovi l'argomento di avvio per poter giocare." }
         }
@@ -720,8 +784,8 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         {
             { ELanguage::English,  "Installation check has failed.\n\nError: %s\n\nThe game will now close. Try reinstalling the game by using the --install launch argument." },
             { ELanguage::Japanese, "インストールチェックに失敗しました\n\nエラー：%s\n\nゲームは終了します、--install 起動引数を使用してゲームを再インストールしてください" },
-            { ELanguage::German,  "Die Installationsprüfung ist fehlgeschlagen.\n\nFehler: %s\n\nDas Spiel wird nun geschlossen. Versuche das Spiel durch Verwendung der Startoption --install neu zu installieren." },
-            { ELanguage::French,  "La vérification de l'installation a échoué.\n\nErreur : %s\n\nL'application va maintenant se fermer. Essayez de réinstaller le jeu en utilisant l'argument de lancement --install." },
+            { ELanguage::German,   "Die Installationsprüfung ist fehlgeschlagen.\n\nFehler: %s\n\nDas Spiel wird nun geschlossen. Versuche das Spiel durch Verwendung der Startoption --install neu zu installieren." },
+            { ELanguage::French,   "La vérification de l'installation a échoué.\n\nErreur : %s\n\nL'application va maintenant se fermer. Essayez de réinstaller le jeu en utilisant l'argument de lancement --install." },
             { ELanguage::Spanish,  "La verificación de la instalación ha fallado.\n\nError: %s\n\nEl juego se cerrará ahora. Intenta reinstalar el juego utilizando el argumento de lanzamiento --install." },
             { ELanguage::Italian,  "La verifica dei file d'installazione non è andata a buon fine.\n\nErrore: %s\n\nIl gioco si chiuderà. Prova a reinstallare il gioco utilizzando l'argomento di avvio --install." }
         }
@@ -859,6 +923,28 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         }
     },
     {
+        "Common_Retry",
+        {
+            { ELanguage::English,  "Retry" },
+            { ELanguage::Japanese, "リトライ" },
+            { ELanguage::German,   "Wiederholen" },
+            { ELanguage::French,   "Réessayer" },
+            { ELanguage::Spanish,  "Reintentar" },
+            { ELanguage::Italian,  "Riprova" }
+        }
+    },
+    {
+        "Common_ContinueWithoutSaving",
+        {
+            { ELanguage::English,  "Continue without saving." },
+            { ELanguage::Japanese, "セーブせずにゲームを続けます" },
+            { ELanguage::German,   "Fortsetzen ohne zu speichern." },
+            { ELanguage::French,   "Continuer sans sauvegarder." },
+            { ELanguage::Spanish,  "Continuar sin guardar." },
+            { ELanguage::Italian,  "Continua senza salvare." }
+        }
+    },
+    {
         "Button_Cancel",
         {
             { ELanguage::English, "${picture(button_b)}${locale(Common_Cancel)}" },
@@ -903,14 +989,32 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::Spanish, "${picture(button_x)} ${locale(Common_Reset)}  ${picture(button_a)} ${locale(Common_Select)}  ${picture(button_b)} ${locale(Common_Back)}" },
         }
     },
+    {
+        "Button_GoldMedalsBack",
+        {
+            { ELanguage::English, "${picture(button_y)}${locale(Achievements_GoldMedals)}  ${picture(button_b)}${locale(Common_Back)}" },
+            { ELanguage::German,  "${picture(button_y)}${locale(Achievements_GoldMedals)}　　${picture(button_b)}${locale(Common_Back)}" },
+            { ELanguage::Spanish, "${picture(button_y)} ${locale(Achievements_GoldMedals)}  ${picture(button_b)} ${locale(Common_Back)}" }
+        }
+    },
+    {
+        "Button_AchievementsBack",
+        {
+            { ELanguage::English, "${picture(button_y)}${locale(Achievements_Title)}  ${picture(button_b)}${locale(Common_Back)}" },
+            { ELanguage::German,  "${picture(button_y)}${locale(Achievements_Title)}　　${picture(button_b)}${locale(Common_Back)}" },
+            { ELanguage::Spanish, "${picture(button_y)} ${locale(Achievements_Title)}  ${picture(button_b)} ${locale(Common_Back)}" }
+        }
+    }
 };
 
 std::string& Localise(const std::string_view& key)
 {
     auto localeFindResult = g_locale.find(key);
+
     if (localeFindResult != g_locale.end())
     {
         auto languageFindResult = localeFindResult->second.find(Config::Language);
+
         if (languageFindResult == localeFindResult->second.end())
             languageFindResult = localeFindResult->second.find(ELanguage::English);
 

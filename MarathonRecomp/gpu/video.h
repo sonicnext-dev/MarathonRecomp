@@ -1,7 +1,10 @@
 #pragma once
 
+// Enable to show debug stats related to async pipeline compiles and cache misses.
 //#define ASYNC_PSO_DEBUG
-/////////////////////////////////////////////////////////////////////#define PSO_CACHING
+// Enable to store uncached pipelines and vertex declarations to "pso_caching.txt" in the game's user directory.
+//#define PSO_CACHING
+// Enable to also output cached pipelines to "pso_caching.txt" to get a full set.
 //#define PSO_CACHING_CLEANUP
 
 #include <plume_render_interface.h>
@@ -16,9 +19,6 @@
 #define SPEC_CONSTANT_ALPHA_TO_COVERAGE (1 << 3)
 #define SPEC_CONSTANT_REVERSE_Z         (1 << 4)
 
-#define SPEC_CONSTANT_CONDITIONAL_SURVEY    (1 << 5)
-#define SPEC_CONSTANT_CONDITIONAL_RENDERING (1 << 6)
-
 #define LOAD_ZSTD_TEXTURE(name) LoadTexture(decompressZstd(name, name##_uncompressed_size).get(), name##_uncompressed_size)
 
 using namespace plume;
@@ -28,15 +28,19 @@ struct Video
     static inline uint32_t s_viewportWidth;
     static inline uint32_t s_viewportHeight;
 
+    static inline bool s_needsResize;
+
     static bool CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry);
     static void WaitOnSwapChain();
     static void Present();
+    static void Resize(uint32_t width, uint32_t height);
     static void StartPipelinePrecompilation();
     static void WaitForGPU();
     static void ComputeViewportDimensions();
 };
 
-enum class Backend {
+enum class Backend
+{
     VULKAN,
     D3D12,
     METAL
@@ -240,7 +244,7 @@ struct GuestSurface : GuestBaseTexture
     ankerl::unordered_dense::map<const RenderTexture*, std::unique_ptr<RenderFramebuffer>> framebuffers;
     RenderSampleCounts sampleCount = RenderSampleCount::COUNT_1;
     ankerl::unordered_dense::map<GuestTexture*, uint32_t> destinationTextures;
-    bool wasCached = false;
+    struct SurfaceVariant* variant = nullptr;
 };
 
 enum GuestDeclType
@@ -330,7 +334,7 @@ struct GuestShader : GuestResource
     ComPtr<IDxcBlobEncoding> libraryBlob;
 #endif
 #ifdef ASYNC_PSO_DEBUG
-    const char* name = "<unknown>";
+    std::string name = "";
 #endif
 };
 
@@ -471,7 +475,13 @@ enum GuestTextureAddress
     D3DTADDRESS_BORDER = 6
 };
 
-inline bool g_needsResize;
+static GuestSurface* GetBackBuffer();
+
+static void SetRenderTarget(GuestDevice* device, uint32_t index, GuestSurface* renderTarget);
+static void SetDepthStencilSurface(GuestDevice* device, GuestSurface* depthStencil);
+static void DiscardTexture(GuestBaseTexture* texture, RenderTextureLayout layout);
+static GuestTexture* CreateTexture(uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, uint32_t usage, uint32_t format, uint32_t pool, uint32_t type);
+static GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t format, uint32_t multiSample, GuestSurfaceCreateParams* params);
 
 extern std::unique_ptr<GuestTexture> LoadTexture(const uint8_t* data, size_t dataSize, RenderComponentMapping componentMapping = RenderComponentMapping());
 

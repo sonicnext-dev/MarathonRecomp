@@ -1,7 +1,9 @@
 #include <api/Marathon.h>
+#include <os/logger.h>
 #include <ui/fader.h>
 #include <ui/message_window.h>
 #include <ui/options_menu.h>
+#include <user/achievement_manager.h>
 #include <user/config.h>
 #include <user/paths.h>
 #include <app.h>
@@ -32,7 +34,7 @@ enum
 
 bool ProcessQuitMessage(Sonicteam::TitleTask* pTitleTask)
 {
-    static int s_quitMessageResult = -1;
+    static auto s_quitMessageResult = -1;
     static std::atomic<bool> s_faderBegun = false;
 
     if (!g_quitMessageOpen)
@@ -110,20 +112,20 @@ PPC_FUNC(sub_825126A0)
             if (g_isSecretDone)
                 break;
 
-            if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManager[0])
+            if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManagers[0])
             {
                 auto& rPadState = spInputManager->m_PadState;
 
-                if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DpadUp))
+                if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DPadUp))
                     g_secretFlags = SECRET_UP;
 
-                if ((g_secretFlags & SECRET_UP) != 0 && rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DpadDown))
+                if ((g_secretFlags & SECRET_UP) != 0 && rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DPadDown))
                     g_secretFlags |= SECRET_DOWN;
 
-                if ((g_secretFlags & SECRET_DOWN) != 0 && rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DpadLeft))
+                if ((g_secretFlags & SECRET_DOWN) != 0 && rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DPadLeft))
                     g_secretFlags |= SECRET_LEFT;
 
-                if ((g_secretFlags & SECRET_LEFT) != 0 && rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DpadRight))
+                if ((g_secretFlags & SECRET_LEFT) != 0 && rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DPadRight))
                     g_secretFlags |= SECRET_RIGHT;
             }
 
@@ -138,7 +140,7 @@ PPC_FUNC(sub_825126A0)
 
         case Sonicteam::TitleTask::TitleState_OptionsWait:
         {
-            if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManager[0])
+            if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManagers[0])
             {
                 auto& rPadState = spInputManager->m_PadState;
 
@@ -155,14 +157,22 @@ PPC_FUNC(sub_825126A0)
 
         case Sonicteam::TitleTask::TitleState_OptionsProceed:
         {
-            if (Config::DisableTitleInputDelay)
-                break;
+            // Reset achievements on new game.
+            if (pTitleTask->m_SelectedIndex == 0)
+            {
+                LOGN("Resetting achievements...");
 
-            g_titleProceedOutroTime += deltaTime;
+                AchievementManager::Reset();
+            }
 
-            // Wait for outro animation to complete before entering menu.
-            if (g_titleProceedOutroTime > TITLE_OPTION_OUTRO_TOTAL_FRAMES)
-                GuestToHostFunction<int>(sub_82511CA0, pTitleTask, 9);
+            if (!Config::DisableTitleInputDelay)
+            {
+                g_titleProceedOutroTime += deltaTime;
+
+                // Wait for outro animation to complete before entering menu.
+                if (g_titleProceedOutroTime > TITLE_OPTION_OUTRO_TOTAL_FRAMES)
+                    GuestToHostFunction<int>(sub_82511CA0, pTitleTask, 9);
+            }
 
             break;
         }
@@ -196,7 +206,7 @@ PPC_FUNC(sub_825126A0)
     }
     else
     {
-        if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManager[0])
+        if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManagers[0])
         {
             auto& rPadState = spInputManager->m_PadState;
 

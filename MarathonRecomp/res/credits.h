@@ -1,22 +1,17 @@
 #pragma once
 
-inline std::array<const char*, 17> g_credits =
+inline std::array<const char*, 12> g_credits =
 {
-    "Skyth",
-    "Sajid",
+    "ga2mer",
+    "IsaacMarovitz",
+    "squidbus",
     "Hyper",
-    "Darío",
-    "DeaThProj",
-    "RadiantDerg",
-    "PTKay",
-    "SuperSonic16",
-    "NextinHKRY",
-    "LadyLunanova",
+    "Rei-san",
+    "Desko",
     "LJSTAR",
-    "saguinee",
-    "Goalringmod27",
-    "M&M",
-    "DaGuAr",
     "brianuuuSonic",
-    "Kitzuku"
+    "Kitzuku",
+    "Ray Vassos",
+    "DaGuAr",
+    "NextinHKRY"
 };

@@ -16,9 +16,9 @@ public:
 
         switch (event->type)
         {
-        case SDL_KEYDOWN:
+        case SDL_EVENT_KEY_DOWN:
         {
-            if (event->key.keysym.sym != SDLK_F8 || m_isF8KeyDown)
+            if (event->key.key != SDLK_F8 || m_isF8KeyDown)
                 break;
 
             // TODO
@@ -28,8 +28,8 @@ public:
             break;
         }
 
-        case SDL_KEYUP:
-            m_isF8KeyDown = event->key.keysym.sym != SDLK_F8;
+        case SDL_EVENT_KEY_UP:
+            m_isF8KeyDown = event->key.key != SDLK_F8;
             break;
         }
 

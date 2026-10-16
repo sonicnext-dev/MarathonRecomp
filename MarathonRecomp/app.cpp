@@ -10,8 +10,10 @@
 #include <user/config.h>
 #include <user/paths.h>
 #include <user/registry.h>
+#include <xxHashMap.h>
 
 static std::thread::id g_mainThreadId = std::this_thread::get_id();
+extern std::array<XXH64_hash_t, 29> g_taskUpdatesOnPause;
 
 void App::Restart(std::vector<std::string> restartArgs)
 {
@@ -68,6 +70,8 @@ PPC_FUNC(sub_8262A568)
 PPC_FUNC_IMPL(__imp__sub_825EA610);
 PPC_FUNC(sub_825EA610)
 {
+    auto pDoc = reinterpret_cast<Sonicteam::DocMarathonState*>(base + ctx.r3.u32);
+
     Video::WaitOnSwapChain();
 
     // Correct small delta time errors.
@@ -89,16 +93,34 @@ PPC_FUNC(sub_825EA610)
     if (std::this_thread::get_id() == g_mainThreadId)
     {
         SDL_PumpEvents();
-        SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+        SDL_FlushEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
+
         GameWindow::Update();
     }
 
     // Allow variable FPS when config is not 60 FPS.
-    App::s_pApp->m_pDoc->m_VFrame = Config::FPS != 60;
+    pDoc->m_VFrame = Config::FPS != 60;
 
     AudioPatches::Update(App::s_deltaTime);
 
     __imp__sub_825EA610(ctx, base);
+
+    if (pDoc->m_PauseFlags.get())
+    {
+        // Update visual tasks for resizing buffers on pause.
+        pDoc->m_pRootTask->WalkSiblings([](Sonicteam::SoX::Engine::Task* in_pTask) -> bool
+        {
+            if ((in_pTask->m_Flags & 4) != 0)
+                return true;
+
+            const auto taskNameHash = HashStr(in_pTask->GetName());
+
+            if (std::find(g_taskUpdatesOnPause.begin(), g_taskUpdatesOnPause.end(), taskNameHash) != g_taskUpdatesOnPause.end())
+                in_pTask->Update();
+
+            return true;
+        });
+    }
 }
 
 PPC_FUNC_IMPL(__imp__sub_82582648);
@@ -121,19 +143,6 @@ PPC_FUNC(sub_82582648)
 
     __imp__sub_82582648(ctx, base);
 }
-
-#if _DEBUG
-// Sonicteam::SoX::Thread::Thread
-PPC_FUNC_IMPL(__imp__sub_825867A8);
-PPC_FUNC(sub_825867A8)
-{
-    auto pThreadName = (const char*)g_memory.Translate(ctx.r4.u32);
-
-    os::logger::Log(fmt::format("Created thread: {}", pThreadName), os::logger::ELogType::Utility, "Sonicteam::SoX::Thread");
-
-    __imp__sub_825867A8(ctx, base);
-}
-#endif
 
 PPC_FUNC_IMPL(__imp__sub_82744840);
 PPC_FUNC(sub_82744840)
@@ -184,3 +193,36 @@ PPC_FUNC(sub_825822D0)
     __imp__sub_825822D0(ctx, base);
 }
 #endif
+
+std::array<XXH64_hash_t, 29> g_taskUpdatesOnPause =
+{
+    HashStr("root"),
+    HashStr("TL_Debug"),
+    HashStr("TL_PrepareMain"),
+    HashStr("TL_Main"),
+    HashStr("TL_HeadUpDisplay"),
+    HashStr("TL_PrepareRender"),
+    HashStr("TL_NonStopTask"),
+    HashStr("ResumeWorkerThreadTask"),
+    HashStr("ThreadResumeTask"),
+    HashStr("Cameraman"),
+    HashStr("PrepareShadowTask"),
+    HashStr("GameRootTask"),
+    HashStr("Task"),
+    HashStr("TaskAdapter"),
+    HashStr("HUDMainDisplay"),
+    HashStr("PostprocessControllerTask"),
+    HashStr("PrepareRenderTask"),
+    HashStr("PrepareFrameSynchronizerTask"),
+    HashStr("FrameSynchronizerTask"),
+    HashStr("BoundingBoxSynchronizerTask"),
+    HashStr("FrustumCullingTask"),
+    HashStr("UpdateResourceInFrustumTask"),
+    HashStr("GameModeNonStop"),
+    HashStr("ObjectAqaMercurySmall"),
+    HashStr("ObjectAqaPond"),
+    HashStr("ReflectionManager"),
+    HashStr("ReflectionArea"),
+    HashStr("HintWindowTask"),
+    HashStr("HUDMessageWindow")
+};

@@ -24,7 +24,15 @@ constexpr double DEG2RAD = 0.01745329238474369;
 #define MARATHON_VIRTUAL_FUNCTION(returnType, virtualIndex, ...) \
     GuestToHostFunction<returnType>(*(be<uint32_t>*)(g_memory.Translate(*(be<uint32_t>*)(this) + (4 * virtualIndex))), __VA_ARGS__)
 
-struct marathon_null_ctor {};
+struct MARATHON_NULL_CTOR {};
+
+struct MARATHON_STD_MAP_CONST_CHAR_COMPARE
+{
+    bool operator()(xpointer<const char> lhs, xpointer<const char> rhs) const
+    {
+        return std::strcmp(lhs.get(), rhs.get()) < 0;
+    }
+};
 
 inline std::vector<std::string_view> ParseTextVariables(const char* pVariables)
 {

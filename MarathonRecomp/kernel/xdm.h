@@ -8,6 +8,14 @@
 
 #ifndef _WIN32
 
+// Prevent conflicting definitions
+#ifdef TRUE
+#undef TRUE
+#endif
+#ifdef FALSE
+#undef FALSE
+#endif
+
 #define S_OK                       0x00000000
 #define FALSE                      0x00000000
 #define TRUE                       0x00000001

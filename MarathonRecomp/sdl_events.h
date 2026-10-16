@@ -1,15 +1,14 @@
 #pragma once
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <ui/game_window.h>
 
-#define SDL_USER_PLAYER_CHAR (SDL_USEREVENT + 1)
+#define SDL_EVENT_USER_PLAYER_CHAR (SDL_EVENT_USER + 1)
 
 inline void SDL_ResizeEvent(SDL_Window* pWindow, int width, int height)
 {
     SDL_Event event{};
-    event.type = SDL_WINDOWEVENT;
-    event.window.event = SDL_WINDOWEVENT_RESIZED;
+    event.type = SDL_EVENT_WINDOW_RESIZED;
     event.window.windowID = SDL_GetWindowID(pWindow);
     event.window.data1 = width;
     event.window.data2 = height;
@@ -20,8 +19,7 @@ inline void SDL_ResizeEvent(SDL_Window* pWindow, int width, int height)
 inline void SDL_MoveEvent(SDL_Window* pWindow, int x, int y)
 {
     SDL_Event event{};
-    event.type = SDL_WINDOWEVENT;
-    event.window.event = SDL_WINDOWEVENT_MOVED;
+    event.type = SDL_EVENT_WINDOW_MOVED;
     event.window.windowID = SDL_GetWindowID(pWindow);
     event.window.data1 = x;
     event.window.data2 = y;
@@ -32,7 +30,7 @@ inline void SDL_MoveEvent(SDL_Window* pWindow, int x, int y)
 inline void SDL_User_PlayerChar(EPlayerCharacter character)
 {
     SDL_Event event{};
-    event.type = SDL_USER_PLAYER_CHAR;
+    event.type = SDL_EVENT_USER_PLAYER_CHAR;
     event.user.code = static_cast<Sint32>(character);
 
     SDL_PushEvent(&event);

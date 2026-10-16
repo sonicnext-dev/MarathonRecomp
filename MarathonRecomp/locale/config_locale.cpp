@@ -74,7 +74,7 @@ CONFIG_DEFINE_ENUM_LOCALE(ELanguage)
 
 CONFIG_DEFINE_LOCALE(VoiceLanguage)
 {
-    { ELanguage::English, { "Voice Language", "Change the language used for character voices." } },
+    { ELanguage::English,  { "Voice Language", "Change the language used for character voices." } },
     { ELanguage::Japanese, { "音声言語", "ゲーム内の音声言語を変更できます" } },
     { ELanguage::German,   { "Stimmeinstellung", "Ändere die Sprache, die für Charakterstimmen benutzt wird." } },
     { ELanguage::French,   { "Langue de doublage", "Modifie la langue utilisée pour la voix des personnages." } },

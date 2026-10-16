@@ -190,6 +190,7 @@ void UpdateLoopStatus(XmaPlayback *playback) {
     }
 
     playback->inputBufferReadOffset = loop_start;
+    playback->numSubframesToSkip = playback->loopSubframeSkip;
 
     if (playback->numLoops != 255) {
         playback->numLoops--;
@@ -310,7 +311,10 @@ void Decode(XmaPlayback *playback) {
             }
         }
     }
-    playback->currentFrameRemainingSubframes = 4 * playback->channelCount;
+
+    playback->currentFrameRemainingSubframes = (4 - std::min<uint32_t>(playback->numSubframesToSkip, 4))
+                                           * playback->channelCount;
+    playback->numSubframesToSkip = 0;
 
     if (!packetInfo.IsLastFrameInPacket()) {
         const uint32_t nextFrameOffset = (playback->inputBufferReadOffset + bitsToCopy) % kBitsPerPacket;
@@ -336,9 +340,6 @@ void Decode(XmaPlayback *playback) {
                 SwapInputBuffer(playback);
                 return;
             }
-        } else {
-            // HACK
-            SwapInputBuffer(playback);
         }
     }
 
@@ -364,22 +365,16 @@ void Consume(XmaPlayback *playback) {
 }
 
 void DecoderThreadFunc(XmaPlayback *playback) {
+    std::unique_lock lock(playback->mutex);
+
     while (playback->isRunning) {
-        std::unique_lock<std::mutex> lock(playback->mutex);
-
         playback->cv.wait(lock, [&] {
-            return (!playback->isRunning || (playback->outputBufferValid == 1 &&
-                                             playback->IsAnyInputBufferValid())) &&
-                   !playback->isLocked.load();
+            return !playback->isRunning || (playback->outputBufferValid == 1 &&
+                                            playback->IsAnyInputBufferValid());
         });
-
-        if (!playback->outputBufferValid)
-            continue;
 
         if (!playback->isRunning)
             break;
-
-        lock.unlock();
 
         const int32_t minimumSubframeDecodeCount = (playback->subframes * playback->channelCount) - 1;
 
@@ -396,27 +391,21 @@ void DecoderThreadFunc(XmaPlayback *playback) {
                                                           / kOutputBytesPerBlock;
 
         if (minimumSubframeDecodeCount > playback->remainingSubframeBlocksInOutputBuffer) {
-            playback->bAllowedToDecode = false;
-            lock.lock();
+            playback->outputBufferValid = 0;
             continue;
         }
 
-        while (playback->remainingSubframeBlocksInOutputBuffer >= minimumSubframeDecodeCount) {
-            Decode(playback);
-            Consume(playback);
-
-            if (!playback->IsAnyInputBufferValid()) {
-                break;
-            }
-        }
+        Decode(playback);
+        Consume(playback);
 
         playback->outputBufferWriteOffset = playback->outputRb.write_offset() / kOutputBytesPerBlock;
-        playback->bAllowedToDecode = false;
 
-        if (playback->outputRb.empty()) {
+        if (playback->outputRb.write_offset() != outputWriteOffset && playback->outputRb.empty()) {
             playback->outputBufferValid = 0;
         }
 
+        lock.unlock();
+        std::this_thread::yield();
         lock.lock();
     }
 }
@@ -432,14 +421,14 @@ uint32_t XMAPlaybackCreate(uint32_t streams, XMAPLAYBACKINIT *init, uint32_t fla
 }
 
 uint32_t XMAPlaybackRequestModifyLock(XmaPlayback *playback) {
-    std::lock_guard<std::mutex> lock(playback->mutex);
+    std::lock_guard lock(playback->mutex);
     playback->isLocked = true;
 
     return 0;
 }
 
 uint32_t XMAPlaybackWaitUntilModifyLockObtained(XmaPlayback *playback) {
-    std::unique_lock<std::mutex> lock(playback->mutex);
+    std::unique_lock lock(playback->mutex);
     playback->cv.wait(lock, [&playback] { return playback->isLocked.load(); });
 
     return 0;
@@ -462,9 +451,9 @@ uint32_t XMAPlaybackQueryContextsAllocated(XmaPlayback *playback) {
 }
 
 uint32_t XMAPlaybackResumePlayback(XmaPlayback *playback) {
-    std::lock_guard<std::mutex> lock(playback->mutex);
+    std::lock_guard lock(playback->mutex);
     playback->isLocked = false;
-    playback->cv.notify_one();
+    playback->cv.notify_all();
 
     return 0;
 }
@@ -490,7 +479,7 @@ uint32_t XMAPlaybackSubmitData(XmaPlayback *playback, uint32_t stream, uint32_t 
         return 1;
     }
 
-    std::lock_guard<std::mutex> lock(playback->mutex);
+    std::lock_guard lock(playback->mutex);
     uint32_t packetCount = dataSize >> 11;
 
     uint32_t validBuffer = playback->inputBuffer1Valid | (playback->inputBuffer2Valid << 1);
@@ -511,6 +500,8 @@ uint32_t XMAPlaybackSubmitData(XmaPlayback *playback, uint32_t stream, uint32_t 
     }
 
     if (!validBuffer) {
+        playback->currentBuffer = 0;
+
         uint8_t *currentInputBuffer = (uint8_t *)g_memory.Translate(data);
         uint32_t frameOffset = XMAPlaybackGetFrameOffsetFromPacketHeader(*currentInputBuffer);
 
@@ -519,99 +510,102 @@ uint32_t XMAPlaybackSubmitData(XmaPlayback *playback, uint32_t stream, uint32_t 
         }
     }
 
-    playback->bAllowedToDecode = true;
-    playback->cv.notify_one();
+    playback->cv.notify_all();
     return 0;
 }
 
 uint32_t XMAPlaybackQueryAvailableData(XmaPlayback *playback, uint32_t stream) {
-    if (!playback->isLocked || (playback->inputBuffer1Valid == 0 && playback->inputBuffer2Valid == 0)) {
-        return 0;
-    }
-
-    uint32_t partialBytesRead = playback->partialBytesRead;
-    uint32_t writeBufferOffsetRead = playback->outputBufferReadOffset & 0x1F;
-    uint32_t offsetWrite = playback->outputBufferWriteOffset;
-    uint32_t sizeWrite = playback->outputBufferBlockCount & 0x1F;
-
-    uint32_t availableBytes = 0;
-    uint32_t isValidWrite = playback->outputBufferValid;
-
-    if (partialBytesRead) {
-        availableBytes = 256 - partialBytesRead;
-        writeBufferOffsetRead++;
-        isValidWrite = 1;
-    }
-
-    uint32_t availableBlocks = 0;
-    if (offsetWrite <= writeBufferOffsetRead) {
-        if (offsetWrite < writeBufferOffsetRead || !isValidWrite) {
-            availableBlocks = sizeWrite - writeBufferOffsetRead;
-        }
-    } else {
-        availableBlocks = offsetWrite - writeBufferOffsetRead;
-    }
-
-    uint32_t totalBytes = (availableBlocks << 8) + availableBytes;
-    uint32_t bytesPerSample = playback->channelCount;
-
-    return totalBytes >> bytesPerSample;
-}
-
-
-uint32_t XMAPlaybackAccessDecodedData(XmaPlayback *playback, uint32_t stream, uint32_t **data) {
-    if (!playback->isLocked)
-        return 0;
-
-    uint32_t partialBytesRead = playback->partialBytesRead;
-    uint32_t addr = reinterpret_cast<uint32_t>(
-            playback->outputBuffer +
-            ((playback->outputBufferReadOffset << 8) & 0x1F00) +
-            partialBytesRead);
-    ;
-    *data = (uint32_t *)__builtin_bswap32(addr);
-
-    uint32_t writeBufferOffsetRead = playback->outputBufferReadOffset & 0x1F;
-    uint32_t offsetWrite = playback->outputBufferWriteOffset;
-    uint32_t sizeWrite = playback->outputBufferBlockCount & 0x1F;
-
-    uint32_t availableBytes = 0;
-    uint32_t isValidWrite = playback->outputBufferValid;
-
-    if (partialBytesRead) {
-        availableBytes = 256 - partialBytesRead;
-        writeBufferOffsetRead++;
-        isValidWrite = 1;
-    }
-
-    uint32_t availableBlocks = 0;
-    if (offsetWrite <= writeBufferOffsetRead) {
-        if (offsetWrite < writeBufferOffsetRead || !isValidWrite) {
-            availableBlocks = sizeWrite - writeBufferOffsetRead;
-        }
-    } else {
-        availableBlocks = offsetWrite - writeBufferOffsetRead;
-    }
-
-    uint32_t totalBytes = (availableBlocks << 8) + availableBytes;
-    uint32_t bytesPerSample = playback->channelCount;
-
-    return totalBytes >> bytesPerSample;
-}
-
-uint32_t XMAPlaybackConsumeDecodedData(XmaPlayback *playback, uint32_t stream, uint32_t maxSamples, uint32_t **data) {
     if (!playback->isLocked) {
         return 0;
     }
 
+    std::lock_guard lock(playback->mutex);
+
+    uint32_t partialBytesRead = playback->partialBytesRead;
+    uint32_t writeBufferOffsetRead = playback->outputBufferReadOffset & 0x1F;
+    uint32_t offsetWrite = playback->outputBufferWriteOffset;
+    uint32_t sizeWrite = playback->outputBufferBlockCount & 0x1F;
+
+    uint32_t availableBytes = 0;
+    uint32_t isValidWrite = playback->outputBufferValid;
+
+    if (partialBytesRead) {
+        availableBytes = 256 - partialBytesRead;
+        writeBufferOffsetRead++;
+        isValidWrite = 1;
+    }
+
+    uint32_t availableBlocks = 0;
+    if (offsetWrite <= writeBufferOffsetRead) {
+        if (offsetWrite < writeBufferOffsetRead || !isValidWrite) {
+            availableBlocks = sizeWrite - writeBufferOffsetRead;
+        }
+    } else {
+        availableBlocks = offsetWrite - writeBufferOffsetRead;
+    }
+
+    uint32_t totalBytes = (availableBlocks << 8) + availableBytes;
+    uint32_t bytesPerSample = playback->channelCount;
+
+    return totalBytes >> bytesPerSample;
+}
+
+
+uint32_t XMAPlaybackAccessDecodedData(XmaPlayback *playback, uint32_t stream, be<uint32_t>* data) {
+    if (!playback->isLocked)
+        return 0;
+
+    std::lock_guard lock(playback->mutex);
+
+    uint32_t partialBytesRead = playback->partialBytesRead;
+    uint32_t addr = playback->outputBuffer +
+                    ((playback->outputBufferReadOffset << 8) & 0x1F00) +
+                    partialBytesRead;
+
+    *data = addr;
+
+    uint32_t writeBufferOffsetRead = playback->outputBufferReadOffset & 0x1F;
+    uint32_t offsetWrite = playback->outputBufferWriteOffset;
+    uint32_t sizeWrite = playback->outputBufferBlockCount & 0x1F;
+
+    uint32_t availableBytes = 0;
+    uint32_t isValidWrite = playback->outputBufferValid;
+
+    if (partialBytesRead) {
+        availableBytes = 256 - partialBytesRead;
+        writeBufferOffsetRead++;
+        isValidWrite = 1;
+    }
+
+    uint32_t availableBlocks = 0;
+    if (offsetWrite <= writeBufferOffsetRead) {
+        if (offsetWrite < writeBufferOffsetRead || !isValidWrite) {
+            availableBlocks = sizeWrite - writeBufferOffsetRead;
+        }
+    } else {
+        availableBlocks = offsetWrite - writeBufferOffsetRead;
+    }
+
+    uint32_t totalBytes = (availableBlocks << 8) + availableBytes;
+    uint32_t bytesPerSample = playback->channelCount;
+
+    return totalBytes >> bytesPerSample;
+}
+
+uint32_t XMAPlaybackConsumeDecodedData(XmaPlayback *playback, uint32_t stream, uint32_t maxSamples, be<uint32_t>* data) {
+    if (!playback->isLocked) {
+        return 0;
+    }
+
+    std::lock_guard lock(playback->mutex);
+
     uint32_t totalBytes = 0;
     uint32_t partialBytesRead = playback->partialBytesRead;
-    uint32_t addr = reinterpret_cast<uint32_t>(
-            playback->outputBuffer +
-            ((playback->outputBufferReadOffset << 8) & 0x1F00) +
-            partialBytesRead);
+    uint32_t addr = playback->outputBuffer +
+                    ((playback->outputBufferReadOffset << 8) & 0x1F00) +
+                    partialBytesRead;
 
-    *data = (uint32_t *)__builtin_bswap32(addr);
+    *data = addr;
     uint32_t bytesPerSample = playback->channelCount;
     uint32_t bytesDesired = maxSamples << bytesPerSample;
     if (partialBytesRead) {
@@ -624,7 +618,7 @@ uint32_t XMAPlaybackConsumeDecodedData(XmaPlayback *playback, uint32_t stream, u
             bytesDesired -= 256 - partialBytesRead;
             playback->partialBytesRead = 0;
 
-            uint32_t writeIndex = (playback->outputBufferReadOffset + 1) & 0x1F;
+            uint32_t writeIndex = playback->outputBufferReadOffset + 1 & 0x1F;
 
             if (writeIndex >= (playback->outputBufferBlockCount & 0x1F)) {
                 writeIndex = 0;
@@ -671,8 +665,7 @@ uint32_t XMAPlaybackConsumeDecodedData(XmaPlayback *playback, uint32_t stream, u
         playback->partialBytesRead = remainingBytes;
     }
 
-    // playback->bAllowedToDecode = true;
-    // playback->cv.notify_one();
+    playback->cv.notify_all();
 
     uint32_t samplesConsumed = totalBytes >> bytesPerSample;
     playback->streamPosition += samplesConsumed;
@@ -687,6 +680,15 @@ uint32_t XMAPlaybackQueryModifyLockObtained(XmaPlayback *playback) {
 
 uint32_t XMAPlaybackDestroy(XmaPlayback *playback) {
     debug_printf("XMAPlaybackDestroy %x\n", playback);
+
+    {
+        std::lock_guard lock(playback->mutex);
+        playback->isRunning = false;
+        playback->cv.notify_all();
+    }
+
+    playback->decoderThread.join();
+
     return 0;
 }
 
@@ -706,6 +708,8 @@ struct XMAPLAYBACKLOOP {
 };
 
 uint32_t XmaPlaybackSetLoop(XmaPlayback *playback, uint32_t streamIndex, XMAPLAYBACKLOOP *loop) {
+    std::lock_guard lock(playback->mutex);
+
     playback->numLoops = loop->numLoops;
     playback->loopSubframeEnd = loop->loopSubframeEnd;
     playback->loopSubframeSkip = loop->loopSubframeSkip;
@@ -727,12 +731,16 @@ uint32_t XMAPlaybackGetStreamPosition(XmaPlayback *playback) {
 
 uint32_t XMAPlaybackSetDecodePosition(XmaPlayback *playback, uint32_t streamIndex, uint32_t bitOffset,
                                       uint32_t subframe) {
+    std::lock_guard lock(playback->mutex);
+
     playback->inputBufferReadOffset = bitOffset & 0x3FFFFFF;
     playback->numSubframesToSkip = subframe & 0x7;
     return 0;
 }
 
 uint32_t XMAPlaybackRewindDecodePosition(XmaPlayback *playback, uint32_t streamIndex, uint32_t numSamples) {
+    std::lock_guard lock(playback->mutex);
+
     uint32_t shift = 7 - (1 != 0);
     uint32_t adjustedSamples = numSamples >> shift;
     uint32_t writeSize = playback->outputBufferBlockCount & 0x1F;
@@ -745,7 +753,7 @@ uint32_t XMAPlaybackRewindDecodePosition(XmaPlayback *playback, uint32_t streamI
         return 0;
     }
 
-    newOffset = (playback->outputBufferWriteOffset - adjustedSamples + writeSize) & 0x1F;
+    newOffset = playback->outputBufferWriteOffset - adjustedSamples + writeSize & 0x1F;
 
     if (newOffset >= writeSize) {
         newOffset -= writeSize;

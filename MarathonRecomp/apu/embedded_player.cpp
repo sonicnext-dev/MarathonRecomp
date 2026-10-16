@@ -5,44 +5,52 @@
 #include <res/music/installer.ogg.h>
 #include <res/sounds/window_open.ogg.h>
 #include <res/sounds/window_close.ogg.h>
-#include <res/sounds/cursor2.ogg.h>
+#include <res/sounds/cursor.ogg.h>
 #include <res/sounds/deside.ogg.h>
 #include <res/sounds/move.ogg.h>
 #include <res/sounds/main_deside.ogg.h>
+#include <res/sounds/cannot_deside.ogg.h>
 
 enum class EmbeddedSound
 {
     WindowOpen,
     WindowClose,
-    Cursor2,
+    Cursor,
     Deside,
     Move,
     MainDeside,
-    Count,
+    CannotDeside,
+    Count
 };
 
 struct EmbeddedSoundData
 {
-    Mix_Chunk* chunk{};
+    MIX_Audio* audio{};
 };
+
+static constexpr size_t EMBEDDED_TRACK_COUNT = 8;
+
+static MIX_Mixer* g_mixer;
+static std::array<MIX_Track*, EMBEDDED_TRACK_COUNT> g_tracks = {};
 
 static std::array<EmbeddedSoundData, size_t(EmbeddedSound::Count)> g_embeddedSoundData = {};
 static const std::unordered_map<std::string_view, EmbeddedSound> g_embeddedSoundMap =
 {
     { "window_open", EmbeddedSound::WindowOpen },
     { "window_close", EmbeddedSound::WindowClose },
-    { "cursor2", EmbeddedSound::Cursor2 },
+    { "cursor", EmbeddedSound::Cursor },
     { "deside", EmbeddedSound::Deside },
     { "move", EmbeddedSound::Move },
     { "main_deside", EmbeddedSound::MainDeside },
+    { "cannot_deside", EmbeddedSound::CannotDeside },
 };
 
-static size_t g_channelIndex;
+static size_t g_trackIndex;
 
 static void PlayEmbeddedSound(EmbeddedSound s)
 {
     EmbeddedSoundData &data = g_embeddedSoundData[size_t(s)];
-    if (data.chunk == nullptr)
+    if (data.audio == nullptr)
     {
         // The sound hasn't been created yet, create it and pick it.
         const void *soundData = nullptr;
@@ -57,9 +65,9 @@ static void PlayEmbeddedSound(EmbeddedSound s)
             soundData = g_window_close;
             soundDataSize = sizeof(g_window_close);
             break;
-        case EmbeddedSound::Cursor2:
-            soundData = g_cursor2;
-            soundDataSize = sizeof(g_cursor2);
+        case EmbeddedSound::Cursor:
+            soundData = g_cursor;
+            soundDataSize = sizeof(g_cursor);
             break;
         case EmbeddedSound::Deside:
             soundData = g_deside;
@@ -73,30 +81,50 @@ static void PlayEmbeddedSound(EmbeddedSound s)
             soundData = g_main_deside;
             soundDataSize = sizeof(g_main_deside);
             break;
+        case EmbeddedSound::CannotDeside:
+            soundData = g_cannot_deside;
+            soundDataSize = sizeof(g_cannot_deside);
+            break;
         default:
             assert(false && "Unknown embedded sound.");
             return;
         }
 
-        data.chunk = Mix_LoadWAV_RW(SDL_RWFromConstMem(soundData, soundDataSize), 1);
+        data.audio = MIX_LoadAudio_IO(g_mixer, SDL_IOFromConstMem(soundData, soundDataSize), true, true);
     }
-    
-    Mix_VolumeChunk(data.chunk, (Config::MasterVolume * Config::EffectsVolume * EmbeddedPlayer::EFFECTS_VOLUME) * MIX_MAX_VOLUME);
-    Mix_PlayChannel(g_channelIndex % MIX_CHANNELS, data.chunk, 0);
-    ++g_channelIndex;
+
+    MIX_Track *track = g_tracks[g_trackIndex % EMBEDDED_TRACK_COUNT];
+    ++g_trackIndex;
+
+    MIX_SetTrackGain(track, Config::MasterVolume * Config::EffectsVolume * EmbeddedPlayer::EFFECTS_VOLUME);
+    MIX_SetTrackAudio(track, data.audio);
+    MIX_PlayTrack(track, 0);
 }
 
-static Mix_Music* g_installerMusic;
+static MIX_Audio* g_installerMusic;
+static MIX_Track* g_musicTrack;
 
-void EmbeddedPlayer::Init() 
+void EmbeddedPlayer::Init()
 {
-    Mix_OpenAudio(XAUDIO_SAMPLES_HZ, AUDIO_F32SYS, 2, 4096);
-    g_installerMusic = Mix_LoadMUS_RW(SDL_RWFromConstMem(g_installer_music, sizeof(g_installer_music)), 1);
+    MIX_Init();
+
+    SDL_AudioSpec spec{};
+    spec.freq = XAUDIO_SAMPLES_HZ;
+    spec.format = SDL_AUDIO_F32;
+    spec.channels = 2;
+    g_mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec);
+
+    for (MIX_Track *&track : g_tracks)
+        track = MIX_CreateTrack(g_mixer);
+
+    g_installerMusic = MIX_LoadAudio_IO(g_mixer, SDL_IOFromConstMem(g_installer_music, sizeof(g_installer_music)), false, true);
+    g_musicTrack = MIX_CreateTrack(g_mixer);
+    MIX_SetTrackAudio(g_musicTrack, g_installerMusic);
 
     s_isActive = true;
 }
 
-void EmbeddedPlayer::Play(const char *name) 
+void EmbeddedPlayer::Play(const char *name)
 {
     assert(s_isActive && "Playback shouldn't be requested if the Embedded Player isn't active.");
 
@@ -111,32 +139,37 @@ void EmbeddedPlayer::Play(const char *name)
 
 void EmbeddedPlayer::PlayMusic()
 {
-    if (!Mix_PlayingMusic())
+    if (!MIX_TrackPlaying(g_musicTrack))
     {
-        Mix_PlayMusic(g_installerMusic, INT_MAX);
-        Mix_VolumeMusic(Config::MasterVolume * Config::MusicVolume * MUSIC_VOLUME * MIX_MAX_VOLUME);
+        SDL_PropertiesID options = SDL_CreateProperties();
+        SDL_SetNumberProperty(options, MIX_PROP_PLAY_LOOPS_NUMBER, -1);
+
+        MIX_SetTrackGain(g_musicTrack, Config::MasterVolume * Config::MusicVolume * MUSIC_VOLUME);
+        MIX_PlayTrack(g_musicTrack, options);
+
+        SDL_DestroyProperties(options);
     }
 }
 
 void EmbeddedPlayer::FadeOutMusic()
 {
-    if (Mix_PlayingMusic())
-        Mix_FadeOutMusic(1000);
+    if (MIX_TrackPlaying(g_musicTrack))
+        MIX_StopTrack(g_musicTrack, MIX_TrackMSToFrames(g_musicTrack, 1000));
 }
 
-void EmbeddedPlayer::Shutdown() 
+void EmbeddedPlayer::Shutdown()
 {
+    MIX_DestroyMixer(g_mixer);
+
     for (EmbeddedSoundData &data : g_embeddedSoundData)
     {
-        if (data.chunk != nullptr)
-            Mix_FreeChunk(data.chunk);
+        if (data.audio != nullptr)
+            MIX_DestroyAudio(data.audio);
     }
 
-    Mix_HaltMusic();
-    Mix_FreeMusic(g_installerMusic);
+    MIX_DestroyAudio(g_installerMusic);
 
-    Mix_CloseAudio();
-    Mix_Quit();
+    MIX_Quit();
 
     s_isActive = false;
 }

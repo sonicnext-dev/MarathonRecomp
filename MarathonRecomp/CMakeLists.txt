@@ -81,6 +81,7 @@ set(MARATHON_RECOMP_KERNEL_CXX_SOURCES
 )
 
 set(MARATHON_RECOMP_LOCALE_CXX_SOURCES
+    "locale/achievement_locale.cpp"
     "locale/config_locale.cpp"
     "locale/locale.cpp"
 )
@@ -90,6 +91,7 @@ if (WIN32)
         "os/win32/logger_win32.cpp"
         "os/win32/media_win32.cpp"
         "os/win32/process_win32.cpp"
+        "os/win32/thread_win32.cpp"
         "os/win32/user_win32.cpp"
         "os/win32/version_win32.cpp"
     )
@@ -98,6 +100,7 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Linux")
         "os/linux/logger_linux.cpp"
         "os/linux/media_linux.cpp"
         "os/linux/process_linux.cpp"
+        "os/linux/thread_linux.cpp"
         "os/linux/user_linux.cpp"
         "os/linux/version_linux.cpp"
     )
@@ -106,6 +109,7 @@ elseif (APPLE)
         "os/macos/logger_macos.cpp"
         "os/macos/media_macos.cpp"
         "os/macos/process_macos.cpp"
+        "os/macos/thread_macos.cpp"
         "os/macos/user_macos.cpp"
         "os/macos/version_macos.cpp"
     )
@@ -126,7 +130,7 @@ set(MARATHON_RECOMP_APU_CXX_SOURCES
     "apu/audio.cpp"
     "apu/xma_decoder.cpp"
     "apu/embedded_player.cpp"
-    "apu/driver/sdl2_driver.cpp"
+    "apu/driver/sdl3_driver.cpp"
 )
 
 set(MARATHON_RECOMP_HID_CXX_SOURCES
@@ -199,7 +203,7 @@ set(MARATHON_RECOMP_UTILS_CXX_SOURCES
 )
 
 set(MARATHON_RECOMP_THIRDPARTY_SOURCES
-    "${MARATHON_RECOMP_THIRDPARTY_ROOT}/imgui/backends/imgui_impl_sdl2.cpp"
+    "${MARATHON_RECOMP_THIRDPARTY_ROOT}/imgui/backends/imgui_impl_sdl3.cpp"
     "${MARATHON_RECOMP_THIRDPARTY_ROOT}/imgui/imgui.cpp"
     "${MARATHON_RECOMP_THIRDPARTY_ROOT}/imgui/imgui_demo.cpp"
     "${MARATHON_RECOMP_THIRDPARTY_ROOT}/imgui/imgui_draw.cpp"
@@ -325,33 +329,6 @@ elseif (APPLE)
             MACOSX_BUNDLE_SHORT_VERSION_STRING ${MACOS_BUNDLE_VERSION}
             MACOSX_BUNDLE_ICON_FILE "game_icon.icns"
     )
-
-    # Linking with MoltenVK directly would prevent using the system Vulkan loader to load with debug layers.
-    # Instead, copy the MoltenVK dylib to the app bundle along with an ICD file for the loader to find it.
-    # In the event the loader is not installed, the MoltenVK dylib can still be picked up directly in the app bundle.
-    set(MVK_BUNDLED_PATH "Resources/vulkan/icd.d")
-    set(MVK_DST "${CMAKE_CURRENT_BINARY_DIR}/Marathon Recompiled.app/Contents/${MVK_BUNDLED_PATH}")
-    set_property(TARGET MarathonRecomp APPEND PROPERTY BUILD_RPATH "@executable_path/../${MVK_BUNDLED_PATH}")
-
-    set(MVK_ICD_SRC "${MARATHON_RECOMP_THIRDPARTY_ROOT}/MoltenVK/MoltenVK/MoltenVK/icd/MoltenVK_icd.json")
-    set(MVK_ICD_DST "${MVK_DST}/MoltenVK_icd.json")
-    set(MVK_DYLIB_SRC "${CMAKE_BINARY_DIR}/thirdparty/MoltenVK/libMoltenVK.dylib")
-    set(MVK_DYLIB_DST "${MVK_DST}/libMoltenVK.dylib")
-
-    add_custom_command(
-            OUTPUT ${MVK_DST}
-            COMMAND ${CMAKE_COMMAND} -E make_directory ${MVK_DST})
-    add_custom_command(
-            OUTPUT ${MVK_ICD_DST}
-            DEPENDS ${MVK_ICD_SRC} ${MVK_DST}
-            COMMAND ${CMAKE_COMMAND} -E copy ${MVK_ICD_SRC} ${MVK_ICD_DST})
-    add_custom_command(
-            OUTPUT ${MVK_DYLIB_DST}
-            DEPENDS ${MVK_DYLIB_SRC} ${MVK_DST}
-            COMMAND ${CMAKE_COMMAND} -E copy ${MVK_DYLIB_SRC} ${MVK_DYLIB_DST})
-    add_custom_target(CopyMoltenVK DEPENDS ${MVK_ICD_DST} ${MVK_DYLIB_DST})
-    add_dependencies(CopyMoltenVK MoltenVK)
-    add_dependencies(MarathonRecomp CopyMoltenVK)
 else()
     add_executable(MarathonRecomp ${MARATHON_RECOMP_CXX_SOURCES})
 endif()
@@ -409,8 +386,8 @@ target_link_libraries(MarathonRecomp PRIVATE
     nfd::nfd
     o1heap
     XenonUtils
-    SDL2::SDL2-static
-    SDL2_mixer
+    SDL3::SDL3-static
+    SDL3_mixer::SDL3_mixer
     tomlplusplus::tomlplusplus
     MarathonRecompLib
     xxHash::xxhash
@@ -420,9 +397,12 @@ target_link_libraries(MarathonRecomp PRIVATE
 
 target_link_libraries(MarathonRecomp PRIVATE ffmpeg)
 
+set(GENERATED_SOURCE_PATH ${CMAKE_CURRENT_BINARY_DIR}/generated)
+
 target_include_directories(MarathonRecomp PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     "${CMAKE_CURRENT_SOURCE_DIR}/api"
+    ${GENERATED_SOURCE_PATH}
     ${MARATHON_RECOMP_THIRDPARTY_INCLUDES}
 )
 
@@ -437,61 +417,64 @@ endif()
 
 target_precompile_headers(MarathonRecomp PUBLIC ${MARATHON_RECOMP_PRECOMPILED_HEADERS})
 
+set(HLSL_SHADERS_IN_PATH ${CMAKE_CURRENT_SOURCE_DIR}/gpu/shader/hlsl)
+set(MSL_SHADERS_IN_PATH ${CMAKE_CURRENT_SOURCE_DIR}/gpu/shader/msl)
+set(HLSL_SHADERS_OUT_PATH ${GENERATED_SOURCE_PATH}/gpu/shader/hlsl)
+set(MSL_SHADERS_OUT_PATH ${GENERATED_SOURCE_PATH}/gpu/shader/msl)
+file(MAKE_DIRECTORY ${HLSL_SHADERS_OUT_PATH})
+file(MAKE_DIRECTORY ${MSL_SHADERS_OUT_PATH})
+
 function(compile_shader FILE_PATH TARGET_NAME)
-    set(HLSL_FILE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/gpu/shader/hlsl/${FILE_PATH}.hlsl)
-    set(MSL_FILE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/gpu/shader/msl/${FILE_PATH}.metal)
+    set(HLSL_FILE_PATH ${HLSL_SHADERS_IN_PATH}/${FILE_PATH}.hlsl)
+    set(MSL_FILE_PATH ${MSL_SHADERS_IN_PATH}/${FILE_PATH}.metal)
+    set(HLSL_FILE_OUT_PATH ${HLSL_SHADERS_OUT_PATH}/${FILE_PATH}.hlsl)
+    set(MSL_FILE_OUT_PATH ${MSL_SHADERS_OUT_PATH}/${FILE_PATH}.metal)
     cmake_path(GET HLSL_FILE_PATH STEM HLSL_NAME)
     cmake_path(GET MSL_FILE_PATH STEM MSL_NAME)
     if (MARATHON_RECOMP_METAL)
         add_custom_command(
-                OUTPUT ${MSL_FILE_PATH}.ir
-                COMMAND ${XCRUN_TOOL} -sdk macosx metal -o ${MSL_FILE_PATH}.ir -c ${MSL_FILE_PATH} -D__air__ -frecord-sources -gline-tables-only
+                OUTPUT ${MSL_FILE_OUT_PATH}.ir
+                COMMAND ${XCRUN_TOOL} -sdk macosx metal -o ${MSL_FILE_OUT_PATH}.ir -c ${MSL_FILE_PATH} -D__air__ -DMARATHON_RECOMP -frecord-sources -gline-tables-only
                 DEPENDS ${MSL_FILE_PATH}
         )
         add_custom_command(
-                OUTPUT ${MSL_FILE_PATH}.metallib
-                COMMAND ${XCRUN_TOOL} -sdk macosx metallib -o ${MSL_FILE_PATH}.metallib ${MSL_FILE_PATH}.ir
-                DEPENDS ${MSL_FILE_PATH}.ir
+                OUTPUT ${MSL_FILE_OUT_PATH}.metallib
+                COMMAND ${XCRUN_TOOL} -sdk macosx metallib -o ${MSL_FILE_OUT_PATH}.metallib ${MSL_FILE_OUT_PATH}.ir
+                DEPENDS ${MSL_FILE_OUT_PATH}.ir
         )
-        BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${MSL_FILE_PATH}.metallib" DEST_FILE "${MSL_FILE_PATH}.metallib" ARRAY_NAME "g_${MSL_NAME}_air")
+        BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${MSL_FILE_OUT_PATH}.metallib" DEST_FILE "${MSL_FILE_OUT_PATH}.metallib" ARRAY_NAME "g_${MSL_NAME}_air")
     endif()
     if (MARATHON_RECOMP_D3D12)
         add_custom_command(
-            OUTPUT ${HLSL_FILE_PATH}.dxil.h
-            COMMAND ${DIRECTX_DXC_TOOL} -T ${TARGET_NAME} -HV 2021 -all-resources-bound -Wno-ignored-attributes -E shaderMain -Fh ${HLSL_FILE_PATH}.dxil.h ${HLSL_FILE_PATH} -Vn g_${HLSL_NAME}_dxil
+            OUTPUT ${HLSL_FILE_OUT_PATH}.dxil.h
+            COMMAND ${DIRECTX_DXC_TOOL} -T ${TARGET_NAME} -HV 2021 -all-resources-bound -Wno-ignored-attributes -DMARATHON_RECOMP -E shaderMain -Fh ${HLSL_FILE_OUT_PATH}.dxil.h ${HLSL_FILE_PATH} -Vn g_${HLSL_NAME}_dxil
             DEPENDS ${HLSL_FILE_PATH}
         )
-        target_sources(MarathonRecomp PRIVATE ${HLSL_FILE_PATH}.dxil.h)
+        target_sources(MarathonRecomp PRIVATE ${HLSL_FILE_OUT_PATH}.dxil.h)
     endif()
     add_custom_command(
-        OUTPUT ${HLSL_FILE_PATH}.spirv.h
-        COMMAND ${DIRECTX_DXC_TOOL} -T ${TARGET_NAME} -HV 2021 -all-resources-bound -spirv -fvk-use-dx-layout ${ARGN} -E shaderMain -Fh ${HLSL_FILE_PATH}.spirv.h ${HLSL_FILE_PATH} -Vn g_${HLSL_NAME}_spirv
+        OUTPUT ${HLSL_FILE_OUT_PATH}.spirv.h
+        COMMAND ${DIRECTX_DXC_TOOL} -T ${TARGET_NAME} -HV 2021 -all-resources-bound -spirv -fvk-use-dx-layout ${ARGN} -DMARATHON_RECOMP -E shaderMain -Fh ${HLSL_FILE_OUT_PATH}.spirv.h ${HLSL_FILE_PATH} -Vn g_${HLSL_NAME}_spirv
         DEPENDS ${HLSL_FILE_PATH}
     )
-    target_sources(MarathonRecomp PRIVATE ${HLSL_FILE_PATH}.spirv.h)
+    target_sources(MarathonRecomp PRIVATE ${HLSL_FILE_OUT_PATH}.spirv.h)
 endfunction()
 
 function(compile_vertex_shader FILE_PATH)
-    compile_shader(${FILE_PATH} vs_6_0 -fvk-invert-y -DMARATHON_RECOMP)
+    compile_shader(${FILE_PATH} vs_6_0 -fvk-invert-y)
 endfunction()
 
 function(compile_pixel_shader FILE_PATH)
-    compile_shader(${FILE_PATH} ps_6_0 -DMARATHON_RECOMP)
+    compile_shader(${FILE_PATH} ps_6_0)
 endfunction()
 
-compile_pixel_shader(blend_color_alpha_ps)
+compile_pixel_shader(conditional_survey_ps)
 compile_vertex_shader(copy_vs)
 compile_pixel_shader(copy_color_ps)
 compile_pixel_shader(copy_depth_ps)
-compile_pixel_shader(csd_filter_ps)
-compile_vertex_shader(csd_no_tex_vs)
-compile_vertex_shader(csd_vs)
 compile_vertex_shader(enhanced_burnout_blur_vs)
 compile_pixel_shader(enhanced_burnout_blur_ps)
-compile_pixel_shader(gaussian_blur_3x3)
-compile_pixel_shader(gaussian_blur_5x5)
-compile_pixel_shader(gaussian_blur_7x7)
-compile_pixel_shader(gaussian_blur_9x9)
+compile_pixel_shader(movie_ps)
 compile_pixel_shader(gamma_correction_ps)
 compile_pixel_shader(imgui_ps)
 compile_vertex_shader(imgui_vs)
@@ -538,7 +521,6 @@ set(RESOURCES_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/res")
 BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/bc_diff/button_bc_diff.bin" DEST_FILE "${RESOURCES_OUTPUT_PATH}/bc_diff/button_bc_diff.bin" ARRAY_NAME "g_button_bc_diff" COMPRESSION_TYPE "zstd")
 BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/font/im_font_atlas.bin" DEST_FILE "${RESOURCES_OUTPUT_PATH}/font/im_font_atlas.bin" ARRAY_NAME "g_im_font_atlas" COMPRESSION_TYPE "zstd")
 BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/font/im_font_atlas.dds" DEST_FILE "${RESOURCES_OUTPUT_PATH}/font/im_font_atlas.dds" ARRAY_NAME "g_im_font_atlas_texture" COMPRESSION_TYPE "zstd")
-BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/images/achievements_menu/trophy.dds" DEST_FILE "${RESOURCES_OUTPUT_PATH}/images/achievements_menu/trophy.dds" ARRAY_NAME "g_trophy" COMPRESSION_TYPE "zstd")
 BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/images/common/button_window.dds" DEST_FILE "${RESOURCES_OUTPUT_PATH}/images/common/button_window.dds" ARRAY_NAME "g_button_window" COMPRESSION_TYPE "zstd")
 BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/images/common/controller.dds" DEST_FILE "${RESOURCES_OUTPUT_PATH}/images/common/controller.dds" ARRAY_NAME "g_controller" COMPRESSION_TYPE "zstd")
 BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/images/common/sonicnext-dev.dds" DEST_FILE "${RESOURCES_OUTPUT_PATH}/images/common/sonicnext-dev.dds" ARRAY_NAME "g_sonicnextdev" COMPRESSION_TYPE "zstd")
@@ -562,13 +544,18 @@ BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/images/ins
 BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/images/installer/install_008.dds" DEST_FILE "${RESOURCES_OUTPUT_PATH}/images/installer/install_008.dds" ARRAY_NAME "g_install_008" COMPRESSION_TYPE "zstd")
 
 ## Game Icon ##
-BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/images/game_icon.bmp" DEST_FILE "${RESOURCES_OUTPUT_PATH}/images/game_icon.bmp" ARRAY_NAME "g_game_icon")
+if (APPLE)
+    BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/images/game_icon_mac.png" DEST_FILE "${RESOURCES_OUTPUT_PATH}/images/game_icon_mac.png" ARRAY_NAME "g_game_icon")
+else()
+    BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/images/game_icon.bmp" DEST_FILE "${RESOURCES_OUTPUT_PATH}/images/game_icon.bmp" ARRAY_NAME "g_game_icon")
+endif()
 
 ## Audio ##
 BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/music/installer.ogg" DEST_FILE "${RESOURCES_OUTPUT_PATH}/music/installer.ogg" ARRAY_NAME "g_installer_music")
 BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/sounds/window_open.ogg" DEST_FILE "${RESOURCES_OUTPUT_PATH}/sounds/window_open.ogg" ARRAY_NAME "g_window_open")
 BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/sounds/window_close.ogg" DEST_FILE "${RESOURCES_OUTPUT_PATH}/sounds/window_close.ogg" ARRAY_NAME "g_window_close")
-BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/sounds/cursor2.ogg" DEST_FILE "${RESOURCES_OUTPUT_PATH}/sounds/cursor2.ogg" ARRAY_NAME "g_cursor2")
+BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/sounds/cursor.ogg" DEST_FILE "${RESOURCES_OUTPUT_PATH}/sounds/cursor.ogg" ARRAY_NAME "g_cursor")
 BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/sounds/deside.ogg" DEST_FILE "${RESOURCES_OUTPUT_PATH}/sounds/deside.ogg" ARRAY_NAME "g_deside")
 BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/sounds/move.ogg" DEST_FILE "${RESOURCES_OUTPUT_PATH}/sounds/move.ogg" ARRAY_NAME "g_move")
 BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/sounds/main_deside.ogg" DEST_FILE "${RESOURCES_OUTPUT_PATH}/sounds/main_deside.ogg" ARRAY_NAME "g_main_deside")
+BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/sounds/cannot_deside.ogg" DEST_FILE "${RESOURCES_OUTPUT_PATH}/sounds/cannot_deside.ogg" ARRAY_NAME "g_cannot_deside")

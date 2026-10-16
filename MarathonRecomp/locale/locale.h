@@ -2,7 +2,8 @@
 
 enum class ELanguage : uint32_t
 {
-    English = 1,
+    Unknown,
+    English,
     Japanese,
     German,
     French,

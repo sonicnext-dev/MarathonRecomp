@@ -56,8 +56,4 @@ struct GuestThread
 
     static uint32_t GetCurrentThreadId();
     static void SetLastError(uint32_t error);
-
-#ifdef _WIN32
-    static void SetThreadName(uint32_t threadId, const char* name);
-#endif
 };

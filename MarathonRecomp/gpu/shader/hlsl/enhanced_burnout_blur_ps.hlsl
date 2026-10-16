@@ -35,7 +35,7 @@ float4 shaderMain(
 
     float blurStrength = blurAmount * velocityMag;
     int g_SampleCount = clamp((int)(blurStrength * 256.0), 4, 64);
-    float2 scaledVelStep = oVelScale / (float)g_SampleCount;
+    float2 scaledVelStep = oVelScale * (0.875 / (float)(g_SampleCount - 1));
 
     float4 result = float4(0.0, 0.0, 0.0, 0.0);
 

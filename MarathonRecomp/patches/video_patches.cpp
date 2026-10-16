@@ -6,6 +6,8 @@
 
 const char* g_pBlockName{};
 
+extern const char* g_surfaceCreationName;
+
 void SetMSAALevel(PPCRegister& val)
 {
     val.u32 = 0;
@@ -82,7 +84,9 @@ PPC_FUNC(sub_82619D00)
     auto height = ctx.r6.u32;
 #endif
 
+    g_surfaceCreationName = pName->c_str();
     __imp__sub_82619D00(ctx, base);
+    g_surfaceCreationName = nullptr;
 
 #if _DEBUG
     LOGFN_UTILITY("Created texture: {} ({}x{})", pName->c_str(), width, height);
@@ -117,10 +121,6 @@ PPC_FUNC(sub_82619B88)
             ReflectionScaleFactor(Config::ReflectionResolution));
         ctx.r6.u32 = static_cast<int>(static_cast<float>(ctx.r6.u32) *
             ReflectionScaleFactor(Config::ReflectionResolution));
-
-        // Bad hack to stop EDRAM cache from messing up
-        if (Config::ReflectionResolution == EReflectionResolution::Full)
-            ctx.r5.u32++;
     }
     
 #if _DEBUG
@@ -128,7 +128,9 @@ PPC_FUNC(sub_82619B88)
     auto height = ctx.r6.u32;
 #endif
 
+    g_surfaceCreationName = pName->c_str();
     __imp__sub_82619B88(ctx, base);
+    g_surfaceCreationName = nullptr;
 
 #if _DEBUG
     if (g_pBlockName)
@@ -173,7 +175,9 @@ PPC_FUNC(sub_82619FF0)
             ShadowScaleFactor(Config::ShadowResolution));
     }
 
+    g_surfaceCreationName = pName->c_str();
     __imp__sub_82619FF0(ctx, base);
+    g_surfaceCreationName = nullptr;
 }
 
 std::string g_renderWorldFBO;
@@ -200,4 +204,23 @@ bool DisableRadialBlur()
 bool DisableKingdomValleyMist()
 {
     return Config::DisableKingdomValleyMist;
+}
+
+static thread_local bool g_isLoadingEnvMap = false;
+
+void SceneEnvMapLoadTexture()
+{
+    if (Config::FixEnvironmentMaps)
+        g_isLoadingEnvMap = true;
+}
+
+void ResourceMgrKeyOverride(PPCRegister& r1, PPCRegister& r28)
+{
+    if (!g_isLoadingEnvMap)
+        return;
+
+    g_isLoadingEnvMap = false;
+
+    // std::string::assign(const std::string&, uint, uint)
+    GuestToHostFunction<void>(0x82161D10, r1.u32 + 0x60, r28.u32, 0, 0xFFFFFFFF);
 }

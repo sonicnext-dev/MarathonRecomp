@@ -2,8 +2,7 @@
 #include <locale/locale.h>
 #include <patches/aspect_ratio_patches.h>
 #include <patches/audio_patches.h>
-#include <res/images/common/main_menu7.dds.h>
-#include <res/images/common/main_menu8.dds.h>
+#include <patches/MainMenuTask_patches.h>
 #include <res/images/common/main_menu9.dds.h>
 #include <ui/black_bar.h>
 #include <ui/button_window.h>
@@ -47,11 +46,7 @@ static int g_optionCount{};
 static IConfigDef* g_optionCurrent{};
 static bool g_optionCanReset{};
 
-static std::unique_ptr<GuestTexture> g_upTexMainMenu7{};
-static std::unique_ptr<GuestTexture> g_upTexMainMenu8{};
 static std::unique_ptr<GuestTexture> g_upTexMainMenu9{};
-
-static float g_fntRodinSize{};
 
 static std::string& GetCategoryName(OptionsMenuCategory category)
 {
@@ -124,7 +119,7 @@ static void MoveCursor(int& cursorIndex, double& cursorTime, int min = 0, int ma
     if (scrollUp || scrollDown)
         g_lastTappedTime = time;
 
-    static constexpr auto FAST_SCROLL_THRESHOLD = 0.6;
+    static constexpr auto FAST_SCROLL_THRESHOLD = 0.3;
     static constexpr auto FAST_SCROLL_SPEED = 1.0 / 6.5;
 
     auto fastScroll = (time - g_lastTappedTime) > FAST_SCROLL_THRESHOLD;
@@ -261,7 +256,7 @@ void DrawSelectionArrows(ImVec2 min, ImVec2 max, bool isSelected)
     auto arrowOffsetXMin = Scale(30, true);
     auto arrowOffsetXMax = Scale(20, true);
 
-    auto arrowOffsetX = Lerp(arrowOffsetXMin, arrowOffsetXMax, sin(motionTime * M_PI));
+    auto arrowOffsetX = Lerp(arrowOffsetXMin, arrowOffsetXMax, sin(motionTime * std::numbers::pi));
     auto arrowOffsetY = Scale(10, true);
 
     auto arrowLeftOffsetX = s_isLeftArrowMotion ? arrowOffsetX : arrowOffsetXMin;
@@ -480,14 +475,15 @@ static void DrawOption
         auto setValueDescription = [=]()
         {
             auto valueDescription = config->GetValueDescription(Config::Language);
+            auto isLanguageOption = (ConfigDef<ELanguage>*)config == &Config::Language;
 
             if (valueDescription.empty())
             {
-                OptionsMenu::s_commonMenu.SetDescription(config->GetDescription(Config::Language));
+                OptionsMenu::s_commonMenu.SetDescription(config->GetDescription(Config::Language), !isLanguageOption);
             }
             else
             {
-                OptionsMenu::s_commonMenu.SetDescription(valueDescription);
+                OptionsMenu::s_commonMenu.SetDescription(valueDescription, !isLanguageOption);
             }
         };
 
@@ -536,13 +532,17 @@ static void DrawOption
                 {
                     config->Value = s_oldValue;
 
-                    VideoConfigValueChangedCallback(config);
+                    // Don't run callbacks if Window Size change is cancelled.
+                    if (static_cast<void*>(config) != &Config::WindowSize)
+                    {
+                        VideoConfigValueChangedCallback(config);
 
-                    if (config->Callback)
-                        config->Callback(config);
+                        if (config->Callback)
+                            config->Callback(config);
 
-                    if (config->ApplyCallback)
-                        config->ApplyCallback(config);
+                        if (config->ApplyCallback)
+                            config->ApplyCallback(config);
+                    }
                 }
 
                 OptionsMenu::SetFlowState(OptionsMenuFlowState::OptionCursor);
@@ -732,13 +732,13 @@ static void DrawOption
             }
             else
             {
-                auto displayModes = GameWindow::GetDisplayModes();
+                const auto& windowModes = GameWindow::s_windowModes;
 
-                if (config->Value >= 0 && config->Value < displayModes.size())
+                if (config->Value >= 0 && config->Value < windowModes.size())
                 {
-                    auto& displayMode = displayModes[config->Value];
+                    const auto& windowMode = windowModes[config->Value];
 
-                    valueText = fmt::format("{}x{}", displayMode.w, displayMode.h);
+                    valueText = fmt::format("{}x{}", windowMode.w, windowMode.h);
                 }
                 else
                 {
@@ -819,7 +819,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
             DrawOption(rowCount++, &Config::Hints, true);
             DrawOption(rowCount++, &Config::ControlTutorial, true);
             DrawOption(rowCount++, &Config::Autosave, true);
-            DrawOption(rowCount++, &Config::AchievementNotifications, false, devReason);               // TODO: implement achievements. DrawOption(rowCount++, &Config::AchievementNotifications, true);
+            DrawOption(rowCount++, &Config::AchievementNotifications, true);
             break;
 
         case OptionsMenuCategory::Input:
@@ -842,12 +842,9 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
 
         case OptionsMenuCategory::Video:
         {
-            // TODO: implement buffer resize.
-            DrawOption(rowCount++, &Config::WindowSize, false, devReason, 0, 0, 1, false);
-
-            // DrawOption(rowCount++, &Config::WindowSize, !Config::Fullscreen,
-            //     &Localise("Options_Desc_NotAvailableFullscreen"),
-            //     0, 0, (int)GameWindow::GetDisplayModes().size() - 1, false);
+            DrawOption(rowCount++, &Config::WindowSize, !Config::Fullscreen,
+                &Localise("Options_Desc_NotAvailableFullscreen"),
+                0, 0, (int)GameWindow::s_windowModes.size() - 1, false);
 
             auto displayCount = GameWindow::GetDisplayCount();
             auto canChangeMonitor = Config::Fullscreen && displayCount > 1;
@@ -856,17 +853,17 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
             if (Config::Fullscreen && displayCount <= 1)
                 monitorReason = &Localise("Options_Desc_NotAvailableHardware");
 
-            DrawOption(rowCount++, &Config::Monitor, false, devReason, 0, 0, 1, false);                // TODO: implement buffer resize. DrawOption(rowCount++, &Config::Monitor, canChangeMonitor, monitorReason, 0, 0, displayCount - 1, false);
-            DrawOption(rowCount++, &Config::AspectRatio, false, devReason);                            // TODO: implement buffer resize. DrawOption(rowCount++, &Config::AspectRatio, true);
-            DrawOption(rowCount++, &Config::ResolutionScale, false, devReason);                        // TODO: implement buffer resize. DrawOption(rowCount++, &Config::ResolutionScale, true, nullptr, 0.25f, 1.0f, 2.0f);
-            DrawOption(rowCount++, &Config::Fullscreen, false, devReason);                             // TODO: implement buffer resize. DrawOption(rowCount++, &Config::Fullscreen, true);
+            DrawOption(rowCount++, &Config::Monitor, canChangeMonitor, monitorReason, 0, 0, displayCount - 1, false);
+            DrawOption(rowCount++, &Config::AspectRatio, true);
+            DrawOption(rowCount++, &Config::ResolutionScale, true, nullptr, 0.25f, 1.0f, 2.0f);
+            DrawOption(rowCount++, &Config::Fullscreen, true);
             DrawOption(rowCount++, &Config::VSync, true);
             DrawOption(rowCount++, &Config::FPS, true, nullptr, FPS_MIN, 120, FPS_MAX);
             DrawOption(rowCount++, &Config::Brightness, true);
             DrawOption(rowCount++, &Config::AntiAliasing, false, devReason);                           // TODO: implement MSAA.          DrawOption(rowCount++, &Config::AntiAliasing, Config::AntiAliasing.InaccessibleValues.size() != 3, &Localise("Options_Desc_NotAvailableHardware"));
             DrawOption(rowCount++, &Config::TransparencyAntiAliasing, false, devReason);               // TODO: implement MSAA.          DrawOption(rowCount++, &Config::TransparencyAntiAliasing, Config::AntiAliasing != EAntiAliasing::Off, &Localise("Options_Desc_NotAvailableMSAA"));
-            DrawOption(rowCount++, &Config::ShadowResolution, !OptionsMenu::s_isPause, cmnReason);     // TODO: allow changes on demand. DrawOption(rowCount++, &Config::ShadowResolution, true);    
-            DrawOption(rowCount++, &Config::ReflectionResolution, !OptionsMenu::s_isPause, cmnReason); // TODO: allow changes on demand. DrawOption(rowCount++, &Config::ReflectionResolution, true);
+            DrawOption(rowCount++, &Config::ShadowResolution, true);
+            DrawOption(rowCount++, &Config::ReflectionResolution, true);
             DrawOption(rowCount++, &Config::RadialBlur, true);
             DrawOption(rowCount++, &Config::CutsceneAspectRatio, true);
             DrawOption(rowCount++, &Config::UIAlignmentMode, true);
@@ -898,42 +895,10 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
 
     if (g_optionCount > 3 && OptionsMenu::s_flowState == OptionsMenuFlowState::OptionCursor)
     {
-        auto scrollArrowUVs = PIXELS_TO_UV_COORDS(1024, 1024, 500, 450, 50, 50);
-        auto scrollArrowOffsetX = Scale(64, true);
-        auto scrollArrowScale = Scale(20, true);
-        auto scrollArrowAlphaMotionInTime = ComputeLinearMotion(g_scrollArrowsTime, 0, 3);
-        auto scrollArrowAlphaMotionPauseTime = ComputeLinearMotion(g_scrollArrowsTime, 3, 11);
-        auto scrollArrowAlphaMotionOutTime = ComputeLinearMotion(g_scrollArrowsTime, 11, 4, true);
-        auto scrollArrowAlphaMotionLoopTime = ComputeLinearMotion(g_scrollArrowsTime, 15, 50);
-        auto scrollArrowAlphaMotion = 255;
+        ImVec2 scrollArrowsMin = { max.x - BlackBar::s_pillarboxWidth - Scale(84, true), min.y + Scale(12, true) };
+        ImVec2 scrollArrowsMax = { max.x, max.y - Scale(16, true) };
 
-        if (scrollArrowAlphaMotionPauseTime >= 1.0)
-        {
-            // Fade out arrows.
-            scrollArrowAlphaMotion = 255 * scrollArrowAlphaMotionOutTime;
-
-            // Reset loop.
-            if (scrollArrowAlphaMotionLoopTime >= 1.0)
-                g_scrollArrowsTime = ImGui::GetTime();
-        }
-        else
-        {
-            // Fade in arrows.
-            scrollArrowAlphaMotion = 255 * scrollArrowAlphaMotionInTime;
-        }
-
-        auto scrollArrowColourMotion = IM_COL32(255, 255, 255, scrollArrowAlphaMotion);
-
-        ImVec2 scrollArrowTopMin = { max.x - scrollArrowScale - scrollArrowOffsetX - BlackBar::s_pillarboxWidth, min.y + Scale(12, true) };
-        ImVec2 scrollArrowTopMax = { scrollArrowTopMin.x + scrollArrowScale, scrollArrowTopMin.y + scrollArrowScale };
-        ImVec2 scrollArrowBottomMin = { scrollArrowTopMin.x, max.y - scrollArrowScale - Scale(16, true) };
-        ImVec2 scrollArrowBottomMax = { scrollArrowTopMax.x, scrollArrowBottomMin.y + scrollArrowScale };
-
-        // Draw top arrow.
-        AddImageFlipped(g_upTexMainMenu1.get(), scrollArrowTopMin, scrollArrowTopMax, GET_UV_COORDS(scrollArrowUVs), scrollArrowColourMotion, false, true);
-
-        // Draw bottom arrow.
-        drawList->AddImage(g_upTexMainMenu1.get(), scrollArrowBottomMin, scrollArrowBottomMax, GET_UV_COORDS(scrollArrowUVs), scrollArrowColourMotion);
+        DrawScrollArrows(scrollArrowsMin, scrollArrowsMax, Scale(20, true), g_scrollArrowsTime, g_optionIndex > 1, g_optionIndex < rowCount - 2);
     }
 }
 
@@ -975,15 +940,6 @@ void OptionsMenu::Draw()
         }
 
         return;
-    }
-
-    g_fntRodinSize = Scale(Config::Language == ELanguage::Japanese ? 28 : 27, true);
-
-    // Draw faded letterbox at tall aspect ratios.
-    if (g_aspectRatio < NARROW_ASPECT_RATIO)
-    {
-        BlackBar::Show(true);
-        BlackBar::SetBorderMargin(Scale(BlackBar::ms_MenuBorderMargin, true));
     }
 
     auto* drawList = ImGui::GetBackgroundDrawList();
@@ -1034,29 +990,29 @@ void OptionsMenu::Draw()
         {
             if (s_commonMenu.IsOpen())
             {
-                for (auto& spInputManager : App::s_pApp->m_pDoc->m_vspInputManager)
+                for (auto& spInputManager : App::s_pApp->m_pDoc->m_vspInputManagers)
                 {
                     auto& rPadState = spInputManager->m_PadState;
 
-                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadUp) || -rPadState.LeftStickVertical > 0.5f)
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DPadUp) || -rPadState.LeftStickVertical > 0.5f)
                         upIsHeld = true;
 
                     if (!g_upWasHeld && upIsHeld)
                         g_up = true;
 
-                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadDown) || -rPadState.LeftStickVertical < -0.5f)
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DPadDown) || -rPadState.LeftStickVertical < -0.5f)
                         downIsHeld = true;
 
                     if (!g_downWasHeld && downIsHeld)
                         g_down = true;
 
-                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadLeft) || -rPadState.LeftStickHorizontal > 0.5f)
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DPadLeft) || -rPadState.LeftStickHorizontal > 0.5f)
                         leftIsHeld = true;
 
                     if (!g_leftWasHeld && leftIsHeld)
                         g_left = true;
 
-                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DpadRight) || -rPadState.LeftStickHorizontal < -0.5f)
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DPadRight) || -rPadState.LeftStickHorizontal < -0.5f)
                         rightIsHeld = true;
 
                     if (!g_rightWasHeld && rightIsHeld)
@@ -1095,6 +1051,7 @@ void OptionsMenu::Draw()
             {
                 if (closingTime >= 1.0)
                 {
+                    MainMenuTaskPatches::s_hideButtonWindow = false;
                     g_isClosingButtonWindow = true;
                     s_isProcessedMessages = false;
                     s_pMainMenuTask = nullptr;
@@ -1104,22 +1061,22 @@ void OptionsMenu::Draw()
 
                 if (!s_isProcessedMessages && s_pMainMenuTask)
                 {
-                    guest_stack_var<Sonicteam::Message::MsgHUDMainMenuSetCursor> msgHUDMainMenuSetCursor
+                    guest_stack_var<Sonicteam::Message::HUDMainMenu::MsgSetCursor> msgSetCursor
                     (
                         Sonicteam::HUDMainMenu::HUDMainMenuState_MainCursorIntro,
                         s_pMainMenuTask->m_MainMenuSelectedIndex
                     );
 
                     // Play cursor intro animation.
-                    s_pMainMenuTask->m_pHUDMainMenu->ProcessMessage(msgHUDMainMenuSetCursor.get());
+                    s_pMainMenuTask->m_pHUDMainMenu->ProcessMessage(msgSetCursor.get());
 
-                    guest_stack_var<Sonicteam::Message::MsgHUDMainMenuTransition> msgHUDMainMenuTransition
+                    guest_stack_var<Sonicteam::Message::HUDMainMenu::MsgTransition> msgTransition
                     (
                         Sonicteam::HUDMainMenu::HUDMainMenuState_OptionsIntro, 3
                     );
 
                     // Play options -> main menu transition.
-                    s_pMainMenuTask->m_pHUDMainMenu->ProcessMessage(msgHUDMainMenuTransition.get());
+                    s_pMainMenuTask->m_pHUDMainMenu->ProcessMessage(msgTransition.get());
 
                     s_isProcessedMessages = true;
                 }
@@ -1226,6 +1183,7 @@ void OptionsMenu::Draw()
             MoveCursor(g_optionIndex, g_flowStateTime, 0, g_optionCount, []()
             {
                 g_cursorArrowsTime = ImGui::GetTime();
+                g_scrollArrowsTime = g_cursorArrowsTime;
             });
 
             if (CheckAndDiscard(g_isDeclined))
@@ -1263,8 +1221,6 @@ void OptionsMenu::Draw()
 
 void OptionsMenu::Init()
 {
-    g_upTexMainMenu7 = LOAD_ZSTD_TEXTURE(g_main_menu7);
-    g_upTexMainMenu8 = LOAD_ZSTD_TEXTURE(g_main_menu8);
     g_upTexMainMenu9 = LOAD_ZSTD_TEXTURE(g_main_menu9);
 }
 
@@ -1290,6 +1246,7 @@ void OptionsMenu::Open(bool isPause)
     ResetSelection();
 
     ButtonWindow::Open("Button_SelectBack", s_isPause);
+    MainMenuTaskPatches::s_hideButtonWindow = true;
 }
 
 void OptionsMenu::Close()

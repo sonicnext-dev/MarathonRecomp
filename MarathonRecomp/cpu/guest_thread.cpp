@@ -1,9 +1,11 @@
+#include "guest_thread.h"
 #include <cstdio>
 #include <stdafx.h>
-#include "guest_thread.h"
+#include <api/Marathon.h>
 #include <kernel/memory.h>
 #include <kernel/heap.h>
 #include <kernel/function.h>
+#include <os/thread.h>
 #include "ppc_context.h"
 
 constexpr size_t PCR_SIZE = 0xAB0;
@@ -216,60 +218,18 @@ void GuestThread::SetLastError(uint32_t error)
     *(uint32_t*)(thread + TEB_OFFSET + 0x160) = ByteSwap(error);
 }
 
-#ifdef _WIN32
-void GuestThread::SetThreadName(uint32_t threadId, const char* name)
+// Sonicteam::SoX::Thread::ThreadProc
+PPC_FUNC_IMPL(__imp__sub_825866A8);
+PPC_FUNC(sub_825866A8)
 {
-#pragma pack(push,8)
-    const DWORD MS_VC_EXCEPTION = 0x406D1388;
+    os::thread::SetCurrentThreadName(reinterpret_cast<Sonicteam::SoX::Thread*>(base + ctx.r3.u32)->m_pName.get());
 
-    typedef struct tagTHREADNAME_INFO
-    {
-        DWORD dwType; // Must be 0x1000.
-        LPCSTR szName; // Pointer to name (in user addr space).
-        DWORD dwThreadID; // Thread ID (-1=caller thread).
-        DWORD dwFlags; // Reserved for future use, must be zero.
-    } THREADNAME_INFO;
-#pragma pack(pop)
-
-    THREADNAME_INFO info;
-    info.dwType = 0x1000;
-    info.szName = name;
-    info.dwThreadID = threadId;
-    info.dwFlags = 0;
-
-    __try
-    {
-        RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR*)&info);
-    }
-    __except (EXCEPTION_EXECUTE_HANDLER)
-    {
-    }
-}
-#endif
-
-void SetThreadNameImpl(uint32_t a1, uint32_t threadId, uint32_t* name)
-{
-#ifdef _WIN32
-    GuestThread::SetThreadName(threadId, (const char*)g_memory.Translate(ByteSwap(*name)));
-#endif
+    __imp__sub_825866A8(ctx, base);
 }
 
-int GetThreadPriorityImpl(GuestThreadHandle* hThread)
-{
-#ifdef _WIN32
-    return GetThreadPriority(hThread == GetKernelObject(CURRENT_THREAD_HANDLE) ? GetCurrentThread() : hThread->thread.native_handle());
-#else 
-    return 0;
-#endif
-}
-
-uint32_t SetThreadIdealProcessorImpl(GuestThreadHandle* hThread, uint32_t dwIdealProcessor)
+uint32_t XSetThreadProcessor(GuestThreadHandle* hThread, uint32_t dwIdealProcessor)
 {
     return 0;
 }
 
-// GUEST_FUNCTION_HOOK(sub_82DFA2E8, SetThreadNameImpl);
-// GUEST_FUNCTION_HOOK(sub_82BD57A8, GetThreadPriorityImpl);
-GUEST_FUNCTION_HOOK(sub_82537F80, SetThreadIdealProcessorImpl);
-
-// GUEST_FUNCTION_STUB(sub_82BD58F8); // Some function that updates the TEB, don't really care since the field is not set
+GUEST_FUNCTION_HOOK(sub_82537F80, XSetThreadProcessor);

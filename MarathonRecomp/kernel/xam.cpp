@@ -10,7 +10,7 @@
 #include <unordered_set>
 #include "xxHashMap.h"
 #include <user/paths.h>
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 struct XamListener : KernelObject
 {
@@ -298,7 +298,7 @@ PPC_FUNC_IMPL(__imp__sub_825B14B8);
 PPC_FUNC(sub_825B14B8) {
     const char* _str = (const char*)g_memory.Translate(ctx.r3.u32);
     uint32_t _1;
-    char _str_end[255];
+    char _str_end[256];
     sscanf(_str, "download:\\%08x\\%255[^\n\r]", &_1, _str_end);
 
     XCONTENT_DATA _data;

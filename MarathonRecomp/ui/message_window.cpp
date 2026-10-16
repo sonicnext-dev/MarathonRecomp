@@ -47,9 +47,9 @@ public:
 
         switch (event->type)
         {
-            case SDL_KEYDOWN:
+            case SDL_EVENT_KEY_DOWN:
             {
-                switch (event->key.keysym.scancode)
+                switch (event->key.scancode)
                 {
                     case SDL_SCANCODE_UP:
                         g_joypadAxis.y = 1.0f;
@@ -72,7 +72,7 @@ public:
                 break;
             }
 
-            case SDL_MOUSEBUTTONDOWN:
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
             {
                 // Only accept left mouse button.
                 if (event->button.button != SDL_BUTTON_LEFT)
@@ -87,23 +87,23 @@ public:
                 break;
             }
 
-            case SDL_CONTROLLERBUTTONDOWN:
+            case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
             {
-                switch (event->cbutton.button)
+                switch (event->gbutton.button)
                 {
-                    case SDL_CONTROLLER_BUTTON_DPAD_UP:
+                    case SDL_GAMEPAD_BUTTON_DPAD_UP:
                         g_joypadAxis = { 0.0f, 1.0f };
                         break;
 
-                    case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+                    case SDL_GAMEPAD_BUTTON_DPAD_DOWN:
                         g_joypadAxis = { 0.0f, -1.0f };
                         break;
 
-                    case SDL_CONTROLLER_BUTTON_A:
+                    case SDL_GAMEPAD_BUTTON_SOUTH:
                         g_isAccepted = true;
                         break;
 
-                    case SDL_CONTROLLER_BUTTON_B:
+                    case SDL_GAMEPAD_BUTTON_EAST:
                         g_isDeclined = true;
                         break;
                 }
@@ -111,19 +111,19 @@ public:
                 break;
             }
 
-            case SDL_CONTROLLERAXISMOTION:
+            case SDL_EVENT_GAMEPAD_AXIS_MOTION:
             {
-                if (event->caxis.axis < 2)
+                if (event->gaxis.axis < 2)
                 {
-                    float newAxisValue = -(event->caxis.value / axisValueRange);
-                    bool sameDirection = (newAxisValue * g_joypadAxis[event->caxis.axis]) > 0.0f;
-                    bool wasInRange = abs(g_joypadAxis[event->caxis.axis]) > axisTapRange;
+                    float newAxisValue = -(event->gaxis.value / axisValueRange);
+                    bool sameDirection = (newAxisValue * g_joypadAxis[event->gaxis.axis]) > 0.0f;
+                    bool wasInRange = abs(g_joypadAxis[event->gaxis.axis]) > axisTapRange;
                     bool isInRange = abs(newAxisValue) > axisTapRange;
 
                     if (sameDirection && !wasInRange && isInRange)
-                        tapDirection[event->caxis.axis] = newAxisValue;
+                        tapDirection[event->gaxis.axis] = newAxisValue;
 
-                    g_joypadAxis[event->caxis.axis] = newAxisValue;
+                    g_joypadAxis[event->gaxis.axis] = newAxisValue;
                 }
 
                 break;
@@ -134,116 +134,6 @@ public:
     }
 }
 g_sdlEventListenerForMessageWindow;
-
-void DrawContainerArrow(const ImVec2 pos, float scale, float rotation, uint32_t colour)
-{
-    auto arrowRadius = Scale(63.0f * scale, true);
-
-    std::array<ImVec2, 4> vertices =
-    {
-        pos,                                          // Top Left
-        { pos.x + arrowRadius, pos.y },               // Top Right
-        { pos.x + arrowRadius, pos.y + arrowRadius }, // Bottom Right
-        { pos.x, pos.y + arrowRadius }                // Bottom Left
-    };
-
-    // Adjust base rotation, since the texture
-    // points the arrow to the bottom left.
-    auto adjRotation = rotation + 90.0f;
-
-    auto radians = adjRotation * (IM_PI / 180.0f);
-    auto c = cosf(radians);
-    auto s = sinf(radians);
-
-    auto& pivot = vertices[3];
-
-    // Rotate around bottom left.
-    for (auto& v : vertices)
-    {
-        float dx = v.x - pivot.x;
-        float dy = v.y - pivot.y;
-
-        v.x = pivot.x + dx * c - dy * s;
-        v.y = pivot.y + dx * s + dy * c;
-    }
-
-    // Adjust height to pivot.
-    for (auto& v : vertices)
-        v.y -= arrowRadius;
-
-    auto drawList = ImGui::GetBackgroundDrawList();
-    auto arrowUVs = PIXELS_TO_UV_COORDS(128, 128, 65, 0, 63, 63);
-
-    auto& uvMin = std::get<0>(arrowUVs);
-    auto& uvMax = std::get<1>(arrowUVs);
-
-    drawList->AddImageQuad(g_upTexWindow.get(), vertices[0], vertices[1], vertices[2], vertices[3], uvMin, { uvMax.x, uvMin.y }, { uvMax.x, uvMax.y }, { uvMin.x, uvMax.y }, colour);
-}
-
-void DrawContainer(const ImVec2 min, const ImVec2 max)
-{
-    auto drawList = ImGui::GetBackgroundDrawList();
-
-    constexpr auto containerTopColour = IM_COL32(20, 56, 130, 200);
-    constexpr auto containerBottomColour = IM_COL32(8, 22, 51, 200);
-
-    drawList->AddRectFilledMultiColor(min, max, containerTopColour, containerTopColour, containerBottomColour, containerBottomColour);
-
-    auto lineHorzUVs = PIXELS_TO_UV_COORDS(128, 128, 2, 0, 60, 5);
-    auto lineVertUVs = PIXELS_TO_UV_COORDS(128, 128, 0, 66, 5, 60);
-
-    auto lineScale = Scale(1, true);
-    auto lineOffsetRight = Scale(3, true);
-
-    // Top
-    drawList->AddImage(g_upTexWindow.get(), min, { max.x, min.y + lineScale }, GET_UV_COORDS(lineHorzUVs));
-
-    // Bottom
-    drawList->AddImage(g_upTexWindow.get(), { min.x, max.y - lineOffsetRight }, { max.x, (max.y - lineOffsetRight) + lineScale }, GET_UV_COORDS(lineHorzUVs));
-
-    // Left
-    drawList->AddImage(g_upTexWindow.get(), min, { min.x + lineScale, max.y }, GET_UV_COORDS(lineVertUVs));
-
-    // Right
-    drawList->AddImage(g_upTexWindow.get(), { max.x - lineOffsetRight, min.y }, { (max.x - lineOffsetRight) + lineScale, max.y }, GET_UV_COORDS(lineVertUVs));
-
-    SetAdditive(true);
-
-    constexpr auto arrowPixelRadius = 63.0f;
-    constexpr auto arrowInnerScale = 0.16f;
-    constexpr auto arrowOuterScale = 0.225f;
-    constexpr auto arrowOuterColour = IM_COL32(255, 255, 255, 45);
-
-    auto arrowOuterOffset = Scale(arrowPixelRadius * arrowOuterScale, true) / 2;
-
-    // Top Left (Inner)
-    DrawContainerArrow(min, arrowInnerScale, 0.0f, containerTopColour);
-
-    // Top Right (Inner)
-    DrawContainerArrow({ max.x, min.y }, arrowInnerScale, 90.0f, containerTopColour);
-
-    // Bottom Right (Inner)
-    DrawContainerArrow(max, arrowInnerScale, 180.0f, containerTopColour);
-
-    // Bottom Left (Inner)
-    DrawContainerArrow({ min.x, max.y }, arrowInnerScale, 270.0f, containerTopColour);
-
-    // Top Left (Outer)
-    DrawContainerArrow({ min.x - arrowOuterOffset, min.y - arrowOuterOffset }, arrowOuterScale, 0.0f, arrowOuterColour);
-    
-    // Top Right (Outer)
-    DrawContainerArrow({ max.x + arrowOuterOffset, min.y - arrowOuterOffset }, arrowOuterScale, 90.0f, arrowOuterColour);
-    
-    // Bottom Right (Outer)
-    DrawContainerArrow({ max.x + arrowOuterOffset, max.y + arrowOuterOffset }, arrowOuterScale, 180.0f, arrowOuterColour);
-    
-    // Bottom Left (Outer)
-    DrawContainerArrow({ min.x - arrowOuterOffset, max.y + arrowOuterOffset }, arrowOuterScale, 270.0f, arrowOuterColour);
-
-    ResetAdditive();
-
-    drawList->PushClipRect(min, max);
-}
 
 void DrawButton(int rowIndex, float yOffset, float yPadding, float width, float height, std::string& text)
 {
@@ -267,8 +157,7 @@ void DrawButton(int rowIndex, float yOffset, float yPadding, float width, float 
             DrawArrowCursor(min, g_time, false, true);
     }
 
-    auto fontSize = Scale(27, true);
-    auto textSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, text.c_str());
+    auto textSize = g_pFntRodin->CalcTextSizeA(g_fntRodinSize, FLT_MAX, 0, text.c_str());
 
     // Show low quality text in-game.
     if (App::s_isInit)
@@ -277,7 +166,7 @@ void DrawButton(int rowIndex, float yOffset, float yPadding, float width, float 
     DrawTextBasic
     (
         g_pFntRodin,
-        fontSize,
+        g_fntRodinSize,
         { /* X */ min.x + ((max.x - min.x) - textSize.x) / 2, /* Y */ min.y + ((max.y - min.y) - textSize.y) / 2 },
         textColour,
         text.c_str()
@@ -325,16 +214,16 @@ void MessageWindow::Draw()
         // Always assume keyboard to prevent mouse from blocking control in-game.
         isKeyboard = true;
 
-        if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManager[0])
+        if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManagers[0])
         {
             auto& rPadState = spInputManager->m_PadState;
 
             g_joypadAxis.y = -rPadState.LeftStickVertical;
 
-            if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DpadUp))
+            if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DPadUp))
                 g_joypadAxis.y = 1.0f;
 
-            if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DpadDown))
+            if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DPadDown))
                 g_joypadAxis.y = -1.0f;
 
             g_isAccepted = rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_A);
@@ -349,16 +238,26 @@ void MessageWindow::Draw()
     ImVec2 msgMax = { msgMin.x + Scale(1088, true), msgMin.y + Scale(384, true) };
     ImVec2 msgCentre = { (msgMin.x / 2) + (msgMax.x / 2), (msgMin.y / 2) + (msgMax.y / 2) };
 
-    DrawContainer(msgMin, msgMax);
+    DrawWindow(msgMin, msgMax);
 
     // Use low quality text when the game is booted to not clash with existing UI.
     if (App::s_isInit)
         SetShaderModifier(IMGUI_SHADER_MODIFIER_LOW_QUALITY_TEXT);
 
-    auto fontSize = Scale(27, true);
-    auto textSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, g_text.c_str());
+    auto textMargin = Scale(270, true);
+    auto textMaxWidth = msgMax.x - msgMin.x - textMargin;
+    auto textSize = g_pFntRodin->CalcTextSizeA(g_fntRodinSize, textMaxWidth, textMaxWidth, g_text.c_str());
 
-    DrawTextBasic(g_pFntRodin, fontSize, { msgCentre.x - textSize.x / 2, msgCentre.y - textSize.y / 2 }, IM_COL32_WHITE, g_text.c_str());
+    DrawTextParagraph
+    (
+        g_pFntRodin,
+        g_fntRodinSize,
+        textMaxWidth,
+        { msgCentre.x - textSize.x / 2, msgCentre.y - textSize.y / 2 },
+        1.0f,
+        g_text.c_str(),
+        [&](const char* str, ImVec2 pos) { DrawTextBasic(g_pFntRodin, g_fntRodinSize, pos, IM_COL32_WHITE, str); }
+    );
 
     // Reset the shader modifier.
     if (App::s_isInit)
@@ -369,7 +268,7 @@ void MessageWindow::Draw()
     ImVec2 selMin = { msgMin.x, msgMax.y + ((msgMin.y - g_vertCentre) / 2) };
     ImVec2 selMax = { msgMax.x, selMin.y + Scale(128, true) };
 
-    DrawContainer(selMin, selMax);
+    DrawWindow(selMin, selMax);
 
     auto rowCount = 0;
     auto windowMarginX = Scale(36, true);

@@ -11,6 +11,11 @@ cbuffer VertexShaderConstants : register(b1, space4)
     float4 g_Velocity : packoffset(c210);
 };
 
+cbuffer SharedConstants : register(b2, space4)
+{
+	DEFINE_SHARED_CONSTANTS();
+};
+
 #endif
 
 void shaderMain(
@@ -22,6 +27,7 @@ void shaderMain(
     out float2 oVelScale : TEXCOORD2)
 {
     oPos = iPosition0;
+    oPos.xy += g_HalfPixelOffset * oPos.w;
     oTexCoord0 = iTexCoord0;
 
     float2 centeredUV;
@@ -33,5 +39,5 @@ void shaderMain(
 
     float2 scaledVec = oVelocity * g_Velocity.w;
     oVelScale.x = scaledVec.x * 0.00002;
-    oVelScale.y = -scaledVec.y * 0.00001;
+    oVelScale.y = -scaledVec.y * 0.00002;
 }

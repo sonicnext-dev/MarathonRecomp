@@ -57,14 +57,14 @@ PPC_FUNC(sub_82195500)
 
             if (auto pCameraMode = pCameraman->m_spCameraModeManager->m_spCameraMode.get())
             {
-                guest_stack_var<Sonicteam::Message::MsgCameramanChangeMode> msgCameramanChangeMode;
-                msgCameramanChangeMode->PadID = pInputManager->m_PadID;
-                msgCameramanChangeMode->TargetActorID = pPlayer->m_ActorID;
-                msgCameramanChangeMode->IsDemoCamera = pCameraMode->m_pVftable.ptr != 0x82002004;
+                guest_stack_var<Sonicteam::Message::Camera::Cameraman::MsgChangeMode> msgChangeMode;
+                msgChangeMode->PadID = pInputManager->m_PadID;
+                msgChangeMode->TargetActorID = pPlayer->m_ActorID;
+                msgChangeMode->IsDemoCamera = pCameraMode->m_pVftable.ptr != 0x82002004;
 
-                LOGFN("Demo Camera: {}", msgCameramanChangeMode->IsDemoCamera ? "Enabled" : "Disabled");
+                LOGFN("Demo Camera: {}", msgChangeMode->IsDemoCamera ? "Enabled" : "Disabled");
 
-                pCameraman->ProcessMessage(msgCameramanChangeMode.get());
+                pCameraman->ProcessMessage(msgChangeMode.get());
             }
         }
     }
@@ -253,12 +253,12 @@ void RestoreChainJumpFlips(PPCRegister& r31, PPCRegister& r30, PPCRegister& r11,
     {
         auto pFixture = GuestToHostFunction<Sonicteam::Fixture*>(sub_821609D0, pActorManager, &pMessage->ActorID);
 
-        auto msgObjJump123GetNextPoint = guest_stack_var<Sonicteam::Message::MsgObjJump123GetNextPoint>();
-        msgObjJump123GetNextPoint->Rotation = { 0, 0, 0, 1 };
-        msgObjJump123GetNextPoint->Position = { 0, 0, 0, 1 };
+        auto msgGetNextPoint = guest_stack_var<Sonicteam::Message::ObjJump123::MsgGetNextPoint>();
+        msgGetNextPoint->Rotation = { 0, 0, 0, 1 };
+        msgGetNextPoint->Position = { 0, 0, 0, 1 };
 
-        if (pFixture->ProcessMessage(msgObjJump123GetNextPoint.get()))
-            target = msgObjJump123GetNextPoint->Position;
+        if (pFixture->ProcessMessage(msgGetNextPoint.get()))
+            target = msgGetNextPoint->Position;
     }
 
     auto magnitudeHorz = f1.f64;

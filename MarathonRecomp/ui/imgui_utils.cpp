@@ -13,10 +13,14 @@
 #include <res/images/common/window.dds.h>
 #include <res/images/common/select_arrow.dds.h>
 #include <res/images/common/main_menu1.dds.h>
+#include <res/images/common/main_menu7.dds.h>
+#include <res/images/common/main_menu8.dds.h>
 #include <res/images/common/arrow.dds.h>
 
 ImFont* g_pFntRodin;
 ImFont* g_pFntNewRodin;
+
+float g_fntRodinSize{};
 
 std::unique_ptr<GuestTexture> g_upTexButtonWindow;
 std::unique_ptr<GuestTexture> g_upTexController;
@@ -24,6 +28,8 @@ std::unique_ptr<GuestTexture> g_upTexKbm;
 std::unique_ptr<GuestTexture> g_upTexWindow;
 std::unique_ptr<GuestTexture> g_upTexSelectArrow;
 std::unique_ptr<GuestTexture> g_upTexMainMenu1;
+std::unique_ptr<GuestTexture> g_upTexMainMenu7;
+std::unique_ptr<GuestTexture> g_upTexMainMenu8;
 std::unique_ptr<GuestTexture> g_upTexArrow;
 
 void InitImGuiUtils()
@@ -37,7 +43,14 @@ void InitImGuiUtils()
     g_upTexWindow = LOAD_ZSTD_TEXTURE(g_window);
     g_upTexSelectArrow = LOAD_ZSTD_TEXTURE(g_select_arrow);
     g_upTexMainMenu1 = LOAD_ZSTD_TEXTURE(g_main_menu1);
+    g_upTexMainMenu7 = LOAD_ZSTD_TEXTURE(g_main_menu7);
+    g_upTexMainMenu8 = LOAD_ZSTD_TEXTURE(g_main_menu8);
     g_upTexArrow = LOAD_ZSTD_TEXTURE(g_arrow);
+}
+
+void UpdateImGuiUtils()
+{
+    g_fntRodinSize = Scale(Config::Language == ELanguage::Japanese ? 28 : 27, true);
 }
 
 void SetGradient(const ImVec2& min, const ImVec2& max, ImU32 top, ImU32 bottom)
@@ -234,7 +247,7 @@ double ComputeLinearMotion(double time, double offset, double total, bool revers
 {
     auto result = std::clamp((ImGui::GetTime() - time - offset / 60.0) / total * 60.0, 0.0, 1.0);
 
-    return reverse ? 1.0f - result : result;
+    return reverse ? 1.0 - result : result;
 }
 
 double ComputeMotion(double time, double offset, double total, bool reverse)
@@ -380,25 +393,21 @@ void DrawContainerBox(ImVec2 min, ImVec2 max, float alpha)
     auto commonHeight = Scale(50);
     auto bottomHeight = Scale(5);
 
-    auto tl = PIXELS_TO_UV_COORDS(1024, 1024, 0, 400, 50, 50);
-    auto tc = PIXELS_TO_UV_COORDS(1024, 1024, 50, 400, 50, 50);
-    auto cl = PIXELS_TO_UV_COORDS(1024, 1024, 0, 450, 50, 50);
-    auto cc = PIXELS_TO_UV_COORDS(1024, 1024, 50, 450, 50, 50);
-    auto bl = PIXELS_TO_UV_COORDS(1024, 1024, 0, 500, 50, 50);
-    auto bc = PIXELS_TO_UV_COORDS(1024, 1024, 50, 500, 50, 50);
+    auto tl = PIXELS_TO_UV_COORDS(1024, 1024, 1, 400, 50, 50);
+    auto tc = PIXELS_TO_UV_COORDS(1024, 1024, 51, 400, 50, 50);
+    auto cl = PIXELS_TO_UV_COORDS(1024, 1024, 1, 450, 50, 50);
+    auto cc = PIXELS_TO_UV_COORDS(1024, 1024, 51, 450, 50, 50);
+    auto bl = PIXELS_TO_UV_COORDS(1024, 1024, 1, 500, 50, 50);
+    auto bc = PIXELS_TO_UV_COORDS(1024, 1024, 51, 500, 50, 50);
 
-    auto color = IM_COL32(255, 255, 255, 100 * alpha);
+    auto colour = IM_COL32(255, 255, 255, 100 * alpha);
 
-    SetHorizontalGradient({ max.x - commonWidth, min.y }, max, IM_COL32_WHITE, IM_COL32(255, 255, 255, 0));
-
-    drawList->AddImage(g_upTexMainMenu1.get(), min, { min.x + commonWidth, min.y + commonHeight }, GET_UV_COORDS(tl), color);
-    drawList->AddImage(g_upTexMainMenu1.get(), { min.x + commonWidth, min.y }, { max.x, min.y + commonHeight }, GET_UV_COORDS(tc), color);
-    drawList->AddImage(g_upTexMainMenu1.get(), { min.x, min.y + commonHeight }, { min.x + commonWidth, max.y - commonHeight }, GET_UV_COORDS(cl), color);
-    drawList->AddImage(g_upTexMainMenu1.get(), { min.x + commonWidth, min.y + commonHeight }, { max.x, max.y - commonHeight }, GET_UV_COORDS(cc), color);
-    drawList->AddImage(g_upTexMainMenu1.get(), { min.x, max.y - commonHeight }, { min.x + commonWidth, max.y + bottomHeight }, GET_UV_COORDS(bl), color);
-    drawList->AddImage(g_upTexMainMenu1.get(), { min.x + commonWidth, max.y - commonHeight }, { max.x, max.y + bottomHeight }, GET_UV_COORDS(bc), color);
-
-    ResetGradient();
+    drawList->AddImage(g_upTexMainMenu1.get(), min, { min.x + commonWidth, min.y + commonHeight }, GET_UV_COORDS(tl), colour);
+    drawList->AddImage(g_upTexMainMenu1.get(), { min.x + commonWidth, min.y }, { max.x, min.y + commonHeight }, GET_UV_COORDS(tc), colour);
+    drawList->AddImage(g_upTexMainMenu1.get(), { min.x, min.y + commonHeight }, { min.x + commonWidth, max.y - commonHeight }, GET_UV_COORDS(cl), colour);
+    drawList->AddImage(g_upTexMainMenu1.get(), { min.x + commonWidth, min.y + commonHeight }, { max.x, max.y - commonHeight }, GET_UV_COORDS(cc), colour);
+    drawList->AddImage(g_upTexMainMenu1.get(), { min.x, max.y - commonHeight }, { min.x + commonWidth, max.y + bottomHeight }, GET_UV_COORDS(bl), colour);
+    drawList->AddImage(g_upTexMainMenu1.get(), { min.x + commonWidth, max.y - commonHeight }, { max.x, max.y + bottomHeight }, GET_UV_COORDS(bc), colour);
 }
 
 void DrawTextBasic(const ImFont* font, float fontSize, const ImVec2& pos, ImU32 colour, const char* text)
@@ -709,21 +718,189 @@ ImU32 ColourLerp(ImU32 c0, ImU32 c1, float t)
 
 void DrawVersionString(const ImU32 colour)
 {
-    auto drawList = ImGui::GetBackgroundDrawList();
     auto& res = ImGui::GetIO().DisplaySize;
+    auto  drawList = ImGui::GetBackgroundDrawList();
 
     auto fontSize = Scale(12, true);
     auto textSize = g_pFntNewRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, g_versionString);
 
-    auto textMargin = Scale(2, true);
-    auto textY = res.y - textSize.y - textMargin;
+    auto textMarginX = Scale(8, true);
+    auto textMarginY = Scale(5, true);
+    auto textY = res.y - textSize.y - textMarginY;
 
     if (g_aspectRatio < NARROW_ASPECT_RATIO)
-        textY -= BlackBar::s_letterboxHeight - BlackBar::s_margin;
+        textY -= g_vertCentre;
 
     // TODO: remove this line after v1 release.
-    drawList->AddText(g_pFntNewRodin, fontSize, { textMargin, textY }, colour, "WORK IN PROGRESS");
-    drawList->AddText(g_pFntNewRodin, fontSize, { res.x - textSize.x - textMargin, textY }, colour, g_versionString);
+    drawList->AddText(g_pFntNewRodin, fontSize, { textMarginX, textY }, colour, "WORK IN PROGRESS");
+    drawList->AddText(g_pFntNewRodin, fontSize, { res.x - textSize.x - textMarginX, textY }, colour, g_versionString);
+}
+
+static void DrawWindowArrow(const ImVec2 pos, float scale, float rotation, uint32_t colour)
+{
+    auto arrowRadius = Scale(63.0f * scale, true);
+
+    std::array<ImVec2, 4> vertices =
+    {
+        pos,                                          // Top Left
+        { pos.x + arrowRadius, pos.y },               // Top Right
+        { pos.x + arrowRadius, pos.y + arrowRadius }, // Bottom Right
+        { pos.x, pos.y + arrowRadius }                // Bottom Left
+    };
+
+    // Adjust base rotation, since the texture
+    // points the arrow to the bottom left.
+    auto adjRotation = rotation + 90.0f;
+
+    auto radians = adjRotation * (IM_PI / 180.0f);
+    auto c = cosf(radians);
+    auto s = sinf(radians);
+
+    auto& pivot = vertices[3];
+
+    // Rotate around bottom left.
+    for (auto& v : vertices)
+    {
+        float dx = v.x - pivot.x;
+        float dy = v.y - pivot.y;
+
+        v.x = pivot.x + dx * c - dy * s;
+        v.y = pivot.y + dx * s + dy * c;
+    }
+
+    // Adjust height to pivot.
+    for (auto& v : vertices)
+        v.y -= arrowRadius;
+
+    auto drawList = ImGui::GetBackgroundDrawList();
+    auto arrowUVs = PIXELS_TO_UV_COORDS(128, 128, 65, 0, 63, 63);
+
+    auto& uvMin = std::get<0>(arrowUVs);
+    auto& uvMax = std::get<1>(arrowUVs);
+
+    drawList->AddImageQuad(g_upTexWindow.get(), vertices[0], vertices[1], vertices[2], vertices[3], uvMin, { uvMax.x, uvMin.y }, { uvMax.x, uvMax.y }, { uvMin.x, uvMax.y }, colour);
+}
+
+double DrawWindow(const ImVec2 min, const ImVec2 max, bool isAnimated, double time, bool isClosing)
+{
+    auto drawList = ImGui::GetBackgroundDrawList();
+    auto motionTime = 1.0;
+
+    auto _min = min;
+    auto _max = max;
+
+    if (isAnimated)
+    {
+        motionTime = ComputeLinearMotion(time, 0, 8, isClosing);
+
+        auto centre = ImVec2{ min.x + ((max.x - min.x) / 2), min.y + ((max.y - min.y) / 2) };
+
+        _min = Lerp(centre, min, motionTime);
+        _max = Lerp(centre, max, motionTime);
+    }
+
+    constexpr auto containerTopColour = IM_COL32(20, 56, 130, 200);
+    constexpr auto containerBottomColour = IM_COL32(8, 22, 51, 200);
+
+    drawList->AddRectFilledMultiColor(_min, _max, containerTopColour, containerTopColour, containerBottomColour, containerBottomColour);
+
+    auto lineHorzUVs = PIXELS_TO_UV_COORDS(128, 128, 2, 0, 60, 5);
+    auto lineVertUVs = PIXELS_TO_UV_COORDS(128, 128, 0, 66, 5, 60);
+
+    auto lineScale = Scale(1, true);
+    auto lineOffsetRight = Scale(3, true);
+
+    // Top
+    drawList->AddImage(g_upTexWindow.get(), _min, { _max.x, _min.y + lineScale }, GET_UV_COORDS(lineHorzUVs));
+
+    // Bottom
+    drawList->AddImage(g_upTexWindow.get(), { _min.x, _max.y - lineOffsetRight }, { _max.x, (_max.y - lineOffsetRight) + lineScale }, GET_UV_COORDS(lineHorzUVs));
+
+    // Left
+    drawList->AddImage(g_upTexWindow.get(), _min, { _min.x + lineScale, _max.y }, GET_UV_COORDS(lineVertUVs));
+
+    // Right
+    drawList->AddImage(g_upTexWindow.get(), { _max.x - lineOffsetRight, _min.y }, { (_max.x - lineOffsetRight) + lineScale, _max.y }, GET_UV_COORDS(lineVertUVs));
+
+    SetAdditive(true);
+
+    constexpr auto arrowPixelRadius = 63.0f;
+    constexpr auto arrowInnerScale = 0.16f;
+    constexpr auto arrowOuterScale = 0.225f;
+    constexpr auto arrowOuterColour = IM_COL32(255, 255, 255, 45);
+
+    auto arrowOuterOffset = Scale(arrowPixelRadius * arrowOuterScale, true) / 2;
+
+    // Top Left (Inner)
+    DrawWindowArrow(_min, arrowInnerScale, 0.0f, containerTopColour);
+
+    // Top Right (Inner)
+    DrawWindowArrow({ _max.x, _min.y }, arrowInnerScale, 90.0f, containerTopColour);
+
+    // Bottom Right (Inner)
+    DrawWindowArrow(_max, arrowInnerScale, 180.0f, containerTopColour);
+
+    // Bottom Left (Inner)
+    DrawWindowArrow({ _min.x, _max.y }, arrowInnerScale, 270.0f, containerTopColour);
+
+    // Top Left (Outer)
+    DrawWindowArrow({ _min.x - arrowOuterOffset, _min.y - arrowOuterOffset }, arrowOuterScale, 0.0f, arrowOuterColour);
+
+    // Top Right (Outer)
+    DrawWindowArrow({ _max.x + arrowOuterOffset, _min.y - arrowOuterOffset }, arrowOuterScale, 90.0f, arrowOuterColour);
+
+    // Bottom Right (Outer)
+    DrawWindowArrow({ _max.x + arrowOuterOffset, _max.y + arrowOuterOffset }, arrowOuterScale, 180.0f, arrowOuterColour);
+
+    // Bottom Left (Outer)
+    DrawWindowArrow({ _min.x - arrowOuterOffset, _max.y + arrowOuterOffset }, arrowOuterScale, 270.0f, arrowOuterColour);
+
+    ResetAdditive();
+
+    drawList->PushClipRect(_min, _max);
+
+    return motionTime;
+}
+
+void DrawScrollArrows(ImVec2 min, ImVec2 max, float scale, double& time, bool top, bool bottom)
+{
+    auto drawList = ImGui::GetBackgroundDrawList();
+
+    auto scrollArrowUVs = PIXELS_TO_UV_COORDS(1024, 1024, 500, 450, 50, 50);
+    auto scrollArrowOffsetX = Scale(64, true);
+    auto scrollArrowAlphaMotionInTime = ComputeLinearMotion(time, 0, 3);
+    auto scrollArrowAlphaMotionPauseTime = ComputeLinearMotion(time, 3, 11);
+    auto scrollArrowAlphaMotionOutTime = ComputeLinearMotion(time, 11, 4, true);
+    auto scrollArrowAlphaMotionLoopTime = ComputeLinearMotion(time, 15, 50);
+    auto scrollArrowAlphaMotion = 255;
+
+    if (scrollArrowAlphaMotionPauseTime >= 1.0)
+    {
+        // Fade out arrows.
+        scrollArrowAlphaMotion = 255 * scrollArrowAlphaMotionOutTime;
+
+        // Reset loop.
+        if (scrollArrowAlphaMotionLoopTime >= 1.0)
+            time = ImGui::GetTime();
+    }
+    else
+    {
+        // Fade in arrows.
+        scrollArrowAlphaMotion = 255 * scrollArrowAlphaMotionInTime;
+    }
+
+    auto scrollArrowColourMotion = IM_COL32(255, 255, 255, scrollArrowAlphaMotion);
+
+    ImVec2 scrollArrowTopMin = min;
+    ImVec2 scrollArrowTopMax = { scrollArrowTopMin.x + scale, scrollArrowTopMin.y + scale };
+    ImVec2 scrollArrowBottomMin = { scrollArrowTopMin.x, max.y - scale };
+    ImVec2 scrollArrowBottomMax = { scrollArrowTopMax.x, scrollArrowBottomMin.y + scale };
+
+    if (top)
+        AddImageFlipped(g_upTexMainMenu1.get(), scrollArrowTopMin, scrollArrowTopMax, GET_UV_COORDS(scrollArrowUVs), scrollArrowColourMotion, false, true);
+
+    if (bottom)
+        drawList->AddImage(g_upTexMainMenu1.get(), scrollArrowBottomMin, scrollArrowBottomMax, GET_UV_COORDS(scrollArrowUVs), scrollArrowColourMotion);
 }
 
 // Taken from ImGui because we need to modify to break for '\u200B\ too
@@ -900,7 +1077,7 @@ ImVec2 MeasureInterpolatedText(const ImFont* pFont, float fontSize, const char* 
 {
     ImVec2 result{};
 
-    auto parsed = ParseInterpolatedString(pText);
+    const auto parsed = ParseInterpolatedString(pText);
 
     auto measureText = [&](float paddingX, std::string_view str)
     {
@@ -912,33 +1089,33 @@ ImVec2 MeasureInterpolatedText(const ImFont* pFont, float fontSize, const char* 
 
     for (size_t i = 0; i < parsed.size(); i++)
     {
-        auto& str = parsed[i];
-        auto  paddingX = i == parsed.size() - 1 ? 0 : Scale(2, true);
+        const auto& str = parsed[i];
+        const auto  paddingX = i == parsed.size() - 1 ? 0 : Scale(2, true);
 
         if (IsInterpolatedString(str))
         {
-            auto parsedSingleNoTokens = ParseInterpolatedString(str.data(), false);
+            const auto parsedSingleNoTokens = ParseInterpolatedString(str.data(), false);
 
             if (!parsedSingleNoTokens.size())
                 continue;
 
-            auto variableMapSingle = MapTextVariables(parsedSingleNoTokens[0].data());
+            const auto variableMapSingle = MapTextVariables(parsedSingleNoTokens[0].data());
 
             if (!variableMapSingle.size())
                 continue;
 
-            auto& variable = variableMapSingle[0];
-            auto& variableType = variable.first;
-            auto& variableValue = variable.second;
+            const auto& variable = variableMapSingle[0];
+            const auto& variableType = variable.first;
+            const auto& variableValue = variable.second;
 
             if (variableType == "picture")
             {
-                auto& pictureName = variableValue;
-                auto  pictureNameHash = HashStr(pictureName);
+                const auto& pictureName = variableValue;
+                const auto  pictureNameHash = HashStr(pictureName);
 
                 if (!pInterpData || !pInterpData->Picture.pupTexture || !pInterpData->pPictureCrops || !pInterpData->pPictureCrops->contains(pictureNameHash))
                 {
-                    auto placeholderScale = Scale(28, true);
+                    const auto placeholderScale = Scale(28, true);
 
                     result.x += placeholderScale;
                     result.y = std::max(result.y, placeholderScale);
@@ -946,16 +1123,20 @@ ImVec2 MeasureInterpolatedText(const ImFont* pFont, float fontSize, const char* 
                     continue;
                 }
 
-                auto pictureCrop = FindHash<ImGuiTextPictureCrop>(*pInterpData->pPictureCrops, pictureNameHash);
-                auto pictureWidth = Scale(pictureCrop.Width, true);
-                auto pictureHeight = Scale(pictureCrop.Height, true);
+                const auto pPictureCrop = FindHash(*pInterpData->pPictureCrops, pictureNameHash);
+
+                if (!pPictureCrop)
+                    continue;
+
+                const auto pictureWidth = Scale(pPictureCrop->Width, true);
+                const auto pictureHeight = Scale(pPictureCrop->Height, true);
 
                 result.x += pictureWidth + paddingX;
                 result.y = std::max(result.y, pictureHeight);
             }
             else if (variableType == "locale")
             {
-                auto& localeName = variableValue;
+                const auto& localeName = variableValue;
 
                 measureText(paddingX, Localise(localeName));
             }
@@ -971,10 +1152,11 @@ ImVec2 MeasureInterpolatedText(const ImFont* pFont, float fontSize, const char* 
 
 void DrawInterpolatedText(const ImFont* pFont, float fontSize, const ImVec2& pos, ImU32 colour, const char* pText, ImGuiTextInterpData* pInterpData)
 {
-    auto drawList = ImGui::GetBackgroundDrawList();
-    auto parsed = ParseInterpolatedString(pText);
+    const auto drawList = ImGui::GetBackgroundDrawList();
+    const auto parsed = ParseInterpolatedString(pText);
+    const auto marginY = Config::Language == ELanguage::Japanese ? 0 : Scale(1, true);
+
     auto advanceX = 0.0f;
-    auto marginY = Config::Language == ELanguage::Japanese ? 0 : Scale(1, true);
 
     auto drawText = [&](const ImVec2& pos, float paddingX, std::string_view str)
     {
@@ -987,37 +1169,37 @@ void DrawInterpolatedText(const ImFont* pFont, float fontSize, const ImVec2& pos
 
     for (size_t i = 0; i < parsed.size(); i++)
     {
-        auto& str = parsed[i];
-        auto  curPos = ImVec2{ pos.x + advanceX, pos.y + marginY };
-        auto  paddingX = i == parsed.size() - 1 ? 0 : Scale(2, true);
+        const auto& str = parsed[i];
+        const auto  curPos = ImVec2{ pos.x + advanceX, pos.y + marginY };
+        const auto  paddingX = i == parsed.size() - 1 ? 0 : Scale(2, true);
 
         if (IsInterpolatedString(str))
         {
-            auto parsedSingleNoTokens = ParseInterpolatedString(str.data(), false);
+            const auto parsedSingleNoTokens = ParseInterpolatedString(str.data(), false);
         
             if (!parsedSingleNoTokens.size())
                 continue;
 
-            auto variableMapSingle = MapTextVariables(parsedSingleNoTokens[0].data());
+            const auto variableMapSingle = MapTextVariables(parsedSingleNoTokens[0].data());
         
             if (!variableMapSingle.size())
                 continue;
         
-            auto& variable = variableMapSingle[0];
-            auto& variableType = variable.first;
-            auto& variableValue = variable.second;
+            const auto& variable = variableMapSingle[0];
+            const auto& variableType = variable.first;
+            const auto& variableValue = variable.second;
         
             if (variableType == "picture")
             {
-                auto& pictureName = variableValue;
-                auto  pictureNameHash = HashStr(pictureName);
+                const auto& pictureName = variableValue;
+                const auto  pictureNameHash = HashStr(pictureName);
 
                 if (!pInterpData || !pInterpData->Picture.pupTexture || !pInterpData->pPictureCrops || !pInterpData->pPictureCrops->contains(pictureNameHash))
                 {
-                    auto placeholderScale = Scale(28, true);
+                    const auto placeholderScale = Scale(28, true);
 
-                    ImVec2 placeholderMin = { pos.x + advanceX, pos.y };
-                    ImVec2 placeholderMax = { placeholderMin.x + placeholderScale, placeholderMin.y + placeholderScale };
+                    const ImVec2 placeholderMin = { pos.x + advanceX, pos.y };
+                    const ImVec2 placeholderMax = { placeholderMin.x + placeholderScale, placeholderMin.y + placeholderScale };
 
                     advanceX += placeholderScale;
 
@@ -1026,13 +1208,17 @@ void DrawInterpolatedText(const ImFont* pFont, float fontSize, const ImVec2& pos
                     continue;
                 }
 
-                auto pictureCrop = FindHash<ImGuiTextPictureCrop>(*pInterpData->pPictureCrops, pictureNameHash);
-                auto pictureUVs = PIXELS_TO_UV_COORDS(pInterpData->Picture.Width, pInterpData->Picture.Height, pictureCrop.X, pictureCrop.Y, pictureCrop.Width, pictureCrop.Height);
-                auto pictureWidth = Scale(pictureCrop.Width, true);
-                auto pictureHeight = Scale(pictureCrop.Height, true);
+                const auto pPictureCrop = FindHash(*pInterpData->pPictureCrops, pictureNameHash);
 
-                ImVec2 pictureMin = { pos.x + advanceX, pos.y };
-                ImVec2 pictureMax = { pictureMin.x + pictureWidth, pictureMin.y + pictureHeight };
+                if (!pPictureCrop)
+                    continue;
+
+                const auto pictureUVs = PIXELS_TO_UV_COORDS(pInterpData->Picture.Width, pInterpData->Picture.Height, pPictureCrop->X, pPictureCrop->Y, pPictureCrop->Width, pPictureCrop->Height);
+                const auto pictureWidth = Scale(pPictureCrop->Width, true);
+                const auto pictureHeight = Scale(pPictureCrop->Height, true);
+
+                const ImVec2 pictureMin = { pos.x + advanceX, pos.y };
+                const ImVec2 pictureMax = { pictureMin.x + pictureWidth, pictureMin.y + pictureHeight };
 
                 advanceX += pictureWidth + paddingX;
 
@@ -1040,7 +1226,7 @@ void DrawInterpolatedText(const ImFont* pFont, float fontSize, const ImVec2& pos
             }
             else if (variableType == "locale")
             {
-                auto& localeName = variableValue;
+                const auto& localeName = variableValue;
 
                 drawText(curPos, paddingX, Localise(localeName));
             }
@@ -1068,7 +1254,8 @@ ImGuiTextInterpData GetHidInterpTextData()
             hid::g_inputDevice == hid::EInputDevice::Mouse)
         {
             buttonTexture = &g_upTexKbm;
-            buttonTextureWidth = uint16_t(384);
+            buttonTextureWidth = uint16_t(84);
+            buttonTextureHeight = uint16_t(28);
         }
 
         if (hid::g_inputDevice == hid::EInputDevice::Keyboard)
@@ -1114,12 +1301,12 @@ const xxHashMap<ImGuiTextPictureCrop> g_buttonCropsPS3 =
 
 const xxHashMap<ImGuiTextPictureCrop> g_buttonCropsMouse =
 {
-    { HashStr("button_a"), { 128, 0, 128, 128 } },
-    { HashStr("button_b"), { 256, 0, 128, 128 } }
+    { HashStr("button_a"), { 0, 0, 28, 28 } },
+    { HashStr("button_b"), { 56, 0, 28, 28 } }
 };
 
 const xxHashMap<ImGuiTextPictureCrop> g_buttonCropsKeyboard =
 {
-    { HashStr("button_a"), { 0, 0, 128, 128 } },
-    { HashStr("button_b"), { 256, 0, 128, 128 } }
+    { HashStr("button_a"), { 28, 0, 28, 28 } },
+    { HashStr("button_b"), { 56, 0, 28, 28 } }
 };

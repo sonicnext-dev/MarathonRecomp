@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include <Marathon.inl>
 #include <Sonicteam/SoX/Component.h>
 #include <Sonicteam/SoX/LinkNode.h>
@@ -12,7 +14,8 @@ namespace Sonicteam::SoX::Engine
     class Task : public Component, public MessageReceiver
     {
     public:
-        be<uint32_t> m_Flags;
+        uint8_t m_Flags;
+        MARATHON_INSERT_PADDING(3);
         be<uint32_t> m_Timestamp;
         xpointer<Task> m_pPrevSibling;
         xpointer<Task> m_pNextSibling;
@@ -21,7 +24,7 @@ namespace Sonicteam::SoX::Engine
         xpointer<Doc> m_pDoc;
         LinkNode<Task> m_lnTask;
 
-        Task* GetFirstDependency() const 
+        Task* GetFirstDependency() const
         {
             if (!m_pDependencies)
                 return nullptr;
@@ -43,6 +46,60 @@ namespace Sonicteam::SoX::Engine
         T* GetDoc()
         {
             return (T*)m_pDoc.get();
+        }
+
+        void WalkSiblings(std::function<bool(Task*)> in_walker, bool in_walkDependencies = true)
+        {
+            for (auto& rTask : *this)
+            {
+                if (!in_walker(&rTask))
+                    break;
+
+                if (in_walkDependencies && rTask.m_pDependencies)
+                    rTask.m_pDependencies->WalkSiblings(in_walker);
+            }
+        }
+
+        class iterator
+        {
+        private:
+            Task* m_pCurrent{};
+
+        public:
+            iterator(Task* in_pCurrent = nullptr) : m_pCurrent(in_pCurrent) {}
+
+            Task& operator*() const
+            {
+                return *m_pCurrent;
+            }
+
+            Task* operator->() const
+            {
+                return m_pCurrent;
+            }
+
+            iterator& operator++()
+            {
+                if (m_pCurrent)
+                    m_pCurrent = m_pCurrent->m_pPrevSibling.get();
+
+                return *this;
+            }
+
+            bool operator!=(const iterator& in_rOther) const
+            {
+                return m_pCurrent != in_rOther.m_pCurrent;
+            }
+        };
+
+        iterator begin()
+        {
+            return iterator(this);
+        }
+
+        iterator end()
+        {
+            return iterator(nullptr);
         }
     };
 

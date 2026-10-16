@@ -12,9 +12,12 @@ namespace Sonicteam
         enum HUDMainMenuState : uint32_t
         {
             HUDMainMenuState_OptionsOutro = 5,
+            HUDMainMenuState_SinglePlayerTextOutro = 8,
+            HUDMainMenuState_SinglePlayerCursorIntro = 86,
             HUDMainMenuState_OptionsIntro = 90,
             HUDMainMenuState_MainCursorIntro = 98,
-            HUDMainMenuState_MainCursorOutro = 99
+            HUDMainMenuState_MainCursorOutro = 99,
+            HUDMainMenuState_GoldMedalResultsCursorOutro = 101
         };
 
         MARATHON_INSERT_PADDING(0x20);

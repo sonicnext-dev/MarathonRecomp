@@ -130,12 +130,24 @@ uint32_t LdrLoadModule(const std::filesystem::path &path)
         return 0;
     }
 
-    const auto image = Image::ParseImage(loadResult.data(), loadResult.size());
+    DecryptedExecutableHeader header{};
+    memcpy(&header, loadResult.data(), std::min(sizeof(header), loadResult.size()));
+    if (header.magic == DECRYPTED_EXECUTABLE_MAGIC) {
+        LOG_UTILITY("Loading pre-decrypted executable");
+        memcpy(g_memory.Translate(header.base), loadResult.data() + sizeof(DecryptedExecutableHeader),
+               loadResult.size() - sizeof(DecryptedExecutableHeader));
+        g_xdbfWrapper = XDBFWrapper(static_cast<uint8_t*>(g_memory.Translate(header.resource_offset)), header.resource_size);
 
-    memcpy(g_memory.Translate(image.base), image.data.get(), image.size);
-    g_xdbfWrapper = XDBFWrapper(static_cast<uint8_t*>(g_memory.Translate(image.resource_offset)), image.resource_size);
+        return header.entry_point;
+    } else {
+        LOG_UTILITY("Loading XEX executable");
+        const auto image = Image::ParseImage(loadResult.data(), loadResult.size());
 
-    return image.entry_point;
+        memcpy(g_memory.Translate(image.base), image.data.get(), image.size);
+        g_xdbfWrapper = XDBFWrapper(static_cast<uint8_t*>(g_memory.Translate(image.resource_offset)), image.resource_size);
+
+        return image.entry_point;
+    }
 }
 
 #ifdef __x86_64__
@@ -297,19 +309,17 @@ int main(int argc, char *argv[])
     std::filesystem::path modulePath;
     bool isGameInstalled = Installer::checkGameInstall(GetGamePath(), modulePath);
     bool runInstallerWizard = forceInstaller || forceDLCInstaller || !isGameInstalled;
-     if (runInstallerWizard)
-     {
-         if (!Video::CreateHostDevice(sdlVideoDriver, graphicsApiRetry))
-         {
-             SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, GameWindow::GetTitle(), Localise("Video_BackendError").c_str(), GameWindow::s_pWindow);
-             std::_Exit(1);
-         }
+    if (runInstallerWizard)
+    {
+        if (!Video::CreateHostDevice(sdlVideoDriver, graphicsApiRetry))
+        {
+            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, GameWindow::GetTitle(), Localise("Video_BackendError").c_str(), GameWindow::s_pWindow);
+            std::_Exit(1);
+        }
 
-         if (!InstallerWizard::Run(GetGamePath(), isGameInstalled && forceDLCInstaller))
-         {
-             std::_Exit(0);
-         }
-     }
+        if (!InstallerWizard::Run(GetGamePath(), isGameInstalled && forceDLCInstaller))
+            std::_Exit(0);
+    }
 
     // ModLoader::Init();
 
@@ -325,9 +335,11 @@ int main(int argc, char *argv[])
             std::_Exit(1);
         }
     }
+
+    Video::StartPipelinePrecompilation();
+
     LOGN_WARNING("Start Guest Thread");
     LOGN_WARNING(modulePath.string());
-    // Video::StartPipelinePrecompilation();
 
     GuestThread::Start({ entry, 0, 0 });
 

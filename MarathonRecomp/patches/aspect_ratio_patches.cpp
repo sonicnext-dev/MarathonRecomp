@@ -1,10 +1,10 @@
 #include "aspect_ratio_patches.h"
-#include <api/Marathon.h>
 #include <gpu/video.h>
 #include <hid/hid.h>
 #include <patches/hook_event.h>
 #include <patches/loading_patches.h>
 #include <patches/MainMenuTask_patches.h>
+#include <ui/achievement_menu.h>
 #include <ui/black_bar.h>
 #include <ui/game_window.h>
 #include <ui/imgui_utils.h>
@@ -87,17 +87,6 @@ struct ChevronAnim
 static std::unordered_map<int32_t, ChevronAnim> g_bgArrows{};
 static std::unordered_map<int32_t, ChevronAnim> g_fgArrows{};
 
-static class LoadingPillarboxEvent : public HookEvent
-{
-public:
-    void Update(float deltaTime) override
-    {
-        if (g_aspectRatio > WIDE_ASPECT_RATIO)
-            BlackBar::Show();
-    }
-}
-g_loadingPillarboxEvent{};
-
 static class ChevronAnimResetEvent : public ContextHookEvent<Sonicteam::MainMenuTask>
 {
     float m_chevronAspectRatio{};
@@ -140,8 +129,7 @@ float ComputeScale(float aspectRatio)
 
 void AspectRatioPatches::Init()
 {
-    LoadingPatches::Events.push_back(&g_loadingPillarboxEvent);
-    MainMenuTaskPatches::Events.push_back(&g_chevronAnimResetEvent);
+    MainMenuTaskPatches::s_events.push_back(&g_chevronAnimResetEvent);
 }
 
 void AspectRatioPatches::ComputeOffsets()
@@ -341,8 +329,7 @@ PPC_FUNC(sub_828C8F60)
         if ((g_sceneModifier->Flags & CSD_MODIFIER_ULTRAWIDE_ONLY) != 0 && g_aspectRatio <= WIDE_ASPECT_RATIO)
             g_sceneModifier->Flags &= (~g_sceneModifier->Flags) | CSD_MODIFIER_ULTRAWIDE_ONLY;
 
-        if ((g_sceneModifier->Flags & CSD_SCENE_DISABLE_MOTION) != 0)
-            pScene->FPS = 0;
+        pScene->FPS = ((g_sceneModifier->Flags & CSD_SCENE_DISABLE_MOTION) != 0) ? 0 : 60;
 
         if (g_aspectRatio > WIDE_ASPECT_RATIO)
         {
@@ -411,7 +398,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
     }
 
     // Hide original button window whilst the options menu is visible.
-    if ((modifier.Flags & CSD_BUTTON_WINDOW) != 0 && OptionsMenu::s_isVisible)
+    if ((modifier.Flags & CSD_BUTTON_WINDOW) != 0 && MainMenuTaskPatches::s_hideButtonWindow)
         return;
 
     // Remove all flags if the aspect ratio is above 16:9.
@@ -1287,7 +1274,7 @@ PPC_FUNC(sub_824D6E50)
 PPC_FUNC_IMPL(__imp__sub_824F1538);
 PPC_FUNC(sub_824F1538)
 {
-    auto pHUDRaderMap = (Sonicteam::HUDRaderMap*)(base + ctx.r3.u32);
+    auto pHUDRaderMap = (Sonicteam::HUDRaderMap*)(base + ctx.r3.u32 - 8);
 
     __imp__sub_824F1538(ctx, base);
 
@@ -1301,20 +1288,30 @@ PPC_FUNC(sub_824F1538)
 PPC_FUNC_IMPL(__imp__sub_82352220);
 PPC_FUNC(sub_82352220)
 {
-    auto pCObjBalloonIconDrawable = (Sonicteam::CObjBalloonIconDrawable*)(base + ctx.r3.u32);
-    auto scale = g_aspectRatioScale;
+    const auto pCObjBalloonIconDrawable = reinterpret_cast<Sonicteam::CObjBalloonIconDrawable*>(base + ctx.r3.u32);
+
+    auto scaleX = 1.0f * g_aspectRatioGameplayScale;
+    auto scaleY = g_aspectRatio * g_aspectRatioGameplayScale;
 
     if (g_aspectRatio > WIDE_ASPECT_RATIO)
-        scale = g_aspectRatio / WIDE_ASPECT_RATIO;
+    {
+        const auto ratio = g_aspectRatio / WIDE_ASPECT_RATIO;
 
-    pCObjBalloonIconDrawable->m_aVertices[0].X = -1.0f / scale;
+        scaleX /= ratio;
+        scaleY /= ratio;
+    }
+
+    pCObjBalloonIconDrawable->m_aVertices[0].X = -scaleX;
     pCObjBalloonIconDrawable->m_aVertices[0].Y = 0.0f;
-    pCObjBalloonIconDrawable->m_aVertices[1].X = -1.0f / scale;
-    pCObjBalloonIconDrawable->m_aVertices[1].Y = g_aspectRatio / scale;
-    pCObjBalloonIconDrawable->m_aVertices[2].X = 1.0f / scale;
+
+    pCObjBalloonIconDrawable->m_aVertices[1].X = -scaleX;
+    pCObjBalloonIconDrawable->m_aVertices[1].Y = scaleY;
+
+    pCObjBalloonIconDrawable->m_aVertices[2].X = scaleX;
     pCObjBalloonIconDrawable->m_aVertices[2].Y = 0.0f;
-    pCObjBalloonIconDrawable->m_aVertices[3].X = 1.0f / scale;
-    pCObjBalloonIconDrawable->m_aVertices[3].Y = g_aspectRatio / scale;
+
+    pCObjBalloonIconDrawable->m_aVertices[3].X = scaleX;
+    pCObjBalloonIconDrawable->m_aVertices[3].Y = scaleY;
 
     __imp__sub_82352220(ctx, base);
 }
@@ -1345,8 +1342,6 @@ PPC_FUNC(sub_8264CC90)
 
         LOGFN_UTILITY("Movie: {} - {}x{}", pMovieObjectWmv->m_FilePath.c_str(), pMovieObjectWmv->m_Width.get(), pMovieObjectWmv->m_Height.get());
     }
-
-    auto movieModifier = FindHash<MovieModifier>(g_movieModifiers, movieNameHash);
 
     g_aspectRatioMovie = (float)pMovieObjectWmv->m_Width / (float)pMovieObjectWmv->m_Height;
 
@@ -1387,6 +1382,11 @@ PPC_FUNC(sub_8264CC90)
     {
         width = 2.0f;
         height = 2.0f;
+
+        MovieModifier movieModifier{};
+
+        if (const auto pMovieModifier = FindHash(g_movieModifiers, movieNameHash))
+            movieModifier = *pMovieModifier;
 
         if (g_aspectRatio > g_aspectRatioMovie)
         {
@@ -1435,14 +1435,14 @@ void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity)
     if (!pTextEntity || !pTextEntity->m_ImageVertexCount)
         return;
 
-    auto variables = MapTextVariables(pTextEntity->m_pVariables);
+    const auto variables = MapTextVariables(pTextEntity->m_pVariables);
+
     auto variablesIndex = 0;
     auto pictureIndex = 0;
 
     for (int i = 0; i < pTextEntity->m_Text.size(); i++)
     {
-        auto str = pTextEntity->m_Text.c_str();
-        auto c = ByteSwap(str[i]);
+        const auto c = ByteSwap(pTextEntity->m_Text.c_str()[i]);
 
         if (c != L'$')
             continue;
@@ -1452,7 +1452,7 @@ void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity)
         if (variablesIndex >= variables.size())
             break;
 
-        auto& variable = variables[variablesIndex];
+        const auto& variable = variables[variablesIndex];
 
         if (variable.first == "picture")
         {
@@ -1461,68 +1461,87 @@ void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity)
             if (Config::ControllerIcons == EControllerIcons::Auto)
                 isPlayStation = hid::g_inputDeviceController == hid::EInputDevice::PlayStation;
 
-            auto& pftModifier = isPlayStation
+            const auto& pftModifier = isPlayStation
                 ? g_buttonCropsPS3
                 : g_buttonCropsXenon;
 
-            auto hash = HashStr(variable.second);
-            auto baseParams = FindHash<ImGuiTextPictureCrop>(g_buttonCropsXenon, hash);
-            auto newParams = FindHash<ImGuiTextPictureCrop>(pftModifier, hash);
+            const auto hash = HashStr(variable.second);
 
-            auto  uv = PIXELS_TO_UV_COORDS(g_fontPictureWidth, g_fontPictureHeight, newParams.X, newParams.Y, newParams.Width, newParams.Height);
-            auto& min = std::get<0>(uv);
-            auto& max = std::get<1>(uv);
+            const auto pBaseParams = FindHash(g_buttonCropsXenon, hash);
+            const auto pNewParams = FindHash(pftModifier, hash);
 
-            auto  vi = pictureIndex * 6;
-            auto& v0 = pTextEntity->m_pImageVertices[vi + 0];
-            auto& v1 = pTextEntity->m_pImageVertices[vi + 1];
-            auto& v2 = pTextEntity->m_pImageVertices[vi + 2];
-            auto& v3 = pTextEntity->m_pImageVertices[vi + 3];
-            auto& v4 = pTextEntity->m_pImageVertices[vi + 4];
-            auto& v5 = pTextEntity->m_pImageVertices[vi + 5];
-
-            auto centreX = (v0.X + v2.X) / 2.0f;
-            auto widthAdjust = (float)newParams.Width / (float)baseParams.Width;
-            auto adjust = [&](auto& vertex)
+            if (pBaseParams && pNewParams)
             {
-                vertex.X = centreX + (vertex.X - centreX) * widthAdjust;
-            };
+                const auto  uv = PIXELS_TO_UV_COORDS(g_fontPictureWidth, g_fontPictureHeight, pNewParams->X, pNewParams->Y, pNewParams->Width, pNewParams->Height);
+                const auto& min = std::get<0>(uv);
+                const auto& max = std::get<1>(uv);
 
-            // Bottom Left (Triangle 1)
-            adjust(v0);
-            v0.U = min.x;
-            v0.V = min.y;
+                const auto vi = pictureIndex * 6;
+                auto& v0 = pTextEntity->m_pImageVertices[vi + 0];
+                auto& v1 = pTextEntity->m_pImageVertices[vi + 1];
+                auto& v2 = pTextEntity->m_pImageVertices[vi + 2];
+                auto& v3 = pTextEntity->m_pImageVertices[vi + 3];
+                auto& v4 = pTextEntity->m_pImageVertices[vi + 4];
+                auto& v5 = pTextEntity->m_pImageVertices[vi + 5];
 
-            // Top Left (Triangle 1)
-            adjust(v1);
-            v1.U = min.x;
-            v1.V = max.y;
+                const auto centreX = (v0.X + v2.X) / 2.0f;
+                const auto widthAdjust = (float)pNewParams->Width / (float)pBaseParams->Width;
 
-            // Top Right (Triangle 1)
-            adjust(v2);
-            v2.U = max.x;
-            v2.V = max.y;
+                auto adjust = [&](auto& vertex)
+                {
+                    vertex.X = centreX + (vertex.X - centreX) * widthAdjust;
+                };
 
-            // Bottom Left (Triangle 2)
-            adjust(v3);
-            v3.U = min.x;
-            v3.V = min.y;
+                // Bottom Left (Triangle 1)
+                adjust(v0);
+                v0.U = min.x;
+                v0.V = min.y;
 
-            // Top Right (Triangle 2)
-            adjust(v4);
-            v4.U = max.x;
-            v4.V = max.y;
+                // Top Left (Triangle 1)
+                adjust(v1);
+                v1.U = min.x;
+                v1.V = max.y;
 
-            // Bottom Right (Triangle 2)
-            adjust(v5);
-            v5.U = max.x;
-            v5.V = min.y;
+                // Top Right (Triangle 1)
+                adjust(v2);
+                v2.U = max.x;
+                v2.V = max.y;
+
+                // Bottom Left (Triangle 2)
+                adjust(v3);
+                v3.U = min.x;
+                v3.V = min.y;
+
+                // Top Right (Triangle 2)
+                adjust(v4);
+                v4.U = max.x;
+                v4.V = max.y;
+
+                // Bottom Right (Triangle 2)
+                adjust(v5);
+                v5.U = max.x;
+                v5.V = min.y;
+            }
 
             pictureIndex++;
         }
 
         variablesIndex++;
     }
+}
+
+void SetTextEntityModifier(Sonicteam::TextEntity* pTextEntity, uint64_t flags)
+{
+    if (!pTextEntity)
+        return;
+
+    const auto pTextModifier = reinterpret_cast<uint64_t*>(
+        reinterpret_cast<uint8_t*>(pTextEntity) + sizeof(Sonicteam::TextEntity));
+
+    *pTextModifier = flags;
+
+    pTextEntity->m_FieldDD = true;
+    pTextEntity->Update();
 }
 
 void TextEntityAlloc(PPCRegister& r3)
@@ -1550,7 +1569,17 @@ PPC_FUNC(sub_8262D868)
     auto textModifier = *(uint64_t*)(base + ctx.r3.u32 + sizeof(Sonicteam::TextEntity));
 
     if ((textModifier & CSD_SKIP) != 0)
+    {
+        for (size_t i = 0; i < pTextEntity->m_CharacterVertexCount; i++)
+        {
+            auto& vertex = pTextEntity->m_pCharacterVertices[i];
+
+            // Mask out alpha bits.
+            vertex.Colour = vertex.Colour.get() & 0x00FFFFFF;
+        }
+
         return;
+    }
 
     auto x = pTextEntity->m_X;
     auto y = pTextEntity->m_Y;
@@ -1613,19 +1642,6 @@ PPC_FUNC(sub_8262D868)
     ReplaceTextVariables(pTextEntity);
 }
 
-void SetTextEntityModifier(Sonicteam::TextEntity* pTextEntity, uint64_t flags)
-{
-    if (!pTextEntity)
-        return;
-
-    auto pTextModifier = (uint64_t*)(reinterpret_cast<uint8_t*>(pTextEntity) + sizeof(Sonicteam::TextEntity));
-
-    *pTextModifier = flags;
-
-    pTextEntity->m_FieldDD = true;
-    pTextEntity->Update();
-}
-
 // Sonicteam::HUDMainMenu::Destroy
 PPC_FUNC_IMPL(__imp__sub_824E2978);
 PPC_FUNC(sub_824E2978)
@@ -1650,11 +1666,11 @@ PPC_FUNC(sub_824E11D0)
 
     static constexpr double HIDE_TEXT_OFFSET = -100000.0f;
 
-    auto isTrialSelect = MainMenuTaskPatches::State >= 12 && MainMenuTaskPatches::State <= 15;
+    auto isTrialSelect = MainMenuTaskPatches::s_state >= 12 && MainMenuTaskPatches::s_state <= 15;
 
-    auto isTag = MainMenuTaskPatches::State == Sonicteam::MainMenuTask::MainMenuState_Tag ||
-                 MainMenuTaskPatches::State == Sonicteam::MainMenuTask::MainMenuState_Tag1PSelect ||
-                 MainMenuTaskPatches::State == Sonicteam::MainMenuTask::MainMenuState_MainMenuExitToStage;
+    auto isTag = MainMenuTaskPatches::s_state == Sonicteam::MainMenuTask::MainMenuState_Tag ||
+                 MainMenuTaskPatches::s_state == Sonicteam::MainMenuTask::MainMenuState_Tag1PSelect ||
+                 MainMenuTaskPatches::s_state == Sonicteam::MainMenuTask::MainMenuState_ExitToStage;
 
     while (pHudTextRoot)
     {
@@ -1746,6 +1762,40 @@ PPC_FUNC(sub_8263CC40)
 
     g_fontPictureWidth = pTextFontPicture->m_TextureWidth;
     g_fontPictureHeight = pTextFontPicture->m_TextureHeight;
+}
+
+// Sonicteam::HUDGoldMedal::Update
+PPC_FUNC_IMPL(__imp__sub_824D5C08);
+PPC_FUNC(sub_824D5C08)
+{
+    auto pHUDGoldMedal = static_cast<Sonicteam::HUDGoldMedal*>(reinterpret_cast<Sonicteam::SoX::Engine::Task*>(base + ctx.r3.u32));
+
+    for (auto& spTextEntity : pHUDGoldMedal->m_aspTextEntities)
+    {
+        auto flags = CSD_ALIGN_CENTER | CSD_SCALE;
+
+        if (AchievementMenu::s_state == AchievementMenuState::Achievements)
+            flags |= CSD_SKIP;
+
+        SetTextEntityModifier(spTextEntity.get(), flags);
+    }
+
+    __imp__sub_824D5C08(ctx, base);
+}
+
+// Sonicteam::MainMenuExpositionTask::Update
+PPC_FUNC_IMPL(__imp__sub_824FD868);
+PPC_FUNC(sub_824FD868)
+{
+    auto pMainMenuExpositionTask = static_cast<Sonicteam::MainMenuExpositionTask*>(reinterpret_cast<Sonicteam::SoX::Engine::Task*>(base + ctx.r3.u32));
+
+    // Default fade speed is 15 frames at 60 FPS.
+    pMainMenuExpositionTask->m_FadeSpeed = (1.0f / 15.0f) * (60.0 * App::s_deltaTime);
+
+    SetTextEntityModifier(pMainMenuExpositionTask->m_spDescriptionEntity.get(), CSD_ALIGN_CENTER | CSD_SCALE);
+    SetTextEntityModifier(pMainMenuExpositionTask->m_spPrevDescriptionEntity.get(), CSD_ALIGN_CENTER | CSD_SCALE);
+
+    __imp__sub_824FD868(ctx, base);
 }
 
 // -------------- CSD MODIFIERS --------------- //
@@ -1901,9 +1951,9 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     // loading
     { HashStr("sprite/loading/loading/Scene_0000/Loading"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
     { HashStr("sprite/loading/loading/Scene_0000/Loading_02"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
-    { HashStr("sprite/loading/loading/Scene_0000/arrow_01"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
-    { HashStr("sprite/loading/loading/Scene_0000/arrow_02"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
-    { HashStr("sprite/loading/loading/Scene_0000/arrow_03"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
+    { HashStr("sprite/loading/loading/Scene_0000/arrow_01"), { .Flags = CSD_ALIGN_BOTTOM_RIGHT | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
+    { HashStr("sprite/loading/loading/Scene_0000/arrow_02"), { .Flags = CSD_ALIGN_BOTTOM_RIGHT | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
+    { HashStr("sprite/loading/loading/Scene_0000/arrow_03"), { .Flags = CSD_ALIGN_BOTTOM_RIGHT | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
 
     // maindisplay
     { HashStr("sprite/maindisplay/power"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
@@ -1986,7 +2036,7 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     // pausemenu
     { HashStr("sprite/pausemenu/pausemenu/pause_menu"), { CSD_SCALE } },
     { HashStr("sprite/pausemenu/pausemenu/pause_menu_cursor"), { CSD_SCALE } },
-    { HashStr("sprite/pausemenu/pausemenu/mission"), { CSD_SCALE } },
+    { HashStr("sprite/pausemenu/pausemenu/mission"), { CSD_ALIGN_BOTTOM | CSD_SCALE } },
 
     // radarmap_cover
     { HashStr("sprite/radarmap_cover/radarmap_cover/Scene_0000"), { CSD_RADARMAP | CSD_ALIGN_TOP_RIGHT | CSD_SCALE } },

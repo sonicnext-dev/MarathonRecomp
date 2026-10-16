@@ -387,7 +387,7 @@ uint32_t XWriteFile(FileHandle* hFile, const void* lpBuffer, uint32_t nNumberOfB
 
 std::filesystem::path FileSystem::ResolvePath(const std::string_view& path, bool checkForMods)
 {
-    LOGF_IMPL(Utility, "Game", "Loading file: \"{}\"", path.data());
+    LOGF_UTILITY("Game", "Loading file: \"{}\"", path.data());
     if (checkForMods)
     {
         std::filesystem::path resolvedPath = ModLoader::ResolvePath(path);
@@ -395,7 +395,7 @@ std::filesystem::path FileSystem::ResolvePath(const std::string_view& path, bool
         if (!resolvedPath.empty())
         {
             if (ModLoader::s_isLogTypeConsole)
-                LOGF_IMPL(Utility, "Mod Loader", "Loading file: \"{}\"", reinterpret_cast<const char*>(resolvedPath.u8string().c_str()));
+                LOGF_UTILITY("Mod Loader", "Loading file: \"{}\"", reinterpret_cast<const char*>(resolvedPath.u8string().c_str()));
 
             return resolvedPath;
         }

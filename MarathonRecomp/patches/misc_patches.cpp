@@ -5,8 +5,7 @@
 #include <user/achievement_manager.h>
 #include <app.h>
 
-// TODO (Hyper): implement achievements menu.
-void AchievementManagerUnlockMidAsmHook(PPCRegister& id)
+void UnlockAchievement(PPCRegister& id)
 {
     AchievementManager::Unlock(id.u32);
 }
@@ -26,12 +25,12 @@ void SetLifeBarAnimation(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5, PPCR
 
         if (Config::RestoreContextualHUDColours)
         {
-            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Shadow] = 1.0f;
-            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Omega] = 1.0f;
-            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Rouge] = 1.0f;
-            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Silver] = 2.0f;
-            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Amy] = 2.0f;
-            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Blaze] = 2.0f;
+            *Sonicteam::Globals::ms_apMainDisplayColours[Sonicteam::Character_Shadow] = 1.0f;
+            *Sonicteam::Globals::ms_apMainDisplayColours[Sonicteam::Character_Omega] = 1.0f;
+            *Sonicteam::Globals::ms_apMainDisplayColours[Sonicteam::Character_Rouge] = 1.0f;
+            *Sonicteam::Globals::ms_apMainDisplayColours[Sonicteam::Character_Silver] = 2.0f;
+            *Sonicteam::Globals::ms_apMainDisplayColours[Sonicteam::Character_Amy] = 2.0f;
+            *Sonicteam::Globals::ms_apMainDisplayColours[Sonicteam::Character_Blaze] = 2.0f;
         }
 
         s_initContextualHUD = true;
@@ -43,8 +42,8 @@ void SetLifeBarAnimation(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5, PPCR
 
     // Redirect "life_ber_anime" to "life_bar_anime", as they
     // actually spelt "bar" correctly in the tag XNCP scene names...
-    if ((pCsdObject->m_pCsdResource->m_FilePath == "sprite/tagdisplay_1p" ||
-        pCsdObject->m_pCsdResource->m_FilePath == "sprite/tagdisplay_2p") &&
+    if ((pCsdObject->m_pCsdResource->m_MgrResourceName == "sprite/tagdisplay_1p" ||
+        pCsdObject->m_pCsdResource->m_MgrResourceName == "sprite/tagdisplay_2p") &&
         strcmp(pSceneName, "life_ber_anime") == 0)
     {
         r4.u32 = g_memory.MapVirtual(s_lifeBarSceneName);
@@ -122,7 +121,7 @@ PPC_FUNC(sub_822CE930)
     if (!Config::ControlTutorial || Config::SlidingAttack != ESlidingAttack::X)
     {
         // Get global flag for Sonic's Antigravity being unlocked to remove "hint_all03_h26_so".
-        guest_stack_var<Sonicteam::Message::MsgMissionGetGlobalFlag> msgGetSonicAntigravityFlag(6001);
+        guest_stack_var<Sonicteam::Message::Mission::MsgGetGlobalFlag> msgGetSonicAntigravityFlag(6001);
         pGame->m_pMissionCore->ProcessMessage(msgGetSonicAntigravityFlag.get());
 
         if (msgGetSonicAntigravityFlag->FlagValue != 0 && strcmp(rMessageName, "hint_twn01_e02_tl") == 0)
@@ -135,11 +134,11 @@ PPC_FUNC(sub_822CE930)
     if (!Config::ControlTutorial || Config::LightDash != ELightDash::X)
     {
         // Get global flag for Sonic's Light Dash being unlocked to remove "hint_twn01_e01_tl".
-        guest_stack_var<Sonicteam::Message::MsgMissionGetGlobalFlag> msgGetSonicLightDashFlag(6000);
+        guest_stack_var<Sonicteam::Message::Mission::MsgGetGlobalFlag> msgGetSonicLightDashFlag(6000);
         pGame->m_pMissionCore->ProcessMessage(msgGetSonicLightDashFlag.get());
 
         // Get global flag for Shadow's Light Dash being unlocked to remove "hint_twn01_e44_rg".
-        guest_stack_var<Sonicteam::Message::MsgMissionGetGlobalFlag> msgGetShadowLightDashFlag(6012);
+        guest_stack_var<Sonicteam::Message::Mission::MsgGetGlobalFlag> msgGetShadowLightDashFlag(6012);
         pGame->m_pMissionCore->ProcessMessage(msgGetShadowLightDashFlag.get());
 
         auto isSonicLightDashHint = msgGetSonicLightDashFlag->FlagValue != 0 && strcmp(rMessageName, "hint_twn01_e00_tl") == 0;

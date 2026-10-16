@@ -35,8 +35,6 @@ struct XmaPlayback {
     uint32_t partialBytesRead = 0;
     uint32_t streamPosition = 0;
 
-    bool bAllowedToDecode = false;
-
     // ffmpeg
     AVCodecContext *codec_ctx = nullptr;
     const AVCodec *codec = nullptr;
@@ -62,8 +60,8 @@ struct XmaPlayback {
     size_t inputBuffer1Size = 0;
     size_t inputBuffer2Size = 0;
     uint32_t validInputBuffer = 0;
-    uint32_t inputBuffer1Valid = 0;
-    uint32_t inputBuffer2Valid = 0;
+    std::atomic<uint32_t> inputBuffer1Valid;
+    std::atomic<uint32_t> inputBuffer2Valid;
     uint32_t currentBuffer = 0;
 
     uint32_t outputBufferValid = 1;

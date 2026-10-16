@@ -9,7 +9,7 @@ static class MainMenuCameraUpdateEvent : public ContextHookEvent<Sonicteam::Main
 public:
     void Update(Sonicteam::MainMenuTask* pThis, float deltaTime) override
     {
-        auto pMainMode = pThis->GetDocMode<Sonicteam::MainMode>();
+        auto pMainMode = pThis->GetParent<Sonicteam::MainMode>();
 
         if (!pMainMode)
             return;
@@ -21,7 +21,7 @@ g_mainMenuCameraUpdateEvent{};
 
 void CameraPatches::Init()
 {
-    MainMenuTaskPatches::Events.push_back(&g_mainMenuCameraUpdateEvent);
+    MainMenuTaskPatches::s_events.push_back(&g_mainMenuCameraUpdateEvent);
 }
 
 void CameraImp_SetFOV(PPCRegister& f1)

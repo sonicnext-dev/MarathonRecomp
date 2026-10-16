@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/SoX/Graphics/FrameGP.h>
+#include <Sonicteam/SoX/Math/Vector.h>
 
 namespace Sonicteam
 {
