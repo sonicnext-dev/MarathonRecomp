@@ -98,6 +98,11 @@ address = 0x82607CD4
 registers = ["r4"]
 
 [[midasm_hook]]
+name = "ScaleDepthStencilMidAsmHook"
+address = 0x825B1DF8
+registers = ["r3", "r4"]
+
+[[midasm_hook]]
 name = "TitleTask_SetDefaultOption"
 address = 0x82512B10
 registers = ["r3", "r4"]
