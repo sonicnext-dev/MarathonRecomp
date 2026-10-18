@@ -209,7 +209,7 @@ static void DrawAchievement(int rowIndex, Achievement& achievement, bool isUnloc
     ImVec2 imageMax = { min.x + imageMarginX + imageSize, min.y + imageMarginY + imageSize };
 
     if (isCurrent)
-        DrawArrowCursor({ rowMin.x + Scale(2, true), imageMin.y + ((imageMax.y - imageMin.y) / 3)}, g_time, false);
+        DrawArrowCursor({ rowMin.x + Scale(2, true), imageMin.y + ((imageMax.y - imageMin.y) / 3) }, g_time, false);
 
     if (!isUnlocked)
         SetShaderModifier(IMGUI_SHADER_MODIFIER_GRAYSCALE);
@@ -471,8 +471,10 @@ void AchievementMenu::Draw()
                 g_down = false;
                 g_downWasHeld = downIsHeld;
             }
-
-            drawList->PopClipRect();
+            else
+            {
+                drawList->PopClipRect();
+            }
 
             break;
         }

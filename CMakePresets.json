@@ -102,10 +102,6 @@
                     "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
                     "type": "FILEPATH"
                 },
-                "VCPKG_TARGET_TRIPLET": {
-                    "value": "x64-linux",
-                    "type": "STRING"
-                },
                 "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/toolchains/linux-clang.cmake"
             },
             "environment": {

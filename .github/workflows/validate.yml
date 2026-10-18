@@ -12,10 +12,14 @@ concurrency:
   
 jobs:
   build-linux:
-    name: Build Linux
-    runs-on: ubuntu-24.04
+    name: Build Linux (${{ matrix.arch.name }}, ${{ matrix.preset }})
+    runs-on: ${{ matrix.arch.runner }}
     strategy:
       matrix:
+        arch: [
+          {"name": "x86_64", "runner": "ubuntu-26.04"},
+          {"name": "arm64", "runner": "ubuntu-26.04-arm"},
+        ]
         preset: ["linux-debug", "linux-release", "linux-relwithdebinfo"]
     env:
       LLVM_VERSION: 18
@@ -35,9 +39,9 @@ jobs:
           path: ./private
 
       - name: Setup ccache
-        uses: hendrikmuhs/ccache-action@v1.2.24
+        uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: ccache-${{ runner.os }}-${{ matrix.preset }}
+          key: ccache-${{ runner.os }}-${{ matrix.arch.name }}-${{ matrix.preset }}
   
       - name: Cache vcpkg
         uses: actions/cache@v6
@@ -45,9 +49,9 @@ jobs:
           path: |
             ./thirdparty/vcpkg/downloads
             ./thirdparty/vcpkg/packages
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
+          key: vcpkg-${{ runner.os }}-${{ matrix.arch.name }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: |
-              vcpkg-${{ runner.os }}-
+              vcpkg-${{ runner.os }}-${{ matrix.arch.name }}-
 
       - name: Install Dependencies (Linux)
         run: |-
@@ -60,29 +64,19 @@ jobs:
           libdbus-1-dev libibus-1.0-dev libudev-dev libusb-1.0-0-dev liburing-dev \
           libfribidi-dev libthai-dev
 
-      - name: Cache ccache Directory
-        uses: actions/cache@v6
-        with:
-          path: /tmp/ccache
-          key: ccache-${{ runner.os }}-${{ matrix.preset }}
-
       - name: Prepare Project
         run: cp ./private/* ./MarathonRecompLib/private
   
       - name: Configure Project
-        env:
-          CCACHE_DIR: /tmp/ccache
         run: cmake . --preset ${{ env.CMAKE_PRESET }} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
 
       - name: Build Project
-        env:
-          CCACHE_DIR: /tmp/ccache
         run: cmake --build ./out/build/${{ env.CMAKE_PRESET }} --target MarathonRecomp
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v7
         with:
-          name: MarathonRecomp-Linux-${{ env.CMAKE_PRESET }}
+          name: MarathonRecomp-Linux-${{ matrix.arch.name }}-${{ env.CMAKE_PRESET }}
           path: ./out/build/${{ env.CMAKE_PRESET }}/MarathonRecomp/MarathonRecomp
   build-windows:
     name: Build Windows (${{ matrix.preset.name }})
@@ -114,7 +108,7 @@ jobs:
           path: .\private
 
       - name: Setup ccache
-        uses: hendrikmuhs/ccache-action@v1.2.24
+        uses: hendrikmuhs/ccache-action@v1.2
         with:
           key: ccache-${{ runner.os }}-${{ matrix.preset.name }}
 
@@ -173,12 +167,19 @@ jobs:
           name: MarathonRecomp-Windows-${{ env.CMAKE_PRESET }}-PDB
           path: .\out\build\${{ env.CMAKE_PRESET }}\MarathonRecomp\MarathonRecomp.pdb
   build-flatpak:
-    name: Build Flatpak
-    runs-on: ubuntu-24.04
+    name: Build Flatpak (${{ matrix.arch.name }})
+    runs-on: ${{ matrix.arch.runner }}
+    strategy:
+      matrix:
+        arch: [
+          {"name": "x86_64", "runner": "ubuntu-26.04"},
+          {"name": "arm64", "runner": "ubuntu-26.04-arm"},
+        ]
     env:
       FLATPAK_ID: io.github.sonicnext_dev.marathonrecomp
       FREEDESKTOP_VERSION: 23.08
       LLVM_VERSION: 18
+      CCACHE_DIR: /tmp/ccache
 
     steps:
       - name: Checkout Repository
@@ -199,10 +200,9 @@ jobs:
           sudo apt install -y flatpak-builder ccache
 
       - name: Setup ccache
-        uses: actions/cache@v6
+        uses: hendrikmuhs/ccache-action@v1.2
         with:
-          path: /tmp/ccache
-          key: ccache-${{ runner.os }}
+          key: ccache-${{ runner.os }}-${{ matrix.arch.name }}-flatpak
 
       - name: Prepare Project
         run: cp ./private/* ./MarathonRecompLib/private  
@@ -216,14 +216,13 @@ jobs:
       - name: Build Flatpak
         run: |
           echo "commit_message=$(git log -1 --pretty=%s)" >> $GITHUB_ENV
-          export CCACHE_DIR=/tmp/ccache
           flatpak-builder --user --force-clean --install-deps-from=flathub --repo=repo --ccache builddir ./flatpak/${{ env.FLATPAK_ID }}.json
           flatpak build-bundle repo ./${{ env.FLATPAK_ID }}.flatpak ${{ env.FLATPAK_ID }} --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v7
         with:
-          name: MarathonRecomp-Flatpak
+          name: MarathonRecomp-Flatpak-${{ matrix.arch.name }}
           path: ./${{ env.FLATPAK_ID }}.flatpak
   build-macos:
     name: Build macOS
@@ -249,7 +248,7 @@ jobs:
           path: ./private
 
       - name: Setup ccache
-        uses: hendrikmuhs/ccache-action@v1.2.24
+        uses: hendrikmuhs/ccache-action@v1.2
         with:
           key: ccache-${{ runner.os }}-${{ matrix.arch }}-${{ matrix.preset }}
 
@@ -267,24 +266,14 @@ jobs:
         run: |
           brew install ninja
 
-      - name: Cache ccache Directory
-        uses: actions/cache@v6
-        with:
-          path: /tmp/ccache
-          key: ccache-${{ runner.os }}-${{ matrix.arch }}-${{ matrix.preset }}
-
       - name: Prepare Project
         run: |
           cp ./private/* ./MarathonRecompLib/private
 
       - name: Configure Project
-        env:
-          CCACHE_DIR: /tmp/ccache
         run: cmake . --preset ${{ env.CMAKE_PRESET }} -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
 
       - name: Build Project
-        env:
-          CCACHE_DIR: /tmp/ccache
         run: cmake --build ./out/build/${{ env.CMAKE_PRESET }} --target MarathonRecomp
 
       - name: Pack Release
