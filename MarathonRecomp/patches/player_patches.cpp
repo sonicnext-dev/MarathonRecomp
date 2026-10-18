@@ -1,8 +1,18 @@
 #include <api/Marathon.h>
 #include <cpu/guest_stack_var.h>
+#include <hid/message/messages.h>
+#include <hid/hid.h>
 #include <os/logger.h>
 #include <user/config.h>
 #include <app.h>
+
+void OnRegisterPlayerActor(PPCRegister& r25)
+{
+    const auto pObject = reinterpret_cast<Sonicteam::Player::Object*>(g_memory.Translate(r25.u32));
+
+    if (const auto pUser = HID::GetManager()->GetUser(pObject->GetPlayerIndex()))
+        pUser->BroadcastMessage<HID::MsgSetCharacterLED>(pObject->m_Name.c_str());
+}
 
 // Sonicteam::Player::Object::Update
 PPC_FUNC_IMPL(__imp__sub_82195500);
@@ -174,6 +184,22 @@ bool PlayerDebugMode_RemapDebugExitButton(PPCRegister& r30)
     }
 
     return false;
+}
+
+// Sonicteam::Player::Object::ProcMsgAmigoChange
+PPC_FUNC_IMPL(__imp__sub_8219A5B0);
+PPC_FUNC(sub_8219A5B0)
+{
+    const auto pAmigo = reinterpret_cast<Sonicteam::Player::Object*>(base + ctx.r3.u32);
+    const auto pMsgAmigoChange = static_cast<Sonicteam::Message::Player::MsgAmigoChange*>(reinterpret_cast<Sonicteam::SoX::IMessage*>(base + ctx.r4.u32));
+
+    if (const auto pPlayer = static_cast<Sonicteam::Player::Object*>(pMsgAmigoChange->pPlayer.get()))
+    {
+        if (const auto pUser = HID::GetManager()->GetUser(pPlayer->GetPlayerIndex()))
+            pUser->BroadcastMessage<HID::MsgSetCharacterLED>(pAmigo->m_Name.c_str());
+    }
+
+    __imp__sub_8219A5B0(ctx, base);
 }
 
 bool AntigravityRetainsMomentum()

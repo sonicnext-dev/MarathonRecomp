@@ -774,3 +774,8 @@ address = 0x825F7190
 name = "ResourceMgrKeyOverride"
 address = 0x825823C8
 registers = ["r1", "r28"]
+
+[[midasm_hook]]
+name = "OnRegisterPlayerActor"
+address = 0x821749F0
+registers = ["r25"]
