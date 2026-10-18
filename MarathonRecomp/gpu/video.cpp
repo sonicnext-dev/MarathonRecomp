@@ -451,10 +451,10 @@ static std::vector<PipelineTask> g_pipelineTaskQueue;
 
 static std::thread::id g_mainThreadId = std::this_thread::get_id();
 
-class LoadingPipelineCompilationEvent : public HookEvent
+class LoadingPipelineCompilationEvent : public ContextHookEvent<Sonicteam::LoadingTask>
 {
 public:
-    void Postfix() override
+    void Postfix(Sonicteam::LoadingTask* in_pThis) override
     {
         assert(std::this_thread::get_id() == g_mainThreadId);
 

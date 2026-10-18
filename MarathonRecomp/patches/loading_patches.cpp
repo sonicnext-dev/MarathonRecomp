@@ -3,12 +3,24 @@
 #include <user/config.h>
 #include <app.h>
 
-void DocMarathon_SetLoading_StartThread()
+Sonicteam::LoadingTask* GetLoadingTask(PPCRegister& r31)
+{
+    const auto pDoc = reinterpret_cast<Sonicteam::DocMarathonState*>(g_memory.Translate(r31.u32));
+
+    return pDoc->m_pRootTask->Find<Sonicteam::LoadingTask>("LoadingTask");
+}
+
+void DocMarathon_SetLoading_StartThread(PPCRegister& r31)
 {
     App::s_isLoading = true;
 
+    const auto pLoadingTask = GetLoadingTask(r31);
+
+    if (!pLoadingTask)
+        return;
+
     for (auto& event : LoadingPatches::Events)
-        event->Prefix();
+        event->Prefix(pLoadingTask);
 }
 
 // Sonicteam::HUDLoading::Update
@@ -27,18 +39,23 @@ PPC_FUNC(sub_824D7340)
     if (App::s_isLoading)
     {
         for (auto& event : LoadingPatches::Events)
-            event->Update(ctx.f1.f64);
+            event->Update(pHUDLoading->GetParent<Sonicteam::LoadingTask>(), ctx.f1.f64);
     }
 
     __imp__sub_824D7340(ctx, base);
 }
 
-void DocMarathon_SetLoading_JoinThread_Prefix()
+void DocMarathon_SetLoading_JoinThread_Prefix(PPCRegister& r31)
 {
+    const auto pLoadingTask = GetLoadingTask(r31);
+
+    if (!pLoadingTask)
+        return;
+
     // Run postfix events before joining to allow the loading
     // animation to continue, if more work needs to be done.
     for (auto& event : LoadingPatches::Events)
-        event->Postfix();
+        event->Postfix(pLoadingTask);
 }
 
 void DocMarathon_SetLoading_JoinThread_Postfix()
