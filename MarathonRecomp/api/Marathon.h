@@ -266,6 +266,7 @@
 #include "Sonicteam/SoX/Scenery/CameraImp.h"
 #include "Sonicteam/SoX/Scenery/Drawable.h"
 #include "Sonicteam/SoX/Thread.h"
+#include "Sonicteam/StageTitleTask.h"
 #include "Sonicteam/StdImageFilters/BurnoutBlurFilter.h"
 #include "Sonicteam/StdImageFilters/SingleTechniqueFilter.h"
 #include "Sonicteam/System/CreateStatic.h"
