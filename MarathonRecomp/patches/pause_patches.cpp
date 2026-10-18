@@ -87,19 +87,12 @@ PPC_FUNC(sub_824F05D8)
 
         if (pMsgChangeState->State == 0)
         {
-            App::s_pApp->m_pDoc->m_pRootTask->WalkSiblings([](Sonicteam::SoX::Engine::Task* in_pTask) -> bool
+            if (const auto pHUDMessageWindow = App::s_pApp->m_pDoc->m_pRootTask->Find<Sonicteam::HUDMessageWindow>("HUDMessageWindow"))
             {
-                if (strcmp(in_pTask->GetName(), "HUDMessageWindow") != 0)
-                    return true;
-
-                const auto pHUDMessageWindow = static_cast<Sonicteam::HUDMessageWindow*>(in_pTask);
-
                 // Close message window upon pausing.
                 guest_stack_var<Sonicteam::Message::HUDMessageWindow::MsgChangeState> msgChangeState(2);
                 pHUDMessageWindow->ProcessMessage(msgChangeState.get());
-
-                return false;
-            });
+            }
         }
     }
 
@@ -151,7 +144,7 @@ PPC_FUNC(sub_82509870)
 
     if (Config::RestoreLoadingTransition || Config::RestorePauseMissionText)
     {
-        App::s_pApp->m_pDoc->m_pRootTask->WalkSiblings([&](Sonicteam::SoX::Engine::Task* in_pTask) -> bool
+        App::s_pApp->m_pDoc->m_pRootTask->Walk([&](Sonicteam::SoX::Engine::Task* in_pTask) -> bool
         {
             const auto pTaskName = in_pTask->GetName();
 

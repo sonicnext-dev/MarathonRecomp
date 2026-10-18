@@ -24,6 +24,25 @@ namespace Sonicteam::SoX::Engine
         xpointer<Doc> m_pDoc;
         LinkNode<Task> m_lnTask;
 
+        template <typename T = Task>
+        T* Find(const char* in_pName)
+        {
+            T* result{};
+
+            Walk([&](Task* in_pNode) -> bool
+            {
+                if (strcmp(in_pNode->GetName(), in_pName) == 0)
+                {
+                    result = static_cast<T*>(in_pNode);
+                    return false;
+                }
+
+                return true;
+            });
+
+            return result;
+        }
+
         Task* GetFirstDependency() const
         {
             if (!m_pDependencies)
@@ -48,15 +67,15 @@ namespace Sonicteam::SoX::Engine
             return (T*)m_pDoc.get();
         }
 
-        void WalkSiblings(std::function<bool(Task*)> in_walker, bool in_walkDependencies = true)
+        void Walk(const std::function<bool(Task*)>& in_rVisitor, bool in_walkDependencies = true)
         {
             for (auto& rTask : *this)
             {
-                if (!in_walker(&rTask))
+                if (!in_rVisitor(&rTask))
                     break;
 
                 if (in_walkDependencies && rTask.m_pDependencies)
-                    rTask.m_pDependencies->WalkSiblings(in_walker);
+                    rTask.m_pDependencies->Walk(in_rVisitor);
             }
         }
 

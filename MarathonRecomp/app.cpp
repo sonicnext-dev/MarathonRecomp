@@ -108,7 +108,7 @@ PPC_FUNC(sub_825EA610)
     if (pDoc->m_PauseFlags.get())
     {
         // Update visual tasks for resizing buffers on pause.
-        pDoc->m_pRootTask->WalkSiblings([](Sonicteam::SoX::Engine::Task* in_pTask) -> bool
+        pDoc->m_pRootTask->Walk([](Sonicteam::SoX::Engine::Task* in_pTask) -> bool
         {
             if ((in_pTask->m_Flags & 4) != 0)
                 return true;
