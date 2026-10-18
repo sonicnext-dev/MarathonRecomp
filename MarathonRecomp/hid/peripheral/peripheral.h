@@ -35,7 +35,7 @@ namespace HID
 
         virtual XAMINPUT_GAMEPAD GetState() override
         {
-            return {};
+            return m_State = {};
         }
 
         virtual const XAMINPUT_VIBRATION& GetVibration() const override

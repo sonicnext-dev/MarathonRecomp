@@ -66,26 +66,15 @@ namespace HID
     {
         if (io_rMessage.Is<MsgRegisterKeyboard>())
         {
-            const auto userId = static_cast<MsgRegisterKeyboard*>(&io_rMessage)->UserID;
+            auto pUser = GetUser(static_cast<MsgRegisterKeyboard*>(&io_rMessage)->UserID);
 
-            // Unregister all keyboards.
-            BroadcastMessage<MsgUnregisterKeyboard>();
+            if (!pUser)
+                pUser = GetUser(0);
 
-            auto spKeyboard = std::make_shared<KeyboardSDL>();
-            auto spMouse = std::make_shared<MouseSDL>();
+            ProcessMessage<MsgUnregisterKeyboard>();
 
-            if (const auto pUser = GetUser(userId))
-            {
-                // Attach keyboard to user.
-                pUser->Attach(std::move(spKeyboard));
-                pUser->Attach(std::move(spMouse));
-            }
-            else if (userId == 0)
-            {
-                // Attach keyboard as user.
-                Attach(std::move(spKeyboard));
-                GetUser(0)->Attach(std::move(spMouse));
-            }
+            pUser->Attach(std::move(std::make_shared<KeyboardSDL>()));
+            pUser->Attach(std::move(std::make_shared<MouseSDL>()));
         }
 
         return PeripheralManager::OnProcessMessage(io_rMessage);

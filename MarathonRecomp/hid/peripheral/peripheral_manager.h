@@ -8,6 +8,9 @@ namespace HID
 {
     class PeripheralManager : public IPeripheralManager
     {
+    protected:
+        IPeripheral* m_LastMutator{};
+
     public:
         virtual bool Init();
 
@@ -27,5 +30,6 @@ namespace HID
         virtual bool OnProcessMessage(IMessage& io_rMessage) override;
 
         PeripheralUser* GetUser(const uint32_t in_userId);
+        std::vector<PeripheralUser*> FindUsers(const IPeripheral* in_pPeripheral);
     };
 }

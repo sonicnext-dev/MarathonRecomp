@@ -95,9 +95,6 @@ namespace HID
 
     bool PeripheralUser::OnProcessMessage(IMessage& io_rMessage)
     {
-        if (io_rMessage.Is<MsgUnregisterKeyboard>())
-            GetManager()->Detach(GetManager()->Find(Keyboard::ID));
-
         return true;
     }
 }

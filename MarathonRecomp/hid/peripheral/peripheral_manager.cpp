@@ -3,6 +3,8 @@
 #include <vector>
 #include <hid/event/loading_led_event.h>
 #include <hid/message/messages.h>
+#include <hid/peripheral/keyboard.h>
+#include <hid/peripheral/mouse.h>
 #include <os/logger.h>
 #include <patches/loading_patches.h>
 
@@ -20,7 +22,7 @@ namespace HID
 
     bool PeripheralManager::Init()
     {
-        // Register keyboard to first gamepad.
+        // Register keyboard to first user.
         ProcessMessage<MsgRegisterKeyboard>(0);
 
         static LoadingLEDEvent loadingLedEvent{};
@@ -31,61 +33,63 @@ namespace HID
 
     bool PeripheralManager::Attach(std::shared_ptr<IPeripheral> in_spPeripheral)
     {
-        if (!in_spPeripheral)
-            return false;
+        bool result{};
 
-        Register(in_spPeripheral);
+        if (!in_spPeripheral)
+            return result;
+
+        const auto keyboardUsers = FindUsers(Find(Keyboard::ID));
+
+        // Unregister keyboard, we'll set it back up later.
+        ProcessMessage<MsgUnregisterKeyboard>();
+
+        const auto peripheralName = in_spPeripheral->GetName();
 
         for (int i = 0; i < g_users.size(); i++)
         {
             if (!g_users[i].IsFree())
                 continue;
 
-            const auto peripheralName = in_spPeripheral->GetName();
-
-            if (g_users[i].Attach(in_spPeripheral))
+            if (g_users[i].Attach(std::move(in_spPeripheral)))
             {
+                result = true;
                 LOGFN("Peripheral attached for User {}: {}", i + 1, peripheralName);
-                return true;
             }
             else
             {
                 LOGFN_ERROR("Peripheral failed to attach for User {}: {}", i + 1, peripheralName);
-                break;
             }
+
+            break;
         }
 
-        return false;
+        for (const auto& rUser : keyboardUsers)
+        {
+            // Only register one keyboard.
+            ProcessMessage<MsgRegisterKeyboard>(rUser->ID);
+            break;
+        }
+
+        return result;
     }
 
     bool PeripheralManager::Detach(IPeripheral* in_pPeripheral)
     {
-        bool result{};
-
         if (!in_pPeripheral)
-            return result;
+            return false;
 
-        result = true;
+        const auto peripheralName = in_pPeripheral->GetName();
 
         for (int i = 0; i < g_users.size(); i++)
         {
             if (g_users[i].IsFree())
                 continue;
 
-            const auto peripheralName = in_pPeripheral->GetName();
-
             if (g_users[i].Detach(in_pPeripheral))
-            {
                 LOGFN("Peripheral detached for User {}: {}", i + 1, peripheralName);
-            }
-            else
-            {
-                LOGFN_ERROR("Peripheral failed to detach for User {}: {}", i + 1, peripheralName);
-                result = false;
-            }
         }
 
-        return result;
+        return true;
     }
 
     bool PeripheralManager::Detach()
@@ -95,13 +99,25 @@ namespace HID
 
     IPeripheral* PeripheralManager::GetMutator()
     {
-        for (auto& rUser : g_users)
-        {
-            if (const auto pMutator = rUser.GetMutator())
-                return pMutator;
-        }
+        IPeripheral* result{};
+        bool found{};
 
-        return nullptr;
+        Walk([&](IPeripheral* in_pNode) -> bool
+        {
+            if (in_pNode->IsMutator())
+            {
+                found = true;
+                result = in_pNode;
+                return false;
+            }
+
+            return true;
+        });
+
+        if (found)
+            m_LastMutator = result;
+
+        return m_LastMutator;
     }
 
     IPeripheral* PeripheralManager::Find(const uint32_t in_id)
@@ -131,40 +147,41 @@ namespace HID
         if (!in_spPeripheral)
             return false;
 
-        bool found{};
-
-        for (const auto& spPeripheral : g_peripherals)
+        for (auto& spPeripheral : g_peripherals)
         {
             if (spPeripheral->GetID() == in_spPeripheral->GetID())
             {
-                found = true;
-                break;
+                LOGFN("Peripheral updated: {}", in_spPeripheral->GetName());
+
+                spPeripheral = std::move(in_spPeripheral);
+
+                return true;
             }
         }
 
-        if (!found)
-        {
-            g_peripherals.push_back(in_spPeripheral);
+        LOGFN("Peripheral registered: {}", in_spPeripheral->GetName());
 
-            LOGFN("Peripheral registered: {}", in_spPeripheral->GetName());
-        }
+        g_peripherals.push_back(std::move(in_spPeripheral));
 
         return true;
     }
 
     bool PeripheralManager::Unregister(IPeripheral* in_pPeripheral)
     {
+        if (!in_pPeripheral)
+            return false;
+
         const auto peripheralName = in_pPeripheral->GetName();
 
-        const auto result = std::erase_if(g_peripherals, [&](std::shared_ptr<IPeripheral> in_spPeripheral)
+        const auto count = std::erase_if(g_peripherals, [&](std::shared_ptr<IPeripheral> in_spPeripheral)
         {
             return in_spPeripheral->GetID() == in_pPeripheral->GetID();
         });
 
-        if (result)
+        if (count)
             LOGFN("Peripheral unregistered: {}", peripheralName);
 
-        return result;
+        return true;
     }
 
     bool PeripheralManager::OnBroadcastMessage(IMessage& io_rMessage)
@@ -191,6 +208,12 @@ namespace HID
 
             pMsgGetPeripheralUsers->Users = FindUsers(pMsgGetPeripheralUsers->pSender);
         }
+        else if (io_rMessage.Is<MsgUnregisterKeyboard>())
+        {
+            Detach(Find(Keyboard::ID));
+            Detach(Find(Mouse::ID));
+        }
+
         return true;
     }
 

@@ -11,7 +11,7 @@ namespace HID
     public:
         virtual XAMINPUT_GAMEPAD GetState() override
         {
-            m_State = XAMINPUT_GAMEPAD();
+            m_State = {};
 
             if (!GameWindow::s_isFocused)
                 return m_State;
