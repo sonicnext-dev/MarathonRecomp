@@ -194,7 +194,7 @@ public:
             return true;
         }
 
-        if (!noModals || !hid::IsInputAllowed())
+        if (!noModals || !HID::IsInputAllowed())
             return false;
 
         constexpr auto axisValueRange = 32767.0f;
@@ -1368,7 +1368,7 @@ bool InstallerWizard::Run(std::filesystem::path installPath, bool skipGame)
     // Guarantee that one controller is initialised.
     // We'll rely on SDL's event loop to get the controller events.
     XAMINPUT_STATE inputState{};
-    hid::GetState(0, &inputState);
+    HID::GetState(0, &inputState);
 
     if (skipGame)
     {

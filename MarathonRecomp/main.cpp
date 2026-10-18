@@ -58,7 +58,7 @@ void HostStartup()
     CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 #endif
 
-    hid::Init();
+    HID::GetManager()->Init();
 }
 
 // Name inspired from nt's entry point

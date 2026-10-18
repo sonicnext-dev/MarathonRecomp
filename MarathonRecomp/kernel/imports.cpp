@@ -273,14 +273,14 @@ uint32_t XamUserGetSigninInfo(uint32_t userIndex, uint32_t flags, XUSER_SIGNIN_I
 {
     if (userIndex == 0)
     {
-        memset(info, 0, sizeof(*info));
+        memset(info, 0, sizeof(XUSER_SIGNIN_INFO));
         info->xuid = 0xB13EBABEBABEBABE;
         info->SigninState = 1;
-        strcpy(info->Name, "SWA");
+        strcpy(info->Name, "Player");
         return 0;
     }
 
-    return 0x00000525; // ERROR_NO_SUCH_USER
+    return ERROR_NO_SUCH_USER;
 }
 
 void XamShowSigninUI()

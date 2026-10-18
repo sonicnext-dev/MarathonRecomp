@@ -17,10 +17,10 @@ CONFIG_DEFINE_ENUM_LOCALISED("Input", EControllerIcons, ControllerIcons, EContro
 CONFIG_DEFINE_ENUM_LOCALISED("Input", ELightDash, LightDash, ELightDash::X, false);
 CONFIG_DEFINE_ENUM_LOCALISED("Input", ESlidingAttack, SlidingAttack, ESlidingAttack::X, false);
 
-CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_A, SDL_SCANCODE_S, false);
-CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_B, SDL_SCANCODE_D, false);
-CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_X, SDL_SCANCODE_A, false);
-CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_Y, SDL_SCANCODE_W, false);
+CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_South, SDL_SCANCODE_S, false);
+CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_East, SDL_SCANCODE_D, false);
+CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_West, SDL_SCANCODE_A, false);
+CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_North, SDL_SCANCODE_W, false);
 CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_DPadUp, SDL_SCANCODE_UNKNOWN, false);
 CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_DPadDown, SDL_SCANCODE_UNKNOWN, false);
 CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_DPadLeft, SDL_SCANCODE_Q, false);
@@ -29,12 +29,14 @@ CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_Start, SDL_SCANCODE_RETURN, fal
 CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_Back, SDL_SCANCODE_BACKSPACE, false);
 CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_LeftTrigger, SDL_SCANCODE_1, false);
 CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_RightTrigger, SDL_SCANCODE_3, false);
-CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_LeftBumper, SDL_SCANCODE_UNKNOWN, false);
-CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_RightBumper, SDL_SCANCODE_UNKNOWN, false);
+CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_LeftShoulder, SDL_SCANCODE_UNKNOWN, false);
+CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_RightShoulder, SDL_SCANCODE_UNKNOWN, false);
+CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_LeftStick, SDL_SCANCODE_UNKNOWN, false);
 CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_LeftStickUp, SDL_SCANCODE_UP, false);
 CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_LeftStickDown, SDL_SCANCODE_DOWN, false);
 CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_LeftStickLeft, SDL_SCANCODE_LEFT, false);
 CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_LeftStickRight, SDL_SCANCODE_RIGHT, false);
+CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_RightStick, SDL_SCANCODE_UNKNOWN, false);
 CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_RightStickUp, SDL_SCANCODE_UNKNOWN, false);
 CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_RightStickDown, SDL_SCANCODE_UNKNOWN, false);
 CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Key_RightStickLeft, SDL_SCANCODE_UNKNOWN, false);

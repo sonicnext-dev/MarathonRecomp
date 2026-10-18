@@ -1,5 +1,7 @@
 #include "app.h"
 #include <gpu/video.h>
+#include <hid/message/messages.h>
+#include <hid/hid.h>
 #include <install/installer.h>
 #include <kernel/function.h>
 #include <os/process.h>
@@ -105,7 +107,9 @@ PPC_FUNC(sub_825EA610)
 
     __imp__sub_825EA610(ctx, base);
 
-    if (pDoc->m_PauseFlags.get())
+    const auto isPaused = pDoc->m_PauseFlags.get();
+
+    if (isPaused)
     {
         // Update visual tasks for resizing buffers on pause.
         pDoc->m_pRootTask->Walk([](Sonicteam::SoX::Engine::Task* in_pTask) -> bool
@@ -121,6 +125,8 @@ PPC_FUNC(sub_825EA610)
             return true;
         });
     }
+
+    HID::GetManager()->BroadcastMessage<HID::MsgSetMouseCapture>(pDoc->GetDocMode("GameMode") && !isPaused);
 }
 
 PPC_FUNC_IMPL(__imp__sub_82582648);

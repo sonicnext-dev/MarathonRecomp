@@ -255,5 +255,5 @@ public:
     static void Load();
     static void Save();
 
-    static bool IsControllerIconsPS3();
+    static EControllerIcons GetPreferredControllerIcons(uint32_t in_userId = 0);
 };

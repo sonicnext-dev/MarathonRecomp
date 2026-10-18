@@ -1,0 +1,11 @@
+#pragma once
+
+#include "msg_peripheral_attached.h"
+#include "msg_peripheral_detached.h"
+#include "msg_register_keyboard.h"
+#include "msg_set_character_led.h"
+#include "msg_set_led.h"
+#include "msg_set_mouse_capture.h"
+#include "msg_set_prohibited_inputs.h"
+#include "msg_set_vibration.h"
+#include "msg_unregister_keyboard.h"

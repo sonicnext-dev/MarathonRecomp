@@ -135,7 +135,10 @@ set(MARATHON_RECOMP_APU_CXX_SOURCES
 
 set(MARATHON_RECOMP_HID_CXX_SOURCES
     "hid/hid.cpp"
-    "hid/driver/sdl_hid.cpp"
+    "hid/peripheral/peripheral_manager.cpp"
+    "hid/peripheral/peripheral_observer.cpp"
+    "hid/peripheral/peripheral_user.cpp"
+    "hid/driver/sdl/peripheral/peripheral_manager_sdl.cpp"
 )
 
 set(MARATHON_RECOMP_PATCHES_CXX_SOURCES

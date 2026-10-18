@@ -1,4 +1,5 @@
 #include "MainMenuTask_patches.h"
+#include <hid/hid.h>
 #include <ui/achievement_menu.h>
 #include <ui/button_window.h>
 #include <ui/options_menu.h>
@@ -19,35 +20,47 @@ PPC_FUNC(sub_824FFCF8)
             pOptionsSelect->m_Priority = -1.0f;
     }
 
-    if (pMainMenuTask->m_State == Sonicteam::MainMenuTask::MainMenuState_MainMenu && pMainMenuTask->m_MainMenuSelectedIndex == 3)
+    switch (pMainMenuTask->m_State)
     {
-        if (!OptionsMenu::s_isVisible && (pMainMenuTask->m_PressedButtons.get() & 0x10) != 0)
+        case Sonicteam::MainMenuTask::MainMenuState_MainMenu:
         {
-            OptionsMenu::s_pMainMenuTask = pMainMenuTask;
-            OptionsMenu::Open();
-    
-            Game_PlaySound("main_deside");
-    
-            pMainMenuTask->m_State = Sonicteam::MainMenuTask::MainMenuState_MainMenu;
-            pMainMenuTask->m_PressedButtons = 0;
+            if (pMainMenuTask->m_MainMenuSelectedIndex != 3)
+                break;
 
-            guest_stack_var<Sonicteam::Message::HUDMainMenu::MsgSetCursor> msgSetCursor
-            (
-                Sonicteam::HUDMainMenu::HUDMainMenuState_MainCursorOutro,
-                pMainMenuTask->m_MainMenuSelectedIndex
-            );
+            if (!OptionsMenu::s_isVisible && (pMainMenuTask->m_PressedButtons.get() & 0x10) != 0)
+            {
+                OptionsMenu::s_pMainMenuTask = pMainMenuTask;
+                OptionsMenu::Open();
 
-            // Play cursor outro animation.
-            pHUDMainMenu->ProcessMessage(msgSetCursor.get());
+                Game_PlaySound("main_deside");
 
-            guest_stack_var<Sonicteam::Message::HUDMainMenu::MsgTransition> msgTransition
-            (
-                Sonicteam::HUDMainMenu::HUDMainMenuState_OptionsOutro, 3
-            );
+                pMainMenuTask->m_State = Sonicteam::MainMenuTask::MainMenuState_MainMenu;
+                pMainMenuTask->m_PressedButtons = 0;
 
-            // Play main menu -> options transition.
-            pHUDMainMenu->ProcessMessage(msgTransition.get());
+                guest_stack_var<Sonicteam::Message::HUDMainMenu::MsgSetCursor> msgSetCursor
+                (
+                    Sonicteam::HUDMainMenu::HUDMainMenuState_MainCursorOutro,
+                    pMainMenuTask->m_MainMenuSelectedIndex
+                );
+
+                // Play cursor outro animation.
+                pHUDMainMenu->ProcessMessage(msgSetCursor.get());
+
+                guest_stack_var<Sonicteam::Message::HUDMainMenu::MsgTransition> msgTransition
+                (
+                    Sonicteam::HUDMainMenu::HUDMainMenuState_OptionsOutro, 3
+                );
+
+                // Play main menu -> options transition.
+                pHUDMainMenu->ProcessMessage(msgTransition.get());
+            }
+
+            break;
         }
+
+        // TODO: assign keyboard to P1 and gamepad to P2, if accepted here using the keyboard.
+        case Sonicteam::MainMenuTask::MainMenuState_Multiplayer:
+            break;
     }
 
     static bool s_isReturningFromOptionsMenu{};

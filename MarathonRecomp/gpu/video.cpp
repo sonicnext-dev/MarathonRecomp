@@ -4811,8 +4811,11 @@ static void SetTexture(GuestDevice* device, uint32_t index, GuestTexture* textur
 {
     // printf("SetTexture: %x %d %x\n", device, index, texture);
 
-    if (Config::IsControllerIconsPS3() && texture != nullptr && texture->patchedTexture != nullptr)
+    if (Config::GetPreferredControllerIcons() == EControllerIcons::PlayStation &&
+        texture != nullptr && texture->patchedTexture != nullptr)
+    {
         texture = texture->patchedTexture.get();
+    }
 
     RenderCommand cmd;
     cmd.type = RenderCommandType::SetTexture;

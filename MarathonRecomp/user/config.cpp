@@ -892,13 +892,16 @@ void Config::Save()
     }
 }
 
-bool Config::IsControllerIconsPS3()
+EControllerIcons Config::GetPreferredControllerIcons(uint32_t in_userId)
 {
-    auto result = Config::ControllerIcons == EControllerIcons::PlayStation;
+    if (Config::ControllerIcons != EControllerIcons::Auto)
+        return Config::ControllerIcons;
 
-    if (Config::ControllerIcons == EControllerIcons::Auto)
-        result = hid::g_inputDeviceController == hid::EInputDevice::PlayStation;
+    if (const auto pMutator = HID::GetManager()->GetUser(in_userId)->GetMutator())
+    {
+        if (pMutator->GetVendor() == HID::PeripheralVendor::PlayStation)
+            return EControllerIcons::PlayStation;
+    }
 
-    return result;
+    return EControllerIcons::Xbox;
 }
-
