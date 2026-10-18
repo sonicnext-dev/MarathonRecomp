@@ -14,10 +14,10 @@ PPC_FUNC(sub_82222428)
 
     if (*pListenerNormal->m_pIsListening)
     {
-        auto& rPadState = pInputManager->m_PadState;
+        auto& rPadState = pInputManager->PadState;
 
         // Add B down support to the normal input listener.
-        if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_B))
+        if (rPadState.IsDown(Sonicteam::SoX::Input::PadButton_East))
             pListenerNormal->m_State = pListenerNormal->m_State.get() | INPUT_LISTENER_B_DOWN;
     }
 }

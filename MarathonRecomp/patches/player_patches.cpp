@@ -20,7 +20,7 @@ PPC_FUNC(sub_82195500)
                 case 1:
                 {
                     // Toggle debug posture on Select press.
-                    if (pPlayer->m_SetupModuleIndexPrefix == 1 && pInputManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_Select))
+                    if (pPlayer->m_SetupModuleIndexPrefix == 1 && pInputManager->PadState.IsPressed(Sonicteam::SoX::Input::PadButton_Back))
                     {
                         pPlayer->m_SetupModuleIndexPostfix = 2;
 
@@ -33,7 +33,7 @@ PPC_FUNC(sub_82195500)
                 case 2:
                 {
                     // Toggle camera volume collision on B press.
-                    if (pInputManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_B))
+                    if (pInputManager->PadState.IsPressed(Sonicteam::SoX::Input::PadButton_East))
                     {
                         auto pGame = App::s_pApp->GetGame();
                         auto pZock = pPlayer->GetPlugin<Sonicteam::Player::Zock>("zock");
@@ -51,14 +51,14 @@ PPC_FUNC(sub_82195500)
         }
 
         // Toggle demo camera on right stick press.
-        if (Config::RestoreDemoCameraMode && pInputManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_RightStick))
+        if (Config::RestoreDemoCameraMode && pInputManager->PadState.IsPressed(Sonicteam::SoX::Input::PadButton_RightStick))
         {
             auto pCameraman = static_cast<Sonicteam::Camera::Cameraman*>(pPlayer->m_pCameraman.get());
 
             if (auto pCameraMode = pCameraman->m_spCameraModeManager->m_spCameraMode.get())
             {
                 guest_stack_var<Sonicteam::Message::Camera::Cameraman::MsgChangeMode> msgChangeMode;
-                msgChangeMode->PadID = pInputManager->m_PadID;
+                msgChangeMode->PadID = pInputManager->ID;
                 msgChangeMode->TargetActorID = pPlayer->m_ActorID;
                 msgChangeMode->IsDemoCamera = pCameraMode->m_pVftable.ptr != 0x82002004;
 
@@ -167,7 +167,7 @@ bool PlayerDebugMode_RemapDebugExitButton(PPCRegister& r30)
 {
     auto pPadState = (Sonicteam::SoX::Input::PadState*)g_memory.Translate(r30.u32);
 
-    if (pPadState->IsPressed(Sonicteam::SoX::Input::KeyState_Select))
+    if (pPadState->IsPressed(Sonicteam::SoX::Input::PadButton_Back))
     {
         LOGN("Debug Mode: Disabled");
         return true;

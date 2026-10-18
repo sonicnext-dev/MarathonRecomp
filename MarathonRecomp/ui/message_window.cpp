@@ -216,21 +216,21 @@ void MessageWindow::Draw()
 
         if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManagers[0])
         {
-            auto& rPadState = spInputManager->m_PadState;
+            auto& rPadState = spInputManager->PadState;
 
             g_joypadAxis.y = -rPadState.LeftStickVertical;
 
-            if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DPadUp))
+            if (rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_DPadUp))
                 g_joypadAxis.y = 1.0f;
 
-            if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DPadDown))
+            if (rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_DPadDown))
                 g_joypadAxis.y = -1.0f;
 
-            g_isAccepted = rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_A);
-            g_isDeclined = rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_B);
+            g_isAccepted = rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_South);
+            g_isDeclined = rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_East);
 
-            if (isKeyboard)
-                g_isAccepted = g_isAccepted || rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_Start);
+            if (peripheralType == HID::PeripheralType::Keyboard)
+                g_isAccepted = g_isAccepted || rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_Start);
         }
     }
 
