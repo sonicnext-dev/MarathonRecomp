@@ -21,7 +21,7 @@ namespace Sonicteam::SoX
         stdx::string m_ResourceNameInitial;
         stdx::string m_ResourceName;
         bool m_IsInResourceManager;
-        MARATHON_INSERT_PADDING(3);
+        MARATHON_INSERT_PADDING(0x03);
 
         void Init(void* file, uint64_t size)
         {
@@ -43,6 +43,10 @@ namespace Sonicteam::SoX
         }
     };
 
+    MARATHON_ASSERT_OFFSETOF(IResource, m_MgrRegistryIndex, 0x08);
     MARATHON_ASSERT_OFFSETOF(IResource, m_MgrResourceName, 0x0C);
+    MARATHON_ASSERT_OFFSETOF(IResource, m_ResourceNameInitial, 0x28);
+    MARATHON_ASSERT_OFFSETOF(IResource, m_ResourceName, 0x44);
+    MARATHON_ASSERT_OFFSETOF(IResource, m_IsInResourceManager, 0x60);
     MARATHON_ASSERT_SIZEOF(IResource, 0x64);
 }
