@@ -3,7 +3,9 @@
 #include <hid/driver/sdl/peripheral/keyboard_sdl.h>
 #include <hid/message/messages.h>
 #include <hid/peripheral/gamepad.h>
+#include <hid/hid.h>
 #include <SDL3/SDL.h>
+#include <app.h>
 
 namespace HID
 {
@@ -57,7 +59,7 @@ namespace HID
 
         virtual XAMINPUT_GAMEPAD GetState() override
         {
-            m_State = XAMINPUT_GAMEPAD();
+            m_State = {};
 
             const auto pGamepad = GetContext<SDL_Gamepad>();
 
@@ -111,8 +113,27 @@ namespace HID
         {
             if (io_rMessage.Is<MsgPeripheralAttached>())
             {
-                // TODO: use player colour.
-                // ProcessMessage<MsgSetLED>(255, 0, 0);
+                MsgGetPeripheralUsers msgGetPeripheralUsers(this);
+                GetManager()->ProcessMessage(msgGetPeripheralUsers);
+
+                const auto pApp = App::s_pApp;
+
+                if (!pApp)
+                    return false;
+
+                const auto pGame = App::s_pApp->GetGame();
+
+                if (!pGame)
+                    return false;
+
+                for (const auto& rUser : msgGetPeripheralUsers.Users)
+                {
+                    // In the event that this gamepad is reconnected, this sets the
+                    // gamepad LED to the colour associated with the character for
+                    // this user.
+                    if (const auto pPlayer = pGame->GetPlayer(rUser->ID))
+                        ProcessMessage<MsgSetCharacterLED>(pPlayer->m_Name.c_str());
+                }
             }
             else if (io_rMessage.Is<MsgSetCharacterLED>())
             {

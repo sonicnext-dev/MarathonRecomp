@@ -1,5 +1,6 @@
 #pragma once
 
+#include "msg_get_peripheral_users.h"
 #include "msg_peripheral_attached.h"
 #include "msg_peripheral_detached.h"
 #include "msg_register_keyboard.h"

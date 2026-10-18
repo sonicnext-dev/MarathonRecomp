@@ -88,7 +88,7 @@ namespace HID
             }
         }
 
-        return true;
+        return PeripheralManager::OnProcessMessage(io_rMessage);
     }
 
     PeripheralManager* GetManager()

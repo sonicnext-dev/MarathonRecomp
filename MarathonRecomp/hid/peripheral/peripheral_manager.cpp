@@ -171,9 +171,12 @@ namespace HID
     {
         auto result = true;
 
-        for (auto& user : g_users)
+        for (auto& rUser : g_users)
         {
-            if (!user.BroadcastMessage(io_rMessage))
+            if (!rUser.BroadcastMessage(io_rMessage))
+                result = false;
+
+            if (!rUser.ProcessMessage(io_rMessage))
                 result = false;
         }
 
@@ -182,6 +185,12 @@ namespace HID
 
     bool PeripheralManager::OnProcessMessage(IMessage& io_rMessage)
     {
+        if (io_rMessage.Is<MsgGetPeripheralUsers>())
+        {
+            const auto pMsgGetPeripheralUsers = static_cast<MsgGetPeripheralUsers*>(&io_rMessage);
+
+            pMsgGetPeripheralUsers->Users = FindUsers(pMsgGetPeripheralUsers->pSender);
+        }
         return true;
     }
 
@@ -191,5 +200,29 @@ namespace HID
             return nullptr;
 
         return &g_users[in_userId];
+    }
+
+    std::vector<PeripheralUser*> PeripheralManager::FindUsers(const IPeripheral* in_pPeripheral)
+    {
+        std::vector<PeripheralUser*> result{};
+
+        if (!in_pPeripheral)
+            return result;
+
+        for (auto& rUser : g_users)
+        {
+            rUser.Walk([&](IPeripheral* in_pNode) -> bool
+            {
+                if (in_pNode->GetID() == in_pPeripheral->GetID())
+                {
+                    result.push_back(&rUser);
+                    return false;
+                }
+
+                return true;
+            });
+        }
+
+        return result;
     }
 }

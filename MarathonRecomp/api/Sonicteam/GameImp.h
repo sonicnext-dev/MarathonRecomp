@@ -9,6 +9,7 @@
 #include <Sonicteam/SoX/Scenery/CameraImp.h>
 #include <Sonicteam/SoX/LinkNode.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
+#include <Sonicteam/ActorManager.h>
 #include <Sonicteam/Game.h>
 #include <Sonicteam/LoadingTask.h>
 #include <Sonicteam/PauseAdapter.h>
@@ -19,7 +20,11 @@
 
 namespace Sonicteam
 {
-    class ActorManager;
+    namespace Player
+    {
+        class Object;
+    }
+
     class GameScript;
 
     class GameImp : public Game
@@ -104,6 +109,14 @@ namespace Sonicteam
         SoX::RefSharedPointer<SoX::Physics::World> m_spPhysicsWorld;
         xpointer<void> m_pMyCollisionFilter;
         MARATHON_INSERT_PADDING(0x0C);
+
+        Player::Object* GetPlayer(uint32_t in_index) const
+        {
+            if (in_index >= 4)
+                return nullptr;
+
+            return m_spActorManager->Find<Player::Object>(m_PlayerData[in_index].ActorID);
+        }
 
         int GetPlayerIndexFromActorID(uint32_t actorId) const
         {

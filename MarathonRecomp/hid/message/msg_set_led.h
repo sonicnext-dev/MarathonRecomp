@@ -13,7 +13,7 @@ namespace HID
         MsgSetLED(const uint8_t in_r, const uint8_t in_g, const uint8_t in_b)
             : Color({ in_r, in_g, in_b }) {}
 
-        MsgSetLED(const Sonicteam::SoX::RGB888& in_rgb)
-            : Color(in_rgb) {}
+        MsgSetLED(const Sonicteam::SoX::RGB888& in_rColor)
+            : Color(in_rColor) {}
     };
 }
