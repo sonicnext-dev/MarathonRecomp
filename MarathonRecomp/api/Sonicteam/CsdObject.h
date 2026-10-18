@@ -10,7 +10,7 @@ namespace Sonicteam
     class CsdObject : public SoX::RefCountObject, public CsdLink
     {
     public:
-        MARATHON_INSERT_PADDING(4);
+        MARATHON_INSERT_PADDING(0x04);
         xpointer<Chao::CSD::CProject> m_pCsdProject;
         xpointer<CsdResource> m_pCsdResource;
     };

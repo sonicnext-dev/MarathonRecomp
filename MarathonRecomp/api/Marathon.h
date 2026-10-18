@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Chao/CSD/Core/csdBase.h"
+#include "Chao/CSD/Core/csdColor.h"
 #include "Chao/CSD/Core/csdRCObject.h"
 #include "Chao/CSD/Core/csdTexList.h"
+#include "Chao/CSD/Manager/csdmMotionPalette.h"
 #include "Chao/CSD/Manager/csdmMotionPattern.h"
 #include "Chao/CSD/Manager/csdmNode.h"
 #include "Chao/CSD/Manager/csdmNodeObserver.h"
@@ -208,6 +210,7 @@
 #include "Sonicteam/SoX/Audio/IAudioEngine.h"
 #include "Sonicteam/SoX/Audio/Player.h"
 #include "Sonicteam/SoX/Audio/PlayerImpl.h"
+#include "Sonicteam/SoX/Color.h"
 #include "Sonicteam/SoX/Component.h"
 #include "Sonicteam/SoX/Engine/Application.h"
 #include "Sonicteam/SoX/Engine/Doc.h"
