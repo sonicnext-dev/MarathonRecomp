@@ -36,8 +36,14 @@ namespace HID
 
         virtual bool OnProcessMessage(IMessage& io_rMessage) override
         {
-            if (io_rMessage.Is<MsgSetMouseCapture>())
+            if (io_rMessage.Is<MsgPeripheralDetached>())
+            {
+                SDL_SetWindowRelativeMouseMode(GameWindow::s_pWindow, false);
+            }
+            else if (io_rMessage.Is<MsgSetMouseCapture>())
+            {
                 SDL_SetWindowRelativeMouseMode(GameWindow::s_pWindow, static_cast<MsgSetMouseCapture*>(&io_rMessage)->Enabled);
+            }
 
             return Mouse::OnProcessMessage(io_rMessage);
         }
