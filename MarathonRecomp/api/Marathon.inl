@@ -12,8 +12,10 @@ constexpr double DEG2RAD = 0.01745329238474369;
 #define MARATHON_CONCAT2(x, y) x##y
 #define MARATHON_CONCAT(x, y) MARATHON_CONCAT2(x, y)
 
-#define MARATHON_INSERT_PADDING(length) \
-    uint8_t MARATHON_CONCAT(pad, __LINE__)[length]
+#define MARATHON_INSERT_PADDING(length)             \
+private:                                            \
+    uint8_t MARATHON_CONCAT(pad, __LINE__)[length]; \
+public:
 
 #define MARATHON_ASSERT_OFFSETOF(type, field, offset) \
     static_assert(offsetof(type, field) == offset)
