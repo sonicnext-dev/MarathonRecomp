@@ -79,17 +79,28 @@ namespace Sonicteam::Player
             return nullptr;
         }
 
+        int GetPlayerIndex()
+        {
+            if (const auto pGameMode = GetDoc<DocMarathonState>()->GetDocMode<GameMode>("GameMode"))
+                return pGameMode->GetGame()->GetPlayerIndexFromActorID(m_ActorID);
+
+            return -1;
+        }
+
         SoX::Input::Manager* GetInputManager()
         {
             if (!m_IsPlayer)
                 return nullptr;
 
-            auto pDoc = GetDoc<DocMarathonState>();
-            auto pGame = pDoc->GetDocMode<GameMode>()->GetGame();
-            auto playerIndex = pGame->PlayerActorIDToIndex(m_ActorID);
-            auto padID = pDoc->m_aPadIDs[playerIndex];
+            const auto playerIndex = GetPlayerIndex();
 
-            return pDoc->m_vspInputManagers[padID].get();
+            if (playerIndex < 0)
+                return nullptr;
+
+            const auto pDoc = GetDoc<DocMarathonState>();
+            const auto& rPadID = pDoc->m_aPadIDs[playerIndex];
+
+            return pDoc->m_vspInputManagers[rPadID].get();
         }
     };
 

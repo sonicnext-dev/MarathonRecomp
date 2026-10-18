@@ -84,7 +84,7 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(0x0C);
         be<uint32_t> m_Field1180;
         xpointer<GameScript> m_pGameScript;
-        be<uint32_t> m_aObjPlayerActorID[0x0F];
+        be<uint32_t> m_PlayerActorIDs[15];
         boost::shared_ptr<ActorManager> m_spActorManager;
         xpointer<TextBook> m_pSystemTextBook;
         MARATHON_INSERT_PADDING(0x08);
@@ -105,7 +105,7 @@ namespace Sonicteam
         xpointer<void> m_pMyCollisionFilter;
         MARATHON_INSERT_PADDING(0x0C);
 
-        int PlayerActorIDToIndex(int32_t actorId) const
+        int GetPlayerIndexFromActorID(uint32_t actorId) const
         {
             for (int i = 0; i < 4; i++)
             {
@@ -169,7 +169,7 @@ namespace Sonicteam
     MARATHON_ASSERT_OFFSETOF(GameImp, m_IsStage, 0x1170);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_Field1180, 0x1180);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pGameScript, 0x1184);
-    MARATHON_ASSERT_OFFSETOF(GameImp, m_aObjPlayerActorID, 0x1188);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_PlayerActorIDs, 0x1188);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_spActorManager, 0x11C4);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pSystemTextBook, 0x11CC);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_vvspCameras, 0x11D8);
