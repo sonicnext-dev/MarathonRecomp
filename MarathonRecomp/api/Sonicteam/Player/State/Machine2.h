@@ -10,11 +10,11 @@ namespace Sonicteam::Player::State
     class Machine2 : public SoX::AI::StateMachine<IContext>, public IMachine
     {
     public:
-        MARATHON_INSERT_PADDING(0x4C);
+        MARATHON_INSERT_PADDING(0x38);
 
-        inline SoX::AI::StateMachine<IContext>* GetBase()
+        StateMachine<IContext>* GetBase()
         {
-            return (SoX::AI::StateMachine<IContext>*)((uint8_t*)this - 0x20);
+            return (StateMachine<IContext>*)((uint8_t*)this - 0x20);
         }
     };
 
