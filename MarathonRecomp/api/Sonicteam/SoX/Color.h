@@ -102,7 +102,7 @@ namespace Sonicteam::SoX
             if (sizeof(Data) != sizeof(in_rColor.Data))
                 return;
 
-            memcpy_s(Data, sizeof(Data), in_rColor.Data, sizeof(in_rColor.Data));
+            memcpy(Data, in_rColor.Data, sizeof(Data));
         }
 
         MAKE_COLOR_CHANNEL(R);
