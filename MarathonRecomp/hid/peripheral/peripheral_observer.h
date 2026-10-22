@@ -18,6 +18,7 @@ namespace HID
         virtual bool Detach() override;
 
         virtual IPeripheral* GetMutator() override;
+        virtual IPeripheral* GetLastMutator() override;
 
         virtual IPeripheral* Find(const uint32_t in_id) override;
         virtual bool Walk(const PeripheralWalker& in_rVisitor) override;

@@ -1,11 +1,11 @@
 #pragma once
 
 #include <Marathon.inl>
-#include <Sonicteam/SoX/RefCountObject.h>
+#include <Sonicteam/SoX/Physics/ShapeCastListener.h>
 
 namespace Sonicteam::SoX::Physics
 {
-    class IntersectListener : public SoX::RefCountObject
+    class IntersectListener : public ShapeCastListener
     {
     public:
         MARATHON_INSERT_PADDING(0x0C);

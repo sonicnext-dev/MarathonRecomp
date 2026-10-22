@@ -6,4 +6,6 @@
 namespace Sonicteam::Player::State
 {
     class CommonObject : public Object2 {};
+
+    MARATHON_ASSERT_SIZEOF(CommonObject, 0x0C);
 }

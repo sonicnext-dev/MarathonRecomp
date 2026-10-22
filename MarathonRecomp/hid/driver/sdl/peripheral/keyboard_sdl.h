@@ -21,60 +21,60 @@ namespace HID
             if (pKeyboardState[SDL_SCANCODE_LALT])
                 return m_State;
 
-            if (pKeyboardState[Config::Key_LeftStickUp])
+            if (pKeyboardState[Config::Keyboard_LeftStickUp])
                 m_State.sThumbLY = 32767;
-            if (pKeyboardState[Config::Key_LeftStickDown])
+            if (pKeyboardState[Config::Keyboard_LeftStickDown])
                 m_State.sThumbLY = -32768;
-            if (pKeyboardState[Config::Key_LeftStickLeft])
+            if (pKeyboardState[Config::Keyboard_LeftStickLeft])
                 m_State.sThumbLX = -32768;
-            if (pKeyboardState[Config::Key_LeftStickRight])
+            if (pKeyboardState[Config::Keyboard_LeftStickRight])
                 m_State.sThumbLX = 32767;
 
-            if (pKeyboardState[Config::Key_RightStickUp])
+            if (pKeyboardState[Config::Keyboard_RightStickUp])
                 m_State.sThumbRY = 32767;
-            if (pKeyboardState[Config::Key_RightStickDown])
+            if (pKeyboardState[Config::Keyboard_RightStickDown])
                 m_State.sThumbRY = -32768;
-            if (pKeyboardState[Config::Key_RightStickLeft])
+            if (pKeyboardState[Config::Keyboard_RightStickLeft])
                 m_State.sThumbRX = -32768;
-            if (pKeyboardState[Config::Key_RightStickRight])
+            if (pKeyboardState[Config::Keyboard_RightStickRight])
                 m_State.sThumbRX = 32767;
 
-            if (pKeyboardState[Config::Key_LeftTrigger])
+            if (pKeyboardState[Config::Keyboard_LeftTrigger])
                 m_State.bLeftTrigger = 0xFF;
-            if (pKeyboardState[Config::Key_RightTrigger])
+            if (pKeyboardState[Config::Keyboard_RightTrigger])
                 m_State.bRightTrigger = 0xFF;
 
-            if (pKeyboardState[Config::Key_DPadUp])
+            if (pKeyboardState[Config::Keyboard_DPadUp])
                 m_State.wButtons |= XAMINPUT_GAMEPAD_DPAD_UP;
-            if (pKeyboardState[Config::Key_DPadDown])
+            if (pKeyboardState[Config::Keyboard_DPadDown])
                 m_State.wButtons |= XAMINPUT_GAMEPAD_DPAD_DOWN;
-            if (pKeyboardState[Config::Key_DPadLeft])
+            if (pKeyboardState[Config::Keyboard_DPadLeft])
                 m_State.wButtons |= XAMINPUT_GAMEPAD_DPAD_LEFT;
-            if (pKeyboardState[Config::Key_DPadRight])
+            if (pKeyboardState[Config::Keyboard_DPadRight])
                 m_State.wButtons |= XAMINPUT_GAMEPAD_DPAD_RIGHT;
 
-            if (pKeyboardState[Config::Key_Start])
+            if (pKeyboardState[Config::Keyboard_Start])
                 m_State.wButtons |= XAMINPUT_GAMEPAD_START;
-            if (pKeyboardState[Config::Key_Back])
+            if (pKeyboardState[Config::Keyboard_Back])
                 m_State.wButtons |= XAMINPUT_GAMEPAD_BACK;
 
-            if (pKeyboardState[Config::Key_LeftShoulder])
+            if (pKeyboardState[Config::Keyboard_LeftShoulder])
                 m_State.wButtons |= XAMINPUT_GAMEPAD_LEFT_SHOULDER;
-            if (pKeyboardState[Config::Key_RightShoulder])
+            if (pKeyboardState[Config::Keyboard_RightShoulder])
                 m_State.wButtons |= XAMINPUT_GAMEPAD_RIGHT_SHOULDER;
 
-            if (pKeyboardState[Config::Key_LeftStick])
+            if (pKeyboardState[Config::Keyboard_LeftStick])
                 m_State.wButtons |= XAMINPUT_GAMEPAD_LEFT_THUMB;
-            if (pKeyboardState[Config::Key_RightStick])
+            if (pKeyboardState[Config::Keyboard_RightStick])
                 m_State.wButtons |= XAMINPUT_GAMEPAD_RIGHT_THUMB;
 
-            if (pKeyboardState[Config::Key_South])
+            if (pKeyboardState[Config::Keyboard_South])
                 m_State.wButtons |= XAMINPUT_GAMEPAD_A;
-            if (pKeyboardState[Config::Key_East])
+            if (pKeyboardState[Config::Keyboard_East])
                 m_State.wButtons |= XAMINPUT_GAMEPAD_B;
-            if (pKeyboardState[Config::Key_West])
+            if (pKeyboardState[Config::Keyboard_West])
                 m_State.wButtons |= XAMINPUT_GAMEPAD_X;
-            if (pKeyboardState[Config::Key_North])
+            if (pKeyboardState[Config::Keyboard_North])
                 m_State.wButtons |= XAMINPUT_GAMEPAD_Y;
 
             m_LastState = m_State;

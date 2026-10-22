@@ -26,18 +26,18 @@ namespace Sonicteam::SoX::Input
 
     struct PadState
     {
-        be<PadButton> LastButtons;
-        be<PadButton> InvertedLastButtons;
+        be<PadButton> Buttons;
+        be<PadButton> ButtonsMask;
         be<PadButton> PressedButtons;
         be<PadButton> ReleasedButtons;
-        be<float> LeftStickHorizontal;
-        be<float> LeftStickVertical;
-        be<short> LeftStickHorizontalS16;
-        be<short> LeftStickVerticalS16;
-        be<float> RightStickHorizontal;
-        be<float> RightStickVertical;
-        be<short> RightStickHorizontalS16;
-        be<short> RightStickVerticalS16;
+        be<float> LeftStickX;
+        be<float> LeftStickY;
+        be<short> LeftStickXRaw;
+        be<short> LeftStickYRaw;
+        be<float> RightStickX;
+        be<float> RightStickY;
+        be<short> RightStickXRaw;
+        be<short> RightStickYRaw;
 
         bool IsDown(const PadButton buttons) const;
         bool IsPressed(const PadButton buttons) const;
@@ -52,18 +52,18 @@ namespace Sonicteam::SoX::Input
         MARATHON_INSERT_PADDING(0x28);
     };
 
-    MARATHON_ASSERT_OFFSETOF(PadState, LastButtons, 0x00);
-    MARATHON_ASSERT_OFFSETOF(PadState, InvertedLastButtons, 0x04);
+    MARATHON_ASSERT_OFFSETOF(PadState, Buttons, 0x00);
+    MARATHON_ASSERT_OFFSETOF(PadState, ButtonsMask, 0x04);
     MARATHON_ASSERT_OFFSETOF(PadState, PressedButtons, 0x08);
     MARATHON_ASSERT_OFFSETOF(PadState, ReleasedButtons, 0x0C);
-    MARATHON_ASSERT_OFFSETOF(PadState, LeftStickHorizontal, 0x10);
-    MARATHON_ASSERT_OFFSETOF(PadState, LeftStickVertical, 0x14);
-    MARATHON_ASSERT_OFFSETOF(PadState, LeftStickHorizontalS16, 0x18);
-    MARATHON_ASSERT_OFFSETOF(PadState, LeftStickVerticalS16, 0x1A);
-    MARATHON_ASSERT_OFFSETOF(PadState, RightStickHorizontal, 0x1C);
-    MARATHON_ASSERT_OFFSETOF(PadState, RightStickVertical, 0x20);
-    MARATHON_ASSERT_OFFSETOF(PadState, RightStickHorizontalS16, 0x24);
-    MARATHON_ASSERT_OFFSETOF(PadState, RightStickVerticalS16, 0x26);
+    MARATHON_ASSERT_OFFSETOF(PadState, LeftStickX, 0x10);
+    MARATHON_ASSERT_OFFSETOF(PadState, LeftStickY, 0x14);
+    MARATHON_ASSERT_OFFSETOF(PadState, LeftStickXRaw, 0x18);
+    MARATHON_ASSERT_OFFSETOF(PadState, LeftStickYRaw, 0x1A);
+    MARATHON_ASSERT_OFFSETOF(PadState, RightStickX, 0x1C);
+    MARATHON_ASSERT_OFFSETOF(PadState, RightStickY, 0x20);
+    MARATHON_ASSERT_OFFSETOF(PadState, RightStickXRaw, 0x24);
+    MARATHON_ASSERT_OFFSETOF(PadState, RightStickYRaw, 0x26);
     MARATHON_ASSERT_SIZEOF(PadState, 0x28);
 
     MARATHON_ASSERT_OFFSETOF(Manager, ID, 0x00);

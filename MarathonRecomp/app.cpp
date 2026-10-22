@@ -107,9 +107,9 @@ PPC_FUNC(sub_825EA610)
 
     __imp__sub_825EA610(ctx, base);
 
-    const auto isPaused = pDoc->m_PauseFlags.get();
+    App::s_isPaused = pDoc->m_PauseFlags.get();
 
-    if (isPaused)
+    if (App::s_isPaused)
     {
         // Update visual tasks for resizing buffers on pause.
         pDoc->m_pRootTask->Walk([](Sonicteam::SoX::Engine::Task* in_pTask) -> bool
@@ -126,7 +126,7 @@ PPC_FUNC(sub_825EA610)
         });
     }
 
-    HID::GetManager()->BroadcastMessage<HID::MsgSetMouseCapture>(pDoc->GetDocMode("GameMode") && !isPaused);
+    HID::GetManager()->BroadcastMessage<HID::MsgSetMouseCapture>(pDoc->GetDocMode("GameMode") && !App::s_isPaused);
 }
 
 PPC_FUNC_IMPL(__imp__sub_82582648);

@@ -120,6 +120,11 @@ namespace HID
         return m_LastMutator;
     }
 
+    IPeripheral* PeripheralManager::GetLastMutator()
+    {
+        return m_LastMutator;
+    }
+
     IPeripheral* PeripheralManager::Find(const uint32_t in_id)
     {
         for (const auto& spPeripheral : g_peripherals)

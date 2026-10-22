@@ -225,7 +225,7 @@ void MessageWindow::Draw()
         {
             auto& rPadState = spInputManager->PadState;
 
-            g_joypadAxis.y = -rPadState.LeftStickVertical;
+            g_joypadAxis.y = -rPadState.LeftStickY;
 
             if (rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_DPadUp))
                 g_joypadAxis.y = 1.0f;

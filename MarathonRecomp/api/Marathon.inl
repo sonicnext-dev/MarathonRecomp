@@ -36,6 +36,21 @@ struct MARATHON_STD_MAP_CONST_CHAR_COMPARE
     }
 };
 
+template <class T, uint32_t pVftable>
+class MARATHON_VIRTUAL_BASE : public T
+{
+public:
+    MARATHON_VIRTUAL_BASE()
+    {
+        *reinterpret_cast<be<uint32_t>*>(this) = pVftable;
+    }
+
+    static T::Vftable* GetVftable()
+    {
+        return static_cast<T::Vftable*>(MmGetHostAddress(pVftable));
+    }
+};
+
 inline std::vector<std::string_view> ParseTextVariables(const char* pVariables)
 {
     std::vector<std::string_view> result{};

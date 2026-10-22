@@ -18,6 +18,7 @@ namespace HID
         virtual bool Detach() = 0;
 
         virtual IPeripheral* GetMutator() = 0;
+        virtual IPeripheral* GetLastMutator() = 0;
 
         virtual IPeripheral* Find(const uint32_t in_id) = 0;
         virtual bool Walk(const PeripheralWalker& in_rVisitor) = 0;

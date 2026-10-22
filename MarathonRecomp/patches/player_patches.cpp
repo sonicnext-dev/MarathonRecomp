@@ -101,7 +101,7 @@ PPC_FUNC(sub_8221A7D8)
         pGauge->m_Value = (100.0f / pTailsContext->m_FlightDuration) * pTailsContext->m_FlightTime;
     }
 
-    auto pTailsFlight = pPlayer->m_spStateMachine->GetBase()->GetState<Sonicteam::Player::State::TailsFlight>();
+    auto pTailsFlight = pPlayer->GetStateMachine<Sonicteam::Player::State::Machine2>()->GetState<Sonicteam::Player::State::TailsFlight>();
     auto pGame = App::s_pApp->GetGame();
 
     auto maturityValue = 1.0f;
@@ -538,7 +538,7 @@ void SonicGauge_FixFlags(PPCRegister& r3, PPCRegister& r31)
                 pSonicContext->m_SlowTime = 0;
             }
         }
-        else if ((pSonicContext->m_PostureFlags.get() & Sonicteam::Player::PostureControl::PostureFlag_Grounded) != 0 || pSonicContext->m_Field24A)
+        else if ((pSonicContext->m_PostureFlags.get() & Sonicteam::Player::PostureControlFlags_Grounded) != 0 || pSonicContext->m_Field24A)
         {
             pSonicGauge->m_GroundedFlags = 0;
         }

@@ -165,6 +165,18 @@ enum class EPlayerCharacter : uint32_t
     Knuckles
 };
 
+enum class EMouseInput : uint32_t
+{
+    Unknown,
+    LeftClick,
+    MiddleClick,
+    RightClick,
+    X1,
+    X2,
+    WheelUp,
+    WheelDown
+};
+
 template<typename T, bool isHidden = false>
 class ConfigDef final : public IConfigDef
 {

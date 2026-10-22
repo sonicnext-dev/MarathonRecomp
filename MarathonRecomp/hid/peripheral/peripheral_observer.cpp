@@ -75,6 +75,11 @@ namespace HID
         return m_LastMutator;
     }
 
+    IPeripheral* PeripheralObserver::GetLastMutator()
+    {
+        return m_LastMutator;
+    }
+
     IPeripheral* PeripheralObserver::Find(const uint32_t in_id)
     {
         IPeripheral* result{};

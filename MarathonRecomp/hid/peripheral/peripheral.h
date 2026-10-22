@@ -50,15 +50,15 @@ namespace HID
             return true;
         }
 
-        virtual bool IsMutator(const uint16_t in_deadzone = 8000) const override
+        virtual bool IsMutator(const float in_deadzone = 0.12f) const override
         {
             return m_State.wButtons != 0 ||
                    m_State.bLeftTrigger != 0 ||
                    m_State.bRightTrigger != 0 ||
-                   std::abs(m_State.sThumbLX) >= in_deadzone ||
-                   std::abs(m_State.sThumbLY) >= in_deadzone ||
-                   std::abs(m_State.sThumbRX) >= in_deadzone ||
-                   std::abs(m_State.sThumbRY) >= in_deadzone;
+                   float(std::abs(m_State.sThumbLX)) / 65535.0f >= in_deadzone ||
+                   float(std::abs(m_State.sThumbLY)) / 65535.0f >= in_deadzone ||
+                   float(std::abs(m_State.sThumbRX)) / 65535.0f >= in_deadzone ||
+                   float(std::abs(m_State.sThumbRY)) / 65535.0f >= in_deadzone;
         }
 
         virtual bool OnBroadcastMessage(IMessage& io_rMessage) override

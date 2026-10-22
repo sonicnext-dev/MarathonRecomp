@@ -2,7 +2,7 @@ namespace Sonicteam::SoX::Input
 {
     inline bool PadState::IsDown(const PadButton buttons) const
     {
-        return (LastButtons & buttons) == buttons;
+        return (Buttons & buttons) == buttons;
     }
 
     inline bool PadState::IsPressed(const PadButton buttons) const

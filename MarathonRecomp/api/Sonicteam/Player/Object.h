@@ -46,7 +46,7 @@ namespace Sonicteam::Player
         SoX::RefSharedPointer<> m_spPackageBinary;
         boost::shared_ptr<void> m_spModel;
         boost::shared_ptr<IPostureControl> m_spPostureControl;
-        boost::shared_ptr<State::Machine2> m_spStateMachine;
+        boost::shared_ptr<State::IMachine> m_spStateMachine;
         boost::shared_ptr<void> m_spGravity;
         boost::shared_ptr<void> m_spImpulse;
         be<uint32_t> m_SetupModuleIndexPrefix;
@@ -61,10 +61,16 @@ namespace Sonicteam::Player
         stdx::string m_Name;
         MARATHON_INSERT_PADDING(0x110);
 
+        template <typename T = State::IMachine>
+        T* GetStateMachine()
+        {
+            return static_cast<T*>(m_spStateMachine.get());
+        }
+
         template <typename T = IGauge>
         T* GetGauge()
         {
-            return (T*)m_spGauge.get();
+            return static_cast<T*>(m_spGauge.get());
         }
 
         template <typename T = IPlugIn>

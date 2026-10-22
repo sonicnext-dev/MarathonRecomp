@@ -284,6 +284,17 @@ CONFIG_DEFINE_ENUM_TEMPLATE(SDL_Scancode)
     { "END CALL", SDL_SCANCODE_ENDCALL },
 };
 
+CONFIG_DEFINE_ENUM_TEMPLATE(EMouseInput)
+{
+    { "LEFT CLICK", EMouseInput::LeftClick },
+    { "MIDDLE CLICK", EMouseInput::MiddleClick },
+    { "RIGHT CLICK", EMouseInput::RightClick },
+    { "X1", EMouseInput::X1 },
+    { "X2", EMouseInput::X2 },
+    { "WHEEL UP", EMouseInput::WheelUp },
+    { "WHEEL DOWN", EMouseInput::WheelDown }
+};
+
 CONFIG_DEFINE_ENUM_TEMPLATE(EChannelConfiguration)
 {
     { "Stereo",   EChannelConfiguration::Stereo },

@@ -451,13 +451,13 @@ void AchievementMenu::Draw()
                 {
                     auto& rPadState = spInputManager->PadState;
 
-                    if (rPadState.IsDown(Sonicteam::SoX::Input::PadButton_DPadUp) || -rPadState.LeftStickVertical > 0.5f)
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::PadButton_DPadUp) || -rPadState.LeftStickY > 0.5f)
                         upIsHeld = true;
 
                     if (!g_upWasHeld && upIsHeld)
                         g_up = true;
 
-                    if (rPadState.IsDown(Sonicteam::SoX::Input::PadButton_DPadDown) || -rPadState.LeftStickVertical < -0.5f)
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::PadButton_DPadDown) || -rPadState.LeftStickY < -0.5f)
                         downIsHeld = true;
 
                     if (!g_downWasHeld && downIsHeld)
