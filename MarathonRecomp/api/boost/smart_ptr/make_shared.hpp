@@ -1,9 +1,10 @@
 #pragma once
 
-#include "boost/smart_ptr/shared_ptr.h"
+#include <boost/smart_ptr/shared_ptr.hpp>
 
 namespace boost
 {
+    // TODO: infer vftables from MARATHON_VIRTUAL_BASE.
     template<typename T>
     shared_ptr<T> make_shared(T* p, uint32_t vftable)
     {

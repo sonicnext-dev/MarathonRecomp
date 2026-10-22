@@ -1,9 +1,9 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <boost/smart_ptr/shared_ptr.hpp>
 #include <Sonicteam/Player/State/CommonContext.h>
 #include <Sonicteam/Player/SonicGauge.h>
-#include <boost/smart_ptr/shared_ptr.h>
 
 namespace Sonicteam::Player::State
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Marathon.inl>
-#include <boost/smart_ptr/shared_ptr.h>
+#include <boost/smart_ptr/shared_ptr.hpp>
 #include <Sonicteam/SoX/Engine/Doc.h>
 #include <Sonicteam/SoX/Engine/Task.h>
 #include <Sonicteam/SoX/RefCountObject.h>

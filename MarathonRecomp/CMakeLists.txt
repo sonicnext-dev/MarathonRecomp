@@ -490,7 +490,7 @@ compile_pixel_shader(resolve_msaa_depth_8x)
 
 function(generate_aggregate_header INPUT_DIRECTORY OUTPUT_FILE)
     get_filename_component(ABS_OUTPUT_FILE "${OUTPUT_FILE}" ABSOLUTE)
-    file(GLOB_RECURSE HEADER_FILES "${INPUT_DIRECTORY}/*.h")
+    file(GLOB_RECURSE HEADER_FILES "${INPUT_DIRECTORY}/*.h" "${INPUT_DIRECTORY}/*.hpp")
     set(HEADER_CONTENT "#pragma once\n\n")
 
     foreach(HEADER_FILE IN LISTS HEADER_FILES)

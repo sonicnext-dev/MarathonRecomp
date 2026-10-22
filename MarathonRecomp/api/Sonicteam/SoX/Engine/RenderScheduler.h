@@ -3,7 +3,7 @@
 #include <Marathon.inl>
 #include <stdx/list.h>
 #include <stdx/string.h>
-#include <boost/smart_ptr/shared_ptr.h>
+#include <boost/smart_ptr/shared_ptr.hpp>
 
 namespace Sonicteam::SoX::Engine
 {

@@ -2,6 +2,7 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/Player/IFlagCommunicator.h>
+#include <boost/smart_ptr/shared_ptr.hpp>
 #include <Sonicteam/Player/State/ICommonContextIF.h>
 #include <Sonicteam/Player/IDynamicLink.h>
 #include <Sonicteam/Player/IVariable.h>
@@ -12,7 +13,6 @@
 #include <Sonicteam/SoX/Engine/Task.h>
 #include <Sonicteam/SoX/Math/Quaternion.h>
 #include <Sonicteam/SoX/Physics/World.h>
-#include <boost/smart_ptr/shared_ptr.h>
 #include <Sonicteam/ActorManager.h>
 
 namespace Sonicteam::Player

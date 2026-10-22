@@ -1,11 +1,11 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <boost/smart_ptr/shared_ptr.hpp>
 #include <Sonicteam/Player/State/ICommonContext.h>
 #include <Sonicteam/Player/IExportPostureRequestFlag.h>
 #include <Sonicteam/Player/IExportWeaponRequestFlag.h>
 #include <Sonicteam/Player/Score.h>
-#include <api/boost/smart_ptr/shared_ptr.h>
 
 namespace Sonicteam::Player::State
 {
