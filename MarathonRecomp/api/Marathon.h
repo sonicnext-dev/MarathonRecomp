@@ -289,6 +289,8 @@
 #include "Sonicteam/sonicXmaPlayer.h"
 #include "boost/smart_ptr/make_shared_object.h"
 #include "boost/smart_ptr/shared_ptr.h"
+#include "boost/move/make_unique.hpp"
+#include "boost/move/unique_ptr.hpp"
 #include "d3dxb.h"
 #include "hk330/hkArray.h"
 #include "hk330/hkReferencedObject.h"
