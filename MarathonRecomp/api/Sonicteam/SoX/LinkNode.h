@@ -194,17 +194,6 @@ namespace Sonicteam::SoX
     class LinkNode : public ILinkNode<LinkNode<T>>
     {
     public:
-        xpointer<T> m_pThis;
-    };
-
-    template <typename T>
-    using LinkedList = LinkNode<T>;
-
-    template <typename T>
-    class LinkRef
-    {
-    public:
-        xpointer<T> m_pElement;
-        LinkNode<LinkRef> m_lnElement;
+        xpointer<T> m_pData;
     };
 }

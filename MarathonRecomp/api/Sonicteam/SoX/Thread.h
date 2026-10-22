@@ -17,7 +17,7 @@ namespace Sonicteam::SoX
         };
 
         xpointer<Vftable> m_pVftable;
-        LinkNode<Thread> m_lnThread;
+        LinkNode<Thread> m_Sibling;
         be<uint32_t> m_StartEvent;
         be<uint32_t> m_EndEvent;
         be<uint32_t> m_ID;
@@ -59,7 +59,7 @@ namespace Sonicteam::SoX
     };
 
     MARATHON_ASSERT_OFFSETOF(Thread, m_pVftable, 0x00);
-    MARATHON_ASSERT_OFFSETOF(Thread, m_lnThread, 0x04);
+    MARATHON_ASSERT_OFFSETOF(Thread, m_Sibling, 0x04);
     MARATHON_ASSERT_OFFSETOF(Thread, m_StartEvent, 0x10);
     MARATHON_ASSERT_OFFSETOF(Thread, m_EndEvent, 0x14);
     MARATHON_ASSERT_OFFSETOF(Thread, m_ID, 0x18);

@@ -516,7 +516,7 @@ void SonicGauge_FixFlags(PPCRegister& r3, PPCRegister& r31)
             pSonicGauge->m_GroundedFlags = 1;
     }
 
-    if (pSonicContext->m_Tornado != 0 || pSonicWeapons->m_GunDrive.m_pElement)
+    if (pSonicContext->m_Tornado != 0 || pSonicWeapons->m_rGunDrive.m_pRef)
     {
         pSonicGauge->m_GroundedFlags = 1;
     }

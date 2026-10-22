@@ -8,7 +8,7 @@
 #include <Sonicteam/Player/IVariable.h>
 #include <Sonicteam/Player/INotification.h>
 #include <Sonicteam/SoX/Engine/Task.h>
-#include <Sonicteam/SoX/LinkNode.h>
+#include <Sonicteam/SoX/RefLinkNode.h>
 
 namespace Sonicteam::Player::Weapon
 {  
@@ -16,10 +16,10 @@ namespace Sonicteam::Player::Weapon
     {
     public:
         MARATHON_INSERT_PADDING(0x4C);
-        SoX::LinkRef<SoX::Engine::Task> m_GunDrive;
+        SoX::RefLinkNode<SoX::Engine::Task> m_rGunDrive;
         MARATHON_INSERT_PADDING(0x28);
     };
 
-    MARATHON_ASSERT_OFFSETOF(SonicWeapons, m_GunDrive, 0x80);
+    MARATHON_ASSERT_OFFSETOF(SonicWeapons, m_rGunDrive, 0x80);
     MARATHON_ASSERT_SIZEOF(SonicWeapons, 0xB8);
 }

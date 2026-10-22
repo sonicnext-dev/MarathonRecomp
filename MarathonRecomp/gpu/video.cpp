@@ -3596,7 +3596,7 @@ void Video::Resize(uint32_t width, uint32_t height)
 
     if (const auto pGame = pApp->GetGame(); rmTextureResources.find("radermap") != rmTextureResources.end())
     {
-        if (const auto pPopupScreenTask = pGame->m_lrPopupScreenTask.m_pElement)
+        if (const auto pPopupScreenTask = pGame->m_rPopupScreenTask.m_pRef)
         {
             pHUDRaderMap = pPopupScreenTask->GetHUDPopupScreen<Sonicteam::HUDRaderMap>();
 

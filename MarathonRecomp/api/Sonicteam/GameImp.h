@@ -7,7 +7,7 @@
 #include <Sonicteam/SoX/Physics/World.h>
 #include <Sonicteam/SoX/Scenery/Camera.h>
 #include <Sonicteam/SoX/Scenery/CameraImp.h>
-#include <Sonicteam/SoX/LinkNode.h>
+#include <Sonicteam/SoX/RefLinkNode.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
 #include <Sonicteam/ActorManager.h>
 #include <Sonicteam/Game.h>
@@ -101,10 +101,10 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(0x04);
         xpointer<Mission::Core> m_pMissionCore;
         MARATHON_INSERT_PADDING(0x248);
-        SoX::LinkRef<PopupScreenTask> m_lrPopupScreenTask;
+        SoX::RefLinkNode<PopupScreenTask> m_rPopupScreenTask;
         MARATHON_INSERT_PADDING(0x04);
-        SoX::LinkRef<LoadingTask> m_lrLoadingTask;
-        SoX::LinkRef<void> m_lrStageTitleTask;
+        SoX::RefLinkNode<LoadingTask> m_rLoadingTask;
+        SoX::RefLinkNode<void> m_rStageTitleTask;
         MARATHON_INSERT_PADDING(0x28);
         SoX::RefSharedPointer<SoX::Physics::World> m_spPhysicsWorld;
         xpointer<void> m_pMyCollisionFilter;
@@ -189,9 +189,9 @@ namespace Sonicteam
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pBgmCue, 0x139C);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pHintTextBook, 0x170C);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pMissionCore, 0x1714);
-    MARATHON_ASSERT_OFFSETOF(GameImp, m_lrPopupScreenTask, 0x1960);
-    MARATHON_ASSERT_OFFSETOF(GameImp, m_lrLoadingTask, 0x1974);
-    MARATHON_ASSERT_OFFSETOF(GameImp, m_lrStageTitleTask, 0x1984);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_rPopupScreenTask, 0x1960);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_rLoadingTask, 0x1974);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_rStageTitleTask, 0x1984);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_spPhysicsWorld, 0x19BC);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pMyCollisionFilter, 0x19C0);
     MARATHON_ASSERT_SIZEOF(GameImp, 0x19D0);
