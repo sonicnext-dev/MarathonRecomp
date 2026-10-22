@@ -398,7 +398,7 @@ registers = ["r3"]
 [[midasm_hook]]
 name = "SonicCamera_MouseLook"
 address = 0x82191FC0
-registers = ["r31", "r5"]
+registers = ["r31", "r5", "f31"]
 
 [[midasm_hook]]
 name = "SonicCamera_RotationSpeedFix"

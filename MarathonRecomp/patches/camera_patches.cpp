@@ -117,6 +117,8 @@ public:
     };
 
     MouseLookState m_MouseLookState;
+    Sonicteam::SoX::Math::Vector m_InterpolateOffset;
+    float m_InterpolateTime;
     float m_InactiveTime;
     float m_Distance;
     float m_Yaw;
@@ -138,6 +140,12 @@ public:
         {
             m_Pitch = -std::atan2(dy, std::sqrt(dx * dx + dz * dz));
         }
+    }
+
+    void SetInterpolateStart(const Sonicteam::SoX::Math::Vector& in_rStart)
+    {
+        m_InterpolateOffset = in_rStart - m_Target;
+        m_InterpolateTime = 0.0f;
     }
 
     bool IsPlayerOutOfControl()
@@ -183,12 +191,13 @@ PPC_FUNC(sub_82192218)
     pSonicCamera->m_Distance = pSonicCamera->m_Orbit.X;
 }
 
-void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5)
+void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_deltaTime)
 {
     if (App::s_isPaused)
         return;
 
     const auto pSonicCamera = reinterpret_cast<SonicCameraEx*>(g_memory.Translate(r31.u32));
+    const auto pOutput = reinterpret_cast<Sonicteam::SoX::Math::Vector*>(g_memory.Translate(r5.u32));
 
     const auto pGame = static_cast<Sonicteam::GameImp*>(pSonicCamera->m_spGame.get());
     const auto playerIndex = pGame->GetPlayerIndexFromActorID(pSonicCamera->m_TargetActorID);
@@ -212,6 +221,9 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5)
                 // Sync current camera orbit to mouse look.
                 pSonicCamera->m_Yaw = pSonicCamera->m_Orbit.Y;
                 pSonicCamera->m_Pitch = pSonicCamera->m_Orbit.Z;
+
+                pSonicCamera->SetInterpolateStart(*pOutput);
+
                 pSonicCamera->m_MouseLookState = SonicCameraEx::MouseLookState_Enabled;
 
                 break;
@@ -259,6 +271,7 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5)
                 pSonicCamera->m_Acceleration.Y = y;
 
                 pSonicCamera->ResetYawPitch();
+                pSonicCamera->SetInterpolateStart(*pOutput);
 
                 return;
             }
@@ -278,7 +291,7 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5)
             pSonicCamera->m_InactiveTime += App::s_deltaTime;
         }
 
-        if (pSonicCamera->m_InactiveTime >= 2.0f)
+        if (pSonicCamera->m_InactiveTime >= Config::MouseAutoCenterTime)
         {
             pSonicCamera->m_MouseLookState = SonicCameraEx::MouseLookState_Resetting;
             return;
@@ -314,8 +327,9 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5)
 
     GuestToHostFunction<Sonicteam::SoX::Math::Vector*>(sub_8218C4F0, normalisedOrbit.get(), &pSonicCamera->m_Orbit);
 
-    // TODO: interpolate into original camera params when transitioning between inactive mode and otherwise.
-    *reinterpret_cast<Sonicteam::SoX::Math::Vector*>(g_memory.Translate(r5.u32)) = pSonicCamera->m_Target + *normalisedOrbit;
+    const auto offset = Sonicteam::SoX::Math::Hermite(pSonicCamera->m_InterpolateOffset, *normalisedOrbit, pSonicCamera->m_InterpolateTime, 2.75f, in_deltaTime.f64);
+
+    *pOutput = pSonicCamera->m_Target + offset;
 }
 
 // Sonicteam::Camera::SonicCamera::Reset
