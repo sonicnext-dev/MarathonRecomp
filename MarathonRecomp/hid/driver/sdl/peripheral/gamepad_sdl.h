@@ -143,7 +143,12 @@ namespace HID
             {
                 const auto pMsgSetLED = static_cast<MsgSetLED*>(&io_rMessage);
 
-                SDL_SetGamepadLED(GetContext<SDL_Gamepad>(), pMsgSetLED->Color.R(), pMsgSetLED->Color.G(), pMsgSetLED->Color.B());
+                const auto a = pMsgSetLED->Color.A() / 255.0f;
+                const auto r = uint8_t(pMsgSetLED->Color.R() * a);
+                const auto g = uint8_t(pMsgSetLED->Color.G() * a);
+                const auto b = uint8_t(pMsgSetLED->Color.B() * a);
+
+                SDL_SetGamepadLED(GetContext<SDL_Gamepad>(), r, g, b);
             }
             else if (io_rMessage.Is<MsgSetVibration>())
             {
