@@ -213,6 +213,55 @@ namespace HID
 
             pMsgGetPeripheralUsers->Users = FindUsers(pMsgGetPeripheralUsers->pSender);
         }
+        else if (io_rMessage.Is<MsgPopGamepads>() || io_rMessage.Is<MsgPushGamepads>())
+        {
+            const auto isPop = io_rMessage.Is<MsgPopGamepads>();
+
+            const auto userId = isPop
+                ? static_cast<MsgPopGamepads*>(&io_rMessage)->UserID
+                : static_cast<MsgPushGamepads*>(&io_rMessage)->UserID;
+
+            auto currentIds = std::vector<uint32_t>();
+            auto nextIds = std::vector<uint32_t>();
+
+            const auto start = isPop ? (g_users.size() - 1) : userId;
+
+            // Pushes or pops gamepads in either direction, starting or stopping at the specified user ID.
+            for (int i = start; isPop ? (i >= userId && i >= 0) : (i < g_users.size()); isPop ? i-- : i++)
+            {
+                auto& rUser = g_users[i];
+
+                nextIds.swap(currentIds);
+                currentIds.clear();
+
+                // Gather all gamepad IDs for current user.
+                rUser.Walk([&](IPeripheral* in_pNode) -> bool
+                {
+                    if (in_pNode->GetType() != PeripheralType::Gamepad)
+                        return true;
+
+                    currentIds.push_back(in_pNode->GetID());
+
+                    return true;
+                });
+
+                // Detach all gamepads from current user.
+                for (const auto& rId : currentIds)
+                    rUser.Detach(rUser.Find(rId));
+
+                if (nextIds.empty())
+                    continue;
+
+                // Attach all gamepads from previous user to this one.
+                for (const auto& spPeripheral : g_peripherals)
+                {
+                    if (std::find(nextIds.begin(), nextIds.end(), spPeripheral->GetID()) == nextIds.end())
+                        continue;
+
+                    rUser.Attach(spPeripheral);
+                }
+            }
+        }
         else if (io_rMessage.Is<MsgUnregisterKeyboard>())
         {
             Detach(Find(Keyboard::ID));

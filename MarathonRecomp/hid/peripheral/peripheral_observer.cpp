@@ -26,6 +26,9 @@ namespace HID
 
         in_pPeripheral->ProcessMessage<MsgPeripheralDetached>();
 
+        if (in_pPeripheral == m_LastMutator)
+            m_LastMutator = nullptr;
+
         return std::erase_if(m_Observees, [&](std::weak_ptr<IPeripheral> in_wpPeripheral)
         {
             const auto spPeripheral = in_wpPeripheral.lock();

@@ -76,6 +76,13 @@ namespace HID
             pUser->Attach(std::move(std::make_shared<KeyboardSDL>()));
             pUser->Attach(std::move(std::make_shared<MouseSDL>()));
         }
+        else if (io_rMessage.Is<MsgSetKeyboardUser>())
+        {
+            const auto userId = static_cast<MsgSetKeyboardUser*>(&io_rMessage)->UserID;
+
+            ProcessMessage<MsgPushGamepads>(userId);
+            ProcessMessage<MsgRegisterKeyboard>(userId);
+        }
 
         return PeripheralManager::OnProcessMessage(io_rMessage);
     }

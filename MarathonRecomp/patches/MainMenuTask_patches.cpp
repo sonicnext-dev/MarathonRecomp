@@ -1,16 +1,20 @@
 #include "MainMenuTask_patches.h"
+#include <hid/message/messages.h>
 #include <hid/hid.h>
 #include <ui/achievement_menu.h>
 #include <ui/button_window.h>
 #include <ui/options_menu.h>
 #include <exports.h>
 
+static bool g_isMultiplayerP1KeyboardUser{};
+
 // Sonicteam::MainMenuTask::Update
 PPC_FUNC_IMPL(__imp__sub_824FFCF8);
 PPC_FUNC(sub_824FFCF8)
 {
-    auto pMainMenuTask = (Sonicteam::MainMenuTask*)(base + ctx.r3.u32);
-    auto pHUDMainMenu = pMainMenuTask->m_pHUDMainMenu;
+    const auto pMainMenuTask = (Sonicteam::MainMenuTask*)(base + ctx.r3.u32);
+    const auto pHUDMainMenu = pMainMenuTask->m_pHUDMainMenu;
+    const auto pDoc = pMainMenuTask->GetDoc<Sonicteam::DocMarathonState>();
 
 #ifdef MARATHON_RECOMP_OPTIONS_MENU
     if (pHUDMainMenu)
@@ -58,9 +62,41 @@ PPC_FUNC(sub_824FFCF8)
             break;
         }
 
-        // TODO: assign keyboard to P1 and gamepad to P2, if accepted here using the keyboard.
         case Sonicteam::MainMenuTask::MainMenuState_Multiplayer:
+        {
+            const auto& rPadState = pDoc->m_vspInputManagers[0]->PadState;
+
+            if (rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_South) ||
+                rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_West))
+            {
+                const auto pMutator = HID::GetManager()->GetMutator();
+
+                // Assign keyboard to Player 1, if they entered the character select via the keyboard.
+                if (pMutator && pMutator->GetType() != HID::PeripheralType::Gamepad)
+                {
+                    HID::GetManager()->ProcessMessage<HID::MsgSetKeyboardUser>(0);
+                    g_isMultiplayerP1KeyboardUser = true;
+                }
+            }
+
             break;
+        }
+
+        case Sonicteam::MainMenuTask::MainMenuState_Tag:
+        case Sonicteam::MainMenuTask::MainMenuState_Battle:
+        {
+            if (pDoc->m_vspInputManagers[0]->PadState.IsPressed(Sonicteam::SoX::Input::PadButton_East))
+            {
+                if (g_isMultiplayerP1KeyboardUser)
+                {
+                    // Restore original gamepad locations from keyboard assignment.
+                    HID::GetManager()->ProcessMessage<HID::MsgPopGamepads>(0);
+                    g_isMultiplayerP1KeyboardUser = false;
+                }
+            }
+
+            break;
+        }
     }
 
     static bool s_isReturningFromOptionsMenu{};
