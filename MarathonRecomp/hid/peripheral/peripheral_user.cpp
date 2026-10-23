@@ -8,11 +8,17 @@ namespace HID
 {
     bool PeripheralUser::Attach(std::shared_ptr<IPeripheral> in_spPeripheral)
     {
+        const auto peripheralId = in_spPeripheral->GetID();
+        const auto peripheralType = in_spPeripheral->GetType();
         const auto peripheralName = in_spPeripheral->GetName();
 
         if (PeripheralObserver::Attach(std::move(in_spPeripheral)))
         {
+            if (peripheralType == PeripheralType::Gamepad)
+                GetManager()->ProcessMessage<MsgSetGamepadUser>(ID, peripheralId);
+
             LOGFN("Peripheral attached for User {}: {}", ID + 1, peripheralName);
+
             return true;
         }
 

@@ -43,8 +43,6 @@ namespace HID
         // Unregister keyboard, we'll set it back up later.
         ProcessMessage<MsgUnregisterKeyboard>();
 
-        const auto peripheralName = in_spPeripheral->GetName();
-
         for (int i = 0; i < g_users.size(); i++)
         {
             if (!g_users[i].IsFree())
@@ -70,8 +68,6 @@ namespace HID
     {
         if (!in_pPeripheral)
             return false;
-
-        const auto peripheralName = in_pPeripheral->GetName();
 
         for (int i = 0; i < g_users.size(); i++)
         {

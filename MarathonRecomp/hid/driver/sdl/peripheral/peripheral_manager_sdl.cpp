@@ -76,6 +76,18 @@ namespace HID
             pUser->Attach(std::move(std::make_shared<KeyboardSDL>()));
             pUser->Attach(std::move(std::make_shared<MouseSDL>()));
         }
+        else if (io_rMessage.Is<MsgSetGamepadUser>())
+        {
+            const auto pMsgSetGamepadUser = static_cast<MsgSetGamepadUser*>(&io_rMessage);
+            const auto pPeripheral = GetUser(pMsgSetGamepadUser->UserID)->Find(pMsgSetGamepadUser->PeripheralID);
+
+            if (pPeripheral->GetType() != PeripheralType::Gamepad)
+                return false;
+
+            const auto pGamepad = static_cast<GamepadSDL*>(pPeripheral);
+
+            SDL_SetGamepadPlayerIndex(pGamepad->GetContext<SDL_Gamepad>(), pMsgSetGamepadUser->UserID);
+        }
         else if (io_rMessage.Is<MsgSetKeyboardUser>())
         {
             const auto userId = static_cast<MsgSetKeyboardUser*>(&io_rMessage)->UserID;

@@ -7,6 +7,7 @@
 #include "msg_push_gamepads.h"
 #include "msg_register_keyboard.h"
 #include "msg_set_character_led.h"
+#include "msg_set_gamepad_user.h"
 #include "msg_set_keyboard_user.h"
 #include "msg_set_led.h"
 #include "msg_set_mouse_capture.h"
