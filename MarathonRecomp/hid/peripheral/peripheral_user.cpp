@@ -2,9 +2,38 @@
 #include <hid/message/messages.h>
 #include <hid/peripheral/keyboard.h>
 #include <hid/hid.h>
+#include <os/logger.h>
 
 namespace HID
 {
+    bool PeripheralUser::Attach(std::shared_ptr<IPeripheral> in_spPeripheral)
+    {
+        const auto peripheralName = in_spPeripheral->GetName();
+
+        if (PeripheralObserver::Attach(std::move(in_spPeripheral)))
+        {
+            LOGFN("Peripheral attached for User {}: {}", ID + 1, peripheralName);
+            return true;
+        }
+
+        LOGFN_ERROR("Peripheral failed to attach for User {}: {}", ID + 1, peripheralName);
+
+        return false;
+    }
+
+    bool PeripheralUser::Detach(IPeripheral* in_pPeripheral)
+    {
+        const auto peripheralName = in_pPeripheral->GetName();
+
+        if (PeripheralObserver::Detach(in_pPeripheral))
+        {
+            LOGFN("Peripheral detached for User {}: {}", ID + 1, peripheralName);
+            return true;
+        }
+
+        return false;
+    }
+
     XAMINPUT_GAMEPAD PeripheralUser::GetState()
     {
         XAMINPUT_GAMEPAD result{};

@@ -51,14 +51,7 @@ namespace HID
                 continue;
 
             if (g_users[i].Attach(std::move(in_spPeripheral)))
-            {
                 result = true;
-                LOGFN("Peripheral attached for User {}: {}", i + 1, peripheralName);
-            }
-            else
-            {
-                LOGFN_ERROR("Peripheral failed to attach for User {}: {}", i + 1, peripheralName);
-            }
 
             break;
         }
@@ -85,8 +78,7 @@ namespace HID
             if (g_users[i].IsFree())
                 continue;
 
-            if (g_users[i].Detach(in_pPeripheral))
-                LOGFN("Peripheral detached for User {}: {}", i + 1, peripheralName);
+            g_users[i].Detach(in_pPeripheral);
         }
 
         return true;

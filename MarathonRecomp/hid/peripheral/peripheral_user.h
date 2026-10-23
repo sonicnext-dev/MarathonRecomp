@@ -16,6 +16,9 @@ namespace HID
 
         explicit PeripheralUser(const uint32_t in_id) : ID(in_id) {}
 
+        virtual bool Attach(std::shared_ptr<IPeripheral> in_spPeripheral) override;
+        virtual bool Detach(IPeripheral* in_pPeripheral) override;
+
         XAMINPUT_GAMEPAD GetState();
 
         XAMINPUT_VIBRATION GetVibration();
