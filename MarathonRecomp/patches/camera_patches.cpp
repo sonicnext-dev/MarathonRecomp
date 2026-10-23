@@ -73,6 +73,9 @@ void DemoGMCamera_InvertPitch(PPCRegister& f0)
     f0.f64 = -f0.f64;
 }
 
+// Tuned for 50% sensitivity to be a solid middle ground for the default.
+static constexpr float k_mouseSensitivityBase = 0.00345f;
+
 static bool GetRelativeMouseForPlayer(const uint32_t in_playerIndex, float* out_x, float* out_y)
 {
     bool result{};
@@ -84,8 +87,11 @@ static bool GetRelativeMouseForPlayer(const uint32_t in_playerIndex, float* out_
     {
         if (const auto pMouse = static_cast<HID::Mouse*>(pUser->Find(HID::Mouse::ID)))
         {
-            x = pMouse->RelativeX * Config::MouseSensitivity;
-            y = pMouse->RelativeY * Config::MouseSensitivity;
+            // Scale sensitivity exponentially to make increments a little less egregious in the upper half.
+            const auto sensitivity = std::lerp(0.01f, 1.0f, std::powf(Config::MouseSensitivity, 3.0f));
+
+            x = pMouse->RelativeX * sensitivity;
+            y = pMouse->RelativeY * sensitivity;
 
             if (Config::HorizontalCamera == ECameraRotationMode::Reverse)
                 x = -x;
@@ -216,7 +222,7 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
     {
         case SonicCameraEx::MouseLookState_Disabled:
         {
-            if (std::fabsf(x) >= 0.12f && std::fabsf(y) >= 0.12f)
+            if (std::fabsf(x) >= 0.0f && std::fabsf(y) >= 0.0f)
             {
                 // Sync current camera orbit to mouse look.
                 pSonicCamera->m_Yaw = pSonicCamera->m_Orbit.Y;
@@ -308,8 +314,8 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
     // X = Distance, Y = Yaw (wrapped pi squared), Z = Pitch (45 degrees clamped).
     // This vector is usually used for interpolating the camera position to look ahead of the player.
     pSonicCamera->m_Orbit.X = pSonicCamera->m_Distance;
-    pSonicCamera->m_Orbit.Y = pSonicCamera->m_Yaw = Sonicteam::SoX::Math::WrapAngle(pSonicCamera->m_Yaw + (x * 0.005f));
-    pSonicCamera->m_Orbit.Z = pSonicCamera->m_Pitch = std::clamp(pSonicCamera->m_Pitch + (y * 0.005f), -maxPitch, maxPitch);
+    pSonicCamera->m_Orbit.Y = pSonicCamera->m_Yaw = Sonicteam::SoX::Math::WrapAngle(pSonicCamera->m_Yaw + (x * k_mouseSensitivityBase));
+    pSonicCamera->m_Orbit.Z = pSonicCamera->m_Pitch = std::clamp(pSonicCamera->m_Pitch + (y * k_mouseSensitivityBase), -maxPitch, maxPitch);
 
     auto normalisedOrbit = guest_stack_var<Sonicteam::SoX::Math::Vector>();
 
@@ -376,8 +382,8 @@ PPC_FUNC(sub_8218CAC0)
     float x{}, y{};
     GetRelativeMouseForPlayer(pGame->GetPlayerIndexFromActorID(pDemoGMCamera->m_TargetActorID), &x, &y);
 
-    pDemoGMCamera->m_Yaw = pDemoGMCamera->m_Yaw + (x * 0.005f);
-    pDemoGMCamera->m_Pitch = pDemoGMCamera->m_Pitch + (y * 0.005f);
+    pDemoGMCamera->m_Yaw = pDemoGMCamera->m_Yaw + (x * k_mouseSensitivityBase);
+    pDemoGMCamera->m_Pitch = pDemoGMCamera->m_Pitch + (y * k_mouseSensitivityBase);
 
     __imp__sub_8218CAC0(ctx, base);
 }
@@ -401,8 +407,8 @@ PPC_FUNC(sub_8218EEB8)
     float x{}, y{};
     GetRelativeMouseForPlayer(pPlayer->GetPlayerIndex(), &x, &y);
 
-    pSnipeCamera->m_Yaw = pSnipeCamera->m_Yaw + (-x * 0.005f);
-    pSnipeCamera->m_Pitch = pSnipeCamera->m_Pitch + (y * 0.005f);
+    pSnipeCamera->m_Yaw = pSnipeCamera->m_Yaw + (-x * k_mouseSensitivityBase);
+    pSnipeCamera->m_Pitch = pSnipeCamera->m_Pitch + (y * k_mouseSensitivityBase);
 
     __imp__sub_8218EEB8(ctx, base);
 }

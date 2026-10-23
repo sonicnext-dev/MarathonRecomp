@@ -12,7 +12,7 @@ CONFIG_DEFINE("System", bool, ShowConsole, false, false);
 
 CONFIG_DEFINE_ENUM_LOCALISED("Input", ECameraRotationMode, HorizontalCamera, ECameraRotationMode::Reverse, false);
 CONFIG_DEFINE_ENUM_LOCALISED("Input", ECameraRotationMode, VerticalCamera, ECameraRotationMode::Normal, false);
-CONFIG_DEFINE_LOCALISED("Input", float, MouseSensitivity, 0.2f, false);
+CONFIG_DEFINE_LOCALISED("Input", float, MouseSensitivity, 0.5f, false);
 CONFIG_DEFINE_LOCALISED("Input", bool, MouseAutoCenter, true, false);
 CONFIG_DEFINE("Input", float, MouseAutoCenterTime, 2.5f, false);
 CONFIG_DEFINE_LOCALISED("Input", bool, AllowBackgroundInput, false, false);

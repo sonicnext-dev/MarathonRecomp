@@ -825,7 +825,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
         case OptionsMenuCategory::Input:
             DrawOption(rowCount++, &Config::HorizontalCamera, true);
             DrawOption(rowCount++, &Config::VerticalCamera, true);
-            DrawOption(rowCount++, &Config::MouseSensitivity, true);
+            DrawOption(rowCount++, &Config::MouseSensitivity, true, nullptr, 0.01f, 0.5f, 1.0f);
             DrawOption(rowCount++, &Config::MouseAutoCenter, true);
             DrawOption(rowCount++, &Config::AllowBackgroundInput, true);
             DrawOption(rowCount++, &Config::ControllerIcons, !OptionsMenu::s_isPause, cmnReason);
