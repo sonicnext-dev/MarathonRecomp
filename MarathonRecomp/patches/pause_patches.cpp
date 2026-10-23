@@ -79,8 +79,6 @@ PPC_FUNC(sub_824F05D8)
     const auto pHUDPause = static_cast<Sonicteam::HUDPause*>(reinterpret_cast<Sonicteam::SoX::MessageReceiver*>(base + ctx.r3.u32));
     const auto pMessage = reinterpret_cast<Sonicteam::SoX::IMessage*>(base + ctx.r4.u32);
     
-    pHUDPause->m_ShowMissionWindow = true;
-    
     if (pMessage->ID == Sonicteam::Message::HUDPause::MsgChangeState::GetID())
     {
         const auto pMsgChangeState = static_cast<Sonicteam::Message::HUDPause::MsgChangeState*>(pMessage);
@@ -188,15 +186,37 @@ PPC_FUNC(sub_82509870)
         });
     }
 
-    SetTextEntityModifier(pPauseTask->m_pMissionText.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
+    SetTextEntityModifier(pPauseTask->m_spMissionText.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
 
     __imp__sub_82509870(ctx, base);
 }
 
-// The mission text is drawn at a lower priority
-// than the mission box by default. 1001.0f is the
-// priority value used by the rest of the pause menu.
-void PauseTask_SetMissionTextPriority(PPCRegister& priority)
+// Skips the original code that sends this message, as it's sent *before* the
+// text entity for the mission window is created, resulting in the message processor
+// seeing nullptr. We'll send this message ourselves after the text entity is created.
+bool PauseTask_SkipSendMsgChangeState()
 {
-    priority.f64 = 1001.0f;
+    return Config::RestorePauseMissionText;
+}
+
+void PauseTask_ConfigureMissionWindow(PPCRegister& r31)
+{
+    const auto pPauseTask = reinterpret_cast<Sonicteam::PauseTask*>(g_memory.Translate(r31.u32));
+
+    // The mission text is drawn at a lower priority than the mission window by default.
+    // 1001.0f is the priority value used by the rest of the pause menu.
+    if (pPauseTask->m_spMissionText)
+        GuestToHostFunction<int>(sub_8262AF00, pPauseTask->m_spMissionText.get(), 1001.0f);
+
+    if (!Config::RestorePauseMissionText)
+        return;
+
+    auto showMissionWindow = true;
+
+    if (!pPauseTask->m_spMissionText || pPauseTask->m_spMissionText->m_TextLength <= 0)
+        showMissionWindow = false;
+
+    auto msgChangeState = guest_stack_var<Sonicteam::Message::HUDPause::MsgChangeState>(0, pPauseTask->m_Field78.get());
+    pPauseTask->m_pHUDPause->m_ShowMissionWindow = showMissionWindow;
+    pPauseTask->m_pHUDPause->ProcessMessage(msgChangeState.get());
 }
