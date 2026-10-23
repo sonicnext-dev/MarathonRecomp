@@ -360,6 +360,12 @@ CONFIG_DEFINE_ENUM_TEMPLATE(ERadialBlur)
     { "Enhanced", ERadialBlur::Enhanced }
 };
 
+CONFIG_DEFINE_ENUM_TEMPLATE(EParticleFade)
+{
+    { "Original", EParticleFade::Original },
+    { "Soft", EParticleFade::Soft },
+};
+
 CONFIG_DEFINE_ENUM_TEMPLATE(ECutsceneAspectRatio)
 {
     { "Original", ECutsceneAspectRatio::Original },
