@@ -23,11 +23,11 @@ namespace HID
                     {
                         const auto& rResourceName = rCsdOverlay->m_pCsdResource->m_MgrResourceName;
 
-                        for (const auto& [sceneKey, sceneValue] : rCsdOverlay->m_pCsdProject->m_Scenes)
+                        for (const auto& [rSceneKey, rSceneValue] : rCsdOverlay->m_pCsdProject->m_Scenes)
                         {
-                            for (const auto& [nodeKey, nodeValue] : sceneValue->m_pObject->m_ActiveNodes)
+                            for (const auto& [rNodeKey, rNodeValue] : rSceneValue->m_pObject->m_ActiveNodes)
                             {
-                                const auto patternIndex = nodeValue->m_pObject->m_pMotionPattern->GetPatternIndex();
+                                const auto patternIndex = rNodeValue->m_pObject->m_pMotionPattern->GetPatternIndex();
 
                                 if (rResourceName == "sprite/interlude/tips_x/tips_so_x")
                                 {

@@ -2,6 +2,7 @@
 
 #include <Marathon.inl>
 #include <Chao/CSD/Core/csdColor.h>
+#include <Chao/CSD/Core/csdVector.h>
 #include <Chao/CSD/Manager/csdmResourceBase.h>
 #include <Sonicteam/SoX/Math/Vector.h>
 
@@ -11,9 +12,9 @@ namespace Chao::CSD
     {
         MARATHON_INSERT_PADDING(0x28);
         be<int> HideFlag;
-        Sonicteam::SoX::Math::Vector2 Position;
+        Chao::CSD::Vector2 Position;
         be<float> Rotation;
-        Sonicteam::SoX::Math::Vector2 Scale;
+        Chao::CSD::Vector2 Scale;
         be<float> PatternIndexFlags;
         Chao::CSD::Color Color;
         Chao::CSD::Color TopLeft;

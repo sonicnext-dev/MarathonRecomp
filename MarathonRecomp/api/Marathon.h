@@ -4,6 +4,7 @@
 #include "Chao/CSD/Core/csdColor.h"
 #include "Chao/CSD/Core/csdRCObject.h"
 #include "Chao/CSD/Core/csdTexList.h"
+#include "Chao/CSD/Core/csdVector.h"
 #include "Chao/CSD/Manager/csdmMotionPalette.h"
 #include "Chao/CSD/Manager/csdmMotionPattern.h"
 #include "Chao/CSD/Manager/csdmNode.h"

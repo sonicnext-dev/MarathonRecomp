@@ -4,7 +4,7 @@
 #include <Sonicteam/Camera/CameraMode.h>
 #include <Sonicteam/Player/Object.h>
 #include <Sonicteam/SoX/Math/Vector.h>
-#include <Sonicteam/SoX/LinkNode.h>
+#include <Sonicteam/SoX/RefLinkNode.h>
 
 namespace Sonicteam::Camera
 {
