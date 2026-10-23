@@ -2,6 +2,7 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/SoX/Audio/Player.h>
+#include <Sonicteam/SoX/LinkNode.h>
 #include <Sonicteam/SoX/RefCountObject.h>
 
 namespace Sonicteam::SoX::Audio

@@ -2,13 +2,13 @@
 
 #include <Marathon.inl>
 #include <Chao/CSD/Core/csdBase.h>
+#include <Chao/CSD/Manager/csdmMotionPalette.h>
 #include <Chao/CSD/Manager/csdmResourceBase.h>
 #include <Chao/CSD/Manager/csdmSceneObserver.h>
 #include <Chao/CSD/Manager/csdmSubjectBase.h>
 
 namespace Chao::CSD
 {
-    class CScene;
     class CNode;
 
     struct Cast
@@ -120,7 +120,8 @@ namespace Chao::CSD
             be<int> CastIndex;
         };
 
-        MARATHON_INSERT_PADDING(0x58);
+        MARATHON_INSERT_PADDING(0x54);
+        xpointer<CMotionPalette> m_pMotionPalette;
         be<float> m_PrevMotionFrame;
         be<float> m_MotionFrame;
         be<float> m_MotionSpeed;
@@ -130,7 +131,7 @@ namespace Chao::CSD
         CSceneMotionRepeat m_MotionRepeat;
         be<int> m_MotionIndex;
         be<float> m_SortOrder;
-        stdx::map<NodeCastSearch, xpointer<CNode>> m_ActiveNodes;
+        stdx::map<NodeCastSearch, xpointer<RCObject<CNode>>> m_ActiveNodes;
         xpointer<const char> m_pName;
         MARATHON_INSERT_PADDING(0x04);
         xpointer<CProject> m_pProject;
@@ -177,6 +178,7 @@ namespace Chao::CSD
     MARATHON_ASSERT_OFFSETOF(CSceneMotionRepeat, m_StartRepeatType, 0x18);
     MARATHON_ASSERT_SIZEOF(CSceneMotionRepeat, 0x1C);
 
+    MARATHON_ASSERT_OFFSETOF(CScene, m_pMotionPalette, 0x70);
     MARATHON_ASSERT_OFFSETOF(CScene, m_PrevMotionFrame, 0x74);
     MARATHON_ASSERT_OFFSETOF(CScene, m_MotionFrame, 0x78);
     MARATHON_ASSERT_OFFSETOF(CScene, m_MotionSpeed, 0x7C);

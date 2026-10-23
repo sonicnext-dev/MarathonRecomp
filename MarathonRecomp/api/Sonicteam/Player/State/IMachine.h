@@ -5,4 +5,6 @@
 namespace Sonicteam::Player::State
 {
     class IMachine : public IPlugIn {};
+
+    MARATHON_ASSERT_SIZEOF(IMachine, 0x20);
 }

@@ -1,8 +1,18 @@
 #include <api/Marathon.h>
 #include <cpu/guest_stack_var.h>
+#include <hid/message/messages.h>
+#include <hid/hid.h>
 #include <os/logger.h>
 #include <user/config.h>
 #include <app.h>
+
+void OnRegisterPlayerActor(PPCRegister& r25)
+{
+    const auto pObject = reinterpret_cast<Sonicteam::Player::Object*>(g_memory.Translate(r25.u32));
+
+    if (const auto pUser = HID::GetManager()->GetUser(pObject->GetPlayerIndex()))
+        pUser->BroadcastMessage<HID::MsgSetCharacterLED>(pObject->m_Name.c_str());
+}
 
 // Sonicteam::Player::Object::Update
 PPC_FUNC_IMPL(__imp__sub_82195500);
@@ -20,7 +30,7 @@ PPC_FUNC(sub_82195500)
                 case 1:
                 {
                     // Toggle debug posture on Select press.
-                    if (pPlayer->m_SetupModuleIndexPrefix == 1 && pInputManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_Select))
+                    if (pPlayer->m_SetupModuleIndexPrefix == 1 && pInputManager->PadState.IsPressed(Sonicteam::SoX::Input::PadButton_Back))
                     {
                         pPlayer->m_SetupModuleIndexPostfix = 2;
 
@@ -33,7 +43,7 @@ PPC_FUNC(sub_82195500)
                 case 2:
                 {
                     // Toggle camera volume collision on B press.
-                    if (pInputManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_B))
+                    if (pInputManager->PadState.IsPressed(Sonicteam::SoX::Input::PadButton_East))
                     {
                         auto pGame = App::s_pApp->GetGame();
                         auto pZock = pPlayer->GetPlugin<Sonicteam::Player::Zock>("zock");
@@ -51,14 +61,14 @@ PPC_FUNC(sub_82195500)
         }
 
         // Toggle demo camera on right stick press.
-        if (Config::RestoreDemoCameraMode && pInputManager->m_PadState.IsPressed(Sonicteam::SoX::Input::KeyState_RightStick))
+        if (Config::RestoreDemoCameraMode && pInputManager->PadState.IsPressed(Sonicteam::SoX::Input::PadButton_RightStick))
         {
             auto pCameraman = static_cast<Sonicteam::Camera::Cameraman*>(pPlayer->m_pCameraman.get());
 
             if (auto pCameraMode = pCameraman->m_spCameraModeManager->m_spCameraMode.get())
             {
                 guest_stack_var<Sonicteam::Message::Camera::Cameraman::MsgChangeMode> msgChangeMode;
-                msgChangeMode->PadID = pInputManager->m_PadID;
+                msgChangeMode->PadID = pInputManager->ID;
                 msgChangeMode->TargetActorID = pPlayer->m_ActorID;
                 msgChangeMode->IsDemoCamera = pCameraMode->m_pVftable.ptr != 0x82002004;
 
@@ -91,7 +101,7 @@ PPC_FUNC(sub_8221A7D8)
         pGauge->m_Value = (100.0f / pTailsContext->m_FlightDuration) * pTailsContext->m_FlightTime;
     }
 
-    auto pTailsFlight = pPlayer->m_spStateMachine->GetBase()->GetState<Sonicteam::Player::State::TailsFlight>();
+    auto pTailsFlight = pPlayer->GetStateMachine<Sonicteam::Player::State::Machine2>()->GetState<Sonicteam::Player::State::TailsFlight>();
     auto pGame = App::s_pApp->GetGame();
 
     auto maturityValue = 1.0f;
@@ -167,13 +177,29 @@ bool PlayerDebugMode_RemapDebugExitButton(PPCRegister& r30)
 {
     auto pPadState = (Sonicteam::SoX::Input::PadState*)g_memory.Translate(r30.u32);
 
-    if (pPadState->IsPressed(Sonicteam::SoX::Input::KeyState_Select))
+    if (pPadState->IsPressed(Sonicteam::SoX::Input::PadButton_Back))
     {
         LOGN("Debug Mode: Disabled");
         return true;
     }
 
     return false;
+}
+
+// Sonicteam::Player::Object::ProcMsgAmigoChange
+PPC_FUNC_IMPL(__imp__sub_8219A5B0);
+PPC_FUNC(sub_8219A5B0)
+{
+    const auto pAmigo = reinterpret_cast<Sonicteam::Player::Object*>(base + ctx.r3.u32);
+    const auto pMsgAmigoChange = static_cast<Sonicteam::Message::Player::MsgAmigoChange*>(reinterpret_cast<Sonicteam::SoX::IMessage*>(base + ctx.r4.u32));
+
+    if (const auto pPlayer = static_cast<Sonicteam::Player::Object*>(pMsgAmigoChange->pPlayer.get()))
+    {
+        if (const auto pUser = HID::GetManager()->GetUser(pPlayer->GetPlayerIndex()))
+            pUser->BroadcastMessage<HID::MsgSetCharacterLED>(pAmigo->m_Name.c_str());
+    }
+
+    __imp__sub_8219A5B0(ctx, base);
 }
 
 bool AntigravityRetainsMomentum()
@@ -490,7 +516,7 @@ void SonicGauge_FixFlags(PPCRegister& r3, PPCRegister& r31)
             pSonicGauge->m_GroundedFlags = 1;
     }
 
-    if (pSonicContext->m_Tornado != 0 || pSonicWeapons->m_GunDrive.m_pElement)
+    if (pSonicContext->m_Tornado != 0 || pSonicWeapons->m_rGunDrive.m_pRef)
     {
         pSonicGauge->m_GroundedFlags = 1;
     }
@@ -512,7 +538,7 @@ void SonicGauge_FixFlags(PPCRegister& r3, PPCRegister& r31)
                 pSonicContext->m_SlowTime = 0;
             }
         }
-        else if ((pSonicContext->m_PostureFlags.get() & Sonicteam::Player::PostureControl::PostureFlag_Grounded) != 0 || pSonicContext->m_Field24A)
+        else if ((pSonicContext->m_PostureFlags.get() & Sonicteam::Player::PostureControlFlags_Grounded) != 0 || pSonicContext->m_Field24A)
         {
             pSonicGauge->m_GroundedFlags = 0;
         }

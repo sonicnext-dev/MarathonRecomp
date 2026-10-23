@@ -1456,10 +1456,7 @@ void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity)
 
         if (variable.first == "picture")
         {
-            auto isPlayStation = Config::ControllerIcons == EControllerIcons::PlayStation;
-
-            if (Config::ControllerIcons == EControllerIcons::Auto)
-                isPlayStation = hid::g_inputDeviceController == hid::EInputDevice::PlayStation;
+            const auto isPlayStation = Config::GetPreferredControllerIcons() == EControllerIcons::PlayStation;
 
             const auto& pftModifier = isPlayStation
                 ? g_buttonCropsPS3

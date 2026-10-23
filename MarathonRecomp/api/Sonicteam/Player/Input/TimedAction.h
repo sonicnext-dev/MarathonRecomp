@@ -7,7 +7,7 @@ namespace Sonicteam::Player::Input
     struct TimedAction
     {
         be<float> m_Time;
-        be<SoX::Input::KeyState> m_Action;
+        be<SoX::Input::PadButton> m_Action;
         bool m_Field08;
         bool m_IsDoubleTapped;
         bool m_Field0A;

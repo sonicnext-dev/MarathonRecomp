@@ -1,17 +1,17 @@
 namespace Sonicteam::SoX::Input
 {
-    inline bool PadState::IsDown(const KeyState in_Keys) const
+    inline bool PadState::IsDown(const PadButton buttons) const
     {
-        return (LastButtons & in_Keys) == in_Keys;
+        return (Buttons & buttons) == buttons;
     }
 
-    inline bool PadState::IsPressed(const KeyState in_Keys) const
+    inline bool PadState::IsPressed(const PadButton buttons) const
     {
-        return (PressedButtons & in_Keys) == in_Keys;
+        return (PressedButtons & buttons) == buttons;
     }
 
-    inline bool PadState::IsReleased(const KeyState in_Keys) const
+    inline bool PadState::IsReleased(const PadButton buttons) const
     {
-        return (ReleasedButtons & in_Keys) == in_Keys;
+        return (ReleasedButtons & buttons) == buttons;
     }
 }

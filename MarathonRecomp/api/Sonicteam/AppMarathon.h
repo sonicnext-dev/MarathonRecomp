@@ -19,7 +19,7 @@ namespace Sonicteam
 
         GameImp* GetGame() const
         {
-            if (auto pGameMode = m_pDoc->GetDocMode<Sonicteam::GameMode>())
+            if (auto pGameMode = m_pDoc->GetDocMode<Sonicteam::GameMode>("GameMode"))
                 return pGameMode->GetGame();
 
             return nullptr;

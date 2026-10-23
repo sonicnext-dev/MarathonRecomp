@@ -3,6 +3,7 @@
 #include <patches/aspect_ratio_patches.h>
 #include <gpu/imgui/imgui_snapshot.h>
 #include <gpu/video.h>
+#include <hid/peripheral/mouse.h>
 #include <hid/hid.h>
 #include <locale/locale.h>
 #include <ui/imgui_utils.h>
@@ -37,7 +38,7 @@ class SDLEventListenerForMessageWindow : public SDLEventListener
 public:
     bool OnSDLEvent(SDL_Event* event) override
     {
-        if (App::s_isInit || !MessageWindow::s_isVisible || !hid::IsInputAllowed())
+        if (App::s_isInit || !MessageWindow::s_isVisible || !HID::IsInputAllowed())
             return false;
 
         constexpr float axisValueRange = 32767.0f;
@@ -179,11 +180,15 @@ void DrawButton(int rowIndex, float yOffset, float yPadding, float width, float 
 
 static void ResetSelection()
 {
-    /* Always use -1 for mouse input to prevent the selection
-       cursor from erroneously appearing where it shouldn't. */
-    g_selectedRowIndex = hid::g_inputDevice == hid::EInputDevice::Mouse
-        ? -1
-        : g_defaultButtonIndex;
+    g_selectedRowIndex = g_defaultButtonIndex;
+
+    if (const auto pMutator = HID::GetManager()->GetUser(0)->GetMutator())
+    {
+        // Always use -1 for mouse input to prevent the selection
+        // cursor from erroneously appearing where it shouldn't.
+        if (pMutator->GetType() == HID::PeripheralType::Mouse)
+            g_selectedRowIndex = -1;
+    }
 
     g_upWasHeld = false;
     g_downWasHeld = false;
@@ -205,32 +210,34 @@ void MessageWindow::Draw()
     }
 
     auto drawList = ImGui::GetBackgroundDrawList();
-    auto isController = hid::IsInputDeviceController();
-    auto isKeyboard = hid::g_inputDevice == hid::EInputDevice::Keyboard;
+    auto peripheralType = HID::PeripheralType::Gamepad;
+
+    if (const auto pMutator = HID::GetManager()->GetUser(0)->GetMutator())
+        peripheralType = pMutator->GetType();
 
     // Handle controller input when the game is booted.
     if (App::s_isInit)
     {
         // Always assume keyboard to prevent mouse from blocking control in-game.
-        isKeyboard = true;
+        peripheralType = HID::PeripheralType::Keyboard;
 
         if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManagers[0])
         {
-            auto& rPadState = spInputManager->m_PadState;
+            auto& rPadState = spInputManager->PadState;
 
-            g_joypadAxis.y = -rPadState.LeftStickVertical;
+            g_joypadAxis.y = -rPadState.LeftStickY;
 
-            if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DPadUp))
+            if (rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_DPadUp))
                 g_joypadAxis.y = 1.0f;
 
-            if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DPadDown))
+            if (rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_DPadDown))
                 g_joypadAxis.y = -1.0f;
 
-            g_isAccepted = rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_A);
-            g_isDeclined = rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_B);
+            g_isAccepted = rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_South);
+            g_isDeclined = rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_East);
 
-            if (isKeyboard)
-                g_isAccepted = g_isAccepted || rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_Start);
+            if (peripheralType == HID::PeripheralType::Keyboard)
+                g_isAccepted = g_isAccepted || rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_Start);
         }
     }
 
@@ -280,7 +287,7 @@ void MessageWindow::Draw()
     for (auto& button : g_buttons)
         DrawButton(rowCount++, windowMarginY, itemPadding, itemWidth, itemHeight, button);
 
-    if (isController || isKeyboard)
+    if (peripheralType == HID::PeripheralType::Gamepad || peripheralType == HID::PeripheralType::Keyboard)
     {
         auto upIsHeld = g_joypadAxis.y > 0.5f;
         auto downIsHeld = g_joypadAxis.y < -0.5f;

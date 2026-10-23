@@ -4,70 +4,71 @@
 
 namespace Sonicteam::SoX::Input
 {
-    enum KeyState
+    enum PadButton : uint32_t
     {
-        KeyState_DPadUp = 0x40,
-        KeyState_DPadDown = 0x80,
-        KeyState_DPadLeft = 0x100,
-        KeyState_DPadRight = 0x200,
-        KeyState_Start = 0x400,
-        KeyState_Select = 0x800,
-        KeyState_LeftStick = 0x10000,
-        KeyState_RightStick = 0x20000,
-        KeyState_LeftBumper = 0x1000,
-        KeyState_RightBumper = 0x2000,
-        KeyState_A = 0x01,
-        KeyState_B = 0x02,
-        KeyState_X = 0x08,
-        KeyState_Y = 0x10,
-        KeyState_LeftTrigger = 0x4000,
-        KeyState_RightTrigger = 0x8000,
+        PadButton_DPadUp = 0x40,
+        PadButton_DPadDown = 0x80,
+        PadButton_DPadLeft = 0x100,
+        PadButton_DPadRight = 0x200,
+        PadButton_Start = 0x400,
+        PadButton_Back = 0x800,
+        PadButton_LeftStick = 0x10000,
+        PadButton_RightStick = 0x20000,
+        PadButton_LeftShoulder = 0x1000,
+        PadButton_RightShoulder = 0x2000,
+        PadButton_South = 0x01,
+        PadButton_East = 0x02,
+        PadButton_West = 0x08,
+        PadButton_North = 0x10,
+        PadButton_LeftTrigger = 0x4000,
+        PadButton_RightTrigger = 0x8000
     };
 
     struct PadState
     {
-        be<uint32_t> LastButtons;
-        be<uint32_t> InvertedLastButtons;
-        be<uint32_t> PressedButtons;
-        be<uint32_t> ReleasedButtons;
-        be<float> LeftStickHorizontal;
-        be<float> LeftStickVertical;
-        be<short> LeftStickHorizontalS16;
-        be<short> LeftStickVerticalS16;
-        be<float> RightStickHorizontal;
-        be<float> RightStickVertical;
-        be<short> RightStickHorizontalS16;
-        be<short> RightStickVerticalS16;
+        be<PadButton> Buttons;
+        be<PadButton> ButtonsMask;
+        be<PadButton> PressedButtons;
+        be<PadButton> ReleasedButtons;
+        be<float> LeftStickX;
+        be<float> LeftStickY;
+        be<short> LeftStickXRaw;
+        be<short> LeftStickYRaw;
+        be<float> RightStickX;
+        be<float> RightStickY;
+        be<short> RightStickXRaw;
+        be<short> RightStickYRaw;
 
-        bool IsDown(const KeyState in_Keys) const;
-        bool IsPressed(const KeyState in_Keys) const;
-        bool IsReleased(const KeyState in_Keys) const;
+        bool IsDown(const PadButton buttons) const;
+        bool IsPressed(const PadButton buttons) const;
+        bool IsReleased(const PadButton buttons) const;
     };
 
-    class Manager
+    struct Manager
     {
-    public:
-        be<uint32_t> m_PadID;
+        be<uint32_t> ID;
         MARATHON_INSERT_PADDING(0x0C);
-        PadState m_PadState;
+        PadState PadState;
         MARATHON_INSERT_PADDING(0x28);
     };
 
-    MARATHON_ASSERT_OFFSETOF(PadState, LastButtons, 0x00);
-    MARATHON_ASSERT_OFFSETOF(PadState, InvertedLastButtons, 0x04);
+    MARATHON_ASSERT_OFFSETOF(PadState, Buttons, 0x00);
+    MARATHON_ASSERT_OFFSETOF(PadState, ButtonsMask, 0x04);
     MARATHON_ASSERT_OFFSETOF(PadState, PressedButtons, 0x08);
     MARATHON_ASSERT_OFFSETOF(PadState, ReleasedButtons, 0x0C);
-    MARATHON_ASSERT_OFFSETOF(PadState, LeftStickHorizontal, 0x10);
-    MARATHON_ASSERT_OFFSETOF(PadState, LeftStickVertical, 0x14);
-    MARATHON_ASSERT_OFFSETOF(PadState, LeftStickHorizontalS16, 0x18);
-    MARATHON_ASSERT_OFFSETOF(PadState, LeftStickVerticalS16, 0x1A);
-    MARATHON_ASSERT_OFFSETOF(PadState, RightStickHorizontal, 0x1C);
-    MARATHON_ASSERT_OFFSETOF(PadState, RightStickVertical, 0x20);
-    MARATHON_ASSERT_OFFSETOF(PadState, RightStickHorizontalS16, 0x24);
-    MARATHON_ASSERT_OFFSETOF(PadState, RightStickVerticalS16, 0x26);
+    MARATHON_ASSERT_OFFSETOF(PadState, LeftStickX, 0x10);
+    MARATHON_ASSERT_OFFSETOF(PadState, LeftStickY, 0x14);
+    MARATHON_ASSERT_OFFSETOF(PadState, LeftStickXRaw, 0x18);
+    MARATHON_ASSERT_OFFSETOF(PadState, LeftStickYRaw, 0x1A);
+    MARATHON_ASSERT_OFFSETOF(PadState, RightStickX, 0x1C);
+    MARATHON_ASSERT_OFFSETOF(PadState, RightStickY, 0x20);
+    MARATHON_ASSERT_OFFSETOF(PadState, RightStickXRaw, 0x24);
+    MARATHON_ASSERT_OFFSETOF(PadState, RightStickYRaw, 0x26);
+    MARATHON_ASSERT_SIZEOF(PadState, 0x28);
 
-    MARATHON_ASSERT_OFFSETOF(Manager, m_PadID, 0x00);
-    MARATHON_ASSERT_OFFSETOF(Manager, m_PadState, 0x10);
+    MARATHON_ASSERT_OFFSETOF(Manager, ID, 0x00);
+    MARATHON_ASSERT_OFFSETOF(Manager, PadState, 0x10);
+    MARATHON_ASSERT_SIZEOF(Manager, 0x60);
 }
 
 #include "Manager.inl"

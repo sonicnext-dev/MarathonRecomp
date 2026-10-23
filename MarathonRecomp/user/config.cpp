@@ -284,6 +284,17 @@ CONFIG_DEFINE_ENUM_TEMPLATE(SDL_Scancode)
     { "END CALL", SDL_SCANCODE_ENDCALL },
 };
 
+CONFIG_DEFINE_ENUM_TEMPLATE(EMouseInput)
+{
+    { "LEFT CLICK", EMouseInput::LeftClick },
+    { "MIDDLE CLICK", EMouseInput::MiddleClick },
+    { "RIGHT CLICK", EMouseInput::RightClick },
+    { "X1", EMouseInput::X1 },
+    { "X2", EMouseInput::X2 },
+    { "WHEEL UP", EMouseInput::WheelUp },
+    { "WHEEL DOWN", EMouseInput::WheelDown }
+};
+
 CONFIG_DEFINE_ENUM_TEMPLATE(EChannelConfiguration)
 {
     { "Stereo",   EChannelConfiguration::Stereo },
@@ -892,13 +903,16 @@ void Config::Save()
     }
 }
 
-bool Config::IsControllerIconsPS3()
+EControllerIcons Config::GetPreferredControllerIcons(uint32_t in_userId)
 {
-    auto result = Config::ControllerIcons == EControllerIcons::PlayStation;
+    if (Config::ControllerIcons != EControllerIcons::Auto)
+        return Config::ControllerIcons;
 
-    if (Config::ControllerIcons == EControllerIcons::Auto)
-        result = hid::g_inputDeviceController == hid::EInputDevice::PlayStation;
+    if (const auto pMutator = HID::GetManager()->GetUser(in_userId)->GetMutator())
+    {
+        if (pMutator->GetVendor() == HID::PeripheralVendor::PlayStation)
+            return EControllerIcons::PlayStation;
+    }
 
-    return result;
+    return EControllerIcons::Xbox;
 }
-

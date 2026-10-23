@@ -2,28 +2,71 @@
 #include <ui/game_window.h>
 #include <user/config.h>
 
-hid::EInputDevice hid::g_inputDevice;
-hid::EInputDevice hid::g_inputDeviceController;
-hid::EInputDeviceExplicit hid::g_inputDeviceExplicit;
-
-uint16_t hid::g_prohibitedButtons;
-bool hid::g_isLeftStickProhibited;
-bool hid::g_isRightStickProhibited;
-
-void hid::SetProhibitedInputs(uint16_t wButtons, bool leftStick, bool rightStick)
+namespace HID
 {
-    hid::g_prohibitedButtons = wButtons;
-    hid::g_isLeftStickProhibited = leftStick;
-    hid::g_isRightStickProhibited = rightStick;
-}
+    bool GetState(uint32_t in_userIndex, XAMINPUT_STATE* out_pState)
+    {
+        static uint32_t packetNumber{};
 
-bool hid::IsInputAllowed()
-{
-    return GameWindow::s_isFocused || Config::AllowBackgroundInput;
-}
+        if (!out_pState)
+            return false;
 
-bool hid::IsInputDeviceController()
-{
-    return hid::g_inputDevice != hid::EInputDevice::Keyboard &&
-        hid::g_inputDevice != hid::EInputDevice::Mouse;
+        if (const auto pUser = GetManager()->GetUser(in_userIndex))
+        {
+            XAMINPUT_STATE state
+            {
+                .dwPacketNumber = packetNumber++,
+                .Gamepad = pUser->GetState()
+            };
+
+            *out_pState = state;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    bool SetState(uint32_t in_userIndex, XAMINPUT_VIBRATION* in_pVibration)
+    {
+        if (!in_pVibration)
+            return false;
+
+        if (const auto pUser = GetManager()->GetUser(in_userIndex))
+        {
+            pUser->SetVibration(*in_pVibration);
+            return true;
+        }
+
+        return false;
+    }
+
+    bool GetCapabilities(uint32_t in_userIndex, XAMINPUT_CAPABILITIES* out_pCapabilities)
+    {
+        if (!out_pCapabilities)
+            return false;
+
+        if (const auto pUser = GetManager()->GetUser(in_userIndex))
+        {
+            XAMINPUT_CAPABILITIES capabilities
+            {
+                .Type = XAMINPUT_DEVTYPE_GAMEPAD,
+                .SubType = XAMINPUT_DEVSUBTYPE_GAMEPAD,
+                .Flags = 0,
+                .Gamepad = pUser->GetState(),
+                .Vibration = pUser->GetVibration()
+            };
+
+            *out_pCapabilities = capabilities;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    bool IsInputAllowed()
+    {
+        return GameWindow::s_isFocused || Config::AllowBackgroundInput;
+    }
 }

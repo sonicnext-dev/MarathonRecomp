@@ -1,36 +1,38 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <boost/smart_ptr/shared_ptr.hpp>
+#include <Sonicteam/SoX/AI/State.h>
 
 namespace Sonicteam::SoX::AI
 {
-    template <typename TStateContext>
+    template <typename TContext>
     class StateMachine
     {
     public:
         xpointer<void> m_pVftable;
-        xpointer<StateMachine<TStateContext>> m_pState;
-        xpointer<TStateContext> m_pContext;
+        boost::shared_ptr<State<TContext>> m_spState;
+        MARATHON_INSERT_PADDING(0x14);
 
-        template <typename TState>
-        TState* GetState()
+        template <typename T = State<TContext>>
+        T* GetState()
         {
-            return (TState*)m_pState.get();
+            return static_cast<T*>(m_spState.get());
         }
 
-        TStateContext* GetContext()
-        {
-            return (TStateContext*)m_pContext.get();
-        }
-
-        template <typename TContext>
         TContext* GetContext()
         {
-            return (TContext*)m_pContext.get();
+            return m_spState->GetContext();
+        }
+
+        template <typename T = TContext>
+        T* GetContext()
+        {
+            return m_spState->template GetContext<T>();
         }
     };
 
     MARATHON_ASSERT_OFFSETOF(StateMachine<void>, m_pVftable, 0x00);
-    MARATHON_ASSERT_OFFSETOF(StateMachine<void>, m_pState, 0x04);
-    MARATHON_ASSERT_OFFSETOF(StateMachine<void>, m_pContext, 0x08);
+    MARATHON_ASSERT_OFFSETOF(StateMachine<void>, m_spState, 0x04);
+    MARATHON_ASSERT_SIZEOF(StateMachine<void>, 0x20);
 }

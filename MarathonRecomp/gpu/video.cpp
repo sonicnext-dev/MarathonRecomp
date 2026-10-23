@@ -451,10 +451,10 @@ static std::vector<PipelineTask> g_pipelineTaskQueue;
 
 static std::thread::id g_mainThreadId = std::this_thread::get_id();
 
-class LoadingPipelineCompilationEvent : public HookEvent
+class LoadingPipelineCompilationEvent : public ContextHookEvent<Sonicteam::LoadingTask>
 {
 public:
-    void Postfix() override
+    void Postfix(Sonicteam::LoadingTask* in_pThis) override
     {
         assert(std::this_thread::get_id() == g_mainThreadId);
 
@@ -3596,7 +3596,7 @@ void Video::Resize(uint32_t width, uint32_t height)
 
     if (const auto pGame = pApp->GetGame(); rmTextureResources.find("radermap") != rmTextureResources.end())
     {
-        if (const auto pPopupScreenTask = pGame->m_lrPopupScreenTask.m_pElement)
+        if (const auto pPopupScreenTask = pGame->m_rPopupScreenTask.m_pRef)
         {
             pHUDRaderMap = pPopupScreenTask->GetHUDPopupScreen<Sonicteam::HUDRaderMap>();
 
@@ -4811,8 +4811,11 @@ static void SetTexture(GuestDevice* device, uint32_t index, GuestTexture* textur
 {
     // printf("SetTexture: %x %d %x\n", device, index, texture);
 
-    if (Config::IsControllerIconsPS3() && texture != nullptr && texture->patchedTexture != nullptr)
+    if (Config::GetPreferredControllerIcons() == EControllerIcons::PlayStation &&
+        texture != nullptr && texture->patchedTexture != nullptr)
+    {
         texture = texture->patchedTexture.get();
+    }
 
     RenderCommand cmd;
     cmd.type = RenderCommandType::SetTexture;

@@ -825,6 +825,8 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
         case OptionsMenuCategory::Input:
             DrawOption(rowCount++, &Config::HorizontalCamera, true);
             DrawOption(rowCount++, &Config::VerticalCamera, true);
+            DrawOption(rowCount++, &Config::MouseSensitivity, true, nullptr, 0.01f, 0.5f, 1.0f);
+            DrawOption(rowCount++, &Config::MouseAutoCenter, true);
             DrawOption(rowCount++, &Config::AllowBackgroundInput, true);
             DrawOption(rowCount++, &Config::ControllerIcons, !OptionsMenu::s_isPause, cmnReason);
             DrawOption(rowCount++, &Config::LightDash, true, nullptr, ENUM_VALUE(ELightDash), false, true);
@@ -992,39 +994,39 @@ void OptionsMenu::Draw()
             {
                 for (auto& spInputManager : App::s_pApp->m_pDoc->m_vspInputManagers)
                 {
-                    auto& rPadState = spInputManager->m_PadState;
+                    auto& rPadState = spInputManager->PadState;
 
-                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DPadUp) || -rPadState.LeftStickVertical > 0.5f)
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::PadButton_DPadUp) || -rPadState.LeftStickY > 0.5f)
                         upIsHeld = true;
 
                     if (!g_upWasHeld && upIsHeld)
                         g_up = true;
 
-                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DPadDown) || -rPadState.LeftStickVertical < -0.5f)
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::PadButton_DPadDown) || -rPadState.LeftStickY < -0.5f)
                         downIsHeld = true;
 
                     if (!g_downWasHeld && downIsHeld)
                         g_down = true;
 
-                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DPadLeft) || -rPadState.LeftStickHorizontal > 0.5f)
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::PadButton_DPadLeft) || -rPadState.LeftStickX > 0.5f)
                         leftIsHeld = true;
 
                     if (!g_leftWasHeld && leftIsHeld)
                         g_left = true;
 
-                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DPadRight) || -rPadState.LeftStickHorizontal < -0.5f)
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::PadButton_DPadRight) || -rPadState.LeftStickX < -0.5f)
                         rightIsHeld = true;
 
                     if (!g_rightWasHeld && rightIsHeld)
                         g_right = true;
 
-                    if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_A))
+                    if (rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_South))
                         g_isAccepted = true;
 
-                    if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_B))
+                    if (rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_East))
                         g_isDeclined = true;
 
-                    if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_X))
+                    if (rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_West))
                         g_isReset = true;
                 }
             }

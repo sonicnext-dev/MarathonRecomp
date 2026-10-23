@@ -114,18 +114,18 @@ PPC_FUNC(sub_825126A0)
 
             if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManagers[0])
             {
-                auto& rPadState = spInputManager->m_PadState;
+                auto& rPadState = spInputManager->PadState;
 
-                if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DPadUp))
+                if (rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_DPadUp))
                     g_secretFlags = SECRET_UP;
 
-                if ((g_secretFlags & SECRET_UP) != 0 && rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DPadDown))
+                if ((g_secretFlags & SECRET_UP) != 0 && rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_DPadDown))
                     g_secretFlags |= SECRET_DOWN;
 
-                if ((g_secretFlags & SECRET_DOWN) != 0 && rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DPadLeft))
+                if ((g_secretFlags & SECRET_DOWN) != 0 && rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_DPadLeft))
                     g_secretFlags |= SECRET_LEFT;
 
-                if ((g_secretFlags & SECRET_LEFT) != 0 && rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_DPadRight))
+                if ((g_secretFlags & SECRET_LEFT) != 0 && rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_DPadRight))
                     g_secretFlags |= SECRET_RIGHT;
             }
 
@@ -142,11 +142,11 @@ PPC_FUNC(sub_825126A0)
         {
             if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManagers[0])
             {
-                auto& rPadState = spInputManager->m_PadState;
+                auto& rPadState = spInputManager->PadState;
 
                 if (g_secretFlags == SECRET_ALL &&
-                    rPadState.IsDown(Sonicteam::SoX::Input::KeyState_A) &&
-                    rPadState.IsDown(Sonicteam::SoX::Input::KeyState_Start))
+                    rPadState.IsDown(Sonicteam::SoX::Input::PadButton_South) &&
+                    rPadState.IsDown(Sonicteam::SoX::Input::PadButton_Start))
                 {
                     OptionsMenu::s_isDebugUnlocked = true;
                 }
@@ -208,9 +208,9 @@ PPC_FUNC(sub_825126A0)
     {
         if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManagers[0])
         {
-            auto& rPadState = spInputManager->m_PadState;
+            auto& rPadState = spInputManager->PadState;
 
-            if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_B))
+            if (rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_East))
             {
                 if (pTitleTask->m_State == Sonicteam::TitleTask::TitleState_Wait)
                 {

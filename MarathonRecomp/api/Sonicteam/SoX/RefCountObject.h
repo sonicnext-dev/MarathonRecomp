@@ -28,7 +28,7 @@ namespace Sonicteam::SoX
                 Destroy(flag);
         }
 
-        inline void AddReference()
+        void AddReference()
         {
             m_ReferenceCount = m_ReferenceCount + 1;
         }
@@ -36,5 +36,5 @@ namespace Sonicteam::SoX
 
     MARATHON_ASSERT_OFFSETOF(RefCountObject, m_pVftable, 0x00);
     MARATHON_ASSERT_OFFSETOF(RefCountObject, m_ReferenceCount, 0x04);
-    MARATHON_ASSERT_SIZEOF(RefCountObject, 8);
+    MARATHON_ASSERT_SIZEOF(RefCountObject, 0x08);
 }

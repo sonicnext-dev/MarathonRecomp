@@ -1,18 +1,19 @@
 #pragma once
 
 #include <Marathon.inl>
-#include <Sonicteam/Player/IFlagCommunicator.h>
+#include <boost/smart_ptr/shared_ptr.hpp>
 #include <Sonicteam/Player/State/ICommonContextIF.h>
-#include <Sonicteam/Player/IDynamicLink.h>
-#include <Sonicteam/Player/IVariable.h>
-#include <Sonicteam/Player/IPosturePlugIn.h>
 #include <Sonicteam/Player/Unit/ITestCase.h>
-#include <Sonicteam/SoX/RefSharedPointer.h>
-#include <Sonicteam/SoX/Math/Vector.h>
+#include <Sonicteam/Player/CommonContextIFFlags.h>
+#include <Sonicteam/Player/IDynamicLink.h>
+#include <Sonicteam/Player/IFlagCommunicator.h>
+#include <Sonicteam/Player/IPosturePlugIn.h>
+#include <Sonicteam/Player/IVariable.h>
 #include <Sonicteam/SoX/Engine/Task.h>
 #include <Sonicteam/SoX/Math/Quaternion.h>
+#include <Sonicteam/SoX/Math/Vector.h>
 #include <Sonicteam/SoX/Physics/World.h>
-#include <boost/smart_ptr/shared_ptr.h>
+#include <Sonicteam/SoX/RefSharedPointer.h>
 #include <Sonicteam/ActorManager.h>
 
 namespace Sonicteam::Player
@@ -41,7 +42,7 @@ namespace Sonicteam::Player
         be<float> m_ImpulseForward;
         be<float> m_ImpulseVertical;
         SoX::Math::Vector m_ImpulseUp;
-        be<uint32_t> m_CommonContextIFFlags;
+        be<CommonContextIFFlags> m_CommonContextIFFlags;
         be<uint32_t> m_PostureRequestFlags;
         be<uint32_t> m_PostureFlags118;
         be<uint32_t> m_PostureFlags11C;

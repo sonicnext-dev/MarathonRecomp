@@ -1,5 +1,7 @@
 #include "imgui_utils.h"
 #include <gpu/imgui/imgui_snapshot.h>
+#include <hid/peripheral/keyboard.h>
+#include <hid/peripheral/mouse.h>
 #include <hid/hid.h>
 #include <patches/aspect_ratio_patches.h>
 #include <ui/black_bar.h>
@@ -1244,27 +1246,33 @@ ImGuiTextInterpData GetHidInterpTextData()
     auto buttonTextureWidth = uint16_t(256);
     auto buttonTextureHeight = uint16_t(128);
 
-    auto buttonCrops = Config::IsControllerIconsPS3() 
+    auto buttonCrops = Config::GetPreferredControllerIcons() == EControllerIcons::PlayStation
         ? &g_buttonCropsPS3
         : &g_buttonCropsXenon;
 
     if (!App::s_isInit)
     {
-        if (hid::g_inputDevice == hid::EInputDevice::Keyboard ||
-            hid::g_inputDevice == hid::EInputDevice::Mouse)
+        if (const auto pMutator = HID::GetManager()->GetUser(0)->GetMutator())
         {
-            buttonTexture = &g_upTexKbm;
-            buttonTextureWidth = uint16_t(84);
-            buttonTextureHeight = uint16_t(28);
-        }
+            const auto type = pMutator->GetType();
+            const auto isKeyboard = type == HID::PeripheralType::Keyboard;
+            const auto isMouse = type == HID::PeripheralType::Mouse;
 
-        if (hid::g_inputDevice == hid::EInputDevice::Keyboard)
-        {
-            buttonCrops = &g_buttonCropsKeyboard;
-        }
-        else if (hid::g_inputDevice == hid::EInputDevice::Mouse)
-        {
-            buttonCrops = &g_buttonCropsMouse;
+            if (isKeyboard || isMouse)
+            {
+                buttonTexture = &g_upTexKbm;
+                buttonTextureWidth = uint16_t(84);
+                buttonTextureHeight = uint16_t(28);
+            }
+
+            if (isKeyboard)
+            {
+                buttonCrops = &g_buttonCropsKeyboard;
+            }
+            else if (isMouse)
+            {
+                buttonCrops = &g_buttonCropsMouse;
+            }
         }
     }
 

@@ -403,10 +403,13 @@ uint32_t XamContentGetDeviceData(uint32_t DeviceID, XDEVICE_DATA* pDeviceData)
 
 uint32_t XamInputGetCapabilities(uint32_t unk, uint32_t userIndex, uint32_t flags, XAMINPUT_CAPABILITIES* caps)
 {
-    if (userIndex != 0)
+    if (userIndex >= 4)
         return ERROR_NO_SUCH_USER;
 
-    uint32_t result = hid::GetCapabilities(userIndex, caps);
+    if (!caps)
+        return ERROR_BAD_ARGUMENTS;
+
+    uint32_t result = HID::GetCapabilities(userIndex, caps);
 
     if (result == ERROR_SUCCESS)
     {
@@ -425,83 +428,16 @@ uint32_t XamInputGetCapabilities(uint32_t unk, uint32_t userIndex, uint32_t flag
 
 uint32_t XamInputGetState(uint32_t userIndex, uint32_t flags, XAMINPUT_STATE* state)
 {
-    if (userIndex != 0)
+    if (userIndex >= 4)
         return ERROR_NO_SUCH_USER;
 
-    memset(state, 0, sizeof(*state));
+    if (!state)
+        return ERROR_BAD_ARGUMENTS;
 
-    if (hid::IsInputAllowed())
-        hid::GetState(userIndex, state);
+    memset(state, 0, sizeof(XAMINPUT_STATE));
 
-    auto keyboardState = SDL_GetKeyboardState(NULL);
-
-    if (GameWindow::s_isFocused && !keyboardState[SDL_SCANCODE_LALT])
-    {
-        if (keyboardState[Config::Key_LeftStickUp])
-            state->Gamepad.sThumbLY = 32767;
-        if (keyboardState[Config::Key_LeftStickDown])
-            state->Gamepad.sThumbLY = -32768;
-        if (keyboardState[Config::Key_LeftStickLeft])
-            state->Gamepad.sThumbLX = -32768;
-        if (keyboardState[Config::Key_LeftStickRight])
-            state->Gamepad.sThumbLX = 32767;
-
-        if (keyboardState[Config::Key_RightStickUp])
-            state->Gamepad.sThumbRY = 32767;
-        if (keyboardState[Config::Key_RightStickDown])
-            state->Gamepad.sThumbRY = -32768;
-        if (keyboardState[Config::Key_RightStickLeft])
-            state->Gamepad.sThumbRX = -32768;
-        if (keyboardState[Config::Key_RightStickRight])
-            state->Gamepad.sThumbRX = 32767;
-
-        if (keyboardState[Config::Key_LeftTrigger])
-            state->Gamepad.bLeftTrigger = 0xFF;
-        if (keyboardState[Config::Key_RightTrigger])
-            state->Gamepad.bRightTrigger = 0xFF;
-
-        if (keyboardState[Config::Key_DPadUp])
-            state->Gamepad.wButtons |= XAMINPUT_GAMEPAD_DPAD_UP;
-        if (keyboardState[Config::Key_DPadDown])
-            state->Gamepad.wButtons |= XAMINPUT_GAMEPAD_DPAD_DOWN;
-        if (keyboardState[Config::Key_DPadLeft])
-            state->Gamepad.wButtons |= XAMINPUT_GAMEPAD_DPAD_LEFT;
-        if (keyboardState[Config::Key_DPadRight])
-            state->Gamepad.wButtons |= XAMINPUT_GAMEPAD_DPAD_RIGHT;
-
-        if (keyboardState[Config::Key_Start])
-            state->Gamepad.wButtons |= XAMINPUT_GAMEPAD_START;
-        if (keyboardState[Config::Key_Back])
-            state->Gamepad.wButtons |= XAMINPUT_GAMEPAD_BACK;
-
-        if (keyboardState[Config::Key_LeftBumper])
-            state->Gamepad.wButtons |= XAMINPUT_GAMEPAD_LEFT_SHOULDER;
-        if (keyboardState[Config::Key_RightBumper])
-            state->Gamepad.wButtons |= XAMINPUT_GAMEPAD_RIGHT_SHOULDER;
-
-        if (keyboardState[Config::Key_A])
-            state->Gamepad.wButtons |= XAMINPUT_GAMEPAD_A;
-        if (keyboardState[Config::Key_B])
-            state->Gamepad.wButtons |= XAMINPUT_GAMEPAD_B;
-        if (keyboardState[Config::Key_X])
-            state->Gamepad.wButtons |= XAMINPUT_GAMEPAD_X;
-        if (keyboardState[Config::Key_Y])
-            state->Gamepad.wButtons |= XAMINPUT_GAMEPAD_Y;
-    }
-
-    state->Gamepad.wButtons &= ~hid::g_prohibitedButtons;
-
-    if (hid::g_isLeftStickProhibited)
-    {
-        state->Gamepad.sThumbLX = 0;
-        state->Gamepad.sThumbLY = 0;
-    }
-
-    if (hid::g_isRightStickProhibited)
-    {
-        state->Gamepad.sThumbRX = 0;
-        state->Gamepad.sThumbRY = 0;
-    }
+    if (HID::IsInputAllowed())
+        HID::GetState(userIndex, state);
 
     ByteSwapInplace(state->Gamepad.wButtons);
     ByteSwapInplace(state->Gamepad.sThumbLX);
@@ -514,14 +450,14 @@ uint32_t XamInputGetState(uint32_t userIndex, uint32_t flags, XAMINPUT_STATE* st
 
 uint32_t XamInputSetState(uint32_t userIndex, uint32_t flags, XAMINPUT_VIBRATION* vibration)
 {
-    if (userIndex != 0)
+    if (userIndex >= 4)
         return ERROR_NO_SUCH_USER;
 
-    if (!hid::IsInputDeviceController())
-        return ERROR_SUCCESS;
+    if (!vibration)
+        return ERROR_BAD_ARGUMENTS;
 
     ByteSwapInplace(vibration->wLeftMotorSpeed);
     ByteSwapInplace(vibration->wRightMotorSpeed);
 
-    return hid::SetState(userIndex, vibration);
+    return HID::SetState(userIndex, vibration);
 }

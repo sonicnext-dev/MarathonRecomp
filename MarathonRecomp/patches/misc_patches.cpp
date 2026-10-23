@@ -153,10 +153,7 @@ PPC_FUNC(sub_822CE930)
         }
     }
 
-    auto isPlayStation = Config::ControllerIcons == EControllerIcons::PlayStation;
-
-    if (Config::ControllerIcons == EControllerIcons::Auto)
-        isPlayStation = hid::g_inputDeviceController == hid::EInputDevice::PlayStation;
+    const auto isPlayStation = Config::GetPreferredControllerIcons() == EControllerIcons::PlayStation;
 
     if (!Config::ControlTutorial || isPlayStation)
     {

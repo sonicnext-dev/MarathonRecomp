@@ -381,14 +381,24 @@ address = 0x82590AB4
 registers = ["f1"]
 
 [[midasm_hook]]
-name = "SonicCamera_InvertAzDriveK"
+name = "SonicCamera_InvertAzDrive"
 address = 0x82191D40
 registers = ["f12"]
 
 [[midasm_hook]]
-name = "SonicCamera_InvertAltDriveK"
+name = "SonicCamera_InvertAltDrive"
 address = 0x82191E00
 registers = ["f12"]
+
+[[midasm_hook]]
+name = "SonicCamera_Alloc"
+address = 0x82192F54
+registers = ["r3"]
+
+[[midasm_hook]]
+name = "SonicCamera_MouseLook"
+address = 0x82191FC0
+registers = ["r31", "r5", "f31"]
 
 [[midasm_hook]]
 name = "SonicCamera_RotationSpeedFix"
@@ -705,12 +715,12 @@ address = 0x82217A94
 jump_address_on_true = 0x82217A98
 
 [[midasm_hook]]
-name = "DemoGMCamera_InvertHorizontal"
+name = "DemoGMCamera_InvertYaw"
 address = 0x8218CC64
 registers = ["f0"]
 
 [[midasm_hook]]
-name = "DemoGMCamera_InvertVertical"
+name = "DemoGMCamera_InvertPitch"
 address = 0x8218CC6C
 registers = ["f0"]
 
@@ -749,10 +759,12 @@ jump_address_on_true = 0x82502E90
 [[midasm_hook]]
 name = "DocMarathon_SetLoading_StartThread"
 address = 0x825EA9AC
+registers = ["r31"]
 
 [[midasm_hook]]
 name = "DocMarathon_SetLoading_JoinThread_Prefix"
 address = 0x825EA9D0
+registers = ["r31"]
 
 [[midasm_hook]]
 name = "DocMarathon_SetLoading_JoinThread_Postfix"
@@ -772,3 +784,8 @@ address = 0x825F7190
 name = "ResourceMgrKeyOverride"
 address = 0x825823C8
 registers = ["r1", "r28"]
+
+[[midasm_hook]]
+name = "OnRegisterPlayerActor"
+address = 0x821749F0
+registers = ["r25"]

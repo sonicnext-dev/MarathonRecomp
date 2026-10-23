@@ -89,7 +89,7 @@ PPC_FUNC(sub_821735B8)
     auto* pTextBookPath = (const char*)(base + ctx.r5.u32);
     void* pNewTextBookPath = nullptr;
 
-    if (Config::IsControllerIconsPS3())
+    if (Config::GetPreferredControllerIcons() == EControllerIcons::PlayStation)
     {
         static constexpr const char* MSG_HINT_PS3 = "text/msg_hint_ps3.mst";
 

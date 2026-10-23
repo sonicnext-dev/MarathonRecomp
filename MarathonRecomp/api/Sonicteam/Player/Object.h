@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Marathon.inl>
-#include <boost/smart_ptr/shared_ptr.h>
+#include <boost/smart_ptr/shared_ptr.hpp>
 #include <Sonicteam/Player/State/Machine2.h>
 #include <Sonicteam/Player/IGauge.h>
 #include <Sonicteam/Player/IPlugIn.h>
@@ -46,7 +46,7 @@ namespace Sonicteam::Player
         SoX::RefSharedPointer<> m_spPackageBinary;
         boost::shared_ptr<void> m_spModel;
         boost::shared_ptr<IPostureControl> m_spPostureControl;
-        boost::shared_ptr<State::Machine2> m_spStateMachine;
+        boost::shared_ptr<State::IMachine> m_spStateMachine;
         boost::shared_ptr<void> m_spGravity;
         boost::shared_ptr<void> m_spImpulse;
         be<uint32_t> m_SetupModuleIndexPrefix;
@@ -61,10 +61,16 @@ namespace Sonicteam::Player
         stdx::string m_Name;
         MARATHON_INSERT_PADDING(0x110);
 
+        template <typename T = State::IMachine>
+        T* GetStateMachine()
+        {
+            return static_cast<T*>(m_spStateMachine.get());
+        }
+
         template <typename T = IGauge>
         T* GetGauge()
         {
-            return (T*)m_spGauge.get();
+            return static_cast<T*>(m_spGauge.get());
         }
 
         template <typename T = IPlugIn>
@@ -79,17 +85,28 @@ namespace Sonicteam::Player
             return nullptr;
         }
 
+        int GetPlayerIndex()
+        {
+            if (const auto pGameMode = GetDoc<DocMarathonState>()->GetDocMode<GameMode>("GameMode"))
+                return pGameMode->GetGame()->GetPlayerIndexFromActorID(m_ActorID);
+
+            return -1;
+        }
+
         SoX::Input::Manager* GetInputManager()
         {
             if (!m_IsPlayer)
                 return nullptr;
 
-            auto pDoc = GetDoc<DocMarathonState>();
-            auto pGame = pDoc->GetDocMode<GameMode>()->GetGame();
-            auto playerIndex = pGame->PlayerActorIDToIndex(m_ActorID);
-            auto padID = pDoc->m_aPadIDs[playerIndex];
+            const auto playerIndex = GetPlayerIndex();
 
-            return pDoc->m_vspInputManagers[padID].get();
+            if (playerIndex < 0)
+                return nullptr;
+
+            const auto pDoc = GetDoc<DocMarathonState>();
+            const auto& rPadID = pDoc->m_aPadIDs[playerIndex];
+
+            return pDoc->m_vspInputManagers[rPadID].get();
         }
     };
 

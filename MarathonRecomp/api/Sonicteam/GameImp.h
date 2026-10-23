@@ -1,14 +1,15 @@
 #pragma once
 
 #include <Marathon.inl>
-#include <boost/smart_ptr/shared_ptr.h>
+#include <boost/smart_ptr/shared_ptr.hpp>
 #include <Sonicteam/Mission/Core.h>
 #include <Sonicteam/SoX/Audio/Cue.h>
 #include <Sonicteam/SoX/Physics/World.h>
 #include <Sonicteam/SoX/Scenery/Camera.h>
 #include <Sonicteam/SoX/Scenery/CameraImp.h>
-#include <Sonicteam/SoX/LinkNode.h>
+#include <Sonicteam/SoX/RefLinkNode.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
+#include <Sonicteam/ActorManager.h>
 #include <Sonicteam/Game.h>
 #include <Sonicteam/LoadingTask.h>
 #include <Sonicteam/PauseAdapter.h>
@@ -19,7 +20,11 @@
 
 namespace Sonicteam
 {
-    class ActorManager;
+    namespace Player
+    {
+        class Object;
+    }
+
     class GameScript;
 
     class GameImp : public Game
@@ -84,7 +89,7 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(0x0C);
         be<uint32_t> m_Field1180;
         xpointer<GameScript> m_pGameScript;
-        be<uint32_t> m_aObjPlayerActorID[0x0F];
+        be<uint32_t> m_PlayerActorIDs[15];
         boost::shared_ptr<ActorManager> m_spActorManager;
         xpointer<TextBook> m_pSystemTextBook;
         MARATHON_INSERT_PADDING(0x08);
@@ -96,16 +101,24 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(0x04);
         xpointer<Mission::Core> m_pMissionCore;
         MARATHON_INSERT_PADDING(0x248);
-        SoX::LinkRef<PopupScreenTask> m_lrPopupScreenTask;
+        SoX::RefLinkNode<PopupScreenTask> m_rPopupScreenTask;
         MARATHON_INSERT_PADDING(0x04);
-        SoX::LinkRef<LoadingTask> m_lrLoadingTask;
-        SoX::LinkRef<void> m_lrStageTitleTask;
+        SoX::RefLinkNode<LoadingTask> m_rLoadingTask;
+        SoX::RefLinkNode<void> m_rStageTitleTask;
         MARATHON_INSERT_PADDING(0x28);
         SoX::RefSharedPointer<SoX::Physics::World> m_spPhysicsWorld;
         xpointer<void> m_pMyCollisionFilter;
         MARATHON_INSERT_PADDING(0x0C);
 
-        int PlayerActorIDToIndex(int32_t actorId) const
+        Player::Object* GetPlayer(uint32_t in_index) const
+        {
+            if (in_index >= 4)
+                return nullptr;
+
+            return m_spActorManager->Find<Player::Object>(m_PlayerData[in_index].ActorID);
+        }
+
+        int GetPlayerIndexFromActorID(uint32_t actorId) const
         {
             for (int i = 0; i < 4; i++)
             {
@@ -169,16 +182,16 @@ namespace Sonicteam
     MARATHON_ASSERT_OFFSETOF(GameImp, m_IsStage, 0x1170);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_Field1180, 0x1180);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pGameScript, 0x1184);
-    MARATHON_ASSERT_OFFSETOF(GameImp, m_aObjPlayerActorID, 0x1188);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_PlayerActorIDs, 0x1188);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_spActorManager, 0x11C4);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pSystemTextBook, 0x11CC);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_vvspCameras, 0x11D8);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pBgmCue, 0x139C);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pHintTextBook, 0x170C);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pMissionCore, 0x1714);
-    MARATHON_ASSERT_OFFSETOF(GameImp, m_lrPopupScreenTask, 0x1960);
-    MARATHON_ASSERT_OFFSETOF(GameImp, m_lrLoadingTask, 0x1974);
-    MARATHON_ASSERT_OFFSETOF(GameImp, m_lrStageTitleTask, 0x1984);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_rPopupScreenTask, 0x1960);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_rLoadingTask, 0x1974);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_rStageTitleTask, 0x1984);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_spPhysicsWorld, 0x19BC);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pMyCollisionFilter, 0x19C0);
     MARATHON_ASSERT_SIZEOF(GameImp, 0x19D0);

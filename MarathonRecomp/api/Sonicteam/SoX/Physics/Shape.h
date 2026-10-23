@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/SoX/Math/Vector.h>
+#include <Sonicteam/SoX/Physics/ShapeType.h>
 #include <Sonicteam/SoX/RefCountObject.h>
 
 namespace Sonicteam::SoX::Physics
@@ -10,14 +12,20 @@ namespace Sonicteam::SoX::Physics
     public:
         struct Vftable : public RefCountObject::Vftable
         {
-            be<uint32_t> fpVFunction04; // (__out VECTOR* u1, __out VECTOR* u2)
-            be<uint32_t> fpInitializeVolume;
+            be<uint32_t> fpGetAABB;
+            be<uint32_t> fpInit;
         };
 
-        be<uint32_t> m_ShapeType;
-        be<float> m_ShapeVolume; // w * h * ... * FLT_MIN
+        be<ShapeType> m_Type;
+        be<float> m_Volume;
+
+        void GetAABB(Math::Vector* out_pMin, Math::Vector* out_pMax)
+        {
+            GuestToHostFunction<void>(static_cast<Vftable*>(m_pVftable.get())->fpGetAABB.get(), this, out_pMin, out_pMax);
+        }
     };
 
-    MARATHON_ASSERT_OFFSETOF(Shape, m_ShapeType, 0x08);
-    MARATHON_ASSERT_OFFSETOF(Shape, m_ShapeVolume, 0x0C);
+    MARATHON_ASSERT_OFFSETOF(Shape, m_Type, 0x08);
+    MARATHON_ASSERT_OFFSETOF(Shape, m_Volume, 0x0C);
+    MARATHON_ASSERT_SIZEOF(Shape, 0x10);
 }

@@ -244,6 +244,26 @@ CONFIG_DEFINE_ENUM_LOCALE(ECameraRotationMode)
     }
 };
 
+CONFIG_DEFINE_LOCALE(MouseSensitivity)
+{
+    { ELanguage::English,  { "Mouse Sensitivity", "Adjust the sensitivity of the mouse when moving the camera." } },
+    { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
+    { ELanguage::German,   { "DUMMY", "DUMMY" } },
+    { ELanguage::French,   { "DUMMY", "DUMMY" } },
+    { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
+    { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
+};
+
+CONFIG_DEFINE_LOCALE(MouseAutoCenter)
+{
+    { ELanguage::English,  { "Mouse Auto-Center", "Center the camera automatically when the mouse is not in use." } },
+    { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
+    { ELanguage::German,   { "DUMMY", "DUMMY" } },
+    { ELanguage::French,   { "DUMMY", "DUMMY" } },
+    { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
+    { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
+};
+
 CONFIG_DEFINE_LOCALE(AllowBackgroundInput)
 {
     { ELanguage::English,  { "Allow Background Input", "Allow controller input whilst the game window is unfocused." } },
@@ -315,6 +335,7 @@ CONFIG_DEFINE_ENUM_LOCALE(EControllerIcons)
         }
     }
 };
+
 CONFIG_DEFINE_LOCALE(LightDash)
 {
     { ELanguage::English,  { "Light Dash", "Change how Light Dash is activated for Sonic and Shadow." } },

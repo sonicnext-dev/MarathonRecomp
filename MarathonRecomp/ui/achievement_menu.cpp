@@ -338,9 +338,9 @@ void AchievementMenu::Draw()
     {
         if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManagers[0])
         {
-            auto& rPadState = spInputManager->m_PadState;
+            auto& rPadState = spInputManager->PadState;
 
-            if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_B))
+            if (rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_East))
             {
                 AchievementMenu::Close();
                 ButtonWindow::Close();
@@ -350,7 +350,7 @@ void AchievementMenu::Draw()
             {
                 case AchievementMenuState::GoldMedals:
                 {
-                    if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_Y))
+                    if (rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_North))
                     {
                         AchievementMenu::SetState(AchievementMenuState::Achievements);
                         ButtonWindow::Open("Button_GoldMedalsBack");
@@ -368,7 +368,7 @@ void AchievementMenu::Draw()
                     if ((s_pMainMenuTask->m_PressedButtons.get() & 0x20) == 0)
                         s_pMainMenuTask->m_PressedButtons = 0;
 
-                    if (rPadState.IsPressed(Sonicteam::SoX::Input::KeyState_Y))
+                    if (rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_North))
                     {
                         AchievementMenu::SetState(AchievementMenuState::GoldMedals);
                         ButtonWindow::Open("Button_AchievementsBack");
@@ -449,15 +449,15 @@ void AchievementMenu::Draw()
 
                 for (auto& spInputManager : App::s_pApp->m_pDoc->m_vspInputManagers)
                 {
-                    auto& rPadState = spInputManager->m_PadState;
+                    auto& rPadState = spInputManager->PadState;
 
-                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DPadUp) || -rPadState.LeftStickVertical > 0.5f)
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::PadButton_DPadUp) || -rPadState.LeftStickY > 0.5f)
                         upIsHeld = true;
 
                     if (!g_upWasHeld && upIsHeld)
                         g_up = true;
 
-                    if (rPadState.IsDown(Sonicteam::SoX::Input::KeyState_DPadDown) || -rPadState.LeftStickVertical < -0.5f)
+                    if (rPadState.IsDown(Sonicteam::SoX::Input::PadButton_DPadDown) || -rPadState.LeftStickY < -0.5f)
                         downIsHeld = true;
 
                     if (!g_downWasHeld && downIsHeld)

@@ -70,6 +70,8 @@ bool Window_OnSDLEvent(void*, SDL_Event* event)
 
         case SDL_EVENT_KEY_DOWN:
         {
+            SDL_HideCursor();
+
             switch (event->key.key)
             {
                 // Toggle fullscreen on ALT+ENTER.
@@ -129,6 +131,34 @@ bool Window_OnSDLEvent(void*, SDL_Event* event)
             break;
         }
 
+        case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+        case SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN:
+        case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+        case SDL_EVENT_GAMEPAD_BUTTON_UP:
+        {
+            if (event->type == SDL_EVENT_GAMEPAD_AXIS_MOTION)
+            {
+                if (abs(event->gaxis.value) > 8000)
+                    SDL_HideCursor();
+            }
+            else
+            {
+                SDL_HideCursor();
+            }
+
+            break;
+        }
+
+        case SDL_EVENT_MOUSE_MOTION:
+        case SDL_EVENT_MOUSE_BUTTON_DOWN:
+        case SDL_EVENT_MOUSE_BUTTON_UP:
+        {
+            if (!GameWindow::IsFullscreen() || GameWindow::s_isFullscreenCursorVisible)
+                SDL_ShowCursor();
+
+            break;
+        }
+
         case SDL_EVENT_WINDOW_FOCUS_LOST:
             GameWindow::s_isFocused = false;
             SDL_ShowCursor();
@@ -174,10 +204,11 @@ bool Window_OnSDLEvent(void*, SDL_Event* event)
             OnWindowDisplayChanged();
             break;
 
-        case SDL_EVENT_USER_PLAYER_CHAR:
-            GameWindow::s_playerCharacter = static_cast<EPlayerCharacter>(event->user.code);
-            GameWindow::SetIcon(GameWindow::s_playerCharacter);
-            break;
+        // TODO
+        // case SDL_EVENT_USER_PLAYER_CHAR:
+        //     GameWindow::s_playerCharacter = static_cast<EPlayerCharacter>(event->user.code);
+        //     GameWindow::SetIcon(GameWindow::s_playerCharacter);
+        //     break;
     }
 
     return false;

@@ -1,9 +1,10 @@
 #pragma once
 
-#include "hook_event.h"
+#include <Marathon.h>
+#include <patches/hook_event.h>
 
 class LoadingPatches
 {
 public:
-    static inline std::vector<IHookEvent*> Events{};
+    static inline std::vector<IContextHookEvent<Sonicteam::LoadingTask>*> Events{};
 };
