@@ -61,40 +61,40 @@ The installer may display this error for several reasons. Please check the follo
 
 - The installer will only accept **original and unmodified files**. Do not attempt to provide modified files to the installer.
 
-### What are the keyboard bindings?
+### What are the keyboard and mouse bindings?
 
-Pad|Key
--|-
-A (Cross)|S
-B (Circle)|D
-X (Square)|A
-Y (Triangle)|W
-D-Pad - Up|Unbound
-D-Pad - Down|Unbound
-D-Pad - Left|Q
-D-Pad - Right|E
-Start|Return
-Back (Select)|Backspace
-Left Trigger (L2)|1
-Right Trigger (R2)|3
-Left Bumper (L1)|Unbound
-Right Bumper (R1)|Unbound
-Left Stick - Up|Up Arrow
-Left Stick - Down|Down Arrow
-Left Stick - Left|Left Arrow
-Left Stick - Right|Right Arrow
-Right Stick - Up|Unbound
-Right Stick - Down|Unbound
-Right Stick - Left|Unbound
-Right Stick - Right|Unbound
+Gamepad               | Keyboard        | Mouse
+----------------------|-----------------|------------------
+**A**                 | **Space**       |
+**B**                 | **Escape**      |
+**X**                 | **Left Shift**  | **Left Click**
+**Y**                 | **E**           |
+**D-Pad Up**          | **Up Arrow**    | **Wheel Up**
+**D-Pad Down**        | **Down Arrow**  | **Wheel Down**
+**D-Pad Left**        | **Left Arrow**  | **X1**
+**D-Pad Right**       | **Right Arrow** | **X2**
+**Start**             | **Return**      |
+**Back**              | **Backspace**   |
+**Left Trigger**      | **1**           | **Middle Click**
+**Right Trigger**     | **3**           | **Right Click**
+**Left Shoulder**     |                 |
+**Right Shoulder**    |                 |
+**Left Stick Click**  |                 |
+**Left Stick Up**     | **W**           |
+**Left Stick Down**   | **S**           |
+**Left Stick Left**   | **A**           |
+**Left Stick Right**  | **D**           |
+**Right Stick Click** |                 |
+**Right Stick Up**    |                 |
+**Right Stick Down**  |                 |
+**Right Stick Left**  |                 |
+**Right Stick Right** |                 |
 
 ---
 
-You can change the keyboard bindings by editing `config.toml` located in the [configuration directory](#where-is-the-save-data-and-configuration-file-stored), although using a controller is highly recommended until Action Remapping is added in a future update.
+You can change the keyboard bindings by editing `config.toml` located in the [configuration directory](#where-is-the-save-data-and-configuration-file-stored), although using a controller is encouraged until Action Remapping is added in a future update.
 
-Refer to the left column of [this enum template](https://github.com/sonicnext-dev/MarathonRecomp/blob/main/MarathonRecomp/user/config.cpp#L40) for a list of valid keys.
-
-*The default keyboard layout is based on Devil's Details' keyboard layout for Sonic Generations (2011)*.
+Refer to the left column of [this enum template](https://github.com/sonicnext-dev/MarathonRecomp/blob/main/MarathonRecomp/user/config.cpp#L48-L285) for a list of valid keys, and [this one](https://github.com/sonicnext-dev/MarathonRecomp/blob/main/MarathonRecomp/user/config.cpp#L287-L296) for a list of valid mouse buttons.
 
 ### Where is the save data and configuration file stored?
 
