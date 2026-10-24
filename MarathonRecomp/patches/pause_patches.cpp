@@ -87,7 +87,7 @@ PPC_FUNC(sub_82509870)
         {
             optionsItemIndex = pPauseTask->m_ItemCount - 1;
             
-            for (int i = 0; i < pPauseTask->m_ItemNames.size(); i++)
+            for (int i = 0; i < pPauseTask->m_ItemNames.Capacity(); i++)
             {
                 const auto& rItemName = pPauseTask->m_ItemNames[i];
             
@@ -99,7 +99,7 @@ PPC_FUNC(sub_82509870)
                 }
             }
             
-            pPauseTask->InsertItem(optionsItemIndex, "options", App::s_pApp->GetGame()->m_pSystemTextBook.get(), "msg_options");
+            pPauseTask->Insert(optionsItemIndex, "options", App::s_pApp->GetGame()->m_pSystemTextBook.get(), "msg_options");
 
             break;
         }

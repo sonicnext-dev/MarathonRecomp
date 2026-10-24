@@ -49,15 +49,15 @@ namespace Sonicteam
         boost::shared_ptr<SoX::Audio::Player> m_spAudioPlayer;
         MARATHON_INSERT_PADDING(0x04);
 
-        bool AddItem(const char* in_pItemName, TextBook* in_pTextBook, const char* in_pTextKey, bool in_isEnabled = true)
+        bool Add(const char* in_pItemName, TextBook* in_pTextBook, const char* in_pTextKey, bool in_isEnabled = true)
         {
-            return InsertItem(m_ItemCount, in_pItemName, in_pTextBook, in_pTextKey, in_isEnabled);
+            return Insert(m_ItemCount, in_pItemName, in_pTextBook, in_pTextKey, in_isEnabled);
         }
 
-        bool InsertItem(const uint32_t in_index, const char* in_pItemName, TextBook* in_pTextBook, const char* in_pTextKey, bool in_isEnabled = true)
+        bool Insert(const uint32_t in_index, const char* in_pItemName, TextBook* in_pTextBook, const char* in_pTextKey, bool in_isEnabled = true)
         {
             const auto size = m_ItemCount;
-            const auto capacity = m_ItemNames.size();
+            const auto capacity = m_ItemNames.Capacity();
 
             // Index exceeds capacity, or capacity has been reached.
             if (in_index >= capacity || size >= capacity)
@@ -75,24 +75,16 @@ namespace Sonicteam
             if (size < index)
                 index = size;
 
-            // Move existing items forwards.
-            for (auto i = size; i > index; i--)
-            {
-                m_ItemNames[i] = std::move(m_ItemNames[i - 1]);
-                m_ItemEnabledFlags[i] = m_ItemEnabledFlags[i - 1];
-                m_ItemTextCards[i] = m_ItemTextCards[i - 1];
-            }
-
-            m_ItemNames[index] = stdx::string(in_pItemName);
-            m_ItemEnabledFlags[index] = in_isEnabled;
-            m_ItemTextCards[index] = it->second;
+            m_ItemNames.Insert(index, stdx::string(in_pItemName));
+            m_ItemEnabledFlags.Insert(index, in_isEnabled);
+            m_ItemTextCards.Insert(index, it->second);
 
             m_ItemCount++;
 
             return true;
         }
 
-        bool RemoveItem(const uint32_t in_index)
+        bool RemoveAt(const uint32_t in_index)
         {
             const auto size = m_ItemCount;
 
@@ -100,31 +92,21 @@ namespace Sonicteam
             if (in_index >= size || size == 0)
                 return false;
 
-            // Move existing items backwards.
-            for (auto i = in_index; i < size - 1; ++i)
-            {
-                m_ItemNames[i] = std::move(m_ItemNames[i + 1]);
-                m_ItemEnabledFlags[i] = m_ItemEnabledFlags[i + 1];
-                m_ItemTextCards[i] = m_ItemTextCards[i + 1];
-            }
-
-            const auto lastIndex = size - 1;
-
-            m_ItemNames[lastIndex] = stdx::string();
-            m_ItemEnabledFlags[lastIndex] = true;
-            m_ItemTextCards[lastIndex] = nullptr;
+            m_ItemNames.RemoveAt(in_index);
+            m_ItemEnabledFlags.RemoveAt(in_index);
+            m_ItemTextCards.RemoveAt(in_index);
 
             m_ItemCount--;
 
             return true;
         }
 
-        bool RemoveItem(const char* in_pItemName)
+        bool Remove(const char* in_pItemName)
         {
-            for (int i = 0; i < m_ItemNames.size(); i++)
+            for (int i = 0; i < m_ItemNames.Capacity(); i++)
             {
                 if (strcmp(m_ItemNames[i].c_str(), in_pItemName) == 0)
-                    return RemoveItem(i);
+                    return RemoveAt(i);
             }
 
             return false;
