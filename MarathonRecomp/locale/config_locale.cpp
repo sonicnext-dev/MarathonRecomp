@@ -247,21 +247,21 @@ CONFIG_DEFINE_ENUM_LOCALE(ECameraRotationMode)
 CONFIG_DEFINE_LOCALE(MouseSensitivity)
 {
     { ELanguage::English,  { "Mouse Sensitivity", "Adjust the sensitivity of the mouse when moving the camera." } },
-    { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
-    { ELanguage::German,   { "DUMMY", "DUMMY" } },
-    { ELanguage::French,   { "DUMMY", "DUMMY" } },
-    { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
-    { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
+    { ELanguage::Japanese, { "マウス感度", "マウスでカメラの動かす速度を調整できます" } },
+    { ELanguage::German,   { "Mausempfindlichkeit", "Passe die Empfindlichkeit der Maus beim Bewegen der Kamera an." } },
+    { ELanguage::French,   { "Sensibilité de la souris", "Régle la sensibilité de la souris pendant le déplacement de la caméra." } },
+    { ELanguage::Spanish,  { "Sensibilidad del ratón", "Ajusta la sensibilidad del ratón al mover la cámara." } },
+    { ELanguage::Italian,  { "Sensibilità del mouse", "Regola la sensibilità del mouse per il movimento della telecamera." } }
 };
 
 CONFIG_DEFINE_LOCALE(MouseAutoCenter)
 {
     { ELanguage::English,  { "Mouse Auto-Center", "Center the camera automatically when the mouse is not in use." } },
-    { ELanguage::Japanese, { "DUMMY", "DUMMY" } },
-    { ELanguage::German,   { "DUMMY", "DUMMY" } },
-    { ELanguage::French,   { "DUMMY", "DUMMY" } },
-    { ELanguage::Spanish,  { "DUMMY", "DUMMY" } },
-    { ELanguage::Italian,  { "DUMMY", "DUMMY" } }
+    { ELanguage::Japanese, { "マウスの自動中央揃え", "マウスが使用されていない場合、カメラを自動的に中央に配置します" } },
+    { ELanguage::German,   { "Automatische Mauszentrierung", "Die Kamera automatisch zentrieren, wenn die Maus nicht verwendet wird." } },
+    { ELanguage::French,   { "Centrage automatique de la souris", "Centre la caméra automatiquement quand la souris n'est pas utilisée." } },
+    { ELanguage::Spanish,  { "Autocentrado del ratón", "Centra la cámara automáticamente cuando el ratón no esté en uso." } },
+    { ELanguage::Italian,  { "Centraggio automatico del Mouse", "Centra automaticamente la telecamera quando il mouse non è in uso." } }
 };
 
 CONFIG_DEFINE_LOCALE(AllowBackgroundInput)
