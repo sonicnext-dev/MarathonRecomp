@@ -29,8 +29,8 @@ CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Keyboard_DPadUp, SDL_SCANCODE_UP, f
 CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Keyboard_DPadDown, SDL_SCANCODE_DOWN, false);
 CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Keyboard_DPadLeft, SDL_SCANCODE_LEFT, false);
 CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Keyboard_DPadRight, SDL_SCANCODE_RIGHT, false);
-CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Keyboard_Start, SDL_SCANCODE_ESCAPE, false);
-CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Keyboard_Back, SDL_SCANCODE_GRAVE, false);
+CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Keyboard_Start, SDL_SCANCODE_RETURN, false);
+CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Keyboard_Back, SDL_SCANCODE_BACKSPACE, false);
 CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Keyboard_LeftTrigger, SDL_SCANCODE_1, false);
 CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Keyboard_RightTrigger, SDL_SCANCODE_3, false);
 CONFIG_DEFINE_ENUM("Bindings", SDL_Scancode, Keyboard_LeftShoulder, SDL_SCANCODE_UNKNOWN, false);
