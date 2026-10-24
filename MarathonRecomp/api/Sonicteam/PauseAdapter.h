@@ -9,8 +9,18 @@ namespace Sonicteam
     class PauseAdapter : public SoX::Engine::Task
     {
     public:
+        enum PauseItemID : uint32_t
+        {
+            Continue,
+            Restart,
+            Quit,
+            Return,
+            ReturnToSelect,
+            Save
+        };
+
         xpointer<SoX::MessageReceiver> m_pOwner;
-        be<uint32_t> m_SelectedID;
+        be<PauseItemID> m_SelectedID;
         be<uint32_t> m_Field54;
         MARATHON_INSERT_PADDING(0x20);
     };
