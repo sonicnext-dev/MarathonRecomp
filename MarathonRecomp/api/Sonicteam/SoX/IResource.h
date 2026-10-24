@@ -13,7 +13,7 @@ namespace Sonicteam::SoX
         {
             be<uint32_t> fpInit;
             be<uint32_t> fpGetPath;
-            be<uint32_t> fpIsInARC; 
+            be<uint32_t> fpIsInArcFile; 
         };
 
         be<uint32_t> m_MgrRegistryIndex; // Used to free resource.
@@ -37,9 +37,9 @@ namespace Sonicteam::SoX
             return *out;
         }
 
-        bool IsInARC()
+        bool IsInArcFile()
         {
-            return GuestToHostFunction<bool>(((Vftable*)m_pVftable.get())->fpIsInARC, this);
+            return GuestToHostFunction<bool>(((Vftable*)m_pVftable.get())->fpIsInArcFile, this);
         }
     };
 

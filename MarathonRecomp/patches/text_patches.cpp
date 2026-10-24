@@ -5,6 +5,7 @@
 #include <kernel/memory.h>
 #include <os/logger.h>
 #include <user/config.h>
+#include <app.h>
 
 // Load text card.
 PPC_FUNC_IMPL(__imp__sub_825ECB48);
@@ -111,23 +112,58 @@ PPC_FUNC(sub_821735B8)
     g_userHeap.Free(pNewTextBookPath);
 }
 
-// Sonicteam::GameImp::OpenHintWindow (speculatory)
+// Sonicteam::GameImp::ProcMsgOpenHint
 PPC_FUNC_IMPL(__imp__sub_82173838);
 PPC_FUNC(sub_82173838)
 {
-    if (!Config::Hints)
-    {
-        auto pMessage = (const char*)(base + ctx.r4.u32);
+    const auto pTextBookMgr = Sonicteam::TextBookMgr::GetInstance();
 
-        // Block specific hints from volumes.
-        for (auto& pattern : TextPatches::s_hintPatterns)
+    if (!pTextBookMgr->m_IsInitialized)
+    {
+        __imp__sub_82173838(ctx, base);
+        return;
+    }
+
+    const auto pMessage = reinterpret_cast<const char*>(base + ctx.r4.u32);
+
+    bool isHintBlocked{};
+
+    for (const auto& [rKey, rValue] : pTextBookMgr->GetResources())
+    {
+        const auto pTextBook = static_cast<Sonicteam::TextBook*>(rValue.get());
+        const auto it = pTextBook->m_TextCards.find(pMessage);
+
+        if (it == pTextBook->m_TextCards.end())
+            continue;
+
+        if (strstr(rKey.c_str(), "msg_hint_xenon") != 0 ||
+            strstr(rKey.c_str(), "msg_hint_ps3") != 0)
         {
-            if (strcmpWildcard(pMessage, pattern))
-            {
-                LOGFN_UTILITY("Blocked hint: {}", pMessage);
-                return;
-            }
+            // Block controller hints.
+            isHintBlocked = !Config::ControlTutorial;
+            break;
         }
+        else if (!Config::Hints)
+        {
+            // Block contextual hints.
+            for (auto& pattern : TextPatches::s_hintPatterns)
+            {
+                if (strcmpWildcard(pMessage, pattern))
+                {
+                    isHintBlocked = true;
+                    break;
+                }
+            }
+
+            if (isHintBlocked)
+                break;
+        }
+    }
+
+    if (isHintBlocked)
+    {
+        LOGFN_UTILITY("Blocked hint: {}", pMessage);
+        return;
     }
 
     __imp__sub_82173838(ctx, base);

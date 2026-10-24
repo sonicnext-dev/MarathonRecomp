@@ -3592,9 +3592,9 @@ void Video::Resize(uint32_t width, uint32_t height)
 
     Sonicteam::HUDRaderMap* pHUDRaderMap{};
 
-    auto& rmTextureResources = pResourceManager->m_mResources[pTextureMgr->m_MgrIndex];
+    auto& rTextureResources = pResourceManager->m_Resources[pTextureMgr->m_ID];
 
-    if (const auto pGame = pApp->GetGame(); rmTextureResources.find("radermap") != rmTextureResources.end())
+    if (const auto pGame = pApp->GetGame(); rTextureResources.find("radermap") != rTextureResources.end())
     {
         if (const auto pPopupScreenTask = pGame->m_rPopupScreenTask.m_pRef)
         {
@@ -3634,7 +3634,7 @@ void Video::Resize(uint32_t width, uint32_t height)
     {
         const auto setTexture = [&](const char* pName, auto* spTexture)
         {
-            if (auto it = rmTextureResources.find(pName); it != rmTextureResources.end())
+            if (auto it = rTextureResources.find(pName); it != rTextureResources.end())
                 *spTexture = reinterpret_cast<Sonicteam::MyTexture*>(it->second.get());
         };
 
