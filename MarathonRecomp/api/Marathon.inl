@@ -26,14 +26,6 @@ constexpr double DEG2RAD = 0.01745329238474369;
 
 struct MARATHON_NULL_CTOR {};
 
-struct MARATHON_STD_MAP_CONST_CHAR_COMPARE
-{
-    bool operator()(xpointer<const char> lhs, xpointer<const char> rhs) const
-    {
-        return std::strcmp(lhs.get(), rhs.get()) < 0;
-    }
-};
-
 inline std::vector<std::string_view> ParseTextVariables(const char* pVariables)
 {
     std::vector<std::string_view> result{};

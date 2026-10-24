@@ -42,6 +42,11 @@ namespace stdx
             return _Myres.get();
         }
 
+        bool empty() const
+        {
+            return !size();
+        }
+
         wstring()
         {
             _Myres = 0xF;
