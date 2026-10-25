@@ -3,7 +3,7 @@
 #include <Marathon.inl>
 #include <Sonicteam/SoX/Message.h>
 
-namespace Sonicteam::Message::GameImp
+namespace Sonicteam::Message::Game
 {
     struct MsgRegisterPlayer : SoX::Message<0x15026>
     {
