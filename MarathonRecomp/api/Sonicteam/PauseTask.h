@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Marathon.inl>
-#include <boost/smart_ptr/shared_ptr.h>
+#include <boost/smart_ptr/shared_ptr.hpp>
 #include <Sonicteam/SoX/Audio/Player.h>
 #include <Sonicteam/SoX/Array.h>
 #include <Sonicteam/HUDCALLBACK.h>
