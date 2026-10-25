@@ -2,7 +2,8 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/SoX/IResource.h>
-#include <api/stdx/map.h>
+#include <stdx/compare/string_compare.h>
+#include <stdx/map.h>
 
 namespace Sonicteam::SoX
 {
@@ -30,6 +31,6 @@ namespace Sonicteam::SoX
         MARATHON_INSERT_PADDING(0x0C); // std::list<SoX::RefSharedPointer<SoX::RefCountObject>>
         stdx::map<be<uint32_t>, ResourceManagerMgrTemplate> m_mManagers;
         MARATHON_INSERT_PADDING(4);
-        stdx::map<xpointer<const char>, be<uint32_t>, MARATHON_STD_MAP_CONST_CHAR_COMPARE> m_mManagerIndices;
+        stdx::map<xpointer<const char>, be<uint32_t>, stdx::string_compare> m_mManagerIndices;
     };
 }

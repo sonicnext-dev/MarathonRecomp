@@ -765,7 +765,7 @@ void RtlLeaveCriticalSection(XRTL_CRITICAL_SECTION* cs)
 
 void RtlEnterCriticalSection(XRTL_CRITICAL_SECTION* cs)
 {
-    uint32_t thisThread = g_ppcContext->r13.u32;
+    be<uint32_t> thisThread = g_ppcContext->r13.u32;
     // printf("RtlEnterCriticalSection %x %x %x %x\n", thisThread, cs->OwningThread, cs->LockCount, cs->RecursionCount);
     assert(thisThread != NULL);
 
@@ -773,7 +773,7 @@ void RtlEnterCriticalSection(XRTL_CRITICAL_SECTION* cs)
 
     while (true) 
     {
-        uint32_t previousOwner = 0;
+        be<uint32_t> previousOwner = 0;
 
         if (owningThread.compare_exchange_weak(previousOwner, thisThread) || previousOwner == thisThread)
         {
@@ -1282,12 +1282,12 @@ void XexGetModuleHandle()
 bool RtlTryEnterCriticalSection(XRTL_CRITICAL_SECTION* cs)
 {
     // printf("RtlTryEnterCriticalSection\n");
-    uint32_t thisThread = g_ppcContext->r13.u32;
+    be<uint32_t> thisThread = g_ppcContext->r13.u32;
     assert(thisThread != NULL);
 
     std::atomic_ref owningThread(cs->OwningThread);
 
-    uint32_t previousOwner = 0;
+    be<uint32_t> previousOwner = 0;
 
     if (owningThread.compare_exchange_weak(previousOwner, thisThread) || previousOwner == thisThread)
     {

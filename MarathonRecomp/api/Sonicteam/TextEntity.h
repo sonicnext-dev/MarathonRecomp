@@ -3,13 +3,12 @@
 #include <Marathon.inl>
 #include <Sonicteam/SoX/Graphics/Vertex.h>
 #include <Sonicteam/CsdLink.h>
+#include <Sonicteam/TextFont.h>
+#include <Sonicteam/TextBoard.h>
 #include <stdx/wstring.h>
 
 namespace Sonicteam
 {
-    class TextFont;
-    class TextBoard;
-
     class TextEntity : public CsdLink
     {
     public:

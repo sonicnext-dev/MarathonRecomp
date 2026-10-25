@@ -561,9 +561,14 @@ address = 0x822196EC
 registers = ["r3", "r31"]
 
 [[midasm_hook]]
-name = "PauseTask_SetMissionTextPriority"
-address = 0x82509AEC
-registers = ["f1"]
+name = "PauseTask_SkipSendMsgChangeState"
+address = 0x82509A30
+jump_address_on_true = 0x82509A60
+
+[[midasm_hook]]
+name = "PauseTask_ConfigureMissionWindow"
+address = 0x82509B04
+registers = ["r31"]
 
 [[midasm_hook]]
 name = "SonicGauge_FixGemSprite"
@@ -579,11 +584,6 @@ registers = ["r29"]
 name = "SonicGauge_FixGemSprite"
 address = 0x82177DFC
 registers = ["r31"]
-
-[[midasm_hook]]
-name = "GameImp_PauseMenu_AddQuitPrefix"
-address = 0x8217DF60
-registers = ["r1", "r30"]
 
 # Sonicteam::Player::State::SonicFall
 [[midasm_hook]]

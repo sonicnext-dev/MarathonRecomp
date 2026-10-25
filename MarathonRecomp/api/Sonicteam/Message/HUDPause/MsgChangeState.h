@@ -8,11 +8,13 @@ namespace Sonicteam::Message::HUDPause
     struct MsgChangeState : SoX::Message<0x1B04E>
     {
         be<uint32_t> State{};
-        MARATHON_INSERT_PADDING(0x04);
+        be<uint32_t> Field08{};
 
-        MsgChangeState(uint32_t in_state) : State(in_state) {}
+        MsgChangeState(const uint32_t in_state, const uint32_t in_field08)
+            : State(in_state), Field08(in_field08) {}
     };
 
     MARATHON_ASSERT_OFFSETOF(MsgChangeState, State, 0x04);
+    MARATHON_ASSERT_OFFSETOF(MsgChangeState, Field08, 0x08);
     MARATHON_ASSERT_SIZEOF(MsgChangeState, 0x0C);
 }

@@ -32,13 +32,16 @@ PPC_FUNC(sub_825ECB48)
 
     static uint16_t* s_replacementStringPool{};
     static ELanguage s_replacementStringPoolLanguage{};
+    static bool s_usePS3TypoFixes{};
 
-    if (s_replacementStringPoolLanguage != Config::Language)
+    auto& replacedMessages = Config::UsePS3TypoFixes ? TextPatches::s_replacedMessagesPS3 : TextPatches::s_replacedMessages;
+
+    if (s_replacementStringPoolLanguage != Config::Language || s_usePS3TypoFixes != Config::UsePS3TypoFixes)
     {
         auto length = 0;
 
         // Compute string pool length.
-        for (auto& replacement : TextPatches::s_replacedMessages)
+        for (auto& replacement : replacedMessages)
             length += (Localise(replacement.second.pKey).length() * 2) + 2;
 
         if (s_replacementStringPool)
@@ -46,10 +49,11 @@ PPC_FUNC(sub_825ECB48)
 
         s_replacementStringPool = (uint16_t*)g_userHeap.Alloc(length);
         s_replacementStringPoolLanguage = Config::Language;
+        s_usePS3TypoFixes = Config::UsePS3TypoFixes;
 
         auto stringPoolPos = s_replacementStringPool;
 
-        for (auto& replacement : TextPatches::s_replacedMessages)
+        for (auto& replacement : replacedMessages)
         {
             auto& message = Localise(replacement.second.pKey);
             auto  wideMessage = TransformUTF8ToWString(message);
@@ -67,7 +71,7 @@ PPC_FUNC(sub_825ECB48)
 
     auto pspTextCard = (boost::shared_ptr<Sonicteam::TextCard>*)(base + ctx.r3.u32);
     
-    for (auto& replacement : TextPatches::s_replacedMessages)
+    for (auto& replacement : replacedMessages)
     {
         if (HashStr(pMessage) != replacement.first)
             continue;

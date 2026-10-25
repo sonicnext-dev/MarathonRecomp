@@ -4,57 +4,25 @@
 #include <ui/options_menu.h>
 #include <app.h>
 
-void AddPauseMenuItem
-(
-    Sonicteam::TextBook* in_pTextBook,
-    stdx::vector<stdx::string>* in_pvActionNames,
-    stdx::vector<Sonicteam::TextCard>* in_pvTextCards,
-    stdx::vector<int>* in_pvEnabledItems,
-    const char* in_pActionName,
-    const char* in_pTextName,
-    bool in_isEnabled
-)
-{
-    guest_stack_var<stdx::string> actionName(in_pActionName);
-    guest_stack_var<stdx::string> textName(in_pTextName);
-    guest_stack_var<boost::shared_ptr<Sonicteam::TextCard>> spTextCard;
-    guest_stack_var<int> isEnabled((int)in_isEnabled);
-
-    GuestToHostFunction<int>(sub_8217D608, in_pvActionNames, actionName.get());
-    GuestToHostFunction<int>(sub_825ECB48, spTextCard.get(), in_pTextBook, textName->c_str());
-    GuestToHostFunction<int>(sub_8239E8F0, in_pvTextCards, spTextCard.get());
-    GuestToHostFunction<int>(sub_823879C8, in_pvEnabledItems, isEnabled.get());
-}
-
-void GameImp_PauseMenu_AddQuitPrefix(PPCRegister& r1, PPCRegister& r30)
-{
-    auto pGameImp = (Sonicteam::GameImp*)g_memory.Translate(r30.u32);
-    auto pvActionNames = (stdx::vector<stdx::string>*)g_memory.Translate(r1.u32 + 0x70);
-    auto pvTextCards = (stdx::vector<Sonicteam::TextCard>*)g_memory.Translate(r1.u32 + 0x60);
-    auto pvEnabledItems = (stdx::vector<int>*)g_memory.Translate(r1.u32 + 0x80);
-
-    AddPauseMenuItem(pGameImp->m_pSystemTextBook, pvActionNames, pvTextCards, pvEnabledItems, "options", "msg_options", true);
-}
-
-// Sonicteam::PauseAdapter::MapActionNameToID (speculatory)
+// Sonicteam::PauseAdapter::ProcMsgGetItemID
 PPC_FUNC_IMPL(__imp__sub_8216DA08);
 PPC_FUNC(sub_8216DA08)
 {
-    auto pPauseAdapter = (Sonicteam::PauseAdapter*)(base + ctx.r3.u32);
-    auto pMsgGetText = (Sonicteam::Message::PauseAdapter::MsgGetText*)(base + ctx.r4.u32);
+    const auto pPauseAdapter = reinterpret_cast<Sonicteam::PauseAdapter*>(base + ctx.r3.u32);
+    const auto pMsgGetText = reinterpret_cast<Sonicteam::Message::PauseAdapter::MsgGetText*>(base + ctx.r4.u32);
 
     __imp__sub_8216DA08(ctx, base);
 
     // Set selected ID to unused slot.
     if (pMsgGetText->SelectedName == "options")
-        pPauseAdapter->m_SelectedID = 6;
+        pPauseAdapter->m_SelectedID = Sonicteam::PauseAdapter::PauseItemID(6);
 }
 
-// Sonicteam::PauseAdapter::DoAction (speculatory)
+// Sonicteam::PauseAdapter::ProcMsgItemSelected
 PPC_FUNC_IMPL(__imp__sub_82170E48);
 PPC_FUNC(sub_82170E48)
 {
-    auto pPauseAdapter = (Sonicteam::PauseAdapter*)(base + ctx.r3.u32);
+    const auto pPauseAdapter = reinterpret_cast<Sonicteam::PauseAdapter*>(base + ctx.r3.u32);
 
     if (pPauseAdapter->m_SelectedID == 6)
     {
@@ -79,8 +47,6 @@ PPC_FUNC(sub_824F05D8)
     const auto pHUDPause = static_cast<Sonicteam::HUDPause*>(reinterpret_cast<Sonicteam::SoX::MessageReceiver*>(base + ctx.r3.u32));
     const auto pMessage = reinterpret_cast<Sonicteam::SoX::IMessage*>(base + ctx.r4.u32);
     
-    pHUDPause->m_ShowMissionWindow = true;
-    
     if (pMessage->ID == Sonicteam::Message::HUDPause::MsgChangeState::GetID())
     {
         const auto pMsgChangeState = static_cast<Sonicteam::Message::HUDPause::MsgChangeState*>(pMessage);
@@ -103,22 +69,44 @@ PPC_FUNC(sub_824F05D8)
 PPC_FUNC_IMPL(__imp__sub_82509870);
 PPC_FUNC(sub_82509870)
 {
-    auto pPauseTask = (Sonicteam::PauseTask*)(base + ctx.r3.u32);
+    const auto pPauseTask = reinterpret_cast<Sonicteam::PauseTask*>(base + ctx.r3.u32);
 
-    static bool s_isReturningFromOptionsMenu{};
+    static bool isReturningFromOptionsMenu{};
+    static int optionsItemIndex{};
 
     switch (pPauseTask->m_State)
     {
+        case Sonicteam::PauseTask::PauseTaskState_Opened:
+        {
+            optionsItemIndex = pPauseTask->m_ItemCount - 1;
+            
+            for (int i = 0; i < pPauseTask->m_ItemNames.Capacity(); i++)
+            {
+                const auto& rItemName = pPauseTask->m_ItemNames[i];
+            
+                // Ensure Options item is always above the quit items.
+                if (rItemName == "quit" || rItemName == "return" || rItemName == "return_to_select")
+                {
+                    optionsItemIndex = i;
+                    break;
+                }
+            }
+            
+            pPauseTask->Insert(optionsItemIndex, "options", App::s_pApp->GetGame()->m_pSystemTextBook.get(), "msg_options");
+
+            break;
+        }
+
         case Sonicteam::PauseTask::PauseTaskState_Opening:
         case Sonicteam::PauseTask::PauseTaskState_Idle:
         {
-            if (!s_isReturningFromOptionsMenu)
+            if (!isReturningFromOptionsMenu)
                 break;
 
-            // Set cursor to Options (should always be above the last item).
-            pPauseTask->m_SelectedIndex = pPauseTask->m_ItemCount - 2;
+            // Set cursor to Options.
+            pPauseTask->m_SelectedIndex = optionsItemIndex;
 
-            s_isReturningFromOptionsMenu = false;
+            isReturningFromOptionsMenu = false;
 
             break;
         }
@@ -130,7 +118,7 @@ PPC_FUNC(sub_82509870)
                 if (OptionsMenu::s_state == OptionsMenuState::Closing)
                 {
                     pPauseTask->m_State = Sonicteam::PauseTask::PauseTaskState_Opened;
-                    s_isReturningFromOptionsMenu = true;
+                    isReturningFromOptionsMenu = true;
                 }
                 else
                 {
@@ -181,15 +169,37 @@ PPC_FUNC(sub_82509870)
         });
     }
 
-    SetTextEntityModifier(pPauseTask->m_pMissionText.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
+    SetTextEntityModifier(pPauseTask->m_spMissionTextEntity.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
 
     __imp__sub_82509870(ctx, base);
 }
 
-// The mission text is drawn at a lower priority
-// than the mission box by default. 1001.0f is the
-// priority value used by the rest of the pause menu.
-void PauseTask_SetMissionTextPriority(PPCRegister& priority)
+// Skips the original code that sends this message, as it's sent *before* the
+// text entity for the mission window is created, resulting in the message processor
+// seeing nullptr. We'll send this message ourselves after the text entity is created.
+bool PauseTask_SkipSendMsgChangeState()
 {
-    priority.f64 = 1001.0f;
+    return Config::RestorePauseMissionText;
+}
+
+void PauseTask_ConfigureMissionWindow(PPCRegister& r31)
+{
+    const auto pPauseTask = reinterpret_cast<Sonicteam::PauseTask*>(g_memory.Translate(r31.u32));
+
+    // The mission text is drawn at a lower priority than the mission window by default.
+    // 1001.0f is the priority value used by the rest of the pause menu.
+    if (pPauseTask->m_spMissionTextEntity)
+        GuestToHostFunction<int>(sub_8262AF00, pPauseTask->m_spMissionTextEntity.get(), 1001.0f);
+
+    if (!Config::RestorePauseMissionText)
+        return;
+
+    auto showMissionWindow = true;
+
+    if (!pPauseTask->m_spMissionTextEntity || pPauseTask->m_spMissionTextEntity->m_TextLength <= 0)
+        showMissionWindow = false;
+
+    auto msgChangeState = guest_stack_var<Sonicteam::Message::HUDPause::MsgChangeState>(0, pPauseTask->m_Field78.get());
+    pPauseTask->m_pHUDPause->m_ShowMissionWindow = showMissionWindow;
+    pPauseTask->m_pHUDPause->ProcessMessage(msgChangeState.get());
 }

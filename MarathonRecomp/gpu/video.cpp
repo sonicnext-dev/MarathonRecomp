@@ -5230,6 +5230,9 @@ static std::unique_ptr<RenderPipeline> CreateGraphicsPipeline(const PipelineStat
     desc.dynamicDepthBiasEnabled = g_capabilities.dynamicDepthBias;
     desc.depthClipEnabled = true;
     desc.primitiveTopology = pipelineState.primitiveTopology;
+    if (!g_capabilities.triangleFan && desc.primitiveTopology == RenderPrimitiveTopology::TRIANGLE_FAN) {
+        desc.primitiveTopology = RenderPrimitiveTopology::TRIANGLE_LIST;
+    }
     desc.cullMode = pipelineState.cullMode;
     desc.frontFace = pipelineState.frontFace;
     desc.renderTargetFormat[0] = pipelineState.renderTargetFormat;
@@ -5772,7 +5775,7 @@ static RenderPrimitiveTopology ConvertPrimitiveType(uint32_t primitiveType)
     case D3DPT_TRIANGLESTRIP:
         return RenderPrimitiveTopology::TRIANGLE_STRIP;
     case D3DPT_TRIANGLEFAN:
-        return g_capabilities.triangleFan ? RenderPrimitiveTopology::TRIANGLE_FAN : RenderPrimitiveTopology::TRIANGLE_LIST;
+        return RenderPrimitiveTopology::TRIANGLE_FAN;
     default:
         assert(false && "Unknown primitive type");
         return RenderPrimitiveTopology::UNKNOWN;
@@ -7365,9 +7368,6 @@ static void PipelineTaskConsumerThread()
                         std::lock_guard lock(g_vertexDeclarationMutex);
                         pipelineState.vertexDeclaration = g_vertexDeclarations[reinterpret_cast<XXH64_hash_t>(pipelineState.vertexDeclaration)];
                     }
-
-                    if (!g_capabilities.triangleFan && pipelineState.primitiveTopology == RenderPrimitiveTopology::TRIANGLE_FAN)
-                        pipelineState.primitiveTopology = RenderPrimitiveTopology::TRIANGLE_LIST;
 
                     // Zero out depth bias for Vulkan, we only store common values for D3D12.
                     if (g_capabilities.dynamicDepthBias && g_backend != Backend::D3D12)

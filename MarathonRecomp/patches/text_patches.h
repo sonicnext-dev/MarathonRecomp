@@ -17,10 +17,26 @@ public:
         { HashStr("msg_gamequitconfirm4"), "msg_backtotitle1" } // Replace "Exit the game." text with "Go back to the Title Screen."
     };
 
+#define REPLACED_MESSAGES_BASE                                                         \
+    { HashStr("msg_goldmedalresults"),   { "MainMenu_GoldMedalResults_Name" } },       \
+    { HashStr("msg_goldmedalresults_c"), { "MainMenu_GoldMedalResults_Description" } }
+
     static inline xxHashMap<ReplacementMessage> s_replacedMessages
     {
-        { HashStr("msg_goldmedalresults"),   { "MainMenu_GoldMedalResults_Name" } },
-        { HashStr("msg_goldmedalresults_c"), { "MainMenu_GoldMedalResults_Description" } }
+        REPLACED_MESSAGES_BASE
+    };
+
+    static inline xxHashMap<ReplacementMessage> s_replacedMessagesPS3
+    {
+        REPLACED_MESSAGES_BASE,
+
+        // Messages corrected in the PS3 version
+        { HashStr("msg_unlock_battle"),   { "PS3_msg_unlock_battle" } },
+        { HashStr("msg_makenewdata"), { "PS3_msg_makenewdata" } },
+        { HashStr("staff0308"), { "PS3_staff0308" } },
+        { HashStr("staff0320"), { "PS3_staff0320" } },
+        { HashStr("staff0321"), { "PS3_staff0321" } },
+        { HashStr("staff0709"), { "PS3_staff0709" } }
     };
 
     static inline std::vector<const char*> s_hintPatterns =

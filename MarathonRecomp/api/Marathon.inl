@@ -28,14 +28,6 @@ public:
 
 struct MARATHON_NULL_CTOR {};
 
-struct MARATHON_STD_MAP_CONST_CHAR_COMPARE
-{
-    bool operator()(xpointer<const char> lhs, xpointer<const char> rhs) const
-    {
-        return std::strcmp(lhs.get(), rhs.get()) < 0;
-    }
-};
-
 template <class T, uint32_t pVftable>
 class MARATHON_VIRTUAL_BASE : public T
 {

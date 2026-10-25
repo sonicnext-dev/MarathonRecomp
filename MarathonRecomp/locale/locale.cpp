@@ -1004,6 +1004,53 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::German,  "${picture(button_y)}${locale(Achievements_Title)}　　${picture(button_b)}${locale(Common_Back)}" },
             { ELanguage::Spanish, "${picture(button_y)} ${locale(Achievements_Title)}  ${picture(button_b)} ${locale(Common_Back)}" }
         }
+    },
+    // The following messages are corrections made in the PS3 version, and should not be changed.
+    {
+        "PS3_msg_unlock_battle",
+        {
+            { ELanguage::English,  "Last Episode is now unlocked.\nPlease select the Episode from Single Player." },
+            { ELanguage::Japanese, "ラストエピソードが遊べるようになりました！\nシングルプレイヤーからエピソードを選択してください" },
+            { ELanguage::German,   "Letzte Episode freigeschaltet.\nBitte wähle die Episode aus dem\nModus Einzelspieler." },
+            { ELanguage::French,   "Le Dernier Episode est désormais\ndéverrouillé. Sélectionner l'épisode\ndans le mode Un joueur." },
+            { ELanguage::Spanish,  "El Último Episodio ha sido desbloqueado.\nSelecciona el episodio en el modo Un jugador." },
+            { ELanguage::Italian,  "Ultimo episodio sbloccato.\nSeleziona l'episodio da Giocatore singolo." }
+        }
+    },
+    {
+        "PS3_msg_makenewdata",
+        {
+            { ELanguage::English,  "Create new Save Data." },
+            { ELanguage::Japanese, "新規作成" },
+            { ELanguage::German,   "Neue Speicherdaten erstellen." },
+            { ELanguage::French,   "Créer des nouvelles données de sauvegarde." },
+            { ELanguage::Spanish,  "Crear nuevos datos guardados." },
+            { ELanguage::Italian,  "Crea nuovi dati di salvataggio." }
+        }
+    },
+    {
+        "PS3_staff0308",
+        {
+            { ELanguage::English,  "Katsunori Kosuge" }
+        }
+    },
+    {
+        "PS3_staff0320",
+        {
+            { ELanguage::English,  "Digital Media Labo.,inc" }
+        }
+    },
+    {
+        "PS3_staff0321",
+        {
+            { ELanguage::English,  "Polygon Magic,inc." }
+        }
+    },
+    {
+        "PS3_staff0709",
+        {
+            { ELanguage::English,  "Dubbing Production Manager" }
+        }
     }
 };
 
