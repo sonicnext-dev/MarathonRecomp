@@ -138,7 +138,7 @@
 #include "Sonicteam/Player/SonicGauge.h"
 #include "Sonicteam/Player/State/CommonContext.h"
 #include "Sonicteam/Player/State/CommonFall.h"
-#include "Sonicteam/Player/State/CommonMiscFlagSlot.h"
+#include "Sonicteam/Player/State/CommonMiscFlagsSlot.h"
 #include "Sonicteam/Player/State/CommonObject.h"
 #include "Sonicteam/Player/State/ContextSpeedAndJump.h"
 #include "Sonicteam/Player/State/ICommonContext.h"

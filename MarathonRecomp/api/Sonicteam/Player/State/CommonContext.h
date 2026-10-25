@@ -2,7 +2,7 @@
 
 #include <Marathon.inl>
 #include <boost/smart_ptr/shared_ptr.hpp>
-#include <Sonicteam/Player/State/CommonMiscFlagSlot.h>
+#include <Sonicteam/Player/State/CommonMiscFlagsSlot.h>
 #include <Sonicteam/Player/State/ICommonContext.h>
 #include <Sonicteam/Player/IExportPostureRequestFlag.h>
 #include <Sonicteam/Player/IExportWeaponRequestFlag.h>
@@ -38,7 +38,7 @@ namespace Sonicteam::Player::State
         boost::anonymous_shared_ptr m_spInputListenerAmigo;
         MARATHON_INSERT_PADDING(0xE8);
 
-        uint8_t GetMiscFlag(CommonMiscFlagSlot in_slot) const
+        uint8_t GetMiscFlags(CommonMiscFlagsSlot in_slot) const
         {
             if (in_slot >= 80)
                 return 0;

@@ -172,8 +172,8 @@ public:
 
         const auto flags = pStateMachineContext->m_CommonContextIFFlags3.get();
 
-        const auto miscFlags = pStateMachineContext->GetMiscFlag(Sonicteam::Player::State::CommonMiscFlagSlot_100) &&
-                               pStateMachineContext->GetMiscFlag(Sonicteam::Player::State::CommonMiscFlagSlot_10C);
+        const auto miscFlags = pStateMachineContext->GetMiscFlags(Sonicteam::Player::State::CommonMiscFlagsSlot_100) &&
+                               pStateMachineContext->GetMiscFlags(Sonicteam::Player::State::CommonMiscFlagsSlot_10C);
 
         const auto isCommonBalancer = pStateMachine->GetState()->m_pVftable.ptr == 0x820038F0;
 
