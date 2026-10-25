@@ -43,15 +43,15 @@ public:
     }
 };
 
-inline std::vector<std::string_view> ParseTextVariables(const char* pVariables)
+inline std::vector<std::string_view> ParseTextVariables(const char* in_pVariables)
 {
     std::vector<std::string_view> result{};
 
-    if (!pVariables)
+    if (!in_pVariables)
         return result;
 
-    auto start = pVariables;
-    auto ptr = pVariables;
+    auto start = in_pVariables;
+    auto ptr = in_pVariables;
     auto depth = 0;
 
     while (*ptr)
@@ -79,30 +79,30 @@ inline std::vector<std::string_view> ParseTextVariables(const char* pVariables)
     return result;
 }
 
-inline std::vector<std::pair<std::string_view, std::string_view>> MapTextVariables(const char* pVariables)
+inline std::vector<std::pair<std::string_view, std::string_view>> MapTextVariables(const char* in_pVariables)
 {
     std::vector<std::pair<std::string_view, std::string_view>> result{};
 
-    if (!pVariables)
+    if (!in_pVariables)
         return result;
 
-    auto variables = ParseTextVariables(pVariables);
+    const auto variables = ParseTextVariables(in_pVariables);
 
-    for (auto& variable : variables)
+    for (const auto& rVariable : variables)
     {
-        auto open = variable.find('(');
-        auto close = variable.find(')');
+        auto open = rVariable.find('(');
+        auto close = rVariable.find(')');
 
         if (open != std::string_view::npos && close != std::string_view::npos && close > open)
         {
-            auto type = variable.substr(0, open);
-            auto value = variable.substr(open + 1, close - open - 1);
+            auto type = rVariable.substr(0, open);
+            auto value = rVariable.substr(open + 1, close - open - 1);
 
             result.emplace_back(type, value);
         }
         else
         {
-            result.emplace_back(variable, std::string_view{});
+            result.emplace_back(rVariable, std::string_view());
         }
     }
 

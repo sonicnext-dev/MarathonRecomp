@@ -46,7 +46,7 @@ PPC_FUNC(sub_82195500)
                     if (pInputManager->PadState.IsPressed(Sonicteam::SoX::Input::PadButton_East))
                     {
                         auto pGame = App::s_pApp->GetGame();
-                        auto pZock = pPlayer->GetPlugin<Sonicteam::Player::Zock>("zock");
+                        auto pZock = pPlayer->GetPlugIn<Sonicteam::Player::Zock>("zock");
                         auto collisionFilterInfo = pZock->m_spPhantomA->m_pRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo == 6 ? 0x383 : 6;
 
                         LOGFN("Camera Volumes: {}", collisionFilterInfo != 6 ? "Enabled" : "Disabled");
@@ -506,7 +506,7 @@ void SonicGauge_FixFlags(PPCRegister& r3, PPCRegister& r31)
         return;
 
     auto pSonicContext = (Sonicteam::Player::State::SonicContext*)g_memory.Translate(r31.u32);
-    auto pSonicWeapons = pSonicContext->m_spScore->m_pPlayer->GetPlugin<Sonicteam::Player::Weapon::SonicWeapons>("sonic_weapons");
+    auto pSonicWeapons = pSonicContext->m_spScore->m_pPlayer->GetPlugIn<Sonicteam::Player::Weapon::SonicWeapons>("sonic_weapons");
 
     static constexpr uint8_t s_groundedAnims[4] = { 0xCB, 0xCC, 0x46, 0xCE };
 
