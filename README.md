@@ -75,8 +75,8 @@ Gamepad               | Keyboard        | Mouse
 **D-Pad Right**       | **Right Arrow** | **X2**
 **Start**             | **Return**      |
 **Back**              | **Backspace**   |
-**Left Trigger**      | **1**           | **Middle Click**
-**Right Trigger**     | **3**           | **Right Click**
+**Left Trigger**      | **Q**           | **Middle Click**
+**Right Trigger**     | **F**           | **Right Click**
 **Left Shoulder**     |                 |
 **Right Shoulder**    |                 |
 **Left Stick Click**  |                 |
