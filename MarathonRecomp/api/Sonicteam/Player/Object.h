@@ -53,11 +53,11 @@ namespace Sonicteam::Player
         be<uint32_t> m_SetupModuleIndexPostfix;
         boost::shared_ptr<IGauge> m_spGauge;
         MARATHON_INSERT_PADDING(8);
-        stdx::vector<boost::shared_ptr<IPlugIn>> m_vspPlugins;
+        stdx::vector<boost::shared_ptr<IPlugIn>> m_PlugIns;
         MARATHON_INSERT_PADDING(0x58);
         be<float> m_DeltaTime;
         MARATHON_INSERT_PADDING(0x48);
-        stdx::vector<EquipFlags> m_vEquipFlags;
+        stdx::vector<EquipFlags> m_EquipFlags;
         stdx::string m_Name;
         MARATHON_INSERT_PADDING(0x110);
 
@@ -74,12 +74,12 @@ namespace Sonicteam::Player
         }
 
         template <typename T = IPlugIn>
-        inline T* GetPlugin(const char* pluginName)
+        inline T* GetPlugIn(const char* pluginName)
         {
-            for (auto& spPlugin : m_vspPlugins)
+            for (auto& spPlugIn : m_PlugIns)
             {
-                if (spPlugin->m_Name == pluginName)
-                    return static_cast<T*>(spPlugin.get());
+                if (spPlugIn->m_Name == pluginName)
+                    return static_cast<T*>(spPlugIn.get());
             }
 
             return nullptr;
@@ -104,9 +104,9 @@ namespace Sonicteam::Player
                 return nullptr;
 
             const auto pDoc = GetDoc<DocMarathonState>();
-            const auto& rPadID = pDoc->m_aPadIDs[playerIndex];
+            const auto& rPadID = pDoc->m_PadIDs[playerIndex];
 
-            return pDoc->m_vspInputManagers[rPadID].get();
+            return pDoc->m_InputManagers[rPadID].get();
         }
     };
 
@@ -139,9 +139,9 @@ namespace Sonicteam::Player
     MARATHON_ASSERT_OFFSETOF(Object, m_SetupModuleIndexPrefix, 0xFC);
     MARATHON_ASSERT_OFFSETOF(Object, m_SetupModuleIndexPostfix, 0x100);
     MARATHON_ASSERT_OFFSETOF(Object, m_spGauge, 0x104);
-    MARATHON_ASSERT_OFFSETOF(Object, m_vspPlugins, 0x114);
+    MARATHON_ASSERT_OFFSETOF(Object, m_PlugIns, 0x114);
     MARATHON_ASSERT_OFFSETOF(Object, m_DeltaTime, 0x17C);
-    MARATHON_ASSERT_OFFSETOF(Object, m_vEquipFlags, 0x1C8);
+    MARATHON_ASSERT_OFFSETOF(Object, m_EquipFlags, 0x1C8);
     MARATHON_ASSERT_OFFSETOF(Object, m_Name, 0x1D8);
     MARATHON_ASSERT_SIZEOF(Object, 0x310);
 }

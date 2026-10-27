@@ -221,7 +221,7 @@ void MessageWindow::Draw()
         // Always assume keyboard to prevent mouse from blocking control in-game.
         peripheralType = HID::PeripheralType::Keyboard;
 
-        if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManagers[0])
+        if (auto& spInputManager = App::s_pApp->m_pDoc->m_InputManagers[0])
         {
             auto& rPadState = spInputManager->PadState;
 

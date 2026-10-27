@@ -64,7 +64,7 @@ PPC_FUNC(sub_824FFCF8)
 
         case Sonicteam::MainMenuTask::MainMenuState_Multiplayer:
         {
-            const auto& rPadState = pDoc->m_vspInputManagers[0]->PadState;
+            const auto& rPadState = pDoc->m_InputManagers[0]->PadState;
 
             if (rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_South) ||
                 rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_West))
@@ -85,7 +85,7 @@ PPC_FUNC(sub_824FFCF8)
         case Sonicteam::MainMenuTask::MainMenuState_Tag:
         case Sonicteam::MainMenuTask::MainMenuState_Battle:
         {
-            if (pDoc->m_vspInputManagers[0]->PadState.IsPressed(Sonicteam::SoX::Input::PadButton_East))
+            if (pDoc->m_InputManagers[0]->PadState.IsPressed(Sonicteam::SoX::Input::PadButton_East))
             {
                 if (g_isMultiplayerP1KeyboardUser)
                 {

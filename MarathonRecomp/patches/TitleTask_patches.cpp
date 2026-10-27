@@ -112,7 +112,7 @@ PPC_FUNC(sub_825126A0)
             if (g_isSecretDone)
                 break;
 
-            if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManagers[0])
+            if (auto& spInputManager = App::s_pApp->m_pDoc->m_InputManagers[0])
             {
                 auto& rPadState = spInputManager->PadState;
 
@@ -140,7 +140,7 @@ PPC_FUNC(sub_825126A0)
 
         case Sonicteam::TitleTask::TitleState_OptionsWait:
         {
-            if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManagers[0])
+            if (auto& spInputManager = App::s_pApp->m_pDoc->m_InputManagers[0])
             {
                 auto& rPadState = spInputManager->PadState;
 
@@ -206,7 +206,7 @@ PPC_FUNC(sub_825126A0)
     }
     else
     {
-        if (auto& spInputManager = App::s_pApp->m_pDoc->m_vspInputManagers[0])
+        if (auto& spInputManager = App::s_pApp->m_pDoc->m_InputManagers[0])
         {
             auto& rPadState = spInputManager->PadState;
 

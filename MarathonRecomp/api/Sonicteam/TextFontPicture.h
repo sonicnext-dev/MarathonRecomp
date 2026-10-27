@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/MyTexture.h>
 #include <Sonicteam/TextFontPictureMgr.h>
 
 namespace Sonicteam

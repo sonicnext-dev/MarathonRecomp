@@ -5,6 +5,7 @@
 #include <kernel/memory.h>
 #include <os/logger.h>
 #include <user/config.h>
+#include <app.h>
 
 // Load text card.
 PPC_FUNC_IMPL(__imp__sub_825ECB48);
@@ -30,7 +31,7 @@ PPC_FUNC(sub_825ECB48)
     if (pNewMessage)
         g_userHeap.Free(pNewMessage);
 
-    static uint16_t* s_replacementStringPool{};
+    static char16_t* s_replacementStringPool{};
     static ELanguage s_replacementStringPoolLanguage{};
     static bool s_usePS3TypoFixes{};
 
@@ -47,7 +48,7 @@ PPC_FUNC(sub_825ECB48)
         if (s_replacementStringPool)
             g_userHeap.Free(s_replacementStringPool);
 
-        s_replacementStringPool = (uint16_t*)g_userHeap.Alloc(length);
+        s_replacementStringPool = reinterpret_cast<char16_t*>(g_userHeap.Alloc(length));
         s_replacementStringPoolLanguage = Config::Language;
         s_usePS3TypoFixes = Config::UsePS3TypoFixes;
 
@@ -111,23 +112,139 @@ PPC_FUNC(sub_821735B8)
     g_userHeap.Free(pNewTextBookPath);
 }
 
-// Sonicteam::GameImp::OpenHintWindow (speculatory)
+// Sonicteam::GameImp::ProcMsgTextCardAction
+PPC_FUNC_IMPL(__imp__sub_82176910);
+PPC_FUNC(sub_82176910)
+{
+    if (Config::GetPreferredControllerIcons() != EControllerIcons::PlayStation)
+    {
+        __imp__sub_82176910(ctx, base);
+        return;
+    }
+
+    const auto pGame = reinterpret_cast<Sonicteam::GameImp*>(base + ctx.r3.u32);
+    const auto pMsgTextCardAction = reinterpret_cast<Sonicteam::Message::Game::MsgTextCardAction*>(base + ctx.r4.u32);
+
+    if (pMsgTextCardAction->Name == "sound")
+    {
+        for (auto& rParameter : pMsgTextCardAction->Parameters)
+        {
+            // Swap these sounds around, as they're configured for the wrong hints.
+            // This is an error with the early version of "msg_hint_ps3" included
+            // in the Xbox 360 version, and was patched on PlayStation 3.
+            if (rParameter == "all06_a04ps_rg")
+            {
+                rParameter = "all06_a04ps_sd";
+                break;
+            }
+            else if (rParameter == "all06_a04ps_sd")
+            {
+                rParameter = "all06_a04ps_rg";
+                break;
+            }
+        }
+
+        const auto pTextBookMgr = Sonicteam::TextBookMgr::GetInstance();
+
+        for (const auto& [rPath, pResource] : pTextBookMgr->GetResources())
+        {
+            if (!strstr(rPath.c_str(), "msg_hint_ps3"))
+                continue;
+
+            const auto pTextBook = static_cast<Sonicteam::TextBook*>(pResource.get());
+
+            // L1/L2 and R1/R2 are flipped on PS3, leading to
+            // the voice lines being incorrect for these hints.
+            static constexpr std::array<const char*, 4> blockedButtons =
+            {
+                "button_lb", "button_lt", "button_rb", "button_rt"
+            };
+
+            for (const auto& [rTextCardKey, spTextCard] : pTextBook->m_TextCards)
+            {
+                const auto pVariables = spTextCard->m_pVariables.get();
+
+                if (!pVariables)
+                    continue;
+
+                if (rTextCardKey == "hint_all06_a04_sd" || rTextCardKey == "hint_all06_a04_rg")
+                {
+                    // Swap "button_x" with "button_a" for these hints.
+                    // This is an error with the early version of "msg_hint_ps3" included
+                    // in the Xbox 360 version, and was patched on PlayStation 3.
+                    if (auto found = strstr(pVariables, "picture(button_x)"))
+                        const_cast<char*>(found)[15] = 'a';
+
+                    continue;
+                }
+
+                for (const auto& rParameter : pMsgTextCardAction->Parameters)
+                {
+                    if (!strstr(pVariables, rParameter.c_str()))
+                        continue;
+
+                    for (const auto& rButton : blockedButtons)
+                    {
+                        // Mutes the voice lines for PlayStation hints using L1/L2 and R1/R2.
+                        // This should be configured to do the same for remapped actions in the future.
+                        if (strstr(pVariables, rButton))
+                        {
+                            LOGFN_UTILITY("Blocked hint sound: {}", rTextCardKey.c_str());
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    __imp__sub_82176910(ctx, base);
+}
+
+// Sonicteam::GameImp::ProcMsgOpenHint
 PPC_FUNC_IMPL(__imp__sub_82173838);
 PPC_FUNC(sub_82173838)
 {
-    if (!Config::Hints)
-    {
-        auto pMessage = (const char*)(base + ctx.r4.u32);
+    const auto pTextBookMgr = Sonicteam::TextBookMgr::GetInstance();
+    const auto pMessage = reinterpret_cast<const char*>(base + ctx.r4.u32);
 
-        // Block specific hints from volumes.
-        for (auto& pattern : TextPatches::s_hintPatterns)
+    bool isHintBlocked{};
+
+    for (const auto& [rKey, rValue] : pTextBookMgr->GetResources())
+    {
+        const auto pTextBook = static_cast<Sonicteam::TextBook*>(rValue.get());
+        const auto it = pTextBook->m_TextCards.find(pMessage);
+
+        if (it == pTextBook->m_TextCards.end())
+            continue;
+
+        if (strstr(rKey.c_str(), "msg_hint_xenon") || strstr(rKey.c_str(), "msg_hint_ps3"))
         {
-            if (strcmpWildcard(pMessage, pattern))
-            {
-                LOGFN_UTILITY("Blocked hint: {}", pMessage);
-                return;
-            }
+            // Block all controller hints.
+            isHintBlocked = !Config::ControlTutorial;
+            break;
         }
+        else if (!Config::Hints)
+        {
+            // Block specific contextual hints.
+            for (auto& pattern : TextPatches::s_hintPatterns)
+            {
+                if (strcmpWildcard(pMessage, pattern))
+                {
+                    isHintBlocked = true;
+                    break;
+                }
+            }
+
+            if (isHintBlocked)
+                break;
+        }
+    }
+
+    if (isHintBlocked)
+    {
+        LOGFN_UTILITY("Blocked hint: {}", pMessage);
+        return;
     }
 
     __imp__sub_82173838(ctx, base);

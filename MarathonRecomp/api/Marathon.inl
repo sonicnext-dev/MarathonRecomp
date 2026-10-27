@@ -43,76 +43,10 @@ public:
     }
 };
 
-inline std::vector<std::string_view> ParseTextVariables(const char* pVariables)
-{
-    std::vector<std::string_view> result{};
-
-    if (!pVariables)
-        return result;
-
-    auto start = pVariables;
-    auto ptr = pVariables;
-    auto depth = 0;
-
-    while (*ptr)
-    {
-        if (*ptr == '(')
-        {
-            depth++;
-        }
-        else if (*ptr == ')')
-        {
-            depth--;
-        }
-        else if (*ptr == ',' && !depth)
-        {
-            result.emplace_back(start, ptr - start);
-            start = ptr + 1;
-        }
-
-        ++ptr;
-    }
-
-    if (ptr != start)
-        result.emplace_back(start, ptr - start);
-
-    return result;
-}
-
-inline std::vector<std::pair<std::string_view, std::string_view>> MapTextVariables(const char* pVariables)
-{
-    std::vector<std::pair<std::string_view, std::string_view>> result{};
-
-    if (!pVariables)
-        return result;
-
-    auto variables = ParseTextVariables(pVariables);
-
-    for (auto& variable : variables)
-    {
-        auto open = variable.find('(');
-        auto close = variable.find(')');
-
-        if (open != std::string_view::npos && close != std::string_view::npos && close > open)
-        {
-            auto type = variable.substr(0, open);
-            auto value = variable.substr(open + 1, close - open - 1);
-
-            result.emplace_back(type, value);
-        }
-        else
-        {
-            result.emplace_back(variable, std::string_view{});
-        }
-    }
-
-    return result;
-}
-
-inline size_t strlenU16(const uint16_t* str)
+inline size_t strlenU16(const char16_t* str)
 {
     size_t result = 0;
-    uint16_t c = 0xFFFF;
+    char16_t c = 0xFFFF;
 
     while (c != 0)
     {
@@ -123,7 +57,7 @@ inline size_t strlenU16(const uint16_t* str)
     return result;
 }
 
-inline bool strcmpU16(const uint16_t* a, const uint16_t* b, bool endianSwapA = false, bool endianSwapB = false)
+inline bool strcmpU16(const char16_t* a, const char16_t* b, bool endianSwapA = false, bool endianSwapB = false)
 {
     for (size_t i = 0; i < strlenU16(a); i += 2)
     {
@@ -143,7 +77,7 @@ inline bool strcmpU16(const uint16_t* a, const uint16_t* b, bool endianSwapA = f
     return true;
 }
 
-inline void printU16(const uint16_t* str, bool endianSwap = false)
+inline void printU16(const char16_t* str, bool endianSwap = false)
 {
     for (size_t i = 0; i < strlenU16(str); i++)
     {

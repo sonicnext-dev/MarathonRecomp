@@ -108,89 +108,82 @@ void PedestrianAnimationLOD(PPCRegister& val)
 PPC_FUNC_IMPL(__imp__sub_822CE930);
 PPC_FUNC(sub_822CE930)
 {
-    auto* pCommonObjectHint = (Sonicteam::CommonObjectHint*)(base + ctx.r3.u32);
-    auto* pGame = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->GetGame();
-    auto& rMessageName = pCommonObjectHint->m_MessageName;
+    const auto pCommonObjectHint = reinterpret_cast<Sonicteam::CommonObjectHint*>(base + ctx.r3.u32);
+    const auto pGame = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->GetGame();
 
-    if (!Config::Hints && pCommonObjectHint->m_Type == Sonicteam::CommonObjectHint::CommonObjectHintType_HintRing)
+    const auto& rMessageName = pCommonObjectHint->m_MessageName;
+
+    if (pCommonObjectHint->m_Type == Sonicteam::CommonObjectHint::CommonObjectHintType_HintRing)
     {
-        pCommonObjectHint->Destroy();
-        return;
-    }
+        bool isHintRingBlocked{};
 
-    if (!Config::ControlTutorial || Config::SlidingAttack != ESlidingAttack::X)
-    {
-        // Get global flag for Sonic's Antigravity being unlocked to remove "hint_all03_h26_so".
-        guest_stack_var<Sonicteam::Message::Mission::MsgGetGlobalFlag> msgGetSonicAntigravityFlag(6001);
-        pGame->m_pMissionCore->ProcessMessage(msgGetSonicAntigravityFlag.get());
-
-        if (msgGetSonicAntigravityFlag->FlagValue != 0 && strcmp(rMessageName, "hint_twn01_e02_tl") == 0)
+        if (Config::Hints)
         {
-            pCommonObjectHint->Destroy();
-            return;
-        }
-    }
+            auto& rTextCards = pGame->m_pHintTextBook->m_TextCards;
 
-    if (!Config::ControlTutorial || Config::LightDash != ELightDash::X)
-    {
-        // Get global flag for Sonic's Light Dash being unlocked to remove "hint_twn01_e01_tl".
-        guest_stack_var<Sonicteam::Message::Mission::MsgGetGlobalFlag> msgGetSonicLightDashFlag(6000);
-        pGame->m_pMissionCore->ProcessMessage(msgGetSonicLightDashFlag.get());
+            const auto it = rTextCards.find(rMessageName);
 
-        // Get global flag for Shadow's Light Dash being unlocked to remove "hint_twn01_e44_rg".
-        guest_stack_var<Sonicteam::Message::Mission::MsgGetGlobalFlag> msgGetShadowLightDashFlag(6012);
-        pGame->m_pMissionCore->ProcessMessage(msgGetShadowLightDashFlag.get());
-
-        auto isSonicLightDashHint = msgGetSonicLightDashFlag->FlagValue != 0 && strcmp(rMessageName, "hint_twn01_e00_tl") == 0;
-        auto isShadowLightDashHint = msgGetShadowLightDashFlag->FlagValue != 0 && strcmp(rMessageName, "hint_twn01_e43_rg") == 0;
-
-        if (isSonicLightDashHint || isShadowLightDashHint ||
-            strcmp(rMessageName, "hint_all03_h00_so") == 0 ||
-            strcmp(rMessageName, "hint_all03_h31_so") == 0)
-        {
-            pCommonObjectHint->Destroy();
-            return;
-        }
-    }
-
-    const auto isPlayStation = Config::GetPreferredControllerIcons() == EControllerIcons::PlayStation;
-
-    if (!Config::ControlTutorial || isPlayStation)
-    {
-        guest_stack_var<int> stack{};
-
-        auto pspTextCard = GuestToHostFunction<boost::shared_ptr<Sonicteam::TextCard>*>(sub_825ECB48,
-            stack.get(), App::s_pApp->GetGame()->m_pHintTextBook.get(), (const char*)rMessageName);
-
-        if (auto pTextCard = pspTextCard->get())
-        {
-            if (pTextCard->m_pVariables)
+            if (it != rTextCards.end())
             {
-                if (!Config::ControlTutorial)
-                {
-                    if (strstr(pTextCard->m_pVariables, "picture(button_"))
-                    {
-                        pCommonObjectHint->Destroy();
-                        return;
-                    }
-                }
+                const auto& spTextCard = it->second;
 
-                if (isPlayStation)
+                if (spTextCard->m_pVariables)
                 {
-                    // L1/R1 and L2/R2 are flipped on PS3, leading
-                    // to the voice lines being wrong for the hints.
-                    // 
-                    // We'll provide an alternate control scheme to
-                    // address this later on, but for now these should
-                    // be hidden.
-
-                    if (strstr(pTextCard->m_pVariables, "button_lb") || strstr(pTextCard->m_pVariables, "button_rb"))
-                    {
-                        pCommonObjectHint->Destroy();
-                        return;
-                    }
+                    // Block controller hint rings.
+                    if (strstr(spTextCard->m_pVariables, "picture(button_"))
+                        isHintRingBlocked = !Config::ControlTutorial;
                 }
             }
+        }
+        else
+        {
+            // Block all hint rings.
+            isHintRingBlocked = true;
+        }
+
+        if (isHintRingBlocked)
+        {
+            pCommonObjectHint->Destroy();
+            return;
+        }
+    }
+
+    if (pGame->m_pMissionCore)
+    {
+        struct HintFlagTest
+        {
+            std::string_view MessageName{};
+            uint32_t GlobalFlag{};
+            std::function<bool()> Condition{};
+        };
+
+        // TODO: unblock these hints for action remapping and just mute them instead.
+        static const std::array<HintFlagTest, 3> hintFlagTests =
+        {
+            // Block "hint_twn01_e01_tl" if Sonic's Light Dash is unlocked.
+            HintFlagTest{ "hint_twn01_e00_tl", 6000, []() { return !Config::ControlTutorial || Config::LightDash != ELightDash::X; } },
+
+            // Block "hint_all03_h26_so" if Sonic's Antigravity is unlocked.
+            HintFlagTest{ "hint_twn01_e02_tl", 6001, []() { return !Config::ControlTutorial || Config::SlidingAttack != ESlidingAttack::X; } },
+
+            // Block "hint_twn01_e44_rg" if Shadow's Light Dash is unlocked.
+            HintFlagTest{ "hint_twn01_e43_rg", 6012, []() { return !Config::ControlTutorial || Config::LightDash != ELightDash::X; } }
+        };
+
+        for (const auto& rTest : hintFlagTests)
+        {
+            if (!rTest.Condition() || rTest.MessageName != rMessageName)
+                continue;
+
+            auto msgGetGlobalFlag = guest_stack_var<Sonicteam::Message::Mission::MsgGetGlobalFlag>(rTest.GlobalFlag);
+            pGame->m_pMissionCore->ProcessMessage(msgGetGlobalFlag.get());
+
+            if (msgGetGlobalFlag->FlagValue == 0)
+                break;
+
+            pCommonObjectHint->Destroy();
+
+            return;
         }
     }
 
