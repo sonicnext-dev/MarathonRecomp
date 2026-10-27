@@ -1435,7 +1435,7 @@ void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity)
     if (!pTextEntity || !pTextEntity->m_ImageVertexCount)
         return;
 
-    const auto variables = MapTextVariables(pTextEntity->m_pVariables);
+    const auto variables = Sonicteam::TextCard::MapVariables(pTextEntity->m_pVariables);
 
     auto variablesIndex = 0;
     auto pictureIndex = 0;

@@ -1101,7 +1101,7 @@ ImVec2 MeasureInterpolatedText(const ImFont* pFont, float fontSize, const char* 
             if (!parsedSingleNoTokens.size())
                 continue;
 
-            const auto variableMapSingle = MapTextVariables(parsedSingleNoTokens[0].data());
+            const auto variableMapSingle = Sonicteam::TextCard::MapVariables(parsedSingleNoTokens[0].data());
 
             if (!variableMapSingle.size())
                 continue;
@@ -1182,7 +1182,7 @@ void DrawInterpolatedText(const ImFont* pFont, float fontSize, const ImVec2& pos
             if (!parsedSingleNoTokens.size())
                 continue;
 
-            const auto variableMapSingle = MapTextVariables(parsedSingleNoTokens[0].data());
+            const auto variableMapSingle = Sonicteam::TextCard::MapVariables(parsedSingleNoTokens[0].data());
         
             if (!variableMapSingle.size())
                 continue;
