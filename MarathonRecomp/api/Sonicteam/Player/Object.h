@@ -2,6 +2,7 @@
 
 #include <Marathon.inl>
 #include <boost/smart_ptr/shared_ptr.hpp>
+#include <Sonicteam/Camera/Cameraman.h>
 #include <Sonicteam/Player/State/Machine2.h>
 #include <Sonicteam/Player/IGauge.h>
 #include <Sonicteam/Player/IPlugIn.h>
@@ -31,7 +32,7 @@ namespace Sonicteam::Player
         stdx::string m_LuaFile;
         stdx::string m_PackageFile;
         be<uint32_t> m_TargetCameraActorID; 
-        xpointer<MessageReceiver> m_pCameraman;
+        xpointer<Camera::Cameraman> m_pCameraman;
         be<uint32_t> m_Index;
         be<uint32_t> m_PadID;
         SoX::Math::Quaternion m_SpawnRotation;

@@ -25,7 +25,7 @@ namespace stdx
             Value _Myval;
         };
 
-        be<uint32_t> _MyProxy;
+        be<uint32_t> _Myproxy;
         xpointer<_List_node> _Myhead;
         be<uint32_t> _Mysize;
 

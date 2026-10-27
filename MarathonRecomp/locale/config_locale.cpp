@@ -407,42 +407,42 @@ CONFIG_DEFINE_ENUM_LOCALE(ESlidingAttack)
     {
         ELanguage::English,
         {
-            { ESlidingAttack::B, { "Hold ${picture(button_b)}", "" } },
+            { ESlidingAttack::B, { "Release ${picture(button_b)}", "" } },
             { ESlidingAttack::X, { "Release ${picture(button_x)}", "" } }
         }
     },
     {
         ELanguage::Japanese,
         {
-            { ESlidingAttack::B, { "${picture(button_b)}を押し続ける", "" } },
+            { ESlidingAttack::B, { "${picture(button_b)}を離す", "" } },
             { ESlidingAttack::X, { "${picture(button_x)}を離す", "" } }
         }
     },
     {
         ELanguage::German,
         {
-            { ESlidingAttack::B, { "Halte ${picture(button_b)} gedrückt", "" } },
+            { ESlidingAttack::B, { "Lasse ${picture(button_b)} los", "" } },
             { ESlidingAttack::X, { "Lasse ${picture(button_x)} los", "" } }
         }
     },
     {
         ELanguage::French,
         {
-            { ESlidingAttack::B, { "Maintenir ${picture(button_b)}", "" } },
+            { ESlidingAttack::B, { "Relâcher ${picture(button_b)}", "" } },
             { ESlidingAttack::X, { "Relâcher ${picture(button_x)}", "" } }
         }
     },
     {
         ELanguage::Spanish,
         {
-            { ESlidingAttack::B, { "Mantener ${picture(button_b)}", "" } },
+            { ESlidingAttack::B, { "Soltar ${picture(button_b)}", "" } },
             { ESlidingAttack::X, { "Soltar ${picture(button_x)}", "" } }
         }
     },
     {
         ELanguage::Italian,
         {
-            { ESlidingAttack::B, { "Tieni premuto ${picture(button_b)}", "" } },
+            { ESlidingAttack::B, { "Rilascia ${picture(button_b)}", "" } },
             { ESlidingAttack::X, { "Rilascia ${picture(button_x)}", "" } }
         }
     }

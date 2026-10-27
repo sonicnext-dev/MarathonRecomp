@@ -310,9 +310,6 @@ bool RestoreChaosSpearFlips()
 
 bool UnlimitedAntigravity()
 {
-    if (Config::SlidingAttack == ESlidingAttack::B)
-        return true;
-
     return Config::UnlimitedAntigravity;
 }
 
