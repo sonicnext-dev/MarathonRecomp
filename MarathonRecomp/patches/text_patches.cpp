@@ -31,7 +31,7 @@ PPC_FUNC(sub_825ECB48)
     if (pNewMessage)
         g_userHeap.Free(pNewMessage);
 
-    static uint16_t* s_replacementStringPool{};
+    static char16_t* s_replacementStringPool{};
     static ELanguage s_replacementStringPoolLanguage{};
     static bool s_usePS3TypoFixes{};
 
@@ -48,7 +48,7 @@ PPC_FUNC(sub_825ECB48)
         if (s_replacementStringPool)
             g_userHeap.Free(s_replacementStringPool);
 
-        s_replacementStringPool = (uint16_t*)g_userHeap.Alloc(length);
+        s_replacementStringPool = reinterpret_cast<char16_t*>(g_userHeap.Alloc(length));
         s_replacementStringPoolLanguage = Config::Language;
         s_usePS3TypoFixes = Config::UsePS3TypoFixes;
 

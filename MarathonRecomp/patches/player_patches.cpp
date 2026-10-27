@@ -481,7 +481,7 @@ PPC_FUNC(sub_8223F360)
     if (pSonicGauge->c_gauge_super == 0.0f)
         pSonicGauge->c_gauge_super = GuestToHostFunction<float>(sub_821EA350, pLuaSystem, pVariableName);
 
-    pVariableName->~string();
+    pVariableName->~basic_string();
 
     g_userHeap.Free(pVariableName);
 }

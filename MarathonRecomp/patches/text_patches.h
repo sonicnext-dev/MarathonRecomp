@@ -5,7 +5,7 @@
 struct ReplacementMessage
 {
     const char* pKey{};
-    xpointer<const uint16_t> pGuestText{};
+    xpointer<const char16_t> pGuestText{};
 };
 
 class TextPatches

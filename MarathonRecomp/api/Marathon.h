@@ -332,6 +332,7 @@
 #include "hk330/hkpWorld.h"
 #include "hk330/hkpWorldObject.h"
 #include "lua50/lua.h"
+#include "stdx/basic_string.h"
 #include "stdx/compare/string_compare.h"
 #include "stdx/list.h"
 #include "stdx/map.h"
