@@ -222,7 +222,7 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
     {
         case SonicCameraEx::MouseLookState_Disabled:
         {
-            if (std::fabsf(x) >= 0.0f && std::fabsf(y) >= 0.0f)
+            if (std::fabsf(x) > 0.0f || std::fabsf(y) > 0.0f)
             {
                 // Sync current camera orbit to mouse look.
                 pSonicCamera->m_Yaw = pSonicCamera->m_Orbit.Y;
@@ -231,13 +231,9 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
                 pSonicCamera->SetInterpolateStart(*pOutput);
 
                 pSonicCamera->m_MouseLookState = SonicCameraEx::MouseLookState_Enabled;
+            }
 
-                break;
-            }
-            else
-            {
-                return;
-            }
+            return;
         }
 
         case SonicCameraEx::MouseLookState_Resetting:
@@ -263,11 +259,33 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
                 const auto padState = pMutator->GetState();
 
                 // Right stick moved beyond threshold, reset back to original camera behaviour.
-                if (std::abs(padState.sThumbRX) >= 8000 && std::abs(padState.sThumbRY) >= 8000)
+                if (std::abs(padState.sThumbRX) >= 8000 || std::abs(padState.sThumbRY) >= 8000)
                 {
                     pSonicCamera->m_MouseLookState = SonicCameraEx::MouseLookState_Resetting;
                     return;
                 }
+            }
+
+            if (Config::MouseAutoCenter)
+            {
+                if (std::fabsf(x) > 0.0f || std::fabsf(y) > 0.0f)
+                {
+                    pSonicCamera->m_InactiveTime = 0.0f;
+                }
+                else
+                {
+                    pSonicCamera->m_InactiveTime += App::s_deltaTime;
+                }
+
+                if (pSonicCamera->m_InactiveTime >= Config::MouseAutoCenterTime)
+                {
+                    pSonicCamera->m_MouseLookState = SonicCameraEx::MouseLookState_Resetting;
+                    return;
+                }
+            }
+            else
+            {
+                pSonicCamera->m_InactiveTime = 0.0f;
             }
 
             if (pSonicCamera->IsPlayerOutOfControl())
@@ -284,28 +302,6 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
 
             break;
         }
-    }
-
-    if (Config::MouseAutoCenter)
-    {
-        if (std::fabsf(x) > 0.0f || std::fabsf(y) > 0.0f)
-        {
-            pSonicCamera->m_InactiveTime = 0.0f;
-        }
-        else
-        {
-            pSonicCamera->m_InactiveTime += App::s_deltaTime;
-        }
-
-        if (pSonicCamera->m_InactiveTime >= Config::MouseAutoCenterTime)
-        {
-            pSonicCamera->m_MouseLookState = SonicCameraEx::MouseLookState_Resetting;
-            return;
-        }
-    }
-    else
-    {
-        pSonicCamera->m_InactiveTime = 0.0f;
     }
 
     static constexpr float maxPitch = 45.0f * DEG2RADf;
