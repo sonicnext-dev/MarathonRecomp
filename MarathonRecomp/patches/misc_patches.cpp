@@ -161,13 +161,13 @@ PPC_FUNC(sub_822CE930)
         static const std::array<HintFlagTest, 3> hintFlagTests =
         {
             // Block "hint_twn01_e01_tl" if Sonic's Light Dash is unlocked.
-            HintFlagTest{ "hint_twn01_e00_tl", 6000, []() { return Config::LightDash != ELightDash::X; } },
+            HintFlagTest{ "hint_twn01_e00_tl", 6000, []() { return !Config::ControlTutorial || Config::LightDash != ELightDash::X; } },
 
             // Block "hint_all03_h26_so" if Sonic's Antigravity is unlocked.
-            HintFlagTest{ "hint_twn01_e02_tl", 6001, []() { return Config::SlidingAttack != ESlidingAttack::X; } },
+            HintFlagTest{ "hint_twn01_e02_tl", 6001, []() { return !Config::ControlTutorial || Config::SlidingAttack != ESlidingAttack::X; } },
 
             // Block "hint_twn01_e44_rg" if Shadow's Light Dash is unlocked.
-            HintFlagTest{ "hint_twn01_e43_rg", 6012, []() { return Config::LightDash != ELightDash::X; } }
+            HintFlagTest{ "hint_twn01_e43_rg", 6012, []() { return !Config::ControlTutorial || Config::LightDash != ELightDash::X; } }
         };
 
         for (const auto& rTest : hintFlagTests)
