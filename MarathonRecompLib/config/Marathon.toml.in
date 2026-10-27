@@ -681,24 +681,6 @@ name = "RemapLightDash"
 address = 0x821A6794
 registers = ["r3", "r11"]
 
-# Sonicteam::Player::State::SonicWalk
-[[midasm_hook]]
-name = "RemapAntigravityEnter"
-address = 0x82218E5C
-registers = ["r11", "r28"]
-
-# Sonicteam::Player::State::SonicRun
-[[midasm_hook]]
-name = "RemapAntigravityEnter"
-address = 0x8221913C
-registers = ["r11", "r28"]
-
-# Sonicteam::Player::State::SonicSliding
-[[midasm_hook]]
-name = "RemapAntigravityExit"
-address = 0x82217AB0
-registers = ["r11", "r30"]
-
 [[midasm_hook]]
 name = "AntigravityRetainsMomentum"
 address = 0x82217968

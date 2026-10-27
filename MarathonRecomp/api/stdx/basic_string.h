@@ -10,14 +10,14 @@ namespace stdx
     class basic_string
     {
     private:
-        static constexpr size_t _ShortBufferSize = 0x10 / sizeof(TChar);
-        static constexpr size_t _ShortBufferSizeTerminated = _ShortBufferSize - 1;
+        static constexpr size_t _Short_buffer_size = 0x10 / sizeof(TChar);
+        static constexpr size_t _Short_buffer_size_terminated = _Short_buffer_size - 1;
 
         union _Bxty
         {
             _Bxty() {}
 
-            TChar _buffer[_ShortBufferSize];
+            TChar _buffer[_Short_buffer_size];
             xpointer<TChar> _str;
         };
 
@@ -28,7 +28,7 @@ namespace stdx
 
         bool is_short() const
         {
-            return _Mysize <= _ShortBufferSizeTerminated;
+            return _Mysize <= _Short_buffer_size_terminated;
         }
 
         void cleanup()
@@ -40,7 +40,7 @@ namespace stdx
 
             _bx._str = nullptr;
             _Mysize = 0;
-            _Myres = _ShortBufferSizeTerminated;
+            _Myres = _Short_buffer_size_terminated;
         }
 
         void from_cstr(std::basic_string_view<TChar> str, bool endianSwap = false)
@@ -48,7 +48,7 @@ namespace stdx
             const auto lengthInChars = str.size();
             const auto lengthInBytes = lengthInChars * sizeof(TChar);
 
-            if (lengthInChars <= _ShortBufferSizeTerminated)
+            if (lengthInChars <= _Short_buffer_size_terminated)
             {
                 cleanup();
 
@@ -90,7 +90,7 @@ namespace stdx
         {
             _bx._buffer[0] = 0;
             _Mysize = 0;
-            _Myres = _ShortBufferSizeTerminated;
+            _Myres = _Short_buffer_size_terminated;
         }
 
         basic_string(const basic_string& other) : basic_string()
@@ -107,7 +107,7 @@ namespace stdx
 
             other._bx._buffer[0] = 0;
             other._Mysize = 0;
-            other._Myres = _ShortBufferSizeTerminated;
+            other._Myres = _Short_buffer_size_terminated;
         }
 
         basic_string(const TChar* str, bool endianSwap = true) : basic_string()
@@ -129,7 +129,7 @@ namespace stdx
 
             _bx._buffer[0] = 0;
             _Mysize = 0;
-            _Myres = _ShortBufferSizeTerminated;
+            _Myres = _Short_buffer_size_terminated;
         }
 
         const TChar* c_str() const
@@ -175,7 +175,7 @@ namespace stdx
 
                 other._bx._buffer[0] = 0;
                 other._Mysize = 0;
-                other._Myres = _ShortBufferSizeTerminated;
+                other._Myres = _Short_buffer_size_terminated;
             }
 
             return *this;
