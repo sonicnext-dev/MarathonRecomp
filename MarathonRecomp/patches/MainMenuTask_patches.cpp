@@ -1,6 +1,7 @@
 #include "MainMenuTask_patches.h"
 #include <hid/message/messages.h>
 #include <hid/hid.h>
+#include <patches/aspect_ratio_patches.h>
 #include <ui/achievement_menu.h>
 #include <ui/button_window.h>
 #include <ui/options_menu.h>
@@ -12,7 +13,7 @@ static bool g_isMultiplayerP1KeyboardUser{};
 PPC_FUNC_IMPL(__imp__sub_824FFCF8);
 PPC_FUNC(sub_824FFCF8)
 {
-    const auto pMainMenuTask = (Sonicteam::MainMenuTask*)(base + ctx.r3.u32);
+    const auto pMainMenuTask = reinterpret_cast<Sonicteam::MainMenuTask*>(base + ctx.r3.u32);
     const auto pHUDMainMenu = pMainMenuTask->m_pHUDMainMenu;
     const auto pDoc = pMainMenuTask->GetDoc<Sonicteam::DocMarathonState>();
 
@@ -20,7 +21,7 @@ PPC_FUNC(sub_824FFCF8)
     if (pHUDMainMenu)
     {
         // Hide original "OPTIONS" title.
-        if (auto pOptionsSelect = pHUDMainMenu->m_pHudTextRoot->Find("options_select", "options"))
+        if (const auto pOptionsSelect = pHUDMainMenu->m_pHudTextRoot->Find("options_select", "options"))
             pOptionsSelect->m_Priority = -1.0f;
     }
 
@@ -127,7 +128,7 @@ PPC_FUNC(sub_824FFCF8)
     if (pHUDMainMenu)
     {
         // Hide original "GOLD MEDAL RESULTS" title.
-        if (auto pGoldMedalResultSelect = pHUDMainMenu->m_pHudTextRoot->Find("goldmedalresult_select", "goldmedalresult"))
+        if (const auto pGoldMedalResultSelect = pHUDMainMenu->m_pHudTextRoot->Find("goldmedalresult_select", "goldmedalresult"))
             pGoldMedalResultSelect->m_Priority = -1.0f;
     }
 
@@ -135,8 +136,13 @@ PPC_FUNC(sub_824FFCF8)
         AchievementMenu::Open(pMainMenuTask);
 #endif
 
+    const auto pHUDButtonWindow = pMainMenuTask->m_pButtonWindowTask->m_pHUDButtonWindow;
+
+    // Hide duplicate button guide.
+    SetTextEntityModifier(pHUDButtonWindow->m_spTextEntity.get(), CSD_SKIP);
+
     static float s_buttonWindowTextOffsetY{};
-    auto& rButtonWindowTextOffsetY = pMainMenuTask->m_pButtonWindowTask->m_pHUDButtonWindow->m_pHudTextParts->m_OffsetY;
+    auto& rButtonWindowTextOffsetY = pHUDButtonWindow->m_pHudTextParts->m_OffsetY;
 
     if (MainMenuTaskPatches::s_hideButtonWindow)
     {
@@ -155,7 +161,7 @@ PPC_FUNC(sub_824FFCF8)
         rButtonWindowTextOffsetY = s_buttonWindowTextOffsetY;
     }
 
-    MainMenuTaskPatches::s_state = (Sonicteam::MainMenuTask::MainMenuState)pMainMenuTask->m_State.get();
+    MainMenuTaskPatches::s_state = Sonicteam::MainMenuTask::MainMenuState(pMainMenuTask->m_State.get());
 
     for (auto& event : MainMenuTaskPatches::s_events)
         event->Update(pMainMenuTask, ctx.f1.f64);
