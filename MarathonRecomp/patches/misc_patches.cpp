@@ -1,6 +1,5 @@
 #include <api/Marathon.h>
 #include <hid/hid.h>
-#include <ui/dev_title_menu.h>
 #include <user/config.h>
 #include <user/achievement_manager.h>
 #include <app.h>
@@ -220,96 +219,6 @@ PPC_FUNC(sub_824A6EA8)
 PPC_FUNC(sub_82188460)
 {
     ctx.r3.u64 = Config::Subtitles;
-}
-
-// Add audio to MessageReceiver(StageSelectMode)
-PPC_FUNC_IMPL(__imp__sub_824A8FF0);
-PPC_FUNC(sub_824A8FF0)
-{
-    auto pMessage = (DevMessage*)(base + ctx.r4.u32);
-    DevTitleMenu::AudioCommon(pMessage);
-    __imp__sub_824A8FF0(ctx, base);
-}
-
-// Add audio to MessageReceiver(DevTitleMode)
-PPC_FUNC_IMPL(__imp__sub_824A0E38);
-PPC_FUNC(sub_824A0E38)
-{
-    auto pMessage = (DevMessage*)(base + ctx.r4.u32);
-    auto pTitle = (StateDevTitle*)(base + 0x82D35E6C);
-    if (pTitle->m_PictureTitle->m_State3 >= 4)
-        return;
-
-    if (pMessage->id == 0x10002)
-    {
-        if (pMessage->id2 == 0x5A || pMessage->id3)
-        {
-            pTitle->m_PictureTitle->m_State3 = 4;
-            DevTitleDelay = DevTitleDelayDefault;
-        }
-        else
-        {
-            return;
-        }
-    }
-
-    DevTitleMenu::AudioCommon(pMessage);
-    __imp__sub_824A0E38(ctx, base);
-}
-
-PPC_FUNC_IMPL(__imp__sub_82161AB8);
-PPC_FUNC(sub_82161AB8)
-{
-    if (!Config::DevTitle)
-    {
-        __imp__sub_82161AB8(ctx, base);
-        return;
-    }
-
-    GuestToHostFunction<void>(sub_825E9E28, ctx.r3.u32, ctx.r4.u32);
-
-    // Initialize MainMode
-    if (!*(uint32_t*)(base + 0x82D35E48))
-        *(be<uint32_t>*)(base + 0x82D35E48) = GuestToHostFunction<uint32_t>(sub_82161150);
-
-    // Initialize DevMode
-    if (!*(uint32_t*)(base + 0x82D35E78))
-        *(be<uint32_t>*)(base + 0x82D35E78) = GuestToHostFunction<uint32_t>(sub_82161860);
-
-    auto pDevMode = (*(be<uint32_t>*)(base + 0x82D35E78)).get();
-
-    // DocSetMode
-    GuestToHostFunction<void>(sub_825E8D78, ctx.r3.u32, pDevMode);
-}
-
-// tateDevTitle, vft + 8
-PPC_FUNC_IMPL(__imp__sub_82162298);
-PPC_FUNC(sub_82162298)
-{
-    auto pTitle = (StateDevTitle*)(base + ctx.r3.u32);
-
-    if (ctx.r3.u32 && pTitle->m_PictureTitle && pTitle->m_PictureTitle->m_State3 > 4)
-    {
-        DevTitleDelay = std::clamp(DevTitleDelay - 0.016666668f, 0.0f, DevTitleDelay);
-    }
-    else
-    {
-        DevTitleDelay = DevTitleDelayDefault;
-    }
-
-    if (!GuestToHostFunction<uint32_t>(sub_82581C68, ctx.r4.u32))
-    {
-        // Wait for transistion
-        GuestToHostFunction<uint32_t>(sub_824A0870, pTitle->m_PictureTitle.ptr.get(), 0.016666668);
-
-        // Force to wait transistion
-        if (pTitle->m_PictureTitle->m_State3 != 6)
-        {
-            return;
-        }
-    }
-
-    __imp__sub_82162298(ctx, base);
 }
 
 void NOP() {}
