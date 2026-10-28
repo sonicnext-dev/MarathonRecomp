@@ -71,6 +71,8 @@
 #include "Sonicteam/MainMenuTask.h"
 #include "Sonicteam/MainMode.h"
 #include "Sonicteam/Message/Camera/Cameraman/MsgChangeMode.h"
+#include "Sonicteam/Message/DevTitleMode/MsgMoveCursor.h"
+#include "Sonicteam/Message/DevTitleMode/MsgSelectCursor.h"
 #include "Sonicteam/Message/Game/MsgRegisterPlayer.h"
 #include "Sonicteam/Message/Game/MsgTextCardAction.h"
 #include "Sonicteam/Message/HUDButtonWindow/MsgChangeButtons.h"

@@ -1663,7 +1663,6 @@ static void CreateImGuiBackend()
     InitImGuiUtils();
     OptionsMenu::Init();
     InstallerWizard::Init();
-    DevTitleMenu::Init();
 
     ImGui_ImplSDL3_InitForOther(GameWindow::s_pWindow);
 

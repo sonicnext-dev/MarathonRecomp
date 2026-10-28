@@ -11,17 +11,19 @@ namespace Sonicteam
     public:
         struct Mode
         {
-            xpointer<const char> Name;
-            MARATHON_INSERT_PADDING(0x04);
+            xpointer<const char> pName;
+            xpointer<DocState> pState;
         };
 
-        be<uint32_t> m_SelectedIndex;
+        be<int> m_SelectedIndex;
         MARATHON_INSERT_PADDING(0x04);
         stdx::vector<Mode> m_Modes;
         MARATHON_INSERT_PADDING(0x2C);
     };
 
-    MARATHON_ASSERT_OFFSETOF(DevTitleMode::Mode, Name, 0x00);
+    MARATHON_ASSERT_OFFSETOF(DevTitleMode::Mode, pName, 0x00);
+    MARATHON_ASSERT_OFFSETOF(DevTitleMode::Mode, pState, 0x04);
+    MARATHON_ASSERT_SIZEOF(DevTitleMode::Mode, 0x08);
 
     MARATHON_ASSERT_OFFSETOF(DevTitleMode, m_SelectedIndex, 0x50);
     MARATHON_ASSERT_OFFSETOF(DevTitleMode, m_Modes, 0x58);

@@ -216,6 +216,23 @@ PPC_FUNC(sub_824A6EA8)
     __imp__sub_824A6EA8(ctx, base);
 }
 
+// Sonicteam::DocMarathonState::StartMainMode
+PPC_FUNC_IMPL(__imp__sub_82161AB8);
+PPC_FUNC(sub_82161AB8)
+{
+    if (!Config::BootDirectlyToDevTitle)
+    {
+        __imp__sub_82161AB8(ctx, base);
+        return;
+    }
+
+    const auto pDoc = reinterpret_cast<Sonicteam::DocMarathonState*>(base + ctx.r3.u32);
+
+    GuestToHostFunction<int>(sub_825E9E28, ctx.r3.u32, ctx.r4.u32);
+
+    ctx.r3.u32 = g_memory.MapVirtual(pDoc->SetDocState(StateDevTitle::GetInstance()));
+}
+
 PPC_FUNC(sub_82188460)
 {
     ctx.r3.u64 = Config::Subtitles;

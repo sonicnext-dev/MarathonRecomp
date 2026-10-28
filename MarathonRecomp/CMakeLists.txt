@@ -145,7 +145,6 @@ set(MARATHON_RECOMP_PATCHES_CXX_SOURCES
     "patches/aspect_ratio_patches.cpp"
     "patches/audio_patches.cpp"
     "patches/camera_patches.cpp"
-    "patches/DevTitleMode_patches.cpp"
     "patches/fps_patches.cpp"
     "patches/frontend_listener.cpp"
     "patches/input_patches.cpp"
