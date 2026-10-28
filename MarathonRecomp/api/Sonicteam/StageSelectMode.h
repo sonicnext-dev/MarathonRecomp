@@ -9,15 +9,24 @@ namespace Sonicteam
     class StageSelectMode : public SoX::Engine::DocMode
     {
     public:
-        xpointer<StageMap> m_StageMap;
+        xpointer<StageMap> m_RootStageMap;
         xpointer<StageMap> m_CurrentStageMap;
-        MARATHON_INSERT_PADDING(4);
-        be<uint32_t> m_CurrentStageMapIndex;
-        be<uint32_t> m_Deep;
+        MARATHON_INSERT_PADDING(0x04);
+        be<uint32_t> m_StageMapIndex;
+        be<uint32_t> m_StageMapDepth;
         MARATHON_INSERT_PADDING(0x1C);
         xpointer<xpointer<const char>> m_StageMapInfo;
         xpointer<uint32_t> m_StageMapType;
         xpointer<const char> m_StageMapName;
-        MARATHON_INSERT_PADDING(0x14);
+        MARATHON_INSERT_PADDING(0x04);
     };
+
+    MARATHON_ASSERT_OFFSETOF(StageSelectMode, m_RootStageMap, 0x50);
+    MARATHON_ASSERT_OFFSETOF(StageSelectMode, m_CurrentStageMap, 0x54);
+    MARATHON_ASSERT_OFFSETOF(StageSelectMode, m_StageMapIndex, 0x5C);
+    MARATHON_ASSERT_OFFSETOF(StageSelectMode, m_StageMapDepth, 0x60);
+    MARATHON_ASSERT_OFFSETOF(StageSelectMode, m_StageMapInfo, 0x80);
+    MARATHON_ASSERT_OFFSETOF(StageSelectMode, m_StageMapType, 0x84);
+    MARATHON_ASSERT_OFFSETOF(StageSelectMode, m_StageMapName, 0x88);
+    MARATHON_ASSERT_SIZEOF(StageSelectMode, 0x90);
 }

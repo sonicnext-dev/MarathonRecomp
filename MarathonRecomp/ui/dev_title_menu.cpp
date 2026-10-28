@@ -149,9 +149,9 @@ static void DrawStageMapSelector()
         config.paddingRatio.y * res.y
     };
 
-    auto& items = pMode->m_CurrentStageMap->m_vpStageMap;
+    auto& items = pMode->m_CurrentStageMap->m_Children;
     const int itemCount = static_cast<int>(items.size());
-    int currentIdx = pMode->m_CurrentStageMapIndex.get();
+    int currentIdx = pMode->m_StageMapIndex.get();
 
     // Handle input
     auto pMsgRec = reinterpret_cast<uintptr_t>(static_cast<Sonicteam::SoX::MessageReceiver*>(pMode));
@@ -198,10 +198,10 @@ static void DrawStageMapSelector()
         // Draw button
         if (Sonic06Button(buttonPos, item->m_Name.c_str(), hovered,
             ImVec2(config.windowWidthRatio * res.x - 20, buttonHeight),
-            isSelected, Y, item->m_vpStageMap.size() > 1))
+            isSelected, Y, item->m_Children.size() > 1))
         {
             currentIdx = i;
-            pMode->m_CurrentStageMapIndex = i;
+            pMode->m_StageMapIndex = i;
             guest_stack_var<DevMessage> vMsgRec(0x10002, 0x5A, 1);
             GuestToHostFunction<void>(sub_824A8FF0, pMsgRec, vMsgRec.get());
         }
@@ -218,7 +218,7 @@ static void DrawDevTitle()
         return;
 
     auto pDevTitle = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::DevTitleMode>();
-    auto pIndex = pDevTitle->m_Selected.get();
+    auto pIndex = pDevTitle->m_SelectedIndex.get();
     auto pDevTitleMenuSTable = static_cast<DevTitleMenuSTable *>(g_memory.Translate(0x82B10A40));
     auto pName = pDevTitleMenuSTable->m_state[pIndex].m_name.get();
 

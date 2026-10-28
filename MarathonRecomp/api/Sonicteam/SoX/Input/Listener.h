@@ -5,9 +5,9 @@
 
 namespace Sonicteam::SoX::Input
 {
-    class Listener : Object
+    class Listener : public Object
     {
     public:
-        MARATHON_INSERT_PADDING(0x14); // LinkSoxNode<void> LinkInput, flags
+        MARATHON_INSERT_PADDING(0x14); // LinkNode<T> LinkInput, Flags
     };
 }

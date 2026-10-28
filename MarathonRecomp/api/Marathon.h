@@ -293,6 +293,8 @@
 #include "Sonicteam/StageMap.h"
 #include "Sonicteam/StageSelectMode.h"
 #include "Sonicteam/StageTitleTask.h"
+#include "Sonicteam/StateDevTitle.h"
+#include "Sonicteam/StateMainMode.h"
 #include "Sonicteam/StdImageFilters/BurnoutBlurFilter.h"
 #include "Sonicteam/StdImageFilters/SingleTechniqueFilter.h"
 #include "Sonicteam/System/CreateStatic.h"
