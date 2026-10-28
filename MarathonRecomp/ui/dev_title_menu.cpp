@@ -240,18 +240,12 @@ static void DrawDevTitle()
 
 void DevTitleMenu::Init()
 {
-    if (!Config::DevTitle)
-        return;
-
     g_mrodinFont = ImFontAtlasSnapshot::GetFont("FOT-RodinPro-DB.otf");
     g_mnewRodinFont = ImFontAtlasSnapshot::GetFont("FOT-NewRodinPro-UB.otf");
 }
 
 void DevTitleMenu::Draw()
 {
-    if (!Config::DevTitle)
-        return;
-
     if (!App::s_pApp)
         return;
 

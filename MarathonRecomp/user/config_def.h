@@ -105,10 +105,11 @@ CONFIG_DEFINE_ENUM_LOCALISED("Video", ECutsceneAspectRatio, CutsceneAspectRatio,
 CONFIG_DEFINE_ENUM_LOCALISED("Video", EUIAlignmentMode, UIAlignmentMode, EUIAlignmentMode::Edge, false);
 
 CONFIG_DEFINE_HIDDEN("Codes", bool, AntigravityRetainsMomentum, false, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, BootDirectlyToTitle, false, false);
+CONFIG_DEFINE_HIDDEN("Codes", bool, BootDirectlyToDevTitle, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, ControllableBoundAttack, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, ControllableSpinkick, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, ControllableTeleportDash, false, false);
-CONFIG_DEFINE_HIDDEN("Codes", bool, DevTitle, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, DisableDWMRoundedCorners, false, true);
 CONFIG_DEFINE_HIDDEN("Codes", bool, DisableEdgeGrabLeftover, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, DisableKingdomValleyMist, false, false);
@@ -130,7 +131,6 @@ CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreDemoCameraMode, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreLoadingTransition, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestorePauseMissionText, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, RestoreSonicActionGauge, false, false);
-CONFIG_DEFINE_HIDDEN("Codes", bool, SkipIntroLogos, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, TailsGauge, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, UnlimitedAntigravity, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, UseOfficialAchievementText, false, false);
