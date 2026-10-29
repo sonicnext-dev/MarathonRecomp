@@ -137,8 +137,8 @@ PPC_FUNC(sub_825126A0)
 
             if (g_secretFlags == SECRET_ALL)
             {
-                LOGFN_WARNING("Secret unlocked!");
-                Game_PlaySound("totalring_count"); // TODO: why no worky...
+                LOGN_WARNING("Secret unlocked!");
+                Game_PlaySound("totalring_count");
                 OptionsMenu::s_isDebugUnlocked = true;
             }
 

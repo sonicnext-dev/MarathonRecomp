@@ -30,7 +30,6 @@
 #include <ui/options_menu.h>
 #include <ui/game_window.h>
 #include <ui/black_bar.h>
-#include <ui/dev_title_menu.h>
 #include <patches/aspect_ratio_patches.h>
 #include <patches/hook_event.h>
 #include <patches/loading_patches.h>
@@ -2996,6 +2995,13 @@ static void DrawFPS()
     drawList->AddText(font, fontSize, textPos, IM_COL32_WHITE, fmt.c_str());
 }
 
+static std::vector<std::function<void()>> g_imguiDrawQueue{};
+
+void Video::EnqueueImGuiDraw(const std::function<void()>& in_rEvent)
+{
+    g_imguiDrawQueue.push_back(in_rEvent);
+}
+
 static void DrawImGui()
 {
     ImGui_ImplSDL3_NewFrame();
@@ -3036,7 +3042,6 @@ static void DrawImGui()
     ResetImGuiCallbacks();
 
     UpdateImGuiUtils();
-    DevTitleMenu::Draw();
     AchievementMenu::Draw();
     OptionsMenu::Draw();
     InstallerWizard::Draw();
@@ -3045,6 +3050,11 @@ static void DrawImGui()
     AchievementOverlay::Draw();
     Fader::Draw();
     BlackBar::Draw();
+
+    for (const auto& rEvent : g_imguiDrawQueue)
+        rEvent();
+
+    g_imguiDrawQueue.clear();
 
     assert(ImGui::GetBackgroundDrawList()->_ClipRectStack.Size == 1 && "Some clip rects were not removed from the stack!");
 

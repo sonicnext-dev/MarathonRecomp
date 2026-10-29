@@ -21,6 +21,7 @@
 
 ImFont* g_pFntRodin;
 ImFont* g_pFntNewRodin;
+ImFont* g_pFntArialUni;
 
 float g_fntRodinSize{};
 
@@ -38,6 +39,7 @@ void InitImGuiUtils()
 {
     g_pFntRodin = ImFontAtlasSnapshot::GetFont("FOT-RodinPro-DB.otf");
     g_pFntNewRodin = ImFontAtlasSnapshot::GetFont("FOT-NewRodinPro-UB.otf");
+    g_pFntArialUni = ImFontAtlasSnapshot::GetFont("ArialUni.ttf");
 
     g_upTexButtonWindow = LOAD_ZSTD_TEXTURE(g_button_window);
     g_upTexController = LOAD_ZSTD_TEXTURE(g_controller);

@@ -14,13 +14,12 @@ namespace Sonicteam
     {
     public:
         stdx::string m_Name;
-        stdx::string m_Text;
+        stdx::string m_Comment;
         stdx::vector<xpointer<StageMap>> m_Children;
 
-        std::string GetHierarchy()
+        std::vector<std::string> GetHierarchy()
         {
-            std::stringstream result{};
-            std::vector<const char*> hierarchy{};
+            std::vector<std::string> result{};
 
             auto pStageMap = this;
 
@@ -29,13 +28,24 @@ namespace Sonicteam
                 if (pStageMap->m_Name.empty())
                     break;
 
-                hierarchy.push_back(pStageMap->m_Name.c_str());
+                result.push_back(pStageMap->m_Name.c_str());
 
                 pStageMap = pStageMap->GetParent<Sonicteam::StageMap>();
             }
 
-            for (int i = hierarchy.size() - 1; i >= 0; i--)
-                result << "/" << hierarchy[i];
+            std::reverse(result.begin(), result.end());
+
+            return result;
+        }
+
+        std::string GetPath()
+        {
+            std::stringstream result{};
+
+            const auto hierarchy = GetHierarchy();
+
+            for (const auto& rName : hierarchy)
+                result << "/" << rName;
 
             return result.str();
         }
@@ -52,7 +62,7 @@ namespace Sonicteam
     };
 
     MARATHON_ASSERT_OFFSETOF(StageMap, m_Name, 0x20);
-    MARATHON_ASSERT_OFFSETOF(StageMap, m_Text, 0x3C);
+    MARATHON_ASSERT_OFFSETOF(StageMap, m_Comment, 0x3C);
     MARATHON_ASSERT_OFFSETOF(StageMap, m_Children, 0x58);
     MARATHON_ASSERT_SIZEOF(StageMap, 0x68);
 }

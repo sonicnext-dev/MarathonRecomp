@@ -30,6 +30,7 @@ struct Video
 
     static inline bool s_needsResize;
 
+    static void EnqueueImGuiDraw(const std::function<void()>& in_rEvent);
     static bool CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry);
     static void WaitOnSwapChain();
     static void Present();

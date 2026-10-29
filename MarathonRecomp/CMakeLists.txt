@@ -88,6 +88,7 @@ set(MARATHON_RECOMP_LOCALE_CXX_SOURCES
 
 if (WIN32)
     set(MARATHON_RECOMP_OS_CXX_SOURCES
+        "os/win32/locale_win32.cpp"
         "os/win32/logger_win32.cpp"
         "os/win32/media_win32.cpp"
         "os/win32/process_win32.cpp"
@@ -97,6 +98,7 @@ if (WIN32)
     )
 elseif (CMAKE_SYSTEM_NAME MATCHES "Linux")
     set(MARATHON_RECOMP_OS_CXX_SOURCES
+        "os/linux/locale_linux.cpp"
         "os/linux/logger_linux.cpp"
         "os/linux/media_linux.cpp"
         "os/linux/process_linux.cpp"
@@ -106,6 +108,7 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Linux")
     )
 elseif (APPLE)
     set(MARATHON_RECOMP_OS_CXX_SOURCES
+        "os/macos/locale_macos.cpp"
         "os/macos/logger_macos.cpp"
         "os/macos/media_macos.cpp"
         "os/macos/process_macos.cpp"
@@ -145,6 +148,7 @@ set(MARATHON_RECOMP_PATCHES_CXX_SOURCES
     "patches/aspect_ratio_patches.cpp"
     "patches/audio_patches.cpp"
     "patches/camera_patches.cpp"
+    "patches/debug_patches.cpp"
     "patches/fps_patches.cpp"
     "patches/frontend_listener.cpp"
     "patches/input_patches.cpp"
@@ -171,7 +175,6 @@ set(MARATHON_RECOMP_UI_CXX_SOURCES
     "ui/installer_wizard.cpp"
     "ui/message_window.cpp"
     "ui/options_menu.cpp"
-    "ui/dev_title_menu.cpp"
 )
 
 set(MARATHON_RECOMP_INSTALL_CXX_SOURCES
