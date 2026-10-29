@@ -27,7 +27,11 @@ class AspectRatioPatches
 {
 public:
     static void Init();
+
     static void ComputeOffsets();
+
+    static float AlignX(float in_offset = 0.0f);
+    static float AlignY(float in_offset = 0.0f);
 };
 
 // -------------- CSD MODIFIERS --------------- //

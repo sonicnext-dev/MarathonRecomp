@@ -174,6 +174,22 @@ void AspectRatioPatches::ComputeOffsets()
     g_radarMapScale = 256 * g_aspectRatioScale * g_aspectRatioGameplayScale;
 }
 
+float AspectRatioPatches::AlignX(float in_offset)
+{
+    if (Config::UIAlignmentMode == EUIAlignmentMode::Centre && g_aspectRatioOffsetX > 0)
+        return g_aspectRatioOffsetX + in_offset;
+
+    return in_offset;
+}
+
+float AspectRatioPatches::AlignY(float in_offset)
+{
+    if (Config::UIAlignmentMode == EUIAlignmentMode::Centre && g_aspectRatioOffsetY > 0)
+        return g_aspectRatioOffsetY + in_offset;
+
+    return in_offset;
+}
+
 void EmplacePath(const void* key, const std::string_view& value)
 {
     std::lock_guard lock(g_pathMutex);

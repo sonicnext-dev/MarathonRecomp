@@ -1,4 +1,5 @@
 #include "dev_title_menu.h"
+#include <patches/aspect_ratio_patches.h>
 #include <ui/imgui_utils.h>
 #include <app.h>
 
@@ -7,8 +8,8 @@ static void DrawInfo()
     const auto drawList = ImGui::GetBackgroundDrawList();
     const auto fontSize = Scale(22);
 
-    drawList->AddText(g_pFntRodin, fontSize, { 0, Scale(4) }, IM_COL32_WHITE, "ソニック・ザ・ヘッジホッグ");
-    drawList->AddText(g_pFntRodin, Scale(11), { Scale(350), Scale(34) }, IM_COL32_WHITE, "Mon Oct 23 05:01:13     2006");
+    drawList->AddText(g_pFntRodin, fontSize, { AspectRatioPatches::AlignX(), Scale(4)}, IM_COL32_WHITE, "ソニック・ザ・ヘッジホッグ");
+    drawList->AddText(g_pFntRodin, Scale(11), { AspectRatioPatches::AlignX(Scale(350)), Scale(34) }, IM_COL32_WHITE, "Mon Oct 23 05:01:13     2006");
 }
 
 static void DrawItem(const ImVec2& in_rPosition, const char* in_pText, bool in_isSelected = false)
@@ -49,7 +50,7 @@ static void DrawDevTitle()
 
     for (int i = 0; i < pDevTitleMode->m_Modes.size(); i++)
     {
-        const ImVec2 position = { itemMargin, itemMargin + i * itemHeight };
+        const ImVec2 position = { AspectRatioPatches::AlignX(itemMargin), itemMargin + i * itemHeight };
 
         DrawItem(position, items[i].pName.get(), i == selectedIndex);
     }
@@ -94,7 +95,7 @@ static void DrawStageSelect()
 
     DrawInfo();
 
-    drawList->AddText(g_pFntRodin, fontSize, { itemMargin, Scale(56) }, IM_COL32_WHITE, pCurrentStageMap->GetHierarchy().c_str());
+    drawList->AddText(g_pFntRodin, fontSize, { AspectRatioPatches::AlignX(itemMargin), Scale(56) }, IM_COL32_WHITE, pCurrentStageMap->GetHierarchy().c_str());
     drawList->PushClipRect({ 0, itemMargin }, { float(Video::s_viewportWidth), float(Video::s_viewportHeight) });
 
     for (int i = 0; i < itemCount; i++)
@@ -117,7 +118,7 @@ static void DrawStageSelect()
         if (hasChildren)
             label << "]";
 
-        const ImVec2 position = { itemMargin, itemMargin + (i - scrollOffset) * itemHeight };
+        const ImVec2 position = { AspectRatioPatches::AlignX(itemMargin), itemMargin + (i - scrollOffset) * itemHeight };
 
         DrawItem(position, label.str().c_str(), i == selectedIndex);
     }
