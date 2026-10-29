@@ -384,6 +384,8 @@ if (WIN32)
         winmm
         windowsapp
     )
+elseif(NOT APPLE)
+    target_link_libraries(MarathonRecomp PRIVATE iconv)
 endif()
 
 target_link_libraries(MarathonRecomp PRIVATE

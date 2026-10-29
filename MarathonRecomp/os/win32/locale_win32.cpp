@@ -2,8 +2,6 @@
 
 std::string os::locale::ConvertToUTF8(Encoding in_encoding, const std::string& in_rStr)
 {
-    std::string result{};
-
     switch (in_encoding)
     {
         case Encoding::ShiftJIS:
@@ -21,12 +19,12 @@ std::string os::locale::ConvertToUTF8(Encoding in_encoding, const std::string& i
             if (lengthU8 <= 0)
                 break;
 
-            result = std::string(lengthU8, 0);
+            std::string result = std::string(lengthU8, 0);
             WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), lengthU16, &result[0], lengthU8, NULL, NULL);
-
-            break;
+            return result;
         }
+        default:
+            assert(false && "Unimplemented.");
+            return "";
     }
-
-    return result;
 }
