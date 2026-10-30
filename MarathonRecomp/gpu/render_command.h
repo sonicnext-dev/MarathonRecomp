@@ -4,6 +4,8 @@
 
 #include <variant>
 
+static constexpr uint32_t CONDITIONAL_SURVEY_MAX = 64;
+
 namespace RenderCommands
 {
     struct SetRenderState
@@ -175,6 +177,11 @@ namespace RenderCommands
         bool enabled;
         uint32_t index;
     };
+
+    struct SetClipPlane
+    {
+        float plane[4];
+    };
 }
 
 using RenderCommand = std::variant<
@@ -206,6 +213,7 @@ using RenderCommand = std::variant<
     RenderCommands::SetIndices,
     RenderCommands::SetPixelShader,
     RenderCommands::SetConditionalSurvey,
-    RenderCommands::SetConditionalRendering>;
+    RenderCommands::SetConditionalRendering,
+    RenderCommands::SetClipPlane>;
 
 extern moodycamel::BlockingConcurrentQueue<RenderCommand> g_renderQueue;
