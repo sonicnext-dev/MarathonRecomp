@@ -108,8 +108,6 @@ PPC_FUNC(sub_825126A0)
             // Skip open animation.
             if (Config::DisableTitleInputDelay)
                 GuestToHostFunction<int>(sub_82511CA0, pTitleTask, int(Sonicteam::TitleTask::TitleState_Wait));
-
-            break;
         }
 
         case Sonicteam::TitleTask::TitleState_Wait:
@@ -117,7 +115,6 @@ PPC_FUNC(sub_825126A0)
             if (OptionsMenu::s_isDebugUnlocked)
                 break;
 
-            // TODO: fix this being delayed for too long without "Disable Title Input Delay" code.
             if (auto& spInputManager = App::s_pApp->m_pDoc->m_InputManagers[0])
             {
                 auto& rPadState = spInputManager->PadState;
