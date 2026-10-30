@@ -1822,8 +1822,6 @@ static uint32_t getSetAddress(uint32_t base, int index) {
 
 static uint32_t CreateDevice(uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4, uint32_t a5, be<uint32_t>* a6)
 {
-    LOGF_WARNING("{:p} {:p} {:p} {:p} {:p} {:p}\n", reinterpret_cast<void*>(a1), reinterpret_cast<void*>(a2), reinterpret_cast<void*>(a3), reinterpret_cast<void*>(a4), reinterpret_cast<void*>(a5), reinterpret_cast<void*>(a6));
-    
     g_xdbfTextureCache = std::unordered_map<uint16_t, GuestTexture*>();
 
     for (auto &achievement : g_xdbfWrapper.GetAchievements(XDBF_LANGUAGE_ENGLISH))
@@ -1996,11 +1994,6 @@ static void UnlockVertexBuffer(GuestBuffer* buffer)
     UnlockBuffer<uint32_t>(buffer);
 }
 
-static void GetVertexBufferDesc(GuestBuffer* buffer, GuestBufferDesc* desc) 
-{
-    desc->size = buffer->dataSize;
-}
-
 static void* LockIndexBuffer(GuestBuffer* buffer, uint32_t, uint32_t, uint32_t flags) 
 {
     return LockBuffer(buffer, flags);
@@ -2012,12 +2005,6 @@ static void UnlockIndexBuffer(GuestBuffer* buffer)
         UnlockBuffer<uint32_t>(buffer);
     else
         UnlockBuffer<uint16_t>(buffer);
-}
-
-static void GetIndexBufferDesc(GuestBuffer* buffer, GuestBufferDesc* desc)
-{
-    desc->format = buffer->guestFormat;
-    desc->size = buffer->dataSize;
 }
 
 static void GetSurfaceDesc(GuestSurface* surface, GuestSurfaceDesc* desc) 
@@ -2605,7 +2592,6 @@ void Video::WaitOnSwapChain()
     }
 }
 
-static bool g_shouldPrecompilePipelines;
 static std::atomic<bool> g_executedCommandList;
 
 void CreateTextureLocal(Sonicteam::SoX::Graphics::Texture* pTexture, uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, uint32_t usage, uint32_t format, uint32_t pool, uint32_t type)
@@ -3285,7 +3271,6 @@ static GuestTexture* CreateTexture(uint32_t width, uint32_t height, uint32_t dep
             RenderTextureLayout::COLOR_WRITE : RenderTextureLayout::DEPTH_WRITE);
     }
 
-    // printf("CreateTexture: w: %d, h: %d, depth: %d, levels: %d, usage: %d, format: %d, pool: %d, type: %d - %x\n", width, height, depth, levels, usage, format, pool, type, texture);
     return texture;
 }
 
@@ -3501,7 +3486,7 @@ static void ProcRenderCommand(const RenderCommands::StretchRect& args)
         args.texture->sourceSurface->destinationTextures.erase(args.texture);
 
     args.texture->sourceSurface = surface;
-    // printf("ProcStretchRect: surface - %x %x ? (%x : %x)\n", surface, isDepthStencil, g_depthStencil, g_renderTarget);
+
     surface->destinationTextures.emplace(args.texture, args.destSliceOrFace);
 
     // If the texture is assigned to any slots, set it again. This'll also push the barrier.
