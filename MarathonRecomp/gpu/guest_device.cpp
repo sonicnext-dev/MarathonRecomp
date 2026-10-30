@@ -295,6 +295,152 @@ static void DrawPrimitiveUP(GuestDevice* device, uint32_t primitiveType, uint32_
     queue.submit();
 }
 
+static void StretchRect(GuestDevice* device, uint32_t flags, uint32_t, GuestTexture* texture, uint32_t, uint32_t, uint32_t destSliceOrFace)
+{
+    g_renderQueue.enqueue(RenderCommands::StretchRect
+    {
+        .flags = flags,
+        .texture = texture,
+        .destSliceOrFace = destSliceOrFace
+    });
+}
+
+static void SetDefaultViewport(GuestDevice* device, GuestSurface* surface)
+{
+    if (surface != nullptr)
+    {
+        g_renderQueue.enqueue(RenderCommands::SetViewport
+        {
+            .x = 0.0f,
+            .y = 0.0f,
+            .width = float(surface->width),
+            .height = float(surface->height),
+            .minDepth = 0.0f,
+            .maxDepth = 1.0f
+        });
+
+        device->viewport.x = 0.0f;
+        device->viewport.y = 0.0f;
+        device->viewport.width = float(surface->width);
+        device->viewport.height = float(surface->height);
+        device->viewport.minZ = 0.0f;
+        device->viewport.maxZ = 1.0f;
+    }
+}
+
+void SetRenderTarget(GuestDevice* device, uint32_t index, GuestSurface* renderTarget)
+{
+    if (index == 0)
+    {
+        g_renderQueue.enqueue(RenderCommands::SetRenderTarget { renderTarget });
+
+        SetDefaultViewport(device, renderTarget);
+    }
+    else
+    {
+        // Multiple targets are not currently handled. Make sure any attempt to set them is nullptr.
+        assert(renderTarget == nullptr);
+    }
+}
+
+void SetDepthStencilSurface(GuestDevice* device, GuestSurface* depthStencil)
+{
+    g_renderQueue.enqueue(RenderCommands::SetDepthStencilSurface { depthStencil });
+
+    SetDefaultViewport(device, depthStencil);
+}
+
+static void Clear(GuestDevice* device, uint32_t flags, uint32_t, be<float>* color, double z, uint32_t stencil)
+{
+    g_renderQueue.enqueue(RenderCommands::Clear
+    {
+        .flags = flags,
+        .color = { color[0], color[1], color[2], color[3] },
+        .z = float(z),
+        .stencil = stencil
+    });
+}
+
+static void SetViewport(GuestDevice* device, GuestViewport* viewport)
+{
+    g_renderQueue.enqueue(RenderCommands::SetViewport
+    {
+         .x = float(viewport->x),
+         .y = float(viewport->y),
+         .width = float(viewport->width),
+         .height = float(viewport->height),
+         .minDepth = viewport->minZ,
+         .maxDepth = viewport->maxZ
+     });
+
+    device->viewport.x = float(viewport->x);
+    device->viewport.y = float(viewport->y);
+    device->viewport.width = float(viewport->width);
+    device->viewport.height = float(viewport->height);
+    device->viewport.minZ = viewport->minZ;
+    device->viewport.maxZ = viewport->maxZ;
+}
+
+struct Rect
+{
+    be<uint32_t> x1;
+    be<uint32_t> y1;
+    be<uint32_t> x2;
+    be<uint32_t> y2;
+};
+
+struct RESOLVE_PARAMS
+{
+    be<uint32_t> format;
+    be<uint32_t> unk;
+    be<uint32_t> format2;
+};
+
+int D3DDevice_BeginTiling(GuestDevice* device, uint32_t flags, uint32_t count, Rect* pTileRects, be<float>* pClearColor, float clearZ, uint32_t clearStencil)
+{
+    Clear(device, 0x3F, 0, pClearColor, clearZ, clearStencil);
+
+    return 0;
+}
+
+int D3DDevice_EndTiling(GuestDevice* device, uint32_t flags, Rect* pResolveRects, GuestTexture* pDestTexture, be<float>* pClearColor, float clearZ, uint32_t clearStencil, RESOLVE_PARAMS* resolveParams)
+{
+    if (pDestTexture)
+    {
+        StretchRect(device, flags, 0, pDestTexture, 0, 0, 0);
+    }
+
+    return 0;
+}
+
+int D3DDevice_BeginShaderConstantF4(GuestDevice* device, uint32_t isPixelShader, uint32_t startRegister, be<uint32_t>* cachedConstantData, be<uint32_t>* writeCombinedConstantData, uint32_t vectorCount)
+{
+    uint32_t* constants;
+    be<uint64_t>* dirtyFlags;
+
+    if (isPixelShader)
+    {
+        constants = &device->pixelShaderFloatConstants[startRegister * 4];
+        dirtyFlags = &device->dirtyFlags[1];
+    }
+    else
+    {
+        constants = &device->vertexShaderFloatConstants[startRegister * 4];
+        dirtyFlags = &device->dirtyFlags[0];
+    }
+
+    const uint32_t addr = g_memory.MapVirtual(constants);
+    *cachedConstantData = addr;
+    *writeCombinedConstantData = addr;
+
+    const uint32_t startBit = startRegister >> 2;
+    const uint32_t endBit = (startRegister + vectorCount - 1) >> 2;
+    const uint64_t dirtyFlag = ~0ull << startBit >> startBit >> (63 - endBit) << (63 - endBit);
+    *dirtyFlags = dirtyFlags->get() | dirtyFlag;
+
+    return 0;
+}
+
 GUEST_FUNCTION_HOOK(sub_8253AC40, SetTexture);
 GUEST_FUNCTION_HOOK(sub_82543628, SetScissorRect);
 
@@ -315,3 +461,17 @@ GUEST_FUNCTION_HOOK(sub_82543CF0, SetClipPlane);
 GUEST_FUNCTION_HOOK(sub_826FEC28, DrawPrimitive);
 GUEST_FUNCTION_HOOK(sub_826FF030, DrawIndexedPrimitive);
 GUEST_FUNCTION_HOOK(sub_826FE5C0, DrawPrimitiveUP);
+
+GUEST_FUNCTION_HOOK(sub_825575B8, StretchRect);
+
+GUEST_FUNCTION_HOOK(sub_82543EE0, SetRenderTarget);
+GUEST_FUNCTION_HOOK(sub_825444F0, SetRenderTarget);
+GUEST_FUNCTION_HOOK(sub_82544210, SetDepthStencilSurface);
+
+GUEST_FUNCTION_HOOK(sub_82555B30, Clear);
+
+GUEST_FUNCTION_HOOK(sub_825436F0, SetViewport);
+
+GUEST_FUNCTION_HOOK(sub_82558F88, D3DDevice_BeginTiling);
+GUEST_FUNCTION_HOOK(sub_82559480, D3DDevice_EndTiling);
+GUEST_FUNCTION_HOOK(sub_825466E8, D3DDevice_BeginShaderConstantF4);
