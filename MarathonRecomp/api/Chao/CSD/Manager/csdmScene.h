@@ -127,7 +127,8 @@ namespace Chao::CSD
         be<float> m_MotionSpeed;
         be<float> m_MotionStartFrame;
         be<float> m_MotionEndFrame;
-        MARATHON_INSERT_PADDING(0x0C);
+        MARATHON_INSERT_PADDING(0x08);
+        be<uint32_t> m_Field90;
         CSceneMotionRepeat m_MotionRepeat;
         be<int> m_MotionIndex;
         be<float> m_SortOrder;
@@ -184,6 +185,7 @@ namespace Chao::CSD
     MARATHON_ASSERT_OFFSETOF(CScene, m_MotionSpeed, 0x7C);
     MARATHON_ASSERT_OFFSETOF(CScene, m_MotionStartFrame, 0x80);
     MARATHON_ASSERT_OFFSETOF(CScene, m_MotionEndFrame, 0x84);
+    MARATHON_ASSERT_OFFSETOF(CScene, m_Field90, 0x90);
     MARATHON_ASSERT_OFFSETOF(CScene, m_MotionRepeat, 0x94);
     MARATHON_ASSERT_OFFSETOF(CScene, m_MotionIndex, 0xB0);
     MARATHON_ASSERT_OFFSETOF(CScene, m_SortOrder, 0xB4);

@@ -27,7 +27,11 @@ class AspectRatioPatches
 {
 public:
     static void Init();
+
     static void ComputeOffsets();
+
+    static float AlignX(float in_offset = 0.0f);
+    static float AlignY(float in_offset = 0.0f);
 };
 
 // -------------- CSD MODIFIERS --------------- //
@@ -105,7 +109,10 @@ enum CsdFlags : uint64_t
     CSD_MAIN_MENU_PARTS_CAST_0226 = MAKE_BITFLAG64(39),
     CSD_MAIN_MENU_PARTS_CAST_0227 = MAKE_BITFLAG64(40),
     
-    CSD_BUTTON_WINDOW = MAKE_BITFLAG64(41)
+    CSD_BUTTON_WINDOW = MAKE_BITFLAG64(41),
+
+    CSD_CROP = MAKE_BITFLAG64(42),
+    CSD_FIT = MAKE_BITFLAG64(43)
 };
 
 struct CsdUVs
