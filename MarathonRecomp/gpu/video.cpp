@@ -360,7 +360,7 @@ static uint32_t g_intermediaryBackBufferTextureDescriptorIndex;
 
 static std::unique_ptr<RenderPipeline> g_gammaCorrectionPipeline;
 
-static std::unique_ptr<RenderDescriptorSet> g_textureDescriptorSet;
+std::unique_ptr<RenderDescriptorSet> g_textureDescriptorSet;
 static std::unique_ptr<RenderDescriptorSet> g_samplerDescriptorSet;
 
 static constexpr uint32_t CONDITIONAL_SURVEY_MAX = 64;
@@ -370,7 +370,7 @@ static std::unique_ptr<RenderDescriptorSet> g_conditionalSurveyDescriptorSet;
 static std::unique_ptr<RenderTexture> g_blankTextures[TEXTURE_DESCRIPTOR_NULL_COUNT];
 static std::unique_ptr<RenderTextureView> g_blankTextureViews[TEXTURE_DESCRIPTOR_NULL_COUNT];
 
-static TextureDescriptorAllocator g_textureDescriptorAllocator;
+TextureDescriptorAllocator g_textureDescriptorAllocator;
 
 static std::unique_ptr<RenderPipelineLayout> g_pipelineLayout;
 static xxHashMap<std::unique_ptr<RenderPipeline>> g_pipelines;
