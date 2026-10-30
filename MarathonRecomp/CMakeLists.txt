@@ -124,6 +124,7 @@ set(MARATHON_RECOMP_CPU_CXX_SOURCES
 
 set(MARATHON_RECOMP_GPU_CXX_SOURCES
     "gpu/video.cpp"
+    "gpu/resources.cpp"
     "gpu/guest_convert.cpp"
     "gpu/guest_device.cpp"
     "gpu/texture_loader.cpp"
