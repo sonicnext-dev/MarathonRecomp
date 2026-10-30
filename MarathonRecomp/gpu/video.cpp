@@ -2,13 +2,11 @@
 
 #include "imgui/imgui_common.h"
 #include "imgui/imgui_snapshot.h"
-#include "imgui/imgui_font_builder.h"
 
 #include <app.h>
 #include <bc_diff.h>
 #include <cpu/guest_thread.h>
 #include <cstdint>
-#include <cstdio>
 #include <decompressor.h>
 #include <kernel/function.h>
 #include <kernel/heap.h>
@@ -45,61 +43,7 @@
 
 #define MARATHON_RECOMP
 #include "../../tools/XenosRecomp/XenosRecomp/shader_common.h"
-
-#ifdef MARATHON_RECOMP_D3D12
-#include "gpu/shader/hlsl/conditional_survey_ps.hlsl.dxil.h"
-#include "gpu/shader/hlsl/copy_vs.hlsl.dxil.h"
-#include "gpu/shader/hlsl/copy_color_ps.hlsl.dxil.h"
-#include "gpu/shader/hlsl/copy_depth_ps.hlsl.dxil.h"
-#include "gpu/shader/hlsl/enhanced_burnout_blur_vs.hlsl.dxil.h"
-#include "gpu/shader/hlsl/enhanced_burnout_blur_ps.hlsl.dxil.h"
-#include "gpu/shader/hlsl/movie_ps.hlsl.dxil.h"
-#include "gpu/shader/hlsl/gamma_correction_ps.hlsl.dxil.h"
-#include "gpu/shader/hlsl/imgui_ps.hlsl.dxil.h"
-#include "gpu/shader/hlsl/imgui_vs.hlsl.dxil.h"
-#include "gpu/shader/hlsl/resolve_msaa_color_2x.hlsl.dxil.h"
-#include "gpu/shader/hlsl/resolve_msaa_color_4x.hlsl.dxil.h"
-#include "gpu/shader/hlsl/resolve_msaa_color_8x.hlsl.dxil.h"
-#include "gpu/shader/hlsl/resolve_msaa_depth_2x.hlsl.dxil.h"
-#include "gpu/shader/hlsl/resolve_msaa_depth_4x.hlsl.dxil.h"
-#include "gpu/shader/hlsl/resolve_msaa_depth_8x.hlsl.dxil.h"
-#endif
-
-#ifdef MARATHON_RECOMP_METAL
-#include "gpu/shader/msl/conditional_survey_ps.metal.metallib.h"
-#include "gpu/shader/msl/copy_vs.metal.metallib.h"
-#include "gpu/shader/msl/copy_color_ps.metal.metallib.h"
-#include "gpu/shader/msl/copy_depth_ps.metal.metallib.h"
-#include "gpu/shader/msl/enhanced_burnout_blur_vs.metal.metallib.h"
-#include "gpu/shader/msl/enhanced_burnout_blur_ps.metal.metallib.h"
-#include "gpu/shader/msl/movie_ps.metal.metallib.h"
-#include "gpu/shader/msl/gamma_correction_ps.metal.metallib.h"
-#include "gpu/shader/msl/imgui_ps.metal.metallib.h"
-#include "gpu/shader/msl/imgui_vs.metal.metallib.h"
-#include "gpu/shader/msl/resolve_msaa_color_2x.metal.metallib.h"
-#include "gpu/shader/msl/resolve_msaa_color_4x.metal.metallib.h"
-#include "gpu/shader/msl/resolve_msaa_color_8x.metal.metallib.h"
-#include "gpu/shader/msl/resolve_msaa_depth_2x.metal.metallib.h"
-#include "gpu/shader/msl/resolve_msaa_depth_4x.metal.metallib.h"
-#include "gpu/shader/msl/resolve_msaa_depth_8x.metal.metallib.h"
-#endif
-
-#include "gpu/shader/hlsl/conditional_survey_ps.hlsl.spirv.h"
-#include "gpu/shader/hlsl/copy_vs.hlsl.spirv.h"
-#include "gpu/shader/hlsl/copy_color_ps.hlsl.spirv.h"
-#include "gpu/shader/hlsl/copy_depth_ps.hlsl.spirv.h"
-#include "gpu/shader/hlsl/enhanced_burnout_blur_vs.hlsl.spirv.h"
-#include "gpu/shader/hlsl/enhanced_burnout_blur_ps.hlsl.spirv.h"
-#include "gpu/shader/hlsl/movie_ps.hlsl.spirv.h"
-#include "gpu/shader/hlsl/gamma_correction_ps.hlsl.spirv.h"
-#include "gpu/shader/hlsl/imgui_ps.hlsl.spirv.h"
-#include "gpu/shader/hlsl/imgui_vs.hlsl.spirv.h"
-#include "gpu/shader/hlsl/resolve_msaa_color_2x.hlsl.spirv.h"
-#include "gpu/shader/hlsl/resolve_msaa_color_4x.hlsl.spirv.h"
-#include "gpu/shader/hlsl/resolve_msaa_color_8x.hlsl.spirv.h"
-#include "gpu/shader/hlsl/resolve_msaa_depth_2x.hlsl.spirv.h"
-#include "gpu/shader/hlsl/resolve_msaa_depth_4x.hlsl.spirv.h"
-#include "gpu/shader/hlsl/resolve_msaa_depth_8x.hlsl.spirv.h"
+#include "gpu/shader/shaders.h"
 
 #ifdef _WIN32
 extern "C"
