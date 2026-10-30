@@ -1511,6 +1511,8 @@ static void CheckSwapChain()
     g_backBuffer->height = Video::s_viewportHeight;
 }
 
+static void DiscardTexture(GuestBaseTexture* texture, RenderTextureLayout layout);
+
 static void BeginCommandList()
 {
     g_renderTarget = g_backBuffer;
