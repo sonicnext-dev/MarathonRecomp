@@ -1,9 +1,13 @@
 #pragma once
 
+#include <concepts>
+
 namespace Sonicteam::System
 {
+    class ISingleton {};
+
     template <typename T, const uint32_t pSingleton, typename TCreator>
-    class Singleton
+    class Singleton : public ISingleton
     {
     private:
         inline static TCreator ms_Creator{};
@@ -18,5 +22,11 @@ namespace Sonicteam::System
 
             return *pInstance;
         }
+    };
+
+    template <typename T>
+    concept DerivedSingleton = std::derived_from<T, ISingleton> && requires
+    {
+        { T::GetInstance() } -> std::same_as<T*>;
     };
 }

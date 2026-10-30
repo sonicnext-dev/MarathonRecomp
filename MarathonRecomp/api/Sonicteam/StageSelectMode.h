@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <Marathon.inl>
 #include <Sonicteam/SoX/Engine/DocMode.h>
 #include <Sonicteam/SoX/Array.h>
@@ -21,6 +22,30 @@ namespace Sonicteam
         xpointer<uint32_t> m_pStageMapType;
         xpointer<const char> m_pStageMapName;
         MARATHON_INSERT_PADDING(0x04);
+
+    private:
+        bool Walk(StageMap* in_pStageMap, const std::function<bool(StageMap*)>& in_rVisitor)
+        {
+            if (!in_pStageMap)
+                return true;
+
+            if (!in_rVisitor(in_pStageMap))
+                return false;
+
+            for (const auto& rChild : in_pStageMap->m_Children)
+            {
+                if (!Walk(rChild, in_rVisitor))
+                    return false;
+            }
+
+            return true;
+        }
+
+    public:
+        void Walk(const std::function<bool(StageMap*)>& in_rVisitor)
+        {
+            Walk(m_pRootStageMap.get(), in_rVisitor);
+        }
     };
 
     MARATHON_ASSERT_OFFSETOF(StageSelectMode, m_pRootStageMap, 0x50);

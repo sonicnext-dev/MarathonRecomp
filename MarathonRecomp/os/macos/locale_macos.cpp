@@ -1,14 +1,16 @@
-#include <CoreFoundation/CoreFoundation.h>
 #include <os/locale.h>
+#include <CoreFoundation/CoreFoundation.h>
 
 std::string os::locale::ConvertToUTF8(Encoding in_encoding, const std::string& in_rStr)
 {
     CFStringEncoding cfEncoding;
+
     switch (in_encoding)
     {
         case Encoding::ShiftJIS:
             cfEncoding = kCFStringEncodingDOSJapanese;
             break;
+
         default:
             assert(false && "Unimplemented.");
             return "";
@@ -16,6 +18,7 @@ std::string os::locale::ConvertToUTF8(Encoding in_encoding, const std::string& i
 
     CFDataRef cfData = CFDataCreateWithBytesNoCopy(nullptr, reinterpret_cast<const UInt8*>(in_rStr.data()),
         static_cast<CFIndex>(in_rStr.size()), kCFAllocatorNull);
+
     assert(data && "CFDataCreateWithBytesNoCopy failed");
 
     CFStringRef cfStr = CFStringCreateFromExternalRepresentation(nullptr, cfData, cfEncoding);

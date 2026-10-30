@@ -21,10 +21,12 @@ std::string os::locale::ConvertToUTF8(Encoding in_encoding, const std::string& i
 
             std::string result = std::string(lengthU8, 0);
             WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), lengthU16, &result[0], lengthU8, NULL, NULL);
+
             return result;
         }
-        default:
-            assert(false && "Unimplemented.");
-            return "";
     }
+
+    assert(false && "Unimplemented.");
+
+    return "";
 }

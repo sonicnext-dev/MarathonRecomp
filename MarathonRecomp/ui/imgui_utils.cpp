@@ -19,6 +19,7 @@
 #include <res/images/common/main_menu8.dds.h>
 #include <res/images/common/arrow.dds.h>
 
+static bool g_initFonts{};
 ImFont* g_pFntRodin;
 ImFont* g_pFntNewRodin;
 ImFont* g_pFntArialUni;
@@ -37,10 +38,6 @@ std::unique_ptr<GuestTexture> g_upTexArrow;
 
 void InitImGuiUtils()
 {
-    g_pFntRodin = ImFontAtlasSnapshot::GetFont("FOT-RodinPro-DB.otf");
-    g_pFntNewRodin = ImFontAtlasSnapshot::GetFont("FOT-NewRodinPro-UB.otf");
-    g_pFntArialUni = ImFontAtlasSnapshot::GetFont("ArialUni.ttf");
-
     g_upTexButtonWindow = LOAD_ZSTD_TEXTURE(g_button_window);
     g_upTexController = LOAD_ZSTD_TEXTURE(g_controller);
     g_upTexKbm = LOAD_ZSTD_TEXTURE(g_kbm);
@@ -54,6 +51,14 @@ void InitImGuiUtils()
 
 void UpdateImGuiUtils()
 {
+    if (!g_initFonts)
+    {
+        g_pFntRodin = ImFontAtlasSnapshot::GetFont(ImFontType::Rodin);
+        g_pFntNewRodin = ImFontAtlasSnapshot::GetFont(ImFontType::NewRodin);
+        g_pFntArialUni = ImFontAtlasSnapshot::GetFont(ImFontType::Arial);
+        g_initFonts = true;
+    }
+
     g_fntRodinSize = Scale(Config::Language == ELanguage::Japanese ? 28 : 27, true);
 }
 

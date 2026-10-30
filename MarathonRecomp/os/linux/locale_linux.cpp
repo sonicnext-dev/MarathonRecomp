@@ -1,5 +1,5 @@
-#include <iconv.h>
 #include <os/locale.h>
+#include <iconv.h>
 
 #define ICONV_INVALID (reinterpret_cast<iconv_t>(-1))
 
@@ -54,13 +54,12 @@ std::string os::locale::ConvertToUTF8(Encoding in_encoding, const std::string& i
 {
     switch (in_encoding)
     {
-    case Encoding::ShiftJIS:
-    {
-        thread_local IconvContext context("UTF-8", "CP932");
-        return context.Convert(in_rStr);
+        case Encoding::ShiftJIS:
+            thread_local IconvContext context("UTF-8", "CP932");
+            return context.Convert(in_rStr);
     }
-    default:
-        assert(false && "Unimplemented.");
-        return "";
-    }
+
+    assert(false && "Unimplemented.");
+
+    return "";
 }

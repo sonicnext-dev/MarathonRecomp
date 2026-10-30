@@ -27,9 +27,14 @@ PPC_FUNC(sub_8289CB70)
 
     Video::EnqueueImGuiDraw([=]()
     {
-        const auto drawList = ImGui::GetBackgroundDrawList();
-
-        drawList->AddText(g_pFntArialUni, Scale(12), { AspectRatioPatches::AlignX(Scale(x)), Scale(y) }, IM_COL32(colour->R(), colour->G(), colour->B(), colour->A()), text.c_str());
+        ImGui::GetBackgroundDrawList()->AddText
+        (
+            g_pFntArialUni,
+            Scale(12),
+            { AspectRatioPatches::AlignX(Scale(x)), Scale(y) },
+            IM_COL32(colour->R(), colour->G(), colour->B(), colour->A()),
+            text.c_str()
+        );
     });
 }
 

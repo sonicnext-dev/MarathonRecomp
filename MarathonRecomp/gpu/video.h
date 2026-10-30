@@ -21,6 +21,9 @@
 
 #define LOAD_ZSTD_TEXTURE(name) LoadTexture(decompressZstd(name, name##_uncompressed_size).get(), name##_uncompressed_size)
 
+static inline constexpr uint32_t PITCH_ALIGNMENT = 0x100;
+static inline constexpr uint32_t PLACEMENT_ALIGNMENT = 0x200;
+
 using namespace plume;
 
 struct Video
@@ -29,6 +32,10 @@ struct Video
     static inline uint32_t s_viewportHeight;
 
     static inline bool s_needsResize;
+
+    // TODO: unspaghettify.
+    static RenderDevice* GetRenderDevice();
+    static void ExecuteCopyCommandList(const std::function<void(RenderCommandList*)>& function);
 
     static void EnqueueImGuiDraw(const std::function<void()>& in_rEvent);
     static bool CreateHostDevice(const char *sdlVideoDriver, bool graphicsApiRetry);
@@ -46,6 +53,50 @@ enum class Backend
     D3D12,
     METAL
 };
+
+enum
+{
+    TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D,
+    TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D_ARRAY,
+    TEXTURE_DESCRIPTOR_NULL_TEXTURE_CUBE,
+    TEXTURE_DESCRIPTOR_NULL_COUNT
+};
+
+struct TextureDescriptorAllocator
+{
+    Mutex mutex;
+    uint32_t capacity = TEXTURE_DESCRIPTOR_NULL_COUNT;
+    std::vector<uint32_t> freed;
+
+    uint32_t allocate()
+    {
+        std::lock_guard lock(mutex);
+
+        uint32_t value;
+        if (!freed.empty())
+        {
+            value = freed.back();
+            freed.pop_back();
+        }
+        else
+        {
+            value = capacity;
+            ++capacity;
+        }
+
+        return value;
+    }
+
+    void free(uint32_t value)
+    {
+        assert(value != NULL);
+        std::lock_guard lock(mutex);
+        freed.push_back(value);
+    }
+};
+
+extern TextureDescriptorAllocator g_textureDescriptorAllocator;
+extern std::unique_ptr<RenderDescriptorSet> g_textureDescriptorSet;
 
 struct GuestSamplerState
 {

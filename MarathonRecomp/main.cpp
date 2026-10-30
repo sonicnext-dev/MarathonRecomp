@@ -4,6 +4,7 @@
 #include <cpuid.h>
 #endif
 #include <cpu/guest_thread.h>
+#include <gpu/imgui/imgui_snapshot.h>
 #include <gpu/video.h>
 #include <kernel/function.h>
 #include <kernel/memory.h>
@@ -316,6 +317,8 @@ int main(int argc, char *argv[])
             SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, GameWindow::GetTitle(), Localise("Video_BackendError").c_str(), GameWindow::s_pWindow);
             std::_Exit(1);
         }
+
+        ImFontAtlasSnapshot::Init(true);
 
         if (!InstallerWizard::Run(GetGamePath(), isGameInstalled && forceDLCInstaller))
             std::_Exit(0);
