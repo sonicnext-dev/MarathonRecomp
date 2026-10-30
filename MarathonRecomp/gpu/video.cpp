@@ -6008,38 +6008,6 @@ static std::thread g_renderThread([]
         }
     });
 
-static GuestShader* g_movieVertexShader;
-static GuestShader* g_moviePixelShaderHD;
-static GuestShader* g_moviePixelShaderSD;
-
-static int ScreenShaderInit(be<uint32_t>* a1)
-{
-    if (g_movieVertexShader == nullptr)
-    {
-        g_movieVertexShader = g_userHeap.AllocPhysical<GuestShader>(ResourceType::VertexShader);
-    }
-
-    if (g_moviePixelShaderHD == nullptr)
-    {
-        g_moviePixelShaderHD = g_userHeap.AllocPhysical<GuestShader>(ResourceType::PixelShader);
-    }
-
-    if (g_moviePixelShaderSD == nullptr)
-    {
-        g_moviePixelShaderSD = g_userHeap.AllocPhysical<GuestShader>(ResourceType::PixelShader);
-    }
-
-    g_moviePixelShaderHD->AddRef();
-    g_moviePixelShaderSD->AddRef();
-    g_movieVertexShader->AddRef();
-
-    a1[0x12] = g_memory.MapVirtual(g_movieVertexShader);
-    a1[0x51] = g_memory.MapVirtual(g_moviePixelShaderHD);
-    a1[0x52] = g_memory.MapVirtual(g_moviePixelShaderSD);
-
-    return 0;
-}
-
 // Needed for correct clearing of index buffer
 static bool IsSet() {
     return true;
@@ -6795,7 +6763,6 @@ GUEST_FUNCTION_HOOK(sub_82541E38, SetRenderState<D3DRS_CLIPPLANEENABLE>);
 
 GUEST_FUNCTION_HOOK(sub_8253AE08, GetType);
 GUEST_FUNCTION_HOOK(sub_82538D60, SurfaceSize);
-GUEST_FUNCTION_HOOK(sub_82736178, ScreenShaderInit);
 
 GUEST_FUNCTION_HOOK(sub_82558F88, D3DDevice_BeginTiling);
 GUEST_FUNCTION_HOOK(sub_82559480, D3DDevice_EndTiling);
