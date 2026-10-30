@@ -6008,17 +6008,6 @@ static std::thread g_renderThread([]
         }
     });
 
-
-static void SetResolution(be<uint32_t>* device)
-{
-    Video::ComputeViewportDimensions();
-
-    uint32_t width = uint32_t(round(Video::s_viewportWidth * Config::ResolutionScale));
-    uint32_t height = uint32_t(round(Video::s_viewportHeight * Config::ResolutionScale));
-    device[46] = width == 0 ? 880 : width;
-    device[47] = height == 0 ? 720 : height;
-}
-
 static GuestShader* g_movieVertexShader;
 static GuestShader* g_moviePixelShaderHD;
 static GuestShader* g_moviePixelShaderSD;
