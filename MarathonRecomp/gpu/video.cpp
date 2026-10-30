@@ -6009,19 +6009,6 @@ static std::thread g_renderThread([]
     });
 
 
-void IndexBufferLengthMidAsmHook(PPCRegister& r3)
-{
-    r3.u64 *= 2;
-}
-
-void SetShadowResolutionMidAsmHook(PPCRegister& r11)
-{
-    auto res = (int32_t)Config::ShadowResolution.Value;
-
-    if (res > 0)
-        r11.u64 = res;
-}
-
 static void SetResolution(be<uint32_t>* device)
 {
     Video::ComputeViewportDimensions();
