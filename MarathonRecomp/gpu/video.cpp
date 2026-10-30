@@ -859,11 +859,10 @@ moodycamel::BlockingConcurrentQueue<RenderCommand> g_renderQueue;
 template<GuestRenderState TType>
 static void SetRenderState(GuestDevice* device, uint32_t value)
 {
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetRenderState;
-    cmd.setRenderState.type = TType;
-    cmd.setRenderState.value = value;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::SetRenderState
+    {
+        .type = TType, .value = value
+    });
 }
 
 static void SetRenderStateUnimplemented(GuestDevice* device, uint32_t value)
@@ -892,11 +891,11 @@ static void SetAlphaTestMode(bool enable)
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.specConstants, specConstants);
 }
 
-static void ProcSetRenderState(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::SetRenderState& args)
 {
-    uint32_t value = cmd.setRenderState.value;
+    uint32_t value = args.value;
 
-    switch (cmd.setRenderState.type)
+    switch (args.type)
     {
     case D3DRS_ZENABLE:
     {
@@ -1939,10 +1938,7 @@ static uint32_t CreateDevice(uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4,
 
 static void DestructResource(GuestResource* resource)
 {
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::DestructResource;
-    cmd.destructResource.resource = resource;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::DestructResource { resource });
 }
 
 static void ReleaseResource(GuestResource* resource)
@@ -1953,9 +1949,8 @@ static void ReleaseResource(GuestResource* resource)
         DestructResource(resource);
 }
 
-static void ProcDestructResource(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::DestructResource& args)
 {
-    const auto& args = cmd.destructResource;
     g_tempResources[g_renderFrame].push_back(args.resource);
 }
 
@@ -1980,16 +1975,11 @@ static void UnlockTextureRect(GuestTexture* texture)
 {
     assert(std::this_thread::get_id() == g_mainThreadId);
 
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::UnlockTextureRect;
-    cmd.unlockTextureRect.texture = texture;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::UnlockTextureRect { texture });
 }
 
-static void ProcUnlockTextureRect(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::UnlockTextureRect& args)
 {
-    const auto& args = cmd.unlockTextureRect;
-
     AddBarrier(args.texture, RenderTextureLayout::COPY_DEST);
     FlushBarriers();
 
@@ -2022,8 +2012,11 @@ static void* LockVertexBuffer(GuestBuffer* buffer, uint32_t, uint32_t, uint32_t 
 static std::atomic<uint32_t> g_bufferUploadCount = 0;
 
 template<typename T>
-static void UnlockBuffer(GuestBuffer* buffer, bool useCopyQueue)
+static void UnlockBuffer(GuestBuffer* buffer)
 {
+    if (buffer->lockedReadOnly)
+        return;
+
     auto copyBuffer = [&](T* dest)
         {
             auto src = reinterpret_cast<const T*>(buffer->mappedMemory);
@@ -2036,7 +2029,7 @@ static void UnlockBuffer(GuestBuffer* buffer, bool useCopyQueue)
             }
         };
 
-    if (useCopyQueue && g_capabilities.gpuUploadHeap)
+    if (g_capabilities.gpuUploadHeap)
     {
         copyBuffer(reinterpret_cast<T*>(buffer->buffer->map()));
         buffer->buffer->unmap();
@@ -2047,45 +2040,13 @@ static void UnlockBuffer(GuestBuffer* buffer, bool useCopyQueue)
         copyBuffer(reinterpret_cast<T*>(uploadBuffer->map()));
         uploadBuffer->unmap();
 
-        if (useCopyQueue)
+        Video::ExecuteCopyCommandList([&](RenderCommandList* in_pCommandList)
         {
-            Video::ExecuteCopyCommandList([&](RenderCommandList* in_pCommandList)
-            {
-                in_pCommandList->copyBufferRegion(buffer->buffer->at(0), uploadBuffer->at(0), buffer->dataSize);
-            });
-        }
-        else
-        {
-            auto& commandList = g_commandLists[g_frame];
-
-            commandList->barriers(RenderBarrierStage::COPY, RenderBufferBarrier(buffer->buffer.get(), RenderBufferAccess::WRITE));
-            commandList->copyBufferRegion(buffer->buffer->at(0), uploadBuffer->at(0), buffer->dataSize);
-            commandList->barriers(RenderBarrierStage::GRAPHICS, RenderBufferBarrier(buffer->buffer.get(), RenderBufferAccess::READ));
-
-            g_tempBuffers[g_frame].emplace_back(std::move(uploadBuffer));
-        }
+            in_pCommandList->copyBufferRegion(buffer->buffer->at(0), uploadBuffer->at(0), buffer->dataSize);
+        });
     }
 
     g_bufferUploadCount++;
-}
-
-template<typename T>
-static void UnlockBuffer(GuestBuffer* buffer)
-{
-    if (!buffer->lockedReadOnly)
-    {
-        UnlockBuffer<T>(buffer, true);
-    }
-}
-
-static void ProcUnlockBuffer16(const RenderCommand& cmd)
-{
-    UnlockBuffer<uint16_t>(cmd.unlockBuffer.buffer, false);
-}
-
-static void ProcUnlockBuffer32(const RenderCommand& cmd)
-{
-    UnlockBuffer<uint32_t>(cmd.unlockBuffer.buffer, false);
 }
 
 static void UnlockVertexBuffer(GuestBuffer* buffer)
@@ -2143,12 +2104,6 @@ static void GetVertexDeclaration(GuestVertexDeclaration* vertexDeclaration, Gues
 {
     memcpy(vertexElements, vertexDeclaration->vertexElements.get(), vertexDeclaration->vertexElementCount * sizeof(GuestVertexElement));
     *count = vertexDeclaration->vertexElementCount;
-}
-
-static uint32_t HashVertexDeclaration(uint32_t vertexDeclaration) 
-{
-    // Vertex declarations are cached on host side, so the pointer itself can be used.
-    return vertexDeclaration;
 }
 
 static const char *DeviceTypeName(RenderDeviceType type)
@@ -2535,16 +2490,12 @@ static void DrawImGui()
 
     auto drawData = ImGui::GetDrawData();
     if (drawData->CmdListsCount != 0)
-    {
-        RenderCommand cmd;
-        cmd.type = RenderCommandType::DrawImGui;
-        g_renderQueue.enqueue(cmd);
-    }
+        g_renderQueue.enqueue(RenderCommands::DrawImGui{});
 }
 
 static void SetFramebuffer(GuestSurface *renderTarget, GuestSurface *depthStencil, bool settingForClear);
 
-static void ProcDrawImGui(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::DrawImGui& args)
 {
     // Make sure the backbuffer is the current target.
     AddBarrier(g_backBuffer, RenderTextureLayout::COLOR_WRITE);
@@ -2808,14 +2759,11 @@ PPC_FUNC(sub_8260A9D0)
 
 void Video::Present() 
 {
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::ExecutePendingStretchRectCommands;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::ExecutePendingStretchRectCommands{});
 
     DrawImGui();
 
-    cmd.type = RenderCommandType::ExecuteCommandList;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::ExecuteCommandList{});
 
     g_executedCommandList.wait(false);
     g_executedCommandList = false;
@@ -2865,8 +2813,7 @@ void Video::Present()
 
     CheckSwapChain();
 
-    cmd.type = RenderCommandType::BeginCommandList;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::BeginCommandList{});
 
     if (Config::FPS >= FPS_MIN && Config::FPS < FPS_MAX)
     {
@@ -3142,7 +3089,7 @@ static void SetRootDescriptor(const UploadAllocation& allocation, size_t index)
         commandList->setGraphicsRootDescriptor(allocation.buffer->at(allocation.offset), index);
 }
 
-static void ProcExecuteCommandList(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::ExecuteCommandList& cmd)
 {    
     if (g_swapChainValid)
     {
@@ -3233,7 +3180,7 @@ static void ProcExecuteCommandList(const RenderCommand& cmd)
     g_executedCommandList.notify_one();
 }
 
-static void ProcBeginCommandList(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::BeginCommandList& cmd)
 {
     g_renderFrame = g_frame;
     DestructTempResources();
@@ -3601,22 +3548,19 @@ static void FlushViewport()
 
 static void StretchRect(GuestDevice* device, uint32_t flags, uint32_t, GuestTexture* texture, uint32_t, uint32_t, uint32_t destSliceOrFace)
 {
-    // printf("StretchRect %x\n", texture);
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::StretchRect;
-    cmd.stretchRect.flags = flags;
-    cmd.stretchRect.texture = texture;
-    cmd.stretchRect.destSliceOrFace = destSliceOrFace;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::StretchRect
+    {
+        .flags = flags,
+        .texture = texture,
+        .destSliceOrFace = destSliceOrFace
+    });
 }
 
 static void SetTextureInRenderThread(uint32_t index, GuestTexture* texture);
 static void SetSurface(uint32_t index, GuestSurface* surface);
 
-static void ProcStretchRect(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::StretchRect& args)
 {
-    const auto& args = cmd.stretchRect;
-
     const bool isDepthStencil = (args.flags & 0x4) != 0;
     const auto surface = isDepthStencil ? g_depthStencil : g_renderTarget;
 
@@ -3656,15 +3600,15 @@ static void SetDefaultViewport(GuestDevice* device, GuestSurface* surface)
 {
     if (surface != nullptr)
     {
-        RenderCommand cmd;
-        cmd.type = RenderCommandType::SetViewport;
-        cmd.setViewport.x = 0.0f;
-        cmd.setViewport.y = 0.0f;
-        cmd.setViewport.width = float(surface->width);
-        cmd.setViewport.height = float(surface->height);
-        cmd.setViewport.minDepth = 0.0f;
-        cmd.setViewport.maxDepth = 1.0f;
-        g_renderQueue.enqueue(cmd);
+        g_renderQueue.enqueue(RenderCommands::SetViewport
+        {
+            .x = 0.0f,
+            .y = 0.0f,
+            .width = float(surface->width),
+            .height = float(surface->height),
+            .minDepth = 0.0f,
+            .maxDepth = 1.0f
+        });
 
         device->viewport.x = 0.0f;
         device->viewport.y = 0.0f;
@@ -3679,10 +3623,7 @@ static void SetRenderTarget(GuestDevice* device, uint32_t index, GuestSurface* r
 {
     if (index == 0)
     {
-        RenderCommand cmd;
-        cmd.type = RenderCommandType::SetRenderTarget;
-        cmd.setRenderTarget.renderTarget = renderTarget;
-        g_renderQueue.enqueue(cmd);
+        g_renderQueue.enqueue(RenderCommands::SetRenderTarget { renderTarget });
 
         SetDefaultViewport(device, renderTarget);
     }
@@ -3693,9 +3634,8 @@ static void SetRenderTarget(GuestDevice* device, uint32_t index, GuestSurface* r
     }
 }
 
-static void ProcSetRenderTarget(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::SetRenderTarget& args)
 {
-    const auto& args = cmd.setRenderTarget;
     SetDirtyValue(g_dirtyStates.renderTargetAndDepthStencil, g_renderTarget, args.renderTarget);
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.renderTargetFormat, args.renderTarget != nullptr ? args.renderTarget->format : RenderFormat::UNKNOWN);
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.sampleCount, args.renderTarget != nullptr ? args.renderTarget->sampleCount : RenderSampleCount::COUNT_1);
@@ -3706,18 +3646,13 @@ static void ProcSetRenderTarget(const RenderCommand& cmd)
 
 static void SetDepthStencilSurface(GuestDevice* device, GuestSurface* depthStencil) 
 {
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetDepthStencilSurface;
-    cmd.setDepthStencilSurface.depthStencil = depthStencil;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::SetDepthStencilSurface { depthStencil });
 
     SetDefaultViewport(device, depthStencil);
 }
 
-static void ProcSetDepthStencilSurface(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::SetDepthStencilSurface& args)
 {
-    const auto& args = cmd.setDepthStencilSurface;
-
     SetDirtyValue(g_dirtyStates.renderTargetAndDepthStencil, g_depthStencil, args.depthStencil);
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.depthStencilFormat, args.depthStencil != nullptr ? args.depthStencil->format : RenderFormat::UNKNOWN);
 }
@@ -3928,7 +3863,7 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
     }
 }
 
-static void ProcExecutePendingStretchRectCommands(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::ExecutePendingStretchRectCommands& args)
 {
     bool foundAny = false;
 
@@ -4032,16 +3967,13 @@ static void SetFramebuffer(GuestSurface* renderTarget, GuestSurface* depthStenci
 
 static void Clear(GuestDevice* device, uint32_t flags, uint32_t, be<float>* color, double z, uint32_t stencil)
 {
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::Clear;
-    cmd.clear.flags = flags;
-    cmd.clear.color[0] = color[0];
-    cmd.clear.color[1] = color[1];
-    cmd.clear.color[2] = color[2];
-    cmd.clear.color[3] = color[3];
-    cmd.clear.z = float(z);
-    cmd.clear.stencil = stencil;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::Clear
+    {
+        .flags = flags,
+        .color = { color[0], color[1], color[2], color[3] },
+        .z = float(z),
+        .stencil = stencil
+    });
 }
 
 static bool SharesStorage(const GuestSurface* lhs, const GuestSurface* rhs)
@@ -4077,10 +4009,8 @@ static void FlushPendingCopiesForAliasedStorage(GuestSurface* renderTarget, Gues
     }
 }
 
-static void ProcClear(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::Clear& args)
 {
-    const auto& args = cmd.clear;
-
     FlushPendingCopiesForAliasedStorage(g_renderTarget, g_depthStencil);
 
     AddBarrier(g_renderTarget, RenderTextureLayout::COLOR_WRITE);
@@ -4206,15 +4136,15 @@ static void ApplyDeferredVariantClears(GuestSurface* renderTarget, GuestSurface*
 
 static void SetViewport(GuestDevice* device, GuestViewport* viewport)
 {
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetViewport;
-    cmd.setViewport.x = viewport->x;
-    cmd.setViewport.y = viewport->y;
-    cmd.setViewport.width = viewport->width;
-    cmd.setViewport.height = viewport->height;
-    cmd.setViewport.minDepth = viewport->minZ;
-    cmd.setViewport.maxDepth = viewport->maxZ;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::SetViewport
+    {
+         .x = float(viewport->x),
+         .y = float(viewport->y),
+         .width = float(viewport->width),
+         .height = float(viewport->height),
+         .minDepth = viewport->minZ,
+         .maxDepth = viewport->maxZ
+     });
 
     device->viewport.x = float(viewport->x);
     device->viewport.y = float(viewport->y);
@@ -4224,10 +4154,8 @@ static void SetViewport(GuestDevice* device, GuestViewport* viewport)
     device->viewport.maxZ = viewport->maxZ;
 }
 
-static void ProcSetViewport(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::SetViewport& args)
 {
-    const auto& args = cmd.setViewport;
-
     SetDirtyValue<float>(g_dirtyStates.viewport, g_viewport.x, args.x);
     SetDirtyValue<float>(g_dirtyStates.viewport, g_viewport.y, args.y);
     SetDirtyValue<float>(g_dirtyStates.viewport, g_viewport.width, args.width);
@@ -4248,19 +4176,16 @@ static void ProcSetViewport(const RenderCommand& cmd)
 
 static void SetTexture(GuestDevice* device, uint32_t index, GuestTexture* texture) 
 {
-    // printf("SetTexture: %x %d %x\n", device, index, texture);
-
     if (Config::GetPreferredControllerIcons() == EControllerIcons::PlayStation &&
         texture != nullptr && texture->patchedTexture != nullptr)
     {
         texture = texture->patchedTexture.get();
     }
 
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetTexture;
-    cmd.setTexture.index = index;
-    cmd.setTexture.texture = texture;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::SetTexture
+    {
+        .index = index, .texture = texture
+    });
 }
 
 static void SetTextureInRenderThread(uint32_t index, GuestTexture* texture)
@@ -4288,10 +4213,8 @@ static void SetSurface(uint32_t index, GuestSurface* surface)
     SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.textureCubeIndices[index], uint32_t(TEXTURE_DESCRIPTOR_NULL_TEXTURE_CUBE));
 }
 
-static void ProcSetTexture(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::SetTexture& args)
 {
-    const auto& args = cmd.setTexture;
-
     // If a pending copy operation is detected, set the source surface. The indices will be fixed later if flushing is necessary.
     bool shouldSetTexture = true;
     if (args.texture != nullptr && args.texture->sourceSurface != nullptr)
@@ -4318,19 +4241,17 @@ static void ProcSetTexture(const RenderCommand& cmd)
 
 static void SetScissorRect(GuestDevice* device, GuestRect* rect)
 {
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetScissorRect;
-    cmd.setScissorRect.top = rect->top;
-    cmd.setScissorRect.left = rect->left;
-    cmd.setScissorRect.bottom = rect->bottom;
-    cmd.setScissorRect.right = rect->right;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::SetScissorRect
+    {
+        .left = rect->left,
+        .top = rect->top,
+        .right = rect->right,
+        .bottom = rect->bottom
+    });
 }
 
-static void ProcSetScissorRect(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::SetScissorRect& args)
 {
-    const auto& args = cmd.setScissorRect;
-
     SetDirtyValue<int32_t>(g_dirtyStates.scissorRect, g_scissorRect.top, args.top);
     SetDirtyValue<int32_t>(g_dirtyStates.scissorRect, g_scissorRect.left, args.left);
     SetDirtyValue<int32_t>(g_dirtyStates.scissorRect, g_scissorRect.bottom, args.bottom);
@@ -4856,10 +4777,10 @@ struct LocalRenderCommandQueue
     RenderCommand commands[20];
     uint32_t count = 0;
 
-    RenderCommand& enqueue()
+    void enqueue(const RenderCommand& command)
     {
         assert(count < std::size(commands));
-        return commands[count++];
+        commands[count++] = command;
     }
 
     void submit()
@@ -4873,9 +4794,10 @@ static void FlushRenderStateForMainThread(GuestDevice* device, LocalRenderComman
     constexpr size_t BOOL_MASK = 0x2ull;
     if ((device->dirtyFlags[3].get() & BOOL_MASK) != 0)
     {
-        auto& cmd = queue.enqueue();
-        cmd.type = RenderCommandType::SetBooleans;
-        cmd.setBooleans.booleans = (device->vertexShaderBoolConstants[0].get() & 0xFF) | ((device->pixelShaderBoolConstants[0].get() & 0xFF) << 16);
+        queue.enqueue(RenderCommands::SetBooleans
+        {
+            (device->vertexShaderBoolConstants[0].get() & 0xFF) | ((device->pixelShaderBoolConstants[0].get() & 0xFF) << 16)
+        });
 
         device->dirtyFlags[3] = device->dirtyFlags[3].get() & ~BOOL_MASK;
     }
@@ -4885,12 +4807,13 @@ static void FlushRenderStateForMainThread(GuestDevice* device, LocalRenderComman
         const size_t mask = 0x8000000000000000ull >> (i + 20);
         if (device->dirtyFlags[2].get() & mask)
         {
-            auto& cmd = queue.enqueue();
-            cmd.type = RenderCommandType::SetSamplerState;
-            cmd.setSamplerState.index = i;
-            cmd.setSamplerState.data0 = device->samplerStates[i].data[0];
-            cmd.setSamplerState.data3 = device->samplerStates[i].data[3];
-            cmd.setSamplerState.data5 = device->samplerStates[i].data[5];
+            queue.enqueue(RenderCommands::SetSamplerState
+            {
+                .index = i,
+                .data0 = device->samplerStates[i].data[0],
+                .data3 = device->samplerStates[i].data[3],
+                .data5 = device->samplerStates[i].data[5]
+            });
 
             device->dirtyFlags[2] = device->dirtyFlags[2].get() & ~mask;
         }
@@ -4905,11 +4828,12 @@ static void FlushRenderStateForMainThread(GuestDevice* device, LocalRenderComman
         uint32_t index = startRegister * 16;
         uint32_t size = (endRegister - startRegister) * 64;
 
-        auto& cmd = queue.enqueue();
-        cmd.type = RenderCommandType::SetVertexShaderConstants;
-        cmd.setVertexShaderConstants.memory = g_intermediaryUploadAllocator.allocate(&device->vertexShaderFloatConstants[index], size);
-        cmd.setVertexShaderConstants.index = index;
-        cmd.setVertexShaderConstants.size = size;
+        queue.enqueue(RenderCommands::SetVertexShaderConstants
+        {
+            .memory = g_intermediaryUploadAllocator.allocate(&device->vertexShaderFloatConstants[index], size),
+            .index = index,
+            .size = size
+        });
 
         device->dirtyFlags[0] = 0;
     }
@@ -4923,25 +4847,24 @@ static void FlushRenderStateForMainThread(GuestDevice* device, LocalRenderComman
         uint32_t index = startRegister * 16;
         uint32_t size = (endRegister - startRegister) * 64;
 
-        auto& cmd = queue.enqueue();
-        cmd.type = RenderCommandType::SetPixelShaderConstants;
-        cmd.setPixelShaderConstants.memory = g_intermediaryUploadAllocator.allocate(&device->pixelShaderFloatConstants[index], size);
-        cmd.setPixelShaderConstants.index = index;
-        cmd.setPixelShaderConstants.size = size;
+        queue.enqueue(RenderCommands::SetPixelShaderConstants
+        {
+            .memory = g_intermediaryUploadAllocator.allocate(&device->pixelShaderFloatConstants[index], size),
+            .index = index,
+            .size = size
+        });
 
         device->dirtyFlags[1] = 0;
     }
 }
 
-static void ProcSetBooleans(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::SetBooleans& args)
 {
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.booleans, cmd.setBooleans.booleans);
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.booleans, args.booleans);
 }
 
-static void ProcSetSamplerState(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::SetSamplerState& args)
 {
-    const auto& args = cmd.setSamplerState;
-
     const auto addressU = ConvertTextureAddressMode((args.data0 >> 10) & 0x7);
     const auto addressV = ConvertTextureAddressMode((args.data0 >> 13) & 0x7);
     const auto addressW = ConvertTextureAddressMode((args.data0 >> 16) & 0x7);
@@ -4986,27 +4909,24 @@ static void ProcSetSamplerState(const RenderCommand& cmd)
     }
 }
 
-static void ProcSetVertexShaderConstants(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::SetVertexShaderConstants& args)
 {
-    auto& args = cmd.setVertexShaderConstants;
     assert((args.index * sizeof(uint32_t) + args.size) <= sizeof(g_vertexShaderConstants));
 
     memcpy(&g_vertexShaderConstants[args.index], args.memory, args.size);
     g_dirtyStates.vertexShaderConstants = true;
 }
 
-static void ProcSetPixelShaderConstants(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::SetPixelShaderConstants& args)
 {
-    auto& args = cmd.setPixelShaderConstants;
     assert((args.index * sizeof(uint32_t) + args.size) <= sizeof(g_pixelShaderConstants));
 
     memcpy(&g_pixelShaderConstants[args.index], args.memory, args.size);
     g_dirtyStates.pixelShaderConstants = true;
 }
 
-static void ProcAddPipeline(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::AddPipeline& args)
 {
-    auto& args = cmd.addPipeline;
     auto& pipeline = g_pipelines[args.hash];
 
     if (pipeline == nullptr)
@@ -5159,19 +5079,18 @@ static void DrawPrimitive(GuestDevice* device, uint32_t primitiveType, uint32_t 
     LocalRenderCommandQueue queue;
     FlushRenderStateForMainThread(device, queue);
 
-    auto& cmd = queue.enqueue();
-    cmd.type = RenderCommandType::DrawPrimitive;
-    cmd.drawPrimitive.primitiveType = primitiveType;
-    cmd.drawPrimitive.startVertex = startVertex;
-    cmd.drawPrimitive.primitiveCount = primitiveCount;
+    queue.enqueue(RenderCommands::DrawPrimitive
+    {
+        .primitiveType = primitiveType,
+        .startVertex = startVertex,
+        .primitiveCount = primitiveCount
+    });
 
     queue.submit();
 }
 
-static void ProcDrawPrimitive(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::DrawPrimitive& args)
 {
-    const auto& args = cmd.drawPrimitive;
-
     SetPrimitiveType(args.primitiveType);
 
     FlushRenderStateForRenderThread();
@@ -5185,20 +5104,19 @@ static void DrawIndexedPrimitive(GuestDevice* device, uint32_t primitiveType, in
     LocalRenderCommandQueue queue;
     FlushRenderStateForMainThread(device, queue);
 
-    auto& cmd = queue.enqueue();
-    cmd.type = RenderCommandType::DrawIndexedPrimitive;
-    cmd.drawIndexedPrimitive.primitiveType = primitiveType;
-    cmd.drawIndexedPrimitive.baseVertexIndex = baseVertexIndex;
-    cmd.drawIndexedPrimitive.startIndex = startIndex;
-    cmd.drawIndexedPrimitive.primCount = primCount;
+    queue.enqueue(RenderCommands::DrawIndexedPrimitive
+    {
+        .primitiveType = primitiveType,
+        .baseVertexIndex = baseVertexIndex,
+        .startIndex = startIndex,
+        .primCount = primCount
+    });
 
     queue.submit();
 }
 
-static void ProcDrawIndexedPrimitive(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::DrawIndexedPrimitive& args)
 {
-    const auto& args = cmd.drawIndexedPrimitive;
-
     SetPrimitiveType(args.primitiveType);
     FlushRenderStateForRenderThread();
 
@@ -5210,21 +5128,20 @@ static void DrawPrimitiveUP(GuestDevice* device, uint32_t primitiveType, uint32_
     LocalRenderCommandQueue queue;
     FlushRenderStateForMainThread(device, queue);
 
-    auto& cmd = queue.enqueue();
-    cmd.type = RenderCommandType::DrawPrimitiveUP;
-    cmd.drawPrimitiveUP.primitiveType = primitiveType;
-    cmd.drawPrimitiveUP.primitiveCount = primitiveCount;
-    cmd.drawPrimitiveUP.vertexStreamZeroData = g_intermediaryUploadAllocator.allocate(vertexStreamZeroData, primitiveCount * vertexStreamZeroStride);
-    cmd.drawPrimitiveUP.vertexStreamZeroSize = primitiveCount * vertexStreamZeroStride;
-    cmd.drawPrimitiveUP.vertexStreamZeroStride = vertexStreamZeroStride;
+    queue.enqueue(RenderCommands::DrawPrimitiveUP
+    {
+        .primitiveType = primitiveType,
+        .primitiveCount = primitiveCount,
+        .vertexStreamZeroData = g_intermediaryUploadAllocator.allocate(vertexStreamZeroData, primitiveCount * vertexStreamZeroStride),
+        .vertexStreamZeroSize = primitiveCount * vertexStreamZeroStride,
+        .vertexStreamZeroStride = vertexStreamZeroStride
+    });
     
     queue.submit();
 }
 
-static void ProcDrawPrimitiveUP(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::DrawPrimitiveUP& args)
 {
-    const auto& args = cmd.drawPrimitiveUP;
-
     SetPrimitiveType(args.primitiveType);
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.vertexStrides[0], uint8_t(args.vertexStreamZeroStride));
 
@@ -5492,18 +5409,12 @@ static GuestVertexDeclaration* CreateVertexDeclaration(GuestVertexElement* verte
 
 static void SetVertexDeclaration(GuestDevice* device, GuestVertexDeclaration* vertexDeclaration) 
 {
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetVertexDeclaration;
-    cmd.setVertexDeclaration.vertexDeclaration = vertexDeclaration;
-    g_renderQueue.enqueue(cmd);
-
+    g_renderQueue.enqueue(RenderCommands::SetVertexDeclaration { vertexDeclaration });
     device->vertexDeclaration = g_memory.MapVirtual(vertexDeclaration);
 }
 
-static void ProcSetVertexDeclaration(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::SetVertexDeclaration& args)
 {
-    auto& args = cmd.setVertexDeclaration;
-
     if (args.vertexDeclaration != nullptr)
     {
         SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.swappedTexcoords, args.vertexDeclaration->swappedTexcoords);
@@ -5583,33 +5494,28 @@ static GuestShader* CreateVertexShader(const be<uint32_t>* function)
 
 static void SetVertexShader(GuestDevice* device, GuestShader* shader)
 {
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetVertexShader;
-    cmd.setVertexShader.shader = shader;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::SetVertexShader { shader });
 }
 
-static void ProcSetVertexShader(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::SetVertexShader& args)
 {
-    GuestShader* shader = cmd.setVertexShader.shader;
+    GuestShader* shader = args.shader;
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.vertexShader, shader);
 }
 
 static void SetStreamSource(GuestDevice* device, uint32_t index, GuestBuffer* buffer, uint32_t offset, uint32_t stride) 
 {
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetStreamSource;
-    cmd.setStreamSource.index = index;
-    cmd.setStreamSource.buffer = buffer;
-    cmd.setStreamSource.offset = offset;
-    cmd.setStreamSource.stride = stride;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::SetStreamSource
+    {
+        .index = index,
+        .buffer = buffer,
+        .offset = offset,
+        .stride = stride
+    });
 }
 
-static void ProcSetStreamSource(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::SetStreamSource& args)
 {
-    const auto& args = cmd.setStreamSource;
-
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.vertexStrides[args.index], uint8_t(args.buffer != nullptr ? args.stride : 0));
 
     bool dirty = false;
@@ -5627,16 +5533,11 @@ static void ProcSetStreamSource(const RenderCommand& cmd)
 
 static void SetIndices(GuestDevice* device, GuestBuffer* buffer) 
 {
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetIndices;
-    cmd.setIndices.buffer = buffer;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::SetIndices { buffer });
 }
 
-static void ProcSetIndices(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::SetIndices& args)
 {
-    const auto& args = cmd.setIndices;
-
     SetDirtyValue(g_dirtyStates.indices, g_indexBufferView.buffer, args.buffer != nullptr ? args.buffer->buffer->at(0) : RenderBufferReference{});
     SetDirtyValue(g_dirtyStates.indices, g_indexBufferView.format, args.buffer != nullptr ? args.buffer->format : RenderFormat::R16_UINT);
     SetDirtyValue(g_dirtyStates.indices, g_indexBufferView.size, args.buffer != nullptr ? args.buffer->dataSize : 0u);
@@ -5649,15 +5550,12 @@ static GuestShader* CreatePixelShader(const be<uint32_t>* function)
 
 static void SetPixelShader(GuestDevice* device, GuestShader* shader)
 {
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetPixelShader;
-    cmd.setPixelShader.shader = shader;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::SetPixelShader { shader });
 }
 
-static void ProcSetPixelShader(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::SetPixelShader& args)
 {
-    GuestShader* shader = cmd.setPixelShader.shader;
+    GuestShader* shader = args.shader;
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.pixelShader, shader);
 }
 
@@ -5665,25 +5563,23 @@ static void BeginConditionalSurvey(GuestDevice* device, uint32_t index)
 {
     assert(index < CONDITIONAL_SURVEY_MAX && "Invalid conditional survey index.");
 
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetConditionalSurvey;
-    cmd.setConditionalSurvey.enabled = true;
-    cmd.setConditionalSurvey.index = index;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::SetConditionalSurvey
+    {
+        .enabled = true, .index = index
+    });
 }
 
 static void EndConditionalSurvey(GuestDevice* device)
 {
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetConditionalSurvey;
-    cmd.setConditionalSurvey.enabled = false;
-    cmd.setConditionalSurvey.index = 0;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::SetConditionalSurvey
+    {
+        .enabled = false, .index = 0
+    });
 }
 
-static void ProcSetConditionalSurvey(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::SetConditionalSurvey& args)
 {
-    if (cmd.setConditionalSurvey.enabled)
+    if (args.enabled)
     {
         // Clear previous survey result first.
         auto uploadBuffer = g_device->createBuffer(RenderBufferDesc::UploadBuffer(sizeof(uint32_t)));
@@ -5692,46 +5588,44 @@ static void ProcSetConditionalSurvey(const RenderCommand& cmd)
 
         auto& commandList = g_commandLists[g_frame];
         commandList->barriers(RenderBarrierStage::COPY, RenderBufferBarrier(g_conditionalSurveyBuffer.get(), RenderBufferAccess::WRITE));
-        commandList->copyBufferRegion(g_conditionalSurveyBuffer->at(cmd.setConditionalSurvey.index * sizeof(uint32_t)), uploadBuffer->at(0), sizeof(uint32_t));
+        commandList->copyBufferRegion(g_conditionalSurveyBuffer->at(args.index * sizeof(uint32_t)), uploadBuffer->at(0), sizeof(uint32_t));
         commandList->barriers(RenderBarrierStage::GRAPHICS, RenderBufferBarrier(g_conditionalSurveyBuffer.get(), RenderBufferAccess::READ | RenderBufferAccess::WRITE));
 
         g_tempBuffers[g_frame].emplace_back(std::move(uploadBuffer));
     }
 
-    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.enableConditionalSurvey, cmd.setConditionalSurvey.enabled);
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.conditionalSurveyIndex, cmd.setConditionalSurvey.index);
+    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.enableConditionalSurvey, args.enabled);
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.conditionalSurveyIndex, args.index);
 }
 
 static void BeginConditionalRendering(GuestDevice* device, uint32_t index)
 {
     assert(index < CONDITIONAL_SURVEY_MAX && "Invalid conditional rendering index.");
 
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetConditionalRendering;
-    cmd.setConditionalRendering.enabled = true;
-    cmd.setConditionalRendering.index = index;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::SetConditionalRendering
+    {
+        .enabled = true, .index = index
+    });
 }
 
 static void EndConditionalRendering(GuestDevice* device)
 {
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetConditionalRendering;
-    cmd.setConditionalRendering.enabled = false;
-    cmd.setConditionalRendering.index = 0;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::SetConditionalRendering
+    {
+        .enabled = false, .index = 0
+    });
 }
 
-static void ProcSetConditionalRendering(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::SetConditionalRendering& args)
 {
     uint32_t specConstants = g_pipelineState.specConstants;
-    if (cmd.setConditionalRendering.enabled)
+    if (args.enabled)
         specConstants |= SPEC_CONSTANT_CONDITIONAL_RENDERING;
     else
         specConstants &= ~SPEC_CONSTANT_CONDITIONAL_RENDERING;
 
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.specConstants, specConstants);
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.conditionalRenderingIndex, cmd.setConditionalRendering.index);
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.conditionalRenderingIndex, args.index);
 }
 
 static void SetClipPlane(GuestDevice* device, uint32_t index, const be<float>* plane)
@@ -5760,44 +5654,7 @@ static std::thread g_renderThread([]
             size_t count = g_renderQueue.wait_dequeue_bulk(commands, std::size(commands));
 
             for (size_t i = 0; i < count; i++)
-            {
-                auto& cmd = commands[i];
-                switch (cmd.type)
-                {
-                case RenderCommandType::SetRenderState:                    ProcSetRenderState(cmd); break;
-                case RenderCommandType::DestructResource:                  ProcDestructResource(cmd); break;
-                case RenderCommandType::UnlockTextureRect:                 ProcUnlockTextureRect(cmd); break;
-                case RenderCommandType::UnlockBuffer16:                    ProcUnlockBuffer16(cmd); break;
-                case RenderCommandType::UnlockBuffer32:                    ProcUnlockBuffer32(cmd); break;
-                case RenderCommandType::DrawImGui:                         ProcDrawImGui(cmd); break;
-                case RenderCommandType::ExecuteCommandList:                ProcExecuteCommandList(cmd); break;
-                case RenderCommandType::BeginCommandList:                  ProcBeginCommandList(cmd); break;
-                case RenderCommandType::StretchRect:                       ProcStretchRect(cmd); break;
-                case RenderCommandType::SetRenderTarget:                   ProcSetRenderTarget(cmd); break;
-                case RenderCommandType::SetDepthStencilSurface:            ProcSetDepthStencilSurface(cmd); break;
-                case RenderCommandType::ExecutePendingStretchRectCommands: ProcExecutePendingStretchRectCommands(cmd); break;
-                case RenderCommandType::Clear:                             ProcClear(cmd); break;
-                case RenderCommandType::SetViewport:                       ProcSetViewport(cmd); break;
-                case RenderCommandType::SetTexture:                        ProcSetTexture(cmd); break;
-                case RenderCommandType::SetScissorRect:                    ProcSetScissorRect(cmd); break;
-                case RenderCommandType::SetSamplerState:                   ProcSetSamplerState(cmd); break;
-                case RenderCommandType::SetBooleans:                       ProcSetBooleans(cmd); break;
-                case RenderCommandType::SetVertexShaderConstants:          ProcSetVertexShaderConstants(cmd); break;
-                case RenderCommandType::SetPixelShaderConstants:           ProcSetPixelShaderConstants(cmd); break;
-                case RenderCommandType::AddPipeline:                       ProcAddPipeline(cmd); break;
-                case RenderCommandType::DrawPrimitive:                     ProcDrawPrimitive(cmd); break;
-                case RenderCommandType::DrawIndexedPrimitive:              ProcDrawIndexedPrimitive(cmd); break;
-                case RenderCommandType::DrawPrimitiveUP:                   ProcDrawPrimitiveUP(cmd); break;
-                case RenderCommandType::SetVertexDeclaration:              ProcSetVertexDeclaration(cmd); break;
-                case RenderCommandType::SetVertexShader:                   ProcSetVertexShader(cmd); break;
-                case RenderCommandType::SetStreamSource:                   ProcSetStreamSource(cmd); break;
-                case RenderCommandType::SetIndices:                        ProcSetIndices(cmd); break;
-                case RenderCommandType::SetPixelShader:                    ProcSetPixelShader(cmd); break;
-                case RenderCommandType::SetConditionalSurvey:              ProcSetConditionalSurvey(cmd); break;
-                case RenderCommandType::SetConditionalRendering:           ProcSetConditionalRendering(cmd); break;
-                default:                                                   assert(false && "Unrecognized render command type."); break;
-                }
-            }
+                std::visit([](const auto& cmd) { ProcRenderCommand(cmd); }, commands[i]);
         }
     });
 
@@ -5857,11 +5714,7 @@ static void CompilePipeline(XXH64_hash_t pipelineHash, const PipelineState& pipe
 #endif
 
     // Will get dropped in render thread if a different thread already managed to compile this.
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::AddPipeline;
-    cmd.addPipeline.hash = pipelineHash;
-    cmd.addPipeline.pipeline = pipeline.release();
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::AddPipeline { .hash = pipelineHash, .pipeline = pipeline.release() });
 }
 
 static void PipelineCompilerThread()
