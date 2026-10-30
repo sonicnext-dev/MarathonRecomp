@@ -527,8 +527,6 @@ enum GuestTextureAddress
     D3DTADDRESS_BORDER = 6
 };
 
-static void SetRenderTarget(GuestDevice* device, uint32_t index, GuestSurface* renderTarget);
-static void SetDepthStencilSurface(GuestDevice* device, GuestSurface* depthStencil);
 static GuestTexture* CreateTexture(uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, uint32_t usage, uint32_t format, uint32_t pool, uint32_t type);
 static GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t format, uint32_t multiSample, GuestSurfaceCreateParams* params);
 
