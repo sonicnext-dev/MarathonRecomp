@@ -6069,20 +6069,6 @@ static bool IsSet() {
     return true;
 }
 
-void MovieRendererMidAsmHook(PPCRegister& r3)
-{
-    auto device = reinterpret_cast<GuestDevice*>(g_memory.Translate(r3.u32));
-
-    // Force linear filtering & clamp addressing
-    for (size_t i = 0; i < 3; i++)
-    {
-        device->samplerStates[i].data[0] = (device->samplerStates[i].data[0].get() & ~0x7fc00) | 0x24800;
-        device->samplerStates[i].data[3] = (device->samplerStates[i].data[3].get() & ~0x1f80000) | 0x1280000;
-    }
-
-    device->dirtyFlags[3] = device->dirtyFlags[3].get() | 0xe0000000ull;
-}
-
 // This is passed to pipeline compilation threads to keep the loading screen busy until
 // all of them are finished. A shared pointer makes sure the destructor is called only once.
 struct PipelineTaskToken
@@ -6195,10 +6181,6 @@ static std::vector<std::unique_ptr<std::thread>> g_pipelineCompilerThreads = [](
 
         return threads;
     }();
-
-static constexpr uint32_t MODEL_DATA_VFTABLE = 0x82073A44;
-static constexpr uint32_t TERRAIN_MODEL_DATA_VFTABLE = 0x8211D25C;
-static constexpr uint32_t PARTICLE_MATERIAL_VFTABLE = 0x8211F198;
 
 // Allocate the shared pointer only when new compilations are happening.
 // If nothing was compiled, the local "token" variable will get destructed with RAII instead.
