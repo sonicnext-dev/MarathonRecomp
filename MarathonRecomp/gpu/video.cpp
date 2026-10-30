@@ -306,7 +306,6 @@ static std::unique_ptr<RenderPipeline> g_gammaCorrectionPipeline;
 std::unique_ptr<RenderDescriptorSet> g_textureDescriptorSet;
 static std::unique_ptr<RenderDescriptorSet> g_samplerDescriptorSet;
 
-static constexpr uint32_t CONDITIONAL_SURVEY_MAX = 64;
 static std::unique_ptr<RenderBuffer> g_conditionalSurveyBuffer;
 static std::unique_ptr<RenderDescriptorSet> g_conditionalSurveyDescriptorSet;
 
@@ -4174,20 +4173,6 @@ static void ProcRenderCommand(const RenderCommands::SetViewport& args)
     g_dirtyStates.scissorRect |= g_dirtyStates.viewport;
 }
 
-static void SetTexture(GuestDevice* device, uint32_t index, GuestTexture* texture) 
-{
-    if (Config::GetPreferredControllerIcons() == EControllerIcons::PlayStation &&
-        texture != nullptr && texture->patchedTexture != nullptr)
-    {
-        texture = texture->patchedTexture.get();
-    }
-
-    g_renderQueue.enqueue(RenderCommands::SetTexture
-    {
-        .index = index, .texture = texture
-    });
-}
-
 static void SetTextureInRenderThread(uint32_t index, GuestTexture* texture)
 {
     AddBarrier(texture, RenderTextureLayout::SHADER_READ);
@@ -4237,17 +4222,6 @@ static void ProcRenderCommand(const RenderCommands::SetTexture& args)
         SetTextureInRenderThread(args.index, args.texture);
     
     g_textures[args.index] = args.texture;
-}
-
-static void SetScissorRect(GuestDevice* device, GuestRect* rect)
-{
-    g_renderQueue.enqueue(RenderCommands::SetScissorRect
-    {
-        .left = rect->left,
-        .top = rect->top,
-        .right = rect->right,
-        .bottom = rect->bottom
-    });
 }
 
 static void ProcRenderCommand(const RenderCommands::SetScissorRect& args)
@@ -5407,12 +5381,6 @@ static GuestVertexDeclaration* CreateVertexDeclaration(GuestVertexElement* verte
     return vertexDeclaration;
 }
 
-static void SetVertexDeclaration(GuestDevice* device, GuestVertexDeclaration* vertexDeclaration) 
-{
-    g_renderQueue.enqueue(RenderCommands::SetVertexDeclaration { vertexDeclaration });
-    device->vertexDeclaration = g_memory.MapVirtual(vertexDeclaration);
-}
-
 static void ProcRenderCommand(const RenderCommands::SetVertexDeclaration& args)
 {
     if (args.vertexDeclaration != nullptr)
@@ -5492,26 +5460,10 @@ static GuestShader* CreateVertexShader(const be<uint32_t>* function)
     return CreateShader(function, ResourceType::VertexShader);
 }
 
-static void SetVertexShader(GuestDevice* device, GuestShader* shader)
-{
-    g_renderQueue.enqueue(RenderCommands::SetVertexShader { shader });
-}
-
 static void ProcRenderCommand(const RenderCommands::SetVertexShader& args)
 {
     GuestShader* shader = args.shader;
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.vertexShader, shader);
-}
-
-static void SetStreamSource(GuestDevice* device, uint32_t index, GuestBuffer* buffer, uint32_t offset, uint32_t stride) 
-{
-    g_renderQueue.enqueue(RenderCommands::SetStreamSource
-    {
-        .index = index,
-        .buffer = buffer,
-        .offset = offset,
-        .stride = stride
-    });
 }
 
 static void ProcRenderCommand(const RenderCommands::SetStreamSource& args)
@@ -5531,11 +5483,6 @@ static void ProcRenderCommand(const RenderCommands::SetStreamSource& args)
     }
 }
 
-static void SetIndices(GuestDevice* device, GuestBuffer* buffer) 
-{
-    g_renderQueue.enqueue(RenderCommands::SetIndices { buffer });
-}
-
 static void ProcRenderCommand(const RenderCommands::SetIndices& args)
 {
     SetDirtyValue(g_dirtyStates.indices, g_indexBufferView.buffer, args.buffer != nullptr ? args.buffer->buffer->at(0) : RenderBufferReference{});
@@ -5548,33 +5495,10 @@ static GuestShader* CreatePixelShader(const be<uint32_t>* function)
     return CreateShader(function, ResourceType::PixelShader);
 }
 
-static void SetPixelShader(GuestDevice* device, GuestShader* shader)
-{
-    g_renderQueue.enqueue(RenderCommands::SetPixelShader { shader });
-}
-
 static void ProcRenderCommand(const RenderCommands::SetPixelShader& args)
 {
     GuestShader* shader = args.shader;
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.pixelShader, shader);
-}
-
-static void BeginConditionalSurvey(GuestDevice* device, uint32_t index)
-{
-    assert(index < CONDITIONAL_SURVEY_MAX && "Invalid conditional survey index.");
-
-    g_renderQueue.enqueue(RenderCommands::SetConditionalSurvey
-    {
-        .enabled = true, .index = index
-    });
-}
-
-static void EndConditionalSurvey(GuestDevice* device)
-{
-    g_renderQueue.enqueue(RenderCommands::SetConditionalSurvey
-    {
-        .enabled = false, .index = 0
-    });
 }
 
 static void ProcRenderCommand(const RenderCommands::SetConditionalSurvey& args)
@@ -5598,24 +5522,6 @@ static void ProcRenderCommand(const RenderCommands::SetConditionalSurvey& args)
     SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.conditionalSurveyIndex, args.index);
 }
 
-static void BeginConditionalRendering(GuestDevice* device, uint32_t index)
-{
-    assert(index < CONDITIONAL_SURVEY_MAX && "Invalid conditional rendering index.");
-
-    g_renderQueue.enqueue(RenderCommands::SetConditionalRendering
-    {
-        .enabled = true, .index = index
-    });
-}
-
-static void EndConditionalRendering(GuestDevice* device)
-{
-    g_renderQueue.enqueue(RenderCommands::SetConditionalRendering
-    {
-        .enabled = false, .index = 0
-    });
-}
-
 static void ProcRenderCommand(const RenderCommands::SetConditionalRendering& args)
 {
     uint32_t specConstants = g_pipelineState.specConstants;
@@ -5628,15 +5534,12 @@ static void ProcRenderCommand(const RenderCommands::SetConditionalRendering& arg
     SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.conditionalRenderingIndex, args.index);
 }
 
-static void SetClipPlane(GuestDevice* device, uint32_t index, const be<float>* plane)
+static void ProcRenderCommand(const RenderCommands::SetClipPlane& args)
 {
-    if (index != 0)
-        return;
-
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[0], plane[0].get());
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[1], plane[1].get());
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[2], plane[2].get());
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[3], plane[3].get());
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[0], args.plane[0]);
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[1], args.plane[1]);
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[2], args.plane[2]);
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[3], args.plane[3]);
 }
 
 static std::thread g_renderThread([]
@@ -6347,33 +6250,15 @@ GUEST_FUNCTION_HOOK(sub_82555B30, Clear);
 
 GUEST_FUNCTION_HOOK(sub_825436F0, SetViewport);
 
-GUEST_FUNCTION_HOOK(sub_8253AC40, SetTexture);
-GUEST_FUNCTION_HOOK(sub_82543628, SetScissorRect);
-
 GUEST_FUNCTION_HOOK(sub_826FEC28, DrawPrimitive);
 GUEST_FUNCTION_HOOK(sub_826FF030, DrawIndexedPrimitive);
 GUEST_FUNCTION_HOOK(sub_826FE5C0, DrawPrimitiveUP);
 
 GUEST_FUNCTION_HOOK(sub_82547118, CreateVertexDeclaration);
-GUEST_FUNCTION_HOOK(sub_825470F8, SetVertexDeclaration);
-
 GUEST_FUNCTION_HOOK(sub_82548700, CreateVertexShader);
-GUEST_FUNCTION_HOOK(sub_82546EE0, SetVertexShader);
-
-GUEST_FUNCTION_HOOK(sub_82543918, SetStreamSource);
-GUEST_FUNCTION_HOOK(sub_82543AC8, SetIndices);
-
 GUEST_FUNCTION_HOOK(sub_82548608, CreatePixelShader);
-GUEST_FUNCTION_HOOK(sub_82546BD8, SetPixelShader);
-
-GUEST_FUNCTION_HOOK(sub_82636BF8, BeginConditionalSurvey);
-GUEST_FUNCTION_HOOK(sub_82636C08, EndConditionalSurvey);
-GUEST_FUNCTION_HOOK(sub_82636C10, BeginConditionalRendering);
-GUEST_FUNCTION_HOOK(sub_82636C18, EndConditionalRendering);
 
 GUEST_FUNCTION_HOOK(sub_8253B760, IsSet);
-
-GUEST_FUNCTION_HOOK(sub_82543CF0, SetClipPlane);
 
 GUEST_FUNCTION_HOOK(sub_82541A78, SetRenderState<D3DRS_ZENABLE>);
 GUEST_FUNCTION_HOOK(sub_82541AC0, SetRenderState<D3DRS_ZWRITEENABLE>);
