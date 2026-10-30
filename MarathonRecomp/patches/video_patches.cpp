@@ -224,3 +224,16 @@ void ResourceMgrKeyOverride(PPCRegister& r1, PPCRegister& r28)
     // std::string::assign(const std::string&, uint, uint)
     GuestToHostFunction<void>(0x82161D10, r1.u32 + 0x60, r28.u32, 0, 0xFFFFFFFF);
 }
+
+void IndexBufferLengthMidAsmHook(PPCRegister& r3)
+{
+    r3.u64 *= 2;
+}
+
+void SetShadowResolutionMidAsmHook(PPCRegister& r11)
+{
+    auto res = (int32_t)Config::ShadowResolution.Value;
+
+    if (res > 0)
+        r11.u64 = res;
+}
