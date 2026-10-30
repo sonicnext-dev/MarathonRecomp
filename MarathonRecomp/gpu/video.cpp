@@ -809,15 +809,6 @@ static void LoadEmbeddedResources()
 
 moodycamel::BlockingConcurrentQueue<RenderCommand> g_renderQueue;
 
-template<GuestRenderState TType>
-static void SetRenderState(GuestDevice* device, uint32_t value)
-{
-    g_renderQueue.enqueue(RenderCommands::SetRenderState
-    {
-        .type = TType, .value = value
-    });
-}
-
 static void SetRenderStateUnimplemented(GuestDevice* device, uint32_t value)
 {
     LOGF_WARNING("{:x}\n", value);
@@ -1042,41 +1033,6 @@ static void ProcRenderCommand(const RenderCommands::SetRenderState& args)
     }
     }
 }
-
-static const std::pair<GuestRenderState, PPCFunc*> g_setRenderStateFunctions[] =
-{
-    { D3DRS_ZENABLE, HostToGuestFunction<SetRenderState<D3DRS_ZENABLE>> },
-    { D3DRS_ZWRITEENABLE, HostToGuestFunction<SetRenderState<D3DRS_ZWRITEENABLE>> },
-    { D3DRS_ALPHATESTENABLE, HostToGuestFunction<SetRenderState<D3DRS_ALPHATESTENABLE>> },
-    { D3DRS_SRCBLEND, HostToGuestFunction<SetRenderState<D3DRS_SRCBLEND>> },
-    { D3DRS_DESTBLEND, HostToGuestFunction<SetRenderState<D3DRS_DESTBLEND>> },
-    { D3DRS_CULLMODE, HostToGuestFunction<SetRenderState<D3DRS_CULLMODE>> },
-    { D3DRS_ZFUNC, HostToGuestFunction<SetRenderState<D3DRS_ZFUNC>> },
-    { D3DRS_ALPHAREF, HostToGuestFunction<SetRenderState<D3DRS_ALPHAREF>> },
-    { D3DRS_ALPHABLENDENABLE, HostToGuestFunction<SetRenderState<D3DRS_ALPHABLENDENABLE>> },
-    { D3DRS_BLENDOP, HostToGuestFunction<SetRenderState<D3DRS_BLENDOP>> },
-    { D3DRS_SCISSORTESTENABLE, HostToGuestFunction<SetRenderState<D3DRS_SCISSORTESTENABLE>> },
-    { D3DRS_SLOPESCALEDEPTHBIAS, HostToGuestFunction<SetRenderState<D3DRS_SLOPESCALEDEPTHBIAS>> },
-    { D3DRS_DEPTHBIAS, HostToGuestFunction<SetRenderState<D3DRS_DEPTHBIAS>> },
-    { D3DRS_SRCBLENDALPHA, HostToGuestFunction<SetRenderState<D3DRS_SRCBLENDALPHA>> },
-    { D3DRS_DESTBLENDALPHA, HostToGuestFunction<SetRenderState<D3DRS_DESTBLENDALPHA>> },
-    { D3DRS_BLENDOPALPHA, HostToGuestFunction<SetRenderState<D3DRS_BLENDOPALPHA>> },
-    { D3DRS_COLORWRITEENABLE, HostToGuestFunction<SetRenderState<D3DRS_COLORWRITEENABLE>> },
-    { D3DRS_STENCILENABLE, HostToGuestFunction<SetRenderState<D3DRS_STENCILENABLE>> },
-    { D3DRS_TWOSIDEDSTENCILMODE, HostToGuestFunction<SetRenderState<D3DRS_TWOSIDEDSTENCILMODE>> },
-    { D3DRS_STENCILFAIL, HostToGuestFunction<SetRenderState<D3DRS_STENCILFAIL>> },
-    { D3DRS_STENCILZFAIL, HostToGuestFunction<SetRenderState<D3DRS_STENCILZFAIL>> },
-    { D3DRS_STENCILPASS, HostToGuestFunction<SetRenderState<D3DRS_STENCILPASS>> },
-    { D3DRS_STENCILFUNC, HostToGuestFunction<SetRenderState<D3DRS_STENCILFUNC>> },
-    { D3DRS_STENCILREF, HostToGuestFunction<SetRenderState<D3DRS_STENCILREF>> },
-    { D3DRS_STENCILMASK, HostToGuestFunction<SetRenderState<D3DRS_STENCILMASK>> },
-    { D3DRS_STENCILWRITEMASK, HostToGuestFunction<SetRenderState<D3DRS_STENCILWRITEMASK>> },
-    { D3DRS_CCW_STENCILFAIL, HostToGuestFunction<SetRenderState<D3DRS_CCW_STENCILFAIL>> },
-    { D3DRS_CCW_STENCILZFAIL, HostToGuestFunction<SetRenderState<D3DRS_CCW_STENCILZFAIL>> },
-    { D3DRS_CCW_STENCILPASS, HostToGuestFunction<SetRenderState<D3DRS_CCW_STENCILPASS>> },
-    { D3DRS_CCW_STENCILFUNC, HostToGuestFunction<SetRenderState<D3DRS_CCW_STENCILFUNC>> },
-    { D3DRS_CLIPPLANEENABLE, HostToGuestFunction<SetRenderState<D3DRS_CLIPPLANEENABLE>> }
-};
 
 static std::unique_ptr<RenderShader> g_copyShader;
 
@@ -1822,6 +1778,41 @@ void Video::WaitForGPU()
     g_queue->waitForCommandFence(g_commandFences[0].get());
 }
 
+static const GuestRenderState g_implementedRenderStates[] =
+{
+    D3DRS_ZENABLE,
+    D3DRS_ZWRITEENABLE,
+    D3DRS_ALPHATESTENABLE,
+    D3DRS_SRCBLEND,
+    D3DRS_DESTBLEND,
+    D3DRS_CULLMODE,
+    D3DRS_ZFUNC,
+    D3DRS_ALPHAREF,
+    D3DRS_ALPHABLENDENABLE,
+    D3DRS_BLENDOP,
+    D3DRS_SCISSORTESTENABLE,
+    D3DRS_SLOPESCALEDEPTHBIAS,
+    D3DRS_DEPTHBIAS,
+    D3DRS_SRCBLENDALPHA,
+    D3DRS_DESTBLENDALPHA,
+    D3DRS_BLENDOPALPHA,
+    D3DRS_COLORWRITEENABLE,
+    D3DRS_STENCILENABLE,
+    D3DRS_TWOSIDEDSTENCILMODE,
+    D3DRS_STENCILFAIL,
+    D3DRS_STENCILZFAIL,
+    D3DRS_STENCILPASS,
+    D3DRS_STENCILFUNC,
+    D3DRS_STENCILREF,
+    D3DRS_STENCILMASK,
+    D3DRS_STENCILWRITEMASK,
+    D3DRS_CCW_STENCILFAIL,
+    D3DRS_CCW_STENCILZFAIL,
+    D3DRS_CCW_STENCILPASS,
+    D3DRS_CCW_STENCILFUNC,
+    D3DRS_CLIPPLANEENABLE
+};
+
 static uint32_t getSetAddress(uint32_t base, int index) {
     uint32_t entryOffset = index * 0xC;
     uint32_t entryAddress = base + entryOffset;
@@ -1867,18 +1858,16 @@ static uint32_t CreateDevice(uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4,
         device->setRenderStateFunctions[i] = functionOffsetUnimplemented;
     }
 
-    // InsertFucntion doesn't work, so we have to do this manually in the end
-    for (auto& [state, function] : g_setRenderStateFunctions)
+    // Point implemented states at the game's own setters, which are hooked by address.
+    for (auto state : g_implementedRenderStates)
     {
-        auto funcOffset = getSetAddress(functionOffset, state/4);
+        auto funcOffset = getSetAddress(functionOffset, state / 4);
         uint32_t addr = __builtin_bswap32(*(uint32_t*)g_memory.Translate(funcOffset));
-        printf("state %d of %x is %x\n", state, funcOffset, addr);
-        g_memory.InsertFunction(addr, function);
         device->setRenderStateFunctions[state / 4] = addr;
     }
 
     for (size_t i = 0; i < std::size(device->setSamplerStateFunctions); i++)
-        device->setSamplerStateFunctions[i] = *reinterpret_cast<uint32_t*>(g_memory.Translate(0x82B79CFC + i * 0xC));
+        device->setSamplerStateFunctions[i] = *static_cast<uint32_t*>(g_memory.Translate(0x82B79CFC + i * 0xC));
 
     device->viewport.width = 1280.0f;
     device->viewport.height = 720.0f;
@@ -5919,38 +5908,6 @@ GUEST_FUNCTION_HOOK(sub_82548700, CreateVertexShader);
 GUEST_FUNCTION_HOOK(sub_82548608, CreatePixelShader);
 
 GUEST_FUNCTION_HOOK(sub_8253B760, IsSet);
-
-GUEST_FUNCTION_HOOK(sub_82541A78, SetRenderState<D3DRS_ZENABLE>);
-GUEST_FUNCTION_HOOK(sub_82541AC0, SetRenderState<D3DRS_ZWRITEENABLE>);
-GUEST_FUNCTION_HOOK(sub_82541460, SetRenderState<D3DRS_ALPHATESTENABLE>);
-GUEST_FUNCTION_HOOK(sub_825415C0, SetRenderState<D3DRS_SRCBLEND>);
-GUEST_FUNCTION_HOOK(sub_82541650, SetRenderState<D3DRS_DESTBLEND>);
-GUEST_FUNCTION_HOOK(sub_82541400, SetRenderState<D3DRS_CULLMODE>);
-GUEST_FUNCTION_HOOK(sub_82541AF0, SetRenderState<D3DRS_ZFUNC>);
-GUEST_FUNCTION_HOOK(sub_825418C8, SetRenderState<D3DRS_ALPHAREF>);
-GUEST_FUNCTION_HOOK(sub_825414A0, SetRenderState<D3DRS_ALPHABLENDENABLE>);
-GUEST_FUNCTION_HOOK(sub_82541530, SetRenderState<D3DRS_BLENDOP>);
-GUEST_FUNCTION_HOOK(sub_82543ED0, SetRenderState<D3DRS_SCISSORTESTENABLE>);
-GUEST_FUNCTION_HOOK(sub_82541E90, SetRenderState<D3DRS_SLOPESCALEDEPTHBIAS>);
-GUEST_FUNCTION_HOOK(sub_82541F58, SetRenderState<D3DRS_DEPTHBIAS>);
-GUEST_FUNCTION_HOOK(sub_82541750, SetRenderState<D3DRS_SRCBLENDALPHA>);
-GUEST_FUNCTION_HOOK(sub_825417C0, SetRenderState<D3DRS_DESTBLENDALPHA>);
-GUEST_FUNCTION_HOOK(sub_825416E0, SetRenderState<D3DRS_BLENDOPALPHA>);
-GUEST_FUNCTION_HOOK(sub_82542050, SetRenderState<D3DRS_COLORWRITEENABLE>);
-GUEST_FUNCTION_HOOK(sub_82541B30, SetRenderState<D3DRS_STENCILENABLE>);
-GUEST_FUNCTION_HOOK(sub_82541B78, SetRenderState<D3DRS_TWOSIDEDSTENCILMODE>);
-GUEST_FUNCTION_HOOK(sub_82541BE8, SetRenderState<D3DRS_STENCILFAIL>);
-GUEST_FUNCTION_HOOK(sub_82541C28, SetRenderState<D3DRS_STENCILZFAIL>);
-GUEST_FUNCTION_HOOK(sub_82541C68, SetRenderState<D3DRS_STENCILPASS>);
-GUEST_FUNCTION_HOOK(sub_82541BB8, SetRenderState<D3DRS_STENCILFUNC>);
-GUEST_FUNCTION_HOOK(sub_82541D78, SetRenderState<D3DRS_STENCILREF>);
-GUEST_FUNCTION_HOOK(sub_82541D98, SetRenderState<D3DRS_STENCILMASK>);
-GUEST_FUNCTION_HOOK(sub_82541DB8, SetRenderState<D3DRS_STENCILWRITEMASK>);
-GUEST_FUNCTION_HOOK(sub_82541CC8, SetRenderState<D3DRS_CCW_STENCILFAIL>);
-GUEST_FUNCTION_HOOK(sub_82541D08, SetRenderState<D3DRS_CCW_STENCILZFAIL>);
-GUEST_FUNCTION_HOOK(sub_82541D48, SetRenderState<D3DRS_CCW_STENCILPASS>);
-GUEST_FUNCTION_HOOK(sub_82541C98, SetRenderState<D3DRS_CCW_STENCILFUNC>);
-GUEST_FUNCTION_HOOK(sub_82541E38, SetRenderState<D3DRS_CLIPPLANEENABLE>);
 
 GUEST_FUNCTION_HOOK(sub_8253AE08, GetType);
 GUEST_FUNCTION_HOOK(sub_82538D60, SurfaceSize);
