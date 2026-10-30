@@ -6676,6 +6676,85 @@ void VideoConfigValueChangedCallback(IConfigDef* config)
         EnqueuePipelineTask(PipelineTaskType::RecompilePipelines);
 }
 
+int GetType(GuestResource* resource)
+{
+    if (resource->type == ResourceType::Texture) return 3;
+    if (resource->type == ResourceType::VolumeTexture) return 17;
+    if (resource->type == ResourceType::ArrayTexture) return 19;
+
+    LOGF_WARNING("unknown resource type {:d}!", (int32_t)resource->type);
+    __builtin_trap();
+    return 0;
+}
+
+// Game asks about the size of surface to check if it needs to be tiled.
+// Because EDRAM has only 10MB, if size is more than 1024, then it enables tiling.
+// We return 0 to always disable tiling.
+int SurfaceSize(uint32_t width, uint32_t height, uint32_t format, uint32_t multisampleLevel)
+{
+    return 0;
+}
+
+struct Rect
+{
+    be<uint32_t> x1;
+    be<uint32_t> y1;
+    be<uint32_t> x2;
+    be<uint32_t> y2;
+};
+
+struct RESOLVE_PARAMS
+{
+    be<uint32_t> format;
+    be<uint32_t> unk;
+    be<uint32_t> format2;
+};
+
+int D3DDevice_BeginTiling(GuestDevice* device, uint32_t flags, uint32_t count, Rect* pTileRects, be<float>* pClearColor, float clearZ, uint32_t clearStencil)
+{
+    Clear(device, 0x3F, 0, pClearColor, clearZ, clearStencil);
+
+    return 0;
+}
+
+int D3DDevice_EndTiling(GuestDevice* device, uint32_t flags, Rect* pResolveRects, GuestTexture* pDestTexture, be<float>* pClearColor, float clearZ, uint32_t clearStencil, RESOLVE_PARAMS* resolveParams)
+{
+    if (pDestTexture)
+    {
+        StretchRect(device, flags, 0, pDestTexture, 0, 0, 0);
+    }
+
+    return 0;
+}
+
+int D3DDevice_BeginShaderConstantF4(GuestDevice* device, uint32_t isPixelShader, uint32_t startRegister, be<uint32_t>* cachedConstantData, be<uint32_t>* writeCombinedConstantData, uint32_t vectorCount)
+{
+    uint32_t* constants;
+    be<uint64_t>* dirtyFlags;
+
+    if (isPixelShader)
+    {
+        constants = &device->pixelShaderFloatConstants[startRegister * 4];
+        dirtyFlags = &device->dirtyFlags[1];
+    }
+    else
+    {
+        constants = &device->vertexShaderFloatConstants[startRegister * 4];
+        dirtyFlags = &device->dirtyFlags[0];
+    }
+
+    const uint32_t addr = g_memory.MapVirtual(constants);
+    *cachedConstantData = addr;
+    *writeCombinedConstantData = addr;
+
+    const uint32_t startBit = startRegister >> 2;
+    const uint32_t endBit = (startRegister + vectorCount - 1) >> 2;
+    const uint64_t dirtyFlag = ~0ull << startBit >> startBit >> (63 - endBit) << (63 - endBit);
+    *dirtyFlags = dirtyFlags->get() | dirtyFlag;
+
+    return 0;
+}
+
 GUEST_FUNCTION_HOOK(sub_8253EC98, CreateDevice);
 
 GUEST_FUNCTION_HOOK(sub_8253AE98, DestructResource);
@@ -6685,16 +6764,13 @@ GUEST_FUNCTION_HOOK(sub_82538D30, UnlockTextureRect);
 
 GUEST_FUNCTION_HOOK(sub_8253B5D0, LockVertexBuffer);
 GUEST_FUNCTION_HOOK(sub_8253B630, UnlockVertexBuffer);
-// GUEST_FUNCTION_HOOK(sub_82BE61D0, GetVertexBufferDesc);
 
 GUEST_FUNCTION_HOOK(sub_8253B6F0, LockIndexBuffer);
 GUEST_FUNCTION_HOOK(sub_8253B750, UnlockIndexBuffer);
-// GUEST_FUNCTION_HOOK(sub_82BE6200, GetIndexBufferDesc);
 
 GUEST_FUNCTION_HOOK(sub_8253AB20, GetSurfaceDesc);
 
 GUEST_FUNCTION_HOOK(sub_825471F8, GetVertexDeclaration);
-// GUEST_FUNCTION_HOOK(sub_82BE0530, HashVertexDeclaration);
 
 GUEST_FUNCTION_HOOK(sub_825586B0, Video::Present);
 GUEST_FUNCTION_HOOK(sub_82543B58, GetBackBuffer);
@@ -6775,32 +6851,13 @@ GUEST_FUNCTION_HOOK(sub_82541D48, SetRenderState<D3DRS_CCW_STENCILPASS>);
 GUEST_FUNCTION_HOOK(sub_82541C98, SetRenderState<D3DRS_CCW_STENCILFUNC>);
 GUEST_FUNCTION_HOOK(sub_82541E38, SetRenderState<D3DRS_CLIPPLANEENABLE>);
 
-int GetType(GuestResource* resource)
-{
-    if (resource->type == ResourceType::Texture) return 3;
-    if (resource->type == ResourceType::VolumeTexture) return 17;
-    if (resource->type == ResourceType::ArrayTexture) return 19;
-
-    LOGF_WARNING("unknown resource type {:d}!", (int32_t)resource->type);
-    __builtin_trap();
-    return 0;
-}
-
 GUEST_FUNCTION_HOOK(sub_8253AE08, GetType);
-
-// Game asks about the size of surface to check if it needs to be tiled.
-// Because EDRAM has only 10MB, if size is more than 1024, then it enables tiling.
-// We return 0 to always disable tiling.
-int SurfaceSize(uint32_t width, uint32_t height, uint32_t format, uint32_t multisampleLevel)
-{
-    return 0;
-}
-
 GUEST_FUNCTION_HOOK(sub_82538D60, SurfaceSize);
-
-// GUEST_FUNCTION_HOOK(sub_82E9EE38, SetResolution);
-
 GUEST_FUNCTION_HOOK(sub_82736178, ScreenShaderInit);
+
+GUEST_FUNCTION_HOOK(sub_82558F88, D3DDevice_BeginTiling);
+GUEST_FUNCTION_HOOK(sub_82559480, D3DDevice_EndTiling);
+GUEST_FUNCTION_HOOK(sub_825466E8, D3DDevice_BeginShaderConstantF4);
 
 GUEST_FUNCTION_STUB(sub_8253EB38);
 GUEST_FUNCTION_STUB(sub_8253EB78);
@@ -6818,69 +6875,3 @@ GUEST_FUNCTION_STUB(sub_8254D7B0); // BeginConditional
 GUEST_FUNCTION_STUB(sub_8254D9D0); // BeginConditional
 GUEST_FUNCTION_STUB(sub_8254DB90); // BeginConditional
 GUEST_FUNCTION_STUB(sub_8254DD40); // SetScreenExtentQueryMode
-
-struct Rect
-{
-    be<uint32_t> x1;
-    be<uint32_t> y1;
-    be<uint32_t> x2;
-    be<uint32_t> y2;
-};
-
-struct RESOLVE_PARAMS
-{
-    be<uint32_t> format;
-    be<uint32_t> unk;
-    be<uint32_t> format2;
-};
-
-int D3DDevice_BeginTiling(GuestDevice* device, uint32_t flags, uint32_t count, Rect* pTileRects, be<float>* pClearColor, float clearZ, uint32_t clearStencil)
-{
-    Clear(device, 0x3F, 0, pClearColor, clearZ, clearStencil);
-
-    return 0;
-}
-
-GUEST_FUNCTION_HOOK(sub_82558F88, D3DDevice_BeginTiling);
-
-int D3DDevice_EndTiling(GuestDevice* device, uint32_t flags, Rect* pResolveRects, GuestTexture* pDestTexture, be<float>* pClearColor, float clearZ, uint32_t clearStencil, RESOLVE_PARAMS* resolveParams)
-{
-    if (pDestTexture)
-    {
-        StretchRect(device, flags, 0, pDestTexture, 0, 0, 0);
-    }
-
-    return 0;
-}
-
-GUEST_FUNCTION_HOOK(sub_82559480, D3DDevice_EndTiling);
-
-int D3DDevice_BeginShaderConstantF4(GuestDevice* device, uint32_t isPixelShader, uint32_t startRegister, be<uint32_t>* cachedConstantData, be<uint32_t>* writeCombinedConstantData, uint32_t vectorCount)
-{
-    uint32_t* constants;
-    be<uint64_t>* dirtyFlags;
-
-    if (isPixelShader)
-    {
-        constants = &device->pixelShaderFloatConstants[startRegister * 4];
-        dirtyFlags = &device->dirtyFlags[1];
-    }
-    else
-    {
-        constants = &device->vertexShaderFloatConstants[startRegister * 4];
-        dirtyFlags = &device->dirtyFlags[0];
-    }
-
-    const uint32_t addr = g_memory.MapVirtual(constants);
-    *cachedConstantData = addr;
-    *writeCombinedConstantData = addr;
-
-    const uint32_t startBit = startRegister >> 2;
-    const uint32_t endBit = (startRegister + vectorCount - 1) >> 2;
-    const uint64_t dirtyFlag = ~0ull << startBit >> startBit >> (63 - endBit) << (63 - endBit);
-    *dirtyFlags = dirtyFlags->get() | dirtyFlag;
-
-    return 0;
-}
-
-GUEST_FUNCTION_HOOK(sub_825466E8, D3DDevice_BeginShaderConstantF4);
