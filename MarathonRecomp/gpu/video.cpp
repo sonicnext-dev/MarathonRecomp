@@ -784,17 +784,6 @@ static void DestructTempResources()
     g_tempBuffers[g_frame].clear();
 }
 
-static std::thread::id g_presentThreadId = std::this_thread::get_id();
-static std::atomic<bool> g_readyForCommands;
-
-// PPC_FUNC_IMPL(__imp__sub_824ECA00);
-// PPC_FUNC(sub_824ECA00)
-// {
-//     g_readyForCommands.wait(false);
-//     g_presentThreadId = std::this_thread::get_id();
-//     __imp__sub_824ECA00(ctx, base);
-// }
-
 static ankerl::unordered_dense::map<RenderTexture*, RenderTextureLayout> g_barrierMap;
 
 static RenderTextureLayout& GetLayoutRef(GuestBaseTexture* texture)
@@ -1591,9 +1580,6 @@ static void BeginCommandList()
     commandList->setGraphicsDescriptorSet(g_textureDescriptorSet.get(), 2);
     commandList->setGraphicsDescriptorSet(g_samplerDescriptorSet.get(), 3);
     commandList->setGraphicsDescriptorSet(g_conditionalSurveyDescriptorSet.get(), 4);
-
-    g_readyForCommands = true;
-    g_readyForCommands.notify_one();
 }
 
 template<typename T>
@@ -2199,7 +2185,7 @@ static void LockTextureRect(GuestTexture* texture, uint32_t, GuestLockedRect* lo
 
 static void UnlockTextureRect(GuestTexture* texture) 
 {
-    assert(std::this_thread::get_id() == g_presentThreadId);
+    assert(std::this_thread::get_id() == g_mainThreadId);
 
     RenderCommand cmd;
     cmd.type = RenderCommandType::UnlockTextureRect;
@@ -3029,8 +3015,6 @@ PPC_FUNC(sub_8260A9D0)
 
 void Video::Present() 
 {
-    g_readyForCommands = false;
-
     RenderCommand cmd;
     cmd.type = RenderCommandType::ExecutePendingStretchRectCommands;
     g_renderQueue.enqueue(cmd);
