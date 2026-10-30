@@ -2,6 +2,7 @@
 
 #include "guest_convert.h"
 #include "guest_device.h"
+#include "surface_variant.h"
 #include "imgui/imgui_common.h"
 #include "imgui/imgui_snapshot.h"
 #include "render_command.h"
@@ -574,68 +575,8 @@ struct PrimitiveIndexData
 static PrimitiveIndexData<D3DPT_TRIANGLEFAN> g_triangleFanIndexData;
 static PrimitiveIndexData<D3DPT_QUADLIST> g_quadIndexData;
 
-// Host render target storage for guest surfaces, identified by EDRAM placement.
-struct SurfaceVariant
-{
-    uint32_t base = 0;
-    uint32_t width = 0;
-    uint32_t height = 0;
-    uint32_t guestFormat = 0;
-    RenderSampleCounts sampleCount = RenderSampleCount::COUNT_1;
-    RenderFormat format = RenderFormat::UNKNOWN;
-    std::unique_ptr<RenderTexture> textureHolder;
-    std::unique_ptr<RenderTextureView> textureView;
-    uint32_t descriptorIndex = 0;
-    // Barrier state is shared by all views, as they render to the same texture.
-    RenderTextureLayout layout = RenderTextureLayout::UNKNOWN;
-    // Framebuffers are cached here instead of on the guest surface so they don't
-    // outlive the host texture when views are destroyed.
-    ankerl::unordered_dense::map<const RenderTexture*, std::unique_ptr<RenderFramebuffer>> framebuffers;
-    uint32_t refCount = 0;
-
-    uint32_t deferredClearFlags = 0;
-    float deferredClearColor[4]{};
-    float deferredClearZ = 1.0f;
-    uint32_t deferredClearStencil = 0;
-};
-
-static Mutex g_surfaceVariantMutex;
-static std::vector<std::unique_ptr<SurfaceVariant>> g_surfaceVariants;
-
 static ankerl::unordered_dense::set<GuestSurface*> g_pendingSurfaceCopies;
 static ankerl::unordered_dense::set<GuestSurface*> g_pendingResolves;
-
-static void ReleaseSurfaceVariant(SurfaceVariant* variant)
-{
-    std::lock_guard lock(g_surfaceVariantMutex);
-
-    assert(variant->refCount != 0);
-    if (--variant->refCount != 0)
-        return;
-
-    g_textureDescriptorSet->setTexture(variant->descriptorIndex, nullptr, {});
-    g_textureDescriptorAllocator.free(variant->descriptorIndex);
-
-    for (auto& other : g_surfaceVariants)
-    {
-        if (other.get() != variant)
-            other->framebuffers.erase(variant->textureHolder.get());
-    }
-
-    g_framebuffer = nullptr;
-
-    std::erase_if(g_surfaceVariants, [variant](auto& entry) { return entry.get() == variant; });
-}
-
-static void PurgeSurfaceVariantFramebuffers()
-{
-    std::lock_guard lock(g_surfaceVariantMutex);
-
-    for (auto& variant : g_surfaceVariants)
-        variant->framebuffers.clear();
-
-    g_framebuffer = nullptr;
-}
 
 static void DestructTempResources()
 {
@@ -674,7 +615,6 @@ static void DestructTempResources()
         {
             const auto buffer = reinterpret_cast<GuestBuffer*>(resource);
 
-
             if (buffer->mappedMemory != nullptr)
                 g_userHeap.Free(buffer->mappedMemory);
 
@@ -707,7 +647,8 @@ static void DestructTempResources()
 
             if (surface->variant != nullptr)
             {
-                ReleaseSurfaceVariant(surface->variant);
+                if (ReleaseSurfaceVariant(surface->variant))
+                    g_framebuffer = nullptr;
             }
             else if (surface->descriptorIndex != NULL)
             {
@@ -3255,85 +3196,6 @@ static GuestBuffer* CreateIndexBuffer(uint32_t length, uint32_t, uint32_t format
     return buffer;
 }
 
-static RenderTextureDesc MakeSurfaceTextureDesc(uint32_t width, uint32_t height, RenderFormat format, RenderSampleCounts sampleCount)
-{
-    RenderTextureDesc desc;
-    desc.dimension = RenderTextureDimension::TEXTURE_2D;
-    desc.width = width;
-    desc.height = height;
-    desc.depth = 1;
-    desc.mipLevels = 1;
-    desc.arraySize = 1;
-    desc.multisampling.sampleCount = sampleCount;
-    desc.format = format;
-    desc.flags = RenderFormatIsDepth(format) ? RenderTextureFlag::DEPTH_TARGET : RenderTextureFlag::RENDER_TARGET;
-    return desc;
-}
-
-const char* g_surfaceCreationName;
-
-static SurfaceVariant* AcquireSurfaceVariant(uint32_t base, uint32_t width, uint32_t height,
-    uint32_t guestFormat, RenderSampleCounts sampleCount, bool& created)
-{
-    std::lock_guard lock(g_surfaceVariantMutex);
-
-    for (auto& variant : g_surfaceVariants)
-    {
-        if (variant->base == base &&
-            variant->width == width &&
-            variant->height == height &&
-            variant->guestFormat == guestFormat &&
-            variant->sampleCount == sampleCount)
-        {
-            variant->refCount++;
-            created = false;
-
-#ifdef _DEBUG
-            LOGF_UTILITY("[surface] shared variant: base {} {}x{} format {:X} refs {} name {}",
-                base, width, height, guestFormat, variant->refCount,
-                g_surfaceCreationName ? g_surfaceCreationName : "<none>");
-#endif
-
-            return variant.get();
-        }
-    }
-
-#ifdef _DEBUG
-    LOGF_UTILITY("[surface] new variant: base {} {}x{} format {:X} samples {} name {}",
-        base, width, height, guestFormat, uint32_t(sampleCount),
-        g_surfaceCreationName ? g_surfaceCreationName : "<none>");
-#endif
-
-    auto& variant = g_surfaceVariants.emplace_back(std::make_unique<SurfaceVariant>());
-    variant->base = base;
-    variant->width = width;
-    variant->height = height;
-    variant->guestFormat = guestFormat;
-    variant->sampleCount = sampleCount;
-    variant->format = ConvertFormat(guestFormat);
-    variant->refCount = 1;
-
-    const auto desc = MakeSurfaceTextureDesc(width, height, variant->format, sampleCount);
-    variant->textureHolder = g_device->createTexture(desc);
-
-    RenderTextureViewDesc viewDesc;
-    viewDesc.dimension = RenderTextureViewDimension::TEXTURE_2D;
-    viewDesc.format = variant->format;
-    viewDesc.mipLevels = 1;
-    variant->textureView = variant->textureHolder->createTextureView(viewDesc);
-    variant->descriptorIndex = g_textureDescriptorAllocator.allocate();
-    g_textureDescriptorSet->setTexture(variant->descriptorIndex, variant->textureHolder.get(), RenderTextureLayout::SHADER_READ, variant->textureView.get());
-
-#ifdef _DEBUG
-    variant->textureHolder->setName(fmt::format("{} EDRAM {} {}x{} {}x",
-        RenderFormatIsDepth(variant->format) ? "Depth Stencil" : "Render Target",
-        base, width, height, int32_t(sampleCount)));
-#endif
-
-    created = true;
-    return variant.get();
-}
-
 static GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t format, uint32_t multiSample, GuestSurfaceCreateParams* params)
 {
     RenderSampleCounts sampleCount;
@@ -3880,43 +3742,7 @@ static void ProcRenderCommand(const RenderCommands::Clear& args)
         commandList->clearDepthStencil(clearDepth, clearStencil, args.z, args.stencil);
     }
 
-    {
-        std::lock_guard lock(g_surfaceVariantMutex);
-
-        for (const auto boundSurface : { g_renderTarget, g_depthStencil })
-        {
-            if (boundSurface == nullptr || boundSurface->variant == nullptr)
-                continue;
-
-            const bool boundIsDepth = RenderFormatIsDepth(boundSurface->format);
-            const uint32_t flags = args.flags & (boundIsDepth ? (D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL) : D3DCLEAR_TARGET);
-            if (flags == 0)
-                continue;
-
-            // The variant the game just cleared itself needs no deferred clear.
-            boundSurface->variant->deferredClearFlags &= ~flags;
-
-            for (auto& variant : g_surfaceVariants)
-            {
-                if (variant.get() == boundSurface->variant ||
-                    variant->base != boundSurface->variant->base ||
-                    RenderFormatIsDepth(variant->format) != boundIsDepth ||
-                    variant->width > boundSurface->variant->width ||
-                    variant->height > boundSurface->variant->height)
-                {
-                    continue;
-                }
-
-                variant->deferredClearFlags |= flags;
-                variant->deferredClearColor[0] = args.color[0];
-                variant->deferredClearColor[1] = args.color[1];
-                variant->deferredClearColor[2] = args.color[2];
-                variant->deferredClearColor[3] = args.color[3];
-                variant->deferredClearZ = args.z;
-                variant->deferredClearStencil = args.stencil;
-            }
-        }
-    }
+    PropagateDeferredClear(g_renderTarget, g_depthStencil, args);
 }
 
 static void ApplyDeferredVariantClears(GuestSurface* renderTarget, GuestSurface* depthStencil)
