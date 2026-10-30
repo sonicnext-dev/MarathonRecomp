@@ -18,8 +18,7 @@ std::string os::locale::ConvertToUTF8(Encoding in_encoding, const std::string& i
 
     CFDataRef cfData = CFDataCreateWithBytesNoCopy(nullptr, reinterpret_cast<const UInt8*>(in_rStr.data()),
         static_cast<CFIndex>(in_rStr.size()), kCFAllocatorNull);
-
-    assert(data && "CFDataCreateWithBytesNoCopy failed");
+    assert(cfData && "CFDataCreateWithBytesNoCopy failed");
 
     CFStringRef cfStr = CFStringCreateFromExternalRepresentation(nullptr, cfData, cfEncoding);
     CFRelease(cfData);
