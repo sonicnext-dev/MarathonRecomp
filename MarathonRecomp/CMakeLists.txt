@@ -124,6 +124,7 @@ set(MARATHON_RECOMP_CPU_CXX_SOURCES
 
 set(MARATHON_RECOMP_GPU_CXX_SOURCES
     "gpu/video.cpp"
+    "gpu/guest_convert.cpp"
     "gpu/imgui/imgui_common.cpp"
     "gpu/imgui/imgui_font_builder.cpp"
     "gpu/imgui/imgui_snapshot.cpp"
