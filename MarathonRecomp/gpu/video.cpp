@@ -4953,63 +4953,6 @@ static void EnqueueGraphicsPipelineCompilation(
 #endif
 }
 
-template<typename T>
-static bool CheckMadeAll(const T& modelData)
-{
-    if (!modelData.IsMadeOne())
-        return false;
-
-    for (auto& meshGroup : modelData.m_NodeGroupModels)
-    {
-        for (auto& mesh : meshGroup->m_OpaqueMeshes)
-        {
-            if (!CheckMadeAll(mesh.get()))
-                return false;
-        }     
-
-        for (auto& mesh : meshGroup->m_TransparentMeshes)
-        {
-            if (!CheckMadeAll(mesh.get()))
-                return false;
-        }    
-
-        for (auto& mesh : meshGroup->m_PunchThroughMeshes)
-        {
-            if (!CheckMadeAll(mesh.get()))
-                return false;
-        }
-
-        for (auto& specialMeshGroup : meshGroup->m_SpecialMeshGroups)
-        {
-            for (auto& mesh : specialMeshGroup)
-            {
-                if (!CheckMadeAll(mesh.get()))
-                    return false;
-            }
-        }
-    }
-
-    for (auto& mesh : modelData.m_OpaqueMeshes)
-    {
-        if (!CheckMadeAll(mesh.get()))
-            return false;
-    }
-
-    for (auto& mesh : modelData.m_TransparentMeshes)
-    {
-        if (!CheckMadeAll(mesh.get()))
-            return false;
-    }
-
-    for (auto& mesh : modelData.m_PunchThroughMeshes)
-    {
-        if (!CheckMadeAll(mesh.get()))
-            return false;
-    }
-
-    return true;
-}
-
 static void PipelineTaskConsumerThread()
 {
     os::thread::SetCurrentThreadName("Pipeline Task Consumer Thread");
