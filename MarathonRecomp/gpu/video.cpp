@@ -3449,7 +3449,7 @@ void Video::Resize(uint32_t width, uint32_t height)
         auto pSurfaceParams = getSurfaceParams(surfaceFormatIndex, rBufferInfo.Flags);
         auto pNewSurface = CreateSurface(rBufferInfo.Width, rBufferInfo.Height, pFormatConfigs[surfaceFormatIndex].SurfaceFormat, 0, reinterpret_cast<GuestSurfaceCreateParams*>(pSurfaceParams));
 
-        GuestToHostFunction<void>(sub_82592E98, rTexture.second->m_aspSurfaces[0].get(), pNewSurface, rBufferInfo.Width, rBufferInfo.Height);
+        GuestToHostFunction<void>(sub_82592E98, rTexture.second->m_Surfaces[0].get(), pNewSurface, rBufferInfo.Width, rBufferInfo.Height);
     }
 
     // Clear post-process buffers.
@@ -3459,9 +3459,10 @@ void Video::Resize(uint32_t width, uint32_t height)
 
     Sonicteam::HUDRaderMap* pHUDRaderMap{};
 
+    const auto pGame = pApp->GetGame();
     auto& rTextureResources = pResourceManager->m_Resources[pTextureMgr->m_ID];
 
-    if (const auto pGame = pApp->GetGame(); rTextureResources.find("radermap") != rTextureResources.end())
+    if (pGame && rTextureResources.find("radermap") != rTextureResources.end())
     {
         if (const auto pPopupScreenTask = pGame->m_rPopupScreenTask.m_pRef)
         {
@@ -3483,7 +3484,7 @@ void Video::Resize(uint32_t width, uint32_t height)
     CacheRenderProcess(pDoc->m_pRenderScheduler, "Spanverse");
 
     // Reload current render script.
-    GuestToHostFunction<void>(sub_8260DF88, pDoc, Sonicteam::Globals::ms_pCurrentRenderScript, 1);
+    GuestToHostFunction<void>(sub_8260DF88, pDoc, Sonicteam::Globals::ms_pCurrentRenderScript, pGame ? pGame->m_Screens.size() : 1);
 
     // Drop cached render processes, no longer needed after reloading render script.
     g_renderProcessCache.clear();

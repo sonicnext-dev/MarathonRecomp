@@ -93,7 +93,7 @@ namespace Sonicteam
         boost::shared_ptr<ActorManager> m_spActorManager;
         xpointer<TextBook> m_pSystemTextBook;
         MARATHON_INSERT_PADDING(0x08);
-        stdx::vector<stdx::vector<boost::shared_ptr<SoX::Scenery::Camera>>> m_vvspCameras;
+        stdx::vector<stdx::vector<boost::shared_ptr<SoX::Scenery::Camera>>> m_Screens;
         MARATHON_INSERT_PADDING(0x1B4);
         xpointer<SoX::Audio::Cue> m_pBgmCue;
         MARATHON_INSERT_PADDING(0x36C);
@@ -118,27 +118,27 @@ namespace Sonicteam
             return m_spActorManager->Find<Player::Object>(m_PlayerData[in_index].ActorID);
         }
 
-        int GetPlayerIndexFromActorID(uint32_t actorId) const
+        int GetPlayerIndexFromActorID(uint32_t in_actorId) const
         {
             for (int i = 0; i < 4; i++)
             {
-                if (m_PlayerData[i].ActorID == actorId)
+                if (m_PlayerData[i].ActorID == in_actorId)
                     return i;
             }
 
             return -1;
         }
 
-        SoX::Scenery::CameraImp* GetCamera(const char* pName, int which = 0)
+        SoX::Scenery::CameraImp* GetCamera(const char* in_pName, int in_screenIndex = 0)
         {
-            if (m_vvspCameras.empty())
+            if (m_Screens.empty())
                 return nullptr;
 
-            for (auto& spCamera : m_vvspCameras[which])
+            for (const auto& spCamera : m_Screens[in_screenIndex])
             {
-                auto pCameraImp = (SoX::Scenery::CameraImp*)spCamera.get();
+                const auto pCameraImp = reinterpret_cast<SoX::Scenery::CameraImp*>(spCamera.get());
 
-                if (pCameraImp->m_Name == pName)
+                if (pCameraImp->m_Name == in_pName)
                     return pCameraImp;
             }
 
@@ -148,13 +148,13 @@ namespace Sonicteam
         template <typename T = SoX::Audio::Cue>
         T* GetBgmCue() const
         {
-            return (T*)m_pBgmCue.get();
+            return static_cast<T*>(m_pBgmCue.get());
         }
 
         template <typename T = SoX::Physics::World>
         T* GetPhysicsWorld() const
         {
-            return (T*)m_spPhysicsWorld.get();
+            return static_cast<T*>(m_spPhysicsWorld.get());
         }
     };
 
@@ -185,7 +185,7 @@ namespace Sonicteam
     MARATHON_ASSERT_OFFSETOF(GameImp, m_PlayerActorIDs, 0x1188);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_spActorManager, 0x11C4);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pSystemTextBook, 0x11CC);
-    MARATHON_ASSERT_OFFSETOF(GameImp, m_vvspCameras, 0x11D8);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_Screens, 0x11D8);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pBgmCue, 0x139C);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pHintTextBook, 0x170C);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pMissionCore, 0x1714);
