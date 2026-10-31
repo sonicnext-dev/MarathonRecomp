@@ -1,3 +1,5 @@
+#include "gpu/video.h"
+
 #include <api/Marathon.h>
 #include <kernel/memory.h>
 #include <os/logger.h>
@@ -224,3 +226,50 @@ void ResourceMgrKeyOverride(PPCRegister& r1, PPCRegister& r28)
     // std::string::assign(const std::string&, uint, uint)
     GuestToHostFunction<void>(0x82161D10, r1.u32 + 0x60, r28.u32, 0, 0xFFFFFFFF);
 }
+
+void IndexBufferLengthMidAsmHook(PPCRegister& r3)
+{
+    r3.u64 *= 2;
+}
+
+void SetShadowResolutionMidAsmHook(PPCRegister& r11)
+{
+    auto res = (int32_t)Config::ShadowResolution.Value;
+
+    if (res > 0)
+        r11.u64 = res;
+}
+
+static GuestShader* g_movieVertexShader;
+static GuestShader* g_moviePixelShaderHD;
+static GuestShader* g_moviePixelShaderSD;
+
+static int ScreenShaderInit(be<uint32_t>* a1)
+{
+    if (g_movieVertexShader == nullptr)
+    {
+        g_movieVertexShader = g_userHeap.AllocPhysical<GuestShader>(ResourceType::VertexShader);
+    }
+
+    if (g_moviePixelShaderHD == nullptr)
+    {
+        g_moviePixelShaderHD = g_userHeap.AllocPhysical<GuestShader>(ResourceType::PixelShader);
+    }
+
+    if (g_moviePixelShaderSD == nullptr)
+    {
+        g_moviePixelShaderSD = g_userHeap.AllocPhysical<GuestShader>(ResourceType::PixelShader);
+    }
+
+    g_moviePixelShaderHD->AddRef();
+    g_moviePixelShaderSD->AddRef();
+    g_movieVertexShader->AddRef();
+
+    a1[0x12] = g_memory.MapVirtual(g_movieVertexShader);
+    a1[0x51] = g_memory.MapVirtual(g_moviePixelShaderHD);
+    a1[0x52] = g_memory.MapVirtual(g_moviePixelShaderSD);
+
+    return 0;
+}
+
+GUEST_FUNCTION_HOOK(sub_82736178, ScreenShaderInit);

@@ -124,6 +124,15 @@ set(MARATHON_RECOMP_CPU_CXX_SOURCES
 
 set(MARATHON_RECOMP_GPU_CXX_SOURCES
     "gpu/video.cpp"
+    "gpu/resources.cpp"
+    "gpu/guest_convert.cpp"
+    "gpu/guest_device.cpp"
+    "gpu/guest_shader.cpp"
+    "gpu/vertex_declaration.cpp"
+    "gpu/texture_loader.cpp"
+    "gpu/surface_variant.cpp"
+    "gpu/pipeline.cpp"
+    "gpu/pipeline_precompile.cpp"
     "gpu/imgui/imgui_common.cpp"
     "gpu/imgui/imgui_font_builder.cpp"
     "gpu/imgui/imgui_snapshot.cpp"
@@ -452,6 +461,7 @@ function(compile_shader FILE_PATH TARGET_NAME)
                 DEPENDS ${MSL_FILE_OUT_PATH}.ir
         )
         BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${MSL_FILE_OUT_PATH}.metallib" DEST_FILE "${MSL_FILE_OUT_PATH}.metallib" ARRAY_NAME "g_${MSL_NAME}_air")
+        set_property(GLOBAL APPEND PROPERTY MARATHON_RECOMP_SHADER_HEADERS "gpu/shader/msl/${FILE_PATH}.metal.metallib.h")
     endif()
     if (MARATHON_RECOMP_D3D12)
         add_custom_command(
@@ -460,6 +470,7 @@ function(compile_shader FILE_PATH TARGET_NAME)
             DEPENDS ${HLSL_FILE_PATH}
         )
         target_sources(MarathonRecomp PRIVATE ${HLSL_FILE_OUT_PATH}.dxil.h)
+        set_property(GLOBAL APPEND PROPERTY MARATHON_RECOMP_SHADER_HEADERS "gpu/shader/hlsl/${FILE_PATH}.hlsl.dxil.h")
     endif()
     add_custom_command(
         OUTPUT ${HLSL_FILE_OUT_PATH}.spirv.h
@@ -467,6 +478,7 @@ function(compile_shader FILE_PATH TARGET_NAME)
         DEPENDS ${HLSL_FILE_PATH}
     )
     target_sources(MarathonRecomp PRIVATE ${HLSL_FILE_OUT_PATH}.spirv.h)
+    set_property(GLOBAL APPEND PROPERTY MARATHON_RECOMP_SHADER_HEADERS "gpu/shader/hlsl/${FILE_PATH}.hlsl.spirv.h")
 endfunction()
 
 function(compile_vertex_shader FILE_PATH)
@@ -493,6 +505,13 @@ compile_pixel_shader(resolve_msaa_color_8x)
 compile_pixel_shader(resolve_msaa_depth_2x)
 compile_pixel_shader(resolve_msaa_depth_4x)
 compile_pixel_shader(resolve_msaa_depth_8x)
+
+get_property(SHADER_HEADERS GLOBAL PROPERTY MARATHON_RECOMP_SHADER_HEADERS)
+set(SHADER_HEADER_CONTENT "#pragma once\n\n")
+foreach(SHADER_HEADER IN LISTS SHADER_HEADERS)
+    string(APPEND SHADER_HEADER_CONTENT "#include \"${SHADER_HEADER}\"\n")
+endforeach()
+file(CONFIGURE OUTPUT "${GENERATED_SOURCE_PATH}/gpu/shader/shaders.h" CONTENT "${SHADER_HEADER_CONTENT}" @ONLY)
 
 function(generate_aggregate_header INPUT_DIRECTORY OUTPUT_FILE)
     get_filename_component(ABS_OUTPUT_FILE "${OUTPUT_FILE}" ABSOLUTE)
