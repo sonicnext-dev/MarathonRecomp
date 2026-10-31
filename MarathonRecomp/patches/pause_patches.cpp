@@ -47,7 +47,7 @@ PPC_FUNC(sub_824F05D8)
     const auto pHUDPause = static_cast<Sonicteam::HUDPause*>(reinterpret_cast<Sonicteam::SoX::MessageReceiver*>(base + ctx.r3.u32));
     const auto pMessage = reinterpret_cast<Sonicteam::SoX::IMessage*>(base + ctx.r4.u32);
     
-    if (pMessage->ID == Sonicteam::Message::HUDPause::MsgChangeState::GetID())
+    if (pHUDPause->m_ShowMissionWindow && pMessage->ID == Sonicteam::Message::HUDPause::MsgChangeState::GetID())
     {
         const auto pMsgChangeState = static_cast<Sonicteam::Message::HUDPause::MsgChangeState*>(pMessage);
 
@@ -153,9 +153,13 @@ PPC_FUNC(sub_82509870)
 
                     case Sonicteam::PauseTask::PauseTaskState_Closed:
                     {
+                        if (!pPauseTask->m_pHUDPause->m_ShowMissionWindow)
+                            break;
+
                         // Restore message window upon unpausing.
                         guest_stack_var<Sonicteam::Message::HUDMessageWindow::MsgChangeState> msgChangeState(0);
                         in_pTask->ProcessMessage(msgChangeState.get());
+
                         break;
                     }
                 }
