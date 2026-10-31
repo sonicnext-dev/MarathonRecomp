@@ -5,6 +5,8 @@
 #include "guest_shader.h"
 #include "surface_variant.h"
 #include "vertex_declaration.h"
+#include "video_internal.h"
+#include "pipeline.h"
 #include "imgui/imgui_common.h"
 #include "imgui/imgui_snapshot.h"
 #include "render_command.h"
@@ -70,51 +72,6 @@ extern std::unique_ptr<RenderInterface> CreateMetalInterface();
 }
 
 using namespace plume;
-
-#pragma pack(push, 1)
-struct PipelineState
-{
-    GuestShader* vertexShader = nullptr;
-    GuestShader* pixelShader = nullptr;
-    GuestVertexDeclaration* vertexDeclaration = nullptr;
-    bool zEnable = true;
-    bool zWriteEnable = true;
-    bool stencilEnable = false;
-    bool stencilTwoSided = false;
-    RenderBlend srcBlend = RenderBlend::ONE;
-    RenderBlend destBlend = RenderBlend::ZERO;
-    RenderCullMode cullMode = RenderCullMode::NONE;
-    RenderFrontFace frontFace = RenderFrontFace::CLOCKWISE;
-    RenderComparisonFunction zFunc = RenderComparisonFunction::LESS;
-    RenderComparisonFunction stencilFunc = RenderComparisonFunction::ALWAYS;
-    RenderStencilOp stencilFail = RenderStencilOp::KEEP;
-    RenderStencilOp stencilZFail = RenderStencilOp::KEEP;
-    RenderStencilOp stencilPass = RenderStencilOp::KEEP;
-    RenderComparisonFunction stencilFuncCCW = RenderComparisonFunction::ALWAYS;
-    RenderStencilOp stencilFailCCW = RenderStencilOp::KEEP;
-    RenderStencilOp stencilZFailCCW = RenderStencilOp::KEEP;
-    RenderStencilOp stencilPassCCW = RenderStencilOp::KEEP;
-    uint32_t stencilMask = 0xFFFFFFFF;
-    uint32_t stencilWriteMask = 0xFFFFFFFF;
-    uint32_t stencilRef = 0;
-    bool alphaBlendEnable = false;
-    RenderBlendOperation blendOp = RenderBlendOperation::ADD;
-    float slopeScaledDepthBias = 0.0f;
-    int32_t depthBias = 0;
-    RenderBlend srcBlendAlpha = RenderBlend::ONE;
-    RenderBlend destBlendAlpha = RenderBlend::ZERO;
-    RenderBlendOperation blendOpAlpha = RenderBlendOperation::ADD;
-    uint32_t colorWriteEnable = uint32_t(RenderColorWriteEnable::ALL);
-    RenderPrimitiveTopology primitiveTopology = RenderPrimitiveTopology::TRIANGLE_LIST;
-    uint8_t vertexStrides[16]{};
-    RenderFormat renderTargetFormat{};
-    RenderFormat depthStencilFormat{};
-    RenderSampleCounts sampleCount = RenderSampleCount::COUNT_1;
-    bool enableAlphaToCoverage = false;
-    bool enableConditionalSurvey = false;
-    uint32_t specConstants = 0;
-};
-#pragma pack(pop)
 
 struct UploadAllocation
 {
@@ -256,10 +213,8 @@ static Profiler g_swapChainAcquireProfiler;
 static bool g_profilerVisible;
 static bool g_profilerWasToggled;
 
-#if !defined(MARATHON_RECOMP_D3D12) && !defined(MARATHON_RECOMP_METAL)
-static constexpr Backend g_backend = Backend::VULKAN;
-#else
-static Backend g_backend;
+#if defined(MARATHON_RECOMP_D3D12) || defined(MARATHON_RECOMP_METAL)
+Backend g_backend;
 #endif
 
 static bool g_triangleStripWorkaround = false;
@@ -320,14 +275,13 @@ static std::unique_ptr<RenderTextureView> g_blankTextureViews[TEXTURE_DESCRIPTOR
 
 TextureDescriptorAllocator g_textureDescriptorAllocator;
 
-static std::unique_ptr<RenderPipelineLayout> g_pipelineLayout;
+std::unique_ptr<RenderPipelineLayout> g_pipelineLayout;
 static xxHashMap<std::unique_ptr<RenderPipeline>> g_pipelines;
 
 #ifdef ASYNC_PSO_DEBUG
 static std::atomic<uint32_t> g_pipelinesCreatedInRenderThread;
 static std::atomic<uint32_t> g_pipelinesCreatedAsynchronously;
 static std::atomic<uint32_t> g_pipelinesDropped;
-static std::atomic<uint32_t> g_pipelinesCurrentlyCompiling;
 static std::string g_pipelineDebugText;
 static Mutex g_debugMutex;
 #endif
@@ -723,32 +677,6 @@ static void FlushBarriers()
     }
 }
 
-static std::unique_ptr<uint8_t[]> g_shaderCache;
-
-static void LoadEmbeddedResources()
-{
-    switch (g_backend)
-    {
-    case Backend::VULKAN:
-        g_shaderCache = std::make_unique<uint8_t[]>(g_spirvCacheDecompressedSize);
-        ZSTD_decompress(g_shaderCache.get(), g_spirvCacheDecompressedSize, g_compressedSpirvCache, g_spirvCacheCompressedSize);
-        break;
-#if defined(MARATHON_RECOMP_D3D12)
-    case Backend::D3D12:
-        g_shaderCache = std::make_unique<uint8_t[]>(g_dxilCacheDecompressedSize);
-        ZSTD_decompress(g_shaderCache.get(), g_dxilCacheDecompressedSize, g_compressedDxilCache, g_dxilCacheCompressedSize);
-        break;
-#elif defined(MARATHON_RECOMP_METAL)
-    case Backend::METAL:
-        g_shaderCache = std::make_unique<uint8_t[]>(g_airCacheDecompressedSize);
-        ZSTD_decompress(g_shaderCache.get(), g_airCacheDecompressedSize, g_compressedAirCache, g_airCacheCompressedSize);
-        break;
-#endif
-    default:
-        assert(false);
-    }
-}
-
 moodycamel::BlockingConcurrentQueue<RenderCommand> g_renderQueue;
 
 static void SetRenderStateUnimplemented(GuestDevice* device, uint32_t value)
@@ -985,38 +913,6 @@ static std::unique_ptr<RenderPipeline> g_copyDepthPipeline;
 static std::unique_ptr<RenderShader> g_resolveMsaaColorShaders[3];
 static ankerl::unordered_dense::map<RenderFormat, std::array<std::unique_ptr<RenderPipeline>, 3>> g_resolveMsaaColorPipelines;
 static std::unique_ptr<RenderPipeline> g_resolveMsaaDepthPipelines[3];
-
-static std::unique_ptr<RenderShader> g_enhancedBurnoutBlurVSShader;
-static std::unique_ptr<RenderShader> g_enhancedBurnoutBlurPSShader;
-
-static std::unique_ptr<RenderShader> g_MoviePSShader;
-
-static std::unique_ptr<GuestShader> g_conditionalSurveyPSShader;
-
-#if defined(MARATHON_RECOMP_D3D12)
-
-#define CREATE_SHADER(NAME) \
-    g_device->createShader( \
-        (g_backend == Backend::VULKAN) ? g_##NAME##_spirv : g_##NAME##_dxil, \
-        (g_backend == Backend::VULKAN) ? sizeof(g_##NAME##_spirv) : sizeof(g_##NAME##_dxil), \
-        "shaderMain", \
-        (g_backend == Backend::VULKAN) ? RenderShaderFormat::SPIRV : RenderShaderFormat::DXIL)
-
-#elif defined(MARATHON_RECOMP_METAL)
-
-#define CREATE_SHADER(NAME) \
-    g_device->createShader( \
-        (g_backend == Backend::VULKAN) ? g_##NAME##_spirv : g_##NAME##_air, \
-        (g_backend == Backend::VULKAN) ? sizeof(g_##NAME##_spirv) : sizeof(g_##NAME##_air), \
-        "shaderMain", \
-        (g_backend == Backend::VULKAN) ? RenderShaderFormat::SPIRV : RenderShaderFormat::METAL)
-
-#else
-
-#define CREATE_SHADER(NAME) \
-    g_device->createShader(g_##NAME##_spirv, sizeof(g_##NAME##_spirv), "shaderMain", RenderShaderFormat::SPIRV)
-
-#endif
 
 #ifdef _WIN32
 static bool DetectWine()
@@ -1653,13 +1549,7 @@ bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
         g_resolveMsaaDepthPipelines[i] = g_device->createGraphicsPipeline(desc);
     }
 
-    g_enhancedBurnoutBlurVSShader = CREATE_SHADER(enhanced_burnout_blur_vs);
-    g_enhancedBurnoutBlurPSShader = CREATE_SHADER(enhanced_burnout_blur_ps);
-    g_MoviePSShader = CREATE_SHADER(movie_ps);
-
-    g_conditionalSurveyPSShader = std::make_unique<GuestShader>(ResourceType::PixelShader);
-    g_conditionalSurveyPSShader->shader = CREATE_SHADER(conditional_survey_ps);
-
+    CreateReplacementShaders();
     CreateImGuiBackend();
 
     auto gammaCorrectionShader = CREATE_SHADER(gamma_correction_ps);
@@ -3581,398 +3471,6 @@ static void ProcRenderCommand(const RenderCommands::SetScissorRect& args)
     SetDirtyValue<int32_t>(g_dirtyStates.scissorRect, g_scissorRect.left, args.left);
     SetDirtyValue<int32_t>(g_dirtyStates.scissorRect, g_scissorRect.bottom, args.bottom);
     SetDirtyValue<int32_t>(g_dirtyStates.scissorRect, g_scissorRect.right, args.right);
-}
-
-static RenderShader* GetReplacementShader(GuestShader* guestShader)
-{
-    if (guestShader == nullptr)
-        return nullptr;
-
-    if (guestShader->shaderCacheEntry != nullptr)
-    {
-        switch (guestShader->shaderCacheEntry->hash)
-        {
-        case 0x3687D038CE7D0BEA:
-        case 0xB4DA7A442DBB16CC:
-            if (Config::RadialBlur == ERadialBlur::Enhanced)
-                return g_enhancedBurnoutBlurVSShader.get();
-            break;
-        case 0xDA58F0110A8595D9:
-        case 0x845A4EF989446C01:
-            if (Config::RadialBlur == ERadialBlur::Enhanced)
-                return g_enhancedBurnoutBlurPSShader.get();
-            break;
-        case 0x88EB0AA82E4257B0:
-            return g_MoviePSShader.get();
-        default:
-            break;
-        }
-    }
-
-    return nullptr;
-}
-
-static RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specConstants)
-{
-    auto* replacementShader = GetReplacementShader(guestShader);
-    if (replacementShader != nullptr)
-        return replacementShader;
-
-    if (g_backend != Backend::D3D12 ||
-        guestShader->shaderCacheEntry == nullptr ||
-        guestShader->shaderCacheEntry->specConstantsMask == 0)
-    {
-        std::lock_guard lock(guestShader->mutex);
-
-        if (guestShader->shader == nullptr)
-        {
-            assert(guestShader->shaderCacheEntry != nullptr);
-
-            switch (g_backend) {
-            case Backend::VULKAN:
-            {
-                auto compressedSpirvData = g_shaderCache.get() + guestShader->shaderCacheEntry->spirvOffset;
-
-                std::vector<uint8_t> decoded(smolv::GetDecodedBufferSize(compressedSpirvData, guestShader->shaderCacheEntry->spirvSize));
-                bool result = smolv::Decode(compressedSpirvData, guestShader->shaderCacheEntry->spirvSize, decoded.data(), decoded.size());
-                assert(result);
-
-                guestShader->shader = g_device->createShader(decoded.data(), decoded.size(), "shaderMain", RenderShaderFormat::SPIRV);
-                break;
-            }
-            case Backend::D3D12:
-            {
-                guestShader->shader = g_device->createShader(g_shaderCache.get() + guestShader->shaderCacheEntry->dxilOffset,
-                    guestShader->shaderCacheEntry->dxilSize, "shaderMain", RenderShaderFormat::DXIL);
-                break;
-            }
-            case Backend::METAL:
-            {
-                guestShader->shader = g_device->createShader(g_shaderCache.get() + guestShader->shaderCacheEntry->airOffset,
-                    guestShader->shaderCacheEntry->airSize, "shaderMain", RenderShaderFormat::METAL);
-                break;
-            }
-            }
-
-#ifdef _DEBUG
-            guestShader->shader->setName(fmt::format("{}:{:x}", guestShader->shaderCacheEntry->filename, guestShader->shaderCacheEntry->hash));
-#endif
-        }
-
-        return guestShader->shader.get();
-    }
-
-    specConstants &= guestShader->shaderCacheEntry->specConstantsMask;
-
-    RenderShader* shader;
-    {
-        std::lock_guard lock(guestShader->mutex);
-        shader = guestShader->linkedShaders[specConstants].get();
-    }
-
-#ifdef MARATHON_RECOMP_D3D12
-    if (shader == nullptr)
-    {
-        static Mutex g_compiledSpecConstantLibraryBlobMutex;
-        static ankerl::unordered_dense::map<uint32_t, ComPtr<IDxcBlob>> g_compiledSpecConstantLibraryBlobs;
-
-        thread_local ComPtr<IDxcCompiler3> s_dxcCompiler;
-        thread_local ComPtr<IDxcLinker> s_dxcLinker;
-        thread_local ComPtr<IDxcUtils> s_dxcUtils;
-
-        wchar_t specConstantsLibName[0x100];
-        swprintf_s(specConstantsLibName, L"SpecConstants_%d", specConstants);
-
-        ComPtr<IDxcBlob> specConstantLibraryBlob;
-        {
-            std::lock_guard lock(g_compiledSpecConstantLibraryBlobMutex);
-            specConstantLibraryBlob = g_compiledSpecConstantLibraryBlobs[specConstants];
-        }
-
-        if (specConstantLibraryBlob == nullptr)
-        {
-            if (s_dxcCompiler == nullptr)
-            {
-                HRESULT hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(s_dxcCompiler.GetAddressOf()));
-                assert(SUCCEEDED(hr) && s_dxcCompiler != nullptr);
-            }
-
-            char libraryHlsl[0x100];
-            sprintf_s(libraryHlsl, "export uint g_SpecConstants() { return %d; }", specConstants);
-
-            DxcBuffer buffer{};
-            buffer.Ptr = libraryHlsl;
-            buffer.Size = strlen(libraryHlsl);
-
-            const wchar_t* args[1];
-            args[0] = L"-T lib_6_3";
-
-            ComPtr<IDxcResult> result;
-            HRESULT hr = s_dxcCompiler->Compile(&buffer, args, std::size(args), nullptr, IID_PPV_ARGS(result.GetAddressOf()));
-            assert(SUCCEEDED(hr) && result != nullptr);
-
-            hr = result->GetResult(specConstantLibraryBlob.GetAddressOf());
-            assert(SUCCEEDED(hr) && specConstantLibraryBlob != nullptr);
-
-            std::lock_guard lock(g_compiledSpecConstantLibraryBlobMutex);
-            g_compiledSpecConstantLibraryBlobs.emplace(specConstants, specConstantLibraryBlob);
-        }
-
-        if (s_dxcLinker == nullptr)
-        {
-            HRESULT hr = DxcCreateInstance(CLSID_DxcLinker, IID_PPV_ARGS(s_dxcLinker.GetAddressOf()));
-            assert(SUCCEEDED(hr) && s_dxcLinker != nullptr);
-        }
-
-        s_dxcLinker->RegisterLibrary(specConstantsLibName, specConstantLibraryBlob.Get());
-
-        wchar_t shaderLibName[0x100];
-        swprintf_s(shaderLibName, L"Shader_%d", guestShader->shaderCacheEntry->dxilOffset);
-
-        ComPtr<IDxcBlobEncoding> shaderLibraryBlob;
-        {
-            std::lock_guard lock(guestShader->mutex);
-            shaderLibraryBlob = guestShader->libraryBlob;
-        }
-
-        if (shaderLibraryBlob == nullptr)
-        {
-            if (s_dxcUtils == nullptr)
-            {
-                HRESULT hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(s_dxcUtils.GetAddressOf()));
-                assert(SUCCEEDED(hr) && s_dxcUtils != nullptr);
-            }
-
-            HRESULT hr = s_dxcUtils->CreateBlobFromPinned(
-                g_shaderCache.get() + guestShader->shaderCacheEntry->dxilOffset,
-                guestShader->shaderCacheEntry->dxilSize,
-                DXC_CP_ACP,
-                shaderLibraryBlob.GetAddressOf());
-
-            assert(SUCCEEDED(hr) && shaderLibraryBlob != nullptr);
-
-            std::lock_guard lock(guestShader->mutex);
-            guestShader->libraryBlob = shaderLibraryBlob;
-        }
-
-        s_dxcLinker->RegisterLibrary(shaderLibName, shaderLibraryBlob.Get());
-
-        const wchar_t* libraryNames[] = { specConstantsLibName, shaderLibName };
-
-        ComPtr<IDxcOperationResult> result;
-        HRESULT hr = s_dxcLinker->Link(L"shaderMain", guestShader->type == ResourceType::VertexShader ? L"vs_6_0" : L"ps_6_0",
-            libraryNames, std::size(libraryNames), nullptr, 0, result.GetAddressOf());
-
-        assert(SUCCEEDED(hr) && result != nullptr);
-
-        ComPtr<IDxcBlob> blob;
-        hr = result->GetResult(blob.GetAddressOf());
-        assert(SUCCEEDED(hr) && blob != nullptr);
-
-        {
-            std::lock_guard lock(guestShader->mutex);
-
-            auto& linkedShader = guestShader->linkedShaders[specConstants];
-            if (linkedShader == nullptr)
-            {
-                linkedShader = g_device->createShader(blob->GetBufferPointer(), blob->GetBufferSize(), "shaderMain", RenderShaderFormat::DXIL);
-                guestShader->shaderBlobs.push_back(std::move(blob));
-            }
-
-            shader = linkedShader.get();
-
-#ifdef _DEBUG
-            shader->setName(fmt::format("{}:{:x}", guestShader->shaderCacheEntry->filename, guestShader->shaderCacheEntry->hash));
-#endif
-        }        
-    }
-#endif
-
-    return shader;
-}
-
-static XXH64_hash_t GetPipelineStateHash(const PipelineState& pipelineState)
-{
-    XXH64_hash_t seed = 0;
-
-    // If shaders need to be replaced, make sure they result in a different pipeline hash.
-    struct {
-        RenderShader* vertex;
-        RenderShader* pixel;
-    } replacements(GetReplacementShader(pipelineState.vertexShader), GetReplacementShader(pipelineState.pixelShader));
-    if (replacements.vertex != nullptr || replacements.pixel != nullptr)
-        seed = XXH3_64bits(&replacements, sizeof(replacements));
-
-    return XXH3_64bits_withSeed(&pipelineState, sizeof(pipelineState), seed);
-}
-
-static void SanitizePipelineState(PipelineState& pipelineState)
-{
-    if (!pipelineState.zEnable && !pipelineState.stencilEnable)
-    {
-        pipelineState.depthStencilFormat = RenderFormat::UNKNOWN;
-    }
-
-    if (!pipelineState.zEnable)
-    {
-        pipelineState.zWriteEnable = false;
-        pipelineState.zFunc = RenderComparisonFunction::LESS;
-        pipelineState.slopeScaledDepthBias = 0.0f;
-        pipelineState.depthBias = 0;
-    }
-
-    if (!pipelineState.stencilEnable)
-    {
-        pipelineState.stencilTwoSided = false;
-        pipelineState.stencilFunc = RenderComparisonFunction::ALWAYS;
-        pipelineState.stencilFail = RenderStencilOp::KEEP;
-        pipelineState.stencilZFail = RenderStencilOp::KEEP;
-        pipelineState.stencilPass = RenderStencilOp::KEEP;
-        pipelineState.stencilMask = 0xFFFFFFFF;
-        pipelineState.stencilWriteMask = 0xFFFFFFFF;
-        pipelineState.stencilRef = 0;
-    }
-
-    if (!pipelineState.stencilTwoSided)
-    {
-        pipelineState.stencilFuncCCW = pipelineState.stencilFunc;
-        pipelineState.stencilFailCCW = pipelineState.stencilFail;
-        pipelineState.stencilZFailCCW = pipelineState.stencilZFail;
-        pipelineState.stencilPassCCW = pipelineState.stencilPass;
-    }
-
-    if (pipelineState.slopeScaledDepthBias == 0.0f)
-        pipelineState.slopeScaledDepthBias = 0.0f; // Remove sign.
-
-    if (!pipelineState.colorWriteEnable)
-    {
-        pipelineState.alphaBlendEnable = false;
-        pipelineState.renderTargetFormat = RenderFormat::UNKNOWN;
-    }
-
-    if (!pipelineState.alphaBlendEnable)
-    {
-        pipelineState.srcBlend = RenderBlend::ONE;
-        pipelineState.destBlend = RenderBlend::ZERO;
-        pipelineState.blendOp = RenderBlendOperation::ADD;
-        pipelineState.srcBlendAlpha = RenderBlend::ONE;
-        pipelineState.destBlendAlpha = RenderBlend::ZERO;
-        pipelineState.blendOpAlpha = RenderBlendOperation::ADD;
-    }
-
-    for (size_t i = 0; i < 16; i++)
-    {
-        if (!pipelineState.vertexDeclaration->vertexStreams[i])
-            pipelineState.vertexStrides[i] = 0;
-    }
-
-    uint32_t specConstantsMask = 0;
-    if (pipelineState.vertexShader->shaderCacheEntry != nullptr)
-        specConstantsMask |= pipelineState.vertexShader->shaderCacheEntry->specConstantsMask;
-
-    if (pipelineState.pixelShader != nullptr && pipelineState.pixelShader->shaderCacheEntry != nullptr)
-        specConstantsMask |= pipelineState.pixelShader->shaderCacheEntry->specConstantsMask;
-
-    pipelineState.specConstants &= specConstantsMask;
-}
-
-static std::unique_ptr<RenderPipeline> CreateGraphicsPipeline(const PipelineState& pipelineState)
-{
-#ifdef ASYNC_PSO_DEBUG
-    ++g_pipelinesCurrentlyCompiling;
-#endif
-
-    RenderGraphicsPipelineDesc desc;
-    desc.pipelineLayout = g_pipelineLayout.get();
-    desc.vertexShader = GetOrLinkShader(pipelineState.vertexShader, pipelineState.specConstants);
-    if (pipelineState.enableConditionalSurvey)
-        desc.pixelShader = GetOrLinkShader(g_conditionalSurveyPSShader.get(), pipelineState.specConstants);
-    else if (pipelineState.pixelShader != nullptr)
-        desc.pixelShader = GetOrLinkShader(pipelineState.pixelShader, pipelineState.specConstants);
-    else
-        desc.pixelShader = nullptr;
-    desc.depthFunction = pipelineState.zFunc;
-    desc.depthEnabled = pipelineState.zEnable;
-    desc.depthWriteEnabled = pipelineState.zWriteEnable;
-    desc.depthBias = pipelineState.depthBias;
-    desc.stencilEnabled = pipelineState.stencilEnable;
-    desc.stencilReadMask = pipelineState.stencilMask;
-    desc.stencilWriteMask = pipelineState.stencilWriteMask;
-    desc.stencilReference = pipelineState.stencilRef;
-    desc.stencilFrontFace.compareFunction = pipelineState.stencilFunc;
-    desc.stencilFrontFace.failOp = pipelineState.stencilFail;
-    desc.stencilFrontFace.depthFailOp = pipelineState.stencilZFail;
-    desc.stencilFrontFace.passOp = pipelineState.stencilPass;
-    if (pipelineState.stencilTwoSided) {
-        desc.stencilBackFace.compareFunction = pipelineState.stencilFuncCCW;
-        desc.stencilBackFace.failOp = pipelineState.stencilFailCCW;
-        desc.stencilBackFace.depthFailOp = pipelineState.stencilZFailCCW;
-        desc.stencilBackFace.passOp = pipelineState.stencilPassCCW;
-    } else {
-        desc.stencilBackFace = desc.stencilFrontFace;
-    }
-    desc.slopeScaledDepthBias = pipelineState.slopeScaledDepthBias;
-    desc.dynamicDepthBiasEnabled = g_capabilities.dynamicDepthBias;
-    desc.depthClipEnabled = true;
-    desc.primitiveTopology = pipelineState.primitiveTopology;
-    if (!g_capabilities.triangleFan && desc.primitiveTopology == RenderPrimitiveTopology::TRIANGLE_FAN) {
-        desc.primitiveTopology = RenderPrimitiveTopology::TRIANGLE_LIST;
-    }
-    desc.cullMode = pipelineState.cullMode;
-    desc.frontFace = pipelineState.frontFace;
-    desc.renderTargetFormat[0] = pipelineState.renderTargetFormat;
-    desc.renderTargetBlend[0].blendEnabled = pipelineState.alphaBlendEnable;
-    desc.renderTargetBlend[0].srcBlend = pipelineState.srcBlend;
-    desc.renderTargetBlend[0].dstBlend = pipelineState.destBlend;
-    desc.renderTargetBlend[0].blendOp = pipelineState.blendOp;
-    desc.renderTargetBlend[0].srcBlendAlpha = pipelineState.srcBlendAlpha;
-    desc.renderTargetBlend[0].dstBlendAlpha = pipelineState.destBlendAlpha;
-    desc.renderTargetBlend[0].blendOpAlpha = pipelineState.blendOpAlpha;
-    desc.renderTargetBlend[0].renderTargetWriteMask = pipelineState.colorWriteEnable;
-    desc.renderTargetCount = pipelineState.renderTargetFormat != RenderFormat::UNKNOWN ? 1 : 0;
-    desc.depthTargetFormat = pipelineState.depthStencilFormat;
-    desc.multisampling.sampleCount = pipelineState.sampleCount;
-    desc.alphaToCoverageEnabled = pipelineState.enableAlphaToCoverage;
-    desc.inputElements = pipelineState.vertexDeclaration->inputElements.get();
-    desc.inputElementsCount = pipelineState.vertexDeclaration->inputElementCount;
-    
-    RenderSpecConstant specConstant{};
-    specConstant.value = pipelineState.specConstants;
-    
-    if (pipelineState.specConstants != 0)
-    {
-        desc.specConstants = &specConstant;
-        desc.specConstantsCount = 1;
-    }
-    
-    RenderInputSlot inputSlots[16]{};
-    uint32_t inputSlotIndices[16]{};
-    uint32_t inputSlotCount = 0;
-    
-    for (size_t i = 0; i < pipelineState.vertexDeclaration->inputElementCount; i++)
-    {
-        auto& inputElement = pipelineState.vertexDeclaration->inputElements[i];
-        auto& inputSlotIndex = inputSlotIndices[inputElement.slotIndex];
-    
-        if (inputSlotIndex == NULL)
-            inputSlotIndex = ++inputSlotCount;
-    
-        auto& inputSlot = inputSlots[inputSlotIndex - 1];
-        inputSlot.index = inputElement.slotIndex;
-        inputSlot.stride = pipelineState.vertexStrides[inputElement.slotIndex];
-        inputSlot.classification = RenderInputSlotClassification::PER_VERTEX_DATA;
-    }
-    
-    desc.inputSlots = inputSlots;
-    desc.inputSlotsCount = inputSlotCount;
-    
-    auto pipeline = g_device->createGraphicsPipeline(desc);
-
-#ifdef ASYNC_PSO_DEBUG
-    --g_pipelinesCurrentlyCompiling;
-#endif
-
-    return pipeline;
 }
 
 static RenderPipeline* CreateGraphicsPipelineInRenderThread(PipelineState pipelineState)

@@ -131,6 +131,7 @@ set(MARATHON_RECOMP_GPU_CXX_SOURCES
     "gpu/vertex_declaration.cpp"
     "gpu/texture_loader.cpp"
     "gpu/surface_variant.cpp"
+    "gpu/pipeline.cpp"
     "gpu/imgui/imgui_common.cpp"
     "gpu/imgui/imgui_font_builder.cpp"
     "gpu/imgui/imgui_snapshot.cpp"
