@@ -227,7 +227,7 @@ GuestVertexDeclaration* CreateVertexDeclarationWithoutAddRef(GuestVertexElement*
         }
 
         vertexDeclaration->inputElements = std::make_unique<RenderInputElement[]>(inputElements.size());
-        std::copy(inputElements.begin(), inputElements.end(), vertexDeclaration->inputElements.get());
+        std::ranges::copy(inputElements, vertexDeclaration->inputElements.get());
 
         vertexDeclaration->vertexElements = std::make_unique<GuestVertexElement[]>(vertexElementCount + 1);
         std::copy(vertexElements, vertexElements + vertexElementCount + 1, vertexDeclaration->vertexElements.get());

@@ -287,7 +287,7 @@ static void DrawIndexedPrimitive(GuestDevice* device, uint32_t primitiveType, in
     queue.submit();
 }
 
-static void DrawPrimitiveUP(GuestDevice* device, uint32_t primitiveType, uint32_t primitiveCount, void* vertexStreamZeroData, uint32_t vertexStreamZeroStride)
+static void DrawPrimitiveUP(GuestDevice* device, uint32_t primitiveType, uint32_t primitiveCount, const void* vertexStreamZeroData, uint32_t vertexStreamZeroStride)
 {
     LocalRenderCommandQueue queue;
     FlushRenderStateForMainThread(device, queue);
@@ -314,7 +314,7 @@ static void StretchRect(GuestDevice* device, uint32_t flags, uint32_t, GuestText
     });
 }
 
-static void SetDefaultViewport(GuestDevice* device, GuestSurface* surface)
+static void SetDefaultViewport(GuestDevice* device, const GuestSurface* surface)
 {
     if (surface != nullptr)
     {
@@ -359,7 +359,7 @@ void SetDepthStencilSurface(GuestDevice* device, GuestSurface* depthStencil)
     SetDefaultViewport(device, depthStencil);
 }
 
-static void Clear(GuestDevice* device, uint32_t flags, uint32_t, be<float>* color, double z, uint32_t stencil)
+static void Clear(GuestDevice* device, uint32_t flags, uint32_t, const be<float>* color, double z, uint32_t stencil)
 {
     g_renderQueue.enqueue(RenderCommands::Clear
     {
@@ -370,7 +370,7 @@ static void Clear(GuestDevice* device, uint32_t flags, uint32_t, be<float>* colo
     });
 }
 
-static void SetViewport(GuestDevice* device, GuestViewport* viewport)
+static void SetViewport(GuestDevice* device, const GuestViewport* viewport)
 {
     g_renderQueue.enqueue(RenderCommands::SetViewport
     {
@@ -405,7 +405,7 @@ struct RESOLVE_PARAMS
     be<uint32_t> format2;
 };
 
-int D3DDevice_BeginTiling(GuestDevice* device, uint32_t flags, uint32_t count, Rect* pTileRects, be<float>* pClearColor, float clearZ, uint32_t clearStencil)
+int D3DDevice_BeginTiling(GuestDevice* device, uint32_t flags, uint32_t count, Rect* pTileRects, const be<float>* pClearColor, float clearZ, uint32_t clearStencil)
 {
     Clear(device, 0x3F, 0, pClearColor, clearZ, clearStencil);
 
