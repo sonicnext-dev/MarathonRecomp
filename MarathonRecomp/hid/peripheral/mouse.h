@@ -1,5 +1,6 @@
 #pragma once
 
+#include <hid/peripheral/mouse_capture_state.h>
 #include <hid/peripheral/peripheral.h>
 
 namespace HID
@@ -11,6 +12,7 @@ namespace HID
         float Y{};
         float RelativeX{};
         float RelativeY{};
+        MouseCaptureState MouseCaptureState{};
 
         HID_MAKE_PERIPHERAL_ID(2);
 
