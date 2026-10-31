@@ -1,6 +1,5 @@
 #include <api/Marathon.h>
 #include <hid/hid.h>
-#include <ui/black_bar.h>
 #include <user/config.h>
 #include <user/achievement_manager.h>
 #include <app.h>
@@ -25,12 +24,12 @@ void SetLifeBarAnimation(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5, PPCR
 
         if (Config::RestoreContextualHUDColours)
         {
-            *Sonicteam::Globals::ms_apMainDisplayColours[Sonicteam::Character_Shadow] = 1.0f;
-            *Sonicteam::Globals::ms_apMainDisplayColours[Sonicteam::Character_Omega] = 1.0f;
-            *Sonicteam::Globals::ms_apMainDisplayColours[Sonicteam::Character_Rouge] = 1.0f;
-            *Sonicteam::Globals::ms_apMainDisplayColours[Sonicteam::Character_Silver] = 2.0f;
-            *Sonicteam::Globals::ms_apMainDisplayColours[Sonicteam::Character_Amy] = 2.0f;
-            *Sonicteam::Globals::ms_apMainDisplayColours[Sonicteam::Character_Blaze] = 2.0f;
+            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Shadow] = 1.0f;
+            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Omega] = 1.0f;
+            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Rouge] = 1.0f;
+            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Silver] = 2.0f;
+            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Amy] = 2.0f;
+            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Blaze] = 2.0f;
         }
 
         s_initContextualHUD = true;
@@ -211,7 +210,7 @@ bool Super3_DisableChangeRequestHint()
 PPC_FUNC_IMPL(__imp__sub_824A6EA8);
 PPC_FUNC(sub_824A6EA8)
 {
-    if ((App::s_isSkipLogos || Config::SkipIntroLogos) && ctx.r4.u32 == 1)
+    if ((App::s_isSkipLogos || Config::BootDirectlyToTitle) && ctx.r4.u32 == 1)
         ctx.r4.u32 = 4;
 
     __imp__sub_824A6EA8(ctx, base);

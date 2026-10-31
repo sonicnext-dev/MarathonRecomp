@@ -7,6 +7,7 @@
 #include <Sonicteam/SoX/LinkNode.h>
 #include <Sonicteam/SoX/Thread.h>
 #include <Sonicteam/DocMarathon.h>
+#include <Sonicteam/DocState.h>
 #include <Sonicteam/MyGraphicsDevice.h>
 #include <Sonicteam/RaderMapManager.h>
 #include <Sonicteam/RenderTargetContainer.h>
@@ -21,7 +22,7 @@ namespace Sonicteam
     class DocMarathonImp : public DocMarathon
     {
     public:
-        MARATHON_INSERT_PADDING(0x04);
+        xpointer<DocState> m_pDocState;
         xpointer<MyGraphicsDevice> m_pMyGraphicsDevice;
         xpointer<SceneParamManager> m_pSceneParamManager;
         MARATHON_INSERT_PADDING(0x34);
@@ -48,6 +49,7 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(0x2C);
     };
 
+    MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_pDocState, 0x5C);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_pMyGraphicsDevice, 0x60);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_pSceneParamManager, 0x64);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_InputManagers, 0x9C);

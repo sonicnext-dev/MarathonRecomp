@@ -5,11 +5,23 @@
 // characters in the locale get added to the atlas.
 #define ENABLE_IM_FONT_ATLAS_SNAPSHOT
 
+struct GuestTexture;
+
+enum class ImFontType
+{
+    Rodin,
+    NewRodin,
+    Arial
+};
+
 struct ImFontAtlasSnapshot
 {
     std::vector<uint8_t> data;
     ankerl::unordered_dense::map<const void*, size_t> objects;
     std::vector<uint32_t> offsets;
+
+    static inline bool IsInitialised{};
+    static inline std::unique_ptr<GuestTexture> FontTexture;
 
     template<typename T1, typename T2>
     void SnapPointer(size_t offset, const T1& value, const T2& ptr, size_t count);
@@ -24,8 +36,8 @@ struct ImFontAtlasSnapshot
 
     static ImFontAtlas* Load();
 
-    static void GenerateGlyphRanges();
+    static void Init(bool in_isInstaller = false);
 
     // When ENABLE_IM_FONT_ATLAS_SNAPSHOT is undefined, this creates the font runtime instead. 
-    static ImFont* GetFont(const char* name);
+    static ImFont* GetFont(ImFontType in_fontType);
 };

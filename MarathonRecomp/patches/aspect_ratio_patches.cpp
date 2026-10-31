@@ -174,6 +174,22 @@ void AspectRatioPatches::ComputeOffsets()
     g_radarMapScale = 256 * g_aspectRatioScale * g_aspectRatioGameplayScale;
 }
 
+float AspectRatioPatches::AlignX(float in_offset)
+{
+    if (Config::UIAlignmentMode == EUIAlignmentMode::Centre && g_aspectRatioOffsetX > 0)
+        return g_aspectRatioOffsetX + in_offset;
+
+    return in_offset;
+}
+
+float AspectRatioPatches::AlignY(float in_offset)
+{
+    if (Config::UIAlignmentMode == EUIAlignmentMode::Centre && g_aspectRatioOffsetY > 0)
+        return g_aspectRatioOffsetY + in_offset;
+
+    return in_offset;
+}
+
 void EmplacePath(const void* key, const std::string_view& value)
 {
     std::lock_guard lock(g_pathMutex);
@@ -521,7 +537,33 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             if ((modifier.Flags & CSD_CHEVRON) != 0 && g_aspectRatio <= WIDE_ASPECT_RATIO)
                 offsetX = 0.0f;
 
-            if ((modifier.Flags & CSD_SCALE) != 0)
+            if ((modifier.Flags & CSD_CROP) != 0)
+            {
+                scaleX = std::max(vpWidth / 1280.0f, vpHeight / 720.0f);
+
+                if ((modifier.Flags & CSD_ALIGN_RIGHT) != 0)
+                    offsetX = vpWidth - (1280.0f * scaleX);
+                else if ((modifier.Flags & CSD_ALIGN_LEFT) != 0)
+                    offsetX = 0.0f;
+                else
+                    offsetX = (vpWidth - (1280.0f * scaleX)) * 0.5f;
+
+                offsetX += pivotX * scaleX;
+            }
+            else if ((modifier.Flags & CSD_FIT) != 0)
+            {
+                const auto fitScale = std::min((vpWidth / 1280.0f) / g_aspectRatioScale, 1.0f);
+
+                scaleX *= fitScale;
+
+                if ((modifier.Flags & CSD_ALIGN_RIGHT) != 0)
+                    offsetX += 1280.0f * (1.0f - fitScale) * g_aspectRatioScale;
+                else if ((modifier.Flags & CSD_ALIGN_LEFT) == 0)
+                    offsetX += g_aspectRatioOffsetX + 640.0f * (1.0f - fitScale) * g_aspectRatioScale - g_aspectRatioOffsetX;
+
+                offsetX += pivotX * g_aspectRatioScale;
+            }
+            else if ((modifier.Flags & CSD_SCALE) != 0)
             {
                 scaleX *= g_aspectRatioGameplayScale;
 
@@ -548,7 +590,33 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
         else if ((modifier.Flags & CSD_ALIGN_TOP) == 0)
             offsetY = g_aspectRatioOffsetY;
 
-        if ((modifier.Flags & CSD_SCALE) != 0)
+        if ((modifier.Flags & CSD_CROP) != 0)
+        {
+            scaleY = std::max(vpWidth / 1280.0f, vpHeight / 720.0f);
+
+            if ((modifier.Flags & CSD_ALIGN_BOTTOM) != 0)
+                offsetY = vpHeight - (720.0f * scaleY);
+            else if ((modifier.Flags & CSD_ALIGN_TOP) != 0)
+                offsetY = 0.0f;
+            else
+                offsetY = (vpHeight - (720.0f * scaleY)) * 0.5f;
+
+            offsetY += pivotY * scaleY;
+        }
+        else if ((modifier.Flags & CSD_FIT) != 0)
+        {
+            const auto fitScale = std::min((vpWidth / 1280.0f) / g_aspectRatioScale, 1.0f);
+
+            scaleY *= fitScale;
+
+            if ((modifier.Flags & CSD_ALIGN_BOTTOM) != 0)
+                offsetY += 720.0f * (1.0f - fitScale) * g_aspectRatioScale;
+            else if ((modifier.Flags & CSD_ALIGN_TOP) == 0)
+                offsetY += g_aspectRatioOffsetY + 360.0f * (1.0f - fitScale) * g_aspectRatioScale - g_aspectRatioOffsetY;
+
+            offsetY += pivotY * g_aspectRatioScale;
+        }
+        else if ((modifier.Flags & CSD_SCALE) != 0)
         {
             scaleY *= g_aspectRatioGameplayScale;
 
@@ -2264,6 +2332,13 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/title/title/Scene_Title/Logo_add"), { CSD_SCALE } },
     { HashStr("sprite/title/title/Scene_Title/Logo"), { CSD_SCALE } },
     { HashStr("sprite/title/title/Scene_Title/copyright"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
+
+    // title (2005)
+    { HashStr("/back_aoita/Null_0064"), { CSD_CROP | CSD_ALIGN_LEFT } },
+    { HashStr("/title_menu/Null_0030kage"), { CSD_FIT } },
+    { HashStr("/title_menu/Cast_0157"), { CSD_SCALE | CSD_ALIGN_BOTTOM_RIGHT } },
+    { HashStr("/title_menu/Null_0030"), { CSD_FIT } },
+    { HashStr("/title_menu/Null_0030boke"), { CSD_FIT } },
 
     // titleloop_sth
     { HashStr("sprite/logo/titleloop_sth/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE | CSD_MOVIE | CSD_MODIFIER_NARROW_ONLY } },

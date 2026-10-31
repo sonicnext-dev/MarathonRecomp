@@ -17,7 +17,6 @@
 #include <kernel/xdbf.h>
 #include <plume_render_interface.h>
 #include <res/bc_diff/button_bc_diff.bin.h>
-#include <res/font/im_font_atlas.dds.h>
 #include <shader/shader_cache.h>
 #include <Marathon.h>
 #include <ui/achievement_menu.h>
@@ -361,58 +360,17 @@ static uint32_t g_intermediaryBackBufferTextureDescriptorIndex;
 
 static std::unique_ptr<RenderPipeline> g_gammaCorrectionPipeline;
 
-static std::unique_ptr<RenderDescriptorSet> g_textureDescriptorSet;
+std::unique_ptr<RenderDescriptorSet> g_textureDescriptorSet;
 static std::unique_ptr<RenderDescriptorSet> g_samplerDescriptorSet;
 
 static constexpr uint32_t CONDITIONAL_SURVEY_MAX = 64;
 static std::unique_ptr<RenderBuffer> g_conditionalSurveyBuffer;
 static std::unique_ptr<RenderDescriptorSet> g_conditionalSurveyDescriptorSet;
 
-enum
-{
-    TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D,
-    TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D_ARRAY,
-    TEXTURE_DESCRIPTOR_NULL_TEXTURE_CUBE,
-    TEXTURE_DESCRIPTOR_NULL_COUNT
-};
-
-struct TextureDescriptorAllocator
-{
-    Mutex mutex;
-    uint32_t capacity = TEXTURE_DESCRIPTOR_NULL_COUNT;
-    std::vector<uint32_t> freed;
-
-    uint32_t allocate()
-    {
-        std::lock_guard lock(mutex);
-
-        uint32_t value;
-        if (!freed.empty())
-        {
-            value = freed.back();
-            freed.pop_back();
-        }
-        else
-        {
-            value = capacity;
-            ++capacity;
-        }
-
-        return value;
-    }
-
-    void free(uint32_t value)
-    {
-        assert(value != NULL);
-        std::lock_guard lock(mutex);
-        freed.push_back(value);
-    }
-};
-
 static std::unique_ptr<RenderTexture> g_blankTextures[TEXTURE_DESCRIPTOR_NULL_COUNT];
 static std::unique_ptr<RenderTextureView> g_blankTextureViews[TEXTURE_DESCRIPTOR_NULL_COUNT];
 
-static TextureDescriptorAllocator g_textureDescriptorAllocator;
+TextureDescriptorAllocator g_textureDescriptorAllocator;
 
 static std::unique_ptr<RenderPipelineLayout> g_pipelineLayout;
 static xxHashMap<std::unique_ptr<RenderPipeline>> g_pipelines;
@@ -1604,25 +1562,20 @@ static bool DetectWine()
 static constexpr size_t TEXTURE_DESCRIPTOR_SIZE = 32768;
 static constexpr size_t SAMPLER_DESCRIPTOR_SIZE = 1024;
 
-static std::unique_ptr<GuestTexture> g_imFontTexture;
 static std::unique_ptr<RenderPipelineLayout> g_imPipelineLayout;
 static std::unique_ptr<RenderPipeline> g_imPipeline;
 static std::unique_ptr<RenderPipeline> g_imAdditivePipeline;
 
-template<typename T>
-static void ExecuteCopyCommandList(const T& function)
+void Video::ExecuteCopyCommandList(const std::function<void(RenderCommandList*)>& function)
 {
     std::lock_guard lock(g_copyMutex);
 
     g_copyCommandList->begin();
-    function();
+    function(g_copyCommandList.get());
     g_copyCommandList->end();
     g_copyQueue->executeCommandLists(g_copyCommandList.get(), g_copyCommandFence.get());
     g_copyQueue->waitForCommandFence(g_copyCommandFence.get());
 }
-
-static constexpr uint32_t PITCH_ALIGNMENT = 0x100;
-static constexpr uint32_t PLACEMENT_ALIGNMENT = 0x200;
 
 struct ImGuiPushConstants
 {
@@ -1642,8 +1595,6 @@ struct ImGuiPushConstants
     float outline{};
 };
 
-extern ImFontBuilderIO g_fontBuilderIO;
-
 static void CreateImGuiBackend()
 {
     ImGuiIO& io = ImGui::GetIO();
@@ -1651,88 +1602,11 @@ static void CreateImGuiBackend()
     io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
     io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 
-#ifdef ENABLE_IM_FONT_ATLAS_SNAPSHOT
-    IM_DELETE(io.Fonts);
-    io.Fonts = ImFontAtlasSnapshot::Load();
-#else
-    io.Fonts->AddFontDefault();
-    ImFontAtlasSnapshot::GenerateGlyphRanges();
-#endif
-
     InitImGuiUtils();
     OptionsMenu::Init();
     InstallerWizard::Init();
 
     ImGui_ImplSDL3_InitForOther(GameWindow::s_pWindow);
-
-#ifdef ENABLE_IM_FONT_ATLAS_SNAPSHOT
-    g_imFontTexture = LoadTexture(
-        decompressZstd(g_im_font_atlas_texture, g_im_font_atlas_texture_uncompressed_size).get(), g_im_font_atlas_texture_uncompressed_size);
-#else
-    io.Fonts->FontBuilderIO = &g_fontBuilderIO;
-    io.Fonts->Build();
-
-    g_imFontTexture = std::make_unique<GuestTexture>(ResourceType::Texture);
-
-    uint8_t* pixels;
-    int width, height;
-    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
-
-    RenderTextureDesc textureDesc;
-    textureDesc.dimension = RenderTextureDimension::TEXTURE_2D;
-    textureDesc.width = width;
-    textureDesc.height = height;
-    textureDesc.depth = 1;
-    textureDesc.mipLevels = 1;
-    textureDesc.arraySize = 1;
-    textureDesc.format = RenderFormat::R8G8B8A8_UNORM;
-
-    g_imFontTexture->textureHolder = g_device->createTexture(textureDesc);
-    g_imFontTexture->texture = g_imFontTexture->textureHolder.get();
-
-    uint32_t rowPitch = (width * 4 + PITCH_ALIGNMENT - 1) & ~(PITCH_ALIGNMENT - 1);
-    uint32_t slicePitch = (rowPitch * height + PLACEMENT_ALIGNMENT - 1) & ~(PLACEMENT_ALIGNMENT - 1);
-    auto uploadBuffer = g_device->createBuffer(RenderBufferDesc::UploadBuffer(slicePitch));
-    uint8_t* mappedMemory = reinterpret_cast<uint8_t*>(uploadBuffer->map());
-
-    if (rowPitch == (width * 4))
-    {
-        memcpy(mappedMemory, pixels, slicePitch);
-    }
-    else
-    {
-        for (size_t i = 0; i < height; i++)
-        {
-            memcpy(mappedMemory, pixels, width * 4);
-            pixels += width * 4;
-            mappedMemory += rowPitch;
-        }
-    }
-
-    uploadBuffer->unmap();
-
-    ExecuteCopyCommandList([&]
-        {
-            g_copyCommandList->barriers(RenderBarrierStage::COPY, RenderTextureBarrier(g_imFontTexture->texture, RenderTextureLayout::COPY_DEST));
-
-            g_copyCommandList->copyTextureRegion(
-                RenderTextureCopyLocation::Subresource(g_imFontTexture->texture, 0),
-                RenderTextureCopyLocation::PlacedFootprint(uploadBuffer.get(), RenderFormat::R8G8B8A8_UNORM, width, height, 1, rowPitch / 4, 0));
-        });
-
-    g_imFontTexture->layout = RenderTextureLayout::COPY_DEST;
-
-    RenderTextureViewDesc textureViewDesc;
-    textureViewDesc.format = textureDesc.format;
-    textureViewDesc.dimension = RenderTextureViewDimension::TEXTURE_2D;
-    textureViewDesc.mipLevels = 1;
-    g_imFontTexture->textureView = g_imFontTexture->texture->createTextureView(textureViewDesc);
-
-    g_imFontTexture->descriptorIndex = g_textureDescriptorAllocator.allocate();
-    g_textureDescriptorSet->setTexture(g_imFontTexture->descriptorIndex, g_imFontTexture->texture, RenderTextureLayout::SHADER_READ, g_imFontTexture->textureView.get());
-#endif
-
-    io.Fonts->SetTexID(g_imFontTexture.get());
 
     RenderPipelineLayoutBuilder pipelineLayoutBuilder;
     pipelineLayoutBuilder.begin(false, true);
@@ -1778,32 +1652,6 @@ static void CreateImGuiBackend()
 
     pipelineDesc.renderTargetBlend[0].dstBlend = RenderBlend::ONE;
     g_imAdditivePipeline = g_device->createGraphicsPipeline(pipelineDesc);
-
-#ifndef ENABLE_IM_FONT_ATLAS_SNAPSHOT
-    ImFontAtlasSnapshot snapshot;
-    snapshot.Snap();
-
-    FILE* file = fopen("im_font_atlas.bin", "wb");
-    if (file)
-    {
-        fwrite(snapshot.data.data(), 1, snapshot.data.size(), file);
-        fclose(file);
-    }
-
-    ddspp::Header header;
-    ddspp::HeaderDXT10 headerDX10;
-    ddspp::encode_header(ddspp::R8G8B8A8_UNORM, width, height, 1, ddspp::Texture2D, 1, 1, header, headerDX10);
-
-    file = fopen("im_font_atlas.dds", "wb");
-    if (file)
-    {
-        fwrite(&ddspp::DDS_MAGIC, 4, 1, file);
-        fwrite(&header, sizeof(header), 1, file);
-        fwrite(&headerDX10, sizeof(headerDX10), 1, file);
-        fwrite(pixels, 4, width * height, file);
-        fclose(file);
-    }
-#endif
 }
 
 static void CheckSwapChain()
@@ -2035,6 +1883,11 @@ static bool TryCreateHostDevice(std::vector<RenderInterfaceFunction*>& interface
     }
 
     return true;
+}
+
+RenderDevice* Video::GetRenderDevice()
+{
+    return g_device.get();
 }
 
 bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
@@ -2580,10 +2433,10 @@ static void UnlockBuffer(GuestBuffer* buffer, bool useCopyQueue)
 
         if (useCopyQueue)
         {
-            ExecuteCopyCommandList([&]
-                {
-                    g_copyCommandList->copyBufferRegion(buffer->buffer->at(0), uploadBuffer->at(0), buffer->dataSize);
-                });
+            Video::ExecuteCopyCommandList([&](RenderCommandList* in_pCommandList)
+            {
+                in_pCommandList->copyBufferRegion(buffer->buffer->at(0), uploadBuffer->at(0), buffer->dataSize);
+            });
         }
         else
         {
@@ -2715,10 +2568,10 @@ static void DrawProfiler()
     if (!g_profilerVisible)
         return;
 
-    ImFont* font = ImFontAtlasSnapshot::GetFont("FOT-RodinPro-DB.otf");
-    const auto defaultFontScale = font->Scale;
-    font->Scale = ImGui::GetDefaultFont()->FontSize / font->FontSize;
-    ImGui::PushFont(font);
+    const auto pFont = g_pFntRodin;
+    const auto defaultFontScale = pFont->Scale;
+    pFont->Scale = ImGui::GetDefaultFont()->FontSize / pFont->FontSize;
+    ImGui::PushFont(pFont);
 
 #define IMGUI_GENERIC_ROW(name, value, ...) \
     do                                      \
@@ -2955,7 +2808,7 @@ static void DrawProfiler()
     ImGui::End();
     ImGui::PopFont();
 
-    font->Scale = defaultFontScale;
+    pFont->Scale = defaultFontScale;
 }
 
 static void DrawFPS()
@@ -2983,20 +2836,29 @@ static void DrawFPS()
     auto drawList = ImGui::GetBackgroundDrawList();
 
     auto fmt = fmt::format("FPS: {:.2f}", fps);
-    auto font = ImFontAtlasSnapshot::GetFont("FOT-RodinPro-DB.otf");
     auto fontSize = Scale(10);
-    auto textSize = font->CalcTextSizeA(fontSize, FLT_MAX, 0, fmt.c_str());
+    auto textSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, fmt.c_str());
 
     ImVec2 min = { Scale(40), Scale(30) };
     ImVec2 max = { min.x + std::max(Scale(75), textSize.x + Scale(10)), min.y + Scale(15) };
     ImVec2 textPos = { min.x + Scale(2), CENTRE_TEXT_VERT(min, max, textSize) + Scale(0.2f) };
 
     drawList->AddRectFilled(min, max, IM_COL32(0, 0, 0, 200));
-    drawList->AddText(font, fontSize, textPos, IM_COL32_WHITE, fmt.c_str());
+    drawList->AddText(g_pFntRodin, fontSize, textPos, IM_COL32_WHITE, fmt.c_str());
+}
+
+static std::vector<std::function<void()>> g_imguiDrawQueue{};
+
+void Video::EnqueueImGuiDraw(const std::function<void()>& in_rEvent)
+{
+    g_imguiDrawQueue.push_back(in_rEvent);
 }
 
 static void DrawImGui()
 {
+    if (!ImFontAtlasSnapshot::IsInitialised)
+        return;
+
     ImGui_ImplSDL3_NewFrame();
 
     auto& io = ImGui::GetIO();
@@ -3043,6 +2905,11 @@ static void DrawImGui()
     AchievementOverlay::Draw();
     Fader::Draw();
     BlackBar::Draw();
+
+    for (const auto& rEvent : g_imguiDrawQueue)
+        rEvent();
+
+    g_imguiDrawQueue.clear();
 
     assert(ImGui::GetBackgroundDrawList()->_ClipRectStack.Size == 1 && "Some clip rects were not removed from the stack!");
 
@@ -3181,7 +3048,7 @@ static void ProcDrawImGui(const RenderCommand& cmd)
 
                     descriptorIndex = texture->descriptorIndex;
 
-                    if (texture == g_imFontTexture.get())
+                    if (texture == ImFontAtlasSnapshot::FontTexture.get())
                         descriptorIndex |= 0x80000000;
 
                     setPushConstants(&pushConstants.texture2DDescriptorIndex, &descriptorIndex, sizeof(descriptorIndex));
@@ -3525,8 +3392,8 @@ void Video::Resize(uint32_t width, uint32_t height)
 
     // Refresh graphics device and configure FBO surfaces.
     GuestToHostFunction<void>(sub_82637418, pMyGraphicsDevice);
-    GuestToHostFunction<void>(sub_825BAE48, pMyGraphicsDevice->m_FrameBufferObject.get(), 0, &pMyGraphicsDevice->m_spBackBuffer);
-    GuestToHostFunction<void>(sub_825BAEB8, pMyGraphicsDevice->m_FrameBufferObject.get(), &pMyGraphicsDevice->m_spDepthStencil);
+    GuestToHostFunction<void>(sub_825BAE48, pMyGraphicsDevice->m_spFrameBufferObject.get(), 0, &pMyGraphicsDevice->m_spBackBuffer);
+    GuestToHostFunction<void>(sub_825BAEB8, pMyGraphicsDevice->m_spFrameBufferObject.get(), &pMyGraphicsDevice->m_spDepthStencil);
 
     struct FormatConfig
     {
@@ -6866,19 +6733,19 @@ static bool LoadTexture(GuestTexture& texture, const uint8_t* data, size_t dataS
 
         uploadBuffer->unmap();
 
-        ExecuteCopyCommandList([&]
+        Video::ExecuteCopyCommandList([&](RenderCommandList* in_pCommandList)
+        {
+            in_pCommandList->barriers(RenderBarrierStage::COPY, RenderTextureBarrier(texture.texture, RenderTextureLayout::COPY_DEST));
+
+            for (size_t i = 0; i < slices.size(); i++)
             {
-                g_copyCommandList->barriers(RenderBarrierStage::COPY, RenderTextureBarrier(texture.texture, RenderTextureLayout::COPY_DEST));
+                auto& slice = slices[i];
 
-                for (size_t i = 0; i < slices.size(); i++)
-                {
-                    auto& slice = slices[i];
-
-                    g_copyCommandList->copyTextureRegion(
-                        RenderTextureCopyLocation::Subresource(texture.texture, i % desc.mipLevels, i / desc.mipLevels),
-                        RenderTextureCopyLocation::PlacedFootprint(uploadBuffer.get(), desc.format, slice.width, slice.height, slice.depth, (slice.dstRowPitch * 8) / ddsDesc.bitsPerPixelOrBlock * ddsDesc.blockWidth, slice.dstOffset));
-                }
-            });
+                in_pCommandList->copyTextureRegion(
+                    RenderTextureCopyLocation::Subresource(texture.texture, i % desc.mipLevels, i / desc.mipLevels),
+                    RenderTextureCopyLocation::PlacedFootprint(uploadBuffer.get(), desc.format, slice.width, slice.height, slice.depth, (slice.dstRowPitch * 8) / ddsDesc.bitsPerPixelOrBlock * ddsDesc.blockWidth, slice.dstOffset));
+            }
+        });
 
         return true;
     }
@@ -6923,14 +6790,14 @@ static bool LoadTexture(GuestTexture& texture, const uint8_t* data, size_t dataS
 
             stbi_image_free(stbImage);
 
-            ExecuteCopyCommandList([&]
-                {
-                    g_copyCommandList->barriers(RenderBarrierStage::COPY, RenderTextureBarrier(texture.texture, RenderTextureLayout::COPY_DEST));
+            Video::ExecuteCopyCommandList([&](RenderCommandList* in_pCommandList)
+            {
+                in_pCommandList->barriers(RenderBarrierStage::COPY, RenderTextureBarrier(texture.texture, RenderTextureLayout::COPY_DEST));
 
-                    g_copyCommandList->copyTextureRegion(
-                        RenderTextureCopyLocation::Subresource(texture.texture, 0),
-                        RenderTextureCopyLocation::PlacedFootprint(uploadBuffer.get(), RenderFormat::R8G8B8A8_UNORM, width, height, 1, rowPitch / 4, 0));
-                });
+                in_pCommandList->copyTextureRegion(
+                    RenderTextureCopyLocation::Subresource(texture.texture, 0),
+                    RenderTextureCopyLocation::PlacedFootprint(uploadBuffer.get(), RenderFormat::R8G8B8A8_UNORM, width, height, 1, rowPitch / 4, 0));
+            });
 
             return true;
         }

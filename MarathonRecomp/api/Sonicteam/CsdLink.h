@@ -10,15 +10,15 @@ namespace Sonicteam
         struct Vftable
         {
             be<uint32_t> fpDestroy;
-            MARATHON_INSERT_PADDING(4);
+            MARATHON_INSERT_PADDING(0x04);
             be<uint32_t> fpUpdate;
         };
 
         xpointer<Vftable> m_pVftable;
         xpointer<CsdLink> m_pNext;
-        xpointer<CsdLink> m_pPrevious;
+        xpointer<CsdLink> m_pPrev;
         be<float> m_Priority;
-        MARATHON_INSERT_PADDING(8);
+        MARATHON_INSERT_PADDING(0x08);
 
         void* Destroy(uint32_t flags = 1)
         {
@@ -33,7 +33,7 @@ namespace Sonicteam
 
     MARATHON_ASSERT_OFFSETOF(CsdLink, m_pVftable, 0x00);
     MARATHON_ASSERT_OFFSETOF(CsdLink, m_pNext, 0x04);
-    MARATHON_ASSERT_OFFSETOF(CsdLink, m_pPrevious, 0x08);
+    MARATHON_ASSERT_OFFSETOF(CsdLink, m_pPrev, 0x08);
     MARATHON_ASSERT_OFFSETOF(CsdLink, m_Priority, 0x0C);
     MARATHON_ASSERT_SIZEOF(CsdLink, 0x18);
 }

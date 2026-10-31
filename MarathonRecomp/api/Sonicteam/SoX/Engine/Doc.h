@@ -19,11 +19,11 @@ namespace Sonicteam::SoX::Engine
         };
 
         xpointer<Vftable> m_pVftable;
-        MARATHON_INSERT_PADDING(4);
+        MARATHON_INSERT_PADDING(0x04);
         xpointer<DocMode> m_pDocMode;
         xpointer<Task> m_pRootTask;
         xpointer<RootGTask> m_pRootGTask;
-        MARATHON_INSERT_PADDING(8);
+        MARATHON_INSERT_PADDING(0x08);
         xpointer<Task> m_pDocModeExecutor;
         xpointer<RenderScheduler> m_pRenderScheduler;
         XRTL_CRITICAL_SECTION m_CriticalSection1;
