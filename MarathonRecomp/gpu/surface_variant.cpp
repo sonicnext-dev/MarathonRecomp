@@ -1,5 +1,6 @@
 #include "surface_variant.h"
 #include "guest_convert.h"
+#include "video_internal.h"
 
 static Mutex g_surfaceVariantMutex;
 static std::vector<std::unique_ptr<SurfaceVariant>> g_surfaceVariants;
@@ -113,6 +114,25 @@ SurfaceVariant* AcquireSurfaceVariant(uint32_t base, uint32_t width, uint32_t he
     return variant.get();
 }
 
+SurfaceVariant* FindAliasResolveSource(const SurfaceVariant* destination)
+{
+    std::lock_guard lock(g_surfaceVariantMutex);
+
+    for (auto& variant : g_surfaceVariants)
+    {
+        if (variant->pendingAliasResolve &&
+            variant->base == destination->base &&
+            variant->format == destination->format &&
+            variant->width == destination->width &&
+            variant->height == destination->height)
+        {
+            return variant.get();
+        }
+    }
+
+    return nullptr;
+}
+
 void PropagateDeferredClear(GuestSurface* renderTarget, GuestSurface* depthStencil, const RenderCommands::Clear& args)
 {
     std::lock_guard lock(g_surfaceVariantMutex);
@@ -142,6 +162,7 @@ void PropagateDeferredClear(GuestSurface* renderTarget, GuestSurface* depthStenc
             }
 
             variant->deferredClearFlags |= flags;
+            variant->pendingAliasResolve = false;
             variant->deferredClearColor[0] = args.color[0];
             variant->deferredClearColor[1] = args.color[1];
             variant->deferredClearColor[2] = args.color[2];
