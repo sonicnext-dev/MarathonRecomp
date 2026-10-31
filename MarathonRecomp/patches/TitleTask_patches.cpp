@@ -19,7 +19,14 @@ static double g_titleExitOutroTime{};
 static bool g_quitMessageOpen{};
 static bool g_saveDataExists{};
 
-static bool g_isSecretDone{};
+enum class DevTitleState
+{
+    Idle,
+    Open,
+    Start
+};
+
+static DevTitleState g_devTitleState{};
 static uint32_t g_secretFlags{};
 
 enum
@@ -91,25 +98,21 @@ bool TitleTask_RedirectStateTransitionToOutroAnim(PPCRegister& r31)
 PPC_FUNC_IMPL(__imp__sub_825126A0);
 PPC_FUNC(sub_825126A0)
 {
-    auto pTitleTask = (Sonicteam::TitleTask*)(base + ctx.r3.u32);
+    auto pTitleTask = reinterpret_cast<Sonicteam::TitleTask*>(base + ctx.r3.u32);
     auto deltaTime = ctx.f1.f64;
 
     switch (pTitleTask->m_State)
     {
         case Sonicteam::TitleTask::TitleState_Open:
         {
-            if (!Config::DisableTitleInputDelay)
-                break;
-
             // Skip open animation.
-            GuestToHostFunction<int>(sub_82511CA0, pTitleTask, (int)Sonicteam::TitleTask::TitleState_Wait);
-
-            break;
+            if (Config::DisableTitleInputDelay)
+                GuestToHostFunction<int>(sub_82511CA0, pTitleTask, int(Sonicteam::TitleTask::TitleState_Wait));
         }
 
         case Sonicteam::TitleTask::TitleState_Wait:
         {
-            if (g_isSecretDone)
+            if (OptionsMenu::s_isDebugUnlocked)
                 break;
 
             if (auto& spInputManager = App::s_pApp->m_pDoc->m_InputManagers[0])
@@ -131,8 +134,9 @@ PPC_FUNC(sub_825126A0)
 
             if (g_secretFlags == SECRET_ALL)
             {
+                LOGN_WARNING("Secret unlocked!");
                 Game_PlaySound("totalring_count");
-                g_isSecretDone = true;
+                OptionsMenu::s_isDebugUnlocked = true;
             }
 
             break;
@@ -148,7 +152,7 @@ PPC_FUNC(sub_825126A0)
                     rPadState.IsDown(Sonicteam::SoX::Input::PadButton_South) &&
                     rPadState.IsDown(Sonicteam::SoX::Input::PadButton_Start))
                 {
-                    OptionsMenu::s_isDebugUnlocked = true;
+                    g_devTitleState = DevTitleState::Open;
                 }
             }
 
@@ -165,13 +169,22 @@ PPC_FUNC(sub_825126A0)
                 AchievementManager::Reset();
             }
 
-            if (!Config::DisableTitleInputDelay)
-            {
-                g_titleProceedOutroTime += deltaTime;
+            g_titleProceedOutroTime += deltaTime;
 
-                // Wait for outro animation to complete before entering menu.
-                if (g_titleProceedOutroTime > TITLE_OPTION_OUTRO_TOTAL_FRAMES)
+            if (Config::DisableTitleInputDelay)
+                g_titleProceedOutroTime = TITLE_OPTION_OUTRO_TOTAL_FRAMES + deltaTime;
+
+            // Wait for outro animation to complete before entering menu.
+            if (g_titleProceedOutroTime > TITLE_OPTION_OUTRO_TOTAL_FRAMES)
+            {
+                if (g_devTitleState == DevTitleState::Open)
+                {
+                    g_devTitleState = DevTitleState::Start;
+                }
+                else
+                {
                     GuestToHostFunction<int>(sub_82511CA0, pTitleTask, 9);
+                }
             }
 
             break;
@@ -245,4 +258,22 @@ PPC_FUNC(sub_82511540)
     }
 
     __imp__sub_82511540(ctx, base);
+}
+
+// Sonicteam::MainMode::Update
+PPC_FUNC_IMPL(__imp__sub_82161A48);
+PPC_FUNC(sub_82161A48)
+{
+    const auto pDoc = reinterpret_cast<Sonicteam::DocMarathon*>(base + ctx.r4.u32);
+
+    if (g_devTitleState == DevTitleState::Start)
+    {
+        g_devTitleState = DevTitleState::Idle;
+
+        ctx.r3.u32 = g_memory.MapVirtual(pDoc->SetDocState(StateDevTitle::GetInstance()));
+
+        return;
+    }
+
+    __imp__sub_82161A48(ctx, base);
 }

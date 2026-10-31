@@ -25,6 +25,13 @@ namespace Sonicteam::SoX
         {
             return GuestToHostFunction<bool>(m_pVftable->fpProcessMessage, this, pMessage);
         }
+
+        template <typename T, typename... TArgs>
+        bool ProcessMessage(TArgs&&... in_args)
+        {
+            guest_stack_var<T> msg(std::forward<TArgs>(in_args)...);
+            return ProcessMessage(msg);
+        }
     };
 
     MARATHON_ASSERT_OFFSETOF(MessageReceiver, m_pVftable, 0x00);

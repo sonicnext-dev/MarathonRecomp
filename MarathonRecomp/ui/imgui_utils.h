@@ -20,6 +20,7 @@
 
 extern ImFont* g_pFntRodin;
 extern ImFont* g_pFntNewRodin;
+extern ImFont* g_pFntArialUni;
 
 extern float g_fntRodinSize;
 

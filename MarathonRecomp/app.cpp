@@ -1,4 +1,5 @@
 #include "app.h"
+#include <gpu/imgui/imgui_snapshot.h>
 #include <gpu/video.h>
 #include <hid/message/messages.h>
 #include <hid/hid.h>
@@ -51,7 +52,7 @@ PPC_FUNC(sub_8262A568)
         be<uint32_t> Height;
     };
 
-    auto pRenderConfig = reinterpret_cast<RenderConfig*>(g_memory.Translate(ctx.r4.u32));
+    auto pRenderConfig = reinterpret_cast<RenderConfig*>(base + ctx.r4.u32);
     pRenderConfig->Width = Video::s_viewportWidth;
     pRenderConfig->Height = Video::s_viewportHeight;
 
@@ -63,8 +64,9 @@ PPC_FUNC(sub_8262A568)
 
     __imp__sub_8262A568(ctx, base);
 
-    App::s_pApp = (Sonicteam::AppMarathon*)g_memory.Translate(ctx.r3.u32);
+    App::s_pApp = reinterpret_cast<Sonicteam::AppMarathon*>(base + ctx.r3.u32);
 
+    ImFontAtlasSnapshot::Init();
     InitPatches();
 }
 
@@ -132,20 +134,10 @@ PPC_FUNC(sub_825EA610)
 PPC_FUNC_IMPL(__imp__sub_82582648);
 PPC_FUNC(sub_82582648)
 {
-    struct File
-    {
-    public:
-        MARATHON_INSERT_PADDING(4);
-        xpointer<const char> pFilePath;
-        MARATHON_INSERT_PADDING(0x0C);
-        be<uint32_t> Length;
-        be<uint32_t> Capacity;
-    };
+    const auto pPath = reinterpret_cast<stdx::string*>(base + ctx.r5.u32);
 
-    auto pFile = reinterpret_cast<File*>(base + ctx.r5.u32);
-
-    if (pFile->pFilePath && pFile->Length > 0)
-        LOGFN_UTILITY("Loading file: {}", pFile->pFilePath.get());
+    if (pPath && !pPath->empty())
+        LOGFN_UTILITY("Loading file: {}", pPath->c_str());
 
     __imp__sub_82582648(ctx, base);
 }

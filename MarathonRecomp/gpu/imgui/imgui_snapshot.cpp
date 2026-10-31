@@ -1,11 +1,28 @@
 #include "imgui_snapshot.h"
-
-#include <locale/locale.h>
-#include <res/font/im_font_atlas.bin.h>
-#include <user/config.h>
-#include <decompressor.h>
 #include <kernel/xdbf.h>
+#include <locale/locale.h>
+#include <os/locale.h>
+#include <res/font/im_font_atlas.bin.h>
+#include <res/font/im_font_atlas.dds.h>
+#include <user/config.h>
 #include <app.h>
+#include <decompressor.h>
+
+extern ImFontBuilderIO g_fontBuilderIO;
+
+
+struct FontInfo
+{
+    const char* pFileName{};
+    std::vector<ImWchar> GlyphRanges{};
+};
+
+static std::map<ImFontType, FontInfo> g_fonts =
+{
+    { ImFontType::Rodin,    { "FOT-RodinPro-DB.otf" } },
+    { ImFontType::NewRodin, { "FOT-NewRodinPro-UB.otf" } },
+    { ImFontType::Arial,    { "ArialUni.ttf" } }
+};
 
 template<typename T1, typename T2>
 void ImFontAtlasSnapshot::SnapPointer(size_t offset, const T1& value, const T2& ptr, size_t count)
@@ -125,7 +142,6 @@ ImFontAtlas* ImFontAtlasSnapshot::Load()
     return reinterpret_cast<ImFontAtlas*>(g_imFontAtlas.get() + header->dataOffset);
 }
 
-
 static void GetGlyphs(std::set<ImWchar>& glyphs, const std::string_view& value)
 {
     const char* cur = value.data();
@@ -137,11 +153,9 @@ static void GetGlyphs(std::set<ImWchar>& glyphs, const std::string_view& value)
     }
 }
 
-static std::vector<ImWchar> g_glyphRanges;
-
-void ImFontAtlasSnapshot::GenerateGlyphRanges()
+static void GenerateGlyphRanges(ImFontType in_fontType, bool in_isInstaller = false)
 {
-    std::vector<std::string_view> localeStrings;
+    std::vector<std::string_view> localeStrings{};
 
     for (auto& config : g_configDefinitions)
         config->GetLocaleStrings(localeStrings);
@@ -160,48 +174,221 @@ void ImFontAtlasSnapshot::GenerateGlyphRanges()
             GetGlyphs(glyphs, value);
     }
 
-    for (size_t i = XDBF_LANGUAGE_ENGLISH; i <= XDBF_LANGUAGE_ITALIAN; i++)
+    auto& rFontInfo = g_fonts[in_fontType];
+
+    if (in_isInstaller)
     {
-        auto achievements = g_xdbfWrapper.GetAchievements(static_cast<EXDBFLanguage>(i));
-        for (auto& achievement : achievements)
+        LOGFN_WARNING("Generating font atlas for \"{}\" in the installer wizard. Glyphs may be missing!", rFontInfo.pFileName);
+    }
+    else
+    {
+        if (in_fontType == ImFontType::Rodin)
         {
-            GetGlyphs(glyphs, achievement.Name);
-            GetGlyphs(glyphs, achievement.UnlockedDesc);
-            GetGlyphs(glyphs, achievement.LockedDesc);
+            for (size_t i = XDBF_LANGUAGE_ENGLISH; i <= XDBF_LANGUAGE_ITALIAN; i++)
+            {
+                auto achievements = g_xdbfWrapper.GetAchievements(static_cast<EXDBFLanguage>(i));
+
+                for (auto& achievement : achievements)
+                {
+                    GetGlyphs(glyphs, achievement.Name);
+                    GetGlyphs(glyphs, achievement.UnlockedDesc);
+                    GetGlyphs(glyphs, achievement.LockedDesc);
+                }
+            }
+        }
+        else if (in_fontType == ImFontType::Arial)
+        {
+            const std::array<void*, 3> stageSelectStrings =
+            {
+                g_memory.Translate(0x820336C4),
+                g_memory.Translate(0x820336C8),
+                g_memory.Translate(0x820336D0)
+            };
+
+            for (const auto& rStr : stageSelectStrings)
+                GetGlyphs(glyphs, os::locale::ConvertToUTF8(os::locale::Encoding::ShiftJIS, reinterpret_cast<const char*>(rStr)));
+
+            if (const auto pResourceManager = Sonicteam::SoX::ResourceManager::GetInstance())
+            {
+                if (const auto pStageSelectLua = pResourceManager->LoadResource<Sonicteam::LuaSystem, Sonicteam::LuaSystemManager>("scripts/stage/stageselect.lua"))
+                {
+                    if (const auto pStageListTable = pStageSelectLua->GetTable("StageList"))
+                    {
+                        if (pStageListTable->Iterate() && pStageListTable->IsTable())
+                        {
+                            do
+                            {
+                                GetGlyphs(glyphs, os::locale::ConvertToUTF8(os::locale::Encoding::ShiftJIS, pStageListTable->GetElement("Comment")));
+                            }
+                            while (pStageListTable->Iterate());
+                        }
+                    }
+                }
+            }
         }
     }
+
+    auto& rGlyphRanges = rFontInfo.GlyphRanges;
 
     for (auto glyph : glyphs)
     {
-        if (g_glyphRanges.empty() || (g_glyphRanges.back() + 1) != glyph)
+        if (rGlyphRanges.empty() || (rGlyphRanges.back() + 1) != glyph)
         {
-            g_glyphRanges.push_back(glyph);
-            g_glyphRanges.push_back(glyph);
+            rGlyphRanges.push_back(glyph);
+            rGlyphRanges.push_back(glyph);
         }
         else
         {
-            g_glyphRanges.back() = glyph;
+            rGlyphRanges.back() = glyph;
         }
     }
 
-    g_glyphRanges.push_back(0);
+    rGlyphRanges.push_back(0);
+
+    ImGui::GetIO().Fonts->AddFontFromFileTTF(rFontInfo.pFileName, 24.0f, nullptr, rGlyphRanges.data());
 }
 
-ImFont* ImFontAtlasSnapshot::GetFont(const char* name)
+void ImFontAtlasSnapshot::Init(bool in_isInstaller)
 {
-    auto fontAtlas = ImGui::GetIO().Fonts;
-    for (auto& configData : fontAtlas->ConfigData)
+    auto& io = ImGui::GetIO();
+
+#ifdef ENABLE_IM_FONT_ATLAS_SNAPSHOT
+    IM_DELETE(io.Fonts);
+    io.Fonts = ImFontAtlasSnapshot::Load();
+
+    FontTexture = LoadTexture
+    (
+        decompressZstd
+        (
+            g_im_font_atlas_texture,
+            g_im_font_atlas_texture_uncompressed_size
+        )
+        .get(),
+
+        g_im_font_atlas_texture_uncompressed_size
+    );
+#else
+    io.Fonts->AddFontDefault();
+
+    GenerateGlyphRanges(ImFontType::Rodin, in_isInstaller);
+    GenerateGlyphRanges(ImFontType::NewRodin, in_isInstaller);
+    GenerateGlyphRanges(ImFontType::Arial, in_isInstaller);
+
+    io.Fonts->FontBuilderIO = &g_fontBuilderIO;
+    io.Fonts->Build();
+
+    FontTexture = std::make_unique<GuestTexture>(ResourceType::Texture);
+
+    uint8_t* pixels;
+    int width, height;
+    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+
+    RenderTextureDesc textureDesc;
+    textureDesc.dimension = RenderTextureDimension::TEXTURE_2D;
+    textureDesc.width = width;
+    textureDesc.height = height;
+    textureDesc.depth = 1;
+    textureDesc.mipLevels = 1;
+    textureDesc.arraySize = 1;
+    textureDesc.format = RenderFormat::R8G8B8A8_UNORM;
+
+    const auto pRenderDevice = Video::GetRenderDevice();
+
+    FontTexture->textureHolder = pRenderDevice->createTexture(textureDesc);
+    FontTexture->texture = FontTexture->textureHolder.get();
+
+    uint32_t rowPitch = (width * 4 + PITCH_ALIGNMENT - 1) & ~(PITCH_ALIGNMENT - 1);
+    uint32_t slicePitch = (rowPitch * height + PLACEMENT_ALIGNMENT - 1) & ~(PLACEMENT_ALIGNMENT - 1);
+    auto uploadBuffer = pRenderDevice->createBuffer(RenderBufferDesc::UploadBuffer(slicePitch));
+    uint8_t* mappedMemory = reinterpret_cast<uint8_t*>(uploadBuffer->map());
+
+    if (rowPitch == (width * 4))
     {
-        if (strstr(configData.Name, name) != nullptr)
+        memcpy(mappedMemory, pixels, slicePitch);
+    }
+    else
+    {
+        for (size_t i = 0; i < height; i++)
         {
-            assert(configData.DstFont != nullptr);
-            return configData.DstFont;
+            memcpy(mappedMemory, pixels, width * 4);
+            pixels += width * 4;
+            mappedMemory += rowPitch;
         }
     }
 
-#ifdef ENABLE_IM_FONT_ATLAS_SNAPSHOT
-    assert(false && "Unable to locate equivalent font in the atlas file.");
+    uploadBuffer->unmap();
+
+    Video::ExecuteCopyCommandList([&](RenderCommandList* in_pCommandList)
+    {
+        in_pCommandList->barriers(RenderBarrierStage::COPY, RenderTextureBarrier(FontTexture->texture, RenderTextureLayout::COPY_DEST));
+
+        in_pCommandList->copyTextureRegion(
+            RenderTextureCopyLocation::Subresource(FontTexture->texture, 0),
+            RenderTextureCopyLocation::PlacedFootprint(uploadBuffer.get(), RenderFormat::R8G8B8A8_UNORM, width, height, 1, rowPitch / 4, 0));
+    });
+
+    FontTexture->layout = RenderTextureLayout::COPY_DEST;
+
+    RenderTextureViewDesc textureViewDesc;
+    textureViewDesc.format = textureDesc.format;
+    textureViewDesc.dimension = RenderTextureViewDimension::TEXTURE_2D;
+    textureViewDesc.mipLevels = 1;
+    FontTexture->textureView = FontTexture->texture->createTextureView(textureViewDesc);
+
+    FontTexture->descriptorIndex = g_textureDescriptorAllocator.allocate();
+    g_textureDescriptorSet->setTexture(FontTexture->descriptorIndex, FontTexture->texture, RenderTextureLayout::SHADER_READ, FontTexture->textureView.get());
 #endif
 
-    return fontAtlas->AddFontFromFileTTF(name, 24.0f, nullptr, g_glyphRanges.data());
+    io.Fonts->SetTexID(FontTexture.get());
+
+#ifndef ENABLE_IM_FONT_ATLAS_SNAPSHOT
+    ImFontAtlasSnapshot snapshot{};
+    snapshot.Snap();
+
+    if (FILE* file = fopen("im_font_atlas.bin", "wb"))
+    {
+        fwrite(snapshot.data.data(), 1, snapshot.data.size(), file);
+        fclose(file);
+    }
+
+    ddspp::Header header;
+    ddspp::HeaderDXT10 headerDX10;
+    ddspp::encode_header(ddspp::R8G8B8A8_UNORM, width, height, 1, ddspp::Texture2D, 1, 1, header, headerDX10);
+
+    if (FILE* file = fopen("im_font_atlas.dds", "wb"))
+    {
+        fwrite(&ddspp::DDS_MAGIC, 4, 1, file);
+        fwrite(&header, sizeof(header), 1, file);
+        fwrite(&headerDX10, sizeof(headerDX10), 1, file);
+        fwrite(pixels, 4, width * height, file);
+        fclose(file);
+    }
+#endif
+
+    IsInit = true;
+}
+
+ImFont* ImFontAtlasSnapshot::GetFont(ImFontType in_fontType)
+{
+    const auto& rFileName = g_fonts[in_fontType].pFileName;
+
+    const auto pFontAtlas = ImGui::GetIO().Fonts;
+
+    for (const auto& rConfigData : pFontAtlas->ConfigData)
+    {
+        if (strstr(rConfigData.Name, rFileName) != nullptr)
+        {
+            assert(rConfigData.DstFont != nullptr);
+
+            return rConfigData.DstFont;
+        }
+    }
+
+    LOGFN_ERROR("Failed to locate font in the font atlas: {}", rFileName);
+
+#ifdef ENABLE_IM_FONT_ATLAS_SNAPSHOT
+    assert(false && "Failed to locate font in the font atlas.");
+#endif
+
+    return nullptr;
 }

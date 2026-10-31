@@ -88,6 +88,7 @@ set(MARATHON_RECOMP_LOCALE_CXX_SOURCES
 
 if (WIN32)
     set(MARATHON_RECOMP_OS_CXX_SOURCES
+        "os/win32/locale_win32.cpp"
         "os/win32/logger_win32.cpp"
         "os/win32/media_win32.cpp"
         "os/win32/process_win32.cpp"
@@ -97,6 +98,7 @@ if (WIN32)
     )
 elseif (CMAKE_SYSTEM_NAME MATCHES "Linux")
     set(MARATHON_RECOMP_OS_CXX_SOURCES
+        "os/linux/locale_linux.cpp"
         "os/linux/logger_linux.cpp"
         "os/linux/media_linux.cpp"
         "os/linux/process_linux.cpp"
@@ -106,6 +108,7 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Linux")
     )
 elseif (APPLE)
     set(MARATHON_RECOMP_OS_CXX_SOURCES
+        "os/macos/locale_macos.cpp"
         "os/macos/logger_macos.cpp"
         "os/macos/media_macos.cpp"
         "os/macos/process_macos.cpp"
@@ -121,6 +124,15 @@ set(MARATHON_RECOMP_CPU_CXX_SOURCES
 
 set(MARATHON_RECOMP_GPU_CXX_SOURCES
     "gpu/video.cpp"
+    "gpu/resources.cpp"
+    "gpu/guest_convert.cpp"
+    "gpu/guest_device.cpp"
+    "gpu/guest_shader.cpp"
+    "gpu/vertex_declaration.cpp"
+    "gpu/texture_loader.cpp"
+    "gpu/surface_variant.cpp"
+    "gpu/pipeline.cpp"
+    "gpu/pipeline_precompile.cpp"
     "gpu/imgui/imgui_common.cpp"
     "gpu/imgui/imgui_font_builder.cpp"
     "gpu/imgui/imgui_snapshot.cpp"
@@ -145,6 +157,7 @@ set(MARATHON_RECOMP_PATCHES_CXX_SOURCES
     "patches/aspect_ratio_patches.cpp"
     "patches/audio_patches.cpp"
     "patches/camera_patches.cpp"
+    "patches/debug_patches.cpp"
     "patches/fps_patches.cpp"
     "patches/frontend_listener.cpp"
     "patches/input_patches.cpp"
@@ -380,6 +393,8 @@ if (WIN32)
         winmm
         windowsapp
     )
+elseif(NOT APPLE)
+    target_link_libraries(MarathonRecomp PRIVATE iconv)
 endif()
 
 target_link_libraries(MarathonRecomp PRIVATE
@@ -446,6 +461,7 @@ function(compile_shader FILE_PATH TARGET_NAME)
                 DEPENDS ${MSL_FILE_OUT_PATH}.ir
         )
         BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${MSL_FILE_OUT_PATH}.metallib" DEST_FILE "${MSL_FILE_OUT_PATH}.metallib" ARRAY_NAME "g_${MSL_NAME}_air")
+        set_property(GLOBAL APPEND PROPERTY MARATHON_RECOMP_SHADER_HEADERS "gpu/shader/msl/${FILE_PATH}.metal.metallib.h")
     endif()
     if (MARATHON_RECOMP_D3D12)
         add_custom_command(
@@ -454,6 +470,7 @@ function(compile_shader FILE_PATH TARGET_NAME)
             DEPENDS ${HLSL_FILE_PATH}
         )
         target_sources(MarathonRecomp PRIVATE ${HLSL_FILE_OUT_PATH}.dxil.h)
+        set_property(GLOBAL APPEND PROPERTY MARATHON_RECOMP_SHADER_HEADERS "gpu/shader/hlsl/${FILE_PATH}.hlsl.dxil.h")
     endif()
     add_custom_command(
         OUTPUT ${HLSL_FILE_OUT_PATH}.spirv.h
@@ -461,6 +478,7 @@ function(compile_shader FILE_PATH TARGET_NAME)
         DEPENDS ${HLSL_FILE_PATH}
     )
     target_sources(MarathonRecomp PRIVATE ${HLSL_FILE_OUT_PATH}.spirv.h)
+    set_property(GLOBAL APPEND PROPERTY MARATHON_RECOMP_SHADER_HEADERS "gpu/shader/hlsl/${FILE_PATH}.hlsl.spirv.h")
 endfunction()
 
 function(compile_vertex_shader FILE_PATH)
@@ -487,6 +505,13 @@ compile_pixel_shader(resolve_msaa_color_8x)
 compile_pixel_shader(resolve_msaa_depth_2x)
 compile_pixel_shader(resolve_msaa_depth_4x)
 compile_pixel_shader(resolve_msaa_depth_8x)
+
+get_property(SHADER_HEADERS GLOBAL PROPERTY MARATHON_RECOMP_SHADER_HEADERS)
+set(SHADER_HEADER_CONTENT "#pragma once\n\n")
+foreach(SHADER_HEADER IN LISTS SHADER_HEADERS)
+    string(APPEND SHADER_HEADER_CONTENT "#include \"${SHADER_HEADER}\"\n")
+endforeach()
+file(CONFIGURE OUTPUT "${GENERATED_SOURCE_PATH}/gpu/shader/shaders.h" CONTENT "${SHADER_HEADER_CONTENT}" @ONLY)
 
 function(generate_aggregate_header INPUT_DIRECTORY OUTPUT_FILE)
     get_filename_component(ABS_OUTPUT_FILE "${OUTPUT_FILE}" ABSOLUTE)

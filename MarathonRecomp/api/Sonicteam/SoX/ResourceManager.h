@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <boost/move/make_unique.hpp>
+#include <boost/move/unique_ptr.hpp>
 #include <Sonicteam/SoX/IResource.h>
 #include <Sonicteam/SoX/RefCountObject.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
@@ -9,6 +11,7 @@
 #include <stdx/compare/string_compare.h>
 #include <stdx/list.h>
 #include <stdx/map.h>
+#include <stdx/string.h>
 
 namespace Sonicteam::SoX
 {
@@ -39,6 +42,17 @@ namespace Sonicteam::SoX
         stdx::map<be<uint32_t>, ResourceMgrInfo> m_Managers;
         MARATHON_INSERT_PADDING(0x04);
         stdx::map<xpointer<const char>, be<uint32_t>, stdx::string_compare> m_ManagerIDs;
+
+        template <typename TRes = IResource, Sonicteam::System::DerivedSingleton TMgr = IResourceMgr>
+        TRes* LoadResource(const char* in_pFilePath)
+        {
+            const auto result = boost::make_unique<xpointer<IResource>>();
+            const auto scriptName = boost::make_unique<stdx::string>(in_pFilePath);
+
+            GuestToHostFunction<IResource*>(sub_82582648, result.get(), TMgr::GetInstance(), scriptName.get(), scriptName.get(), 0, 1);
+
+            return static_cast<TRes*>(result->get());
+        }
     };
 
     MARATHON_ASSERT_OFFSETOF(ResourceManager::ResourceMgrInfo, fpFunc00, 0x00);

@@ -26,7 +26,8 @@ namespace Sonicteam
         };
 
         be<MainModeState> m_State;
-        MARATHON_INSERT_PADDING(0x20);
+        be<MainModeState> m_NextState;
+        MARATHON_INSERT_PADDING(0x1C);
         boost::shared_ptr<SoX::Scenery::Camera> m_spSelectCamera;
         xpointer<SoX::Graphics::FrameGP> m_pFrameGP;
         MARATHON_INSERT_PADDING(4);
@@ -35,6 +36,7 @@ namespace Sonicteam
     };
 
     MARATHON_ASSERT_OFFSETOF(MainMode, m_State, 0x50);
+    MARATHON_ASSERT_OFFSETOF(MainMode, m_NextState, 0x54);
     MARATHON_ASSERT_OFFSETOF(MainMode, m_spSelectCamera, 0x74);
     MARATHON_ASSERT_OFFSETOF(MainMode, m_pFrameGP, 0x7C);
     MARATHON_ASSERT_OFFSETOF(MainMode, m_pMainTask, 0x84);

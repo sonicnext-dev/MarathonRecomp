@@ -1,43 +1,41 @@
 #include "video.h"
 
+#include "guest_convert.h"
+#include "guest_device.h"
+#include "guest_shader.h"
+#include "surface_variant.h"
+#include "video_internal.h"
+#include "pipeline.h"
 #include "imgui/imgui_common.h"
 #include "imgui/imgui_snapshot.h"
-#include "imgui/imgui_font_builder.h"
+#include "render_command.h"
+#include "resources.h"
 
+#include <Marathon.h>
 #include <app.h>
-#include <bc_diff.h>
-#include <cpu/guest_thread.h>
 #include <cstdint>
-#include <cstdio>
-#include <decompressor.h>
+#include <hid/hid.h>
 #include <kernel/function.h>
 #include <kernel/heap.h>
-#include <hid/hid.h>
 #include <kernel/memory.h>
 #include <kernel/xdbf.h>
+#include <os/process.h>
+#include <os/thread.h>
+#include <patches/aspect_ratio_patches.h>
 #include <plume_render_interface.h>
-#include <res/bc_diff/button_bc_diff.bin.h>
-#include <res/font/im_font_atlas.dds.h>
-#include <shader/shader_cache.h>
-#include <Marathon.h>
+#include <ranges>
 #include <ui/achievement_menu.h>
 #include <ui/achievement_overlay.h>
+#include <ui/black_bar.h>
 #include <ui/button_window.h>
 #include <ui/fader.h>
+#include <ui/game_window.h>
 #include <ui/imgui_utils.h>
 #include <ui/installer_wizard.h>
 #include <ui/message_window.h>
 #include <ui/options_menu.h>
-#include <ui/game_window.h>
-#include <ui/black_bar.h>
-#include <patches/aspect_ratio_patches.h>
-#include <patches/hook_event.h>
-#include <patches/loading_patches.h>
 #include <user/config.h>
-#include <sdl_listener.h>
 #include <xxHashMap.h>
-#include <os/process.h>
-#include <os/thread.h>
 
 #if defined(ASYNC_PSO_DEBUG) || defined(PSO_CACHING)
 #include <user/paths.h>
@@ -46,61 +44,7 @@
 
 #define MARATHON_RECOMP
 #include "../../tools/XenosRecomp/XenosRecomp/shader_common.h"
-
-#ifdef MARATHON_RECOMP_D3D12
-#include "gpu/shader/hlsl/conditional_survey_ps.hlsl.dxil.h"
-#include "gpu/shader/hlsl/copy_vs.hlsl.dxil.h"
-#include "gpu/shader/hlsl/copy_color_ps.hlsl.dxil.h"
-#include "gpu/shader/hlsl/copy_depth_ps.hlsl.dxil.h"
-#include "gpu/shader/hlsl/enhanced_burnout_blur_vs.hlsl.dxil.h"
-#include "gpu/shader/hlsl/enhanced_burnout_blur_ps.hlsl.dxil.h"
-#include "gpu/shader/hlsl/movie_ps.hlsl.dxil.h"
-#include "gpu/shader/hlsl/gamma_correction_ps.hlsl.dxil.h"
-#include "gpu/shader/hlsl/imgui_ps.hlsl.dxil.h"
-#include "gpu/shader/hlsl/imgui_vs.hlsl.dxil.h"
-#include "gpu/shader/hlsl/resolve_msaa_color_2x.hlsl.dxil.h"
-#include "gpu/shader/hlsl/resolve_msaa_color_4x.hlsl.dxil.h"
-#include "gpu/shader/hlsl/resolve_msaa_color_8x.hlsl.dxil.h"
-#include "gpu/shader/hlsl/resolve_msaa_depth_2x.hlsl.dxil.h"
-#include "gpu/shader/hlsl/resolve_msaa_depth_4x.hlsl.dxil.h"
-#include "gpu/shader/hlsl/resolve_msaa_depth_8x.hlsl.dxil.h"
-#endif
-
-#ifdef MARATHON_RECOMP_METAL
-#include "gpu/shader/msl/conditional_survey_ps.metal.metallib.h"
-#include "gpu/shader/msl/copy_vs.metal.metallib.h"
-#include "gpu/shader/msl/copy_color_ps.metal.metallib.h"
-#include "gpu/shader/msl/copy_depth_ps.metal.metallib.h"
-#include "gpu/shader/msl/enhanced_burnout_blur_vs.metal.metallib.h"
-#include "gpu/shader/msl/enhanced_burnout_blur_ps.metal.metallib.h"
-#include "gpu/shader/msl/movie_ps.metal.metallib.h"
-#include "gpu/shader/msl/gamma_correction_ps.metal.metallib.h"
-#include "gpu/shader/msl/imgui_ps.metal.metallib.h"
-#include "gpu/shader/msl/imgui_vs.metal.metallib.h"
-#include "gpu/shader/msl/resolve_msaa_color_2x.metal.metallib.h"
-#include "gpu/shader/msl/resolve_msaa_color_4x.metal.metallib.h"
-#include "gpu/shader/msl/resolve_msaa_color_8x.metal.metallib.h"
-#include "gpu/shader/msl/resolve_msaa_depth_2x.metal.metallib.h"
-#include "gpu/shader/msl/resolve_msaa_depth_4x.metal.metallib.h"
-#include "gpu/shader/msl/resolve_msaa_depth_8x.metal.metallib.h"
-#endif
-
-#include "gpu/shader/hlsl/conditional_survey_ps.hlsl.spirv.h"
-#include "gpu/shader/hlsl/copy_vs.hlsl.spirv.h"
-#include "gpu/shader/hlsl/copy_color_ps.hlsl.spirv.h"
-#include "gpu/shader/hlsl/copy_depth_ps.hlsl.spirv.h"
-#include "gpu/shader/hlsl/enhanced_burnout_blur_vs.hlsl.spirv.h"
-#include "gpu/shader/hlsl/enhanced_burnout_blur_ps.hlsl.spirv.h"
-#include "gpu/shader/hlsl/movie_ps.hlsl.spirv.h"
-#include "gpu/shader/hlsl/gamma_correction_ps.hlsl.spirv.h"
-#include "gpu/shader/hlsl/imgui_ps.hlsl.spirv.h"
-#include "gpu/shader/hlsl/imgui_vs.hlsl.spirv.h"
-#include "gpu/shader/hlsl/resolve_msaa_color_2x.hlsl.spirv.h"
-#include "gpu/shader/hlsl/resolve_msaa_color_4x.hlsl.spirv.h"
-#include "gpu/shader/hlsl/resolve_msaa_color_8x.hlsl.spirv.h"
-#include "gpu/shader/hlsl/resolve_msaa_depth_2x.hlsl.spirv.h"
-#include "gpu/shader/hlsl/resolve_msaa_depth_4x.hlsl.spirv.h"
-#include "gpu/shader/hlsl/resolve_msaa_depth_8x.hlsl.spirv.h"
+#include "gpu/shader/shaders.h"
 
 #ifdef _WIN32
 extern "C"
@@ -122,51 +66,6 @@ extern std::unique_ptr<RenderInterface> CreateMetalInterface();
 }
 
 using namespace plume;
-
-#pragma pack(push, 1)
-struct PipelineState
-{
-    GuestShader* vertexShader = nullptr;
-    GuestShader* pixelShader = nullptr;
-    GuestVertexDeclaration* vertexDeclaration = nullptr;
-    bool zEnable = true;
-    bool zWriteEnable = true;
-    bool stencilEnable = false;
-    bool stencilTwoSided = false;
-    RenderBlend srcBlend = RenderBlend::ONE;
-    RenderBlend destBlend = RenderBlend::ZERO;
-    RenderCullMode cullMode = RenderCullMode::NONE;
-    RenderFrontFace frontFace = RenderFrontFace::CLOCKWISE;
-    RenderComparisonFunction zFunc = RenderComparisonFunction::LESS;
-    RenderComparisonFunction stencilFunc = RenderComparisonFunction::ALWAYS;
-    RenderStencilOp stencilFail = RenderStencilOp::KEEP;
-    RenderStencilOp stencilZFail = RenderStencilOp::KEEP;
-    RenderStencilOp stencilPass = RenderStencilOp::KEEP;
-    RenderComparisonFunction stencilFuncCCW = RenderComparisonFunction::ALWAYS;
-    RenderStencilOp stencilFailCCW = RenderStencilOp::KEEP;
-    RenderStencilOp stencilZFailCCW = RenderStencilOp::KEEP;
-    RenderStencilOp stencilPassCCW = RenderStencilOp::KEEP;
-    uint32_t stencilMask = 0xFFFFFFFF;
-    uint32_t stencilWriteMask = 0xFFFFFFFF;
-    uint32_t stencilRef = 0;
-    bool alphaBlendEnable = false;
-    RenderBlendOperation blendOp = RenderBlendOperation::ADD;
-    float slopeScaledDepthBias = 0.0f;
-    int32_t depthBias = 0;
-    RenderBlend srcBlendAlpha = RenderBlend::ONE;
-    RenderBlend destBlendAlpha = RenderBlend::ZERO;
-    RenderBlendOperation blendOpAlpha = RenderBlendOperation::ADD;
-    uint32_t colorWriteEnable = uint32_t(RenderColorWriteEnable::ALL);
-    RenderPrimitiveTopology primitiveTopology = RenderPrimitiveTopology::TRIANGLE_LIST;
-    uint8_t vertexStrides[16]{};
-    RenderFormat renderTargetFormat{};
-    RenderFormat depthStencilFormat{};
-    RenderSampleCounts sampleCount = RenderSampleCount::COUNT_1;
-    bool enableAlphaToCoverage = false;
-    bool enableConditionalSurvey = false;
-    uint32_t specConstants = 0;
-};
-#pragma pack(pop)
 
 struct UploadAllocation
 {
@@ -308,10 +207,8 @@ static Profiler g_swapChainAcquireProfiler;
 static bool g_profilerVisible;
 static bool g_profilerWasToggled;
 
-#if !defined(MARATHON_RECOMP_D3D12) && !defined(MARATHON_RECOMP_METAL)
-static constexpr Backend g_backend = Backend::VULKAN;
-#else
-static Backend g_backend;
+#if defined(MARATHON_RECOMP_D3D12) || defined(MARATHON_RECOMP_METAL)
+Backend g_backend;
 #endif
 
 static bool g_triangleStripWorkaround = false;
@@ -361,150 +258,31 @@ static uint32_t g_intermediaryBackBufferTextureDescriptorIndex;
 
 static std::unique_ptr<RenderPipeline> g_gammaCorrectionPipeline;
 
-static std::unique_ptr<RenderDescriptorSet> g_textureDescriptorSet;
+std::unique_ptr<RenderDescriptorSet> g_textureDescriptorSet;
 static std::unique_ptr<RenderDescriptorSet> g_samplerDescriptorSet;
 
-static constexpr uint32_t CONDITIONAL_SURVEY_MAX = 64;
 static std::unique_ptr<RenderBuffer> g_conditionalSurveyBuffer;
 static std::unique_ptr<RenderDescriptorSet> g_conditionalSurveyDescriptorSet;
-
-enum
-{
-    TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D,
-    TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D_ARRAY,
-    TEXTURE_DESCRIPTOR_NULL_TEXTURE_CUBE,
-    TEXTURE_DESCRIPTOR_NULL_COUNT
-};
-
-struct TextureDescriptorAllocator
-{
-    Mutex mutex;
-    uint32_t capacity = TEXTURE_DESCRIPTOR_NULL_COUNT;
-    std::vector<uint32_t> freed;
-
-    uint32_t allocate()
-    {
-        std::lock_guard lock(mutex);
-
-        uint32_t value;
-        if (!freed.empty())
-        {
-            value = freed.back();
-            freed.pop_back();
-        }
-        else
-        {
-            value = capacity;
-            ++capacity;
-        }
-
-        return value;
-    }
-
-    void free(uint32_t value)
-    {
-        assert(value != NULL);
-        std::lock_guard lock(mutex);
-        freed.push_back(value);
-    }
-};
 
 static std::unique_ptr<RenderTexture> g_blankTextures[TEXTURE_DESCRIPTOR_NULL_COUNT];
 static std::unique_ptr<RenderTextureView> g_blankTextureViews[TEXTURE_DESCRIPTOR_NULL_COUNT];
 
-static TextureDescriptorAllocator g_textureDescriptorAllocator;
+TextureDescriptorAllocator g_textureDescriptorAllocator;
 
-static std::unique_ptr<RenderPipelineLayout> g_pipelineLayout;
+std::unique_ptr<RenderPipelineLayout> g_pipelineLayout;
 static xxHashMap<std::unique_ptr<RenderPipeline>> g_pipelines;
 
 #ifdef ASYNC_PSO_DEBUG
 static std::atomic<uint32_t> g_pipelinesCreatedInRenderThread;
 static std::atomic<uint32_t> g_pipelinesCreatedAsynchronously;
 static std::atomic<uint32_t> g_pipelinesDropped;
-static std::atomic<uint32_t> g_pipelinesCurrentlyCompiling;
 static std::string g_pipelineDebugText;
 static Mutex g_debugMutex;
 #endif
 
-#ifdef PSO_CACHING
-static xxHashMap<PipelineState> g_pipelineStatesToCache;
-static Mutex g_pipelineCacheMutex;
-#endif
-
-static std::atomic<uint32_t> g_compilingPipelineTaskCount;
-static std::atomic<uint32_t> g_pendingPipelineTaskCount;
-
-enum class PipelineTaskType
-{
-    Null,
-    PrecompilePipelines,
-    RecompilePipelines
-};
-
-struct PipelineTask
-{
-    PipelineTaskType type{};
-};
-
-static Mutex g_pipelineTaskMutex;
-static std::vector<PipelineTask> g_pipelineTaskQueue;
-
-static std::thread::id g_mainThreadId = std::this_thread::get_id();
-
-class LoadingPipelineCompilationEvent : public ContextHookEvent<Sonicteam::LoadingTask>
-{
-public:
-    void Postfix(Sonicteam::LoadingTask* in_pThis) override
-    {
-        assert(std::this_thread::get_id() == g_mainThreadId);
-
-        // Wait for pipeline compilations to finish.
-        uint32_t value;
-        while ((value = g_compilingPipelineTaskCount.load()) != 0)
-        {
-            // Pump SDL events to prevent the OS
-            // from thinking the process is unresponsive.
-            SDL_PumpEvents();
-            SDL_FlushEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
-
-            g_compilingPipelineTaskCount.wait(value);
-        }
-    }
-}
-g_loadingPipelineCompilationEvent{};
-
-static void EnqueuePipelineTask(PipelineTaskType type)
-{
-    // Precompiled pipelines deliberately do not increment
-    // this counter to overlap the compilation with intro logos.
-    if (type != PipelineTaskType::PrecompilePipelines)
-        ++g_compilingPipelineTaskCount;
-
-    {
-        std::lock_guard lock(g_pipelineTaskMutex);
-        g_pipelineTaskQueue.emplace_back(type);
-    }
-
-    if ((++g_pendingPipelineTaskCount) == 1)
-        g_pendingPipelineTaskCount.notify_one();
-}
-
-static const PipelineState g_pipelineStateCache[] =
-{
-#include "cache/pipeline_state_cache.h"
-};
-
-#include "cache/vertex_element_cache.h"
-
-static uint8_t* const g_vertexDeclarationCache[] =
-{
-#include "cache/vertex_declaration_cache.h"
-};
+std::thread::id g_mainThreadId = std::this_thread::get_id();
 
 static xxHashMap<std::pair<uint32_t, std::unique_ptr<RenderSampler>>> g_samplerStates;
-
-static Mutex g_vertexDeclarationMutex;
-static xxHashMap<GuestVertexDeclaration*> g_vertexDeclarations;
 
 struct UploadBuffer
 {
@@ -540,7 +318,7 @@ struct UploadAllocator
         if (buffer.buffer == nullptr)
         {
             buffer.buffer = g_device->createBuffer(RenderBufferDesc::UploadBuffer(UploadBuffer::SIZE, RenderBufferFlag::CONSTANT | RenderBufferFlag::VERTEX | RenderBufferFlag::INDEX | RenderBufferFlag::DEVICE_ADDRESSABLE));
-            buffer.memory = reinterpret_cast<uint8_t*>(buffer.buffer->map());
+            buffer.memory = static_cast<uint8_t*>(buffer.buffer->map());
             buffer.deviceAddress = buffer.buffer->getDeviceAddress();
         }
         
@@ -582,53 +360,6 @@ struct UploadAllocator
 };
 
 static UploadAllocator g_uploadAllocators[NUM_FRAMES];
-
-struct IntermediaryUploadAllocator
-{
-    static constexpr size_t SIZE = 16 * 1024 * 1024;
-
-    std::vector<std::unique_ptr<uint8_t[]>> buffers;
-    uint32_t index = 0;
-    uint32_t offset = 0;
-
-    uint8_t* allocate(uint32_t size)
-    {
-        assert(size <= SIZE);
-
-        if (offset + size > SIZE)
-        {
-            ++index;
-            offset = 0;
-        }
-
-        if (buffers.size() <= index)
-            buffers.resize(index + 1);
-
-        auto& buffer = buffers[index];
-        if (buffer == nullptr)
-            buffer = std::make_unique_for_overwrite<uint8_t[]>(SIZE);
-
-        auto result = buffer.get() + offset;
-        offset += ((size + 0xF) & ~0xF);
-
-        return result;
-    }
-
-    uint8_t* allocate(const void* memory, uint32_t size)
-    {
-        auto result = allocate(size);
-        memcpy(result, memory, size);
-        return result;
-    }
-
-    void reset()
-    {
-        index = 0;
-        offset = 0;
-    }
-};
-
-static IntermediaryUploadAllocator g_intermediaryUploadAllocator;
 
 static std::vector<GuestResource*> g_tempResources[NUM_FRAMES];
 static std::vector<std::unique_ptr<RenderBuffer>> g_tempBuffers[NUM_FRAMES];
@@ -696,7 +427,7 @@ struct PrimitiveIndexData
             }
         }
 
-        if (indexBuffer == NULL || currentIndexCount < indexCount)
+        if (indexBuffer == nullptr || currentIndexCount < indexCount)
         {
             auto allocation = g_uploadAllocators[g_frame].allocate<false>(indexData.data(), indexCount * 2, 2);
             indexBuffer = allocation.buffer->at(allocation.offset);
@@ -720,68 +451,8 @@ struct PrimitiveIndexData
 static PrimitiveIndexData<D3DPT_TRIANGLEFAN> g_triangleFanIndexData;
 static PrimitiveIndexData<D3DPT_QUADLIST> g_quadIndexData;
 
-// Host render target storage for guest surfaces, identified by EDRAM placement.
-struct SurfaceVariant
-{
-    uint32_t base = 0;
-    uint32_t width = 0;
-    uint32_t height = 0;
-    uint32_t guestFormat = 0;
-    RenderSampleCounts sampleCount = RenderSampleCount::COUNT_1;
-    RenderFormat format = RenderFormat::UNKNOWN;
-    std::unique_ptr<RenderTexture> textureHolder;
-    std::unique_ptr<RenderTextureView> textureView;
-    uint32_t descriptorIndex = 0;
-    // Barrier state is shared by all views, as they render to the same texture.
-    RenderTextureLayout layout = RenderTextureLayout::UNKNOWN;
-    // Framebuffers are cached here instead of on the guest surface so they don't
-    // outlive the host texture when views are destroyed.
-    ankerl::unordered_dense::map<const RenderTexture*, std::unique_ptr<RenderFramebuffer>> framebuffers;
-    uint32_t refCount = 0;
-
-    uint32_t deferredClearFlags = 0;
-    float deferredClearColor[4]{};
-    float deferredClearZ = 1.0f;
-    uint32_t deferredClearStencil = 0;
-};
-
-static Mutex g_surfaceVariantMutex;
-static std::vector<std::unique_ptr<SurfaceVariant>> g_surfaceVariants;
-
 static ankerl::unordered_dense::set<GuestSurface*> g_pendingSurfaceCopies;
 static ankerl::unordered_dense::set<GuestSurface*> g_pendingResolves;
-
-static void ReleaseSurfaceVariant(SurfaceVariant* variant)
-{
-    std::lock_guard lock(g_surfaceVariantMutex);
-
-    assert(variant->refCount != 0);
-    if (--variant->refCount != 0)
-        return;
-
-    g_textureDescriptorSet->setTexture(variant->descriptorIndex, nullptr, {});
-    g_textureDescriptorAllocator.free(variant->descriptorIndex);
-
-    for (auto& other : g_surfaceVariants)
-    {
-        if (other.get() != variant)
-            other->framebuffers.erase(variant->textureHolder.get());
-    }
-
-    g_framebuffer = nullptr;
-
-    std::erase_if(g_surfaceVariants, [variant](auto& entry) { return entry.get() == variant; });
-}
-
-static void PurgeSurfaceVariantFramebuffers()
-{
-    std::lock_guard lock(g_surfaceVariantMutex);
-
-    for (auto& variant : g_surfaceVariants)
-        variant->framebuffers.clear();
-
-    g_framebuffer = nullptr;
-}
 
 static void DestructTempResources()
 {
@@ -820,7 +491,6 @@ static void DestructTempResources()
         {
             const auto buffer = reinterpret_cast<GuestBuffer*>(resource);
 
-
             if (buffer->mappedMemory != nullptr)
                 g_userHeap.Free(buffer->mappedMemory);
 
@@ -848,12 +518,13 @@ static void DestructTempResources()
                 g_dirtyStates.renderTargetAndDepthStencil = true;
             }
 
-            for (const auto& [texture, _] : surface->destinationTextures)
+            for (const auto &texture : surface->destinationTextures | std::views::keys)
                 texture->sourceSurface = nullptr;
 
             if (surface->variant != nullptr)
             {
-                ReleaseSurfaceVariant(surface->variant);
+                if (ReleaseSurfaceVariant(surface->variant))
+                    g_framebuffer = nullptr;
             }
             else if (surface->descriptorIndex != NULL)
             {
@@ -883,17 +554,6 @@ static void DestructTempResources()
     g_tempResources[g_frame].clear();
     g_tempBuffers[g_frame].clear();
 }
-
-static std::thread::id g_presentThreadId = std::this_thread::get_id();
-static std::atomic<bool> g_readyForCommands;
-
-// PPC_FUNC_IMPL(__imp__sub_824ECA00);
-// PPC_FUNC(sub_824ECA00)
-// {
-//     g_readyForCommands.wait(false);
-//     g_presentThreadId = std::this_thread::get_id();
-//     __imp__sub_824ECA00(ctx, base);
-// }
 
 static ankerl::unordered_dense::map<RenderTexture*, RenderTextureLayout> g_barrierMap;
 
@@ -938,256 +598,7 @@ static void FlushBarriers()
     }
 }
 
-static std::unique_ptr<uint8_t[]> g_shaderCache;
-static std::unique_ptr<uint8_t[]> g_buttonBcDiff;
-
-static void LoadEmbeddedResources()
-{
-    switch (g_backend)
-    {
-    case Backend::VULKAN:
-        g_shaderCache = std::make_unique<uint8_t[]>(g_spirvCacheDecompressedSize);
-        ZSTD_decompress(g_shaderCache.get(), g_spirvCacheDecompressedSize, g_compressedSpirvCache, g_spirvCacheCompressedSize);
-        break;
-#if defined(MARATHON_RECOMP_D3D12)
-    case Backend::D3D12:
-        g_shaderCache = std::make_unique<uint8_t[]>(g_dxilCacheDecompressedSize);
-        ZSTD_decompress(g_shaderCache.get(), g_dxilCacheDecompressedSize, g_compressedDxilCache, g_dxilCacheCompressedSize);
-        break;
-#elif defined(MARATHON_RECOMP_METAL)
-    case Backend::METAL:
-        g_shaderCache = std::make_unique<uint8_t[]>(g_airCacheDecompressedSize);
-        ZSTD_decompress(g_shaderCache.get(), g_airCacheDecompressedSize, g_compressedAirCache, g_airCacheCompressedSize);
-        break;
-#endif
-    default:
-        assert(false);
-    }
-
-    g_buttonBcDiff = decompressZstd(g_button_bc_diff, g_button_bc_diff_uncompressed_size);
-}
-
-enum class RenderCommandType
-{
-    SetRenderState,
-    DestructResource,
-    UnlockTextureRect,
-    UnlockBuffer16,
-    UnlockBuffer32,
-    DrawImGui,
-    ExecuteCommandList,
-    BeginCommandList,
-    StretchRect,
-    SetRenderTarget,
-    SetDepthStencilSurface,
-    ExecutePendingStretchRectCommands,
-    Clear,
-    SetViewport,
-    SetTexture,
-    SetScissorRect,
-    SetSamplerState,
-    SetBooleans,
-    SetVertexShaderConstants,
-    SetPixelShaderConstants,
-    AddPipeline,
-    DrawPrimitive,
-    DrawIndexedPrimitive,
-    DrawPrimitiveUP,
-    SetVertexDeclaration,
-    SetVertexShader,
-    SetStreamSource,
-    SetIndices,
-    SetPixelShader,
-    SetConditionalSurvey,
-    SetConditionalRendering,
-};
-
-struct RenderCommand
-{
-    RenderCommandType type;
-    union
-    {
-        struct
-        {
-            GuestRenderState type;
-            uint32_t value;
-        } setRenderState;
-
-        struct 
-        {
-            GuestResource* resource;
-        } destructResource;
-
-        struct
-        {
-            GuestTexture* texture;
-        } unlockTextureRect;
-
-        struct
-        {
-            GuestBuffer* buffer;
-        } unlockBuffer;
-
-        struct 
-        {
-            GuestDevice* device;
-            uint32_t flags;
-            GuestTexture* texture;
-            uint32_t destSliceOrFace;
-        } stretchRect;
-
-        struct 
-        {
-            GuestSurface* renderTarget;
-        } setRenderTarget;
-
-        struct 
-        {
-            GuestSurface* depthStencil;
-        } setDepthStencilSurface;
-
-        struct 
-        {
-            uint32_t flags;
-            float color[4];
-            float z;
-            uint32_t stencil;
-        } clear;
-
-        struct 
-        {
-            float x;
-            float y;
-            float width;
-            float height;
-            float minDepth;
-            float maxDepth;
-        } setViewport;
-
-        struct 
-        {
-            uint32_t index;
-            GuestTexture* texture;
-        } setTexture;
-
-        struct 
-        {
-            int32_t left;
-            int32_t top;
-            int32_t right;
-            int32_t bottom;
-        } setScissorRect;
-
-        struct
-        {
-            uint32_t index;
-            uint32_t data0;
-            uint32_t data3;
-            uint32_t data5;
-        } setSamplerState;
-
-        struct
-        {
-            uint32_t booleans;
-        } setBooleans;
-
-        struct
-        {
-            uint8_t* memory;
-            uint32_t index;
-            uint32_t size;
-        } setVertexShaderConstants;  
-        
-        struct
-        {
-            uint8_t* memory;
-            uint32_t index;
-            uint32_t size;
-        } setPixelShaderConstants;
-
-        struct
-        {
-            XXH64_hash_t hash;
-            RenderPipeline* pipeline;
-        } addPipeline;
-
-        struct 
-        {
-            uint32_t primitiveType; 
-            uint32_t startVertex; 
-            uint32_t primitiveCount;
-        } drawPrimitive;
-
-        struct 
-        {
-            uint32_t primitiveType;
-            int32_t baseVertexIndex; 
-            uint32_t startIndex;
-            uint32_t primCount;
-        } drawIndexedPrimitive;
-
-        struct 
-        {
-            uint32_t primitiveType;
-            uint32_t primitiveCount; 
-            uint8_t* vertexStreamZeroData;
-            uint32_t vertexStreamZeroSize;
-            uint32_t vertexStreamZeroStride;
-        } drawPrimitiveUP;
-
-        struct 
-        {
-            GuestVertexDeclaration* vertexDeclaration;
-        } setVertexDeclaration;
-
-        struct 
-        {
-            GuestShader* shader;
-        } setVertexShader;
-
-        struct 
-        {
-            uint32_t index;
-            GuestBuffer* buffer;
-            uint32_t offset;
-            uint32_t stride;
-        } setStreamSource;
-
-        struct 
-        {
-            GuestBuffer* buffer;
-        } setIndices;
-
-        struct 
-        {
-            GuestShader* shader;
-        } setPixelShader;
-
-        struct
-        {
-            bool enabled;
-            uint32_t index;
-        } setConditionalSurvey;
-
-        struct
-        {
-            bool enabled;
-            uint32_t index;
-        } setConditionalRendering;
-    };
-};
-
-static moodycamel::BlockingConcurrentQueue<RenderCommand> g_renderQueue;
-
-template<GuestRenderState TType>
-static void SetRenderState(GuestDevice* device, uint32_t value)
-{
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetRenderState;
-    cmd.setRenderState.type = TType;
-    cmd.setRenderState.value = value;
-    g_renderQueue.enqueue(cmd);
-}
+moodycamel::BlockingConcurrentQueue<RenderCommand> g_renderQueue;
 
 static void SetRenderStateUnimplemented(GuestDevice* device, uint32_t value)
 {
@@ -1215,113 +626,11 @@ static void SetAlphaTestMode(bool enable)
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.specConstants, specConstants);
 }
 
-static RenderBlend ConvertBlendMode(uint32_t blendMode)
+static void ProcRenderCommand(const RenderCommands::SetRenderState& args)
 {
-    switch (blendMode)
-    {
-    case D3DBLEND_ZERO:
-        return RenderBlend::ZERO;
-    case D3DBLEND_ONE:
-        return RenderBlend::ONE;
-    case D3DBLEND_SRCCOLOR:
-        return RenderBlend::SRC_COLOR;
-    case D3DBLEND_INVSRCCOLOR:
-        return RenderBlend::INV_SRC_COLOR;
-    case D3DBLEND_SRCALPHA:
-        return RenderBlend::SRC_ALPHA;
-    case D3DBLEND_INVSRCALPHA:
-        return RenderBlend::INV_SRC_ALPHA;
-    case D3DBLEND_DESTCOLOR:
-        return RenderBlend::DEST_COLOR;
-    case D3DBLEND_INVDESTCOLOR:
-        return RenderBlend::INV_DEST_COLOR;
-    case D3DBLEND_DESTALPHA:
-        return RenderBlend::DEST_ALPHA;
-    case D3DBLEND_INVDESTALPHA:
-        return RenderBlend::INV_DEST_ALPHA;
-    default:
-        assert(false && "Invalid blend mode");
-        return RenderBlend::ZERO;
-    }
-}
+    uint32_t value = args.value;
 
-static RenderBlendOperation ConvertBlendOp(uint32_t blendOp)
-{
-    switch (blendOp)
-    {
-    case D3DBLENDOP_ADD:
-        return RenderBlendOperation::ADD;
-    case D3DBLENDOP_SUBTRACT:
-        return RenderBlendOperation::SUBTRACT;
-    case D3DBLENDOP_REVSUBTRACT:
-        return RenderBlendOperation::REV_SUBTRACT;
-    case D3DBLENDOP_MIN:
-        return RenderBlendOperation::MIN;
-    case D3DBLENDOP_MAX:
-        return RenderBlendOperation::MAX;
-    default:
-        assert(false && "Unknown blend operation");
-        return RenderBlendOperation::ADD;
-    }
-}
-
-static RenderComparisonFunction ConvertCompareFunc(uint32_t compareFunc)
-{
-    switch (compareFunc)
-    {
-    case D3DCMP_NEVER:
-        return RenderComparisonFunction::NEVER;
-    case D3DCMP_LESS:
-        return RenderComparisonFunction::LESS;
-    case D3DCMP_EQUAL:
-        return RenderComparisonFunction::EQUAL;
-    case D3DCMP_LESSEQUAL:
-        return RenderComparisonFunction::LESS_EQUAL;
-    case D3DCMP_GREATER:
-        return RenderComparisonFunction::GREATER;
-    case D3DCMP_NOTEQUAL:
-        return RenderComparisonFunction::NOT_EQUAL;
-    case D3DCMP_GREATEREQUAL:
-        return RenderComparisonFunction::GREATER_EQUAL;
-    case D3DCMP_ALWAYS:
-        return RenderComparisonFunction::ALWAYS;
-    default:
-        assert(false && "Unknown comparison function");
-        return RenderComparisonFunction::NEVER;
-    }
-}
-
-static RenderStencilOp ConvertStencilOp(uint32_t stencilOp)
-{
-    switch (stencilOp)
-    {
-    case D3DSTENCILOP_KEEP:
-        return RenderStencilOp::KEEP;
-    case D3DSTENCILOP_ZERO:
-        return RenderStencilOp::ZERO;
-    case D3DSTENCILOP_REPLACE:
-        return RenderStencilOp::REPLACE;
-    case D3DSTENCILOP_INCRSAT:
-        return RenderStencilOp::INCREMENT_AND_CLAMP;
-    case D3DSTENCILOP_DECRSAT:
-        return RenderStencilOp::DECREMENT_AND_CLAMP;
-    case D3DSTENCILOP_INVERT:
-        return RenderStencilOp::INVERT;
-    case D3DSTENCILOP_INCR:
-        return RenderStencilOp::INCREMENT_AND_WRAP;
-    case D3DSTENCILOP_DECR:
-        return RenderStencilOp::DECREMENT_AND_WRAP;
-    default:
-        assert(false && "Unknown stencil op");
-        return RenderStencilOp::KEEP;
-    }
-}
-
-static void ProcSetRenderState(const RenderCommand& cmd)
-{
-    uint32_t value = cmd.setRenderState.value;
-
-    switch (cmd.setRenderState.type)
+    switch (args.type)
     {
     case D3DRS_ZENABLE:
     {
@@ -1449,7 +758,7 @@ static void ProcSetRenderState(const RenderCommand& cmd)
     }
     case D3DRS_ALPHAREF:
     {
-        SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.alphaThreshold, float(value) / 256.0f);
+        SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.alphaThreshold, static_cast<float>(value) / 256.0f);
         break;
     }
     case D3DRS_ALPHABLENDENABLE:
@@ -1473,7 +782,7 @@ static void ProcSetRenderState(const RenderCommand& cmd)
     {
         if (g_capabilities.dynamicDepthBias)
             SetDirtyValue(g_dirtyStates.depthBias, g_slopeScaledDepthBias, *reinterpret_cast<float*>(&value));
-        else 
+        else
             SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.slopeScaledDepthBias, *reinterpret_cast<float*>(&value));
 
         break;
@@ -1481,9 +790,9 @@ static void ProcSetRenderState(const RenderCommand& cmd)
     case D3DRS_DEPTHBIAS:
     {
         if (g_capabilities.dynamicDepthBias)
-            SetDirtyValue(g_dirtyStates.depthBias, g_depthBias, int32_t(*reinterpret_cast<float*>(&value) * (1 << 24)));
+            SetDirtyValue(g_dirtyStates.depthBias, g_depthBias, static_cast<int32_t>(*reinterpret_cast<float *>(&value) * (1 << 24)));
         else
-            SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.depthBias, int32_t(*reinterpret_cast<float*>(&value)* (1 << 24)));
+            SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.depthBias, static_cast<int32_t>(*reinterpret_cast<float *>(&value) * (1 << 24)));
 
         break;
     }
@@ -1516,41 +825,6 @@ static void ProcSetRenderState(const RenderCommand& cmd)
     }
 }
 
-static const std::pair<GuestRenderState, PPCFunc*> g_setRenderStateFunctions[] =
-{
-    { D3DRS_ZENABLE, HostToGuestFunction<SetRenderState<D3DRS_ZENABLE>> },
-    { D3DRS_ZWRITEENABLE, HostToGuestFunction<SetRenderState<D3DRS_ZWRITEENABLE>> },
-    { D3DRS_ALPHATESTENABLE, HostToGuestFunction<SetRenderState<D3DRS_ALPHATESTENABLE>> },
-    { D3DRS_SRCBLEND, HostToGuestFunction<SetRenderState<D3DRS_SRCBLEND>> },
-    { D3DRS_DESTBLEND, HostToGuestFunction<SetRenderState<D3DRS_DESTBLEND>> },
-    { D3DRS_CULLMODE, HostToGuestFunction<SetRenderState<D3DRS_CULLMODE>> },
-    { D3DRS_ZFUNC, HostToGuestFunction<SetRenderState<D3DRS_ZFUNC>> },
-    { D3DRS_ALPHAREF, HostToGuestFunction<SetRenderState<D3DRS_ALPHAREF>> },
-    { D3DRS_ALPHABLENDENABLE, HostToGuestFunction<SetRenderState<D3DRS_ALPHABLENDENABLE>> },
-    { D3DRS_BLENDOP, HostToGuestFunction<SetRenderState<D3DRS_BLENDOP>> },
-    { D3DRS_SCISSORTESTENABLE, HostToGuestFunction<SetRenderState<D3DRS_SCISSORTESTENABLE>> },
-    { D3DRS_SLOPESCALEDEPTHBIAS, HostToGuestFunction<SetRenderState<D3DRS_SLOPESCALEDEPTHBIAS>> },
-    { D3DRS_DEPTHBIAS, HostToGuestFunction<SetRenderState<D3DRS_DEPTHBIAS>> },
-    { D3DRS_SRCBLENDALPHA, HostToGuestFunction<SetRenderState<D3DRS_SRCBLENDALPHA>> },
-    { D3DRS_DESTBLENDALPHA, HostToGuestFunction<SetRenderState<D3DRS_DESTBLENDALPHA>> },
-    { D3DRS_BLENDOPALPHA, HostToGuestFunction<SetRenderState<D3DRS_BLENDOPALPHA>> },
-    { D3DRS_COLORWRITEENABLE, HostToGuestFunction<SetRenderState<D3DRS_COLORWRITEENABLE>> },
-    { D3DRS_STENCILENABLE, HostToGuestFunction<SetRenderState<D3DRS_STENCILENABLE>> },
-    { D3DRS_TWOSIDEDSTENCILMODE, HostToGuestFunction<SetRenderState<D3DRS_TWOSIDEDSTENCILMODE>> },
-    { D3DRS_STENCILFAIL, HostToGuestFunction<SetRenderState<D3DRS_STENCILFAIL>> },
-    { D3DRS_STENCILZFAIL, HostToGuestFunction<SetRenderState<D3DRS_STENCILZFAIL>> },
-    { D3DRS_STENCILPASS, HostToGuestFunction<SetRenderState<D3DRS_STENCILPASS>> },
-    { D3DRS_STENCILFUNC, HostToGuestFunction<SetRenderState<D3DRS_STENCILFUNC>> },
-    { D3DRS_STENCILREF, HostToGuestFunction<SetRenderState<D3DRS_STENCILREF>> },
-    { D3DRS_STENCILMASK, HostToGuestFunction<SetRenderState<D3DRS_STENCILMASK>> },
-    { D3DRS_STENCILWRITEMASK, HostToGuestFunction<SetRenderState<D3DRS_STENCILWRITEMASK>> },
-    { D3DRS_CCW_STENCILFAIL, HostToGuestFunction<SetRenderState<D3DRS_CCW_STENCILFAIL>> },
-    { D3DRS_CCW_STENCILZFAIL, HostToGuestFunction<SetRenderState<D3DRS_CCW_STENCILZFAIL>> },
-    { D3DRS_CCW_STENCILPASS, HostToGuestFunction<SetRenderState<D3DRS_CCW_STENCILPASS>> },
-    { D3DRS_CCW_STENCILFUNC, HostToGuestFunction<SetRenderState<D3DRS_CCW_STENCILFUNC>> },
-    { D3DRS_CLIPPLANEENABLE, HostToGuestFunction<SetRenderState<D3DRS_CLIPPLANEENABLE>> }
-};
-
 static std::unique_ptr<RenderShader> g_copyShader;
 
 static std::unique_ptr<RenderShader> g_copyColorShader;
@@ -1560,38 +834,6 @@ static std::unique_ptr<RenderPipeline> g_copyDepthPipeline;
 static std::unique_ptr<RenderShader> g_resolveMsaaColorShaders[3];
 static ankerl::unordered_dense::map<RenderFormat, std::array<std::unique_ptr<RenderPipeline>, 3>> g_resolveMsaaColorPipelines;
 static std::unique_ptr<RenderPipeline> g_resolveMsaaDepthPipelines[3];
-
-static std::unique_ptr<RenderShader> g_enhancedBurnoutBlurVSShader;
-static std::unique_ptr<RenderShader> g_enhancedBurnoutBlurPSShader;
-
-static std::unique_ptr<RenderShader> g_MoviePSShader;
-
-static std::unique_ptr<GuestShader> g_conditionalSurveyPSShader;
-
-#if defined(MARATHON_RECOMP_D3D12)
-
-#define CREATE_SHADER(NAME) \
-    g_device->createShader( \
-        (g_backend == Backend::VULKAN) ? g_##NAME##_spirv : g_##NAME##_dxil, \
-        (g_backend == Backend::VULKAN) ? sizeof(g_##NAME##_spirv) : sizeof(g_##NAME##_dxil), \
-        "shaderMain", \
-        (g_backend == Backend::VULKAN) ? RenderShaderFormat::SPIRV : RenderShaderFormat::DXIL)
-
-#elif defined(MARATHON_RECOMP_METAL)
-
-#define CREATE_SHADER(NAME) \
-    g_device->createShader( \
-        (g_backend == Backend::VULKAN) ? g_##NAME##_spirv : g_##NAME##_air, \
-        (g_backend == Backend::VULKAN) ? sizeof(g_##NAME##_spirv) : sizeof(g_##NAME##_air), \
-        "shaderMain", \
-        (g_backend == Backend::VULKAN) ? RenderShaderFormat::SPIRV : RenderShaderFormat::METAL)
-
-#else
-
-#define CREATE_SHADER(NAME) \
-    g_device->createShader(g_##NAME##_spirv, sizeof(g_##NAME##_spirv), "shaderMain", RenderShaderFormat::SPIRV)
-
-#endif
 
 #ifdef _WIN32
 static bool DetectWine()
@@ -1604,25 +846,20 @@ static bool DetectWine()
 static constexpr size_t TEXTURE_DESCRIPTOR_SIZE = 32768;
 static constexpr size_t SAMPLER_DESCRIPTOR_SIZE = 1024;
 
-static std::unique_ptr<GuestTexture> g_imFontTexture;
 static std::unique_ptr<RenderPipelineLayout> g_imPipelineLayout;
 static std::unique_ptr<RenderPipeline> g_imPipeline;
 static std::unique_ptr<RenderPipeline> g_imAdditivePipeline;
 
-template<typename T>
-static void ExecuteCopyCommandList(const T& function)
+void Video::ExecuteCopyCommandList(const std::function<void(RenderCommandList*)>& function)
 {
     std::lock_guard lock(g_copyMutex);
 
     g_copyCommandList->begin();
-    function();
+    function(g_copyCommandList.get());
     g_copyCommandList->end();
     g_copyQueue->executeCommandLists(g_copyCommandList.get(), g_copyCommandFence.get());
     g_copyQueue->waitForCommandFence(g_copyCommandFence.get());
 }
-
-static constexpr uint32_t PITCH_ALIGNMENT = 0x100;
-static constexpr uint32_t PLACEMENT_ALIGNMENT = 0x200;
 
 struct ImGuiPushConstants
 {
@@ -1642,8 +879,6 @@ struct ImGuiPushConstants
     float outline{};
 };
 
-extern ImFontBuilderIO g_fontBuilderIO;
-
 static void CreateImGuiBackend()
 {
     ImGuiIO& io = ImGui::GetIO();
@@ -1651,88 +886,11 @@ static void CreateImGuiBackend()
     io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;
     io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 
-#ifdef ENABLE_IM_FONT_ATLAS_SNAPSHOT
-    IM_DELETE(io.Fonts);
-    io.Fonts = ImFontAtlasSnapshot::Load();
-#else
-    io.Fonts->AddFontDefault();
-    ImFontAtlasSnapshot::GenerateGlyphRanges();
-#endif
-
     InitImGuiUtils();
     OptionsMenu::Init();
     InstallerWizard::Init();
 
     ImGui_ImplSDL3_InitForOther(GameWindow::s_pWindow);
-
-#ifdef ENABLE_IM_FONT_ATLAS_SNAPSHOT
-    g_imFontTexture = LoadTexture(
-        decompressZstd(g_im_font_atlas_texture, g_im_font_atlas_texture_uncompressed_size).get(), g_im_font_atlas_texture_uncompressed_size);
-#else
-    io.Fonts->FontBuilderIO = &g_fontBuilderIO;
-    io.Fonts->Build();
-
-    g_imFontTexture = std::make_unique<GuestTexture>(ResourceType::Texture);
-
-    uint8_t* pixels;
-    int width, height;
-    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
-
-    RenderTextureDesc textureDesc;
-    textureDesc.dimension = RenderTextureDimension::TEXTURE_2D;
-    textureDesc.width = width;
-    textureDesc.height = height;
-    textureDesc.depth = 1;
-    textureDesc.mipLevels = 1;
-    textureDesc.arraySize = 1;
-    textureDesc.format = RenderFormat::R8G8B8A8_UNORM;
-
-    g_imFontTexture->textureHolder = g_device->createTexture(textureDesc);
-    g_imFontTexture->texture = g_imFontTexture->textureHolder.get();
-
-    uint32_t rowPitch = (width * 4 + PITCH_ALIGNMENT - 1) & ~(PITCH_ALIGNMENT - 1);
-    uint32_t slicePitch = (rowPitch * height + PLACEMENT_ALIGNMENT - 1) & ~(PLACEMENT_ALIGNMENT - 1);
-    auto uploadBuffer = g_device->createBuffer(RenderBufferDesc::UploadBuffer(slicePitch));
-    uint8_t* mappedMemory = reinterpret_cast<uint8_t*>(uploadBuffer->map());
-
-    if (rowPitch == (width * 4))
-    {
-        memcpy(mappedMemory, pixels, slicePitch);
-    }
-    else
-    {
-        for (size_t i = 0; i < height; i++)
-        {
-            memcpy(mappedMemory, pixels, width * 4);
-            pixels += width * 4;
-            mappedMemory += rowPitch;
-        }
-    }
-
-    uploadBuffer->unmap();
-
-    ExecuteCopyCommandList([&]
-        {
-            g_copyCommandList->barriers(RenderBarrierStage::COPY, RenderTextureBarrier(g_imFontTexture->texture, RenderTextureLayout::COPY_DEST));
-
-            g_copyCommandList->copyTextureRegion(
-                RenderTextureCopyLocation::Subresource(g_imFontTexture->texture, 0),
-                RenderTextureCopyLocation::PlacedFootprint(uploadBuffer.get(), RenderFormat::R8G8B8A8_UNORM, width, height, 1, rowPitch / 4, 0));
-        });
-
-    g_imFontTexture->layout = RenderTextureLayout::COPY_DEST;
-
-    RenderTextureViewDesc textureViewDesc;
-    textureViewDesc.format = textureDesc.format;
-    textureViewDesc.dimension = RenderTextureViewDimension::TEXTURE_2D;
-    textureViewDesc.mipLevels = 1;
-    g_imFontTexture->textureView = g_imFontTexture->texture->createTextureView(textureViewDesc);
-
-    g_imFontTexture->descriptorIndex = g_textureDescriptorAllocator.allocate();
-    g_textureDescriptorSet->setTexture(g_imFontTexture->descriptorIndex, g_imFontTexture->texture, RenderTextureLayout::SHADER_READ, g_imFontTexture->textureView.get());
-#endif
-
-    io.Fonts->SetTexID(g_imFontTexture.get());
 
     RenderPipelineLayoutBuilder pipelineLayoutBuilder;
     pipelineLayoutBuilder.begin(false, true);
@@ -1778,32 +936,6 @@ static void CreateImGuiBackend()
 
     pipelineDesc.renderTargetBlend[0].dstBlend = RenderBlend::ONE;
     g_imAdditivePipeline = g_device->createGraphicsPipeline(pipelineDesc);
-
-#ifndef ENABLE_IM_FONT_ATLAS_SNAPSHOT
-    ImFontAtlasSnapshot snapshot;
-    snapshot.Snap();
-
-    FILE* file = fopen("im_font_atlas.bin", "wb");
-    if (file)
-    {
-        fwrite(snapshot.data.data(), 1, snapshot.data.size(), file);
-        fclose(file);
-    }
-
-    ddspp::Header header;
-    ddspp::HeaderDXT10 headerDX10;
-    ddspp::encode_header(ddspp::R8G8B8A8_UNORM, width, height, 1, ddspp::Texture2D, 1, 1, header, headerDX10);
-
-    file = fopen("im_font_atlas.dds", "wb");
-    if (file)
-    {
-        fwrite(&ddspp::DDS_MAGIC, 4, 1, file);
-        fwrite(&header, sizeof(header), 1, file);
-        fwrite(&headerDX10, sizeof(headerDX10), 1, file);
-        fwrite(pixels, 4, width * height, file);
-        fclose(file);
-    }
-#endif
 }
 
 static void CheckSwapChain()
@@ -1906,9 +1038,6 @@ static void BeginCommandList()
     commandList->setGraphicsDescriptorSet(g_textureDescriptorSet.get(), 2);
     commandList->setGraphicsDescriptorSet(g_samplerDescriptorSet.get(), 3);
     commandList->setGraphicsDescriptorSet(g_conditionalSurveyDescriptorSet.get(), 4);
-
-    g_readyForCommands = true;
-    g_readyForCommands.notify_one();
 }
 
 template<typename T>
@@ -1919,7 +1048,7 @@ static void ApplyLowEndDefault(ConfigDef<T> &configDef, T newDefault, bool &chan
         configDef = newDefault;
         changed = true;
     }
-    
+
     configDef.DefaultValue = newDefault;
 }
 
@@ -1932,13 +1061,13 @@ static void ApplyLowEndDefaults()
     ApplyLowEndDefault(Config::ReflectionResolution, EReflectionResolution::Quarter, changed);
     ApplyLowEndDefault(Config::TransparencyAntiAliasing, false, changed);
 
-    if (changed) 
+    if (changed)
     {
         Config::Save();
     }
 }
 
-using RenderInterfaceFunction = std::unique_ptr<RenderInterface>(void);
+using RenderInterfaceFunction = std::unique_ptr<RenderInterface>();
 
 static bool TryCreateHostDevice(std::vector<RenderInterfaceFunction*>& interfaceFunctions, bool graphicsApiRetry)
 {
@@ -1950,16 +1079,14 @@ static bool TryCreateHostDevice(std::vector<RenderInterfaceFunction*>& interface
         // If we are attempting to create again after a reboot due to a crash, swap the order.
         g_backend = (g_backend == Backend::VULKAN) ? Backend::D3D12 : Backend::VULKAN;
 
-        // Don't allow redirection to Vulkan if we are retrying after a crash, 
+        // Don't allow redirection to Vulkan if we are retrying after a crash,
         // so the user can at least boot the game with D3D12 if Vulkan fails to work.
         allowVulkanRedirection = false;
     }
 #endif
 
-    for (size_t i = 0; i < interfaceFunctions.size(); i++)
+    for (auto interfaceFunction : interfaceFunctions)
     {
-        RenderInterfaceFunction* interfaceFunction = interfaceFunctions[i];
-
 #ifdef MARATHON_RECOMP_D3D12
         // Wrap the device creation in __try/__except to survive from driver crashes.
         __try
@@ -1975,7 +1102,7 @@ static bool TryCreateHostDevice(std::vector<RenderInterfaceFunction*>& interface
             if (g_device != nullptr)
             {
                 const RenderDeviceDescription &deviceDescription = g_device->getDescription();
-                
+
 #if defined(MARATHON_RECOMP_D3D12)
                 if (interfaceFunction == CreateD3D12Interface)
                 {
@@ -1992,7 +1119,7 @@ static bool TryCreateHostDevice(std::vector<RenderInterfaceFunction*>& interface
                             g_device.reset();
                             g_interface.reset();
 
-                            // In case Vulkan fails to initialize, we will try D3D12 again afterwards, 
+                            // In case Vulkan fails to initialize, we will try D3D12 again afterwards,
                             // just to get the game to boot. This only really happens in very old Intel GPU drivers.
                             if (g_backend != Backend::VULKAN)
                             {
@@ -2035,6 +1162,11 @@ static bool TryCreateHostDevice(std::vector<RenderInterfaceFunction*>& interface
     }
 
     return true;
+}
+
+RenderDevice* Video::GetRenderDevice()
+{
+    return g_device.get();
 }
 
 bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
@@ -2180,20 +1312,20 @@ bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
         acquireSemaphore = g_device->createCommandSemaphore();
 
     g_renderSemaphores.resize(g_swapChain->getTextureCount());
-    
+
     for (auto& renderSemaphore : g_renderSemaphores)
         renderSemaphore = g_device->createCommandSemaphore();
 
     RenderPipelineLayoutBuilder pipelineLayoutBuilder;
     pipelineLayoutBuilder.begin(false, true);
-    
+
     RenderDescriptorSetBuilder descriptorSetBuilder;
     descriptorSetBuilder.begin();
     descriptorSetBuilder.addTexture(0, TEXTURE_DESCRIPTOR_SIZE);
     descriptorSetBuilder.end(true, TEXTURE_DESCRIPTOR_SIZE);
-    
+
     g_textureDescriptorSet = descriptorSetBuilder.create(g_device.get());
-    
+
     for (size_t i = 0; i < TEXTURE_DESCRIPTOR_NULL_COUNT; i++)
     {
         auto& texture = g_blankTextures[i];
@@ -2214,11 +1346,6 @@ bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
         switch (i)
         {
         case TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D:
-            desc.dimension = RenderTextureDimension::TEXTURE_2D;
-            desc.arraySize = 1;
-            viewDesc.dimension = RenderTextureViewDimension::TEXTURE_2D;
-            break;
-
         case TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D_ARRAY:
             desc.dimension = RenderTextureDimension::TEXTURE_2D;
             desc.arraySize = 1;
@@ -2246,11 +1373,11 @@ bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
     pipelineLayoutBuilder.addDescriptorSet(descriptorSetBuilder);
     pipelineLayoutBuilder.addDescriptorSet(descriptorSetBuilder);
     pipelineLayoutBuilder.addDescriptorSet(descriptorSetBuilder);
-    
+
     descriptorSetBuilder.begin();
     descriptorSetBuilder.addSampler(0, SAMPLER_DESCRIPTOR_SIZE);
     descriptorSetBuilder.end(true, SAMPLER_DESCRIPTOR_SIZE);
-    
+
     g_samplerDescriptorSet = descriptorSetBuilder.create(g_device.get());
     auto& [descriptorIndex, sampler] = g_samplerStates[XXH3_64bits(&g_samplerDescs[0], sizeof(RenderSamplerDesc))];
     descriptorIndex = 1;
@@ -2288,7 +1415,7 @@ bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
         pipelineLayoutBuilder.addPushConstant(3, 4, 4, RenderShaderStageFlag::PIXEL); // For copy/resolve shaders.
     }
     pipelineLayoutBuilder.end();
-    
+
     g_pipelineLayout = pipelineLayoutBuilder.create(g_device.get());
 
     g_copyShader = CREATE_SHADER(copy_vs);
@@ -2336,13 +1463,7 @@ bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
         g_resolveMsaaDepthPipelines[i] = g_device->createGraphicsPipeline(desc);
     }
 
-    g_enhancedBurnoutBlurVSShader = CREATE_SHADER(enhanced_burnout_blur_vs);
-    g_enhancedBurnoutBlurPSShader = CREATE_SHADER(enhanced_burnout_blur_ps);
-    g_MoviePSShader = CREATE_SHADER(movie_ps);
-
-    g_conditionalSurveyPSShader = std::make_unique<GuestShader>(ResourceType::PixelShader);
-    g_conditionalSurveyPSShader->shader = CREATE_SHADER(conditional_survey_ps);
-
+    CreateReplacementShaders();
     CreateImGuiBackend();
 
     auto gammaCorrectionShader = CREATE_SHADER(gamma_correction_ps);
@@ -2401,6 +1522,41 @@ void Video::WaitForGPU()
     g_queue->waitForCommandFence(g_commandFences[0].get());
 }
 
+static constexpr GuestRenderState g_implementedRenderStates[] =
+{
+    D3DRS_ZENABLE,
+    D3DRS_ZWRITEENABLE,
+    D3DRS_ALPHATESTENABLE,
+    D3DRS_SRCBLEND,
+    D3DRS_DESTBLEND,
+    D3DRS_CULLMODE,
+    D3DRS_ZFUNC,
+    D3DRS_ALPHAREF,
+    D3DRS_ALPHABLENDENABLE,
+    D3DRS_BLENDOP,
+    D3DRS_SCISSORTESTENABLE,
+    D3DRS_SLOPESCALEDEPTHBIAS,
+    D3DRS_DEPTHBIAS,
+    D3DRS_SRCBLENDALPHA,
+    D3DRS_DESTBLENDALPHA,
+    D3DRS_BLENDOPALPHA,
+    D3DRS_COLORWRITEENABLE,
+    D3DRS_STENCILENABLE,
+    D3DRS_TWOSIDEDSTENCILMODE,
+    D3DRS_STENCILFAIL,
+    D3DRS_STENCILZFAIL,
+    D3DRS_STENCILPASS,
+    D3DRS_STENCILFUNC,
+    D3DRS_STENCILREF,
+    D3DRS_STENCILMASK,
+    D3DRS_STENCILWRITEMASK,
+    D3DRS_CCW_STENCILFAIL,
+    D3DRS_CCW_STENCILZFAIL,
+    D3DRS_CCW_STENCILPASS,
+    D3DRS_CCW_STENCILFUNC,
+    D3DRS_CLIPPLANEENABLE
+};
+
 static uint32_t getSetAddress(uint32_t base, int index) {
     uint32_t entryOffset = index * 0xC;
     uint32_t entryAddress = base + entryOffset;
@@ -2410,8 +1566,6 @@ static uint32_t getSetAddress(uint32_t base, int index) {
 
 static uint32_t CreateDevice(uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4, uint32_t a5, be<uint32_t>* a6)
 {
-    LOGF_WARNING("{:p} {:p} {:p} {:p} {:p} {:p}\n", reinterpret_cast<void*>(a1), reinterpret_cast<void*>(a2), reinterpret_cast<void*>(a3), reinterpret_cast<void*>(a4), reinterpret_cast<void*>(a5), reinterpret_cast<void*>(a6));
-    
     g_xdbfTextureCache = std::unordered_map<uint16_t, GuestTexture*>();
 
     for (auto &achievement : g_xdbfWrapper.GetAchievements(XDBF_LANGUAGE_ENGLISH))
@@ -2440,24 +1594,22 @@ static uint32_t CreateDevice(uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4,
     // Append render state functions to the end of guest function table.
     uint32_t functionOffsetUnimplemented = PPC_CODE_BASE + PPC_CODE_SIZE;
     g_memory.InsertFunction(functionOffsetUnimplemented, HostToGuestFunction<SetRenderStateUnimplemented>);
-    
+
     uint32_t functionOffset = 0x82B79868;
     for (size_t i = 0; i < std::size(device->setRenderStateFunctions); i++) {
         device->setRenderStateFunctions[i] = functionOffsetUnimplemented;
     }
 
-    // InsertFucntion doesn't work, so we have to do this manually in the end
-    for (auto& [state, function] : g_setRenderStateFunctions)
+    // Point implemented states at the game's own setters, which are hooked by address.
+    for (auto state : g_implementedRenderStates)
     {
-        auto funcOffset = getSetAddress(functionOffset, state/4);
-        uint32_t addr = __builtin_bswap32(*(uint32_t*)g_memory.Translate(funcOffset));
-        printf("state %d of %x is %x\n", state, funcOffset, addr);
-        g_memory.InsertFunction(addr, function);
+        auto funcOffset = getSetAddress(functionOffset, state / 4);
+        uint32_t addr = __builtin_bswap32(*static_cast<uint32_t *>(g_memory.Translate(funcOffset)));
         device->setRenderStateFunctions[state / 4] = addr;
     }
 
     for (size_t i = 0; i < std::size(device->setSamplerStateFunctions); i++)
-        device->setSamplerStateFunctions[i] = *reinterpret_cast<uint32_t*>(g_memory.Translate(0x82B79CFC + i * 0xC));
+        device->setSamplerStateFunctions[i] = *static_cast<uint32_t*>(g_memory.Translate(0x82B79CFC + i * 0xC));
 
     device->viewport.width = 1280.0f;
     device->viewport.height = 720.0f;
@@ -2468,59 +1620,13 @@ static uint32_t CreateDevice(uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4,
     return 0;
 }
 
-static void DestructResource(GuestResource* resource)
+static void ProcRenderCommand(const RenderCommands::DestructResource& args)
 {
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::DestructResource;
-    cmd.destructResource.resource = resource;
-    g_renderQueue.enqueue(cmd);
-}
-
-static void ReleaseResource(GuestResource* resource)
-{
-    resource->Release();
-
-    if (resource->refCount == 0)
-        DestructResource(resource);
-}
-
-static void ProcDestructResource(const RenderCommand& cmd)
-{
-    const auto& args = cmd.destructResource;
     g_tempResources[g_renderFrame].push_back(args.resource);
 }
 
-static uint32_t ComputeTexturePitch(GuestTexture* texture)
+static void ProcRenderCommand(const RenderCommands::UnlockTextureRect& args)
 {
-    return (texture->width * RenderFormatSize(texture->format) + PITCH_ALIGNMENT - 1) & ~(PITCH_ALIGNMENT - 1);
-}
-
-static void LockTextureRect(GuestTexture* texture, uint32_t, GuestLockedRect* lockedRect) 
-{
-    uint32_t pitch = ComputeTexturePitch(texture);
-    uint32_t slicePitch = pitch * texture->height;
-
-    if (texture->mappedMemory == nullptr)
-        texture->mappedMemory = g_userHeap.AllocPhysical(slicePitch, 0x10);
-
-    lockedRect->pitch = pitch;
-    lockedRect->bits = g_memory.MapVirtual(texture->mappedMemory);
-}
-
-static void UnlockTextureRect(GuestTexture* texture) 
-{
-    assert(std::this_thread::get_id() == g_presentThreadId);
-
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::UnlockTextureRect;
-    cmd.unlockTextureRect.texture = texture;
-    g_renderQueue.enqueue(cmd);
-}
-
-static void ProcUnlockTextureRect(const RenderCommand& cmd)
-{
-    const auto& args = cmd.unlockTextureRect;
-
     AddBarrier(args.texture, RenderTextureLayout::COPY_DEST);
     FlushBarriers();
 
@@ -2535,156 +1641,9 @@ static void ProcUnlockTextureRect(const RenderCommand& cmd)
         RenderTextureCopyLocation::PlacedFootprint(allocation.buffer, args.texture->format, args.texture->width, args.texture->height, 1, pitch / RenderFormatSize(args.texture->format), allocation.offset));
 }
 
-static void* LockBuffer(GuestBuffer* buffer, uint32_t flags)
-{
-    buffer->lockedReadOnly = (flags & 0x10) != 0;
-
-    if (buffer->mappedMemory == nullptr)
-        buffer->mappedMemory = g_userHeap.AllocPhysical(buffer->dataSize, 0x10);
-
-    return buffer->mappedMemory;
-}
-
-static void* LockVertexBuffer(GuestBuffer* buffer, uint32_t, uint32_t, uint32_t flags)
-{
-    return LockBuffer(buffer, flags);
-}
-
-static std::atomic<uint32_t> g_bufferUploadCount = 0;
-
-template<typename T>
-static void UnlockBuffer(GuestBuffer* buffer, bool useCopyQueue)
-{
-    auto copyBuffer = [&](T* dest)
-        {
-            auto src = reinterpret_cast<const T*>(buffer->mappedMemory);
-
-            for (size_t i = 0; i < buffer->dataSize; i += sizeof(T))
-            {
-                *dest = ByteSwap(*src);
-                ++dest;
-                ++src;
-            }
-        };
-
-    if (useCopyQueue && g_capabilities.gpuUploadHeap)
-    {
-        copyBuffer(reinterpret_cast<T*>(buffer->buffer->map()));
-        buffer->buffer->unmap();
-    }
-    else
-    {
-        auto uploadBuffer = g_device->createBuffer(RenderBufferDesc::UploadBuffer(buffer->dataSize));
-        copyBuffer(reinterpret_cast<T*>(uploadBuffer->map()));
-        uploadBuffer->unmap();
-
-        if (useCopyQueue)
-        {
-            ExecuteCopyCommandList([&]
-                {
-                    g_copyCommandList->copyBufferRegion(buffer->buffer->at(0), uploadBuffer->at(0), buffer->dataSize);
-                });
-        }
-        else
-        {
-            auto& commandList = g_commandLists[g_frame];
-
-            commandList->barriers(RenderBarrierStage::COPY, RenderBufferBarrier(buffer->buffer.get(), RenderBufferAccess::WRITE));
-            commandList->copyBufferRegion(buffer->buffer->at(0), uploadBuffer->at(0), buffer->dataSize);
-            commandList->barriers(RenderBarrierStage::GRAPHICS, RenderBufferBarrier(buffer->buffer.get(), RenderBufferAccess::READ));
-
-            g_tempBuffers[g_frame].emplace_back(std::move(uploadBuffer));
-        }
-    }
-
-    g_bufferUploadCount++;
-}
-
-template<typename T>
-static void UnlockBuffer(GuestBuffer* buffer)
-{
-    if (!buffer->lockedReadOnly)
-    {
-        UnlockBuffer<T>(buffer, true);
-    }
-}
-
-static void ProcUnlockBuffer16(const RenderCommand& cmd)
-{
-    UnlockBuffer<uint16_t>(cmd.unlockBuffer.buffer, false);
-}
-
-static void ProcUnlockBuffer32(const RenderCommand& cmd)
-{
-    UnlockBuffer<uint32_t>(cmd.unlockBuffer.buffer, false);
-}
-
-static void UnlockVertexBuffer(GuestBuffer* buffer)
-{
-    UnlockBuffer<uint32_t>(buffer);
-}
-
-static void GetVertexBufferDesc(GuestBuffer* buffer, GuestBufferDesc* desc) 
-{
-    desc->size = buffer->dataSize;
-}
-
-static void* LockIndexBuffer(GuestBuffer* buffer, uint32_t, uint32_t, uint32_t flags) 
-{
-    return LockBuffer(buffer, flags);
-}
-
-static void UnlockIndexBuffer(GuestBuffer* buffer) 
-{
-    if (buffer->guestFormat == D3DFMT_INDEX32)
-        UnlockBuffer<uint32_t>(buffer);
-    else
-        UnlockBuffer<uint16_t>(buffer);
-}
-
-static void GetIndexBufferDesc(GuestBuffer* buffer, GuestBufferDesc* desc)
-{
-    desc->format = buffer->guestFormat;
-    desc->size = buffer->dataSize;
-}
-
-static void GetSurfaceDesc(GuestSurface* surface, GuestSurfaceDesc* desc) 
-{
-    if (surface->width == 0 && surface->height == 0) {
-        LOGF_WARNING("{:p} {:d} {:d} \n", reinterpret_cast<void*>(desc), surface->width, surface->height);
-        __builtin_trap();
-    }
-    desc->width = surface->width;
-    desc->height = surface->height;
-    desc->format = surface->guestFormat;
-    desc->type = 4; // D3DRTYPE_SURFACE
-    // desc->multiSampleType = 0;
-    if (surface->sampleCount == RenderSampleCount::COUNT_1) {
-        desc->multiSampleType = 0;
-    } else if (surface->sampleCount == RenderSampleCount::COUNT_2) {
-        desc->multiSampleType = 1;
-    } else {
-        desc->multiSampleType = 2;
-    }
-    desc->multiSampleQuality = 0;
-    desc->usage = 0;
-}
-
-static void GetVertexDeclaration(GuestVertexDeclaration* vertexDeclaration, GuestVertexElement* vertexElements, be<uint32_t>* count) 
-{
-    memcpy(vertexElements, vertexDeclaration->vertexElements.get(), vertexDeclaration->vertexElementCount * sizeof(GuestVertexElement));
-    *count = vertexDeclaration->vertexElementCount;
-}
-
-static uint32_t HashVertexDeclaration(uint32_t vertexDeclaration) 
-{
-    // Vertex declarations are cached on host side, so the pointer itself can be used.
-    return vertexDeclaration;
-}
-
 static const char *DeviceTypeName(RenderDeviceType type)
 {
-    switch (type) 
+    switch (type)
     {
     case RenderDeviceType::INTEGRATED:
         return "Integrated";
@@ -2715,10 +1674,10 @@ static void DrawProfiler()
     if (!g_profilerVisible)
         return;
 
-    ImFont* font = ImFontAtlasSnapshot::GetFont("FOT-RodinPro-DB.otf");
-    const auto defaultFontScale = font->Scale;
-    font->Scale = ImGui::GetDefaultFont()->FontSize / font->FontSize;
-    ImGui::PushFont(font);
+    const auto pFont = g_pFntRodin;
+    const auto defaultFontScale = pFont->Scale;
+    pFont->Scale = ImGui::GetDefaultFont()->FontSize / pFont->FontSize;
+    ImGui::PushFont(pFont);
 
 #define IMGUI_GENERIC_ROW(name, value, ...) \
     do                                      \
@@ -2814,8 +1773,8 @@ static void DrawProfiler()
 
                 if (ImGui::BeginTable("Memory", 2))
                 {
-                    IMGUI_GENERIC_ROW("Heap Allocated", "%.2f MiB", double(heapDiagnostics.allocated / (1024.0 * 1024.0)));
-                    IMGUI_GENERIC_ROW("Physical Heap Allocated", "%.2f MiB", double(physicalHeapDiagnostics.allocated / (1024.0 * 1024.0)));
+                    IMGUI_GENERIC_ROW("Heap Allocated", "%.2f MiB", static_cast<double>(heapDiagnostics.allocated / (1024.0 * 1024.0)));
+                    IMGUI_GENERIC_ROW("Physical Heap Allocated", "%.2f MiB", static_cast<double>(physicalHeapDiagnostics.allocated / (1024.0 * 1024.0)));
 
                     ImGui::EndTable();
                 }
@@ -2854,14 +1813,14 @@ static void DrawProfiler()
 
                 IMGUI_GENERIC_ROW("Device", "%s", g_device->getDescription().name.c_str());
                 IMGUI_GENERIC_ROW("Device Type", "%s", DeviceTypeName(g_device->getDescription().type));
-                IMGUI_GENERIC_ROW("VRAM", "%.2f MiB", double(g_device->getDescription().dedicatedVideoMemory) / (1024.0 * 1024.0));
+                IMGUI_GENERIC_ROW("VRAM", "%.2f MiB", static_cast<double>(g_device->getDescription().dedicatedVideoMemory) / (1024.0 * 1024.0));
                 IMGUI_GENERIC_ROW("GPU Waits", "%u", g_waitForGPUCount);
                 IMGUI_GENERIC_ROW("Buffer Uploads", "%u", g_bufferUploadCount.load());
 
                 IMGUI_GENERIC_ROW("Resolution", "%ux%u (%ux%u)",
                     Video::s_viewportWidth, Video::s_viewportHeight,
-                    uint32_t(round(Video::s_viewportWidth * Config::ResolutionScale)),
-                    uint32_t(round(Video::s_viewportHeight * Config::ResolutionScale)));
+                    static_cast<uint32_t>(round(Video::s_viewportWidth * Config::ResolutionScale)),
+                    static_cast<uint32_t>(round(Video::s_viewportHeight * Config::ResolutionScale)));
 
                 ImGui::EndTable();
             }
@@ -2886,7 +1845,7 @@ static void DrawProfiler()
                 }
 
                 ImGui::Separator();
-                
+
                 if (ImGui::TreeNode("Pipeline States"))
                 {
                     ImGui::Indent();
@@ -2955,7 +1914,7 @@ static void DrawProfiler()
     ImGui::End();
     ImGui::PopFont();
 
-    font->Scale = defaultFontScale;
+    pFont->Scale = defaultFontScale;
 }
 
 static void DrawFPS()
@@ -2974,7 +1933,7 @@ static void DrawFPS()
 
     if (time - updateTime >= 1.0f)
     {
-        fps = 1000.0 / std::max(totalDeltaTime / double(totalDeltaCount), 1.0);
+        fps = 1000.0 / std::max(totalDeltaTime / static_cast<double>(totalDeltaCount), 1.0);
         updateTime = time;
         totalDeltaTime = 0.0;
         totalDeltaCount = 0;
@@ -2983,32 +1942,41 @@ static void DrawFPS()
     auto drawList = ImGui::GetBackgroundDrawList();
 
     auto fmt = fmt::format("FPS: {:.2f}", fps);
-    auto font = ImFontAtlasSnapshot::GetFont("FOT-RodinPro-DB.otf");
     auto fontSize = Scale(10);
-    auto textSize = font->CalcTextSizeA(fontSize, FLT_MAX, 0, fmt.c_str());
+    auto textSize = g_pFntRodin->CalcTextSizeA(fontSize, FLT_MAX, 0, fmt.c_str());
 
     ImVec2 min = { Scale(40), Scale(30) };
     ImVec2 max = { min.x + std::max(Scale(75), textSize.x + Scale(10)), min.y + Scale(15) };
     ImVec2 textPos = { min.x + Scale(2), CENTRE_TEXT_VERT(min, max, textSize) + Scale(0.2f) };
 
     drawList->AddRectFilled(min, max, IM_COL32(0, 0, 0, 200));
-    drawList->AddText(font, fontSize, textPos, IM_COL32_WHITE, fmt.c_str());
+    drawList->AddText(g_pFntRodin, fontSize, textPos, IM_COL32_WHITE, fmt.c_str());
+}
+
+static std::vector<std::function<void()>> g_imguiDrawQueue{};
+
+void Video::EnqueueImGuiDraw(const std::function<void()>& in_rEvent)
+{
+    g_imguiDrawQueue.push_back(in_rEvent);
 }
 
 static void DrawImGui()
 {
+    if (!ImFontAtlasSnapshot::IsInit)
+        return;
+
     ImGui_ImplSDL3_NewFrame();
 
     auto& io = ImGui::GetIO();
-    io.DisplaySize = { float(Video::s_viewportWidth), float(Video::s_viewportHeight) };
+    io.DisplaySize = { static_cast<float>(Video::s_viewportWidth), static_cast<float>(Video::s_viewportHeight) };
 
     // ImGui doesn't know that we center the screen for specific aspect ratio
-    // settings, which causes mouse events to not work correctly. To fix this, 
+    // settings, which causes mouse events to not work correctly. To fix this,
     // we can adjust the mouse events before ImGui processes them.
     uint32_t width = g_swapChain->getWidth();
     uint32_t height = g_swapChain->getHeight();
-    float mousePosScaleX = float(width) / float(GameWindow::s_width);
-    float mousePosScaleY = float(height) / float(GameWindow::s_height);
+    float mousePosScaleX = static_cast<float>(width) / static_cast<float>(GameWindow::s_width);
+    float mousePosScaleY = static_cast<float>(height) / static_cast<float>(GameWindow::s_height);
     float mousePosOffsetX = (width - Video::s_viewportWidth) / 2.0f;
     float mousePosOffsetY = (height - Video::s_viewportHeight) / 2.0f;
     for (int i = 0; i < io.Ctx->InputEventsQueue.Size; i++)
@@ -3044,6 +2012,11 @@ static void DrawImGui()
     Fader::Draw();
     BlackBar::Draw();
 
+    for (const auto& rEvent : g_imguiDrawQueue)
+        rEvent();
+
+    g_imguiDrawQueue.clear();
+
     assert(ImGui::GetBackgroundDrawList()->_ClipRectStack.Size == 1 && "Some clip rects were not removed from the stack!");
 
     DrawFPS();
@@ -3052,16 +2025,80 @@ static void DrawImGui()
 
     auto drawData = ImGui::GetDrawData();
     if (drawData->CmdListsCount != 0)
+        g_renderQueue.enqueue(RenderCommands::DrawImGui{});
+}
+
+static void SetFramebuffer(GuestSurface* renderTarget, GuestSurface* depthStencil, bool settingForClear)
+{
+    if (settingForClear || g_dirtyStates.renderTargetAndDepthStencil)
     {
-        RenderCommand cmd;
-        cmd.type = RenderCommandType::DrawImGui;
-        g_renderQueue.enqueue(cmd);
+        GuestSurface* framebufferContainer = nullptr;
+        RenderTexture* framebufferKey = nullptr;
+
+        if (renderTarget != nullptr && depthStencil != nullptr)
+        {
+            framebufferContainer = depthStencil; // Backbuffer texture changes per frame so we can't use the depth stencil as the key.
+            framebufferKey = renderTarget->texture;
+        }
+        else if (renderTarget != nullptr && depthStencil == nullptr)
+        {
+            framebufferContainer = renderTarget;
+            framebufferKey = renderTarget->texture; // Backbuffer texture changes per frame so we can't assume nullptr for it.
+        }
+        else if (renderTarget == nullptr && depthStencil != nullptr)
+        {
+            framebufferContainer = depthStencil;
+            framebufferKey = nullptr;
+        }
+
+        auto& commandList = g_commandLists[g_frame];
+
+        if (framebufferContainer != nullptr)
+        {
+            auto& framebuffers = framebufferContainer->variant != nullptr ?
+                framebufferContainer->variant->framebuffers : framebufferContainer->framebuffers;
+
+            auto& framebuffer = framebuffers[framebufferKey];
+
+            if (framebuffer == nullptr)
+            {
+                RenderFramebufferDesc desc;
+
+                if (renderTarget != nullptr)
+                {
+                    desc.colorAttachments = const_cast<const RenderTexture**>(&renderTarget->texture);
+                    desc.colorAttachmentsCount = 1;
+                }
+
+                if (depthStencil != nullptr)
+                    desc.depthAttachment = depthStencil->texture;
+
+                framebuffer = g_device->createFramebuffer(desc);
+            }
+
+            if (g_framebuffer != framebuffer.get())
+            {
+                commandList->setFramebuffer(framebuffer.get());
+                g_framebuffer = framebuffer.get();
+            }
+        }
+        else if (g_framebuffer != nullptr)
+        {
+            commandList->setFramebuffer(nullptr);
+            g_framebuffer = nullptr;
+        }
+
+        if (g_framebuffer != nullptr)
+        {
+            SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.halfPixelOffsetX, 1.0f / static_cast<float>(g_framebuffer->getWidth()));
+            SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.halfPixelOffsetY, -1.0f / static_cast<float>(g_framebuffer->getHeight()));
+        }
+
+        g_dirtyStates.renderTargetAndDepthStencil = settingForClear;
     }
 }
 
-static void SetFramebuffer(GuestSurface *renderTarget, GuestSurface *depthStencil, bool settingForClear);
-
-static void ProcDrawImGui(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::DrawImGui& args)
 {
     // Make sure the backbuffer is the current target.
     AddBarrier(g_backBuffer, RenderTextureLayout::COLOR_WRITE);
@@ -3122,13 +2159,13 @@ static void ProcDrawImGui(const RenderCommand& cmd)
             auto& drawCmd = drawList->CmdBuffer[j];
             if (drawCmd.UserCallback != nullptr)
             {
-                auto callbackData = reinterpret_cast<const ImGuiCallbackData*>(drawCmd.UserCallbackData);
+                auto callbackData = static_cast<const ImGuiCallbackData*>(drawCmd.UserCallbackData);
 
                 switch (static_cast<ImGuiCallback>(reinterpret_cast<size_t>(drawCmd.UserCallback)))
                 {
                 case ImGuiCallback::SetGradient:
                     setPushConstants(&pushConstants.boundsMin, &callbackData->setGradient, sizeof(callbackData->setGradient));
-                    break;       
+                    break;
                 case ImGuiCallback::SetShaderModifier:
                     setPushConstants(&pushConstants.shaderModifier, &callbackData->setShaderModifier, sizeof(callbackData->setShaderModifier));
                     break;
@@ -3137,7 +2174,7 @@ static void ProcDrawImGui(const RenderCommand& cmd)
                     break;
                 case ImGuiCallback::SetScale:
                     setPushConstants(&pushConstants.scale, &callbackData->setScale, sizeof(callbackData->setScale));
-                    break;       
+                    break;
                 case ImGuiCallback::SetMarqueeFade:
                     setPushConstants(&pushConstants.boundsMin, &callbackData->setMarqueeFade, sizeof(callbackData->setMarqueeFade));
                     break;
@@ -3167,7 +2204,7 @@ static void ProcDrawImGui(const RenderCommand& cmd)
                 if (drawCmd.ClipRect.z <= drawCmd.ClipRect.x || drawCmd.ClipRect.w <= drawCmd.ClipRect.y)
                     continue;
 
-                auto texture = reinterpret_cast<GuestTexture*>(drawCmd.TextureId);
+                auto texture = static_cast<GuestTexture*>(drawCmd.TextureId);
                 uint32_t descriptorIndex = TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D;
                 if (texture != nullptr)
                 {
@@ -3181,7 +2218,7 @@ static void ProcDrawImGui(const RenderCommand& cmd)
 
                     descriptorIndex = texture->descriptorIndex;
 
-                    if (texture == g_imFontTexture.get())
+                    if (texture == ImFontAtlasSnapshot::FontTexture.get())
                         descriptorIndex |= 0x80000000;
 
                     setPushConstants(&pushConstants.texture2DDescriptorIndex, &descriptorIndex, sizeof(descriptorIndex));
@@ -3196,7 +2233,7 @@ static void ProcDrawImGui(const RenderCommand& cmd)
 
                 if (memcmp(&clipRect, &drawCmd.ClipRect, sizeof(clipRect)) != 0)
                 {
-                    commandList->setScissors(RenderRect(int32_t(drawCmd.ClipRect.x), int32_t(drawCmd.ClipRect.y), int32_t(drawCmd.ClipRect.z), int32_t(drawCmd.ClipRect.w)));
+                    commandList->setScissors(RenderRect(static_cast<int32_t>(drawCmd.ClipRect.x), static_cast<int32_t>(drawCmd.ClipRect.y), static_cast<int32_t>(drawCmd.ClipRect.z), static_cast<int32_t>(drawCmd.ClipRect.w)));
                     clipRect = drawCmd.ClipRect;
                 }
 
@@ -3229,12 +2266,11 @@ void Video::WaitOnSwapChain()
     }
 }
 
-static bool g_shouldPrecompilePipelines;
 static std::atomic<bool> g_executedCommandList;
 
 void CreateTextureLocal(Sonicteam::SoX::Graphics::Texture* pTexture, uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, uint32_t usage, uint32_t format, uint32_t pool, uint32_t type)
 {
-    auto pGuestTexture = (GuestTexture*)pTexture->m_pTexture.get();
+    auto pGuestTexture = static_cast<GuestTexture *>(pTexture->m_pTexture.get());
     auto pGuestTextureNew = CreateTexture(width, height, depth, levels, usage, format, pool, type);
 
     if (pGuestTexture->sourceSurface != nullptr)
@@ -3272,9 +2308,9 @@ static bool CacheRenderProcess(Sonicteam::SoX::Engine::RenderScheduler* pRenderS
 
 static bool FindRenderProcess(lua50::lua_State* L, const char* pName)
 {
-    const auto pCallbackData = reinterpret_cast<Sonicteam::RenderAction::CallbackData*>(lua50::lua_topointer(L, 1));
+    const auto pCallbackData = static_cast<Sonicteam::RenderAction::CallbackData*>(lua50::lua_topointer(L, 1));
 
-    auto it = std::find_if(g_renderProcessCache.begin(), g_renderProcessCache.end(), [&](const auto& rRenderProcess)
+    auto it = std::ranges::find_if(g_renderProcessCache, [&](const auto& rRenderProcess)
     {
         return rRenderProcess.first == pName;
     });
@@ -3317,24 +2353,19 @@ PPC_FUNC(sub_8260A9D0)
     {
         ctx.r3.u32 = 1;
     }
-    else 
+    else
     {
         __imp__sub_8260A9D0(ctx, base);
     }
 }
 
-void Video::Present() 
+void Video::Present()
 {
-    g_readyForCommands = false;
-
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::ExecutePendingStretchRectCommands;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::ExecutePendingStretchRectCommands{});
 
     DrawImGui();
 
-    cmd.type = RenderCommandType::ExecuteCommandList;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::ExecuteCommandList{});
 
     g_executedCommandList.wait(false);
     g_executedCommandList = false;
@@ -3367,12 +2398,12 @@ void Video::Present()
         // Update the GPU profiler with the results from the timestamps of the frame.
         g_queryPools[g_frame]->queryResults();
         const uint64_t *frameTimestamps = g_queryPools[g_frame]->getResults();
-        g_gpuFrameProfiler.Set(double(frameTimestamps[1] - frameTimestamps[0]) / 1000000.0);
+        g_gpuFrameProfiler.Set(static_cast<double>(frameTimestamps[1] - frameTimestamps[0]) / 1000000.0);
     }
 
     g_dirtyStates = DirtyStates(true);
     g_uploadAllocators[g_frame].reset();
-    g_intermediaryUploadAllocator.reset();
+    ResetIntermediaryUploadAllocator();
     g_triangleFanIndexData.reset();
     g_quadIndexData.reset();
 
@@ -3384,8 +2415,7 @@ void Video::Present()
 
     CheckSwapChain();
 
-    cmd.type = RenderCommandType::BeginCommandList;
-    g_renderQueue.enqueue(cmd);
+    g_renderQueue.enqueue(RenderCommands::BeginCommandList{});
 
     if (Config::FPS >= FPS_MIN && Config::FPS < FPS_MAX)
     {
@@ -3474,7 +2504,7 @@ void Video::Resize(uint32_t width, uint32_t height)
     auto& rDeviceInfo = pApp->m_DeviceInfo;
 
     auto surfaceParams = D3DXBSURFACE_PARAMETERS(0, 0, 0);
-    const auto surfaceBase = uint32_t(height * 1.155555555555556); // 720p: 0x340
+    const auto surfaceBase = static_cast<uint32_t>(height * 1.155555555555556); // 720p: 0x340
 
     // Recreate main buffers.
     ReleaseResource(static_cast<GuestTexture*>(pApp->m_pFrontBufferTexture.get()));
@@ -3608,8 +2638,8 @@ void Video::Resize(uint32_t width, uint32_t height)
 
     const auto sfxMatrices1 = pDoc->m_pSFXAgent->m_aSFXMatrices1;
     const auto sfxMatrices2 = pDoc->m_pSFXAgent->m_aSFXMatrices2;
-    pDoc->m_pSFXAgent->m_aSFXMatrices1 = 0;
-    pDoc->m_pSFXAgent->m_aSFXMatrices2 = 0;
+    pDoc->m_pSFXAgent->m_aSFXMatrices1 = nullptr;
+    pDoc->m_pSFXAgent->m_aSFXMatrices2 = nullptr;
 
     // Cache particle render processes.
     CacheRenderProcess(pDoc->m_pRenderScheduler, "GE1Particle");
@@ -3644,13 +2674,6 @@ void Video::Resize(uint32_t width, uint32_t height)
     }
 }
 
-void Video::StartPipelinePrecompilation()
-{
-    LoadingPatches::Events.push_back(&g_loadingPipelineCompilationEvent);
-
-    EnqueuePipelineTask(PipelineTaskType::PrecompilePipelines);
-}
-
 static void SetRootDescriptor(const UploadAllocation& allocation, size_t index)
 {
     auto& commandList = g_commandLists[g_frame];
@@ -3661,8 +2684,8 @@ static void SetRootDescriptor(const UploadAllocation& allocation, size_t index)
         commandList->setGraphicsRootDescriptor(allocation.buffer->at(allocation.offset), index);
 }
 
-static void ProcExecuteCommandList(const RenderCommand& cmd)
-{    
+static void ProcRenderCommand(const RenderCommands::ExecuteCommandList& cmd)
+{
     if (g_swapChainValid)
     {
         auto swapChainTexture = g_swapChain->getTexture(g_backBufferIndex);
@@ -3686,8 +2709,8 @@ static void ProcExecuteCommandList(const RenderCommand& cmd)
             constants.gamma = 1.0f / std::clamp(constants.gamma + offset, 0.1f, 4.0f);
             constants.textureDescriptorIndex = g_intermediaryBackBufferTextureDescriptorIndex;
 
-            constants.viewportOffsetX = (int32_t(g_swapChain->getWidth()) - int32_t(Video::s_viewportWidth)) / 2;
-            constants.viewportOffsetY = (int32_t(g_swapChain->getHeight()) - int32_t(Video::s_viewportHeight)) / 2;
+            constants.viewportOffsetX = (static_cast<int32_t>(g_swapChain->getWidth()) - static_cast<int32_t>(Video::s_viewportWidth)) / 2;
+            constants.viewportOffsetY = (static_cast<int32_t>(g_swapChain->getHeight()) - static_cast<int32_t>(Video::s_viewportHeight)) / 2;
             constants.viewportWidth = Video::s_viewportWidth;
             constants.viewportHeight = Video::s_viewportHeight;
 
@@ -3752,7 +2775,7 @@ static void ProcExecuteCommandList(const RenderCommand& cmd)
     g_executedCommandList.notify_one();
 }
 
-static void ProcBeginCommandList(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::BeginCommandList& cmd)
 {
     g_renderFrame = g_frame;
     DestructTempResources();
@@ -3767,7 +2790,7 @@ static GuestSurface* GetBackBuffer()
     return g_backBuffer;
 }
 
-static GuestSurface* GetDepthStencil() 
+static GuestSurface* GetDepthStencil()
 {
     if (g_depthStencil)
         g_depthStencil->AddRef();
@@ -3779,7 +2802,7 @@ void Video::ComputeViewportDimensions()
 {
     uint32_t width = g_swapChain->getWidth();
     uint32_t height = g_swapChain->getHeight();
-    float aspectRatio = float(width) / float(height);
+    float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 
     switch (Config::AspectRatio)
     {
@@ -3808,49 +2831,7 @@ void Video::ComputeViewportDimensions()
     AspectRatioPatches::ComputeOffsets();
 }
 
-static RenderFormat ConvertFormat(uint32_t format)
-{
-    switch (format)
-    {
-    case D3DFMT_A16B16G16R16F:
-    case D3DFMT_A16B16G16R16F_2:
-    case D3DFMT_A16B16G16R16F_EXPAND:
-        return RenderFormat::R16G16B16A16_FLOAT;
-    case D3DFMT_LIN_A8R8G8B8:
-        return RenderFormat::B8G8R8A8_UNORM;
-    case D3DFMT_A8B8G8R8:
-    case D3DFMT_A8R8G8B8:
-    case D3DFMT_X8R8G8B8:
-    case D3DFMT_LE_X8R8G8B8:
-        return RenderFormat::R8G8B8A8_UNORM;
-    case D3DFMT_R32F:
-        return RenderFormat::R32_FLOAT;
-    case D3DFMT_D24FS8:
-    case D3DFMT_D24S8:
-        return RenderFormat::D32_FLOAT_S8_UINT;
-    case D3DFMT_G16R16F:
-    case D3DFMT_G16R16F_2:
-        return RenderFormat::R16G16_FLOAT;
-    case D3DFMT_INDEX16:
-        return RenderFormat::R16_UINT;
-    case D3DFMT_INDEX32:
-        return RenderFormat::R32_UINT;
-    case D3DFMT_A8:
-    case D3DFMT_L8:
-    case D3DFMT_L8_2:
-        return RenderFormat::R8_UNORM;
-    case D3DFMT_DXT1:
-        return RenderFormat::BC1_UNORM;
-    case D3DFMT_DXT4:
-        return RenderFormat::BC3_UNORM;
-    default:
-        LOGF_WARNING("{:x}\n", format);
-        assert(false && "Unknown format");
-        return RenderFormat::R16G16B16A16_FLOAT;
-    }
-}
-
-static void DiscardTexture(GuestBaseTexture* texture, RenderTextureLayout layout)
+void DiscardTexture(GuestBaseTexture* texture, RenderTextureLayout layout)
 {
     if (g_backend == Backend::D3D12)
     {
@@ -3870,264 +2851,6 @@ static void DiscardTexture(GuestBaseTexture* texture, RenderTextureLayout layout
         g_queue->executeCommandLists(g_discardCommandList.get(), g_discardCommandFence.get());
         g_queue->waitForCommandFence(g_discardCommandFence.get());
     }
-}
-
-static GuestTexture* CreateTexture(uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, uint32_t usage, uint32_t format, uint32_t pool, uint32_t type) 
-{
-    ResourceType resourceType;
-
-    switch (type)
-    {
-    case 17:
-        resourceType = ResourceType::VolumeTexture;
-        break;
-    case 19:
-        resourceType = ResourceType::ArrayTexture;
-        break;
-    default:
-        resourceType = ResourceType::Texture;
-        break;
-    }
-
-    const auto texture = g_userHeap.AllocPhysical<GuestTexture>(resourceType);
-
-    RenderTextureDesc desc;
-    desc.dimension = texture->type == ResourceType::VolumeTexture ? RenderTextureDimension::TEXTURE_3D : RenderTextureDimension::TEXTURE_2D;
-    desc.width = width;
-    desc.height = height;
-    desc.mipLevels = levels;
-    desc.format = ConvertFormat(format);
-
-    if (texture->type == ResourceType::ArrayTexture) {
-        desc.arraySize = depth;
-        desc.depth = 1;
-    } else {
-        desc.depth = depth;
-        desc.arraySize = 1;
-    }
-
-    if (RenderFormatIsDepth(desc.format))
-        desc.flags = RenderTextureFlag::DEPTH_TARGET;
-    else if (usage != 0)
-        desc.flags = RenderTextureFlag::RENDER_TARGET;
-    else
-        desc.flags = RenderTextureFlag::NONE;
-
-    texture->textureHolder = g_device->createTexture(desc);
-    texture->texture = texture->textureHolder.get();
-
-    RenderTextureViewDesc viewDesc;
-    viewDesc.format = desc.format;
-    viewDesc.dimension = texture->type == ResourceType::VolumeTexture ? RenderTextureViewDimension::TEXTURE_3D : RenderTextureViewDimension::TEXTURE_2D;
-    viewDesc.mipLevels = levels;
-
-    switch (format)
-    {
-    case D3DFMT_D24FS8:
-    case D3DFMT_D24S8:
-    case D3DFMT_L8:
-    case D3DFMT_L8_2:
-        viewDesc.componentMapping = RenderComponentMapping(RenderSwizzle::R, RenderSwizzle::R, RenderSwizzle::R, RenderSwizzle::ONE);
-        break;
-
-    case D3DFMT_X8R8G8B8:
-        viewDesc.componentMapping = RenderComponentMapping(RenderSwizzle::G, RenderSwizzle::B, RenderSwizzle::A, RenderSwizzle::ONE);
-        break;
-    }
-
-    texture->textureView = texture->texture->createTextureView(viewDesc);
-
-    texture->width = width;
-    texture->height = height;
-    texture->depth = depth;
-    texture->format = desc.format;
-    texture->mipLevels = viewDesc.mipLevels;
-    texture->viewDimension = viewDesc.dimension;
-    texture->descriptorIndex = g_textureDescriptorAllocator.allocate();
-
-    g_textureDescriptorSet->setTexture(texture->descriptorIndex, texture->texture, RenderTextureLayout::SHADER_READ, texture->textureView.get());
-
-#ifdef _DEBUG 
-    texture->texture->setName(fmt::format("Texture {:X}", g_memory.MapVirtual(texture)));
-#endif
-
-    if (desc.flags != RenderTextureFlag::NONE)
-    {
-        DiscardTexture(texture, desc.flags == RenderTextureFlag::RENDER_TARGET ?
-            RenderTextureLayout::COLOR_WRITE : RenderTextureLayout::DEPTH_WRITE);
-    }
-
-    // printf("CreateTexture: w: %d, h: %d, depth: %d, levels: %d, usage: %d, format: %d, pool: %d, type: %d - %x\n", width, height, depth, levels, usage, format, pool, type, texture);
-    return texture;
-}
-
-static RenderHeapType GetBufferHeapType()
-{
-    return g_capabilities.gpuUploadHeap ? RenderHeapType::GPU_UPLOAD : RenderHeapType::DEFAULT;
-}
-
-static GuestBuffer* CreateVertexBuffer(uint32_t length) 
-{
-    auto buffer = g_userHeap.AllocPhysical<GuestBuffer>(ResourceType::VertexBuffer);
-    buffer->buffer = g_device->createBuffer(RenderBufferDesc::VertexBuffer(length, GetBufferHeapType(), RenderBufferFlag::INDEX));
-    buffer->dataSize = length;
-#ifdef _DEBUG 
-    buffer->buffer->setName(fmt::format("Vertex Buffer {:X}", g_memory.MapVirtual(buffer)));
-#endif
-    return buffer;
-}
-
-static GuestBuffer* CreateIndexBuffer(uint32_t length, uint32_t, uint32_t format)
-{
-    auto buffer = g_userHeap.AllocPhysical<GuestBuffer>(ResourceType::IndexBuffer);
-    buffer->buffer = g_device->createBuffer(RenderBufferDesc::IndexBuffer(length, GetBufferHeapType()));
-    buffer->dataSize = length;
-    buffer->format = ConvertFormat(format);
-    buffer->guestFormat = format;
-#ifdef _DEBUG 
-    buffer->buffer->setName(fmt::format("Index Buffer {:X}", g_memory.MapVirtual(buffer)));
-#endif
-    return buffer;
-}
-
-static RenderTextureDesc MakeSurfaceTextureDesc(uint32_t width, uint32_t height, RenderFormat format, RenderSampleCounts sampleCount)
-{
-    RenderTextureDesc desc;
-    desc.dimension = RenderTextureDimension::TEXTURE_2D;
-    desc.width = width;
-    desc.height = height;
-    desc.depth = 1;
-    desc.mipLevels = 1;
-    desc.arraySize = 1;
-    desc.multisampling.sampleCount = sampleCount;
-    desc.format = format;
-    desc.flags = RenderFormatIsDepth(format) ? RenderTextureFlag::DEPTH_TARGET : RenderTextureFlag::RENDER_TARGET;
-    return desc;
-}
-
-const char* g_surfaceCreationName;
-
-static SurfaceVariant* AcquireSurfaceVariant(uint32_t base, uint32_t width, uint32_t height,
-    uint32_t guestFormat, RenderSampleCounts sampleCount, bool& created)
-{
-    std::lock_guard lock(g_surfaceVariantMutex);
-
-    for (auto& variant : g_surfaceVariants)
-    {
-        if (variant->base == base &&
-            variant->width == width &&
-            variant->height == height &&
-            variant->guestFormat == guestFormat &&
-            variant->sampleCount == sampleCount)
-        {
-            variant->refCount++;
-            created = false;
-
-#ifdef _DEBUG
-            LOGF_UTILITY("[surface] shared variant: base {} {}x{} format {:X} refs {} name {}",
-                base, width, height, guestFormat, variant->refCount,
-                g_surfaceCreationName ? g_surfaceCreationName : "<none>");
-#endif
-
-            return variant.get();
-        }
-    }
-
-#ifdef _DEBUG
-    LOGF_UTILITY("[surface] new variant: base {} {}x{} format {:X} samples {} name {}",
-        base, width, height, guestFormat, uint32_t(sampleCount),
-        g_surfaceCreationName ? g_surfaceCreationName : "<none>");
-#endif
-
-    auto& variant = g_surfaceVariants.emplace_back(std::make_unique<SurfaceVariant>());
-    variant->base = base;
-    variant->width = width;
-    variant->height = height;
-    variant->guestFormat = guestFormat;
-    variant->sampleCount = sampleCount;
-    variant->format = ConvertFormat(guestFormat);
-    variant->refCount = 1;
-
-    const auto desc = MakeSurfaceTextureDesc(width, height, variant->format, sampleCount);
-    variant->textureHolder = g_device->createTexture(desc);
-
-    RenderTextureViewDesc viewDesc;
-    viewDesc.dimension = RenderTextureViewDimension::TEXTURE_2D;
-    viewDesc.format = variant->format;
-    viewDesc.mipLevels = 1;
-    variant->textureView = variant->textureHolder->createTextureView(viewDesc);
-    variant->descriptorIndex = g_textureDescriptorAllocator.allocate();
-    g_textureDescriptorSet->setTexture(variant->descriptorIndex, variant->textureHolder.get(), RenderTextureLayout::SHADER_READ, variant->textureView.get());
-
-#ifdef _DEBUG
-    variant->textureHolder->setName(fmt::format("{} EDRAM {} {}x{} {}x",
-        RenderFormatIsDepth(variant->format) ? "Depth Stencil" : "Render Target",
-        base, width, height, int32_t(sampleCount)));
-#endif
-
-    created = true;
-    return variant.get();
-}
-
-static GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t format, uint32_t multiSample, GuestSurfaceCreateParams* params)
-{
-    RenderSampleCounts sampleCount;
-    if (multiSample == 0) {
-        sampleCount = RenderSampleCount::COUNT_1;
-    } else {
-        sampleCount = multiSample == 1 ? RenderSampleCount::COUNT_2 : RenderSampleCount::COUNT_4;
-    }
-
-    const RenderFormat renderFormat = ConvertFormat(format);
-    const bool isDepthStencil = RenderFormatIsDepth(renderFormat);
-
-    const auto surface = g_userHeap.AllocPhysical<GuestSurface>(isDepthStencil ?
-        ResourceType::DepthStencil : ResourceType::RenderTarget);
-
-    surface->width = width;
-    surface->height = height;
-    surface->format = renderFormat;
-    surface->guestFormat = format;
-    surface->sampleCount = sampleCount;
-
-    bool created = false;
-
-    if (params != nullptr)
-    {
-        // The view shares the variant's host resources without owning them.
-        surface->variant = AcquireSurfaceVariant(params->base, width, height, format, sampleCount, created);
-        surface->texture = surface->variant->textureHolder.get();
-        surface->descriptorIndex = surface->variant->descriptorIndex;
-    }
-    else
-    {
-        // No EDRAM placement information: the surface owns its host texture.
-        const auto desc = MakeSurfaceTextureDesc(width, height, renderFormat, sampleCount);
-        surface->textureHolder = g_device->createTexture(desc);
-        surface->texture = surface->textureHolder.get();
-
-        RenderTextureViewDesc viewDesc;
-        viewDesc.dimension = RenderTextureViewDimension::TEXTURE_2D;
-        viewDesc.format = renderFormat;
-        viewDesc.mipLevels = 1;
-        surface->textureView = surface->textureHolder->createTextureView(viewDesc);
-        surface->descriptorIndex = g_textureDescriptorAllocator.allocate();
-        g_textureDescriptorSet->setTexture(surface->descriptorIndex, surface->textureHolder.get(), RenderTextureLayout::SHADER_READ, surface->textureView.get());
-
-    #ifdef _DEBUG
-        surface->texture->setName(fmt::format("{} {:X}", isDepthStencil ? "Depth Stencil" : "Render Target", g_memory.MapVirtual(surface)));
-    #endif
-
-        created = true;
-    }
-
-    if (created)
-    {
-        DiscardTexture(surface, isDepthStencil ?
-            RenderTextureLayout::DEPTH_WRITE : RenderTextureLayout::COLOR_WRITE);
-    }
-
-    return surface;
 }
 
 static void FlushViewport()
@@ -4160,24 +2883,33 @@ static void FlushViewport()
     }
 }
 
-static void StretchRect(GuestDevice* device, uint32_t flags, uint32_t, GuestTexture* texture, uint32_t, uint32_t, uint32_t destSliceOrFace)
+static void SetTextureInRenderThread(uint32_t index, GuestTexture* texture)
 {
-    // printf("StretchRect %x\n", texture);
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::StretchRect;
-    cmd.stretchRect.flags = flags;
-    cmd.stretchRect.texture = texture;
-    cmd.stretchRect.destSliceOrFace = destSliceOrFace;
-    g_renderQueue.enqueue(cmd);
+    AddBarrier(texture, RenderTextureLayout::SHADER_READ);
+
+    auto viewDimension = texture != nullptr ? texture->viewDimension : RenderTextureViewDimension::UNKNOWN;
+
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.texture2DIndices[index],
+        viewDimension == RenderTextureViewDimension::TEXTURE_2D ? texture->descriptorIndex : TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D);
+
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.texture2DArrayIndices[index], texture != nullptr &&
+        viewDimension == RenderTextureViewDimension::TEXTURE_2D ? texture->descriptorIndex : TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D_ARRAY);
+
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.textureCubeIndices[index], texture != nullptr &&
+        viewDimension == RenderTextureViewDimension::TEXTURE_CUBE ? texture->descriptorIndex : TEXTURE_DESCRIPTOR_NULL_TEXTURE_CUBE);
 }
 
-static void SetTextureInRenderThread(uint32_t index, GuestTexture* texture);
-static void SetSurface(uint32_t index, GuestSurface* surface);
-
-static void ProcStretchRect(const RenderCommand& cmd)
+static void SetSurface(uint32_t index, GuestSurface* surface)
 {
-    const auto& args = cmd.stretchRect;
+    AddBarrier(surface, RenderTextureLayout::SHADER_READ);
 
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.texture2DIndices[index], surface->descriptorIndex);
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.texture2DArrayIndices[index], static_cast<uint32_t>(TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D_ARRAY));
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.textureCubeIndices[index], static_cast<uint32_t>(TEXTURE_DESCRIPTOR_NULL_TEXTURE_CUBE));
+}
+
+static void ProcRenderCommand(const RenderCommands::StretchRect& args)
+{
     const bool isDepthStencil = (args.flags & 0x4) != 0;
     const auto surface = isDepthStencil ? g_depthStencil : g_renderTarget;
 
@@ -4186,7 +2918,7 @@ static void ProcStretchRect(const RenderCommand& cmd)
         args.texture->sourceSurface->destinationTextures.erase(args.texture);
 
     args.texture->sourceSurface = surface;
-    // printf("ProcStretchRect: surface - %x %x ? (%x : %x)\n", surface, isDepthStencil, g_depthStencil, g_renderTarget);
+
     surface->destinationTextures.emplace(args.texture, args.destSliceOrFace);
 
     // If the texture is assigned to any slots, set it again. This'll also push the barrier.
@@ -4213,50 +2945,8 @@ static void ProcStretchRect(const RenderCommand& cmd)
     g_pendingSurfaceCopies.emplace(surface);
 }
 
-static void SetDefaultViewport(GuestDevice* device, GuestSurface* surface)
+static void ProcRenderCommand(const RenderCommands::SetRenderTarget& args)
 {
-    if (surface != nullptr)
-    {
-        RenderCommand cmd;
-        cmd.type = RenderCommandType::SetViewport;
-        cmd.setViewport.x = 0.0f;
-        cmd.setViewport.y = 0.0f;
-        cmd.setViewport.width = float(surface->width);
-        cmd.setViewport.height = float(surface->height);
-        cmd.setViewport.minDepth = 0.0f;
-        cmd.setViewport.maxDepth = 1.0f;
-        g_renderQueue.enqueue(cmd);
-
-        device->viewport.x = 0.0f;
-        device->viewport.y = 0.0f;
-        device->viewport.width = float(surface->width);
-        device->viewport.height = float(surface->height);
-        device->viewport.minZ = 0.0f;
-        device->viewport.maxZ = 1.0f;
-    }
-}
-
-static void SetRenderTarget(GuestDevice* device, uint32_t index, GuestSurface* renderTarget) 
-{
-    if (index == 0)
-    {
-        RenderCommand cmd;
-        cmd.type = RenderCommandType::SetRenderTarget;
-        cmd.setRenderTarget.renderTarget = renderTarget;
-        g_renderQueue.enqueue(cmd);
-
-        SetDefaultViewport(device, renderTarget);
-    }
-    else
-    {
-        // Multiple targets are not currently handled. Make sure any attempt to set them is nullptr.
-        assert(renderTarget == nullptr);
-    }
-}
-
-static void ProcSetRenderTarget(const RenderCommand& cmd)
-{
-    const auto& args = cmd.setRenderTarget;
     SetDirtyValue(g_dirtyStates.renderTargetAndDepthStencil, g_renderTarget, args.renderTarget);
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.renderTargetFormat, args.renderTarget != nullptr ? args.renderTarget->format : RenderFormat::UNKNOWN);
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.sampleCount, args.renderTarget != nullptr ? args.renderTarget->sampleCount : RenderSampleCount::COUNT_1);
@@ -4265,20 +2955,8 @@ static void ProcSetRenderTarget(const RenderCommand& cmd)
     SetAlphaTestMode((g_pipelineState.specConstants & (SPEC_CONSTANT_ALPHA_TEST | SPEC_CONSTANT_ALPHA_TO_COVERAGE)) != 0);
 }
 
-static void SetDepthStencilSurface(GuestDevice* device, GuestSurface* depthStencil) 
+static void ProcRenderCommand(const RenderCommands::SetDepthStencilSurface& args)
 {
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetDepthStencilSurface;
-    cmd.setDepthStencilSurface.depthStencil = depthStencil;
-    g_renderQueue.enqueue(cmd);
-
-    SetDefaultViewport(device, depthStencil);
-}
-
-static void ProcSetDepthStencilSurface(const RenderCommand& cmd)
-{
-    const auto& args = cmd.setDepthStencilSurface;
-
     SetDirtyValue(g_dirtyStates.renderTargetAndDepthStencil, g_depthStencil, args.depthStencil);
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.depthStencilFormat, args.depthStencil != nullptr ? args.depthStencil->format : RenderFormat::UNKNOWN);
 }
@@ -4315,7 +2993,7 @@ static bool PopulateBarriersForStretchRect(GuestSurface* renderTarget, GuestSurf
 
             AddBarrier(surface, srcLayout);
 
-            for (const auto [texture, _] : surface->destinationTextures)
+            for (const auto texture : surface->destinationTextures | std::views::keys)
                 AddBarrier(texture, dstLayout);
 
             addedAny = true;
@@ -4457,7 +3135,7 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
                     }
 
                     commandList->setPipeline(pipeline);
-                    commandList->setViewports(RenderViewport(0.0f, 0.0f, float(texture->width), float(texture->height), 0.0f, 1.0f));
+                    commandList->setViewports(RenderViewport(0.0f, 0.0f, static_cast<float>(texture->width), static_cast<float>(texture->height), 0.0f, 1.0f));
                     commandList->setScissors(RenderRect(0, 0, texture->width, texture->height));
                     commandList->setGraphicsPushConstants(0, &surface->descriptorIndex, 0, sizeof(uint32_t));
                     commandList->drawInstanced(6, 1, 0, 0);
@@ -4489,7 +3167,7 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
     }
 }
 
-static void ProcExecutePendingStretchRectCommands(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::ExecutePendingStretchRectCommands& args)
 {
     bool foundAny = false;
 
@@ -4509,7 +3187,7 @@ static void ProcExecutePendingStretchRectCommands(const RenderCommand& cmd)
             if (!RenderFormatIsDepth(surface->format))
                 ExecutePendingStretchRectCommands(surface, nullptr);
 
-            for (const auto [texture, _] : surface->destinationTextures)
+            for (const auto texture : surface->destinationTextures | std::views::keys)
                 texture->sourceSurface = nullptr;
 
             surface->destinationTextures.clear();
@@ -4520,97 +3198,12 @@ static void ProcExecutePendingStretchRectCommands(const RenderCommand& cmd)
     g_pendingResolves.clear();
 }
 
-static void SetFramebuffer(GuestSurface* renderTarget, GuestSurface* depthStencil, bool settingForClear)
-{
-    if (settingForClear || g_dirtyStates.renderTargetAndDepthStencil)
-    {
-        // printf("SetFramebuffer %x %x\n", renderTarget, depthStencil);
-        GuestSurface* framebufferContainer = nullptr;
-        RenderTexture* framebufferKey = nullptr;
-
-        if (renderTarget != nullptr && depthStencil != nullptr)
-        {
-            framebufferContainer = depthStencil; // Backbuffer texture changes per frame so we can't use the depth stencil as the key.
-            framebufferKey = renderTarget->texture;
-        }
-        else if (renderTarget != nullptr && depthStencil == nullptr)
-        {
-            framebufferContainer = renderTarget;
-            framebufferKey = renderTarget->texture; // Backbuffer texture changes per frame so we can't assume nullptr for it.
-        }
-        else if (renderTarget == nullptr && depthStencil != nullptr)
-        {
-            framebufferContainer = depthStencil;
-            framebufferKey = nullptr;
-        }
-
-        auto& commandList = g_commandLists[g_frame];
-
-        if (framebufferContainer != nullptr)
-        {
-            auto& framebuffers = framebufferContainer->variant != nullptr ?
-                framebufferContainer->variant->framebuffers : framebufferContainer->framebuffers;
-
-            auto& framebuffer = framebuffers[framebufferKey];
-
-            if (framebuffer == nullptr)
-            {
-                RenderFramebufferDesc desc;
-
-                if (renderTarget != nullptr)
-                {
-                    desc.colorAttachments = const_cast<const RenderTexture**>(&renderTarget->texture);
-                    desc.colorAttachmentsCount = 1;
-                }
-
-                if (depthStencil != nullptr)
-                    desc.depthAttachment = depthStencil->texture;
-
-                framebuffer = g_device->createFramebuffer(desc);
-            }
-
-            if (g_framebuffer != framebuffer.get())
-            {
-                commandList->setFramebuffer(framebuffer.get());
-                g_framebuffer = framebuffer.get();
-            }
-        }
-        else if (g_framebuffer != nullptr)
-        {
-            commandList->setFramebuffer(nullptr);
-            g_framebuffer = nullptr;
-        }
-
-        if (g_framebuffer != nullptr)
-        {
-            SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.halfPixelOffsetX, 1.0f / float(g_framebuffer->getWidth()));
-            SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.halfPixelOffsetY, -1.0f / float(g_framebuffer->getHeight()));
-        }
-
-        g_dirtyStates.renderTargetAndDepthStencil = settingForClear;
-    }
-}
-
-static void Clear(GuestDevice* device, uint32_t flags, uint32_t, be<float>* color, double z, uint32_t stencil)
-{
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::Clear;
-    cmd.clear.flags = flags;
-    cmd.clear.color[0] = color[0];
-    cmd.clear.color[1] = color[1];
-    cmd.clear.color[2] = color[2];
-    cmd.clear.color[3] = color[3];
-    cmd.clear.z = float(z);
-    cmd.clear.stencil = stencil;
-    g_renderQueue.enqueue(cmd);
-}
-
 static bool SharesStorage(const GuestSurface* lhs, const GuestSurface* rhs)
 {
     return lhs != nullptr && rhs != nullptr && lhs->texture == rhs->texture;
 }
 
-static void FlushPendingCopiesForAliasedStorage(GuestSurface* renderTarget, GuestSurface* depthStencil)
+static void FlushPendingCopiesForAliasedStorage(const GuestSurface* renderTarget, const GuestSurface* depthStencil)
 {
     bool foundAny = false;
 
@@ -4638,10 +3231,8 @@ static void FlushPendingCopiesForAliasedStorage(GuestSurface* renderTarget, Gues
     }
 }
 
-static void ProcClear(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::Clear& args)
 {
-    const auto& args = cmd.clear;
-
     FlushPendingCopiesForAliasedStorage(g_renderTarget, g_depthStencil);
 
     AddBarrier(g_renderTarget, RenderTextureLayout::COLOR_WRITE);
@@ -4698,46 +3289,10 @@ static void ProcClear(const RenderCommand& cmd)
         commandList->clearDepthStencil(clearDepth, clearStencil, args.z, args.stencil);
     }
 
-    {
-        std::lock_guard lock(g_surfaceVariantMutex);
-
-        for (const auto boundSurface : { g_renderTarget, g_depthStencil })
-        {
-            if (boundSurface == nullptr || boundSurface->variant == nullptr)
-                continue;
-
-            const bool boundIsDepth = RenderFormatIsDepth(boundSurface->format);
-            const uint32_t flags = args.flags & (boundIsDepth ? (D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL) : D3DCLEAR_TARGET);
-            if (flags == 0)
-                continue;
-
-            // The variant the game just cleared itself needs no deferred clear.
-            boundSurface->variant->deferredClearFlags &= ~flags;
-
-            for (auto& variant : g_surfaceVariants)
-            {
-                if (variant.get() == boundSurface->variant ||
-                    variant->base != boundSurface->variant->base ||
-                    RenderFormatIsDepth(variant->format) != boundIsDepth ||
-                    variant->width > boundSurface->variant->width ||
-                    variant->height > boundSurface->variant->height)
-                {
-                    continue;
-                }
-
-                variant->deferredClearFlags |= flags;
-                variant->deferredClearColor[0] = args.color[0];
-                variant->deferredClearColor[1] = args.color[1];
-                variant->deferredClearColor[2] = args.color[2];
-                variant->deferredClearColor[3] = args.color[3];
-                variant->deferredClearZ = args.z;
-                variant->deferredClearStencil = args.stencil;
-            }
-        }
-    }
+    PropagateDeferredClear(g_renderTarget, g_depthStencil, args);
 }
 
-static void ApplyDeferredVariantClears(GuestSurface* renderTarget, GuestSurface* depthStencil)
+static void ApplyDeferredVariantClears(const GuestSurface* renderTarget, const GuestSurface* depthStencil)
 {
     auto& commandList = g_commandLists[g_frame];
 
@@ -4765,41 +3320,19 @@ static void ApplyDeferredVariantClears(GuestSurface* renderTarget, GuestSurface*
     }
 }
 
-static void SetViewport(GuestDevice* device, GuestViewport* viewport)
+static void ProcRenderCommand(const RenderCommands::SetViewport& args)
 {
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetViewport;
-    cmd.setViewport.x = viewport->x;
-    cmd.setViewport.y = viewport->y;
-    cmd.setViewport.width = viewport->width;
-    cmd.setViewport.height = viewport->height;
-    cmd.setViewport.minDepth = viewport->minZ;
-    cmd.setViewport.maxDepth = viewport->maxZ;
-    g_renderQueue.enqueue(cmd);
-
-    device->viewport.x = float(viewport->x);
-    device->viewport.y = float(viewport->y);
-    device->viewport.width = float(viewport->width);
-    device->viewport.height = float(viewport->height);
-    device->viewport.minZ = viewport->minZ;
-    device->viewport.maxZ = viewport->maxZ;
-}
-
-static void ProcSetViewport(const RenderCommand& cmd)
-{
-    const auto& args = cmd.setViewport;
-
     SetDirtyValue<float>(g_dirtyStates.viewport, g_viewport.x, args.x);
     SetDirtyValue<float>(g_dirtyStates.viewport, g_viewport.y, args.y);
     SetDirtyValue<float>(g_dirtyStates.viewport, g_viewport.width, args.width);
     SetDirtyValue<float>(g_dirtyStates.viewport, g_viewport.height, args.height);
     SetDirtyValue<float>(g_dirtyStates.viewport, g_viewport.minDepth, args.minDepth);
     SetDirtyValue<float>(g_dirtyStates.viewport, g_viewport.maxDepth, args.maxDepth);
-    
+
     uint32_t specConstants = g_pipelineState.specConstants;
     if (args.minDepth > args.maxDepth)
         specConstants |= SPEC_CONSTANT_REVERSE_Z;
-    else 
+    else
         specConstants &= ~SPEC_CONSTANT_REVERSE_Z;
 
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.specConstants, specConstants);
@@ -4807,52 +3340,8 @@ static void ProcSetViewport(const RenderCommand& cmd)
     g_dirtyStates.scissorRect |= g_dirtyStates.viewport;
 }
 
-static void SetTexture(GuestDevice* device, uint32_t index, GuestTexture* texture) 
+static void ProcRenderCommand(const RenderCommands::SetTexture& args)
 {
-    // printf("SetTexture: %x %d %x\n", device, index, texture);
-
-    if (Config::GetPreferredControllerIcons() == EControllerIcons::PlayStation &&
-        texture != nullptr && texture->patchedTexture != nullptr)
-    {
-        texture = texture->patchedTexture.get();
-    }
-
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetTexture;
-    cmd.setTexture.index = index;
-    cmd.setTexture.texture = texture;
-    g_renderQueue.enqueue(cmd);
-}
-
-static void SetTextureInRenderThread(uint32_t index, GuestTexture* texture)
-{
-    AddBarrier(texture, RenderTextureLayout::SHADER_READ);
-
-    auto viewDimension = texture != nullptr ? texture->viewDimension : RenderTextureViewDimension::UNKNOWN;
-
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.texture2DIndices[index],
-        viewDimension == RenderTextureViewDimension::TEXTURE_2D ? texture->descriptorIndex : TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D);
-
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.texture2DArrayIndices[index], texture != nullptr &&
-        viewDimension == RenderTextureViewDimension::TEXTURE_2D ? texture->descriptorIndex : TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D_ARRAY);
-
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.textureCubeIndices[index], texture != nullptr &&
-        viewDimension == RenderTextureViewDimension::TEXTURE_CUBE ? texture->descriptorIndex : TEXTURE_DESCRIPTOR_NULL_TEXTURE_CUBE);
-}
-
-static void SetSurface(uint32_t index, GuestSurface* surface)
-{
-    AddBarrier(surface, RenderTextureLayout::SHADER_READ);
-
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.texture2DIndices[index], surface->descriptorIndex);
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.texture2DArrayIndices[index], uint32_t(TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D_ARRAY));
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.textureCubeIndices[index], uint32_t(TEXTURE_DESCRIPTOR_NULL_TEXTURE_CUBE));
-}
-
-static void ProcSetTexture(const RenderCommand& cmd)
-{
-    const auto& args = cmd.setTexture;
-
     // If a pending copy operation is detected, set the source surface. The indices will be fixed later if flushing is necessary.
     bool shouldSetTexture = true;
     if (args.texture != nullptr && args.texture->sourceSurface != nullptr)
@@ -4870,424 +3359,19 @@ static void ProcSetTexture(const RenderCommand& cmd)
             shouldSetTexture = false;
         }
     }
-    
+
     if (shouldSetTexture)
         SetTextureInRenderThread(args.index, args.texture);
-    
+
     g_textures[args.index] = args.texture;
 }
 
-static void SetScissorRect(GuestDevice* device, GuestRect* rect)
+static void ProcRenderCommand(const RenderCommands::SetScissorRect& args)
 {
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetScissorRect;
-    cmd.setScissorRect.top = rect->top;
-    cmd.setScissorRect.left = rect->left;
-    cmd.setScissorRect.bottom = rect->bottom;
-    cmd.setScissorRect.right = rect->right;
-    g_renderQueue.enqueue(cmd);
-}
-
-static void ProcSetScissorRect(const RenderCommand& cmd)
-{
-    const auto& args = cmd.setScissorRect;
-
     SetDirtyValue<int32_t>(g_dirtyStates.scissorRect, g_scissorRect.top, args.top);
     SetDirtyValue<int32_t>(g_dirtyStates.scissorRect, g_scissorRect.left, args.left);
     SetDirtyValue<int32_t>(g_dirtyStates.scissorRect, g_scissorRect.bottom, args.bottom);
     SetDirtyValue<int32_t>(g_dirtyStates.scissorRect, g_scissorRect.right, args.right);
-}
-
-static RenderShader* GetReplacementShader(GuestShader* guestShader)
-{
-    if (guestShader == nullptr)
-        return nullptr;
-
-    if (guestShader->shaderCacheEntry != nullptr)
-    {
-        switch (guestShader->shaderCacheEntry->hash)
-        {
-        case 0x3687D038CE7D0BEA:
-        case 0xB4DA7A442DBB16CC:
-            if (Config::RadialBlur == ERadialBlur::Enhanced)
-                return g_enhancedBurnoutBlurVSShader.get();
-            break;
-        case 0xDA58F0110A8595D9:
-        case 0x845A4EF989446C01:
-            if (Config::RadialBlur == ERadialBlur::Enhanced)
-                return g_enhancedBurnoutBlurPSShader.get();
-            break;
-        case 0x88EB0AA82E4257B0:
-            return g_MoviePSShader.get();
-        default:
-            break;
-        }
-    }
-
-    return nullptr;
-}
-
-static RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specConstants)
-{
-    auto* replacementShader = GetReplacementShader(guestShader);
-    if (replacementShader != nullptr)
-        return replacementShader;
-
-    if (g_backend != Backend::D3D12 ||
-        guestShader->shaderCacheEntry == nullptr ||
-        guestShader->shaderCacheEntry->specConstantsMask == 0)
-    {
-        std::lock_guard lock(guestShader->mutex);
-
-        if (guestShader->shader == nullptr)
-        {
-            assert(guestShader->shaderCacheEntry != nullptr);
-
-            switch (g_backend) {
-            case Backend::VULKAN:
-            {
-                auto compressedSpirvData = g_shaderCache.get() + guestShader->shaderCacheEntry->spirvOffset;
-
-                std::vector<uint8_t> decoded(smolv::GetDecodedBufferSize(compressedSpirvData, guestShader->shaderCacheEntry->spirvSize));
-                bool result = smolv::Decode(compressedSpirvData, guestShader->shaderCacheEntry->spirvSize, decoded.data(), decoded.size());
-                assert(result);
-
-                guestShader->shader = g_device->createShader(decoded.data(), decoded.size(), "shaderMain", RenderShaderFormat::SPIRV);
-                break;
-            }
-            case Backend::D3D12:
-            {
-                guestShader->shader = g_device->createShader(g_shaderCache.get() + guestShader->shaderCacheEntry->dxilOffset,
-                    guestShader->shaderCacheEntry->dxilSize, "shaderMain", RenderShaderFormat::DXIL);
-                break;
-            }
-            case Backend::METAL:
-            {
-                guestShader->shader = g_device->createShader(g_shaderCache.get() + guestShader->shaderCacheEntry->airOffset,
-                    guestShader->shaderCacheEntry->airSize, "shaderMain", RenderShaderFormat::METAL);
-                break;
-            }
-            }
-
-#ifdef _DEBUG
-            guestShader->shader->setName(fmt::format("{}:{:x}", guestShader->shaderCacheEntry->filename, guestShader->shaderCacheEntry->hash));
-#endif
-        }
-
-        return guestShader->shader.get();
-    }
-
-    specConstants &= guestShader->shaderCacheEntry->specConstantsMask;
-
-    RenderShader* shader;
-    {
-        std::lock_guard lock(guestShader->mutex);
-        shader = guestShader->linkedShaders[specConstants].get();
-    }
-
-#ifdef MARATHON_RECOMP_D3D12
-    if (shader == nullptr)
-    {
-        static Mutex g_compiledSpecConstantLibraryBlobMutex;
-        static ankerl::unordered_dense::map<uint32_t, ComPtr<IDxcBlob>> g_compiledSpecConstantLibraryBlobs;
-
-        thread_local ComPtr<IDxcCompiler3> s_dxcCompiler;
-        thread_local ComPtr<IDxcLinker> s_dxcLinker;
-        thread_local ComPtr<IDxcUtils> s_dxcUtils;
-
-        wchar_t specConstantsLibName[0x100];
-        swprintf_s(specConstantsLibName, L"SpecConstants_%d", specConstants);
-
-        ComPtr<IDxcBlob> specConstantLibraryBlob;
-        {
-            std::lock_guard lock(g_compiledSpecConstantLibraryBlobMutex);
-            specConstantLibraryBlob = g_compiledSpecConstantLibraryBlobs[specConstants];
-        }
-
-        if (specConstantLibraryBlob == nullptr)
-        {
-            if (s_dxcCompiler == nullptr)
-            {
-                HRESULT hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(s_dxcCompiler.GetAddressOf()));
-                assert(SUCCEEDED(hr) && s_dxcCompiler != nullptr);
-            }
-
-            char libraryHlsl[0x100];
-            sprintf_s(libraryHlsl, "export uint g_SpecConstants() { return %d; }", specConstants);
-
-            DxcBuffer buffer{};
-            buffer.Ptr = libraryHlsl;
-            buffer.Size = strlen(libraryHlsl);
-
-            const wchar_t* args[1];
-            args[0] = L"-T lib_6_3";
-
-            ComPtr<IDxcResult> result;
-            HRESULT hr = s_dxcCompiler->Compile(&buffer, args, std::size(args), nullptr, IID_PPV_ARGS(result.GetAddressOf()));
-            assert(SUCCEEDED(hr) && result != nullptr);
-
-            hr = result->GetResult(specConstantLibraryBlob.GetAddressOf());
-            assert(SUCCEEDED(hr) && specConstantLibraryBlob != nullptr);
-
-            std::lock_guard lock(g_compiledSpecConstantLibraryBlobMutex);
-            g_compiledSpecConstantLibraryBlobs.emplace(specConstants, specConstantLibraryBlob);
-        }
-
-        if (s_dxcLinker == nullptr)
-        {
-            HRESULT hr = DxcCreateInstance(CLSID_DxcLinker, IID_PPV_ARGS(s_dxcLinker.GetAddressOf()));
-            assert(SUCCEEDED(hr) && s_dxcLinker != nullptr);
-        }
-
-        s_dxcLinker->RegisterLibrary(specConstantsLibName, specConstantLibraryBlob.Get());
-
-        wchar_t shaderLibName[0x100];
-        swprintf_s(shaderLibName, L"Shader_%d", guestShader->shaderCacheEntry->dxilOffset);
-
-        ComPtr<IDxcBlobEncoding> shaderLibraryBlob;
-        {
-            std::lock_guard lock(guestShader->mutex);
-            shaderLibraryBlob = guestShader->libraryBlob;
-        }
-
-        if (shaderLibraryBlob == nullptr)
-        {
-            if (s_dxcUtils == nullptr)
-            {
-                HRESULT hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(s_dxcUtils.GetAddressOf()));
-                assert(SUCCEEDED(hr) && s_dxcUtils != nullptr);
-            }
-
-            HRESULT hr = s_dxcUtils->CreateBlobFromPinned(
-                g_shaderCache.get() + guestShader->shaderCacheEntry->dxilOffset,
-                guestShader->shaderCacheEntry->dxilSize,
-                DXC_CP_ACP,
-                shaderLibraryBlob.GetAddressOf());
-
-            assert(SUCCEEDED(hr) && shaderLibraryBlob != nullptr);
-
-            std::lock_guard lock(guestShader->mutex);
-            guestShader->libraryBlob = shaderLibraryBlob;
-        }
-
-        s_dxcLinker->RegisterLibrary(shaderLibName, shaderLibraryBlob.Get());
-
-        const wchar_t* libraryNames[] = { specConstantsLibName, shaderLibName };
-
-        ComPtr<IDxcOperationResult> result;
-        HRESULT hr = s_dxcLinker->Link(L"shaderMain", guestShader->type == ResourceType::VertexShader ? L"vs_6_0" : L"ps_6_0",
-            libraryNames, std::size(libraryNames), nullptr, 0, result.GetAddressOf());
-
-        assert(SUCCEEDED(hr) && result != nullptr);
-
-        ComPtr<IDxcBlob> blob;
-        hr = result->GetResult(blob.GetAddressOf());
-        assert(SUCCEEDED(hr) && blob != nullptr);
-
-        {
-            std::lock_guard lock(guestShader->mutex);
-
-            auto& linkedShader = guestShader->linkedShaders[specConstants];
-            if (linkedShader == nullptr)
-            {
-                linkedShader = g_device->createShader(blob->GetBufferPointer(), blob->GetBufferSize(), "shaderMain", RenderShaderFormat::DXIL);
-                guestShader->shaderBlobs.push_back(std::move(blob));
-            }
-
-            shader = linkedShader.get();
-
-#ifdef _DEBUG
-            shader->setName(fmt::format("{}:{:x}", guestShader->shaderCacheEntry->filename, guestShader->shaderCacheEntry->hash));
-#endif
-        }        
-    }
-#endif
-
-    return shader;
-}
-
-static XXH64_hash_t GetPipelineStateHash(const PipelineState& pipelineState)
-{
-    XXH64_hash_t seed = 0;
-
-    // If shaders need to be replaced, make sure they result in a different pipeline hash.
-    struct {
-        RenderShader* vertex;
-        RenderShader* pixel;
-    } replacements(GetReplacementShader(pipelineState.vertexShader), GetReplacementShader(pipelineState.pixelShader));
-    if (replacements.vertex != nullptr || replacements.pixel != nullptr)
-        seed = XXH3_64bits(&replacements, sizeof(replacements));
-
-    return XXH3_64bits_withSeed(&pipelineState, sizeof(pipelineState), seed);
-}
-
-static void SanitizePipelineState(PipelineState& pipelineState)
-{
-    if (!pipelineState.zEnable && !pipelineState.stencilEnable)
-    {
-        pipelineState.depthStencilFormat = RenderFormat::UNKNOWN;
-    }
-
-    if (!pipelineState.zEnable)
-    {
-        pipelineState.zWriteEnable = false;
-        pipelineState.zFunc = RenderComparisonFunction::LESS;
-        pipelineState.slopeScaledDepthBias = 0.0f;
-        pipelineState.depthBias = 0;
-    }
-
-    if (!pipelineState.stencilEnable)
-    {
-        pipelineState.stencilTwoSided = false;
-        pipelineState.stencilFunc = RenderComparisonFunction::ALWAYS;
-        pipelineState.stencilFail = RenderStencilOp::KEEP;
-        pipelineState.stencilZFail = RenderStencilOp::KEEP;
-        pipelineState.stencilPass = RenderStencilOp::KEEP;
-        pipelineState.stencilMask = 0xFFFFFFFF;
-        pipelineState.stencilWriteMask = 0xFFFFFFFF;
-        pipelineState.stencilRef = 0;
-    }
-
-    if (!pipelineState.stencilTwoSided)
-    {
-        pipelineState.stencilFuncCCW = pipelineState.stencilFunc;
-        pipelineState.stencilFailCCW = pipelineState.stencilFail;
-        pipelineState.stencilZFailCCW = pipelineState.stencilZFail;
-        pipelineState.stencilPassCCW = pipelineState.stencilPass;
-    }
-
-    if (pipelineState.slopeScaledDepthBias == 0.0f)
-        pipelineState.slopeScaledDepthBias = 0.0f; // Remove sign.
-
-    if (!pipelineState.colorWriteEnable)
-    {
-        pipelineState.alphaBlendEnable = false;
-        pipelineState.renderTargetFormat = RenderFormat::UNKNOWN;
-    }
-
-    if (!pipelineState.alphaBlendEnable)
-    {
-        pipelineState.srcBlend = RenderBlend::ONE;
-        pipelineState.destBlend = RenderBlend::ZERO;
-        pipelineState.blendOp = RenderBlendOperation::ADD;
-        pipelineState.srcBlendAlpha = RenderBlend::ONE;
-        pipelineState.destBlendAlpha = RenderBlend::ZERO;
-        pipelineState.blendOpAlpha = RenderBlendOperation::ADD;
-    }
-
-    for (size_t i = 0; i < 16; i++)
-    {
-        if (!pipelineState.vertexDeclaration->vertexStreams[i])
-            pipelineState.vertexStrides[i] = 0;
-    }
-
-    uint32_t specConstantsMask = 0;
-    if (pipelineState.vertexShader->shaderCacheEntry != nullptr)
-        specConstantsMask |= pipelineState.vertexShader->shaderCacheEntry->specConstantsMask;
-
-    if (pipelineState.pixelShader != nullptr && pipelineState.pixelShader->shaderCacheEntry != nullptr)
-        specConstantsMask |= pipelineState.pixelShader->shaderCacheEntry->specConstantsMask;
-
-    pipelineState.specConstants &= specConstantsMask;
-}
-
-static std::unique_ptr<RenderPipeline> CreateGraphicsPipeline(const PipelineState& pipelineState)
-{
-#ifdef ASYNC_PSO_DEBUG
-    ++g_pipelinesCurrentlyCompiling;
-#endif
-
-    RenderGraphicsPipelineDesc desc;
-    desc.pipelineLayout = g_pipelineLayout.get();
-    desc.vertexShader = GetOrLinkShader(pipelineState.vertexShader, pipelineState.specConstants);
-    if (pipelineState.enableConditionalSurvey)
-        desc.pixelShader = GetOrLinkShader(g_conditionalSurveyPSShader.get(), pipelineState.specConstants);
-    else if (pipelineState.pixelShader != nullptr)
-        desc.pixelShader = GetOrLinkShader(pipelineState.pixelShader, pipelineState.specConstants);
-    else
-        desc.pixelShader = nullptr;
-    desc.depthFunction = pipelineState.zFunc;
-    desc.depthEnabled = pipelineState.zEnable;
-    desc.depthWriteEnabled = pipelineState.zWriteEnable;
-    desc.depthBias = pipelineState.depthBias;
-    desc.stencilEnabled = pipelineState.stencilEnable;
-    desc.stencilReadMask = pipelineState.stencilMask;
-    desc.stencilWriteMask = pipelineState.stencilWriteMask;
-    desc.stencilReference = pipelineState.stencilRef;
-    desc.stencilFrontFace.compareFunction = pipelineState.stencilFunc;
-    desc.stencilFrontFace.failOp = pipelineState.stencilFail;
-    desc.stencilFrontFace.depthFailOp = pipelineState.stencilZFail;
-    desc.stencilFrontFace.passOp = pipelineState.stencilPass;
-    if (pipelineState.stencilTwoSided) {
-        desc.stencilBackFace.compareFunction = pipelineState.stencilFuncCCW;
-        desc.stencilBackFace.failOp = pipelineState.stencilFailCCW;
-        desc.stencilBackFace.depthFailOp = pipelineState.stencilZFailCCW;
-        desc.stencilBackFace.passOp = pipelineState.stencilPassCCW;
-    } else {
-        desc.stencilBackFace = desc.stencilFrontFace;
-    }
-    desc.slopeScaledDepthBias = pipelineState.slopeScaledDepthBias;
-    desc.dynamicDepthBiasEnabled = g_capabilities.dynamicDepthBias;
-    desc.depthClipEnabled = true;
-    desc.primitiveTopology = pipelineState.primitiveTopology;
-    if (!g_capabilities.triangleFan && desc.primitiveTopology == RenderPrimitiveTopology::TRIANGLE_FAN) {
-        desc.primitiveTopology = RenderPrimitiveTopology::TRIANGLE_LIST;
-    }
-    desc.cullMode = pipelineState.cullMode;
-    desc.frontFace = pipelineState.frontFace;
-    desc.renderTargetFormat[0] = pipelineState.renderTargetFormat;
-    desc.renderTargetBlend[0].blendEnabled = pipelineState.alphaBlendEnable;
-    desc.renderTargetBlend[0].srcBlend = pipelineState.srcBlend;
-    desc.renderTargetBlend[0].dstBlend = pipelineState.destBlend;
-    desc.renderTargetBlend[0].blendOp = pipelineState.blendOp;
-    desc.renderTargetBlend[0].srcBlendAlpha = pipelineState.srcBlendAlpha;
-    desc.renderTargetBlend[0].dstBlendAlpha = pipelineState.destBlendAlpha;
-    desc.renderTargetBlend[0].blendOpAlpha = pipelineState.blendOpAlpha;
-    desc.renderTargetBlend[0].renderTargetWriteMask = pipelineState.colorWriteEnable;
-    desc.renderTargetCount = pipelineState.renderTargetFormat != RenderFormat::UNKNOWN ? 1 : 0;
-    desc.depthTargetFormat = pipelineState.depthStencilFormat;
-    desc.multisampling.sampleCount = pipelineState.sampleCount;
-    desc.alphaToCoverageEnabled = pipelineState.enableAlphaToCoverage;
-    desc.inputElements = pipelineState.vertexDeclaration->inputElements.get();
-    desc.inputElementsCount = pipelineState.vertexDeclaration->inputElementCount;
-    
-    RenderSpecConstant specConstant{};
-    specConstant.value = pipelineState.specConstants;
-    
-    if (pipelineState.specConstants != 0)
-    {
-        desc.specConstants = &specConstant;
-        desc.specConstantsCount = 1;
-    }
-    
-    RenderInputSlot inputSlots[16]{};
-    uint32_t inputSlotIndices[16]{};
-    uint32_t inputSlotCount = 0;
-    
-    for (size_t i = 0; i < pipelineState.vertexDeclaration->inputElementCount; i++)
-    {
-        auto& inputElement = pipelineState.vertexDeclaration->inputElements[i];
-        auto& inputSlotIndex = inputSlotIndices[inputElement.slotIndex];
-    
-        if (inputSlotIndex == NULL)
-            inputSlotIndex = ++inputSlotCount;
-    
-        auto& inputSlot = inputSlots[inputSlotIndex - 1];
-        inputSlot.index = inputElement.slotIndex;
-        inputSlot.stride = pipelineState.vertexStrides[inputElement.slotIndex];
-        inputSlot.classification = RenderInputSlotClassification::PER_VERTEX_DATA;
-    }
-    
-    desc.inputSlots = inputSlots;
-    desc.inputSlotsCount = inputSlotCount;
-    
-    auto pipeline = g_device->createGraphicsPipeline(desc);
-
-#ifdef ASYNC_PSO_DEBUG
-    --g_pipelinesCurrentlyCompiling;
-#endif
-
-    return pipeline;
 }
 
 static RenderPipeline* CreateGraphicsPipelineInRenderThread(PipelineState pipelineState)
@@ -5308,7 +3392,7 @@ static RenderPipeline* CreateGraphicsPipelineInRenderThread(PipelineState pipeli
 
         pipeline->setName(fmt::format("{} {} {} {:X}", App::s_isLoading ? "ASYNC" : "",
             pipelineState.vertexShader->name, pipelineState.pixelShader != nullptr ? pipelineState.pixelShader->name : "<none>", hash));
-        
+
         if (!App::s_isLoading)
         {
             std::lock_guard lock(g_debugMutex);
@@ -5408,150 +3492,17 @@ static RenderPipeline* CreateGraphicsPipelineInRenderThread(PipelineState pipeli
         g_pipelineStatesToCache.emplace(hash, pipelineState);
 #endif
     }
-    
+
     return pipeline.get();
 }
 
-static RenderTextureAddressMode ConvertTextureAddressMode(size_t value)
+static void ProcRenderCommand(const RenderCommands::SetBooleans& args)
 {
-    switch (value)
-    {
-    case D3DTADDRESS_WRAP:
-        return RenderTextureAddressMode::WRAP;
-    case D3DTADDRESS_MIRROR:
-        return RenderTextureAddressMode::MIRROR;
-    case D3DTADDRESS_CLAMP:
-        return RenderTextureAddressMode::CLAMP;
-    case D3DTADDRESS_MIRRORONCE:
-        return RenderTextureAddressMode::MIRROR_ONCE;
-    case D3DTADDRESS_BORDER:
-        return RenderTextureAddressMode::BORDER;
-    default:
-        assert(false && "Unknown texture address mode");
-        return RenderTextureAddressMode::UNKNOWN;
-    }
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.booleans, args.booleans);
 }
 
-static RenderFilter ConvertTextureFilter(uint32_t value)
+static void ProcRenderCommand(const RenderCommands::SetSamplerState& args)
 {
-    switch (value)
-    {
-    case D3DTEXF_POINT:
-    case D3DTEXF_NONE:
-        return RenderFilter::NEAREST;
-    case D3DTEXF_LINEAR:
-        return RenderFilter::LINEAR;
-    default:
-        assert(false && "Unknown texture filter");
-        return RenderFilter::UNKNOWN;
-    }
-}
-
-static RenderBorderColor ConvertBorderColor(uint32_t value)
-{
-    switch (value)
-    {
-    case 0:
-        return RenderBorderColor::TRANSPARENT_BLACK;
-    case 1:
-        return RenderBorderColor::OPAQUE_WHITE;
-    default:
-        assert(false && "Unknown border color");
-        return RenderBorderColor::UNKNOWN;
-    }
-}
-
-struct LocalRenderCommandQueue
-{
-    RenderCommand commands[20];
-    uint32_t count = 0;
-
-    RenderCommand& enqueue()
-    {
-        assert(count < std::size(commands));
-        return commands[count++];
-    }
-
-    void submit()
-    {
-        g_renderQueue.enqueue_bulk(commands, count);
-    }
-};
-
-static void FlushRenderStateForMainThread(GuestDevice* device, LocalRenderCommandQueue& queue)
-{
-    constexpr size_t BOOL_MASK = 0x2ull;
-    if ((device->dirtyFlags[3].get() & BOOL_MASK) != 0)
-    {
-        auto& cmd = queue.enqueue();
-        cmd.type = RenderCommandType::SetBooleans;
-        cmd.setBooleans.booleans = (device->vertexShaderBoolConstants[0].get() & 0xFF) | ((device->pixelShaderBoolConstants[0].get() & 0xFF) << 16);
-
-        device->dirtyFlags[3] = device->dirtyFlags[3].get() & ~BOOL_MASK;
-    }
-
-    for (uint32_t i = 0; i < 16; i++)
-    {
-        const size_t mask = 0x8000000000000000ull >> (i + 20);
-        if (device->dirtyFlags[2].get() & mask)
-        {
-            auto& cmd = queue.enqueue();
-            cmd.type = RenderCommandType::SetSamplerState;
-            cmd.setSamplerState.index = i;
-            cmd.setSamplerState.data0 = device->samplerStates[i].data[0];
-            cmd.setSamplerState.data3 = device->samplerStates[i].data[3];
-            cmd.setSamplerState.data5 = device->samplerStates[i].data[5];
-
-            device->dirtyFlags[2] = device->dirtyFlags[2].get() & ~mask;
-        }
-    }
-
-    uint64_t dirtyFlags = device->dirtyFlags[0].get();
-    if (dirtyFlags != 0)
-    {
-        int startRegister = std::countl_zero(dirtyFlags);
-        int endRegister = 64 - std::countr_zero(dirtyFlags);
-
-        uint32_t index = startRegister * 16;
-        uint32_t size = (endRegister - startRegister) * 64;
-
-        auto& cmd = queue.enqueue();
-        cmd.type = RenderCommandType::SetVertexShaderConstants;
-        cmd.setVertexShaderConstants.memory = g_intermediaryUploadAllocator.allocate(&device->vertexShaderFloatConstants[index], size);
-        cmd.setVertexShaderConstants.index = index;
-        cmd.setVertexShaderConstants.size = size;
-
-        device->dirtyFlags[0] = 0;
-    }
-
-    dirtyFlags = device->dirtyFlags[1].get();
-    if (dirtyFlags != 0)
-    {
-        int startRegister = std::countl_zero(dirtyFlags);
-        int endRegister = std::min(56, 64 - std::countr_zero(dirtyFlags));
-
-        uint32_t index = startRegister * 16;
-        uint32_t size = (endRegister - startRegister) * 64;
-
-        auto& cmd = queue.enqueue();
-        cmd.type = RenderCommandType::SetPixelShaderConstants;
-        cmd.setPixelShaderConstants.memory = g_intermediaryUploadAllocator.allocate(&device->pixelShaderFloatConstants[index], size);
-        cmd.setPixelShaderConstants.index = index;
-        cmd.setPixelShaderConstants.size = size;
-
-        device->dirtyFlags[1] = 0;
-    }
-}
-
-static void ProcSetBooleans(const RenderCommand& cmd)
-{
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.booleans, cmd.setBooleans.booleans);
-}
-
-static void ProcSetSamplerState(const RenderCommand& cmd)
-{
-    const auto& args = cmd.setSamplerState;
-
     const auto addressU = ConvertTextureAddressMode((args.data0 >> 10) & 0x7);
     const auto addressV = ConvertTextureAddressMode((args.data0 >> 13) & 0x7);
     const auto addressW = ConvertTextureAddressMode((args.data0 >> 16) & 0x7);
@@ -5576,7 +3527,7 @@ static void ProcSetSamplerState(const RenderCommand& cmd)
     SetDirtyValue(dirty, samplerDesc.addressW, addressW);
     SetDirtyValue(dirty, samplerDesc.minFilter, minFilter);
     SetDirtyValue(dirty, samplerDesc.magFilter, magFilter);
-    SetDirtyValue(dirty, samplerDesc.mipmapMode, RenderMipmapMode(mipFilter));
+    SetDirtyValue(dirty, samplerDesc.mipmapMode, static_cast<RenderMipmapMode>(mipFilter));
     SetDirtyValue(dirty, samplerDesc.maxAnisotropy, anisotropyEnabled ? Config::AnisotropicFiltering : 16u);
     SetDirtyValue(dirty, samplerDesc.anisotropyEnabled, anisotropyEnabled);
     SetDirtyValue(dirty, samplerDesc.borderColor, borderColor);
@@ -5596,27 +3547,24 @@ static void ProcSetSamplerState(const RenderCommand& cmd)
     }
 }
 
-static void ProcSetVertexShaderConstants(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::SetVertexShaderConstants& args)
 {
-    auto& args = cmd.setVertexShaderConstants;
     assert((args.index * sizeof(uint32_t) + args.size) <= sizeof(g_vertexShaderConstants));
 
     memcpy(&g_vertexShaderConstants[args.index], args.memory, args.size);
     g_dirtyStates.vertexShaderConstants = true;
 }
 
-static void ProcSetPixelShaderConstants(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::SetPixelShaderConstants& args)
 {
-    auto& args = cmd.setPixelShaderConstants;
     assert((args.index * sizeof(uint32_t) + args.size) <= sizeof(g_pixelShaderConstants));
 
     memcpy(&g_pixelShaderConstants[args.index], args.memory, args.size);
     g_dirtyStates.pixelShaderConstants = true;
 }
 
-static void ProcAddPipeline(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::AddPipeline& args)
 {
-    auto& args = cmd.addPipeline;
     auto& pipeline = g_pipelines[args.hash];
 
     if (pipeline == nullptr)
@@ -5635,7 +3583,7 @@ static void ProcAddPipeline(const RenderCommand& cmd)
     }
 }
 
-static constexpr int32_t COMMON_DEPTH_BIAS_VALUE = int32_t((1 << 24) * 0.002f);
+static constexpr int32_t COMMON_DEPTH_BIAS_VALUE = static_cast<int32_t>((1 << 24) * 0.002f);
 static constexpr float COMMON_SLOPE_SCALED_DEPTH_BIAS_VALUE = 1.0f;
 
 static void FlushRenderStateForRenderThread()
@@ -5645,7 +3593,7 @@ static void FlushRenderStateForRenderThread()
 
     bool foundAny = PopulateBarriersForStretchRect(renderTarget, depthStencil);
 
-    auto aliasesBoundStorage = [&](GuestSurface* surface)
+    auto aliasesBoundStorage = [&](const GuestSurface* surface)
     {
         return surface != renderTarget && surface != depthStencil &&
             (SharesStorage(surface, renderTarget) || SharesStorage(surface, depthStencil));
@@ -5759,52 +3707,13 @@ static void FlushRenderStateForRenderThread()
     g_dirtyStates = DirtyStates(false);
 }
 
-static RenderPrimitiveTopology ConvertPrimitiveType(uint32_t primitiveType)
-{
-    switch (primitiveType)
-    {
-    case D3DPT_POINTLIST:
-        return RenderPrimitiveTopology::POINT_LIST;
-    case D3DPT_LINELIST:
-        return RenderPrimitiveTopology::LINE_LIST;
-    case D3DPT_LINESTRIP:
-        return RenderPrimitiveTopology::LINE_STRIP;
-    case D3DPT_TRIANGLELIST:
-    case D3DPT_QUADLIST:
-        return RenderPrimitiveTopology::TRIANGLE_LIST;
-    case D3DPT_TRIANGLESTRIP:
-        return RenderPrimitiveTopology::TRIANGLE_STRIP;
-    case D3DPT_TRIANGLEFAN:
-        return RenderPrimitiveTopology::TRIANGLE_FAN;
-    default:
-        assert(false && "Unknown primitive type");
-        return RenderPrimitiveTopology::UNKNOWN;
-    }
-}
-
 static void SetPrimitiveType(uint32_t primitiveType)
 {
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.primitiveTopology, ConvertPrimitiveType(primitiveType));
 }
 
-static void DrawPrimitive(GuestDevice* device, uint32_t primitiveType, uint32_t startVertex, uint32_t primitiveCount) 
+static void ProcRenderCommand(const RenderCommands::DrawPrimitive& args)
 {
-    LocalRenderCommandQueue queue;
-    FlushRenderStateForMainThread(device, queue);
-
-    auto& cmd = queue.enqueue();
-    cmd.type = RenderCommandType::DrawPrimitive;
-    cmd.drawPrimitive.primitiveType = primitiveType;
-    cmd.drawPrimitive.startVertex = startVertex;
-    cmd.drawPrimitive.primitiveCount = primitiveCount;
-
-    queue.submit();
-}
-
-static void ProcDrawPrimitive(const RenderCommand& cmd)
-{
-    const auto& args = cmd.drawPrimitive;
-
     SetPrimitiveType(args.primitiveType);
 
     FlushRenderStateForRenderThread();
@@ -5813,53 +3722,18 @@ static void ProcDrawPrimitive(const RenderCommand& cmd)
     commandList->drawInstanced(args.primitiveCount, 1, args.startVertex, 0);
 }
 
-static void DrawIndexedPrimitive(GuestDevice* device, uint32_t primitiveType, int32_t baseVertexIndex, uint32_t startIndex, uint32_t primCount)
+static void ProcRenderCommand(const RenderCommands::DrawIndexedPrimitive& args)
 {
-    LocalRenderCommandQueue queue;
-    FlushRenderStateForMainThread(device, queue);
-
-    auto& cmd = queue.enqueue();
-    cmd.type = RenderCommandType::DrawIndexedPrimitive;
-    cmd.drawIndexedPrimitive.primitiveType = primitiveType;
-    cmd.drawIndexedPrimitive.baseVertexIndex = baseVertexIndex;
-    cmd.drawIndexedPrimitive.startIndex = startIndex;
-    cmd.drawIndexedPrimitive.primCount = primCount;
-
-    queue.submit();
-}
-
-static void ProcDrawIndexedPrimitive(const RenderCommand& cmd)
-{
-    const auto& args = cmd.drawIndexedPrimitive;
-
     SetPrimitiveType(args.primitiveType);
     FlushRenderStateForRenderThread();
 
     g_commandLists[g_frame]->drawIndexedInstanced(args.primCount, 1, args.startIndex, args.baseVertexIndex, 0);
 }
 
-static void DrawPrimitiveUP(GuestDevice* device, uint32_t primitiveType, uint32_t primitiveCount, void* vertexStreamZeroData, uint32_t vertexStreamZeroStride)
+static void ProcRenderCommand(const RenderCommands::DrawPrimitiveUP& args)
 {
-    LocalRenderCommandQueue queue;
-    FlushRenderStateForMainThread(device, queue);
-
-    auto& cmd = queue.enqueue();
-    cmd.type = RenderCommandType::DrawPrimitiveUP;
-    cmd.drawPrimitiveUP.primitiveType = primitiveType;
-    cmd.drawPrimitiveUP.primitiveCount = primitiveCount;
-    cmd.drawPrimitiveUP.vertexStreamZeroData = g_intermediaryUploadAllocator.allocate(vertexStreamZeroData, primitiveCount * vertexStreamZeroStride);
-    cmd.drawPrimitiveUP.vertexStreamZeroSize = primitiveCount * vertexStreamZeroStride;
-    cmd.drawPrimitiveUP.vertexStreamZeroStride = vertexStreamZeroStride;
-    
-    queue.submit();
-}
-
-static void ProcDrawPrimitiveUP(const RenderCommand& cmd)
-{
-    const auto& args = cmd.drawPrimitiveUP;
-
     SetPrimitiveType(args.primitiveType);
-    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.vertexStrides[0], uint8_t(args.vertexStreamZeroStride));
+    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.vertexStrides[0], static_cast<uint8_t>(args.vertexStreamZeroStride));
 
     auto allocation = g_uploadAllocators[g_frame].allocate<true>(reinterpret_cast<const uint32_t*>(args.vertexStreamZeroData), args.vertexStreamZeroSize, 0x4);
 
@@ -5884,344 +3758,8 @@ static void ProcDrawPrimitiveUP(const RenderCommand& cmd)
         g_commandLists[g_frame]->drawInstanced(args.primitiveCount, 1, 0, 0);
 }
 
-static const char* ConvertDeclUsage(uint32_t usage)
+static void ProcRenderCommand(const RenderCommands::SetVertexDeclaration& args)
 {
-    switch (usage)
-    {
-    case D3DDECLUSAGE_POSITION:
-        return "POSITION";
-    case D3DDECLUSAGE_BLENDWEIGHT:
-        return "BLENDWEIGHT";
-    case D3DDECLUSAGE_BLENDINDICES:
-        return "BLENDINDICES";
-    case D3DDECLUSAGE_NORMAL:
-        return "NORMAL";
-    case D3DDECLUSAGE_PSIZE:
-        return "PSIZE";
-    case D3DDECLUSAGE_TEXCOORD:
-        return "TEXCOORD";
-    case D3DDECLUSAGE_TANGENT:
-        return "TANGENT";
-    case D3DDECLUSAGE_BINORMAL:
-        return "BINORMAL";
-    case D3DDECLUSAGE_TESSFACTOR:
-        return "TESSFACTOR";
-    case D3DDECLUSAGE_POSITIONT:
-        return "POSITIONT";
-    case D3DDECLUSAGE_COLOR:
-        return "COLOR";
-    case D3DDECLUSAGE_FOG:
-        return "FOG";
-    case D3DDECLUSAGE_DEPTH:
-        return "DEPTH";
-    case D3DDECLUSAGE_SAMPLE:
-        return "SAMPLE";
-    default:
-        assert(false && "Unknown usage");
-        return "UNKNOWN";
-    }
-}
-
-static RenderFormat ConvertDeclType(uint32_t type)
-{
-    switch (type)
-    {
-    case D3DDECLTYPE_FLOAT1:
-        return RenderFormat::R32_FLOAT;
-    case D3DDECLTYPE_FLOAT2:
-        return RenderFormat::R32G32_FLOAT;
-    case D3DDECLTYPE_FLOAT3:
-        return RenderFormat::R32G32B32_FLOAT;
-    case D3DDECLTYPE_FLOAT4:
-        return RenderFormat::R32G32B32A32_FLOAT;
-    case D3DDECLTYPE_D3DCOLOR:
-        return RenderFormat::B8G8R8A8_UNORM;
-    case D3DDECLTYPE_UBYTE4:
-    case D3DDECLTYPE_UBYTE4_2:
-        return RenderFormat::R8G8B8A8_UINT;
-    case D3DDECLTYPE_SHORT2:
-        return RenderFormat::R16G16_SINT;
-    case D3DDECLTYPE_SHORT4:
-        return RenderFormat::R16G16B16A16_SINT;
-    case D3DDECLTYPE_UBYTE4N:
-    case D3DDECLTYPE_UBYTE4N_2:
-        return RenderFormat::R8G8B8A8_UNORM;
-    case D3DDECLTYPE_SHORT2N:
-        return RenderFormat::R16G16_SNORM;
-    case D3DDECLTYPE_SHORT4N:
-        return RenderFormat::R16G16B16A16_SNORM;
-    case D3DDECLTYPE_USHORT2N:
-        return RenderFormat::R16G16_UNORM;
-    case D3DDECLTYPE_USHORT4N:
-        return RenderFormat::R16G16B16A16_UNORM;
-    case D3DDECLTYPE_UINT1:
-        return RenderFormat::R32_UINT;
-    case D3DDECLTYPE_DEC3N_2:
-    case D3DDECLTYPE_DEC3N_3:
-        return RenderFormat::R32_UINT;
-    case D3DDECLTYPE_FLOAT16_2:
-        return RenderFormat::R16G16_FLOAT;
-    case D3DDECLTYPE_FLOAT16_4:
-        return RenderFormat::R16G16B16A16_FLOAT;
-    default:
-        assert(false && "Unknown type");
-        return RenderFormat::UNKNOWN;
-    }
-}
-
-static GuestVertexDeclaration* CreateVertexDeclarationWithoutAddRef(GuestVertexElement* vertexElements) 
-{
-    size_t vertexElementCount = 0;
-    auto vertexElement = vertexElements;
-
-    while (vertexElement->stream != 0xFF && vertexElement->type != D3DDECLTYPE_UNUSED)
-    {
-        vertexElement->padding = 0;
-        ++vertexElement;
-        ++vertexElementCount;
-    }
-
-    vertexElement->padding = 0; // Clear the padding in D3DDECL_END() 
-
-    std::lock_guard lock(g_vertexDeclarationMutex);
-
-    XXH64_hash_t hash = XXH3_64bits(vertexElements, vertexElementCount * sizeof(GuestVertexElement));
-    auto& vertexDeclaration = g_vertexDeclarations[hash];
-
-    if (vertexDeclaration == nullptr)
-    {
-        vertexDeclaration = g_userHeap.AllocPhysical<GuestVertexDeclaration>(ResourceType::VertexDeclaration);
-        vertexDeclaration->hash = hash;
-
-        static std::vector<RenderInputElement> inputElements;
-        inputElements.clear();
-
-        struct Location
-        {
-            uint32_t usage;
-            uint32_t usageIndex;
-            uint32_t location;
-        };
-
-        // Should match the locations defined in XenosRecomp.
-        constexpr Location locations[] =
-        {
-            { D3DDECLUSAGE_POSITION, 0, 0 },
-            { D3DDECLUSAGE_POSITION, 1, 1 },
-            { D3DDECLUSAGE_POSITION, 2, 2 },
-            { D3DDECLUSAGE_POSITION, 3, 3 },
-            { D3DDECLUSAGE_NORMAL, 0, 4 },
-            { D3DDECLUSAGE_NORMAL, 1, 5 },
-            { D3DDECLUSAGE_NORMAL, 2, 6 },
-            { D3DDECLUSAGE_NORMAL, 3, 7 },
-            { D3DDECLUSAGE_TANGENT, 0, 8 },
-            { D3DDECLUSAGE_TANGENT, 1, 9 },
-            { D3DDECLUSAGE_TANGENT, 2, 10 },
-            { D3DDECLUSAGE_TANGENT, 3, 11 },
-            { D3DDECLUSAGE_BINORMAL, 0, 12 },
-            { D3DDECLUSAGE_TEXCOORD, 0, 13 },
-            { D3DDECLUSAGE_TEXCOORD, 1, 14 },
-            { D3DDECLUSAGE_TEXCOORD, 2, 15 },
-            { D3DDECLUSAGE_TEXCOORD, 3, 16 },
-            { D3DDECLUSAGE_COLOR, 0, 17 },
-            { D3DDECLUSAGE_BLENDINDICES, 0, 18 },
-            { D3DDECLUSAGE_BLENDWEIGHT, 0, 19 },
-        };
-
-        vertexElement = vertexElements;
-        while (vertexElement->stream != 0xFF && vertexElement->type != D3DDECLTYPE_UNUSED)
-        {
-            uint32_t resolvedLocation = ~0;
-            for (auto& location : locations)
-            {
-                if (location.usage == vertexElement->usage && location.usageIndex == vertexElement->usageIndex)
-                {
-                    resolvedLocation = location.location;
-                    break;
-                }
-            }
-
-            if (resolvedLocation == ~0)
-            {
-                // Bound but not used by any guest shaders.
-                ++vertexElement;
-                continue;
-            }
-
-            auto& inputElement = inputElements.emplace_back();
-            inputElement.semanticName = ConvertDeclUsage(vertexElement->usage);
-            inputElement.semanticIndex = vertexElement->usageIndex;
-            inputElement.location = resolvedLocation;
-            inputElement.format = ConvertDeclType(vertexElement->type);
-            inputElement.slotIndex = vertexElement->stream;
-            inputElement.alignedByteOffset = vertexElement->offset;
-
-            switch (vertexElement->usage)
-            {
-            case D3DDECLUSAGE_NORMAL:
-                switch (vertexElement->type)
-                {
-                case D3DDECLTYPE_SHORT2:
-                case D3DDECLTYPE_SHORT4:
-                case D3DDECLTYPE_SHORT2N:
-                case D3DDECLTYPE_SHORT4N:
-                case D3DDECLTYPE_USHORT2N:
-                case D3DDECLTYPE_USHORT4N:
-                case D3DDECLTYPE_FLOAT16_2:
-                case D3DDECLTYPE_FLOAT16_4:
-                    vertexDeclaration->swappedNormals |= 1 << vertexElement->usageIndex;
-                    break;
-                }
-
-                break;
-            case D3DDECLUSAGE_BINORMAL:
-                switch (vertexElement->type)
-                {
-                case D3DDECLTYPE_SHORT2:
-                case D3DDECLTYPE_SHORT4:
-                case D3DDECLTYPE_SHORT2N:
-                case D3DDECLTYPE_SHORT4N:
-                case D3DDECLTYPE_USHORT2N:
-                case D3DDECLTYPE_USHORT4N:
-                case D3DDECLTYPE_FLOAT16_2:
-                case D3DDECLTYPE_FLOAT16_4:
-                    vertexDeclaration->swappedBinormals |= 1 << vertexElement->usageIndex;
-                    break;
-                }
-
-                break;
-            case D3DDECLUSAGE_TANGENT:
-                switch (vertexElement->type)
-                {
-                case D3DDECLTYPE_SHORT2:
-                case D3DDECLTYPE_SHORT4:
-                case D3DDECLTYPE_SHORT2N:
-                case D3DDECLTYPE_SHORT4N:
-                case D3DDECLTYPE_USHORT2N:
-                case D3DDECLTYPE_USHORT4N:
-                case D3DDECLTYPE_FLOAT16_2:
-                case D3DDECLTYPE_FLOAT16_4:
-                    vertexDeclaration->swappedTangents |= 1 << vertexElement->usageIndex;
-                    break;
-                }
-
-                break;
-            case D3DDECLUSAGE_BLENDWEIGHT:
-                switch (vertexElement->type)
-                {
-                case D3DDECLTYPE_SHORT2:
-                case D3DDECLTYPE_SHORT4:
-                case D3DDECLTYPE_SHORT2N:
-                case D3DDECLTYPE_SHORT4N:
-                case D3DDECLTYPE_USHORT2N:
-                case D3DDECLTYPE_USHORT4N:
-                case D3DDECLTYPE_FLOAT16_2:
-                case D3DDECLTYPE_FLOAT16_4:
-                    vertexDeclaration->swappedBlendWeights |= 1 << vertexElement->usageIndex;
-                    break;
-                }
-
-                break;
-
-            case D3DDECLUSAGE_TEXCOORD:
-                switch (vertexElement->type)
-                {
-                case D3DDECLTYPE_SHORT2:
-                case D3DDECLTYPE_SHORT4:
-                case D3DDECLTYPE_SHORT2N:
-                case D3DDECLTYPE_SHORT4N:
-                case D3DDECLTYPE_USHORT2N:
-                case D3DDECLTYPE_USHORT4N:
-                case D3DDECLTYPE_FLOAT16_2:
-                case D3DDECLTYPE_FLOAT16_4:
-                    vertexDeclaration->swappedTexcoords |= 1 << vertexElement->usageIndex;
-                    break;
-                }
-
-                break;
-            }
-
-            vertexDeclaration->vertexStreams[vertexElement->stream] = true;
-
-            ++vertexElement;
-        }
-
-        auto addInputElement = [&](uint32_t usage, uint32_t usageIndex)
-            {
-                uint32_t location = ~0;
-
-                for (auto& alsoLocation : locations)
-                {
-                    if (alsoLocation.usage == usage && alsoLocation.usageIndex == usageIndex)
-                    {
-                        location = alsoLocation.location;
-                        break;
-                    }
-                }
-
-                assert(location != ~0);
-
-                for (auto& inputElement : inputElements)
-                {
-                    if (inputElement.location == location)
-                        return;
-                }
-
-                auto format = RenderFormat::R32_FLOAT;
-                switch (usage)
-                {
-                case D3DDECLUSAGE_NORMAL:
-                case D3DDECLUSAGE_TANGENT:
-                case D3DDECLUSAGE_BINORMAL:
-                case D3DDECLUSAGE_BLENDINDICES:
-                    format = RenderFormat::R32G32B32_FLOAT;
-                    break;
-                }
-
-                inputElements.emplace_back(ConvertDeclUsage(usage), usageIndex, location, format, 15, 0);
-            };
-
-        // Assign any unbound usages to null buffer slot.
-        for (auto& location : locations)
-        {
-            addInputElement(location.usage, location.usageIndex);
-        }
-
-        vertexDeclaration->inputElements = std::make_unique<RenderInputElement[]>(inputElements.size());
-        std::copy(inputElements.begin(), inputElements.end(), vertexDeclaration->inputElements.get());
-
-        vertexDeclaration->vertexElements = std::make_unique<GuestVertexElement[]>(vertexElementCount + 1);
-        std::copy(vertexElements, vertexElements + vertexElementCount + 1, vertexDeclaration->vertexElements.get());
-
-        vertexDeclaration->inputElementCount = uint32_t(inputElements.size());
-        vertexDeclaration->vertexElementCount = vertexElementCount + 1;
-    }
-
-    vertexDeclaration->AddRef();
-    return vertexDeclaration;
-}
-
-static GuestVertexDeclaration* CreateVertexDeclaration(GuestVertexElement* vertexElements)
-{
-    auto vertexDeclaration = CreateVertexDeclarationWithoutAddRef(vertexElements);
-    vertexDeclaration->AddRef();
-    return vertexDeclaration;
-}
-
-static void SetVertexDeclaration(GuestDevice* device, GuestVertexDeclaration* vertexDeclaration) 
-{
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetVertexDeclaration;
-    cmd.setVertexDeclaration.vertexDeclaration = vertexDeclaration;
-    g_renderQueue.enqueue(cmd);
-
-    device->vertexDeclaration = g_memory.MapVirtual(vertexDeclaration);
-}
-
-static void ProcSetVertexDeclaration(const RenderCommand& cmd)
-{
-    auto& args = cmd.setVertexDeclaration;
-
     if (args.vertexDeclaration != nullptr)
     {
         SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.swappedTexcoords, args.vertexDeclaration->swappedTexcoords);
@@ -6241,94 +3779,15 @@ static void ProcSetVertexDeclaration(const RenderCommand& cmd)
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.vertexDeclaration, args.vertexDeclaration);
 }
 
-static ShaderCacheEntry* FindShaderCacheEntry(XXH64_hash_t hash)
+static void ProcRenderCommand(const RenderCommands::SetVertexShader& args)
 {
-    auto end = g_shaderCacheEntries + g_shaderCacheEntryCount;
-    auto findResult = std::lower_bound(g_shaderCacheEntries, end, hash, [](ShaderCacheEntry& lhs, XXH64_hash_t rhs)
-        {
-            return lhs.hash < rhs;
-        });
-
-    return findResult != end && findResult->hash == hash ? findResult : nullptr;
-}
-
-static GuestShader* GetOrCreateShader(XXH64_hash_t hash, ResourceType resourceType) {
-    auto findResult = FindShaderCacheEntry(hash);
-    GuestShader* shader = nullptr;
-
-    if (findResult == nullptr)
-    {
-        LOGF_WARNING("Shader not found by hash: {:x}", hash);
-        LOG_WARNING("Perhaps the path to the required shader will be printed before this error");
-        __builtin_trap();
-    }
-    if (findResult != nullptr)
-    {
-        if (findResult->guestShader == nullptr)
-        {
-            shader = g_userHeap.AllocPhysical<GuestShader>(resourceType);
-            shader->shaderCacheEntry = findResult;
-#ifdef ASYNC_PSO_DEBUG
-            shader->name = findResult->filename;
-#endif
-
-            findResult->guestShader = shader;
-        }
-        else
-        {
-            shader = findResult->guestShader;
-        }
-    }
-
-    if (shader == nullptr)
-        shader = g_userHeap.AllocPhysical<GuestShader>(resourceType);
-    else
-        shader->AddRef();
-
-    return shader;
-}
-
-static GuestShader* CreateShader(const be<uint32_t>* function, ResourceType resourceType)
-{
-    XXH64_hash_t hash = XXH3_64bits(function, function[1] + function[2]);
-    return GetOrCreateShader(hash, resourceType);
-}
-
-static GuestShader* CreateVertexShader(const be<uint32_t>* function) 
-{
-    return CreateShader(function, ResourceType::VertexShader);
-}
-
-static void SetVertexShader(GuestDevice* device, GuestShader* shader)
-{
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetVertexShader;
-    cmd.setVertexShader.shader = shader;
-    g_renderQueue.enqueue(cmd);
-}
-
-static void ProcSetVertexShader(const RenderCommand& cmd)
-{
-    GuestShader* shader = cmd.setVertexShader.shader;
+    GuestShader* shader = args.shader;
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.vertexShader, shader);
 }
 
-static void SetStreamSource(GuestDevice* device, uint32_t index, GuestBuffer* buffer, uint32_t offset, uint32_t stride) 
+static void ProcRenderCommand(const RenderCommands::SetStreamSource& args)
 {
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetStreamSource;
-    cmd.setStreamSource.index = index;
-    cmd.setStreamSource.buffer = buffer;
-    cmd.setStreamSource.offset = offset;
-    cmd.setStreamSource.stride = stride;
-    g_renderQueue.enqueue(cmd);
-}
-
-static void ProcSetStreamSource(const RenderCommand& cmd)
-{
-    const auto& args = cmd.setStreamSource;
-
-    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.vertexStrides[args.index], uint8_t(args.buffer != nullptr ? args.stride : 0));
+    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.vertexStrides[args.index], static_cast<uint8_t>(args.buffer != nullptr ? args.stride : 0));
 
     bool dirty = false;
 
@@ -6343,65 +3802,22 @@ static void ProcSetStreamSource(const RenderCommand& cmd)
     }
 }
 
-static void SetIndices(GuestDevice* device, GuestBuffer* buffer) 
+static void ProcRenderCommand(const RenderCommands::SetIndices& args)
 {
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetIndices;
-    cmd.setIndices.buffer = buffer;
-    g_renderQueue.enqueue(cmd);
-}
-
-static void ProcSetIndices(const RenderCommand& cmd)
-{
-    const auto& args = cmd.setIndices;
-
     SetDirtyValue(g_dirtyStates.indices, g_indexBufferView.buffer, args.buffer != nullptr ? args.buffer->buffer->at(0) : RenderBufferReference{});
     SetDirtyValue(g_dirtyStates.indices, g_indexBufferView.format, args.buffer != nullptr ? args.buffer->format : RenderFormat::R16_UINT);
     SetDirtyValue(g_dirtyStates.indices, g_indexBufferView.size, args.buffer != nullptr ? args.buffer->dataSize : 0u);
 }
 
-static GuestShader* CreatePixelShader(const be<uint32_t>* function)
+static void ProcRenderCommand(const RenderCommands::SetPixelShader& args)
 {
-    return CreateShader(function, ResourceType::PixelShader);
-}
-
-static void SetPixelShader(GuestDevice* device, GuestShader* shader)
-{
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetPixelShader;
-    cmd.setPixelShader.shader = shader;
-    g_renderQueue.enqueue(cmd);
-}
-
-static void ProcSetPixelShader(const RenderCommand& cmd)
-{
-    GuestShader* shader = cmd.setPixelShader.shader;
+    GuestShader* shader = args.shader;
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.pixelShader, shader);
 }
 
-static void BeginConditionalSurvey(GuestDevice* device, uint32_t index)
+static void ProcRenderCommand(const RenderCommands::SetConditionalSurvey& args)
 {
-    assert(index < CONDITIONAL_SURVEY_MAX && "Invalid conditional survey index.");
-
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetConditionalSurvey;
-    cmd.setConditionalSurvey.enabled = true;
-    cmd.setConditionalSurvey.index = index;
-    g_renderQueue.enqueue(cmd);
-}
-
-static void EndConditionalSurvey(GuestDevice* device)
-{
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetConditionalSurvey;
-    cmd.setConditionalSurvey.enabled = false;
-    cmd.setConditionalSurvey.index = 0;
-    g_renderQueue.enqueue(cmd);
-}
-
-static void ProcSetConditionalSurvey(const RenderCommand& cmd)
-{
-    if (cmd.setConditionalSurvey.enabled)
+    if (args.enabled)
     {
         // Clear previous survey result first.
         auto uploadBuffer = g_device->createBuffer(RenderBufferDesc::UploadBuffer(sizeof(uint32_t)));
@@ -6410,57 +3826,34 @@ static void ProcSetConditionalSurvey(const RenderCommand& cmd)
 
         auto& commandList = g_commandLists[g_frame];
         commandList->barriers(RenderBarrierStage::COPY, RenderBufferBarrier(g_conditionalSurveyBuffer.get(), RenderBufferAccess::WRITE));
-        commandList->copyBufferRegion(g_conditionalSurveyBuffer->at(cmd.setConditionalSurvey.index * sizeof(uint32_t)), uploadBuffer->at(0), sizeof(uint32_t));
+        commandList->copyBufferRegion(g_conditionalSurveyBuffer->at(args.index * sizeof(uint32_t)), uploadBuffer->at(0), sizeof(uint32_t));
         commandList->barriers(RenderBarrierStage::GRAPHICS, RenderBufferBarrier(g_conditionalSurveyBuffer.get(), RenderBufferAccess::READ | RenderBufferAccess::WRITE));
 
         g_tempBuffers[g_frame].emplace_back(std::move(uploadBuffer));
     }
 
-    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.enableConditionalSurvey, cmd.setConditionalSurvey.enabled);
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.conditionalSurveyIndex, cmd.setConditionalSurvey.index);
+    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.enableConditionalSurvey, args.enabled);
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.conditionalSurveyIndex, args.index);
 }
 
-static void BeginConditionalRendering(GuestDevice* device, uint32_t index)
-{
-    assert(index < CONDITIONAL_SURVEY_MAX && "Invalid conditional rendering index.");
-
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetConditionalRendering;
-    cmd.setConditionalRendering.enabled = true;
-    cmd.setConditionalRendering.index = index;
-    g_renderQueue.enqueue(cmd);
-}
-
-static void EndConditionalRendering(GuestDevice* device)
-{
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::SetConditionalRendering;
-    cmd.setConditionalRendering.enabled = false;
-    cmd.setConditionalRendering.index = 0;
-    g_renderQueue.enqueue(cmd);
-}
-
-static void ProcSetConditionalRendering(const RenderCommand& cmd)
+static void ProcRenderCommand(const RenderCommands::SetConditionalRendering& args)
 {
     uint32_t specConstants = g_pipelineState.specConstants;
-    if (cmd.setConditionalRendering.enabled)
+    if (args.enabled)
         specConstants |= SPEC_CONSTANT_CONDITIONAL_RENDERING;
     else
         specConstants &= ~SPEC_CONSTANT_CONDITIONAL_RENDERING;
 
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.specConstants, specConstants);
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.conditionalRenderingIndex, cmd.setConditionalRendering.index);
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.conditionalRenderingIndex, args.index);
 }
 
-static void SetClipPlane(GuestDevice* device, uint32_t index, const be<float>* plane)
+static void ProcRenderCommand(const RenderCommands::SetClipPlane& args)
 {
-    if (index != 0)
-        return;
-
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[0], plane[0].get());
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[1], plane[1].get());
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[2], plane[2].get());
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[3], plane[3].get());
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[0], args.plane[0]);
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[1], args.plane[1]);
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[2], args.plane[2]);
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[3], args.plane[3]);
 }
 
 static std::thread g_renderThread([]
@@ -6478,1158 +3871,11 @@ static std::thread g_renderThread([]
             size_t count = g_renderQueue.wait_dequeue_bulk(commands, std::size(commands));
 
             for (size_t i = 0; i < count; i++)
-            {
-                auto& cmd = commands[i];
-                switch (cmd.type)
-                {
-                case RenderCommandType::SetRenderState:                    ProcSetRenderState(cmd); break;
-                case RenderCommandType::DestructResource:                  ProcDestructResource(cmd); break;
-                case RenderCommandType::UnlockTextureRect:                 ProcUnlockTextureRect(cmd); break;
-                case RenderCommandType::UnlockBuffer16:                    ProcUnlockBuffer16(cmd); break;
-                case RenderCommandType::UnlockBuffer32:                    ProcUnlockBuffer32(cmd); break;
-                case RenderCommandType::DrawImGui:                         ProcDrawImGui(cmd); break;
-                case RenderCommandType::ExecuteCommandList:                ProcExecuteCommandList(cmd); break;
-                case RenderCommandType::BeginCommandList:                  ProcBeginCommandList(cmd); break;
-                case RenderCommandType::StretchRect:                       ProcStretchRect(cmd); break;
-                case RenderCommandType::SetRenderTarget:                   ProcSetRenderTarget(cmd); break;
-                case RenderCommandType::SetDepthStencilSurface:            ProcSetDepthStencilSurface(cmd); break;
-                case RenderCommandType::ExecutePendingStretchRectCommands: ProcExecutePendingStretchRectCommands(cmd); break;
-                case RenderCommandType::Clear:                             ProcClear(cmd); break;
-                case RenderCommandType::SetViewport:                       ProcSetViewport(cmd); break;
-                case RenderCommandType::SetTexture:                        ProcSetTexture(cmd); break;
-                case RenderCommandType::SetScissorRect:                    ProcSetScissorRect(cmd); break;
-                case RenderCommandType::SetSamplerState:                   ProcSetSamplerState(cmd); break;
-                case RenderCommandType::SetBooleans:                       ProcSetBooleans(cmd); break;
-                case RenderCommandType::SetVertexShaderConstants:          ProcSetVertexShaderConstants(cmd); break;
-                case RenderCommandType::SetPixelShaderConstants:           ProcSetPixelShaderConstants(cmd); break;
-                case RenderCommandType::AddPipeline:                       ProcAddPipeline(cmd); break;
-                case RenderCommandType::DrawPrimitive:                     ProcDrawPrimitive(cmd); break;
-                case RenderCommandType::DrawIndexedPrimitive:              ProcDrawIndexedPrimitive(cmd); break;
-                case RenderCommandType::DrawPrimitiveUP:                   ProcDrawPrimitiveUP(cmd); break;
-                case RenderCommandType::SetVertexDeclaration:              ProcSetVertexDeclaration(cmd); break;
-                case RenderCommandType::SetVertexShader:                   ProcSetVertexShader(cmd); break;
-                case RenderCommandType::SetStreamSource:                   ProcSetStreamSource(cmd); break;
-                case RenderCommandType::SetIndices:                        ProcSetIndices(cmd); break;
-                case RenderCommandType::SetPixelShader:                    ProcSetPixelShader(cmd); break;
-                case RenderCommandType::SetConditionalSurvey:              ProcSetConditionalSurvey(cmd); break;
-                case RenderCommandType::SetConditionalRendering:           ProcSetConditionalRendering(cmd); break;
-                default:                                                   assert(false && "Unrecognized render command type."); break;
-                }
-            }
+                std::visit([](const auto& cmd) { ProcRenderCommand(cmd); }, commands[i]);
         }
     });
 
-struct GuestPictureData
-{
-    be<uint32_t> vtable;
-    uint8_t flags;
-    be<uint32_t> name;
-    be<uint32_t> texture;
-    be<uint32_t> type;
-};
-
-union Bxty {
-    char _Buf[16];
-    xpointer<uint32_t> _Ptr;
-};
-
-struct BEString
-{
-    char alval[1];
-    Bxty bx;
-    be<uint32_t> size;
-    uint32_t res;
-
-    const char* c_str() {
-        uint32_t len = size.get();
-        if (len == 0) {
-            return alval;
-        } else if (len < 16) {
-            return bx._Buf;
-        } else {
-            return reinterpret_cast<const char*>(bx._Ptr.get());
-        }
-    }
-};
-
-struct GuestMyTexture
-{
-    be<uint32_t> vtable; // 0x0
-    be<uint32_t> field0x4; // 0x4
-    be<uint32_t> regIndex; // 0x8
-    BEString str1; // 0xC
-    BEString str2; // 0x28
-    BEString str3; // 0x44
-    be<uint32_t> byte60; // 0x60
-    be<uint32_t> texture; // 0x64
-    be<uint32_t> Surface[6]; // 0x64
-    be<uint32_t> width; // 0x80
-    be<uint32_t> height; // 0x84
-    be<uint32_t> graphicsDevice; // 0x88
-    be<uint32_t> guestDevice; // 0x8C
-};
-
-static RenderTextureDimension ConvertTextureDimension(ddspp::TextureType type)
-{
-    switch (type) 
-    {
-    case ddspp::Texture1D:
-        return RenderTextureDimension::TEXTURE_1D;
-    case ddspp::Texture2D:
-    case ddspp::Cubemap:
-        return RenderTextureDimension::TEXTURE_2D;
-    case ddspp::Texture3D:
-        return RenderTextureDimension::TEXTURE_3D;
-    default:
-        assert(false && "Unknown texture type from DDS.");
-        return RenderTextureDimension::UNKNOWN;
-    }
-}
-
-static RenderTextureViewDimension ConvertTextureViewDimension(ddspp::TextureType type)
-{
-    switch (type)
-    {
-    case ddspp::Texture1D:
-        return RenderTextureViewDimension::TEXTURE_1D;
-    case ddspp::Texture2D:
-        return RenderTextureViewDimension::TEXTURE_2D;
-    case ddspp::Texture3D:
-        return RenderTextureViewDimension::TEXTURE_3D;
-    case ddspp::Cubemap:
-        return RenderTextureViewDimension::TEXTURE_CUBE;
-    default:
-        assert(false && "Unknown texture type from DDS.");
-        return RenderTextureViewDimension::UNKNOWN;
-    }
-}
-
-static RenderFormat ConvertDXGIFormat(ddspp::DXGIFormat format) 
-{
-    switch (format)
-    {
-    case ddspp::R32G32B32A32_TYPELESS:
-        return RenderFormat::R32G32B32A32_TYPELESS;
-    case ddspp::R32G32B32A32_FLOAT:
-        return RenderFormat::R32G32B32A32_FLOAT;
-    case ddspp::R32G32B32A32_UINT:
-        return RenderFormat::R32G32B32A32_UINT;
-    case ddspp::R32G32B32A32_SINT:
-        return RenderFormat::R32G32B32A32_SINT;
-    case ddspp::R32G32B32_TYPELESS:
-        return RenderFormat::R32G32B32_TYPELESS;
-    case ddspp::R32G32B32_FLOAT:
-        return RenderFormat::R32G32B32_FLOAT;
-    case ddspp::R32G32B32_UINT:
-        return RenderFormat::R32G32B32_UINT;
-    case ddspp::R32G32B32_SINT:
-        return RenderFormat::R32G32B32_SINT;
-    case ddspp::R16G16B16A16_TYPELESS:
-        return RenderFormat::R16G16B16A16_TYPELESS;
-    case ddspp::R16G16B16A16_FLOAT:
-        return RenderFormat::R16G16B16A16_FLOAT;
-    case ddspp::R16G16B16A16_UNORM:
-        return RenderFormat::R16G16B16A16_UNORM;
-    case ddspp::R16G16B16A16_UINT:
-        return RenderFormat::R16G16B16A16_UINT;
-    case ddspp::R16G16B16A16_SNORM:
-        return RenderFormat::R16G16B16A16_SNORM;
-    case ddspp::R16G16B16A16_SINT:
-        return RenderFormat::R16G16B16A16_SINT;
-    case ddspp::R32G32_TYPELESS:
-        return RenderFormat::R32G32_TYPELESS;
-    case ddspp::R32G32_FLOAT:
-        return RenderFormat::R32G32_FLOAT;
-    case ddspp::R32G32_UINT:
-        return RenderFormat::R32G32_UINT;
-    case ddspp::R32G32_SINT:
-        return RenderFormat::R32G32_SINT;
-    case ddspp::R8G8B8A8_TYPELESS:
-        return RenderFormat::R8G8B8A8_TYPELESS;
-    case ddspp::R8G8B8A8_UNORM:
-        return RenderFormat::R8G8B8A8_UNORM;
-    case ddspp::R8G8B8A8_UINT:
-        return RenderFormat::R8G8B8A8_UINT;
-    case ddspp::R8G8B8A8_SNORM:
-        return RenderFormat::R8G8B8A8_SNORM;
-    case ddspp::R8G8B8A8_SINT:
-        return RenderFormat::R8G8B8A8_SINT;
-    case ddspp::B8G8R8A8_UNORM:
-        return RenderFormat::B8G8R8A8_UNORM;
-    case ddspp::B8G8R8X8_UNORM:
-        return RenderFormat::B8G8R8A8_UNORM;   
-    case ddspp::R16G16_TYPELESS:
-        return RenderFormat::R16G16_TYPELESS;
-    case ddspp::R16G16_FLOAT:
-        return RenderFormat::R16G16_FLOAT;
-    case ddspp::R16G16_UNORM:
-        return RenderFormat::R16G16_UNORM;
-    case ddspp::R16G16_UINT:
-        return RenderFormat::R16G16_UINT;
-    case ddspp::R16G16_SNORM:
-        return RenderFormat::R16G16_SNORM;
-    case ddspp::R16G16_SINT:
-        return RenderFormat::R16G16_SINT;
-    case ddspp::R32_TYPELESS:
-        return RenderFormat::R32_TYPELESS;
-    case ddspp::D32_FLOAT:
-        return RenderFormat::D32_FLOAT;
-    case ddspp::R32_FLOAT:
-        return RenderFormat::R32_FLOAT;
-    case ddspp::R32_UINT:
-        return RenderFormat::R32_UINT;
-    case ddspp::R32_SINT:
-        return RenderFormat::R32_SINT;
-    case ddspp::R8G8_TYPELESS:
-        return RenderFormat::R8G8_TYPELESS;
-    case ddspp::R8G8_UNORM:
-        return RenderFormat::R8G8_UNORM;
-    case ddspp::R8G8_UINT:
-        return RenderFormat::R8G8_UINT;
-    case ddspp::R8G8_SNORM:
-        return RenderFormat::R8G8_SNORM;
-    case ddspp::R8G8_SINT:
-        return RenderFormat::R8G8_SINT;
-    case ddspp::R16_TYPELESS:
-        return RenderFormat::R16_TYPELESS;
-    case ddspp::R16_FLOAT:
-        return RenderFormat::R16_FLOAT;
-    case ddspp::D16_UNORM:
-        return RenderFormat::D16_UNORM;
-    case ddspp::R16_UNORM:
-        return RenderFormat::R16_UNORM;
-    case ddspp::R16_UINT:
-        return RenderFormat::R16_UINT;
-    case ddspp::R16_SNORM:
-        return RenderFormat::R16_SNORM;
-    case ddspp::R16_SINT:
-        return RenderFormat::R16_SINT;
-    case ddspp::R8_TYPELESS:
-        return RenderFormat::R8_TYPELESS;
-    case ddspp::R8_UNORM:
-    case ddspp::A8_UNORM:
-        return RenderFormat::R8_UNORM;
-    case ddspp::R8_UINT:
-        return RenderFormat::R8_UINT;
-    case ddspp::R8_SNORM:
-        return RenderFormat::R8_SNORM;
-    case ddspp::R8_SINT:
-        return RenderFormat::R8_SINT;
-    case ddspp::BC1_TYPELESS:
-        return RenderFormat::BC1_TYPELESS;
-    case ddspp::BC1_UNORM:
-        return RenderFormat::BC1_UNORM;
-    case ddspp::BC1_UNORM_SRGB:
-        return RenderFormat::BC1_UNORM_SRGB;
-    case ddspp::BC2_TYPELESS:
-        return RenderFormat::BC2_TYPELESS;
-    case ddspp::BC2_UNORM:
-        return RenderFormat::BC2_UNORM;
-    case ddspp::BC2_UNORM_SRGB:
-        return RenderFormat::BC2_UNORM_SRGB;
-    case ddspp::BC3_TYPELESS:
-        return RenderFormat::BC3_TYPELESS;
-    case ddspp::BC3_UNORM:
-        return RenderFormat::BC3_UNORM;
-    case ddspp::BC3_UNORM_SRGB:
-        return RenderFormat::BC3_UNORM_SRGB;
-    case ddspp::BC4_TYPELESS:
-        return RenderFormat::BC4_TYPELESS;
-    case ddspp::BC4_UNORM:
-        return RenderFormat::BC4_UNORM;
-    case ddspp::BC4_SNORM:
-        return RenderFormat::BC4_SNORM;
-    case ddspp::BC5_TYPELESS:
-        return RenderFormat::BC5_TYPELESS;
-    case ddspp::BC5_UNORM:
-        return RenderFormat::BC5_UNORM;
-    case ddspp::BC5_SNORM:
-        return RenderFormat::BC5_SNORM;
-    case ddspp::BC6H_TYPELESS:
-        return RenderFormat::BC6H_TYPELESS;
-    case ddspp::BC6H_UF16:
-        return RenderFormat::BC6H_UF16;
-    case ddspp::BC6H_SF16:
-        return RenderFormat::BC6H_SF16;
-    case ddspp::BC7_TYPELESS:
-        return RenderFormat::BC7_TYPELESS;
-    case ddspp::BC7_UNORM:
-        return RenderFormat::BC7_UNORM;
-    case ddspp::BC7_UNORM_SRGB:
-        return RenderFormat::BC7_UNORM_SRGB;
-    default:
-        printf("format: %x\n", format);
-        assert(false && "Unsupported format from DDS.");
-        return RenderFormat::UNKNOWN;
-    }
-}
-
-static bool LoadTexture(GuestTexture& texture, const uint8_t* data, size_t dataSize, RenderComponentMapping componentMapping)
-{
-    ddspp::Descriptor ddsDesc;
-    if (ddspp::decode_header((unsigned char *)(data), ddsDesc) != ddspp::Error)
-    {
-        RenderTextureDesc desc;
-        desc.dimension = ConvertTextureDimension(ddsDesc.type);
-        desc.width = ddsDesc.width;
-        desc.height = ddsDesc.height;
-        desc.depth = ddsDesc.depth;
-        desc.mipLevels = ddsDesc.numMips;
-        desc.arraySize = ddsDesc.type == ddspp::TextureType::Cubemap ? ddsDesc.arraySize * 6 : ddsDesc.arraySize;
-        desc.format = ConvertDXGIFormat(ddsDesc.format);
-        desc.flags = ddsDesc.type == ddspp::TextureType::Cubemap ? RenderTextureFlag::CUBE : RenderTextureFlag::NONE;
-
-        texture.textureHolder = g_device->createTexture(desc);
-        texture.texture = texture.textureHolder.get();
-        texture.layout = RenderTextureLayout::COPY_DEST;
-
-        RenderTextureViewDesc viewDesc;
-        viewDesc.format = desc.format;
-        viewDesc.dimension = ConvertTextureViewDimension(ddsDesc.type);
-        viewDesc.mipLevels = ddsDesc.numMips;
-
-        if (ddsDesc.format == ddspp::A8_UNORM)
-        {
-            // Map A8_UNORM to R8_UNORM for compatability
-            componentMapping = RenderComponentMapping(RenderSwizzle::ZERO, RenderSwizzle::ZERO, RenderSwizzle::ZERO, RenderSwizzle::R);
-        }
-
-        viewDesc.componentMapping = componentMapping;
-        texture.textureView = texture.texture->createTextureView(viewDesc);
-        texture.descriptorIndex = g_textureDescriptorAllocator.allocate();
-        g_textureDescriptorSet->setTexture(texture.descriptorIndex, texture.texture, RenderTextureLayout::SHADER_READ, texture.textureView.get());
-
-        texture.width = ddsDesc.width;
-        texture.height = ddsDesc.height;
-        texture.mipLevels = viewDesc.mipLevels;
-        texture.viewDimension = viewDesc.dimension;
-
-        struct Slice
-        {
-            uint32_t width;
-            uint32_t height;
-            uint32_t depth;
-            uint32_t srcOffset;
-            uint32_t dstOffset;
-            uint32_t srcRowPitch;
-            uint32_t dstRowPitch;
-            uint32_t rowCount;
-        };
-
-        std::vector<Slice> slices;
-        uint32_t curSrcOffset = 0;
-        uint32_t curDstOffset = 0;
-
-        for (uint32_t arraySlice = 0; arraySlice < desc.arraySize; arraySlice++)
-        {
-            for (uint32_t mipSlice = 0; mipSlice < ddsDesc.numMips; mipSlice++)
-            {
-                auto& slice = slices.emplace_back();
-
-                slice.width = std::max(1u, ddsDesc.width >> mipSlice);
-                slice.height = std::max(1u, ddsDesc.height >> mipSlice);
-                slice.depth = std::max(1u, ddsDesc.depth >> mipSlice);
-                slice.srcOffset = curSrcOffset;
-                slice.dstOffset = curDstOffset;
-                uint32_t rowPitch = ((slice.width + ddsDesc.blockWidth - 1) / ddsDesc.blockWidth) * ddsDesc.bitsPerPixelOrBlock;
-                slice.srcRowPitch = (rowPitch + 7) / 8;
-                slice.dstRowPitch = (slice.srcRowPitch + PITCH_ALIGNMENT - 1) & ~(PITCH_ALIGNMENT - 1);
-                slice.rowCount = (slice.height + ddsDesc.blockHeight - 1) / ddsDesc.blockHeight;
-
-                curSrcOffset += slice.srcRowPitch * slice.rowCount * slice.depth;
-                curDstOffset += (slice.dstRowPitch * slice.rowCount * slice.depth + PLACEMENT_ALIGNMENT - 1) & ~(PLACEMENT_ALIGNMENT - 1);
-            }
-        }
-
-        auto uploadBuffer = g_device->createBuffer(RenderBufferDesc::UploadBuffer(curDstOffset));
-        uint8_t* mappedMemory = reinterpret_cast<uint8_t*>(uploadBuffer->map());
-
-        for (auto& slice : slices)
-        {
-            const uint8_t* srcData = data + ddsDesc.headerSize + slice.srcOffset;
-            uint8_t* dstData = mappedMemory + slice.dstOffset;
-
-            if (slice.srcRowPitch == slice.dstRowPitch)
-            {
-                memcpy(dstData, srcData, slice.srcRowPitch * slice.rowCount * slice.depth);
-            }
-            else
-            {
-                for (size_t i = 0; i < slice.rowCount * slice.depth; i++)
-                {
-                    memcpy(dstData, srcData, slice.srcRowPitch);
-                    srcData += slice.srcRowPitch;
-                    dstData += slice.dstRowPitch;
-                }
-            }
-        }
-
-        uploadBuffer->unmap();
-
-        ExecuteCopyCommandList([&]
-            {
-                g_copyCommandList->barriers(RenderBarrierStage::COPY, RenderTextureBarrier(texture.texture, RenderTextureLayout::COPY_DEST));
-
-                for (size_t i = 0; i < slices.size(); i++)
-                {
-                    auto& slice = slices[i];
-
-                    g_copyCommandList->copyTextureRegion(
-                        RenderTextureCopyLocation::Subresource(texture.texture, i % desc.mipLevels, i / desc.mipLevels),
-                        RenderTextureCopyLocation::PlacedFootprint(uploadBuffer.get(), desc.format, slice.width, slice.height, slice.depth, (slice.dstRowPitch * 8) / ddsDesc.bitsPerPixelOrBlock * ddsDesc.blockWidth, slice.dstOffset));
-                }
-            });
-
-        return true;
-    }
-    else
-    {
-        int width, height;
-        void* stbImage = stbi_load_from_memory(data, dataSize, &width, &height, nullptr, 4);
-
-        if (stbImage != nullptr)
-        {
-            texture.textureHolder = g_device->createTexture(RenderTextureDesc::Texture2D(width, height, 1, RenderFormat::R8G8B8A8_UNORM));
-            texture.texture = texture.textureHolder.get();
-            texture.viewDimension = RenderTextureViewDimension::TEXTURE_2D;
-            texture.layout = RenderTextureLayout::COPY_DEST;
-
-            texture.descriptorIndex = g_textureDescriptorAllocator.allocate();
-            g_textureDescriptorSet->setTexture(texture.descriptorIndex, texture.texture, RenderTextureLayout::SHADER_READ);
-
-            uint32_t rowPitch = (width * 4 + PITCH_ALIGNMENT - 1) & ~(PITCH_ALIGNMENT - 1);
-            uint32_t slicePitch = rowPitch * height;
-
-            auto uploadBuffer = g_device->createBuffer(RenderBufferDesc::UploadBuffer(slicePitch));
-            uint8_t* mappedMemory = reinterpret_cast<uint8_t*>(uploadBuffer->map());
-
-            if (rowPitch == (width * 4))
-            {
-                memcpy(mappedMemory, stbImage, slicePitch);
-            }
-            else
-            {
-                auto data = reinterpret_cast<const uint8_t*>(stbImage);
-
-                for (size_t i = 0; i < height; i++)
-                {
-                    memcpy(mappedMemory, data, width * 4);
-                    data += width * 4;
-                    mappedMemory += rowPitch;
-                }
-            }
-
-            uploadBuffer->unmap();
-
-            stbi_image_free(stbImage);
-
-            ExecuteCopyCommandList([&]
-                {
-                    g_copyCommandList->barriers(RenderBarrierStage::COPY, RenderTextureBarrier(texture.texture, RenderTextureLayout::COPY_DEST));
-
-                    g_copyCommandList->copyTextureRegion(
-                        RenderTextureCopyLocation::Subresource(texture.texture, 0),
-                        RenderTextureCopyLocation::PlacedFootprint(uploadBuffer.get(), RenderFormat::R8G8B8A8_UNORM, width, height, 1, rowPitch / 4, 0));
-                });
-
-            return true;
-        }
-    }
-
-    return false;
-}
-
-std::unique_ptr<GuestTexture> LoadTexture(const uint8_t* data, size_t dataSize, RenderComponentMapping componentMapping)
-{
-    GuestTexture texture(ResourceType::Texture);
-
-    if (LoadTexture(texture, data, dataSize, componentMapping))
-        return std::make_unique<GuestTexture>(std::move(texture));
-
-    return nullptr;
-}
-
-static void DiffPatchTexture(GuestTexture& texture, uint8_t* data, uint32_t dataSize)
-{
-    auto header = reinterpret_cast<BlockCompressionDiffPatchHeader*>(g_buttonBcDiff.get());
-    auto entries = reinterpret_cast<BlockCompressionDiffPatchEntry*>(g_buttonBcDiff.get() + header->entriesOffset);
-    auto end = entries + header->entryCount;
-    
-    auto hash = XXH3_64bits(data, dataSize);
-
-    auto findResult = std::lower_bound(entries, end, hash, [](BlockCompressionDiffPatchEntry& lhs, XXH64_hash_t rhs)
-    {
-        return lhs.hash < rhs;
-    });
-
-    if (findResult != end && findResult->hash == hash)
-    {
-        auto patch = reinterpret_cast<BlockCompressionDiffPatch*>(g_buttonBcDiff.get() + findResult->patchesOffset);
-
-        for (size_t i = 0; i < findResult->patchCount; i++)
-        {
-            assert(patch->destinationOffset + patch->patchBytesSize <= dataSize);
-            memcpy(data + patch->destinationOffset, g_buttonBcDiff.get() + patch->patchBytesOffset, patch->patchBytesSize);
-            ++patch;
-        }
-
-        GuestTexture patchedTexture(ResourceType::Texture);
-
-        if (LoadTexture(patchedTexture, data, dataSize, {}))
-            texture.patchedTexture = std::make_unique<GuestTexture>(std::move(patchedTexture));
-    }
-}
-
-static void MakePictureData(GuestMyTexture* pictureData, uint8_t* data, uint32_t dataSize)
-{
-    if (data != nullptr)
-    {
-        GuestTexture texture(ResourceType::Texture);
-
-        if (LoadTexture(texture, data, dataSize, {}))
-        {
-#ifdef _DEBUG
-            if (pictureData->str1.size.get() > 0)
-                texture.texture->setName(fmt::format("Texture {}", pictureData->str1.c_str()));
-#endif
-            DiffPatchTexture(texture, data, dataSize);
-
-            pictureData->texture = g_memory.MapVirtual(g_userHeap.AllocPhysical<GuestTexture>(std::move(texture)));
-            pictureData->width = texture.width;
-            pictureData->height = texture.height;
-        }
-    }
-}
-
-void IndexBufferLengthMidAsmHook(PPCRegister& r3)
-{
-    r3.u64 *= 2;
-}
-
-void SetShadowResolutionMidAsmHook(PPCRegister& r11)
-{
-    auto res = (int32_t)Config::ShadowResolution.Value;
-
-    if (res > 0)
-        r11.u64 = res;
-}
-
-static void SetResolution(be<uint32_t>* device)
-{
-    Video::ComputeViewportDimensions();
-
-    uint32_t width = uint32_t(round(Video::s_viewportWidth * Config::ResolutionScale));
-    uint32_t height = uint32_t(round(Video::s_viewportHeight * Config::ResolutionScale));
-    device[46] = width == 0 ? 880 : width;
-    device[47] = height == 0 ? 720 : height;
-}
-
-static GuestShader* g_movieVertexShader;
-static GuestShader* g_moviePixelShaderHD;
-static GuestShader* g_moviePixelShaderSD;
-
-static int ScreenShaderInit(be<uint32_t>* a1)
-{
-    if (g_movieVertexShader == nullptr)
-    {
-        g_movieVertexShader = g_userHeap.AllocPhysical<GuestShader>(ResourceType::VertexShader);
-    }
-
-    if (g_moviePixelShaderHD == nullptr)
-    {
-        g_moviePixelShaderHD = g_userHeap.AllocPhysical<GuestShader>(ResourceType::PixelShader);
-    }
-
-    if (g_moviePixelShaderSD == nullptr)
-    {
-        g_moviePixelShaderSD = g_userHeap.AllocPhysical<GuestShader>(ResourceType::PixelShader);
-    }
-
-    g_moviePixelShaderHD->AddRef();
-    g_moviePixelShaderSD->AddRef();
-    g_movieVertexShader->AddRef();
-
-    a1[0x12] = g_memory.MapVirtual(g_movieVertexShader);
-    a1[0x51] = g_memory.MapVirtual(g_moviePixelShaderHD);
-    a1[0x52] = g_memory.MapVirtual(g_moviePixelShaderSD);
-
-    return 0;
-}
-
-// Needed for correct clearing of index buffer
-static bool IsSet() {
-    return true;
-}
-
-void MovieRendererMidAsmHook(PPCRegister& r3)
-{
-    auto device = reinterpret_cast<GuestDevice*>(g_memory.Translate(r3.u32));
-
-    // Force linear filtering & clamp addressing
-    for (size_t i = 0; i < 3; i++)
-    {
-        device->samplerStates[i].data[0] = (device->samplerStates[i].data[0].get() & ~0x7fc00) | 0x24800;
-        device->samplerStates[i].data[3] = (device->samplerStates[i].data[3].get() & ~0x1f80000) | 0x1280000;
-    }
-
-    device->dirtyFlags[3] = device->dirtyFlags[3].get() | 0xe0000000ull;
-}
-
-// This is passed to pipeline compilation threads to keep the loading screen busy until
-// all of them are finished. A shared pointer makes sure the destructor is called only once.
-struct PipelineTaskToken
-{
-    PipelineTaskType type{};
-
-    PipelineTaskToken()
-    {
-    }
-
-    PipelineTaskToken(const PipelineTaskToken&) = delete;
-
-    PipelineTaskToken(PipelineTaskToken&& other)
-        : type(std::exchange(other.type, PipelineTaskType::Null))
-    {
-    }
-
-    ~PipelineTaskToken()
-    {
-        if (type != PipelineTaskType::Null)
-        {
-            if ((--g_compilingPipelineTaskCount) == 0)
-                g_compilingPipelineTaskCount.notify_one();
-        }
-    }
-};
-
-struct PipelineStateQueueItem
-{
-    XXH64_hash_t pipelineHash;
-    PipelineState pipelineState;
-    std::shared_ptr<PipelineTaskToken> token;
-#ifdef ASYNC_PSO_DEBUG
-    std::string pipelineName;
-#endif
-};
-
-static moodycamel::BlockingConcurrentQueue<PipelineStateQueueItem> g_pipelineStateQueue;
-
-static void CompilePipeline(XXH64_hash_t pipelineHash, const PipelineState& pipelineState
-#ifdef ASYNC_PSO_DEBUG
-    , const std::string& pipelineName
-#endif
-)
-{
-    auto pipeline = CreateGraphicsPipeline(pipelineState);
-#ifdef ASYNC_PSO_DEBUG
-    pipeline->setName(pipelineName);
-#endif
-
-    // Will get dropped in render thread if a different thread already managed to compile this.
-    RenderCommand cmd;
-    cmd.type = RenderCommandType::AddPipeline;
-    cmd.addPipeline.hash = pipelineHash;
-    cmd.addPipeline.pipeline = pipeline.release();
-    g_renderQueue.enqueue(cmd);
-}
-
-static void PipelineCompilerThread()
-{
-    os::thread::SetCurrentThreadName("Pipeline Compiler Thread");
-
-#ifdef _WIN32
-    int threadPriority = THREAD_PRIORITY_LOWEST;
-    SetThreadPriority(GetCurrentThread(), threadPriority);
-#endif
-
-    std::unique_ptr<GuestThreadContext> ctx;
-
-    while (true)
-    {
-        PipelineStateQueueItem queueItem;
-        g_pipelineStateQueue.wait_dequeue(queueItem);
-
-        if (ctx == nullptr)
-            ctx = std::make_unique<GuestThreadContext>(0);
-
-#ifdef _WIN32
-        int newThreadPriority = threadPriority;
-
-        if (App::s_isLoading)
-            newThreadPriority = THREAD_PRIORITY_HIGHEST;
-        else
-            newThreadPriority = THREAD_PRIORITY_LOWEST;
-
-        if (newThreadPriority != threadPriority)
-        {
-            SetThreadPriority(GetCurrentThread(), newThreadPriority);
-            threadPriority = newThreadPriority;
-        }
-#endif
-
-        CompilePipeline(queueItem.pipelineHash, queueItem.pipelineState
-#ifdef ASYNC_PSO_DEBUG
-            , queueItem.pipelineName.c_str()
-#endif
-        );
-
-        std::this_thread::yield();
-    }
-}
-
-static std::vector<std::unique_ptr<std::thread>> g_pipelineCompilerThreads = []()
-    {
-        size_t threadCount = std::max(2u, (std::thread::hardware_concurrency() * 2) / 3);
-
-        std::vector<std::unique_ptr<std::thread>> threads(threadCount);
-        for (auto& thread : threads)
-            thread = std::make_unique<std::thread>(PipelineCompilerThread);
-
-        return threads;
-    }();
-
-static constexpr uint32_t MODEL_DATA_VFTABLE = 0x82073A44;
-static constexpr uint32_t TERRAIN_MODEL_DATA_VFTABLE = 0x8211D25C;
-static constexpr uint32_t PARTICLE_MATERIAL_VFTABLE = 0x8211F198;
-
-// Allocate the shared pointer only when new compilations are happening.
-// If nothing was compiled, the local "token" variable will get destructed with RAII instead.
-struct PipelineTaskTokenPair
-{
-    PipelineTaskToken token;
-    std::shared_ptr<PipelineTaskToken> sharedToken;
-};
-
-// Having this separate, because I don't want to lock a mutex in the render thread before
-// every single draw. Might be worth profiling to see if it actually has an impact and merge them.
-static xxHashMap<PipelineState> g_asyncPipelineStates;
-
-static void EnqueueGraphicsPipelineCompilation(
-    const PipelineState& pipelineState,
-    PipelineTaskTokenPair& tokenPair,
-    const char* name,
-    bool isPrecompiledPipeline = false)
-{
-    XXH64_hash_t hash = GetPipelineStateHash(pipelineState);
-    bool shouldCompile = g_asyncPipelineStates.emplace(hash, pipelineState).second;
-
-    if (shouldCompile)
-    {
-        if (!App::s_isLoading && isPrecompiledPipeline)
-        {
-            // We can just compile here during the logos.
-            CompilePipeline(hash, pipelineState
-#ifdef ASYNC_PSO_DEBUG
-                , fmt::format("CACHE {} {:X}", name, hash)
-#endif
-            );
-        }
-        else
-        {
-            if (tokenPair.sharedToken == nullptr && tokenPair.token.type != PipelineTaskType::Null)
-                tokenPair.sharedToken = std::make_shared<PipelineTaskToken>(std::move(tokenPair.token));
-
-            PipelineStateQueueItem queueItem;
-            queueItem.pipelineHash = hash;
-            queueItem.pipelineState = pipelineState;
-            queueItem.token = tokenPair.sharedToken;
-#ifdef ASYNC_PSO_DEBUG
-            queueItem.pipelineName = fmt::format("ASYNC {} {:X}", name, hash);
-#endif
-            g_pipelineStateQueue.enqueue(queueItem);
-        }
-    }
-
-#ifdef PSO_CACHING_CLEANUP
-    if (shouldCompile && isPrecompiledPipeline)
-    {
-        std::lock_guard lock(g_pipelineCacheMutex);
-        g_pipelineStatesToCache.emplace(hash, pipelineState);
-    }
-#endif
-
-#ifdef PSO_CACHING
-    if (!isPrecompiledPipeline)
-    {
-        std::lock_guard lock(g_pipelineCacheMutex);
-        g_pipelineStatesToCache.erase(hash);
-    }
-#endif
-}
-
-template<typename T>
-static bool CheckMadeAll(const T& modelData)
-{
-    if (!modelData.IsMadeOne())
-        return false;
-
-    for (auto& meshGroup : modelData.m_NodeGroupModels)
-    {
-        for (auto& mesh : meshGroup->m_OpaqueMeshes)
-        {
-            if (!CheckMadeAll(mesh.get()))
-                return false;
-        }     
-
-        for (auto& mesh : meshGroup->m_TransparentMeshes)
-        {
-            if (!CheckMadeAll(mesh.get()))
-                return false;
-        }    
-
-        for (auto& mesh : meshGroup->m_PunchThroughMeshes)
-        {
-            if (!CheckMadeAll(mesh.get()))
-                return false;
-        }
-
-        for (auto& specialMeshGroup : meshGroup->m_SpecialMeshGroups)
-        {
-            for (auto& mesh : specialMeshGroup)
-            {
-                if (!CheckMadeAll(mesh.get()))
-                    return false;
-            }
-        }
-    }
-
-    for (auto& mesh : modelData.m_OpaqueMeshes)
-    {
-        if (!CheckMadeAll(mesh.get()))
-            return false;
-    }
-
-    for (auto& mesh : modelData.m_TransparentMeshes)
-    {
-        if (!CheckMadeAll(mesh.get()))
-            return false;
-    }
-
-    for (auto& mesh : modelData.m_PunchThroughMeshes)
-    {
-        if (!CheckMadeAll(mesh.get()))
-            return false;
-    }
-
-    return true;
-}
-
-static void PipelineTaskConsumerThread()
-{
-    os::thread::SetCurrentThreadName("Pipeline Task Consumer Thread");
-
-#ifdef _WIN32
-    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_IDLE);
-#endif
-
-    std::vector<PipelineTask> localPipelineTaskQueue;
-    std::unique_ptr<GuestThreadContext> ctx;
-
-    while (true)
-    {
-        // Wait for tasks to arrive.
-        uint32_t pendingPipelineTaskCount;
-        while ((pendingPipelineTaskCount = g_pendingPipelineTaskCount.load()) == 0)
-            g_pendingPipelineTaskCount.wait(pendingPipelineTaskCount);
-
-        if (ctx == nullptr)
-            ctx = std::make_unique<GuestThreadContext>(0);
-
-        {
-            std::lock_guard lock(g_pipelineTaskMutex);
-            localPipelineTaskQueue.insert(localPipelineTaskQueue.end(), g_pipelineTaskQueue.begin(), g_pipelineTaskQueue.end());
-            g_pipelineTaskQueue.clear();
-        }
-
-        bool allHandled = true;
-
-        for (auto& [type] : localPipelineTaskQueue)
-        {
-            switch (type)
-            {
-            case PipelineTaskType::PrecompilePipelines:
-            {
-                // Deliberately leaving the type null to account for the enqueue
-                // call not incrementing the compiling pipeline task counter.
-                PipelineTaskTokenPair tokenPair;
-
-                for (auto vertexElements : g_vertexDeclarationCache)
-                    CreateVertexDeclarationWithoutAddRef(reinterpret_cast<GuestVertexElement*>(vertexElements));
-
-                for (auto pipelineState : g_pipelineStateCache)
-                {
-                    // The hashes were reinterpret casted to pointers in the cache.
-                    pipelineState.vertexShader = GetOrCreateShader(reinterpret_cast<XXH64_hash_t>(pipelineState.vertexShader), ResourceType::VertexShader);
-
-                    if (pipelineState.pixelShader != nullptr)
-                        pipelineState.pixelShader = GetOrCreateShader(reinterpret_cast<XXH64_hash_t>(pipelineState.pixelShader), ResourceType::PixelShader);
-
-                    {
-                        std::lock_guard lock(g_vertexDeclarationMutex);
-                        pipelineState.vertexDeclaration = g_vertexDeclarations[reinterpret_cast<XXH64_hash_t>(pipelineState.vertexDeclaration)];
-                    }
-
-                    // Zero out depth bias for Vulkan, we only store common values for D3D12.
-                    if (g_capabilities.dynamicDepthBias && g_backend != Backend::D3D12)
-                    {
-                        pipelineState.depthBias = 0;
-                        pipelineState.slopeScaledDepthBias = 0.0f;
-                    }
-
-                    auto createGraphicsPipeline = [&](PipelineState& pipelineStateToCreate, const char* name)
-                        {
-                            SanitizePipelineState(pipelineStateToCreate);
-                            EnqueueGraphicsPipelineCompilation(pipelineStateToCreate, tokenPair, name, true);
-                        };
-
-                    // Compile both MSAA and non MSAA variants to work with reflection maps. The render formats are an assumption but it should hold true.
-                    if (Config::AntiAliasing != EAntiAliasing::Off &&
-                        pipelineState.renderTargetFormat == RenderFormat::R16G16B16A16_FLOAT &&
-                        pipelineState.depthStencilFormat == RenderFormat::D32_FLOAT_S8_UINT)
-                    {
-                        auto msaaPipelineState = pipelineState;
-                        msaaPipelineState.sampleCount = int32_t(Config::AntiAliasing.Value);
-
-                        if (Config::TransparencyAntiAliasing && (msaaPipelineState.specConstants & SPEC_CONSTANT_ALPHA_TEST) != 0)
-                        {
-                            msaaPipelineState.enableAlphaToCoverage = true;
-                            msaaPipelineState.specConstants &= ~SPEC_CONSTANT_ALPHA_TEST;
-                            msaaPipelineState.specConstants |= SPEC_CONSTANT_ALPHA_TO_COVERAGE;
-                        }
-
-                        createGraphicsPipeline(msaaPipelineState, "Precompiled Pipeline MSAA");
-                    }
-
-                    createGraphicsPipeline(pipelineState, "Precompiled Pipeline");
-                }
-
-                type = PipelineTaskType::Null;
-                --g_pendingPipelineTaskCount;
-
-                break;
-            }
-
-            case PipelineTaskType::RecompilePipelines:
-            {
-                PipelineTaskTokenPair tokenPair;
-                tokenPair.token.type = type;
-
-                auto asyncPipelines = g_asyncPipelineStates.values();
-
-                for (auto& [hash, pipelineState] : asyncPipelines)
-                {
-                    bool alphaTest = (pipelineState.specConstants & (SPEC_CONSTANT_ALPHA_TEST | SPEC_CONSTANT_ALPHA_TO_COVERAGE)) != 0;
-                    bool msaa = pipelineState.sampleCount != 1 || (pipelineState.renderTargetFormat == RenderFormat::R16G16B16A16_FLOAT && pipelineState.depthStencilFormat == RenderFormat::D32_FLOAT_S8_UINT);
-
-                    pipelineState.sampleCount = 1;
-                    pipelineState.enableAlphaToCoverage = false;
-                    pipelineState.specConstants &= ~(SPEC_CONSTANT_ALPHA_TEST | SPEC_CONSTANT_ALPHA_TO_COVERAGE);
-
-                    if (msaa && Config::AntiAliasing != EAntiAliasing::Off)
-                    {
-                        pipelineState.sampleCount = int32_t(Config::AntiAliasing.Value);
-
-                        if (alphaTest)
-                        {
-                            if (Config::TransparencyAntiAliasing)
-                            {
-                                pipelineState.enableAlphaToCoverage = true;
-                                pipelineState.specConstants |= SPEC_CONSTANT_ALPHA_TO_COVERAGE;
-                            }
-                            else
-                            {
-                                pipelineState.specConstants |= SPEC_CONSTANT_ALPHA_TEST;
-                            }
-                        }
-                    }
-                    else if (alphaTest)
-                    {
-                        pipelineState.specConstants |= SPEC_CONSTANT_ALPHA_TEST;
-                    }
-
-                    SanitizePipelineState(pipelineState);
-                    EnqueueGraphicsPipelineCompilation(pipelineState, tokenPair, "Recompiled Pipeline State");
-                }
-
-                type = PipelineTaskType::Null;
-                --g_pendingPipelineTaskCount;
-
-                break;
-            }
-            }
-        }
-
-        if (allHandled)
-            localPipelineTaskQueue.clear();
-
-        std::this_thread::yield();
-    }
-}
-
-static std::thread g_pipelineTaskConsumerThread(PipelineTaskConsumerThread);
-
-#ifdef PSO_CACHING
-class SDLEventListenerForPSOCaching : public SDLEventListener
-{
-public:
-    bool OnSDLEvent(SDL_Event* event) override 
-    {
-        if (event->type != SDL_EVENT_QUIT)
-            return false;
-
-        std::lock_guard lock(g_pipelineCacheMutex);
-        if (g_pipelineStatesToCache.empty())
-            return false;
-
-        std::string path = (GetUserPath() / "pso_caching.txt").string();
-        FILE* f = fopen(path.c_str(), "ab");
-        if (f != nullptr)
-        {
-            ankerl::unordered_dense::set<GuestVertexDeclaration*> vertexDeclarations;
-            xxHashMap<PipelineState> pipelineStatesToCache;
-
-            for (auto& [hash, pipelineState] : g_pipelineStatesToCache)
-            {
-                if (pipelineState.vertexShader->shaderCacheEntry == nullptr ||
-                    (pipelineState.pixelShader != nullptr && pipelineState.pixelShader->shaderCacheEntry == nullptr))
-                {
-                    continue;
-                }
-
-                vertexDeclarations.emplace(pipelineState.vertexDeclaration);
-
-                // Mask out the config options.
-                pipelineState.sampleCount = 1;
-                pipelineState.enableAlphaToCoverage = false;
-
-                if ((pipelineState.specConstants & SPEC_CONSTANT_ALPHA_TO_COVERAGE) != 0)
-                {
-                    pipelineState.specConstants &= ~SPEC_CONSTANT_ALPHA_TO_COVERAGE;
-                    pipelineState.specConstants |= SPEC_CONSTANT_ALPHA_TEST;
-                }
-
-                pipelineStatesToCache.emplace(XXH3_64bits(&pipelineState, sizeof(pipelineState)), pipelineState);
-            }
-
-            for (auto vertexDeclaration : vertexDeclarations)
-            {
-                fmt::print(f, "static uint8_t g_vertexElements_{:016X}[] = {{", vertexDeclaration->hash);
-
-                auto bytes = reinterpret_cast<uint8_t*>(vertexDeclaration->vertexElements.get());
-                for (size_t i = 0; i < vertexDeclaration->vertexElementCount * sizeof(GuestVertexElement); i++)
-                    fmt::print(f, "0x{:X},", bytes[i]);
-
-                fmt::println(f, "}};");
-            }
-
-            for (auto& [pipelineHash, pipelineState] : pipelineStatesToCache)
-            {
-                fmt::println(f, "{{ "
-                    "reinterpret_cast<GuestShader*>(0x{:X}),"
-                    "reinterpret_cast<GuestShader*>(0x{:X}),"
-                    "reinterpret_cast<GuestVertexDeclaration*>(0x{:X}),"
-                    "{},"
-                    "{},"
-                    "{},"
-                    "{},"
-                    "RenderBlend::{},"
-                    "RenderBlend::{},"
-                    "RenderCullMode::{},"
-                    "RenderFrontFace::{},"
-                    "RenderComparisonFunction::{},"
-                    "RenderComparisonFunction::{},"
-                    "RenderStencilOp::{},"
-                    "RenderStencilOp::{},"
-                    "RenderStencilOp::{},"
-                    "RenderComparisonFunction::{},"
-                    "RenderStencilOp::{},"
-                    "RenderStencilOp::{},"
-                    "RenderStencilOp::{},"
-                    "{},"
-                    "{},"
-                    "{},"
-                    "{},"
-                    "RenderBlendOperation::{},"
-                    "{},"
-                    "{},"
-                    "RenderBlend::{},"
-                    "RenderBlend::{},"
-                    "RenderBlendOperation::{},"
-                    "0x{:X},"
-                    "RenderPrimitiveTopology::{},"
-                    "{{ {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{} }},"
-                    "RenderFormat::{},"
-                    "RenderFormat::{},"
-                    "{},"
-                    "{},"
-                    "{},"
-                    "0x{:X} }},",
-                    pipelineState.vertexShader->shaderCacheEntry->hash,
-                    pipelineState.pixelShader != nullptr ? pipelineState.pixelShader->shaderCacheEntry->hash : 0,
-                    pipelineState.vertexDeclaration->hash,
-                    pipelineState.zEnable,
-                    pipelineState.zWriteEnable,
-                    pipelineState.stencilEnable,
-                    pipelineState.stencilTwoSided,
-                    magic_enum::enum_name(pipelineState.srcBlend),
-                    magic_enum::enum_name(pipelineState.destBlend),
-                    magic_enum::enum_name(pipelineState.cullMode),
-                    magic_enum::enum_name(pipelineState.frontFace),
-                    magic_enum::enum_name(pipelineState.zFunc),
-                    magic_enum::enum_name(pipelineState.stencilFunc),
-                    magic_enum::enum_name(pipelineState.stencilFail),
-                    magic_enum::enum_name(pipelineState.stencilZFail),
-                    magic_enum::enum_name(pipelineState.stencilPass),
-                    magic_enum::enum_name(pipelineState.stencilFuncCCW),
-                    magic_enum::enum_name(pipelineState.stencilFailCCW),
-                    magic_enum::enum_name(pipelineState.stencilZFailCCW),
-                    magic_enum::enum_name(pipelineState.stencilPassCCW),
-                    pipelineState.stencilMask,
-                    pipelineState.stencilWriteMask,
-                    pipelineState.stencilRef,
-                    pipelineState.alphaBlendEnable,
-                    magic_enum::enum_name(pipelineState.blendOp),
-                    pipelineState.slopeScaledDepthBias,
-                    pipelineState.depthBias,
-                    magic_enum::enum_name(pipelineState.srcBlendAlpha),
-                    magic_enum::enum_name(pipelineState.destBlendAlpha),
-                    magic_enum::enum_name(pipelineState.blendOpAlpha),
-                    pipelineState.colorWriteEnable,
-                    magic_enum::enum_name(pipelineState.primitiveTopology),
-                    pipelineState.vertexStrides[0],
-                    pipelineState.vertexStrides[1],
-                    pipelineState.vertexStrides[2],
-                    pipelineState.vertexStrides[3],
-                    pipelineState.vertexStrides[4],
-                    pipelineState.vertexStrides[5],
-                    pipelineState.vertexStrides[6],
-                    pipelineState.vertexStrides[7],
-                    pipelineState.vertexStrides[8],
-                    pipelineState.vertexStrides[9],
-                    pipelineState.vertexStrides[10],
-                    pipelineState.vertexStrides[11],
-                    pipelineState.vertexStrides[12],
-                    pipelineState.vertexStrides[13],
-                    pipelineState.vertexStrides[14],
-                    pipelineState.vertexStrides[15],
-                    magic_enum::enum_name(pipelineState.renderTargetFormat),
-                    magic_enum::enum_name(pipelineState.depthStencilFormat),
-                    pipelineState.sampleCount,
-                    pipelineState.enableAlphaToCoverage,
-                    pipelineState.enableConditionalSurvey,
-                    pipelineState.specConstants);
-            }
-
-            fclose(f);
-        }
-
-        return false;
-    }
-};
-SDLEventListenerForPSOCaching g_sdlEventListenerForPSOCaching;
-#endif
-
-void VideoConfigValueChangedCallback(IConfigDef* config)
+void VideoConfigValueChangedCallback(const IConfigDef* config)
 {
     // Config options that require internal resolution resize
     Video::s_needsResize |=
@@ -7649,136 +3895,14 @@ void VideoConfigValueChangedCallback(IConfigDef* config)
         config == &Config::RadialBlur;
 
     if (shouldRecompile)
-        EnqueuePipelineTask(PipelineTaskType::RecompilePipelines);
+        EnqueuePipelineRecompilation();
 }
 
 GUEST_FUNCTION_HOOK(sub_8253EC98, CreateDevice);
 
-GUEST_FUNCTION_HOOK(sub_8253AE98, DestructResource);
-
-GUEST_FUNCTION_HOOK(sub_8253A740, LockTextureRect);
-GUEST_FUNCTION_HOOK(sub_82538D30, UnlockTextureRect);
-
-GUEST_FUNCTION_HOOK(sub_8253B5D0, LockVertexBuffer);
-GUEST_FUNCTION_HOOK(sub_8253B630, UnlockVertexBuffer);
-// GUEST_FUNCTION_HOOK(sub_82BE61D0, GetVertexBufferDesc);
-
-GUEST_FUNCTION_HOOK(sub_8253B6F0, LockIndexBuffer);
-GUEST_FUNCTION_HOOK(sub_8253B750, UnlockIndexBuffer);
-// GUEST_FUNCTION_HOOK(sub_82BE6200, GetIndexBufferDesc);
-
-GUEST_FUNCTION_HOOK(sub_8253AB20, GetSurfaceDesc);
-
-GUEST_FUNCTION_HOOK(sub_825471F8, GetVertexDeclaration);
-// GUEST_FUNCTION_HOOK(sub_82BE0530, HashVertexDeclaration);
-
 GUEST_FUNCTION_HOOK(sub_825586B0, Video::Present);
 GUEST_FUNCTION_HOOK(sub_82543B58, GetBackBuffer);
 GUEST_FUNCTION_HOOK(sub_82543BA0, GetDepthStencil);
-
-GUEST_FUNCTION_HOOK(sub_8253A8D8, CreateTexture);
-GUEST_FUNCTION_HOOK(sub_8253B508, CreateVertexBuffer);
-GUEST_FUNCTION_HOOK(sub_8253B640, CreateIndexBuffer);
-GUEST_FUNCTION_HOOK(sub_8253A9F8, CreateSurface);
-
-GUEST_FUNCTION_HOOK(sub_825575B8, StretchRect);
-
-GUEST_FUNCTION_HOOK(sub_82543EE0, SetRenderTarget);
-GUEST_FUNCTION_HOOK(sub_825444F0, SetRenderTarget);
-GUEST_FUNCTION_HOOK(sub_82544210, SetDepthStencilSurface);
-
-GUEST_FUNCTION_HOOK(sub_82555B30, Clear);
-
-GUEST_FUNCTION_HOOK(sub_825436F0, SetViewport);
-
-GUEST_FUNCTION_HOOK(sub_8253AC40, SetTexture);
-GUEST_FUNCTION_HOOK(sub_82543628, SetScissorRect);
-
-GUEST_FUNCTION_HOOK(sub_826FEC28, DrawPrimitive);
-GUEST_FUNCTION_HOOK(sub_826FF030, DrawIndexedPrimitive);
-GUEST_FUNCTION_HOOK(sub_826FE5C0, DrawPrimitiveUP);
-
-GUEST_FUNCTION_HOOK(sub_82547118, CreateVertexDeclaration);
-GUEST_FUNCTION_HOOK(sub_825470F8, SetVertexDeclaration);
-
-GUEST_FUNCTION_HOOK(sub_82548700, CreateVertexShader);
-GUEST_FUNCTION_HOOK(sub_82546EE0, SetVertexShader);
-
-GUEST_FUNCTION_HOOK(sub_82543918, SetStreamSource);
-GUEST_FUNCTION_HOOK(sub_82543AC8, SetIndices);
-
-GUEST_FUNCTION_HOOK(sub_82548608, CreatePixelShader);
-GUEST_FUNCTION_HOOK(sub_82546BD8, SetPixelShader);
-
-GUEST_FUNCTION_HOOK(sub_82636BF8, BeginConditionalSurvey);
-GUEST_FUNCTION_HOOK(sub_82636C08, EndConditionalSurvey);
-GUEST_FUNCTION_HOOK(sub_82636C10, BeginConditionalRendering);
-GUEST_FUNCTION_HOOK(sub_82636C18, EndConditionalRendering);
-
-GUEST_FUNCTION_HOOK(sub_8253B760, IsSet);
-
-GUEST_FUNCTION_HOOK(sub_82543CF0, SetClipPlane);
-
-GUEST_FUNCTION_HOOK(sub_82541A78, SetRenderState<D3DRS_ZENABLE>);
-GUEST_FUNCTION_HOOK(sub_82541AC0, SetRenderState<D3DRS_ZWRITEENABLE>);
-GUEST_FUNCTION_HOOK(sub_82541460, SetRenderState<D3DRS_ALPHATESTENABLE>);
-GUEST_FUNCTION_HOOK(sub_825415C0, SetRenderState<D3DRS_SRCBLEND>);
-GUEST_FUNCTION_HOOK(sub_82541650, SetRenderState<D3DRS_DESTBLEND>);
-GUEST_FUNCTION_HOOK(sub_82541400, SetRenderState<D3DRS_CULLMODE>);
-GUEST_FUNCTION_HOOK(sub_82541AF0, SetRenderState<D3DRS_ZFUNC>);
-GUEST_FUNCTION_HOOK(sub_825418C8, SetRenderState<D3DRS_ALPHAREF>);
-GUEST_FUNCTION_HOOK(sub_825414A0, SetRenderState<D3DRS_ALPHABLENDENABLE>);
-GUEST_FUNCTION_HOOK(sub_82541530, SetRenderState<D3DRS_BLENDOP>);
-GUEST_FUNCTION_HOOK(sub_82543ED0, SetRenderState<D3DRS_SCISSORTESTENABLE>);
-GUEST_FUNCTION_HOOK(sub_82541E90, SetRenderState<D3DRS_SLOPESCALEDEPTHBIAS>);
-GUEST_FUNCTION_HOOK(sub_82541F58, SetRenderState<D3DRS_DEPTHBIAS>);
-GUEST_FUNCTION_HOOK(sub_82541750, SetRenderState<D3DRS_SRCBLENDALPHA>);
-GUEST_FUNCTION_HOOK(sub_825417C0, SetRenderState<D3DRS_DESTBLENDALPHA>);
-GUEST_FUNCTION_HOOK(sub_825416E0, SetRenderState<D3DRS_BLENDOPALPHA>);
-GUEST_FUNCTION_HOOK(sub_82542050, SetRenderState<D3DRS_COLORWRITEENABLE>);
-GUEST_FUNCTION_HOOK(sub_82541B30, SetRenderState<D3DRS_STENCILENABLE>);
-GUEST_FUNCTION_HOOK(sub_82541B78, SetRenderState<D3DRS_TWOSIDEDSTENCILMODE>);
-GUEST_FUNCTION_HOOK(sub_82541BE8, SetRenderState<D3DRS_STENCILFAIL>);
-GUEST_FUNCTION_HOOK(sub_82541C28, SetRenderState<D3DRS_STENCILZFAIL>);
-GUEST_FUNCTION_HOOK(sub_82541C68, SetRenderState<D3DRS_STENCILPASS>);
-GUEST_FUNCTION_HOOK(sub_82541BB8, SetRenderState<D3DRS_STENCILFUNC>);
-GUEST_FUNCTION_HOOK(sub_82541D78, SetRenderState<D3DRS_STENCILREF>);
-GUEST_FUNCTION_HOOK(sub_82541D98, SetRenderState<D3DRS_STENCILMASK>);
-GUEST_FUNCTION_HOOK(sub_82541DB8, SetRenderState<D3DRS_STENCILWRITEMASK>);
-GUEST_FUNCTION_HOOK(sub_82541CC8, SetRenderState<D3DRS_CCW_STENCILFAIL>);
-GUEST_FUNCTION_HOOK(sub_82541D08, SetRenderState<D3DRS_CCW_STENCILZFAIL>);
-GUEST_FUNCTION_HOOK(sub_82541D48, SetRenderState<D3DRS_CCW_STENCILPASS>);
-GUEST_FUNCTION_HOOK(sub_82541C98, SetRenderState<D3DRS_CCW_STENCILFUNC>);
-GUEST_FUNCTION_HOOK(sub_82541E38, SetRenderState<D3DRS_CLIPPLANEENABLE>);
-
-int GetType(GuestResource* resource)
-{
-    if (resource->type == ResourceType::Texture) return 3;
-    if (resource->type == ResourceType::VolumeTexture) return 17;
-    if (resource->type == ResourceType::ArrayTexture) return 19;
-
-    LOGF_WARNING("unknown resource type {:d}!", (int32_t)resource->type);
-    __builtin_trap();
-    return 0;
-}
-
-GUEST_FUNCTION_HOOK(sub_8253AE08, GetType);
-
-// Game asks about the size of surface to check if it needs to be tiled.
-// Because EDRAM has only 10MB, if size is more than 1024, then it enables tiling.
-// We return 0 to always disable tiling.
-int SurfaceSize(uint32_t width, uint32_t height, uint32_t format, uint32_t multisampleLevel)
-{
-    return 0;
-}
-
-GUEST_FUNCTION_HOOK(sub_82538D60, SurfaceSize);
-GUEST_FUNCTION_HOOK(sub_82656B68, MakePictureData);
-GUEST_FUNCTION_HOOK(sub_82656DB8, MakePictureData);
-
-// GUEST_FUNCTION_HOOK(sub_82E9EE38, SetResolution);
-
-GUEST_FUNCTION_HOOK(sub_82736178, ScreenShaderInit);
 
 GUEST_FUNCTION_STUB(sub_8253EB38);
 GUEST_FUNCTION_STUB(sub_8253EB78);
@@ -7796,69 +3920,3 @@ GUEST_FUNCTION_STUB(sub_8254D7B0); // BeginConditional
 GUEST_FUNCTION_STUB(sub_8254D9D0); // BeginConditional
 GUEST_FUNCTION_STUB(sub_8254DB90); // BeginConditional
 GUEST_FUNCTION_STUB(sub_8254DD40); // SetScreenExtentQueryMode
-
-struct Rect
-{
-    be<uint32_t> x1;
-    be<uint32_t> y1;
-    be<uint32_t> x2;
-    be<uint32_t> y2;
-};
-
-struct RESOLVE_PARAMS
-{
-    be<uint32_t> format;
-    be<uint32_t> unk;
-    be<uint32_t> format2;
-};
-
-int D3DDevice_BeginTiling(GuestDevice* device, uint32_t flags, uint32_t count, Rect* pTileRects, be<float>* pClearColor, float clearZ, uint32_t clearStencil)
-{
-    Clear(device, 0x3F, 0, pClearColor, clearZ, clearStencil);
-
-    return 0;
-}
-
-GUEST_FUNCTION_HOOK(sub_82558F88, D3DDevice_BeginTiling);
-
-int D3DDevice_EndTiling(GuestDevice* device, uint32_t flags, Rect* pResolveRects, GuestTexture* pDestTexture, be<float>* pClearColor, float clearZ, uint32_t clearStencil, RESOLVE_PARAMS* resolveParams)
-{
-    if (pDestTexture)
-    {
-        StretchRect(device, flags, 0, pDestTexture, 0, 0, 0);
-    }
-
-    return 0;
-}
-
-GUEST_FUNCTION_HOOK(sub_82559480, D3DDevice_EndTiling);
-
-int D3DDevice_BeginShaderConstantF4(GuestDevice* device, uint32_t isPixelShader, uint32_t startRegister, be<uint32_t>* cachedConstantData, be<uint32_t>* writeCombinedConstantData, uint32_t vectorCount)
-{
-    uint32_t* constants;
-    be<uint64_t>* dirtyFlags;
-
-    if (isPixelShader)
-    {
-        constants = &device->pixelShaderFloatConstants[startRegister * 4];
-        dirtyFlags = &device->dirtyFlags[1];
-    }
-    else
-    {
-        constants = &device->vertexShaderFloatConstants[startRegister * 4];
-        dirtyFlags = &device->dirtyFlags[0];
-    }
-
-    const uint32_t addr = g_memory.MapVirtual(constants);
-    *cachedConstantData = addr;
-    *writeCombinedConstantData = addr;
-
-    const uint32_t startBit = startRegister >> 2;
-    const uint32_t endBit = (startRegister + vectorCount - 1) >> 2;
-    const uint64_t dirtyFlag = ~0ull << startBit >> startBit >> (63 - endBit) << (63 - endBit);
-    *dirtyFlags = dirtyFlags->get() | dirtyFlag;
-
-    return 0;
-}
-
-GUEST_FUNCTION_HOOK(sub_825466E8, D3DDevice_BeginShaderConstantF4);
