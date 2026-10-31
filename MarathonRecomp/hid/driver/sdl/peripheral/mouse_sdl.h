@@ -2,6 +2,7 @@
 
 #include <hid/message/messages.h>
 #include <hid/peripheral/mouse.h>
+#include <hid/peripheral/mouse_capture_state.h>
 #include <ui/game_window.h>
 
 namespace HID
@@ -17,7 +18,10 @@ namespace HID
             RelativeY = 0;
 
             if (!GameWindow::s_isFocused)
+            {
+                MouseCaptureState = MouseCaptureState::Uncaptured;
                 return m_State;
+            }
 
             const auto processInput = [&](EMouseInput in_input)
             {
@@ -112,17 +116,39 @@ namespace HID
 
             const auto buttons = SDL_GetMouseState(nullptr, nullptr);
 
-            if ((buttons & SDL_BUTTON_LMASK) != 0)
-                processInput(EMouseInput::LeftClick);
-            if ((buttons & SDL_BUTTON_MMASK) != 0)
-                processInput(EMouseInput::MiddleClick);
-            if ((buttons & SDL_BUTTON_RMASK) != 0)
-                processInput(EMouseInput::RightClick);
+            switch (MouseCaptureState)
+            {
+                case MouseCaptureState::Uncaptured:
+                    MouseCaptureState = MouseCaptureState::CapturingFocus;
+                    break;
 
-            if ((buttons & SDL_BUTTON_X1MASK) != 0)
-                processInput(EMouseInput::X1);
-            if ((buttons & SDL_BUTTON_X2MASK) != 0)
-                processInput(EMouseInput::X2);
+                case MouseCaptureState::CapturingFocus:
+                {
+                    if (buttons)
+                        break;
+
+                    MouseCaptureState = MouseCaptureState::Captured;
+
+                    break;
+                }
+
+                case MouseCaptureState::Captured:
+                {
+                    if ((buttons & SDL_BUTTON_LMASK) != 0)
+                        processInput(EMouseInput::LeftClick);
+                    if ((buttons & SDL_BUTTON_MMASK) != 0)
+                        processInput(EMouseInput::MiddleClick);
+                    if ((buttons & SDL_BUTTON_RMASK) != 0)
+                        processInput(EMouseInput::RightClick);
+
+                    if ((buttons & SDL_BUTTON_X1MASK) != 0)
+                        processInput(EMouseInput::X1);
+                    if ((buttons & SDL_BUTTON_X2MASK) != 0)
+                        processInput(EMouseInput::X2);
+
+                    break;
+                }
+            }
 
             m_LastState = m_State;
 

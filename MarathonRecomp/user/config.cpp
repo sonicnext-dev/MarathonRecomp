@@ -286,6 +286,7 @@ CONFIG_DEFINE_ENUM_TEMPLATE(SDL_Scancode)
 
 CONFIG_DEFINE_ENUM_TEMPLATE(EMouseInput)
 {
+    { "???", EMouseInput::Unknown },
     { "LEFT CLICK", EMouseInput::LeftClick },
     { "MIDDLE CLICK", EMouseInput::MiddleClick },
     { "RIGHT CLICK", EMouseInput::RightClick },
