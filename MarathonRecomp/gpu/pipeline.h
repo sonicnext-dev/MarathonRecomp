@@ -2,6 +2,10 @@
 
 #include "video.h"
 
+#ifdef PSO_CACHING
+#include <xxHashMap.h>
+#endif
+
 #pragma pack(push, 1)
 struct PipelineState
 {
@@ -49,8 +53,16 @@ struct PipelineState
 
 #ifdef ASYNC_PSO_DEBUG
 extern std::atomic<uint32_t> g_pipelinesCurrentlyCompiling;
+extern std::atomic<uint32_t> g_compilingPipelineTaskCount;
+extern std::atomic<uint32_t> g_pendingPipelineTaskCount;
+#endif
+
+#ifdef PSO_CACHING
+extern xxHashMap<PipelineState> g_pipelineStatesToCache;
+extern Mutex g_pipelineCacheMutex;
 #endif
 
 XXH64_hash_t GetPipelineStateHash(const PipelineState& pipelineState);
 void SanitizePipelineState(PipelineState& pipelineState);
 std::unique_ptr<RenderPipeline> CreateGraphicsPipeline(const PipelineState& pipelineState);
+void EnqueuePipelineRecompilation();
