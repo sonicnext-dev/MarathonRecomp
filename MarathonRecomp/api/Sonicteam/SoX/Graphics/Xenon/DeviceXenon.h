@@ -16,7 +16,7 @@ namespace Sonicteam::SoX::Graphics::Xenon
         RefSharedPointer<Surface> m_spBackBuffer;
         RefSharedPointer<Surface> m_spDepthStencil;
         MARATHON_INSERT_PADDING(0x30);
-        Array<xpointer<void>, 10> m_apTextures;
+        Array<xpointer<void>, 10> m_Textures;
         MARATHON_INSERT_PADDING(0x28);
         D3DXBSURFACE_PARAMETERS m_SurfaceParamsA;
         D3DXBSURFACE_PARAMETERS m_SurfaceParamsB;
@@ -29,7 +29,7 @@ namespace Sonicteam::SoX::Graphics::Xenon
 
     MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_spBackBuffer, 0xD0);
     MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_spDepthStencil, 0xD4);
-    MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_apTextures, 0x108);
+    MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_Textures, 0x108);
     MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_SurfaceParamsA, 0x158);
     MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_SurfaceParamsB, 0x164);
     MARATHON_ASSERT_OFFSETOF(DeviceXenon, m_SurfaceParamsC, 0x170);

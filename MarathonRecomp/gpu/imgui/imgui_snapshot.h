@@ -20,7 +20,7 @@ struct ImFontAtlasSnapshot
     ankerl::unordered_dense::map<const void*, size_t> objects;
     std::vector<uint32_t> offsets;
 
-    static inline bool IsInit{};
+    static inline bool IsInitialised{};
     static inline std::unique_ptr<GuestTexture> FontTexture;
 
     template<typename T1, typename T2>

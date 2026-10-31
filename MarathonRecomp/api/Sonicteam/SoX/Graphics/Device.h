@@ -28,14 +28,14 @@ namespace Sonicteam::SoX::Graphics
         be<float> m_Field80;
         be<float> m_Field84; // Viewport?
         MARATHON_INSERT_PADDING(4);
-        be<uint32_t> m_Width1;
-        be<uint32_t> m_Height1;
+        be<uint32_t> m_WidthA;
+        be<uint32_t> m_HeightA;
         be<uint32_t> m_Field94;
         be<uint32_t> m_Field98;
-        be<uint32_t> m_Width2;
-        be<uint32_t> m_Height2;
+        be<uint32_t> m_WidthB;
+        be<uint32_t> m_HeightB;
         MARATHON_INSERT_PADDING(0x1C);
-        RefSharedPointer<RefCountObject> m_FrameBufferObject;
+        RefSharedPointer<RefCountObject> m_spFrameBufferObject;
         MARATHON_INSERT_PADDING(0x0C);
 
         void DrawText(const char* in_pText, const uint32_t in_x, const uint32_t in_y, const ARGB8888* in_pColor = nullptr)
@@ -58,12 +58,12 @@ namespace Sonicteam::SoX::Graphics
     MARATHON_ASSERT_OFFSETOF(Device, m_Field80, 0x80);
     MARATHON_ASSERT_OFFSETOF(Device, m_Field84, 0x84);
     MARATHON_ASSERT_OFFSETOF(Device, m_Field84, 0x84);
-    MARATHON_ASSERT_OFFSETOF(Device, m_Width1, 0x8C);
-    MARATHON_ASSERT_OFFSETOF(Device, m_Height1, 0x90);
+    MARATHON_ASSERT_OFFSETOF(Device, m_WidthA, 0x8C);
+    MARATHON_ASSERT_OFFSETOF(Device, m_HeightA, 0x90);
     MARATHON_ASSERT_OFFSETOF(Device, m_Field94, 0x94);
     MARATHON_ASSERT_OFFSETOF(Device, m_Field98, 0x98);
-    MARATHON_ASSERT_OFFSETOF(Device, m_Width2, 0x9C);
-    MARATHON_ASSERT_OFFSETOF(Device, m_Height2, 0xA0);
-    MARATHON_ASSERT_OFFSETOF(Device, m_FrameBufferObject, 0xC0);
+    MARATHON_ASSERT_OFFSETOF(Device, m_WidthB, 0x9C);
+    MARATHON_ASSERT_OFFSETOF(Device, m_HeightB, 0xA0);
+    MARATHON_ASSERT_OFFSETOF(Device, m_spFrameBufferObject, 0xC0);
     MARATHON_ASSERT_SIZEOF(Device, 0xD0);
 }

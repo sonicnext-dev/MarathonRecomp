@@ -10,7 +10,6 @@
 
 extern ImFontBuilderIO g_fontBuilderIO;
 
-
 struct FontInfo
 {
     const char* pFileName{};
@@ -250,6 +249,9 @@ static void GenerateGlyphRanges(ImFontType in_fontType, bool in_isInstaller = fa
 
 void ImFontAtlasSnapshot::Init(bool in_isInstaller)
 {
+    if (IsInitialised)
+        return;
+
     auto& io = ImGui::GetIO();
 
 #ifdef ENABLE_IM_FONT_ATLAS_SNAPSHOT
@@ -365,7 +367,7 @@ void ImFontAtlasSnapshot::Init(bool in_isInstaller)
     }
 #endif
 
-    IsInit = true;
+    IsInitialised = true;
 }
 
 ImFont* ImFontAtlasSnapshot::GetFont(ImFontType in_fontType)

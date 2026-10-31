@@ -2856,7 +2856,7 @@ void Video::EnqueueImGuiDraw(const std::function<void()>& in_rEvent)
 
 static void DrawImGui()
 {
-    if (!ImFontAtlasSnapshot::IsInit)
+    if (!ImFontAtlasSnapshot::IsInitialised)
         return;
 
     ImGui_ImplSDL3_NewFrame();
@@ -3392,8 +3392,8 @@ void Video::Resize(uint32_t width, uint32_t height)
 
     // Refresh graphics device and configure FBO surfaces.
     GuestToHostFunction<void>(sub_82637418, pMyGraphicsDevice);
-    GuestToHostFunction<void>(sub_825BAE48, pMyGraphicsDevice->m_FrameBufferObject.get(), 0, &pMyGraphicsDevice->m_spBackBuffer);
-    GuestToHostFunction<void>(sub_825BAEB8, pMyGraphicsDevice->m_FrameBufferObject.get(), &pMyGraphicsDevice->m_spDepthStencil);
+    GuestToHostFunction<void>(sub_825BAE48, pMyGraphicsDevice->m_spFrameBufferObject.get(), 0, &pMyGraphicsDevice->m_spBackBuffer);
+    GuestToHostFunction<void>(sub_825BAEB8, pMyGraphicsDevice->m_spFrameBufferObject.get(), &pMyGraphicsDevice->m_spDepthStencil);
 
     struct FormatConfig
     {
