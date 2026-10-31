@@ -127,6 +127,8 @@ set(MARATHON_RECOMP_GPU_CXX_SOURCES
     "gpu/resources.cpp"
     "gpu/guest_convert.cpp"
     "gpu/guest_device.cpp"
+    "gpu/guest_shader.cpp"
+    "gpu/vertex_declaration.cpp"
     "gpu/texture_loader.cpp"
     "gpu/surface_variant.cpp"
     "gpu/imgui/imgui_common.cpp"
