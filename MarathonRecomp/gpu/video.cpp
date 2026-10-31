@@ -1085,8 +1085,10 @@ static bool TryCreateHostDevice(std::vector<RenderInterfaceFunction*>& interface
     }
 #endif
 
-    for (auto interfaceFunction : interfaceFunctions)
+    for (size_t i = 0; i < interfaceFunctions.size(); i++)
     {
+        RenderInterfaceFunction* interfaceFunction = interfaceFunctions[i];
+
 #ifdef MARATHON_RECOMP_D3D12
         // Wrap the device creation in __try/__except to survive from driver crashes.
         __try
