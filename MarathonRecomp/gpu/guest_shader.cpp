@@ -243,7 +243,7 @@ RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specConstants)
             auto& linkedShader = guestShader->linkedShaders[specConstants];
             if (linkedShader == nullptr)
             {
-                linkedShader = g_device->createShader(blob->GetBufferPointer(), blob->GetBufferSize(), "shaderMain", RenderShaderFormat::DXIL);
+                linkedShader = Video::GetRenderDevice()->createShader(blob->GetBufferPointer(), blob->GetBufferSize(), "shaderMain", RenderShaderFormat::DXIL);
                 guestShader->shaderBlobs.push_back(std::move(blob));
             }
 
