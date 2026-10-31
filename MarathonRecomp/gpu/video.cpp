@@ -11,30 +11,31 @@
 #include "render_command.h"
 #include "resources.h"
 
+#include <Marathon.h>
 #include <app.h>
 #include <cstdint>
+#include <hid/hid.h>
 #include <kernel/function.h>
 #include <kernel/heap.h>
-#include <hid/hid.h>
 #include <kernel/memory.h>
 #include <kernel/xdbf.h>
+#include <os/process.h>
+#include <os/thread.h>
+#include <patches/aspect_ratio_patches.h>
 #include <plume_render_interface.h>
-#include <Marathon.h>
+#include <ranges>
 #include <ui/achievement_menu.h>
 #include <ui/achievement_overlay.h>
+#include <ui/black_bar.h>
 #include <ui/button_window.h>
 #include <ui/fader.h>
+#include <ui/game_window.h>
 #include <ui/imgui_utils.h>
 #include <ui/installer_wizard.h>
 #include <ui/message_window.h>
 #include <ui/options_menu.h>
-#include <ui/game_window.h>
-#include <ui/black_bar.h>
-#include <patches/aspect_ratio_patches.h>
 #include <user/config.h>
 #include <xxHashMap.h>
-#include <os/process.h>
-#include <os/thread.h>
 
 #if defined(ASYNC_PSO_DEBUG) || defined(PSO_CACHING)
 #include <user/paths.h>
@@ -317,7 +318,7 @@ struct UploadAllocator
         if (buffer.buffer == nullptr)
         {
             buffer.buffer = g_device->createBuffer(RenderBufferDesc::UploadBuffer(UploadBuffer::SIZE, RenderBufferFlag::CONSTANT | RenderBufferFlag::VERTEX | RenderBufferFlag::INDEX | RenderBufferFlag::DEVICE_ADDRESSABLE));
-            buffer.memory = reinterpret_cast<uint8_t*>(buffer.buffer->map());
+            buffer.memory = static_cast<uint8_t*>(buffer.buffer->map());
             buffer.deviceAddress = buffer.buffer->getDeviceAddress();
         }
         
@@ -426,7 +427,7 @@ struct PrimitiveIndexData
             }
         }
 
-        if (indexBuffer == NULL || currentIndexCount < indexCount)
+        if (indexBuffer == nullptr || currentIndexCount < indexCount)
         {
             auto allocation = g_uploadAllocators[g_frame].allocate<false>(indexData.data(), indexCount * 2, 2);
             indexBuffer = allocation.buffer->at(allocation.offset);
@@ -517,7 +518,7 @@ static void DestructTempResources()
                 g_dirtyStates.renderTargetAndDepthStencil = true;
             }
 
-            for (const auto& [texture, _] : surface->destinationTextures)
+            for (const auto &texture : surface->destinationTextures | std::views::keys)
                 texture->sourceSurface = nullptr;
 
             if (surface->variant != nullptr)
@@ -757,7 +758,7 @@ static void ProcRenderCommand(const RenderCommands::SetRenderState& args)
     }
     case D3DRS_ALPHAREF:
     {
-        SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.alphaThreshold, float(value) / 256.0f);
+        SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.alphaThreshold, static_cast<float>(value) / 256.0f);
         break;
     }
     case D3DRS_ALPHABLENDENABLE:
@@ -781,7 +782,7 @@ static void ProcRenderCommand(const RenderCommands::SetRenderState& args)
     {
         if (g_capabilities.dynamicDepthBias)
             SetDirtyValue(g_dirtyStates.depthBias, g_slopeScaledDepthBias, *reinterpret_cast<float*>(&value));
-        else 
+        else
             SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.slopeScaledDepthBias, *reinterpret_cast<float*>(&value));
 
         break;
@@ -789,9 +790,9 @@ static void ProcRenderCommand(const RenderCommands::SetRenderState& args)
     case D3DRS_DEPTHBIAS:
     {
         if (g_capabilities.dynamicDepthBias)
-            SetDirtyValue(g_dirtyStates.depthBias, g_depthBias, int32_t(*reinterpret_cast<float*>(&value) * (1 << 24)));
+            SetDirtyValue(g_dirtyStates.depthBias, g_depthBias, static_cast<int32_t>(*reinterpret_cast<float *>(&value) * (1 << 24)));
         else
-            SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.depthBias, int32_t(*reinterpret_cast<float*>(&value)* (1 << 24)));
+            SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.depthBias, static_cast<int32_t>(*reinterpret_cast<float *>(&value) * (1 << 24)));
 
         break;
     }
@@ -1047,7 +1048,7 @@ static void ApplyLowEndDefault(ConfigDef<T> &configDef, T newDefault, bool &chan
         configDef = newDefault;
         changed = true;
     }
-    
+
     configDef.DefaultValue = newDefault;
 }
 
@@ -1060,13 +1061,13 @@ static void ApplyLowEndDefaults()
     ApplyLowEndDefault(Config::ReflectionResolution, EReflectionResolution::Quarter, changed);
     ApplyLowEndDefault(Config::TransparencyAntiAliasing, false, changed);
 
-    if (changed) 
+    if (changed)
     {
         Config::Save();
     }
 }
 
-using RenderInterfaceFunction = std::unique_ptr<RenderInterface>(void);
+using RenderInterfaceFunction = std::unique_ptr<RenderInterface>();
 
 static bool TryCreateHostDevice(std::vector<RenderInterfaceFunction*>& interfaceFunctions, bool graphicsApiRetry)
 {
@@ -1078,16 +1079,14 @@ static bool TryCreateHostDevice(std::vector<RenderInterfaceFunction*>& interface
         // If we are attempting to create again after a reboot due to a crash, swap the order.
         g_backend = (g_backend == Backend::VULKAN) ? Backend::D3D12 : Backend::VULKAN;
 
-        // Don't allow redirection to Vulkan if we are retrying after a crash, 
+        // Don't allow redirection to Vulkan if we are retrying after a crash,
         // so the user can at least boot the game with D3D12 if Vulkan fails to work.
         allowVulkanRedirection = false;
     }
 #endif
 
-    for (size_t i = 0; i < interfaceFunctions.size(); i++)
+    for (auto interfaceFunction : interfaceFunctions)
     {
-        RenderInterfaceFunction* interfaceFunction = interfaceFunctions[i];
-
 #ifdef MARATHON_RECOMP_D3D12
         // Wrap the device creation in __try/__except to survive from driver crashes.
         __try
@@ -1103,7 +1102,7 @@ static bool TryCreateHostDevice(std::vector<RenderInterfaceFunction*>& interface
             if (g_device != nullptr)
             {
                 const RenderDeviceDescription &deviceDescription = g_device->getDescription();
-                
+
 #if defined(MARATHON_RECOMP_D3D12)
                 if (interfaceFunction == CreateD3D12Interface)
                 {
@@ -1120,7 +1119,7 @@ static bool TryCreateHostDevice(std::vector<RenderInterfaceFunction*>& interface
                             g_device.reset();
                             g_interface.reset();
 
-                            // In case Vulkan fails to initialize, we will try D3D12 again afterwards, 
+                            // In case Vulkan fails to initialize, we will try D3D12 again afterwards,
                             // just to get the game to boot. This only really happens in very old Intel GPU drivers.
                             if (g_backend != Backend::VULKAN)
                             {
@@ -1313,20 +1312,20 @@ bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
         acquireSemaphore = g_device->createCommandSemaphore();
 
     g_renderSemaphores.resize(g_swapChain->getTextureCount());
-    
+
     for (auto& renderSemaphore : g_renderSemaphores)
         renderSemaphore = g_device->createCommandSemaphore();
 
     RenderPipelineLayoutBuilder pipelineLayoutBuilder;
     pipelineLayoutBuilder.begin(false, true);
-    
+
     RenderDescriptorSetBuilder descriptorSetBuilder;
     descriptorSetBuilder.begin();
     descriptorSetBuilder.addTexture(0, TEXTURE_DESCRIPTOR_SIZE);
     descriptorSetBuilder.end(true, TEXTURE_DESCRIPTOR_SIZE);
-    
+
     g_textureDescriptorSet = descriptorSetBuilder.create(g_device.get());
-    
+
     for (size_t i = 0; i < TEXTURE_DESCRIPTOR_NULL_COUNT; i++)
     {
         auto& texture = g_blankTextures[i];
@@ -1347,11 +1346,6 @@ bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
         switch (i)
         {
         case TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D:
-            desc.dimension = RenderTextureDimension::TEXTURE_2D;
-            desc.arraySize = 1;
-            viewDesc.dimension = RenderTextureViewDimension::TEXTURE_2D;
-            break;
-
         case TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D_ARRAY:
             desc.dimension = RenderTextureDimension::TEXTURE_2D;
             desc.arraySize = 1;
@@ -1379,11 +1373,11 @@ bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
     pipelineLayoutBuilder.addDescriptorSet(descriptorSetBuilder);
     pipelineLayoutBuilder.addDescriptorSet(descriptorSetBuilder);
     pipelineLayoutBuilder.addDescriptorSet(descriptorSetBuilder);
-    
+
     descriptorSetBuilder.begin();
     descriptorSetBuilder.addSampler(0, SAMPLER_DESCRIPTOR_SIZE);
     descriptorSetBuilder.end(true, SAMPLER_DESCRIPTOR_SIZE);
-    
+
     g_samplerDescriptorSet = descriptorSetBuilder.create(g_device.get());
     auto& [descriptorIndex, sampler] = g_samplerStates[XXH3_64bits(&g_samplerDescs[0], sizeof(RenderSamplerDesc))];
     descriptorIndex = 1;
@@ -1421,7 +1415,7 @@ bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
         pipelineLayoutBuilder.addPushConstant(3, 4, 4, RenderShaderStageFlag::PIXEL); // For copy/resolve shaders.
     }
     pipelineLayoutBuilder.end();
-    
+
     g_pipelineLayout = pipelineLayoutBuilder.create(g_device.get());
 
     g_copyShader = CREATE_SHADER(copy_vs);
@@ -1528,7 +1522,7 @@ void Video::WaitForGPU()
     g_queue->waitForCommandFence(g_commandFences[0].get());
 }
 
-static const GuestRenderState g_implementedRenderStates[] =
+static constexpr GuestRenderState g_implementedRenderStates[] =
 {
     D3DRS_ZENABLE,
     D3DRS_ZWRITEENABLE,
@@ -1600,7 +1594,7 @@ static uint32_t CreateDevice(uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4,
     // Append render state functions to the end of guest function table.
     uint32_t functionOffsetUnimplemented = PPC_CODE_BASE + PPC_CODE_SIZE;
     g_memory.InsertFunction(functionOffsetUnimplemented, HostToGuestFunction<SetRenderStateUnimplemented>);
-    
+
     uint32_t functionOffset = 0x82B79868;
     for (size_t i = 0; i < std::size(device->setRenderStateFunctions); i++) {
         device->setRenderStateFunctions[i] = functionOffsetUnimplemented;
@@ -1610,7 +1604,7 @@ static uint32_t CreateDevice(uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4,
     for (auto state : g_implementedRenderStates)
     {
         auto funcOffset = getSetAddress(functionOffset, state / 4);
-        uint32_t addr = __builtin_bswap32(*(uint32_t*)g_memory.Translate(funcOffset));
+        uint32_t addr = __builtin_bswap32(*static_cast<uint32_t *>(g_memory.Translate(funcOffset)));
         device->setRenderStateFunctions[state / 4] = addr;
     }
 
@@ -1649,7 +1643,7 @@ static void ProcRenderCommand(const RenderCommands::UnlockTextureRect& args)
 
 static const char *DeviceTypeName(RenderDeviceType type)
 {
-    switch (type) 
+    switch (type)
     {
     case RenderDeviceType::INTEGRATED:
         return "Integrated";
@@ -1779,8 +1773,8 @@ static void DrawProfiler()
 
                 if (ImGui::BeginTable("Memory", 2))
                 {
-                    IMGUI_GENERIC_ROW("Heap Allocated", "%.2f MiB", double(heapDiagnostics.allocated / (1024.0 * 1024.0)));
-                    IMGUI_GENERIC_ROW("Physical Heap Allocated", "%.2f MiB", double(physicalHeapDiagnostics.allocated / (1024.0 * 1024.0)));
+                    IMGUI_GENERIC_ROW("Heap Allocated", "%.2f MiB", static_cast<double>(heapDiagnostics.allocated / (1024.0 * 1024.0)));
+                    IMGUI_GENERIC_ROW("Physical Heap Allocated", "%.2f MiB", static_cast<double>(physicalHeapDiagnostics.allocated / (1024.0 * 1024.0)));
 
                     ImGui::EndTable();
                 }
@@ -1819,14 +1813,14 @@ static void DrawProfiler()
 
                 IMGUI_GENERIC_ROW("Device", "%s", g_device->getDescription().name.c_str());
                 IMGUI_GENERIC_ROW("Device Type", "%s", DeviceTypeName(g_device->getDescription().type));
-                IMGUI_GENERIC_ROW("VRAM", "%.2f MiB", double(g_device->getDescription().dedicatedVideoMemory) / (1024.0 * 1024.0));
+                IMGUI_GENERIC_ROW("VRAM", "%.2f MiB", static_cast<double>(g_device->getDescription().dedicatedVideoMemory) / (1024.0 * 1024.0));
                 IMGUI_GENERIC_ROW("GPU Waits", "%u", g_waitForGPUCount);
                 IMGUI_GENERIC_ROW("Buffer Uploads", "%u", g_bufferUploadCount.load());
 
                 IMGUI_GENERIC_ROW("Resolution", "%ux%u (%ux%u)",
                     Video::s_viewportWidth, Video::s_viewportHeight,
-                    uint32_t(round(Video::s_viewportWidth * Config::ResolutionScale)),
-                    uint32_t(round(Video::s_viewportHeight * Config::ResolutionScale)));
+                    static_cast<uint32_t>(round(Video::s_viewportWidth * Config::ResolutionScale)),
+                    static_cast<uint32_t>(round(Video::s_viewportHeight * Config::ResolutionScale)));
 
                 ImGui::EndTable();
             }
@@ -1851,7 +1845,7 @@ static void DrawProfiler()
                 }
 
                 ImGui::Separator();
-                
+
                 if (ImGui::TreeNode("Pipeline States"))
                 {
                     ImGui::Indent();
@@ -1939,7 +1933,7 @@ static void DrawFPS()
 
     if (time - updateTime >= 1.0f)
     {
-        fps = 1000.0 / std::max(totalDeltaTime / double(totalDeltaCount), 1.0);
+        fps = 1000.0 / std::max(totalDeltaTime / static_cast<double>(totalDeltaCount), 1.0);
         updateTime = time;
         totalDeltaTime = 0.0;
         totalDeltaCount = 0;
@@ -1974,15 +1968,15 @@ static void DrawImGui()
     ImGui_ImplSDL3_NewFrame();
 
     auto& io = ImGui::GetIO();
-    io.DisplaySize = { float(Video::s_viewportWidth), float(Video::s_viewportHeight) };
+    io.DisplaySize = { static_cast<float>(Video::s_viewportWidth), static_cast<float>(Video::s_viewportHeight) };
 
     // ImGui doesn't know that we center the screen for specific aspect ratio
-    // settings, which causes mouse events to not work correctly. To fix this, 
+    // settings, which causes mouse events to not work correctly. To fix this,
     // we can adjust the mouse events before ImGui processes them.
     uint32_t width = g_swapChain->getWidth();
     uint32_t height = g_swapChain->getHeight();
-    float mousePosScaleX = float(width) / float(GameWindow::s_width);
-    float mousePosScaleY = float(height) / float(GameWindow::s_height);
+    float mousePosScaleX = static_cast<float>(width) / static_cast<float>(GameWindow::s_width);
+    float mousePosScaleY = static_cast<float>(height) / static_cast<float>(GameWindow::s_height);
     float mousePosOffsetX = (width - Video::s_viewportWidth) / 2.0f;
     float mousePosOffsetY = (height - Video::s_viewportHeight) / 2.0f;
     for (int i = 0; i < io.Ctx->InputEventsQueue.Size; i++)
@@ -2096,8 +2090,8 @@ static void SetFramebuffer(GuestSurface* renderTarget, GuestSurface* depthStenci
 
         if (g_framebuffer != nullptr)
         {
-            SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.halfPixelOffsetX, 1.0f / float(g_framebuffer->getWidth()));
-            SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.halfPixelOffsetY, -1.0f / float(g_framebuffer->getHeight()));
+            SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.halfPixelOffsetX, 1.0f / static_cast<float>(g_framebuffer->getWidth()));
+            SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.halfPixelOffsetY, -1.0f / static_cast<float>(g_framebuffer->getHeight()));
         }
 
         g_dirtyStates.renderTargetAndDepthStencil = settingForClear;
@@ -2165,13 +2159,13 @@ static void ProcRenderCommand(const RenderCommands::DrawImGui& args)
             auto& drawCmd = drawList->CmdBuffer[j];
             if (drawCmd.UserCallback != nullptr)
             {
-                auto callbackData = reinterpret_cast<const ImGuiCallbackData*>(drawCmd.UserCallbackData);
+                auto callbackData = static_cast<const ImGuiCallbackData*>(drawCmd.UserCallbackData);
 
                 switch (static_cast<ImGuiCallback>(reinterpret_cast<size_t>(drawCmd.UserCallback)))
                 {
                 case ImGuiCallback::SetGradient:
                     setPushConstants(&pushConstants.boundsMin, &callbackData->setGradient, sizeof(callbackData->setGradient));
-                    break;       
+                    break;
                 case ImGuiCallback::SetShaderModifier:
                     setPushConstants(&pushConstants.shaderModifier, &callbackData->setShaderModifier, sizeof(callbackData->setShaderModifier));
                     break;
@@ -2180,7 +2174,7 @@ static void ProcRenderCommand(const RenderCommands::DrawImGui& args)
                     break;
                 case ImGuiCallback::SetScale:
                     setPushConstants(&pushConstants.scale, &callbackData->setScale, sizeof(callbackData->setScale));
-                    break;       
+                    break;
                 case ImGuiCallback::SetMarqueeFade:
                     setPushConstants(&pushConstants.boundsMin, &callbackData->setMarqueeFade, sizeof(callbackData->setMarqueeFade));
                     break;
@@ -2210,7 +2204,7 @@ static void ProcRenderCommand(const RenderCommands::DrawImGui& args)
                 if (drawCmd.ClipRect.z <= drawCmd.ClipRect.x || drawCmd.ClipRect.w <= drawCmd.ClipRect.y)
                     continue;
 
-                auto texture = reinterpret_cast<GuestTexture*>(drawCmd.TextureId);
+                auto texture = static_cast<GuestTexture*>(drawCmd.TextureId);
                 uint32_t descriptorIndex = TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D;
                 if (texture != nullptr)
                 {
@@ -2239,7 +2233,7 @@ static void ProcRenderCommand(const RenderCommands::DrawImGui& args)
 
                 if (memcmp(&clipRect, &drawCmd.ClipRect, sizeof(clipRect)) != 0)
                 {
-                    commandList->setScissors(RenderRect(int32_t(drawCmd.ClipRect.x), int32_t(drawCmd.ClipRect.y), int32_t(drawCmd.ClipRect.z), int32_t(drawCmd.ClipRect.w)));
+                    commandList->setScissors(RenderRect(static_cast<int32_t>(drawCmd.ClipRect.x), static_cast<int32_t>(drawCmd.ClipRect.y), static_cast<int32_t>(drawCmd.ClipRect.z), static_cast<int32_t>(drawCmd.ClipRect.w)));
                     clipRect = drawCmd.ClipRect;
                 }
 
@@ -2276,7 +2270,7 @@ static std::atomic<bool> g_executedCommandList;
 
 void CreateTextureLocal(Sonicteam::SoX::Graphics::Texture* pTexture, uint32_t width, uint32_t height, uint32_t depth, uint32_t levels, uint32_t usage, uint32_t format, uint32_t pool, uint32_t type)
 {
-    auto pGuestTexture = (GuestTexture*)pTexture->m_pTexture.get();
+    auto pGuestTexture = static_cast<GuestTexture *>(pTexture->m_pTexture.get());
     auto pGuestTextureNew = CreateTexture(width, height, depth, levels, usage, format, pool, type);
 
     if (pGuestTexture->sourceSurface != nullptr)
@@ -2314,9 +2308,9 @@ static bool CacheRenderProcess(Sonicteam::SoX::Engine::RenderScheduler* pRenderS
 
 static bool FindRenderProcess(lua50::lua_State* L, const char* pName)
 {
-    const auto pCallbackData = reinterpret_cast<Sonicteam::RenderAction::CallbackData*>(lua50::lua_topointer(L, 1));
+    const auto pCallbackData = static_cast<Sonicteam::RenderAction::CallbackData*>(lua50::lua_topointer(L, 1));
 
-    auto it = std::find_if(g_renderProcessCache.begin(), g_renderProcessCache.end(), [&](const auto& rRenderProcess)
+    auto it = std::ranges::find_if(g_renderProcessCache, [&](const auto& rRenderProcess)
     {
         return rRenderProcess.first == pName;
     });
@@ -2359,13 +2353,13 @@ PPC_FUNC(sub_8260A9D0)
     {
         ctx.r3.u32 = 1;
     }
-    else 
+    else
     {
         __imp__sub_8260A9D0(ctx, base);
     }
 }
 
-void Video::Present() 
+void Video::Present()
 {
     g_renderQueue.enqueue(RenderCommands::ExecutePendingStretchRectCommands{});
 
@@ -2404,7 +2398,7 @@ void Video::Present()
         // Update the GPU profiler with the results from the timestamps of the frame.
         g_queryPools[g_frame]->queryResults();
         const uint64_t *frameTimestamps = g_queryPools[g_frame]->getResults();
-        g_gpuFrameProfiler.Set(double(frameTimestamps[1] - frameTimestamps[0]) / 1000000.0);
+        g_gpuFrameProfiler.Set(static_cast<double>(frameTimestamps[1] - frameTimestamps[0]) / 1000000.0);
     }
 
     g_dirtyStates = DirtyStates(true);
@@ -2510,7 +2504,7 @@ void Video::Resize(uint32_t width, uint32_t height)
     auto& rDeviceInfo = pApp->m_DeviceInfo;
 
     auto surfaceParams = D3DXBSURFACE_PARAMETERS(0, 0, 0);
-    const auto surfaceBase = uint32_t(height * 1.155555555555556); // 720p: 0x340
+    const auto surfaceBase = static_cast<uint32_t>(height * 1.155555555555556); // 720p: 0x340
 
     // Recreate main buffers.
     ReleaseResource(static_cast<GuestTexture*>(pApp->m_pFrontBufferTexture.get()));
@@ -2644,8 +2638,8 @@ void Video::Resize(uint32_t width, uint32_t height)
 
     const auto sfxMatrices1 = pDoc->m_pSFXAgent->m_aSFXMatrices1;
     const auto sfxMatrices2 = pDoc->m_pSFXAgent->m_aSFXMatrices2;
-    pDoc->m_pSFXAgent->m_aSFXMatrices1 = 0;
-    pDoc->m_pSFXAgent->m_aSFXMatrices2 = 0;
+    pDoc->m_pSFXAgent->m_aSFXMatrices1 = nullptr;
+    pDoc->m_pSFXAgent->m_aSFXMatrices2 = nullptr;
 
     // Cache particle render processes.
     CacheRenderProcess(pDoc->m_pRenderScheduler, "GE1Particle");
@@ -2691,7 +2685,7 @@ static void SetRootDescriptor(const UploadAllocation& allocation, size_t index)
 }
 
 static void ProcRenderCommand(const RenderCommands::ExecuteCommandList& cmd)
-{    
+{
     if (g_swapChainValid)
     {
         auto swapChainTexture = g_swapChain->getTexture(g_backBufferIndex);
@@ -2715,8 +2709,8 @@ static void ProcRenderCommand(const RenderCommands::ExecuteCommandList& cmd)
             constants.gamma = 1.0f / std::clamp(constants.gamma + offset, 0.1f, 4.0f);
             constants.textureDescriptorIndex = g_intermediaryBackBufferTextureDescriptorIndex;
 
-            constants.viewportOffsetX = (int32_t(g_swapChain->getWidth()) - int32_t(Video::s_viewportWidth)) / 2;
-            constants.viewportOffsetY = (int32_t(g_swapChain->getHeight()) - int32_t(Video::s_viewportHeight)) / 2;
+            constants.viewportOffsetX = (static_cast<int32_t>(g_swapChain->getWidth()) - static_cast<int32_t>(Video::s_viewportWidth)) / 2;
+            constants.viewportOffsetY = (static_cast<int32_t>(g_swapChain->getHeight()) - static_cast<int32_t>(Video::s_viewportHeight)) / 2;
             constants.viewportWidth = Video::s_viewportWidth;
             constants.viewportHeight = Video::s_viewportHeight;
 
@@ -2796,7 +2790,7 @@ static GuestSurface* GetBackBuffer()
     return g_backBuffer;
 }
 
-static GuestSurface* GetDepthStencil() 
+static GuestSurface* GetDepthStencil()
 {
     if (g_depthStencil)
         g_depthStencil->AddRef();
@@ -2808,7 +2802,7 @@ void Video::ComputeViewportDimensions()
 {
     uint32_t width = g_swapChain->getWidth();
     uint32_t height = g_swapChain->getHeight();
-    float aspectRatio = float(width) / float(height);
+    float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 
     switch (Config::AspectRatio)
     {
@@ -2910,8 +2904,8 @@ static void SetSurface(uint32_t index, GuestSurface* surface)
     AddBarrier(surface, RenderTextureLayout::SHADER_READ);
 
     SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.texture2DIndices[index], surface->descriptorIndex);
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.texture2DArrayIndices[index], uint32_t(TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D_ARRAY));
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.textureCubeIndices[index], uint32_t(TEXTURE_DESCRIPTOR_NULL_TEXTURE_CUBE));
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.texture2DArrayIndices[index], static_cast<uint32_t>(TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D_ARRAY));
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.textureCubeIndices[index], static_cast<uint32_t>(TEXTURE_DESCRIPTOR_NULL_TEXTURE_CUBE));
 }
 
 static void ProcRenderCommand(const RenderCommands::StretchRect& args)
@@ -2999,7 +2993,7 @@ static bool PopulateBarriersForStretchRect(GuestSurface* renderTarget, GuestSurf
 
             AddBarrier(surface, srcLayout);
 
-            for (const auto [texture, _] : surface->destinationTextures)
+            for (const auto texture : surface->destinationTextures | std::views::keys)
                 AddBarrier(texture, dstLayout);
 
             addedAny = true;
@@ -3141,7 +3135,7 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
                     }
 
                     commandList->setPipeline(pipeline);
-                    commandList->setViewports(RenderViewport(0.0f, 0.0f, float(texture->width), float(texture->height), 0.0f, 1.0f));
+                    commandList->setViewports(RenderViewport(0.0f, 0.0f, static_cast<float>(texture->width), static_cast<float>(texture->height), 0.0f, 1.0f));
                     commandList->setScissors(RenderRect(0, 0, texture->width, texture->height));
                     commandList->setGraphicsPushConstants(0, &surface->descriptorIndex, 0, sizeof(uint32_t));
                     commandList->drawInstanced(6, 1, 0, 0);
@@ -3193,7 +3187,7 @@ static void ProcRenderCommand(const RenderCommands::ExecutePendingStretchRectCom
             if (!RenderFormatIsDepth(surface->format))
                 ExecutePendingStretchRectCommands(surface, nullptr);
 
-            for (const auto [texture, _] : surface->destinationTextures)
+            for (const auto texture : surface->destinationTextures | std::views::keys)
                 texture->sourceSurface = nullptr;
 
             surface->destinationTextures.clear();
@@ -3209,7 +3203,7 @@ static bool SharesStorage(const GuestSurface* lhs, const GuestSurface* rhs)
     return lhs != nullptr && rhs != nullptr && lhs->texture == rhs->texture;
 }
 
-static void FlushPendingCopiesForAliasedStorage(GuestSurface* renderTarget, GuestSurface* depthStencil)
+static void FlushPendingCopiesForAliasedStorage(const GuestSurface* renderTarget, const GuestSurface* depthStencil)
 {
     bool foundAny = false;
 
@@ -3298,7 +3292,7 @@ static void ProcRenderCommand(const RenderCommands::Clear& args)
     PropagateDeferredClear(g_renderTarget, g_depthStencil, args);
 }
 
-static void ApplyDeferredVariantClears(GuestSurface* renderTarget, GuestSurface* depthStencil)
+static void ApplyDeferredVariantClears(const GuestSurface* renderTarget, const GuestSurface* depthStencil)
 {
     auto& commandList = g_commandLists[g_frame];
 
@@ -3334,11 +3328,11 @@ static void ProcRenderCommand(const RenderCommands::SetViewport& args)
     SetDirtyValue<float>(g_dirtyStates.viewport, g_viewport.height, args.height);
     SetDirtyValue<float>(g_dirtyStates.viewport, g_viewport.minDepth, args.minDepth);
     SetDirtyValue<float>(g_dirtyStates.viewport, g_viewport.maxDepth, args.maxDepth);
-    
+
     uint32_t specConstants = g_pipelineState.specConstants;
     if (args.minDepth > args.maxDepth)
         specConstants |= SPEC_CONSTANT_REVERSE_Z;
-    else 
+    else
         specConstants &= ~SPEC_CONSTANT_REVERSE_Z;
 
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.specConstants, specConstants);
@@ -3365,10 +3359,10 @@ static void ProcRenderCommand(const RenderCommands::SetTexture& args)
             shouldSetTexture = false;
         }
     }
-    
+
     if (shouldSetTexture)
         SetTextureInRenderThread(args.index, args.texture);
-    
+
     g_textures[args.index] = args.texture;
 }
 
@@ -3398,7 +3392,7 @@ static RenderPipeline* CreateGraphicsPipelineInRenderThread(PipelineState pipeli
 
         pipeline->setName(fmt::format("{} {} {} {:X}", App::s_isLoading ? "ASYNC" : "",
             pipelineState.vertexShader->name, pipelineState.pixelShader != nullptr ? pipelineState.pixelShader->name : "<none>", hash));
-        
+
         if (!App::s_isLoading)
         {
             std::lock_guard lock(g_debugMutex);
@@ -3498,7 +3492,7 @@ static RenderPipeline* CreateGraphicsPipelineInRenderThread(PipelineState pipeli
         g_pipelineStatesToCache.emplace(hash, pipelineState);
 #endif
     }
-    
+
     return pipeline.get();
 }
 
@@ -3533,7 +3527,7 @@ static void ProcRenderCommand(const RenderCommands::SetSamplerState& args)
     SetDirtyValue(dirty, samplerDesc.addressW, addressW);
     SetDirtyValue(dirty, samplerDesc.minFilter, minFilter);
     SetDirtyValue(dirty, samplerDesc.magFilter, magFilter);
-    SetDirtyValue(dirty, samplerDesc.mipmapMode, RenderMipmapMode(mipFilter));
+    SetDirtyValue(dirty, samplerDesc.mipmapMode, static_cast<RenderMipmapMode>(mipFilter));
     SetDirtyValue(dirty, samplerDesc.maxAnisotropy, anisotropyEnabled ? Config::AnisotropicFiltering : 16u);
     SetDirtyValue(dirty, samplerDesc.anisotropyEnabled, anisotropyEnabled);
     SetDirtyValue(dirty, samplerDesc.borderColor, borderColor);
@@ -3589,7 +3583,7 @@ static void ProcRenderCommand(const RenderCommands::AddPipeline& args)
     }
 }
 
-static constexpr int32_t COMMON_DEPTH_BIAS_VALUE = int32_t((1 << 24) * 0.002f);
+static constexpr int32_t COMMON_DEPTH_BIAS_VALUE = static_cast<int32_t>((1 << 24) * 0.002f);
 static constexpr float COMMON_SLOPE_SCALED_DEPTH_BIAS_VALUE = 1.0f;
 
 static void FlushRenderStateForRenderThread()
@@ -3599,7 +3593,7 @@ static void FlushRenderStateForRenderThread()
 
     bool foundAny = PopulateBarriersForStretchRect(renderTarget, depthStencil);
 
-    auto aliasesBoundStorage = [&](GuestSurface* surface)
+    auto aliasesBoundStorage = [&](const GuestSurface* surface)
     {
         return surface != renderTarget && surface != depthStencil &&
             (SharesStorage(surface, renderTarget) || SharesStorage(surface, depthStencil));
@@ -3739,7 +3733,7 @@ static void ProcRenderCommand(const RenderCommands::DrawIndexedPrimitive& args)
 static void ProcRenderCommand(const RenderCommands::DrawPrimitiveUP& args)
 {
     SetPrimitiveType(args.primitiveType);
-    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.vertexStrides[0], uint8_t(args.vertexStreamZeroStride));
+    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.vertexStrides[0], static_cast<uint8_t>(args.vertexStreamZeroStride));
 
     auto allocation = g_uploadAllocators[g_frame].allocate<true>(reinterpret_cast<const uint32_t*>(args.vertexStreamZeroData), args.vertexStreamZeroSize, 0x4);
 
@@ -3793,7 +3787,7 @@ static void ProcRenderCommand(const RenderCommands::SetVertexShader& args)
 
 static void ProcRenderCommand(const RenderCommands::SetStreamSource& args)
 {
-    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.vertexStrides[args.index], uint8_t(args.buffer != nullptr ? args.stride : 0));
+    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.vertexStrides[args.index], static_cast<uint8_t>(args.buffer != nullptr ? args.stride : 0));
 
     bool dirty = false;
 
@@ -3881,7 +3875,7 @@ static std::thread g_renderThread([]
         }
     });
 
-void VideoConfigValueChangedCallback(IConfigDef* config)
+void VideoConfigValueChangedCallback(const IConfigDef* config)
 {
     // Config options that require internal resolution resize
     Video::s_needsResize |=
