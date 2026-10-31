@@ -261,12 +261,6 @@ uint32_t XamShowMessageBoxUI(uint32_t dwUserIndex, be<uint16_t>* wszTitle, be<ui
 uint32_t XamContentCreateEnumerator(uint32_t dwUserIndex, uint32_t DeviceID, uint32_t dwContentType,
     uint32_t dwContentFlags, uint32_t cItem, be<uint32_t>* pcbBuffer, be<uint32_t>* phEnum)
 {
-    if (dwUserIndex != 0)
-    {
-        GuestThread::SetLastError(ERROR_NO_SUCH_USER);
-        return 0xFFFFFFFF;
-    }
-
     const auto& registry = gContentRegistry[dwContentType - 1];
     const auto& values = registry | std::views::values;
     auto* enumerator = CreateKernelObject<XamEnumerator<decltype(values.begin())>>(cItem, sizeof(_XCONTENT_DATA), values.begin(), values.end());
@@ -294,8 +288,8 @@ uint32_t XamEnumerate(uint32_t hEnum, uint32_t dwFlags, void* pvBuffer, uint32_t
 }
 
 // Patch DLC enumeration format string to allow for whitespace
-PPC_FUNC_IMPL(__imp__sub_825B14B8);
-PPC_FUNC(sub_825B14B8) {
+PPC_FUNC(sub_825B14B8)
+{
     const char* _str = (const char*)g_memory.Translate(ctx.r3.u32);
     uint32_t _1;
     char _str_end[256];
