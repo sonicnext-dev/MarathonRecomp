@@ -428,8 +428,8 @@ static void MakePictureData(Sonicteam::MyTexture* pictureData, uint8_t* data, ui
         if (LoadTexture(texture, data, dataSize, {}))
         {
 #ifdef _DEBUG
-            if (pictureData->str1.size.get() > 0)
-                texture.texture->setName(fmt::format("Texture {}", pictureData->str1.c_str()));
+            if (pictureData->m_MgrResourceName.size() > 0)
+                texture.texture->setName(fmt::format("Texture {}", pictureData->m_MgrResourceName.c_str()));
 #endif
             DiffPatchTexture(texture, data, dataSize);
 
