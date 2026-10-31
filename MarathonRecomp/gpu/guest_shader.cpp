@@ -6,8 +6,6 @@
 #include <shader/shader_cache.h>
 #include <user/config.h>
 
-#define MARATHON_RECOMP
-#include "../../tools/XenosRecomp/XenosRecomp/shader_common.h"
 #include "gpu/shader/shaders.h"
 
 static std::unique_ptr<uint8_t[]> g_shaderCache;
@@ -53,7 +51,7 @@ void CreateReplacementShaders()
     g_conditionalSurveyPSShader->shader = CREATE_SHADER(conditional_survey_ps);
 }
 
-RenderShader* GetReplacementShader(GuestShader* guestShader)
+RenderShader* GetReplacementShader(const GuestShader* guestShader)
 {
     if (guestShader == nullptr)
         return nullptr;
@@ -264,7 +262,7 @@ RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specConstants)
 static ShaderCacheEntry* FindShaderCacheEntry(XXH64_hash_t hash)
 {
     auto end = g_shaderCacheEntries + g_shaderCacheEntryCount;
-    auto findResult = std::lower_bound(g_shaderCacheEntries, end, hash, [](ShaderCacheEntry& lhs, XXH64_hash_t rhs)
+    auto findResult = std::lower_bound(g_shaderCacheEntries, end, hash, [](const ShaderCacheEntry& lhs, XXH64_hash_t rhs)
         {
             return lhs.hash < rhs;
         });

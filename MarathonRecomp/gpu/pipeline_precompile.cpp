@@ -103,13 +103,11 @@ struct PipelineTaskToken
 {
     PipelineTaskType type{};
 
-    PipelineTaskToken()
-    {
-    }
+    PipelineTaskToken() = default;
 
     PipelineTaskToken(const PipelineTaskToken&) = delete;
 
-    PipelineTaskToken(PipelineTaskToken&& other)
+    PipelineTaskToken(PipelineTaskToken&& other) noexcept
         : type(std::exchange(other.type, PipelineTaskType::Null))
     {
     }

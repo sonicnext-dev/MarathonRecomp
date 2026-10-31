@@ -103,7 +103,7 @@ GuestTexture* CreateTexture(uint32_t width, uint32_t height, uint32_t depth, uin
     return texture;
 }
 
-GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t format, uint32_t multiSample, GuestSurfaceCreateParams* params)
+GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t format, uint32_t multiSample, const GuestSurfaceCreateParams* params)
 {
     RenderSampleCounts sampleCount;
     if (multiSample == 0) {
@@ -233,7 +233,7 @@ static void UnlockBuffer(GuestBuffer* buffer)
 
     auto copyBuffer = [&](T* dest)
     {
-        auto src = reinterpret_cast<const T*>(buffer->mappedMemory);
+        auto src = static_cast<const T*>(buffer->mappedMemory);
 
         for (size_t i = 0; i < buffer->dataSize; i += sizeof(T))
         {
@@ -245,13 +245,13 @@ static void UnlockBuffer(GuestBuffer* buffer)
 
     if (Video::GetRenderDevice()->getCapabilities().gpuUploadHeap)
     {
-        copyBuffer(reinterpret_cast<T*>(buffer->buffer->map()));
+        copyBuffer(static_cast<T*>(buffer->buffer->map()));
         buffer->buffer->unmap();
     }
     else
     {
         auto uploadBuffer = Video::GetRenderDevice()->createBuffer(RenderBufferDesc::UploadBuffer(buffer->dataSize));
-        copyBuffer(reinterpret_cast<T*>(uploadBuffer->map()));
+        copyBuffer(static_cast<T*>(uploadBuffer->map()));
         uploadBuffer->unmap();
 
         Video::ExecuteCopyCommandList([&](RenderCommandList* in_pCommandList)
@@ -260,7 +260,7 @@ static void UnlockBuffer(GuestBuffer* buffer)
         });
     }
 
-    g_bufferUploadCount++;
+    ++g_bufferUploadCount;
 }
 
 static void UnlockVertexBuffer(GuestBuffer* buffer)
@@ -318,7 +318,7 @@ static void GetSurfaceDesc(GuestSurface* surface, GuestSurfaceDesc* desc)
     desc->usage = 0;
 }
 
-static void GetVertexDeclaration(GuestVertexDeclaration* vertexDeclaration, GuestVertexElement* vertexElements, be<uint32_t>* count)
+static void GetVertexDeclaration(const GuestVertexDeclaration* vertexDeclaration, GuestVertexElement* vertexElements, be<uint32_t>* count)
 {
     memcpy(vertexElements, vertexDeclaration->vertexElements.get(), vertexDeclaration->vertexElementCount * sizeof(GuestVertexElement));
     *count = vertexDeclaration->vertexElementCount;

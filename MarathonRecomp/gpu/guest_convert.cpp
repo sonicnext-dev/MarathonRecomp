@@ -288,7 +288,6 @@ RenderFormat ConvertDeclType(uint32_t type)
     case D3DDECLTYPE_USHORT4N:
         return RenderFormat::R16G16B16A16_UNORM;
     case D3DDECLTYPE_UINT1:
-        return RenderFormat::R32_UINT;
     case D3DDECLTYPE_DEC3N_2:
     case D3DDECLTYPE_DEC3N_3:
         return RenderFormat::R32_UINT;
