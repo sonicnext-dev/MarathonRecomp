@@ -837,6 +837,62 @@ CONFIG_DEFINE_ENUM_LOCALE(ERadialBlur)
     }
 };
 
+CONFIG_DEFINE_LOCALE(ParticleFade)
+{
+    { ELanguage::English, { "Particle Fade", "Change how particle edges blend." } },
+    { ELanguage::Japanese, { "Particle Fade", "Change how particle edges blend." } },
+    { ELanguage::German, { "Particle Fade", "Change how particle edges blend." } },
+    { ELanguage::French, { "Particle Fade", "Change how particle edges blend." } },
+    { ELanguage::Spanish, { "Particle Fade", "Change how particle edges blend." } },
+    { ELanguage::Italian, { "Particle Fade", "Change how particle edges blend." } },
+};
+
+CONFIG_DEFINE_ENUM_LOCALE(EParticleFade)
+{
+    {
+        ELanguage::English,
+        {
+            { EParticleFade::Original, { "Original", "" } },
+            { EParticleFade::Soft, { "Soft", "Soft: softens the edges of particles to reduce clipping artifacts." } }
+        }
+    },
+    {
+        ELanguage::Japanese,
+        {
+            { EParticleFade::Original, { "Original", "" } },
+            { EParticleFade::Soft, { "Soft", "Soft: softens the edges of particles to reduce clipping artifacts." } }
+        }
+    },
+    {
+        ELanguage::German,
+        {
+            { EParticleFade::Original, { "Original", "" } },
+            { EParticleFade::Soft, { "Soft", "Soft: softens the edges of particles to reduce clipping artifacts." } }
+        }
+    },
+    {
+        ELanguage::French,
+        {
+            { EParticleFade::Original, { "Original", "" } },
+            { EParticleFade::Soft, { "Soft", "Soft: softens the edges of particles to reduce clipping artifacts." } }
+        }
+    },
+    {
+        ELanguage::Spanish,
+        {
+            { EParticleFade::Original, { "Original", "" } },
+            { EParticleFade::Soft, { "Soft", "Soft: softens the edges of particles to reduce clipping artifacts." } }
+        }
+    },
+    {
+        ELanguage::Italian,
+        {
+            { EParticleFade::Original, { "Original", "" } },
+            { EParticleFade::Soft, { "Soft", "Soft: softens the edges of particles to reduce clipping artifacts." } }
+        }
+    }
+};
+
 CONFIG_DEFINE_LOCALE(CutsceneAspectRatio)
 {
     { ELanguage::English,  { "Cutscene Aspect Ratio", "Change the aspect ratio of the real-time cutscenes." } },
