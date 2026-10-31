@@ -512,23 +512,23 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
     {
         "Installer_Step_RequiredSpace",
         {
-            { ELanguage::English,  "Required space: %2.2f GiB" },
-            { ELanguage::Japanese, "必要な容量: %2.2f GiB" },
-            { ELanguage::German,   "Benötigter Speicherplatz:\n%2.2f GiB\n" },
-            { ELanguage::French,   "Espace nécessaire : %2.2f Gio" },
-            { ELanguage::Spanish,  "Espacio necesario: %2.2f GiB" },
-            { ELanguage::Italian,  "Spazio necessario: %2.2f GiB" }
+            { ELanguage::English,  "Required space: %s" },
+            { ELanguage::Japanese, "必要な容量: %s" },
+            { ELanguage::German,   "Benötigter Speicherplatz:\n%s\n" },
+            { ELanguage::French,   "Espace nécessaire : %s" },
+            { ELanguage::Spanish,  "Espacio necesario: %s" },
+            { ELanguage::Italian,  "Spazio necessario: %s" }
         }
     },
     {
         "Installer_Step_AvailableSpace",
         {
-            { ELanguage::English,  "Available space: %2.2f GiB" },
-            { ELanguage::Japanese, "使用可能な容量: %2.2f GiB" },
-            { ELanguage::German,   "Verfügbarer Speicherplatz:\n%2.2f GiB\n" },
-            { ELanguage::French,   "Espace disponible : %2.2f Gio" },
-            { ELanguage::Spanish,  "Espacio disponible: %2.2f GiB" },
-            { ELanguage::Italian,  "Spazio disponibile: %2.2f GiB" }
+            { ELanguage::English,  "Available space: %s" },
+            { ELanguage::Japanese, "使用可能な容量: %s" },
+            { ELanguage::German,   "Verfügbarer Speicherplatz:\n%s\n" },
+            { ELanguage::French,   "Espace disponible : %s" },
+            { ELanguage::Spanish,  "Espacio disponible: %s" },
+            { ELanguage::Italian,  "Spazio disponibile: %s" }
         }
     },
     {
@@ -942,6 +942,27 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::French,   "Continuer sans sauvegarder." },
             { ELanguage::Spanish,  "Continuar sin guardar." },
             { ELanguage::Italian,  "Continua senza salvare." }
+        }
+    },
+    {
+        "Common_Kibibyte",
+        {
+            { ELanguage::English, "%2.2f KiB" },
+            { ELanguage::French,  "%2.2f Kio" }
+        }
+    },
+    {
+        "Common_Mebibyte",
+        {
+            { ELanguage::English, "%2.2f MiB" },
+            { ELanguage::French,  "%2.2f Mio" }
+        }
+    },
+    {
+        "Common_Gibibyte",
+        {
+            { ELanguage::English, "%2.2f GiB" },
+            { ELanguage::French,  "%2.2f Gio" }
         }
     },
     {
