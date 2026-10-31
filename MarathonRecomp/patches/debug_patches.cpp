@@ -6,7 +6,19 @@
 #include <user/config.h>
 #include <app.h>
 
+PPC_FUNC_IMPL(__imp__sub_8259A638);
+PPC_FUNC(sub_8259A638)
+{
+    // Scale debug menu text before handing off to device.
+    ctx.r5.u32 = AspectRatioPatches::AlignX(Scale(ctx.r5.u32));
+    ctx.r6.u32 = Scale(ctx.r6.u32);
+
+    __imp__sub_8259A638(ctx, base);
+}
+
 // Sonicteam::SoX::Graphics::Xenon::DeviceXenon::DrawText
+// TODO: check if this is called anywhere else besides the debug menu, as
+// restoring this could display debug text anywhere else in the game too.
 PPC_FUNC(sub_8289CB70)
 {
     const auto pText = reinterpret_cast<const char*>(base + ctx.r4.u32);
@@ -22,20 +34,20 @@ PPC_FUNC(sub_8289CB70)
         return;
 
     const auto text = os::locale::ConvertToUTF8(os::locale::Encoding::ShiftJIS, std::string(pText, textLengthInCharsNoTerminator));
-    const auto x = float(ctx.r5.u32);
-    const auto y = float(ctx.r6.u32);
-    const auto colour = reinterpret_cast<Sonicteam::SoX::ARGB8888*>(base + ctx.r7.u32);
+    const auto position = ImVec2(ctx.r5.u32, ctx.r6.u32);
+
+    auto color = IM_COL32_WHITE;
+
+    if (ctx.r7.u32)
+    {
+        const auto pColor = reinterpret_cast<Sonicteam::SoX::ARGB8888*>(base + ctx.r7.u32);
+
+        color = IM_COL32(pColor->R(), pColor->G(), pColor->B(), pColor->A());
+    }
 
     Video::EnqueueImGuiDraw([=]()
     {
-        ImGui::GetBackgroundDrawList()->AddText
-        (
-            g_pFntArialUni,
-            Scale(12),
-            { AspectRatioPatches::AlignX(Scale(x)), Scale(y) },
-            IM_COL32(colour->R(), colour->G(), colour->B(), colour->A()),
-            text.c_str()
-        );
+        ImGui::GetBackgroundDrawList()->AddText(g_pFntArialUni, Scale(12), position, color, text.c_str());
     });
 }
 
@@ -60,8 +72,8 @@ PPC_FUNC(sub_82161AB8)
 PPC_FUNC_IMPL(__imp__sub_82195500);
 PPC_FUNC(sub_82195500)
 {
-    auto pPlayer = (Sonicteam::Player::Object*)(base + ctx.r3.u32);
-    auto pInputManager = pPlayer->GetInputManager();
+    const auto pPlayer = reinterpret_cast<Sonicteam::Player::Object*>(base + ctx.r3.u32);
+    const auto pInputManager = pPlayer->GetInputManager();
 
     if (pPlayer->m_IsPlayer && pInputManager)
     {
@@ -75,7 +87,6 @@ PPC_FUNC(sub_82195500)
                     if (pPlayer->m_SetupModuleIndexPrefix == 1 && pInputManager->PadState.IsPressed(Sonicteam::SoX::Input::PadButton_Back))
                     {
                         pPlayer->m_SetupModuleIndexPostfix = 2;
-
                         LOGN("Debug Mode: Enabled");
                     }
 
@@ -87,9 +98,9 @@ PPC_FUNC(sub_82195500)
                     // Toggle camera volume collision on B press.
                     if (pInputManager->PadState.IsPressed(Sonicteam::SoX::Input::PadButton_East))
                     {
-                        auto pGame = App::s_pApp->GetGame();
-                        auto pZock = pPlayer->GetPlugIn<Sonicteam::Player::Zock>("zock");
-                        auto collisionFilterInfo = pZock->m_spPhantomA->m_pRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo == 6 ? 0x383 : 6;
+                        const auto pGame = App::s_pApp->GetGame();
+                        const auto pZock = pPlayer->GetPlugIn<Sonicteam::Player::Zock>("zock");
+                        const auto collisionFilterInfo = pZock->m_spPhantomA->m_pRigidBody->m_collidable.m_broadPhaseHandle.m_collisionFilterInfo == 6 ? 0x383 : 6;
 
                         LOGFN("Camera Volumes: {}", collisionFilterInfo != 6 ? "Enabled" : "Disabled");
 
@@ -105,9 +116,9 @@ PPC_FUNC(sub_82195500)
         // Toggle demo camera on right stick press.
         if (Config::RestoreDemoCameraMode && pInputManager->PadState.IsPressed(Sonicteam::SoX::Input::PadButton_RightStick))
         {
-            auto pCameraman = static_cast<Sonicteam::Camera::Cameraman*>(pPlayer->m_pCameraman.get());
+            const auto pCameraman = static_cast<Sonicteam::Camera::Cameraman*>(pPlayer->m_pCameraman.get());
 
-            if (auto pCameraMode = pCameraman->m_spCameraModeManager->m_spCameraMode.get())
+            if (const auto pCameraMode = pCameraman->m_spCameraModeManager->m_spCameraMode.get())
             {
                 guest_stack_var<Sonicteam::Message::Camera::Cameraman::MsgChangeMode> msgChangeMode;
                 msgChangeMode->PadID = pInputManager->ID;
@@ -130,7 +141,7 @@ void PlayerDebugMode_RegisterLuaSetup(PPCRegister& str, PPCRegister& index)
     if (!Config::EnableDebugMode)
         return;
 
-    auto pString = (stdx::string*)g_memory.Translate(str.u32);
+    const auto pString = reinterpret_cast<stdx::string*>(g_memory.Translate(str.u32));
 
     switch (index.u32)
     {
@@ -150,7 +161,7 @@ void PlayerDebugMode_RegisterLuaSetup(PPCRegister& str, PPCRegister& index)
 
 bool PlayerDebugMode_RemapDebugExitButton(PPCRegister& r30)
 {
-    auto pPadState = (Sonicteam::SoX::Input::PadState*)g_memory.Translate(r30.u32);
+    const auto pPadState = reinterpret_cast<Sonicteam::SoX::Input::PadState*>(g_memory.Translate(r30.u32));
 
     if (pPadState->IsPressed(Sonicteam::SoX::Input::PadButton_Back))
     {
