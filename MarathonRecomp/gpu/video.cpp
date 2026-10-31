@@ -2034,7 +2034,75 @@ static void DrawImGui()
         g_renderQueue.enqueue(RenderCommands::DrawImGui{});
 }
 
-static void SetFramebuffer(GuestSurface *renderTarget, GuestSurface *depthStencil, bool settingForClear);
+static void SetFramebuffer(GuestSurface* renderTarget, GuestSurface* depthStencil, bool settingForClear)
+{
+    if (settingForClear || g_dirtyStates.renderTargetAndDepthStencil)
+    {
+        GuestSurface* framebufferContainer = nullptr;
+        RenderTexture* framebufferKey = nullptr;
+
+        if (renderTarget != nullptr && depthStencil != nullptr)
+        {
+            framebufferContainer = depthStencil; // Backbuffer texture changes per frame so we can't use the depth stencil as the key.
+            framebufferKey = renderTarget->texture;
+        }
+        else if (renderTarget != nullptr && depthStencil == nullptr)
+        {
+            framebufferContainer = renderTarget;
+            framebufferKey = renderTarget->texture; // Backbuffer texture changes per frame so we can't assume nullptr for it.
+        }
+        else if (renderTarget == nullptr && depthStencil != nullptr)
+        {
+            framebufferContainer = depthStencil;
+            framebufferKey = nullptr;
+        }
+
+        auto& commandList = g_commandLists[g_frame];
+
+        if (framebufferContainer != nullptr)
+        {
+            auto& framebuffers = framebufferContainer->variant != nullptr ?
+                framebufferContainer->variant->framebuffers : framebufferContainer->framebuffers;
+
+            auto& framebuffer = framebuffers[framebufferKey];
+
+            if (framebuffer == nullptr)
+            {
+                RenderFramebufferDesc desc;
+
+                if (renderTarget != nullptr)
+                {
+                    desc.colorAttachments = const_cast<const RenderTexture**>(&renderTarget->texture);
+                    desc.colorAttachmentsCount = 1;
+                }
+
+                if (depthStencil != nullptr)
+                    desc.depthAttachment = depthStencil->texture;
+
+                framebuffer = g_device->createFramebuffer(desc);
+            }
+
+            if (g_framebuffer != framebuffer.get())
+            {
+                commandList->setFramebuffer(framebuffer.get());
+                g_framebuffer = framebuffer.get();
+            }
+        }
+        else if (g_framebuffer != nullptr)
+        {
+            commandList->setFramebuffer(nullptr);
+            g_framebuffer = nullptr;
+        }
+
+        if (g_framebuffer != nullptr)
+        {
+            SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.halfPixelOffsetX, 1.0f / float(g_framebuffer->getWidth()));
+            SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.halfPixelOffsetY, -1.0f / float(g_framebuffer->getHeight()));
+        }
+
+        g_dirtyStates.renderTargetAndDepthStencil = settingForClear;
+    }
+}
 
 static void ProcRenderCommand(const RenderCommands::DrawImGui& args)
 {
@@ -2821,8 +2889,30 @@ static void FlushViewport()
     }
 }
 
-static void SetTextureInRenderThread(uint32_t index, GuestTexture* texture);
-static void SetSurface(uint32_t index, GuestSurface* surface);
+static void SetTextureInRenderThread(uint32_t index, GuestTexture* texture)
+{
+    AddBarrier(texture, RenderTextureLayout::SHADER_READ);
+
+    auto viewDimension = texture != nullptr ? texture->viewDimension : RenderTextureViewDimension::UNKNOWN;
+
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.texture2DIndices[index],
+        viewDimension == RenderTextureViewDimension::TEXTURE_2D ? texture->descriptorIndex : TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D);
+
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.texture2DArrayIndices[index], texture != nullptr &&
+        viewDimension == RenderTextureViewDimension::TEXTURE_2D ? texture->descriptorIndex : TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D_ARRAY);
+
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.textureCubeIndices[index], texture != nullptr &&
+        viewDimension == RenderTextureViewDimension::TEXTURE_CUBE ? texture->descriptorIndex : TEXTURE_DESCRIPTOR_NULL_TEXTURE_CUBE);
+}
+
+static void SetSurface(uint32_t index, GuestSurface* surface)
+{
+    AddBarrier(surface, RenderTextureLayout::SHADER_READ);
+
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.texture2DIndices[index], surface->descriptorIndex);
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.texture2DArrayIndices[index], uint32_t(TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D_ARRAY));
+    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.textureCubeIndices[index], uint32_t(TEXTURE_DESCRIPTOR_NULL_TEXTURE_CUBE));
+}
 
 static void ProcRenderCommand(const RenderCommands::StretchRect& args)
 {
@@ -3114,77 +3204,6 @@ static void ProcRenderCommand(const RenderCommands::ExecutePendingStretchRectCom
     g_pendingResolves.clear();
 }
 
-static void SetFramebuffer(GuestSurface* renderTarget, GuestSurface* depthStencil, bool settingForClear)
-{
-    if (settingForClear || g_dirtyStates.renderTargetAndDepthStencil)
-    {
-        // printf("SetFramebuffer %x %x\n", renderTarget, depthStencil);
-        GuestSurface* framebufferContainer = nullptr;
-        RenderTexture* framebufferKey = nullptr;
-
-        if (renderTarget != nullptr && depthStencil != nullptr)
-        {
-            framebufferContainer = depthStencil; // Backbuffer texture changes per frame so we can't use the depth stencil as the key.
-            framebufferKey = renderTarget->texture;
-        }
-        else if (renderTarget != nullptr && depthStencil == nullptr)
-        {
-            framebufferContainer = renderTarget;
-            framebufferKey = renderTarget->texture; // Backbuffer texture changes per frame so we can't assume nullptr for it.
-        }
-        else if (renderTarget == nullptr && depthStencil != nullptr)
-        {
-            framebufferContainer = depthStencil;
-            framebufferKey = nullptr;
-        }
-
-        auto& commandList = g_commandLists[g_frame];
-
-        if (framebufferContainer != nullptr)
-        {
-            auto& framebuffers = framebufferContainer->variant != nullptr ?
-                framebufferContainer->variant->framebuffers : framebufferContainer->framebuffers;
-
-            auto& framebuffer = framebuffers[framebufferKey];
-
-            if (framebuffer == nullptr)
-            {
-                RenderFramebufferDesc desc;
-
-                if (renderTarget != nullptr)
-                {
-                    desc.colorAttachments = const_cast<const RenderTexture**>(&renderTarget->texture);
-                    desc.colorAttachmentsCount = 1;
-                }
-
-                if (depthStencil != nullptr)
-                    desc.depthAttachment = depthStencil->texture;
-
-                framebuffer = g_device->createFramebuffer(desc);
-            }
-
-            if (g_framebuffer != framebuffer.get())
-            {
-                commandList->setFramebuffer(framebuffer.get());
-                g_framebuffer = framebuffer.get();
-            }
-        }
-        else if (g_framebuffer != nullptr)
-        {
-            commandList->setFramebuffer(nullptr);
-            g_framebuffer = nullptr;
-        }
-
-        if (g_framebuffer != nullptr)
-        {
-            SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.halfPixelOffsetX, 1.0f / float(g_framebuffer->getWidth()));
-            SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.halfPixelOffsetY, -1.0f / float(g_framebuffer->getHeight()));
-        }
-
-        g_dirtyStates.renderTargetAndDepthStencil = settingForClear;
-    }
-}
-
 static bool SharesStorage(const GuestSurface* lhs, const GuestSurface* rhs)
 {
     return lhs != nullptr && rhs != nullptr && lhs->texture == rhs->texture;
@@ -3325,31 +3344,6 @@ static void ProcRenderCommand(const RenderCommands::SetViewport& args)
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.specConstants, specConstants);
 
     g_dirtyStates.scissorRect |= g_dirtyStates.viewport;
-}
-
-static void SetTextureInRenderThread(uint32_t index, GuestTexture* texture)
-{
-    AddBarrier(texture, RenderTextureLayout::SHADER_READ);
-
-    auto viewDimension = texture != nullptr ? texture->viewDimension : RenderTextureViewDimension::UNKNOWN;
-
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.texture2DIndices[index],
-        viewDimension == RenderTextureViewDimension::TEXTURE_2D ? texture->descriptorIndex : TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D);
-
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.texture2DArrayIndices[index], texture != nullptr &&
-        viewDimension == RenderTextureViewDimension::TEXTURE_2D ? texture->descriptorIndex : TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D_ARRAY);
-
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.textureCubeIndices[index], texture != nullptr &&
-        viewDimension == RenderTextureViewDimension::TEXTURE_CUBE ? texture->descriptorIndex : TEXTURE_DESCRIPTOR_NULL_TEXTURE_CUBE);
-}
-
-static void SetSurface(uint32_t index, GuestSurface* surface)
-{
-    AddBarrier(surface, RenderTextureLayout::SHADER_READ);
-
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.texture2DIndices[index], surface->descriptorIndex);
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.texture2DArrayIndices[index], uint32_t(TEXTURE_DESCRIPTOR_NULL_TEXTURE_2D_ARRAY));
-    SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.textureCubeIndices[index], uint32_t(TEXTURE_DESCRIPTOR_NULL_TEXTURE_CUBE));
 }
 
 static void ProcRenderCommand(const RenderCommands::SetTexture& args)
