@@ -1,5 +1,11 @@
 #pragma once
 
+#include "Cal/CCalAudioRenderer.h"
+#include "Cal/CCalBase.h"
+#include "Cal/CCalChannel.h"
+#include "Cal/CCalMoviePlayer.h"
+#include "Cal/CCalRenderer.h"
+#include "Cal/CCalXmvPlayer.h"
 #include "Chao/CSD/Core/csdBase.h"
 #include "Chao/CSD/Core/csdColor.h"
 #include "Chao/CSD/Core/csdRCObject.h"
@@ -325,6 +331,8 @@
 #include "Sonicteam/VehicleMissileCtrlSingle.h"
 #include "Sonicteam/WorldRenderProcess.h"
 #include "Sonicteam/sonicXmaPlayer.h"
+#include "XAudio/XAudioSourceVoice.h"
+#include "XAudio/XAudioVoice.h"
 #include "boost/move/make_unique.hpp"
 #include "boost/move/unique_ptr.hpp"
 #include "boost/smart_ptr/make_shared.hpp"

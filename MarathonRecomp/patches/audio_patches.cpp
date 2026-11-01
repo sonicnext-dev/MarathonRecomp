@@ -28,7 +28,7 @@ bool AudioPatches::CanAttenuate()
 
 void AudioPatches::Update(float deltaTime)
 {
-    auto pAudioEngine = Sonicteam::AudioEngineXenon::GetInstance();
+    const auto pAudioEngine = Sonicteam::AudioEngineXenon::GetInstance();
 
     if (!pAudioEngine)
         return;

@@ -8,11 +8,11 @@ namespace Sonicteam
     class MovieObject : public SoX::RefCountObject
     {
     public:
-        MARATHON_INSERT_PADDING(4);
+        MARATHON_INSERT_PADDING(0x04);
         xpointer<MovieObjectWmv> m_pMovieObjectWmv;
         stdx::string m_Language;
         xpointer<MyGraphicsDevice> m_pMyGraphicsDevice;
-        MARATHON_INSERT_PADDING(8);
+        MARATHON_INSERT_PADDING(0x08);
         be<uint32_t> m_Width;
         be<uint32_t> m_Height;
         bool m_Field40;
