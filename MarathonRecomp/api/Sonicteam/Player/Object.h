@@ -8,6 +8,7 @@
 #include <Sonicteam/Player/IPlugIn.h>
 #include <Sonicteam/Player/RootFrame.h>
 #include <Sonicteam/Player/IPostureControl.h>
+#include <Sonicteam/SoX/MessageReceiver.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
 #include <stdx/vector.h>
 
@@ -32,7 +33,7 @@ namespace Sonicteam::Player
         stdx::string m_LuaFile;
         stdx::string m_PackageFile;
         be<uint32_t> m_TargetCameraActorID; 
-        xpointer<Camera::Cameraman> m_pCameraman;
+        xpointer<SoX::MessageReceiver> m_pCameraman;
         be<uint32_t> m_Index;
         be<uint32_t> m_PadID;
         SoX::Math::Quaternion m_SpawnRotation;
