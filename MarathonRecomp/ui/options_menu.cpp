@@ -857,7 +857,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
 
             DrawOption(rowCount++, &Config::Monitor, canChangeMonitor, monitorReason, 0, 0, displayCount - 1, false);
             DrawOption(rowCount++, &Config::AspectRatio, true);
-            DrawOption(rowCount++, &Config::ResolutionScale, true, nullptr, 0.25f, 0.5f, 1.0f);
+            DrawOption(rowCount++, &Config::ResolutionScale, true, nullptr, 0.25f, 1.0f, 2.0f);
             DrawOption(rowCount++, &Config::Fullscreen, true);
             DrawOption(rowCount++, &Config::VSync, true);
             DrawOption(rowCount++, &Config::FPS, true, nullptr, FPS_MIN, 120, FPS_MAX);
