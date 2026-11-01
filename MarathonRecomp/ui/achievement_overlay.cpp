@@ -37,7 +37,7 @@ void AchievementOverlay::Draw()
         Game_PlaySound("deside");
     }
     
-    if (!s_isVisible)
+    if (!s_isVisible || !App::s_isDrawUI)
         return;
     
     if (ImGui::GetTime() - g_appearTime >= OVERLAY_DURATION)

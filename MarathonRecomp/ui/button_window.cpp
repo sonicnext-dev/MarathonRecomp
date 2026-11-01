@@ -9,7 +9,7 @@ static bool g_isAnimated{};
 
 void ButtonWindow::Draw()
 {
-    if (!s_isVisible || g_buttonKey.empty())
+    if (!s_isVisible || !App::s_isDrawUI || g_buttonKey.empty())
         return;
 
     auto* drawList = ImGui::GetBackgroundDrawList();

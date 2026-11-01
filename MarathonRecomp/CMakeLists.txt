@@ -159,7 +159,6 @@ set(MARATHON_RECOMP_PATCHES_CXX_SOURCES
     "patches/camera_patches.cpp"
     "patches/debug_patches.cpp"
     "patches/fps_patches.cpp"
-    "patches/frontend_listener.cpp"
     "patches/input_patches.cpp"
     "patches/loading_patches.cpp"
     "patches/MainMenuTask_patches.cpp"
@@ -169,6 +168,7 @@ set(MARATHON_RECOMP_PATCHES_CXX_SOURCES
     "patches/SaveDataTask_patches.cpp"
     "patches/text_patches.cpp"
     "patches/TitleTask_patches.cpp"
+    "patches/ui_toggle_listener.cpp"
     "patches/video_patches.cpp"
 )
 

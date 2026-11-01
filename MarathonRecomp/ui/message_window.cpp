@@ -199,7 +199,7 @@ static void ResetSelection()
 
 void MessageWindow::Draw()
 {
-    if (!s_isVisible)
+    if (!s_isVisible || !App::s_isDrawUI)
         return;
 
     if (g_isClosing && (ImGui::GetTime() - g_time) > (1.0 / 60.0) * 30.0)

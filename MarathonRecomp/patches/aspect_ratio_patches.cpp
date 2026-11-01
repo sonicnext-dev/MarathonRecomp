@@ -425,7 +425,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
     if ((modifier.Flags & CSD_MODIFIER_NARROW_ONLY) != 0 && g_aspectRatio >= WIDE_ASPECT_RATIO)
         modifier.Flags &= (~modifier.Flags) | CSD_MODIFIER_NARROW_ONLY;
     
-    if ((modifier.Flags & CSD_SKIP) != 0)
+    if (!App::s_isDrawUI || (modifier.Flags & CSD_SKIP) != 0)
     {
         if ((modifier.Flags & CSD_CHEVRON) != 0)
         {
@@ -1342,7 +1342,7 @@ PPC_FUNC(sub_824D6E50)
 PPC_FUNC_IMPL(__imp__sub_824F1538);
 PPC_FUNC(sub_824F1538)
 {
-    auto pHUDRaderMap = (Sonicteam::HUDRaderMap*)(base + ctx.r3.u32 - 8);
+    const auto pHUDRaderMap = static_cast<Sonicteam::HUDRaderMap*>(reinterpret_cast<Sonicteam::SoX::Engine::Task*>(base + ctx.r3.u32));
 
     __imp__sub_824F1538(ctx, base);
 
@@ -1633,7 +1633,7 @@ PPC_FUNC(sub_8262D868)
     auto pTextEntity = (Sonicteam::TextEntity*)(base + ctx.r3.u32);
     auto textModifier = *(uint64_t*)(base + ctx.r3.u32 + sizeof(Sonicteam::TextEntity));
 
-    if ((textModifier & CSD_SKIP) != 0)
+    if (!App::s_isDrawUI || (textModifier & CSD_SKIP) != 0)
     {
         for (size_t i = 0; i < pTextEntity->m_CharacterVertexCount; i++)
         {

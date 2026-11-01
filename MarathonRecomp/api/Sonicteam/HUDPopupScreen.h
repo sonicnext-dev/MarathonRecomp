@@ -17,7 +17,8 @@ namespace Sonicteam
         {
             HUDPopupScreenState_Opening = 1,
             HUDPopupScreenState_Idle,
-            HUDPopupScreenState_Closing
+            HUDPopupScreenState_Closing,
+            HUDPopupScreenState_Deleting
         };
 
         xpointer<CsdObject> m_pCsdObject;
