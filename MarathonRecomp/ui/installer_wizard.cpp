@@ -1274,16 +1274,45 @@ void InstallerWizard::Draw()
 
             case WizardPage::CheckSpace:
             {
+                const auto getSizeLocale = [](const uint64_t in_size)
+                {
+                    char result[64]{};
+
+                    const char* localeKey{};
+                    double readable{};
+
+                    if (in_size >= 0x40000000)
+                    {
+                        localeKey = "Common_Gibibyte";
+                        readable = in_size >> 20;
+                    }
+                    else if (in_size >= 0x100000)
+                    {
+                        localeKey = "Common_Mebibyte";
+                        readable = in_size >> 10;
+                    }
+                    else if (in_size >= 0x400)
+                    {
+                        localeKey = "Common_Kibibyte";
+                        readable = in_size;
+                    }
+
+                    readable /= 1024.0;
+
+                    snprintf(result, sizeof(result), Localise(localeKey).c_str(), readable);
+
+                    return std::string(result);
+                };
+
                 char descriptionText[512]{};
                 char requiredSpaceText[128]{};
                 char availableSpaceText[128]{};
 
-                constexpr auto divisor = 1024.0 * 1024.0 * 1024.0;
-                auto requiredGiB = double(g_installerSources.totalSize) / divisor;
-                auto availableGiB = double(g_installerAvailableSize) / divisor;
+                const auto required = getSizeLocale(g_installerSources.totalSize);
+                const auto available = getSizeLocale(g_installerAvailableSize);
 
-                snprintf(requiredSpaceText, sizeof(requiredSpaceText), Localise("Installer_Step_RequiredSpace").c_str(), requiredGiB);
-                snprintf(availableSpaceText, sizeof(availableSpaceText), g_installerAvailableSize > 0 ? Localise("Installer_Step_AvailableSpace").c_str() : "", availableGiB);
+                snprintf(requiredSpaceText, sizeof(requiredSpaceText), Localise("Installer_Step_RequiredSpace").c_str(), required.c_str());
+                snprintf(availableSpaceText, sizeof(availableSpaceText), g_installerAvailableSize > 0 ? Localise("Installer_Step_AvailableSpace").c_str() : "", available.c_str());
                 snprintf(descriptionText, sizeof(descriptionText), "%s%s\n%s", text.c_str(), requiredSpaceText, availableSpaceText);
 
                 text = descriptionText;
