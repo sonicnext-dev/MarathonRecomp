@@ -2562,8 +2562,8 @@ void Video::Resize(uint32_t width, uint32_t height)
         GuestToHostFunction<void>(sub_82593038, pSurface, pGuestSurface);
     };
 
-    setSurface(pMyGraphicsDevice->m_spBackBuffer.get(), static_cast<GuestSurface*>(pApp->m_pBackBufferSurface.get()));
-    setSurface(pMyGraphicsDevice->m_spDepthStencil.get(), static_cast<GuestSurface*>(pApp->m_pDepthStencilSurface.get()));
+    setSurface(pMyGraphicsDevice->m_spBackBufferSurface.get(), static_cast<GuestSurface*>(pApp->m_pBackBufferSurface.get()));
+    setSurface(pMyGraphicsDevice->m_spDepthStencilSurface.get(), static_cast<GuestSurface*>(pApp->m_pDepthStencilSurface.get()));
     setSurface(pMyGraphicsDevice->m_spColorTile2x.get(), static_cast<GuestSurface*>(pApp->m_pColorTile2x.get()));
     setSurface(pMyGraphicsDevice->m_spDepthTile2x.get(), static_cast<GuestSurface*>(pApp->m_pDepthTile2x.get()));
     setSurface(pMyGraphicsDevice->m_spColorTile4x.get(), static_cast<GuestSurface*>(pApp->m_pColorTile4x.get()));
@@ -2571,8 +2571,8 @@ void Video::Resize(uint32_t width, uint32_t height)
 
     // Refresh graphics device and configure FBO surfaces.
     GuestToHostFunction<void>(sub_82637418, pMyGraphicsDevice);
-    GuestToHostFunction<void>(sub_825BAE48, pMyGraphicsDevice->m_spFrameBufferObject.get(), 0, &pMyGraphicsDevice->m_spBackBuffer);
-    GuestToHostFunction<void>(sub_825BAEB8, pMyGraphicsDevice->m_spFrameBufferObject.get(), &pMyGraphicsDevice->m_spDepthStencil);
+    GuestToHostFunction<void>(sub_825BAE48, pMyGraphicsDevice->m_spFrameBufferObject.get(), 0, &pMyGraphicsDevice->m_spBackBufferSurface);
+    GuestToHostFunction<void>(sub_825BAEB8, pMyGraphicsDevice->m_spFrameBufferObject.get(), &pMyGraphicsDevice->m_spDepthStencilSurface);
 
     struct FormatConfig
     {
