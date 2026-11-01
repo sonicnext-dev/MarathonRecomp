@@ -161,13 +161,6 @@ struct GuestResource
     {
     }
 
-    // Make Linux happy
-    virtual ~GuestResource() = default;
-
-    // Restore move constructor and assignment since destructor is declared
-    GuestResource(GuestResource&&) noexcept = default;
-    GuestResource& operator=(GuestResource&&) noexcept = default;
-
     void AddRef()
     {
         std::atomic_ref atomicRef(refCount.value);
@@ -248,10 +241,6 @@ struct GuestTexture : GuestBaseTexture
     std::vector<std::unique_ptr<RenderTextureView>> framebufferViews;
     std::unique_ptr<GuestTexture> patchedTexture;
     struct GuestSurface* sourceSurface = nullptr;
-
-    GuestTexture(ResourceType type) : GuestBaseTexture(type)
-    {
-    }
 };
 
 struct GuestLockedRect
@@ -279,10 +268,6 @@ struct GuestBuffer : GuestResource
     RenderFormat format = RenderFormat::UNKNOWN;
     uint32_t guestFormat = 0;
     bool lockedReadOnly = false;
-
-    GuestBuffer(ResourceType type) : GuestResource(type)
-    {
-    }
 };
 
 struct GuestSurfaceDesc
@@ -312,10 +297,6 @@ struct GuestSurface : GuestBaseTexture
     RenderSampleCounts sampleCount = RenderSampleCount::COUNT_1;
     ankerl::unordered_dense::map<GuestTexture*, uint32_t> destinationTextures;
     struct SurfaceVariant* variant = nullptr;
-
-    GuestSurface(ResourceType type) : GuestBaseTexture(type)
-    {
-    }
 };
 
 enum GuestDeclType
@@ -391,10 +372,6 @@ struct GuestVertexDeclaration : GuestResource
     bool hasR11G11B10Normal = false;
     bool vertexStreams[16]{};
     uint32_t indexVertexStream = 0;
-
-    GuestVertexDeclaration(ResourceType type) : GuestResource(type)
-    {
-    }
 };
 
 // VertexShader/PixelShader
@@ -411,10 +388,6 @@ struct GuestShader : GuestResource
 #ifdef ASYNC_PSO_DEBUG
     std::string name = "";
 #endif
-
-    GuestShader(ResourceType type) : GuestResource(type)
-    {
-    }
 };
 
 struct GuestViewport
