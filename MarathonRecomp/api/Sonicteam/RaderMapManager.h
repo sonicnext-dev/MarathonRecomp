@@ -17,7 +17,8 @@ namespace Sonicteam
         be<float> m_Zoom;
         MARATHON_INSERT_PADDING(0x0C);
         SoX::Math::Vector m_Field90;
-        MARATHON_INSERT_PADDING(0x10);
+        be<uint32_t> m_FieldA0;
+        MARATHON_INSERT_PADDING(0x0C);
     };
 
     MARATHON_ASSERT_OFFSETOF(RaderMapManager, m_pClump, 0x58);
@@ -26,5 +27,6 @@ namespace Sonicteam
     MARATHON_ASSERT_OFFSETOF(RaderMapManager, m_Transform, 0x70);
     MARATHON_ASSERT_OFFSETOF(RaderMapManager, m_Zoom, 0x80);
     MARATHON_ASSERT_OFFSETOF(RaderMapManager, m_Field90, 0x90);
+    MARATHON_ASSERT_OFFSETOF(RaderMapManager, m_FieldA0, 0xA0);
     MARATHON_ASSERT_SIZEOF(RaderMapManager, 0xB0);
 }

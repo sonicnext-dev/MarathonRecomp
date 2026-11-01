@@ -13,6 +13,7 @@ public:
     static inline bool s_isSaving;
     static inline bool s_isSaveDataCorrupt;
     static inline bool s_isPaused;
+    static inline bool s_isDrawUI = true;
 
     static inline Sonicteam::AppMarathon* s_pApp;
 

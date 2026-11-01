@@ -312,7 +312,7 @@ void AchievementMenu::Draw()
         return;
     }
 
-    if (!s_isVisible)
+    if (!s_isVisible || !App::s_isDrawUI)
         return;
 
     auto* drawList = ImGui::GetBackgroundDrawList();

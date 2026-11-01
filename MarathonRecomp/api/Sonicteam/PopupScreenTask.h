@@ -11,6 +11,7 @@ namespace Sonicteam
     {
     public:
         SoX::RefSharedPointer<HUDPopupScreen> m_spHUDPopupScreen;
+        bool m_IsDeleting;
         
         template <typename T = HUDPopupScreen>
         T* GetHUDPopupScreen()
@@ -18,4 +19,8 @@ namespace Sonicteam
             return static_cast<T*>(m_spHUDPopupScreen.get());
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(PopupScreenTask, m_spHUDPopupScreen, 0x4C);
+    MARATHON_ASSERT_OFFSETOF(PopupScreenTask, m_IsDeleting, 0x50);
+    MARATHON_ASSERT_SIZEOF(PopupScreenTask, 0x54);
 }

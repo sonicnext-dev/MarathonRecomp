@@ -933,7 +933,7 @@ static void DrawContainer(ImVec2 min, ImVec2 max)
 
 void OptionsMenu::Draw()
 {
-    if (!s_isVisible)
+    if (!s_isVisible || !App::s_isDrawUI)
     {
         if (g_isClosingButtonWindow)
         {
