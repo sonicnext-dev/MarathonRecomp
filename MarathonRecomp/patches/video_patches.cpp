@@ -10,11 +10,6 @@ const char* g_pBlockName{};
 
 extern const char* g_surfaceCreationName;
 
-void SetMSAALevel(PPCRegister& val)
-{
-    val.u32 = 0;
-}
-
 void BeginBlockGetName(PPCRegister& r3)
 {
     g_pBlockName = (const char*)g_memory.Translate(r3.u32);
@@ -238,6 +233,12 @@ void SetShadowResolutionMidAsmHook(PPCRegister& r11)
 
     if (res > 0)
         r11.u64 = res;
+}
+
+void FixMsaaRenderResolution(PPCRegister& r3, PPCRegister& r4)
+{
+    r3.u32 = Video::s_viewportWidth;
+    r4.u32 = Video::s_viewportHeight;
 }
 
 static GuestShader* g_movieVertexShader;

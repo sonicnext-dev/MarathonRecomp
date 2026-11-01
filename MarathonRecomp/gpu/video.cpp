@@ -2916,7 +2916,7 @@ static void ProcRenderCommand(const RenderCommands::StretchRect& args)
     const bool isDepthStencil = (args.flags & 0x4) != 0;
     const auto surface = isDepthStencil ? g_depthStencil : g_renderTarget;
 
-    // Erase previous pending command so it doesn't cause the texture to be overriden.
+    // Erase previous pending command so it doesn't cause the texture to be overridden.
     if (args.texture->sourceSurface != nullptr)
         args.texture->sourceSurface->destinationTextures.erase(args.texture);
 
@@ -2964,6 +2964,23 @@ static void ProcRenderCommand(const RenderCommands::SetDepthStencilSurface& args
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.depthStencilFormat, args.depthStencil != nullptr ? args.depthStencil->format : RenderFormat::UNKNOWN);
 }
 
+static bool UseShaderResolve(GuestSurface* surface)
+{
+    // We place all barriers beforehand, so we need to determine if *any* of the resolve
+    // operations need to be done with a shader.
+    for (const auto [texture, slice] : surface->destinationTextures)
+    {
+        // Do shader resolve if the surface is not multisampled, the format does not match,
+        // or the surface is depth and resolve modes are not supported.
+        if (surface->sampleCount == RenderSampleCount::COUNT_1 ||
+            surface->format != texture->format ||
+            (RenderFormatIsDepth(surface->format) && !g_capabilities.resolveModes))
+            return true;
+    }
+
+    return false;
+}
+
 static bool PopulateBarriersForStretchRect(GuestSurface* renderTarget, GuestSurface* depthStencil)
 {
     bool addedAny = false;
@@ -2972,26 +2989,13 @@ static bool PopulateBarriersForStretchRect(GuestSurface* renderTarget, GuestSurf
     {
         if (surface != nullptr && !surface->destinationTextures.empty())
         {
-            const bool multiSampling = surface->sampleCount != RenderSampleCount::COUNT_1;
+            RenderTextureLayout srcLayout = RenderTextureLayout::RESOLVE_SOURCE;
+            RenderTextureLayout dstLayout = RenderTextureLayout::RESOLVE_DEST;
 
-            RenderTextureLayout srcLayout;
-            RenderTextureLayout dstLayout;
-            bool shaderResolve = true;
-
-            if (multiSampling)
-            {
-                if (!RenderFormatIsDepth(surface->format) || g_capabilities.resolveModes)
-                {
-                    srcLayout = RenderTextureLayout::RESOLVE_SOURCE;
-                    dstLayout = RenderTextureLayout::RESOLVE_DEST;
-                    shaderResolve = false;
-                }
-            }
-
-            if (shaderResolve)
+            if (UseShaderResolve(surface))
             {
                 srcLayout = RenderTextureLayout::SHADER_READ;
-                dstLayout = (RenderFormatIsDepth(surface->format) ? RenderTextureLayout::DEPTH_WRITE : RenderTextureLayout::COLOR_WRITE);
+                dstLayout = RenderFormatIsDepth(surface->format) ? RenderTextureLayout::DEPTH_WRITE : RenderTextureLayout::COLOR_WRITE;
             }
 
             AddBarrier(surface, srcLayout);
@@ -3016,24 +3020,10 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
         {
             const bool multiSampling = surface->sampleCount != RenderSampleCount::COUNT_1;
             const bool isDepthStencil = RenderFormatIsDepth(surface->format);
+            const bool shaderResolve = UseShaderResolve(surface);
 
             for (const auto [texture, slice] : surface->destinationTextures)
             {
-                bool shaderResolve = true;
-
-                if (multiSampling)
-                {
-                    if (!isDepthStencil || g_capabilities.resolveModes)
-                    {
-                        if (isDepthStencil)
-                            commandList->resolveTextureRegion(texture->texture, 0, 0, surface->texture, nullptr, RenderResolveMode::MIN);
-                        else
-                            commandList->resolveTexture(texture->texture, surface->texture);
-
-                        shaderResolve = false;
-                    }
-                }
-
                 if (shaderResolve)
                 {
                     RenderPipeline* pipeline = nullptr;
@@ -3154,6 +3144,10 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
                         g_dirtyStates.depthBias = true; // Static depth bias in copy pipeline invalidates dynamic depth bias.
                     }
                 }
+                else if (isDepthStencil)
+                    commandList->resolveTextureRegion(texture->texture, 0, 0, surface->texture, nullptr, RenderResolveMode::MIN);
+                else
+                    commandList->resolveTexture(texture->texture, surface->texture);
 
                 texture->sourceSurface = nullptr;
 

@@ -93,11 +93,6 @@ invalid_instructions = [
 ]
 
 [[midasm_hook]]
-name = "SetMSAALevel"
-address = 0x82607CD4
-registers = ["r4"]
-
-[[midasm_hook]]
 name = "TitleTask_SetDefaultOption"
 address = 0x82512B10
 registers = ["r3", "r4"]
@@ -771,3 +766,23 @@ registers = ["r1", "r28"]
 name = "OnRegisterPlayerActor"
 address = 0x821749F0
 registers = ["r25"]
+
+[[midasm_hook]]
+name = "FixMsaaRenderResolution"
+address = 0x825b1e70
+registers = ["r3", "r4"]
+
+[[midasm_hook]]
+name = "FixMsaaRenderResolution"
+address = 0x825b1edc
+registers = ["r3", "r4"]
+
+[[midasm_hook]]
+name = "FixMsaaRenderResolution"
+address = 0x825b1f30
+registers = ["r3", "r4"]
+
+[[midasm_hook]]
+name = "FixMsaaRenderResolution"
+address = 0x825b1f94
+registers = ["r3", "r4"]
