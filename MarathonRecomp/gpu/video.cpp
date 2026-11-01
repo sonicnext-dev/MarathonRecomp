@@ -2524,6 +2524,16 @@ void Video::Resize(uint32_t width, uint32_t height)
     rDeviceInfo.SurfaceParamsC = rDeviceInfo.SurfaceParamsB;
     rDeviceInfo.SurfaceParamsC.Base = rDeviceInfo.SurfaceParamsB.Base + surfaceBase;
 
+    ReleaseResource(static_cast<GuestSurface*>(pApp->m_pColorTile2x.get()));
+    pApp->m_pColorTile2x = CreateSurface(width, height, D3DFMT_A16B16G16R16F_2, 1, reinterpret_cast<GuestSurfaceCreateParams*>(&surfaceParams));
+    ReleaseResource(static_cast<GuestSurface*>(pApp->m_pDepthTile2x.get()));
+    pApp->m_pDepthTile2x = CreateSurface(width, height, D3DFMT_D24FS8, 1, reinterpret_cast<GuestSurfaceCreateParams*>(&surfaceParams));
+
+    ReleaseResource(static_cast<GuestSurface*>(pApp->m_pColorTile4x.get()));
+    pApp->m_pColorTile4x = CreateSurface(width, height, D3DFMT_A16B16G16R16F_2, 2, reinterpret_cast<GuestSurfaceCreateParams*>(&surfaceParams));
+    ReleaseResource(static_cast<GuestSurface*>(pApp->m_pDepthTile4x.get()));
+    pApp->m_pDepthTile4x = CreateSurface(width, height, D3DFMT_D24FS8, 2, reinterpret_cast<GuestSurfaceCreateParams*>(&surfaceParams));
+
     // Viewport is reset here because we're using the game's backbuffer directly.
     SetRenderTarget(static_cast<GuestDevice*>(pApp->m_pDevice.get()), 0, static_cast<GuestSurface*>(pApp->m_pBackBufferSurface.get()));
     SetDepthStencilSurface(static_cast<GuestDevice*>(pApp->m_pDevice.get()), static_cast<GuestSurface*>(pApp->m_pDepthStencilSurface.get()));
@@ -2554,6 +2564,10 @@ void Video::Resize(uint32_t width, uint32_t height)
 
     setSurface(pMyGraphicsDevice->m_spBackBuffer.get(), static_cast<GuestSurface*>(pApp->m_pBackBufferSurface.get()));
     setSurface(pMyGraphicsDevice->m_spDepthStencil.get(), static_cast<GuestSurface*>(pApp->m_pDepthStencilSurface.get()));
+    setSurface(pMyGraphicsDevice->m_spColorTile2x.get(), static_cast<GuestSurface*>(pApp->m_pColorTile2x.get()));
+    setSurface(pMyGraphicsDevice->m_spDepthTile2x.get(), static_cast<GuestSurface*>(pApp->m_pDepthTile2x.get()));
+    setSurface(pMyGraphicsDevice->m_spColorTile4x.get(), static_cast<GuestSurface*>(pApp->m_pColorTile4x.get()));
+    setSurface(pMyGraphicsDevice->m_spDepthTile4x.get(), static_cast<GuestSurface*>(pApp->m_pDepthTile4x.get()));
 
     // Refresh graphics device and configure FBO surfaces.
     GuestToHostFunction<void>(sub_82637418, pMyGraphicsDevice);

@@ -769,20 +769,20 @@ registers = ["r25"]
 
 [[midasm_hook]]
 name = "FixMsaaRenderResolution"
-address = 0x825b1e70
+address = 0x825B1E70
 registers = ["r3", "r4"]
 
 [[midasm_hook]]
 name = "FixMsaaRenderResolution"
-address = 0x825b1edc
+address = 0x825B1EDC
 registers = ["r3", "r4"]
 
 [[midasm_hook]]
 name = "FixMsaaRenderResolution"
-address = 0x825b1f30
+address = 0x825B1F30
 registers = ["r3", "r4"]
 
 [[midasm_hook]]
 name = "FixMsaaRenderResolution"
-address = 0x825b1f94
+address = 0x825B1F94
 registers = ["r3", "r4"]
