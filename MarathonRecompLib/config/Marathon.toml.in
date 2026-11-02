@@ -794,6 +794,18 @@ registers = ["r26", "r1"]
 jump_address = 0x828B51B4
 
 [[midasm_hook]]
+name = "ClearMsaaFrameBuffer"
+address = 0x828B44F0
+registers = ["r31"]
+jump_address_on_true = 0x828B44F4
+
+[[midasm_hook]]
+name = "ClearMsaaFrameBuffer"
+address = 0x828B44FC
+registers = ["r31"]
+jump_address_on_true = 0x828B4500
+
+[[midasm_hook]]
 name = "ResolveMsaaFrameBuffers"
 address = 0x828B453C
 registers = ["r31", "r8"]

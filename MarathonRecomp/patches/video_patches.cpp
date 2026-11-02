@@ -254,6 +254,14 @@ void FixFrameBufferTileRects(PPCRegister& r26, PPCRegister& r1)
     pFrameBufferObjectXenon->m_TileRects.push_back(rect);
 }
 
+bool ClearMsaaFrameBuffer(PPCRegister& r31)
+{
+    const auto pFrameBufferObjectXenon = reinterpret_cast<Sonicteam::SoX::Graphics::Xenon::FrameBufferObjectXenon*>(g_memory.Translate(r31.u32));
+
+    // Ensure an MSAA framebuffer is cleared before re-use
+    return pFrameBufferObjectXenon->m_MSAALevel != 0;
+}
+
 void ResolveMsaaFrameBuffers(PPCRegister& r31, PPCRegister& r8)
 {
     const auto pFrameBufferObjectXenon = reinterpret_cast<Sonicteam::SoX::Graphics::Xenon::FrameBufferObjectXenon*>(g_memory.Translate(r31.u32));
