@@ -242,6 +242,22 @@ void SetMsaaLevel(PPCRegister& r1)
     pLuaSystem->SetString("MSAAType", "2x");
 }
 
+void SetMsaaLevelMultiplayer(PPCRegister& r31, PPCRegister& r4)
+{
+    const auto L = reinterpret_cast<lua50::lua_State*>(g_memory.Translate(r31.u32));
+
+    // MSAA type is provided, abort.
+    if (lua50::lua_isstring(L, 9))
+        return;
+
+    const auto pFrameBufferName = lua50::lua_tostring(L, 2);
+    const auto pDepthStencilName = lua50::lua_tostring(L, 3);
+
+    // Force MSAA level for multiplayer.
+    if (strstr(pFrameBufferName, "coframebuffer") && strcmp(pDepthStencilName, "codepthstencil") == 0)
+        r4.u32 = Config::AntiAliasing != EAntiAliasing::Off;
+}
+
 void FixMsaaSurfaceSize(PPCRegister& r1, PPCRegister& r3, PPCRegister& r4)
 {
     const auto* backBufferSize = static_cast<be<uint32_t>*>(g_memory.Translate(r1.u32 + 0x60));

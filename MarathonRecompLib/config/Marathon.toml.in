@@ -773,6 +773,11 @@ address = 0x8260E07C
 registers = ["r1"]
 
 [[midasm_hook]]
+name = "SetMsaaLevelMultiplayer"
+address = 0x82607CD4
+registers = ["r31", "r4"]
+
+[[midasm_hook]]
 name = "FixMsaaSurfaceSize"
 address = 0x825B1E70
 registers = ["r1", "r3", "r4"]
