@@ -2594,7 +2594,7 @@ void Video::Resize(uint32_t width, uint32_t height)
     };
 
     // Update depth stencil surfaces.
-    for (auto& rSurface : pRenderTargetContainer->m_mspDepthStencil_1_4)
+    for (auto& rSurface : pRenderTargetContainer->m_DepthStencilSurfaces)
     {
         const auto pSurfaceName = rSurface.first.c_str();
 
@@ -2610,7 +2610,7 @@ void Video::Resize(uint32_t width, uint32_t height)
     }
 
     // Update frame buffer textures.
-    for (auto& rTexture : pRenderTargetContainer->m_mspFrameBuffer)
+    for (auto& rTexture : pRenderTargetContainer->m_FrameBufferTextures)
     {
         const auto pTextureName = rTexture.first.c_str();
 
@@ -2632,9 +2632,9 @@ void Video::Resize(uint32_t width, uint32_t height)
     }
 
     // Clear post-process buffers.
-    pRenderTargetContainer->m_mspDepthStencil_256.clear();
-    pRenderTargetContainer->m_mspPostEffect.clear();
-    pRenderTargetContainer->m_mspPostEffectAfter.clear();
+    pRenderTargetContainer->m_DepthStencil256xSurfaces.clear();
+    pRenderTargetContainer->m_PostEffectTextures.clear();
+    pRenderTargetContainer->m_PostEffectAfterTextures.clear();
 
     Sonicteam::HUDRaderMap* pHUDRaderMap{};
 
