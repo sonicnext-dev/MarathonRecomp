@@ -15,6 +15,8 @@ static std::unique_ptr<RenderShader> g_enhancedBurnoutBlurPSShader;
 
 static std::unique_ptr<RenderShader> g_MoviePSShader;
 
+static std::unique_ptr<RenderShader> g_downsamplePSShader;
+
 std::unique_ptr<GuestShader> g_conditionalSurveyPSShader;
 
 void LoadEmbeddedResources()
@@ -47,6 +49,8 @@ void CreateReplacementShaders()
     g_enhancedBurnoutBlurPSShader = CREATE_SHADER(enhanced_burnout_blur_ps);
     g_MoviePSShader = CREATE_SHADER(movie_ps);
 
+    g_downsamplePSShader = CREATE_SHADER(downsample_ps);
+
     g_conditionalSurveyPSShader = std::make_unique<GuestShader>(ResourceType::PixelShader);
     g_conditionalSurveyPSShader->shader = CREATE_SHADER(conditional_survey_ps);
 }
@@ -72,6 +76,8 @@ RenderShader* GetReplacementShader(const GuestShader* guestShader)
             break;
         case 0x88EB0AA82E4257B0:
             return g_MoviePSShader.get();
+        case 0x62573AB4C9EC44EE:
+            return g_downsamplePSShader.get();
         default:
             break;
         }

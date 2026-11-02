@@ -123,6 +123,7 @@ set(MARATHON_RECOMP_CPU_CXX_SOURCES
 )
 
 set(MARATHON_RECOMP_GPU_CXX_SOURCES
+    "gpu/render_resolution.cpp"
     "gpu/video.cpp"
     "gpu/resources.cpp"
     "gpu/guest_convert.cpp"
@@ -491,6 +492,7 @@ compile_pixel_shader(conditional_survey_ps)
 compile_vertex_shader(copy_vs)
 compile_pixel_shader(copy_color_ps)
 compile_pixel_shader(copy_depth_ps)
+compile_pixel_shader(downsample_ps)
 compile_vertex_shader(enhanced_burnout_blur_vs)
 compile_pixel_shader(enhanced_burnout_blur_ps)
 compile_pixel_shader(movie_ps)

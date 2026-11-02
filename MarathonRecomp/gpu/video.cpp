@@ -3,13 +3,14 @@
 #include "guest_convert.h"
 #include "guest_device.h"
 #include "guest_shader.h"
-#include "surface_variant.h"
-#include "video_internal.h"
-#include "pipeline.h"
 #include "imgui/imgui_common.h"
 #include "imgui/imgui_snapshot.h"
+#include "pipeline.h"
 #include "render_command.h"
+#include "render_resolution.h"
 #include "resources.h"
+#include "surface_variant.h"
+#include "video_internal.h"
 
 #include <Marathon.h>
 #include <app.h>
@@ -579,6 +580,15 @@ static void AddBarrier(GuestBaseTexture* texture, RenderTextureLayout layout)
             g_barrierMap[texture->texture] = layout;
             layoutRef = layout;
         }
+    }
+}
+
+static void AddVariantBarrier(SurfaceVariant* variant, RenderTextureLayout layout)
+{
+    if (variant->layout != layout)
+    {
+        g_barrierMap[variant->textureHolder.get()] = layout;
+        variant->layout = layout;
     }
 }
 
@@ -2465,10 +2475,9 @@ void Video::Resize(uint32_t width, uint32_t height)
     if (!pRenderTargetContainer || !pMyGraphicsDevice)
         return;
 
-    width *= Config::ResolutionScale;
-    height *= Config::ResolutionScale;
+    const auto internalSize = RenderResolution::GetInternalSize();
 
-    if (!width || !height)
+    if (!internalSize.Width || !internalSize.Height)
     {
         LOGN_ERROR("Attempting to resize buffers to 0x0.");
         return;
@@ -2476,8 +2485,6 @@ void Video::Resize(uint32_t width, uint32_t height)
 
     struct BufferInfo
     {
-        uint32_t Width;
-        uint32_t Height;
         uint32_t Index;
         uint32_t Flags;
     };
@@ -2485,17 +2492,17 @@ void Video::Resize(uint32_t width, uint32_t height)
     static std::map<std::string, BufferInfo> buffers{};
 
     // Update buffer dimensions.
-    buffers["framebuffer0"] = { width, height, 0, 4 };
-    buffers["framebuffer1"] = { width, height, 0, 0 };
-    buffers["framebuffer_1_4_0"] = { width >> 2, height >> 2, 3, 2 };
-    buffers["framebuffer_1_4_1"] = { width >> 2, height >> 2, 0, 2 };
-    buffers["framebuffer_1_8_0"] = { width >> 3, height >> 3, 3, 2 };
-    buffers["framebuffer_1_8_1"] = { width >> 3, height >> 3, 0, 2 };
-    buffers["framebuffer_1_16_0"] = { width >> 4, height >> 4, 3, 2 };
-    buffers["framebuffer_1_16_1"] = { width >> 4, height >> 4, 0, 2 };
-    buffers["framebuffer_1_32_0"] = { width >> 5, height >> 5, 3, 2 };
-    buffers["framebuffer_1_32_1"] = { width >> 5, height >> 5, 0, 2 };
-    buffers["depthstencil_1_4"] = { width, height, 6, 0 };
+    buffers["framebuffer0"] = { 0, 4 };
+    buffers["framebuffer1"] = { 0, 0 };
+    buffers["framebuffer_1_4_0"] = { 3, 2 };
+    buffers["framebuffer_1_4_1"] = { 0, 2 };
+    buffers["framebuffer_1_8_0"] = { 3, 2 };
+    buffers["framebuffer_1_8_1"] = { 0, 2 };
+    buffers["framebuffer_1_16_0"] = { 3, 2 };
+    buffers["framebuffer_1_16_1"] = { 0, 2 };
+    buffers["framebuffer_1_32_0"] = { 3, 2 };
+    buffers["framebuffer_1_32_1"] = { 0, 2 };
+    buffers["depthstencil_1_4"] = { 6, 0 };
 
     if (g_backBuffer && g_backBuffer != pApp->m_pBackBufferSurface.get())
         g_backBuffer->Release();
@@ -2506,7 +2513,7 @@ void Video::Resize(uint32_t width, uint32_t height)
     auto& rDeviceInfo = pApp->m_DeviceInfo;
 
     auto surfaceParams = D3DXBSURFACE_PARAMETERS(0, 0, 0);
-    const auto surfaceBase = static_cast<uint32_t>(height * 1.155555555555556); // 720p: 0x340
+    const auto surfaceBase = static_cast<uint32_t>(internalSize.Height * 1.155555555555556); // 720p: 0x340
 
     // Recreate main buffers.
     ReleaseResource(static_cast<GuestTexture*>(pApp->m_pFrontBufferTexture.get()));
@@ -2518,7 +2525,7 @@ void Video::Resize(uint32_t width, uint32_t height)
     surfaceParams.Base = surfaceParams.Base + surfaceBase;
 
     ReleaseResource(static_cast<GuestSurface*>(pApp->m_pDepthStencilSurface.get()));
-    pApp->m_pDepthStencilSurface = CreateSurface(width, height, D3DFMT_D24FS8, 0, reinterpret_cast<GuestSurfaceCreateParams*>(&surfaceParams));
+    pApp->m_pDepthStencilSurface = CreateSurface(internalSize.Width, internalSize.Height, D3DFMT_D24FS8, 0, reinterpret_cast<GuestSurfaceCreateParams*>(&surfaceParams));
 
     rDeviceInfo.SurfaceParamsB = surfaceParams;
     rDeviceInfo.SurfaceParamsC = rDeviceInfo.SurfaceParamsB;
@@ -2588,11 +2595,12 @@ void Video::Resize(uint32_t width, uint32_t height)
             continue;
 
         const auto& rBufferInfo = buffers[pSurfaceName];
+        const auto size = *RenderResolution::FindBufferSize(pSurfaceName, nullptr);
 
         auto pSurfaceParams = getSurfaceParams(rBufferInfo.Index, rBufferInfo.Flags);
-        auto pNewSurface = CreateSurface(rBufferInfo.Width, rBufferInfo.Height, pFormatConfigs[rBufferInfo.Index].SurfaceFormat, 0, reinterpret_cast<GuestSurfaceCreateParams*>(pSurfaceParams));
+        auto pNewSurface = CreateSurface(size.Width, size.Height, pFormatConfigs[rBufferInfo.Index].SurfaceFormat, 0, reinterpret_cast<GuestSurfaceCreateParams*>(pSurfaceParams));
 
-        GuestToHostFunction<void>(sub_82592E98, rSurface.second.get(), pNewSurface, rBufferInfo.Width, rBufferInfo.Height);
+        GuestToHostFunction<void>(sub_82592E98, rSurface.second.get(), pNewSurface, size.Width, size.Height);
     }
 
     // Update frame buffer textures.
@@ -2604,17 +2612,18 @@ void Video::Resize(uint32_t width, uint32_t height)
             continue;
 
         const auto& rBufferInfo = buffers[pTextureName];
+        const auto size = *RenderResolution::FindBufferSize(pTextureName, nullptr);
 
-        CreateTextureLocal(rTexture.second.get(), rBufferInfo.Width, rBufferInfo.Height, 1, 1, pFormatConfigs[rBufferInfo.Index].Usage, pFormatConfigs[rBufferInfo.Index].TextureFormat, 0, 3);
+        CreateTextureLocal(rTexture.second.get(), size.Width, size.Height, 1, 1, pFormatConfigs[rBufferInfo.Index].Usage, pFormatConfigs[rBufferInfo.Index].TextureFormat, 0, 3);
 
         const auto surfaceFormatIndex = (rBufferInfo.Flags & 4) == 0
             ? rBufferInfo.Index
             : 3;
 
         auto pSurfaceParams = getSurfaceParams(surfaceFormatIndex, rBufferInfo.Flags);
-        auto pNewSurface = CreateSurface(rBufferInfo.Width, rBufferInfo.Height, pFormatConfigs[surfaceFormatIndex].SurfaceFormat, 0, reinterpret_cast<GuestSurfaceCreateParams*>(pSurfaceParams));
+        auto pNewSurface = CreateSurface(size.Width, size.Height, pFormatConfigs[surfaceFormatIndex].SurfaceFormat, 0, reinterpret_cast<GuestSurfaceCreateParams*>(pSurfaceParams));
 
-        GuestToHostFunction<void>(sub_82592E98, rTexture.second->m_Surfaces[0].get(), pNewSurface, rBufferInfo.Width, rBufferInfo.Height);
+        GuestToHostFunction<void>(sub_82592E98, rTexture.second->m_Surfaces[0].get(), pNewSurface, size.Width, size.Height);
     }
 
     // Clear post-process buffers.
@@ -2911,10 +2920,86 @@ static void SetSurface(uint32_t index, GuestSurface* surface)
     SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.textureCubeIndices[index], static_cast<uint32_t>(TEXTURE_DESCRIPTOR_NULL_TEXTURE_CUBE));
 }
 
+static void ResolveAliasedVariant(const GuestSurface* surface)
+{
+    if (surface == nullptr || surface->variant == nullptr ||
+        surface->sampleCount != RenderSampleCount::COUNT_1 ||
+        surface->texture != surface->variant->textureHolder.get())
+    {
+        return;
+    }
+
+    const auto destination = surface->variant;
+    const auto source = FindAliasResolveSource(destination);
+
+    if (source == nullptr)
+        return;
+
+    source->pendingAliasResolve = false;
+
+    auto& commandList = g_commandLists[g_frame];
+    const bool isDepthStencil = RenderFormatIsDepth(source->format);
+
+    destination->deferredClearFlags &= ~(isDepthStencil ? D3DCLEAR_ZBUFFER : D3DCLEAR_TARGET);
+
+    if (!isDepthStencil || g_capabilities.resolveModes)
+    {
+        AddVariantBarrier(source, RenderTextureLayout::RESOLVE_SOURCE);
+        AddVariantBarrier(destination, RenderTextureLayout::RESOLVE_DEST);
+        FlushBarriers();
+
+        if (isDepthStencil)
+            commandList->resolveTextureRegion(destination->textureHolder.get(), 0, 0, source->textureHolder.get(), nullptr, RenderResolveMode::MIN);
+        else
+            commandList->resolveTexture(destination->textureHolder.get(), source->textureHolder.get());
+
+        return;
+    }
+
+    AddVariantBarrier(source, RenderTextureLayout::SHADER_READ);
+    AddVariantBarrier(destination, RenderTextureLayout::DEPTH_WRITE);
+    FlushBarriers();
+
+    auto& framebuffer = destination->framebuffers[nullptr];
+    if (framebuffer == nullptr)
+    {
+        RenderFramebufferDesc desc;
+        desc.depthAttachment = destination->textureHolder.get();
+        framebuffer = g_device->createFramebuffer(desc);
+    }
+
+    if (g_framebuffer != framebuffer.get())
+    {
+        commandList->setFramebuffer(framebuffer.get());
+        g_framebuffer = framebuffer.get();
+    }
+
+    const uint32_t pipelineIndex = source->sampleCount == RenderSampleCount::COUNT_2 ? 0 : source->sampleCount == RenderSampleCount::COUNT_4 ? 1 : 2;
+
+    commandList->setPipeline(g_resolveMsaaDepthPipelines[pipelineIndex].get());
+    commandList->setViewports(RenderViewport(0.0f, 0.0f, static_cast<float>(destination->width), static_cast<float>(destination->height), 0.0f, 1.0f));
+    commandList->setScissors(RenderRect(0, 0, destination->width, destination->height));
+    commandList->setGraphicsPushConstants(0, &source->descriptorIndex, 0, sizeof(uint32_t));
+    commandList->drawInstanced(6, 1, 0, 0);
+
+    g_dirtyStates.renderTargetAndDepthStencil = true;
+    g_dirtyStates.viewport = true;
+    g_dirtyStates.pipelineState = true;
+    g_dirtyStates.scissorRect = true;
+
+    if (g_backend != Backend::D3D12)
+    {
+        g_dirtyStates.vertexShaderConstants = true;
+        g_dirtyStates.depthBias = true;
+    }
+}
+
 static void ProcRenderCommand(const RenderCommands::StretchRect& args)
 {
     const bool isDepthStencil = (args.flags & 0x4) != 0;
     const auto surface = isDepthStencil ? g_depthStencil : g_renderTarget;
+
+    ResolveAliasedVariant(surface);
 
     // Erase previous pending command so it doesn't cause the texture to be overriden.
     if (args.texture->sourceSurface != nullptr)
@@ -2952,7 +3037,6 @@ static void ProcRenderCommand(const RenderCommands::SetRenderTarget& args)
 {
     SetDirtyValue(g_dirtyStates.renderTargetAndDepthStencil, g_renderTarget, args.renderTarget);
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.renderTargetFormat, args.renderTarget != nullptr ? args.renderTarget->format : RenderFormat::UNKNOWN);
-    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.sampleCount, args.renderTarget != nullptr ? args.renderTarget->sampleCount : RenderSampleCount::COUNT_1);
 
     // When alpha to coverage is enabled, update the alpha test mode as it's dependent on sample count.
     SetAlphaTestMode((g_pipelineState.specConstants & (SPEC_CONSTANT_ALPHA_TEST | SPEC_CONSTANT_ALPHA_TO_COVERAGE)) != 0);
@@ -2962,6 +3046,20 @@ static void ProcRenderCommand(const RenderCommands::SetDepthStencilSurface& args
 {
     SetDirtyValue(g_dirtyStates.renderTargetAndDepthStencil, g_depthStencil, args.depthStencil);
     SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.depthStencilFormat, args.depthStencil != nullptr ? args.depthStencil->format : RenderFormat::UNKNOWN);
+}
+
+static bool CanHardwareResolve(GuestSurface* surface)
+{
+    if (RenderFormatIsDepth(surface->format))
+        return g_capabilities.resolveModes;
+
+    for (const auto texture : surface->destinationTextures | std::views::keys)
+    {
+        if (texture->format != surface->format)
+            return false;
+    }
+
+    return true;
 }
 
 static bool PopulateBarriersForStretchRect(GuestSurface* renderTarget, GuestSurface* depthStencil)
@@ -2980,7 +3078,7 @@ static bool PopulateBarriersForStretchRect(GuestSurface* renderTarget, GuestSurf
 
             if (multiSampling)
             {
-                if (!RenderFormatIsDepth(surface->format) || g_capabilities.resolveModes)
+                if (CanHardwareResolve(surface))
                 {
                     srcLayout = RenderTextureLayout::RESOLVE_SOURCE;
                     dstLayout = RenderTextureLayout::RESOLVE_DEST;
@@ -3016,6 +3114,7 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
         {
             const bool multiSampling = surface->sampleCount != RenderSampleCount::COUNT_1;
             const bool isDepthStencil = RenderFormatIsDepth(surface->format);
+            const bool hardwareResolve = CanHardwareResolve(surface);
 
             for (const auto [texture, slice] : surface->destinationTextures)
             {
@@ -3023,7 +3122,7 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
 
                 if (multiSampling)
                 {
-                    if (!isDepthStencil || g_capabilities.resolveModes)
+                    if (hardwareResolve)
                     {
                         if (isDepthStencil)
                             commandList->resolveTextureRegion(texture->texture, 0, 0, surface->texture, nullptr, RenderResolveMode::MIN);
@@ -3064,7 +3163,7 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
                         }
                         else
                         {
-                            auto& resolveMsaaColorPipeline = g_resolveMsaaColorPipelines[surface->format][pipelineIndex];
+                            auto& resolveMsaaColorPipeline = g_resolveMsaaColorPipelines[texture->format][pipelineIndex];
                             if (resolveMsaaColorPipeline == nullptr)
                             {
                                 RenderGraphicsPipelineDesc desc;
@@ -3593,6 +3692,12 @@ static void FlushRenderStateForRenderThread()
 {
     auto renderTarget = g_pipelineState.colorWriteEnable ? g_renderTarget : nullptr;
     auto depthStencil = g_pipelineState.zEnable || g_pipelineState.stencilEnable ? g_depthStencil : nullptr;
+    auto sampleSource = renderTarget != nullptr ? renderTarget : depthStencil;
+
+    ResolveAliasedVariant(renderTarget);
+    ResolveAliasedVariant(depthStencil);
+
+    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.sampleCount, sampleSource != nullptr ? sampleSource->sampleCount : RenderSampleCount::COUNT_1);
 
     bool foundAny = PopulateBarriersForStretchRect(renderTarget, depthStencil);
 
@@ -3648,6 +3753,13 @@ static void FlushRenderStateForRenderThread()
 
     SetFramebuffer(renderTarget, depthStencil, false);
     ApplyDeferredVariantClears(renderTarget, depthStencil);
+
+    for (const auto surface : { renderTarget, depthStencil })
+    {
+        if (surface != nullptr && surface->variant != nullptr && surface->sampleCount != RenderSampleCount::COUNT_1)
+            surface->variant->pendingAliasResolve = true;
+    }
+
     FlushViewport();
 
     auto& commandList = g_commandLists[g_frame];

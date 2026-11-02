@@ -25,12 +25,14 @@ struct SurfaceVariant
     float deferredClearColor[4]{};
     float deferredClearZ = 1.0f;
     uint32_t deferredClearStencil = 0;
+    bool pendingAliasResolve = false;
 };
 
 extern const char* g_surfaceCreationName;
 
 RenderTextureDesc MakeSurfaceTextureDesc(uint32_t width, uint32_t height, RenderFormat format, RenderSampleCounts sampleCount);
 SurfaceVariant* AcquireSurfaceVariant(uint32_t base, uint32_t width, uint32_t height, uint32_t guestFormat, RenderSampleCounts sampleCount, bool& created);
+SurfaceVariant* FindAliasResolveSource(const SurfaceVariant* destination);
 bool ReleaseSurfaceVariant(SurfaceVariant* variant);
 void PurgeSurfaceVariantFramebuffers();
 void PropagateDeferredClear(GuestSurface* renderTarget, GuestSurface* depthStencil, const RenderCommands::Clear& args);
