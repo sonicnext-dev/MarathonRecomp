@@ -242,7 +242,7 @@ void SetMsaaLevel(PPCRegister& r1)
     pLuaSystem->SetString("MSAAType", "2x");
 }
 
-void SetMsaaLevelMultiplayer(PPCRegister& r31, PPCRegister& r4)
+void SetMsaaLevelForBuffers(PPCRegister& r31, PPCRegister& r4)
 {
     const auto L = reinterpret_cast<lua50::lua_State*>(g_memory.Translate(r31.u32));
 
@@ -250,12 +250,24 @@ void SetMsaaLevelMultiplayer(PPCRegister& r31, PPCRegister& r4)
     if (lua50::lua_isstring(L, 9))
         return;
 
-    const auto pFrameBufferName = lua50::lua_tostring(L, 2);
+    const auto pBufferName = lua50::lua_tostring(L, 2);
     const auto pDepthStencilName = lua50::lua_tostring(L, 3);
+    const auto bufferType = Sonicteam::SoX::Graphics::GetBufferTypeByName(lua50::lua_tostring(L, 4));
 
-    // Force MSAA level for multiplayer.
-    if (strstr(pFrameBufferName, "coframebuffer") && strcmp(pDepthStencilName, "codepthstencil") == 0)
-        r4.u32 = Config::AntiAliasing != EAntiAliasing::Off;
+    static const std::array<std::tuple<const char*, const char*, Sonicteam::SoX::Graphics::BufferType>, 2> buffers =
+    {{
+        // Force MSAA level for multiplayer.
+        { "coframebuffer", "codepthstencil", Sonicteam::SoX::Graphics::BufferType_All },
+
+        // Force MSAA level for radar.
+        { "radermap", "depthstencil_256", Sonicteam::SoX::Graphics::BufferType_ColorDepth }
+    }};
+
+    for (const auto& [rBufferName, rDepthStencilName, rBufferType] : buffers)
+    {
+        if (strstr(pBufferName, rBufferName) && strcmp(pDepthStencilName, rDepthStencilName) == 0 && bufferType == rBufferType)
+            r4.u32 = Config::AntiAliasing != EAntiAliasing::Off;
+    }
 }
 
 void FixMsaaSurfaceSize(PPCRegister& r1, PPCRegister& r3, PPCRegister& r4)

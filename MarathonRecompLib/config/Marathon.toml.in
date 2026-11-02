@@ -773,7 +773,7 @@ address = 0x8260E07C
 registers = ["r1"]
 
 [[midasm_hook]]
-name = "SetMsaaLevelMultiplayer"
+name = "SetMsaaLevelForBuffers"
 address = 0x82607CD4
 registers = ["r31", "r4"]
 

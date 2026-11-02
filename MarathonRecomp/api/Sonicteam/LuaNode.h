@@ -23,7 +23,7 @@ namespace Sonicteam
             be<uint32_t> fpIsBoolean;
             be<uint32_t> fpGetBoolean;
             be<uint32_t> fpSetBoolean;
-            be<uint32_t> fpUnregisterLocal;
+            be<uint32_t> fpUnregister;
             be<uint32_t> fpRegisterFunctions; // int (__fastcall *RegisterFunctions)(Sonicteam::LuaNode* this, luaL_reg* in_pFunctions, int in_count)
             be<uint32_t> fpGetTable;
         };
@@ -102,11 +102,11 @@ namespace Sonicteam
             GuestToHostFunction<void>(m_pVftable->fpSetBoolean.get(), this, name->c_str(), in_value);
         }
 
-        void UnregisterLocal(const char* in_pName)
+        void Unregister(const char* in_pName)
         {
             const auto name = guest_stack_var<stdx::string>(in_pName);
 
-            GuestToHostFunction<void>(m_pVftable->fpUnregisterLocal.get(), this, name->c_str());
+            GuestToHostFunction<void>(m_pVftable->fpUnregister.get(), this, name->c_str());
         }
 
         boost::shared_ptr<LuaTableAccess> GetTable(const char* in_pName)
@@ -130,7 +130,7 @@ namespace Sonicteam
     MARATHON_ASSERT_OFFSETOF(LuaNode::Vftable, fpIsBoolean, 0x4C);
     MARATHON_ASSERT_OFFSETOF(LuaNode::Vftable, fpGetBoolean, 0x50);
     MARATHON_ASSERT_OFFSETOF(LuaNode::Vftable, fpSetBoolean, 0x54);
-    MARATHON_ASSERT_OFFSETOF(LuaNode::Vftable, fpUnregisterLocal, 0x58);
+    MARATHON_ASSERT_OFFSETOF(LuaNode::Vftable, fpUnregister, 0x58);
     MARATHON_ASSERT_OFFSETOF(LuaNode::Vftable, fpRegisterFunctions, 0x5C);
     MARATHON_ASSERT_OFFSETOF(LuaNode::Vftable, fpGetTable, 0x60);
     MARATHON_ASSERT_SIZEOF(LuaNode::Vftable, 0x64);

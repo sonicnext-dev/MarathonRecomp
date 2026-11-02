@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Marathon.inl>
-#include <Sonicteam/SoX/Graphics/FrameBufferType.h>
+#include <Sonicteam/SoX/Graphics/BufferType.h>
 #include <Sonicteam/SoX/Graphics/Surface.h>
 #include <Sonicteam/SoX/Array.h>
 #include <Sonicteam/SoX/Color.h>
@@ -15,7 +15,7 @@ namespace Sonicteam::SoX::Graphics
     public:
         Array<RefSharedPointer<Surface>, 4> m_FrameBufferSurfaces;
         RefSharedPointer<Surface> m_spDepthStencilSurface;
-        be<FrameBufferType> m_Type;
+        be<BufferType> m_Type;
         ARGB8888 m_ClearColor;
         be<float> m_ClearZ;
         MARATHON_INSERT_PADDING(0x04);
