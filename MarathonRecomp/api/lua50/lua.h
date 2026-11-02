@@ -29,4 +29,14 @@ namespace lua50
     {
         return GuestToHostFunction<void*>(sub_825D5800, L, idx);
     }
+
+    inline bool lua_isstring(lua_State* L, int idx)
+    {
+        return GuestToHostFunction<bool>(sub_825D5468, L, idx);
+    }
+
+    inline const char* lua_tostring(lua_State* L, int idx)
+    {
+        return GuestToHostFunction<const char*>(sub_825D5660, L, idx);
+    }
 }

@@ -768,6 +768,11 @@ address = 0x821749F0
 registers = ["r25"]
 
 [[midasm_hook]]
+name = "SetMsaaLevel"
+address = 0x8260E07C
+registers = ["r1"]
+
+[[midasm_hook]]
 name = "FixMsaaSurfaceSize"
 address = 0x825B1E70
 registers = ["r1", "r3", "r4"]
