@@ -7,6 +7,7 @@
 #include <kernel/function.h>
 #include <kernel/heap.h>
 #include <kernel/memory.h>
+#include <user/config.h>
 
 std::atomic<uint32_t> g_bufferUploadCount = 0;
 
@@ -103,16 +104,27 @@ GuestTexture* CreateTexture(uint32_t width, uint32_t height, uint32_t depth, uin
     return texture;
 }
 
+static RenderSampleCounts GetSurfaceSampleCount(uint32_t multiSampleType) {
+    if (multiSampleType == 0)
+        return RenderSampleCount::COUNT_1;
+
+    switch (Config::AntiAliasing)
+    {
+    case EAntiAliasing::MSAA2x:
+        return RenderSampleCount::COUNT_2;
+    case EAntiAliasing::MSAA4x:
+        return RenderSampleCount::COUNT_4;
+    case EAntiAliasing::MSAA8x:
+        return RenderSampleCount::COUNT_8;
+    default:
+        return RenderSampleCount::COUNT_1;
+    }
+}
+
 GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t format, uint32_t multiSample, const GuestSurfaceCreateParams* params)
 {
-    RenderSampleCounts sampleCount;
-    if (multiSample == 0) {
-        sampleCount = RenderSampleCount::COUNT_1;
-    } else {
-        sampleCount = multiSample == 1 ? RenderSampleCount::COUNT_2 : RenderSampleCount::COUNT_4;
-    }
-
     const RenderFormat renderFormat = ConvertFormat(format);
+    const RenderSampleCounts sampleCount = GetSurfaceSampleCount(multiSample);
     const bool isDepthStencil = RenderFormatIsDepth(renderFormat);
 
     const auto surface = g_userHeap.AllocPhysical<GuestSurface>(isDepthStencil ?
@@ -122,6 +134,7 @@ GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t format, ui
     surface->height = height;
     surface->format = renderFormat;
     surface->guestFormat = format;
+    surface->multiSampleType = multiSample;
     surface->sampleCount = sampleCount;
 
     bool created = false;
@@ -306,14 +319,7 @@ static void GetSurfaceDesc(GuestSurface* surface, GuestSurfaceDesc* desc)
     desc->height = surface->height;
     desc->format = surface->guestFormat;
     desc->type = 4; // D3DRTYPE_SURFACE
-    // desc->multiSampleType = 0;
-    if (surface->sampleCount == RenderSampleCount::COUNT_1) {
-        desc->multiSampleType = 0;
-    } else if (surface->sampleCount == RenderSampleCount::COUNT_2) {
-        desc->multiSampleType = 1;
-    } else {
-        desc->multiSampleType = 2;
-    }
+    desc->multiSampleType = surface->multiSampleType;
     desc->multiSampleQuality = 0;
     desc->usage = 0;
 }
@@ -340,14 +346,6 @@ int GetType(GuestResource* resource)
     return 0;
 }
 
-// Game asks about the size of surface to check if it needs to be tiled.
-// Because EDRAM has only 10MB, if size is more than 1024, then it enables tiling.
-// We return 0 to always disable tiling.
-int SurfaceSize(uint32_t width, uint32_t height, uint32_t format, uint32_t multisampleLevel)
-{
-    return 0;
-}
-
 GUEST_FUNCTION_HOOK(sub_8253AE98, DestructResource);
 
 GUEST_FUNCTION_HOOK(sub_8253A740, LockTextureRect);
@@ -371,4 +369,3 @@ GUEST_FUNCTION_HOOK(sub_825471F8, GetVertexDeclaration);
 GUEST_FUNCTION_HOOK(sub_8253B760, IsSet);
 
 GUEST_FUNCTION_HOOK(sub_8253AE08, GetType);
-GUEST_FUNCTION_HOOK(sub_82538D60, SurfaceSize);

@@ -10,11 +10,6 @@ const char* g_pBlockName{};
 
 extern const char* g_surfaceCreationName;
 
-void SetMSAALevel(PPCRegister& val)
-{
-    val.u32 = 0;
-}
-
 void BeginBlockGetName(PPCRegister& r3)
 {
     g_pBlockName = (const char*)g_memory.Translate(r3.u32);
@@ -238,6 +233,42 @@ void SetShadowResolutionMidAsmHook(PPCRegister& r11)
 
     if (res > 0)
         r11.u64 = res;
+}
+
+void FixMsaaSurfaceSize(PPCRegister& r1, PPCRegister& r3, PPCRegister& r4)
+{
+    const auto* backBufferSize = static_cast<be<uint32_t>*>(g_memory.Translate(r1.u32 + 0x60));
+
+    // Update MSAA surface size to full back-buffer width/height
+    r3.u32 = backBufferSize[0];
+    r4.u32 = backBufferSize[1];
+}
+
+void FixFrameBufferTileRects(PPCRegister& r26, PPCRegister& r1)
+{
+    const auto pFrameBufferObjectXenon = reinterpret_cast<Sonicteam::SoX::Graphics::Xenon::FrameBufferObjectXenon*>(g_memory.Translate(r26.u32));
+    const auto pSurfaceDesc = reinterpret_cast<D3DXBSURFACE_DESC*>(g_memory.Translate(r1.u32 + 0x80));
+
+    // Tiling is disabled, always use a single rect
+    D3DXBRECT rect{ 0, 0, pSurfaceDesc->Width.get(), pSurfaceDesc->Height.get() };
+    pFrameBufferObjectXenon->m_TileRects.push_back(rect);
+}
+
+void ResolveMsaaFrameBuffers(PPCRegister& r31, PPCRegister& r8)
+{
+    const auto pFrameBufferObjectXenon = reinterpret_cast<Sonicteam::SoX::Graphics::Xenon::FrameBufferObjectXenon*>(g_memory.Translate(r31.u32));
+
+    // Set bit mask to always resolve color targets for MSAA framebuffers
+    if (pFrameBufferObjectXenon->m_MSAALevel)
+        r8.u32 = 0xF;
+}
+
+bool CopyResolvedMsaaFrameBuffer(PPCRegister& r27)
+{
+    const auto pFrameBufferObjectXenon = reinterpret_cast<Sonicteam::SoX::Graphics::Xenon::FrameBufferObjectXenon*>(g_memory.Translate(r27.u32));
+
+    // Ensure an MSAA framebuffer's resolved output is copied
+    return pFrameBufferObjectXenon->m_MSAALevel != 0;
 }
 
 static GuestShader* g_movieVertexShader;

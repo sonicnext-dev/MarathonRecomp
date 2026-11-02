@@ -293,8 +293,9 @@ struct GuestSurfaceCreateParams
 struct GuestSurface : GuestBaseTexture
 {
     uint32_t guestFormat = 0;
-    ankerl::unordered_dense::map<const RenderTexture*, std::unique_ptr<RenderFramebuffer>> framebuffers;
+    uint32_t multiSampleType = 0;
     RenderSampleCounts sampleCount = RenderSampleCount::COUNT_1;
+    ankerl::unordered_dense::map<const RenderTexture*, std::unique_ptr<RenderFramebuffer>> framebuffers;
     ankerl::unordered_dense::map<GuestTexture*, uint32_t> destinationTextures;
     struct SurfaceVariant* variant = nullptr;
 };

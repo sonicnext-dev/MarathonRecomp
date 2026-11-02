@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/SoX/Graphics/FrameBufferObject.h>
 #include <Sonicteam/SoX/Math/Matrix.h>
 #include <Sonicteam/SoX/Color.h>
 #include <Sonicteam/SoX/RefCountObject.h>
@@ -27,7 +28,7 @@ namespace Sonicteam::SoX::Graphics
         Math::Matrix4x4 m_Field40;
         be<float> m_Field80;
         be<float> m_Field84; // Viewport?
-        MARATHON_INSERT_PADDING(4);
+        MARATHON_INSERT_PADDING(0x04);
         be<uint32_t> m_WidthA;
         be<uint32_t> m_HeightA;
         be<uint32_t> m_Field94;
@@ -35,7 +36,7 @@ namespace Sonicteam::SoX::Graphics
         be<uint32_t> m_WidthB;
         be<uint32_t> m_HeightB;
         MARATHON_INSERT_PADDING(0x1C);
-        RefSharedPointer<RefCountObject> m_spFrameBufferObject;
+        RefSharedPointer<FrameBufferObject> m_spFrameBufferObject;
         MARATHON_INSERT_PADDING(0x0C);
 
         void DrawText(const char* in_pText, const uint32_t in_x, const uint32_t in_y, const ARGB8888* in_pColor = nullptr)
