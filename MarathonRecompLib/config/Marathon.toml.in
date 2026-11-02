@@ -768,21 +768,38 @@ address = 0x821749F0
 registers = ["r25"]
 
 [[midasm_hook]]
-name = "FixMsaaRenderResolution"
+name = "FixMsaaSurfaceSize"
 address = 0x825B1E70
-registers = ["r3", "r4"]
+registers = ["r1", "r3", "r4"]
 
 [[midasm_hook]]
-name = "FixMsaaRenderResolution"
+name = "FixMsaaSurfaceSize"
 address = 0x825B1EDC
-registers = ["r3", "r4"]
+registers = ["r1", "r3", "r4"]
 
 [[midasm_hook]]
-name = "FixMsaaRenderResolution"
+name = "FixMsaaSurfaceSize"
 address = 0x825B1F30
-registers = ["r3", "r4"]
+registers = ["r1", "r3", "r4"]
 
 [[midasm_hook]]
-name = "FixMsaaRenderResolution"
+name = "FixMsaaSurfaceSize"
 address = 0x825B1F94
-registers = ["r3", "r4"]
+registers = ["r1", "r3", "r4"]
+
+[[midasm_hook]]
+name = "FixFrameBufferTileRects"
+address = 0x828B50A4
+registers = ["r26", "r1"]
+jump_address = 0x828B51B4
+
+[[midasm_hook]]
+name = "ResolveMsaaFrameBuffers"
+address = 0x828B453C
+registers = ["r31", "r8"]
+
+[[midasm_hook]]
+name = "CopyResolvedMsaaFrameBuffer"
+address = 0x828B4DDC
+registers = ["r27"]
+jump_address_on_true = 0x828B4DE0
