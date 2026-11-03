@@ -144,18 +144,16 @@ enum class ResourceType
     DepthStencil,
     VertexDeclaration,
     VertexShader,
-    PixelShader
+    PixelShader,
+
+    Invalid
 };
 
 struct GuestResource
 {
     uint32_t unused = 0;
     be<uint32_t> refCount = 1;
-    ResourceType type;
-
-    GuestResource(ResourceType type) : type(type) 
-    {
-    }
+    ResourceType type = ResourceType::Invalid;
 
     void AddRef()
     {
@@ -220,10 +218,6 @@ struct GuestBaseTexture : GuestResource
     RenderFormat format = RenderFormat::UNKNOWN;
     uint32_t descriptorIndex = 0;
     RenderTextureLayout layout = RenderTextureLayout::UNKNOWN;
-
-    GuestBaseTexture(ResourceType type) : GuestResource(type)
-    {
-    }
 };
 
 // Texture/VolumeTexture

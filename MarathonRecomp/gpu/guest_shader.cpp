@@ -47,7 +47,8 @@ void CreateReplacementShaders()
     g_enhancedBurnoutBlurPSShader = CREATE_SHADER(enhanced_burnout_blur_ps);
     g_MoviePSShader = CREATE_SHADER(movie_ps);
 
-    g_conditionalSurveyPSShader = std::make_unique<GuestShader>(ResourceType::PixelShader);
+    g_conditionalSurveyPSShader = std::make_unique<GuestShader>();
+    g_conditionalSurveyPSShader->type = ResourceType::PixelShader;
     g_conditionalSurveyPSShader->shader = CREATE_SHADER(conditional_survey_ps);
 }
 
@@ -284,7 +285,8 @@ GuestShader* GetOrCreateShader(XXH64_hash_t hash, ResourceType resourceType) {
     {
         if (findResult->guestShader == nullptr)
         {
-            shader = g_userHeap.AllocPhysical<GuestShader>(resourceType);
+            shader = g_userHeap.AllocPhysical<GuestShader>();
+            shader->type = resourceType;
             shader->shaderCacheEntry = findResult;
 #ifdef ASYNC_PSO_DEBUG
             shader->name = findResult->filename;
@@ -299,7 +301,10 @@ GuestShader* GetOrCreateShader(XXH64_hash_t hash, ResourceType resourceType) {
     }
 
     if (shader == nullptr)
-        shader = g_userHeap.AllocPhysical<GuestShader>(resourceType);
+    {
+        shader = g_userHeap.AllocPhysical<GuestShader>();
+        shader->type = resourceType;
+    }
     else
         shader->AddRef();
 

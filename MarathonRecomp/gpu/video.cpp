@@ -1480,7 +1480,8 @@ bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
     g_gammaCorrectionPipeline = g_device->createGraphicsPipeline(desc);
 
     // NOTE: We initially allocate this on host memory to make the installer work, even if the 4 GB memory allocation fails.
-    g_backBufferHolder = std::make_unique<GuestSurface>(ResourceType::RenderTarget);
+    g_backBufferHolder = std::make_unique<GuestSurface>();
+    g_backBufferHolder->type = ResourceType::RenderTarget;
 
     g_backBuffer = g_backBufferHolder.get();
     g_backBuffer->width = 1280;

@@ -29,7 +29,8 @@ GuestVertexDeclaration* CreateVertexDeclarationWithoutAddRef(GuestVertexElement*
 
     if (vertexDeclaration == nullptr)
     {
-        vertexDeclaration = g_userHeap.AllocPhysical<GuestVertexDeclaration>(ResourceType::VertexDeclaration);
+        vertexDeclaration = g_userHeap.AllocPhysical<GuestVertexDeclaration>();
+        vertexDeclaration->type = ResourceType::VertexDeclaration;
         vertexDeclaration->hash = hash;
 
         static std::vector<RenderInputElement> inputElements;
