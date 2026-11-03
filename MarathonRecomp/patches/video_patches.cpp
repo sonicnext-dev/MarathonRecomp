@@ -308,7 +308,7 @@ void ResolveMsaaFrameBuffers(PPCRegister& r31, PPCRegister& r8)
 
 bool CopyResolvedMsaaFrameBuffer(PPCRegister& r27)
 {
-    const auto pFrameBufferObjectXenon = reinterpret_cast<Sonicteam::SoX::Graphics::Xenon::FrameBufferObjectXenon*>(g_memory.Translate(r27.u32));
+    const auto pFrameBufferObjectXenon = *reinterpret_cast<xpointer<Sonicteam::SoX::Graphics::Xenon::FrameBufferObjectXenon>*>(g_memory.Translate(r27.u32));
 
     // Ensure an MSAA framebuffer's resolved output is copied.
     return pFrameBufferObjectXenon->m_MSAALevel != 0;
