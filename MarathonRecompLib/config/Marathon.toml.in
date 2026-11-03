@@ -644,24 +644,34 @@ address = 0x82607CD4
 registers = ["r31", "r4"]
 
 [[midasm_hook]]
-name = "FixMsaaSurfaceSize"
+name = "FixSurfaceSize"
+address = 0x825B1DF8
+registers = ["r3", "r4"]
+
+[[midasm_hook]]
+name = "FixSurfaceSize"
+address = 0x825B1D94
+registers = ["r3", "r4"]
+
+[[midasm_hook]]
+name = "FixSurfaceSize"
 address = 0x825B1E70
-registers = ["r1", "r3", "r4"]
+registers = ["r3", "r4"]
 
 [[midasm_hook]]
-name = "FixMsaaSurfaceSize"
+name = "FixSurfaceSize"
 address = 0x825B1EDC
-registers = ["r1", "r3", "r4"]
+registers = ["r3", "r4"]
 
 [[midasm_hook]]
-name = "FixMsaaSurfaceSize"
+name = "FixSurfaceSize"
 address = 0x825B1F30
-registers = ["r1", "r3", "r4"]
+registers = ["r3", "r4"]
 
 [[midasm_hook]]
-name = "FixMsaaSurfaceSize"
+name = "FixSurfaceSize"
 address = 0x825B1F94
-registers = ["r1", "r3", "r4"]
+registers = ["r3", "r4"]
 
 [[midasm_hook]]
 name = "FixFrameBufferTileRects"
