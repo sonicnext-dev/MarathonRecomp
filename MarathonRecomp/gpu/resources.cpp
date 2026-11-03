@@ -33,16 +33,14 @@ GuestTexture* CreateTexture(uint32_t width, uint32_t height, uint32_t depth, uin
         break;
     }
 
-    const auto texture = g_userHeap.AllocPhysical<GuestTexture>(resourceType);
-
     RenderTextureDesc desc;
-    desc.dimension = texture->type == ResourceType::VolumeTexture ? RenderTextureDimension::TEXTURE_3D : RenderTextureDimension::TEXTURE_2D;
+    desc.dimension = resourceType == ResourceType::VolumeTexture ? RenderTextureDimension::TEXTURE_3D : RenderTextureDimension::TEXTURE_2D;
     desc.width = width;
     desc.height = height;
     desc.mipLevels = levels;
     desc.format = ConvertFormat(format);
 
-    if (texture->type == ResourceType::ArrayTexture) {
+    if (resourceType == ResourceType::ArrayTexture) {
         desc.arraySize = depth;
         desc.depth = 1;
     } else {
@@ -57,12 +55,9 @@ GuestTexture* CreateTexture(uint32_t width, uint32_t height, uint32_t depth, uin
     else
         desc.flags = RenderTextureFlag::NONE;
 
-    texture->textureHolder = Video::GetRenderDevice()->createTexture(desc);
-    texture->texture = texture->textureHolder.get();
-
     RenderTextureViewDesc viewDesc;
     viewDesc.format = desc.format;
-    viewDesc.dimension = texture->type == ResourceType::VolumeTexture ? RenderTextureViewDimension::TEXTURE_3D : RenderTextureViewDimension::TEXTURE_2D;
+    viewDesc.dimension = resourceType == ResourceType::VolumeTexture ? RenderTextureViewDimension::TEXTURE_3D : RenderTextureViewDimension::TEXTURE_2D;
     viewDesc.mipLevels = levels;
 
     switch (format)
@@ -79,6 +74,11 @@ GuestTexture* CreateTexture(uint32_t width, uint32_t height, uint32_t depth, uin
         break;
     }
 
+    const auto texture = g_userHeap.AllocPhysical<GuestTexture>();
+
+    texture->type = resourceType;
+    texture->textureHolder = Video::GetRenderDevice()->createTexture(desc);
+    texture->texture = texture->textureHolder.get();
     texture->textureView = texture->texture->createTextureView(viewDesc);
 
     texture->width = width;
@@ -127,9 +127,9 @@ GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t format, ui
     const RenderSampleCounts sampleCount = GetSurfaceSampleCount(multiSample);
     const bool isDepthStencil = RenderFormatIsDepth(renderFormat);
 
-    const auto surface = g_userHeap.AllocPhysical<GuestSurface>(isDepthStencil ?
-        ResourceType::DepthStencil : ResourceType::RenderTarget);
+    const auto surface = g_userHeap.AllocPhysical<GuestSurface>();
 
+    surface->type = isDepthStencil ? ResourceType::DepthStencil : ResourceType::RenderTarget;
     surface->width = width;
     surface->height = height;
     surface->format = renderFormat;
@@ -216,7 +216,8 @@ static RenderHeapType GetBufferHeapType()
 
 static GuestBuffer* CreateVertexBuffer(uint32_t length)
 {
-    auto buffer = g_userHeap.AllocPhysical<GuestBuffer>(ResourceType::VertexBuffer);
+    auto buffer = g_userHeap.AllocPhysical<GuestBuffer>();
+    buffer->type = ResourceType::VertexBuffer;
     buffer->buffer = Video::GetRenderDevice()->createBuffer(RenderBufferDesc::VertexBuffer(length, GetBufferHeapType(), RenderBufferFlag::INDEX));
     buffer->dataSize = length;
 #ifdef _DEBUG
@@ -227,7 +228,8 @@ static GuestBuffer* CreateVertexBuffer(uint32_t length)
 
 static GuestBuffer* CreateIndexBuffer(uint32_t length, uint32_t, uint32_t format)
 {
-    auto buffer = g_userHeap.AllocPhysical<GuestBuffer>(ResourceType::IndexBuffer);
+    auto buffer = g_userHeap.AllocPhysical<GuestBuffer>();
+    buffer->type = ResourceType::IndexBuffer;
     buffer->buffer = Video::GetRenderDevice()->createBuffer(RenderBufferDesc::IndexBuffer(length, GetBufferHeapType()));
     buffer->dataSize = length;
     buffer->format = ConvertFormat(format);

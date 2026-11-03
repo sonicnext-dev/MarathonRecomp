@@ -322,17 +322,20 @@ static int ScreenShaderInit(be<uint32_t>* a1)
 {
     if (g_movieVertexShader == nullptr)
     {
-        g_movieVertexShader = g_userHeap.AllocPhysical<GuestShader>(ResourceType::VertexShader);
+        g_movieVertexShader = g_userHeap.AllocPhysical<GuestShader>();
+        g_movieVertexShader->type = ResourceType::VertexShader;
     }
 
     if (g_moviePixelShaderHD == nullptr)
     {
-        g_moviePixelShaderHD = g_userHeap.AllocPhysical<GuestShader>(ResourceType::PixelShader);
+        g_moviePixelShaderHD = g_userHeap.AllocPhysical<GuestShader>();
+        g_moviePixelShaderHD->type = ResourceType::PixelShader;
     }
 
     if (g_moviePixelShaderSD == nullptr)
     {
-        g_moviePixelShaderSD = g_userHeap.AllocPhysical<GuestShader>(ResourceType::PixelShader);
+        g_moviePixelShaderSD = g_userHeap.AllocPhysical<GuestShader>();
+        g_moviePixelShaderSD->type = ResourceType::PixelShader;
     }
 
     g_moviePixelShaderHD->AddRef();

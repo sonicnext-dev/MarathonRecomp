@@ -218,10 +218,6 @@ static bool LoadTexture(GuestTexture& texture, const uint8_t* data, size_t dataS
         desc.format = ConvertDXGIFormat(ddsDesc.format);
         desc.flags = ddsDesc.type == ddspp::TextureType::Cubemap ? RenderTextureFlag::CUBE : RenderTextureFlag::NONE;
 
-        texture.textureHolder = Video::GetRenderDevice()->createTexture(desc);
-        texture.texture = texture.textureHolder.get();
-        texture.layout = RenderTextureLayout::COPY_DEST;
-
         RenderTextureViewDesc viewDesc;
         viewDesc.format = desc.format;
         viewDesc.dimension = ConvertTextureViewDimension(ddsDesc.type);
@@ -234,6 +230,11 @@ static bool LoadTexture(GuestTexture& texture, const uint8_t* data, size_t dataS
         }
 
         viewDesc.componentMapping = componentMapping;
+
+        texture.type = ResourceType::Texture;
+        texture.textureHolder = Video::GetRenderDevice()->createTexture(desc);
+        texture.texture = texture.textureHolder.get();
+        texture.layout = RenderTextureLayout::COPY_DEST;
         texture.textureView = texture.texture->createTextureView(viewDesc);
         texture.descriptorIndex = g_textureDescriptorAllocator.allocate();
         g_textureDescriptorSet->setTexture(texture.descriptorIndex, texture.texture, RenderTextureLayout::SHADER_READ, texture.textureView.get());
@@ -327,6 +328,7 @@ static bool LoadTexture(GuestTexture& texture, const uint8_t* data, size_t dataS
 
     if (stbImage != nullptr)
     {
+        texture.type = ResourceType::Texture;
         texture.textureHolder = Video::GetRenderDevice()->createTexture(RenderTextureDesc::Texture2D(width, height, 1, RenderFormat::R8G8B8A8_UNORM));
         texture.texture = texture.textureHolder.get();
         texture.viewDimension = RenderTextureViewDimension::TEXTURE_2D;
@@ -378,7 +380,7 @@ static bool LoadTexture(GuestTexture& texture, const uint8_t* data, size_t dataS
 
 std::unique_ptr<GuestTexture> LoadTexture(const uint8_t* data, size_t dataSize, RenderComponentMapping componentMapping)
 {
-    GuestTexture texture(ResourceType::Texture);
+    GuestTexture texture;
 
     if (LoadTexture(texture, data, dataSize, componentMapping))
         return std::make_unique<GuestTexture>(std::move(texture));
@@ -412,7 +414,7 @@ static void DiffPatchTexture(GuestTexture& texture, uint8_t* data, uint32_t data
             ++patch;
         }
 
-        GuestTexture patchedTexture(ResourceType::Texture);
+        GuestTexture patchedTexture;
 
         if (LoadTexture(patchedTexture, data, dataSize, {}))
             texture.patchedTexture = std::make_unique<GuestTexture>(std::move(patchedTexture));
@@ -423,7 +425,7 @@ static void MakePictureData(Sonicteam::MyTexture* pictureData, uint8_t* data, ui
 {
     if (data != nullptr)
     {
-        GuestTexture texture(ResourceType::Texture);
+        GuestTexture texture;
 
         if (LoadTexture(texture, data, dataSize, {}))
         {

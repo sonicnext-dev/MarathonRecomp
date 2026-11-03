@@ -279,8 +279,6 @@ void ImFontAtlasSnapshot::Init(bool in_isInstaller)
     io.Fonts->FontBuilderIO = &g_fontBuilderIO;
     io.Fonts->Build();
 
-    FontTexture = std::make_unique<GuestTexture>(ResourceType::Texture);
-
     uint8_t* pixels;
     int width, height;
     io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
@@ -296,6 +294,8 @@ void ImFontAtlasSnapshot::Init(bool in_isInstaller)
 
     const auto pRenderDevice = Video::GetRenderDevice();
 
+    FontTexture = std::make_unique<GuestTexture>();
+    FontTexture->type = ResourceType::Texture;
     FontTexture->textureHolder = pRenderDevice->createTexture(textureDesc);
     FontTexture->texture = FontTexture->textureHolder.get();
 
