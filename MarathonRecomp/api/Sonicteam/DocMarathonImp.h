@@ -9,6 +9,7 @@
 #include <Sonicteam/DocMarathon.h>
 #include <Sonicteam/DocState.h>
 #include <Sonicteam/MyGraphicsDevice.h>
+#include <Sonicteam/PostprocessController.h>
 #include <Sonicteam/RaderMapManager.h>
 #include <Sonicteam/RenderTargetContainer.h>
 #include <Sonicteam/SFXAgent.h>
@@ -32,7 +33,9 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(0x04);
         xpointer<RenderTargetContainer> m_pRenderTargetContainer;
         xpointer<SFXAgent> m_pSFXAgent;
-        MARATHON_INSERT_PADDING(0x0C);
+        MARATHON_INSERT_PADDING(0x04);
+        xpointer<PostprocessController> m_pPostprocessController;
+        MARATHON_INSERT_PADDING(0x04);
         be<uint32_t> m_PauseFlags;
         MARATHON_INSERT_PADDING(0x08);
         xpointer<SoX::LinkedList<SoX::Thread>> m_pThreads;
@@ -56,6 +59,7 @@ namespace Sonicteam
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_VFrame, 0xD0);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_pRenderTargetContainer, 0xD8);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_pSFXAgent, 0xDC);
+    MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_pPostprocessController, 0xE4);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_PauseFlags, 0xEC);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_pThreads, 0xF8);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_pParticleManager, 0x384);

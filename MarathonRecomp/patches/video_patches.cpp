@@ -1,5 +1,4 @@
 #include "gpu/video.h"
-
 #include <api/Marathon.h>
 #include <kernel/memory.h>
 #include <os/logger.h>
@@ -9,11 +8,6 @@
 const char* g_pBlockName{};
 
 extern const char* g_surfaceCreationName;
-
-void SetMSAALevel(PPCRegister& val)
-{
-    val.u32 = 0;
-}
 
 void BeginBlockGetName(PPCRegister& r3)
 {
@@ -238,6 +232,86 @@ void SetShadowResolutionMidAsmHook(PPCRegister& r11)
 
     if (res > 0)
         r11.u64 = res;
+}
+
+void SetMsaaLevel(PPCRegister& r1)
+{
+    const auto pLuaSystem = reinterpret_cast<xpointer<Sonicteam::LuaSystem>*>(g_memory.Translate(r1.u32 + 0x54))->get();
+
+    // Force Lua MSAA type to 2x to override stages that disable it.
+    pLuaSystem->SetString("MSAAType", "2x");
+}
+
+void SetMsaaLevelForBuffers(PPCRegister& r31, PPCRegister& r4)
+{
+    const auto L = reinterpret_cast<lua50::lua_State*>(g_memory.Translate(r31.u32));
+
+    // MSAA type is provided, abort.
+    if (lua50::lua_isstring(L, 9))
+        return;
+
+    const auto pBufferName = lua50::lua_tostring(L, 2);
+    const auto pDepthStencilName = lua50::lua_tostring(L, 3);
+    const auto bufferType = Sonicteam::SoX::Graphics::GetBufferTypeByName(lua50::lua_tostring(L, 4));
+
+    static const std::array<std::tuple<const char*, const char*, Sonicteam::SoX::Graphics::BufferType>, 2> buffers =
+    {{
+        // Force MSAA level for multiplayer.
+        { "coframebuffer", "codepthstencil", Sonicteam::SoX::Graphics::BufferType_All },
+
+        // Force MSAA level for radar.
+        { "radermap", "depthstencil_256", Sonicteam::SoX::Graphics::BufferType_ColorDepth }
+    }};
+
+    for (const auto& [rBufferName, rDepthStencilName, rBufferType] : buffers)
+    {
+        if (strstr(pBufferName, rBufferName) && strcmp(pDepthStencilName, rDepthStencilName) == 0 && bufferType == rBufferType)
+            r4.u32 = Config::AntiAliasing != EAntiAliasing::Off;
+    }
+}
+
+void FixMsaaSurfaceSize(PPCRegister& r1, PPCRegister& r3, PPCRegister& r4)
+{
+    const auto* backBufferSize = static_cast<be<uint32_t>*>(g_memory.Translate(r1.u32 + 0x60));
+
+    // Update MSAA surface size to full back-buffer width/height.
+    r3.u32 = backBufferSize[0];
+    r4.u32 = backBufferSize[1];
+}
+
+void FixFrameBufferTileRects(PPCRegister& r26, PPCRegister& r1)
+{
+    const auto pFrameBufferObjectXenon = reinterpret_cast<Sonicteam::SoX::Graphics::Xenon::FrameBufferObjectXenon*>(g_memory.Translate(r26.u32));
+    const auto pSurfaceDesc = reinterpret_cast<D3DXBSURFACE_DESC*>(g_memory.Translate(r1.u32 + 0x80));
+
+    // Tiling is disabled, always use a single rect.
+    D3DXBRECT rect{ 0, 0, pSurfaceDesc->Width.get(), pSurfaceDesc->Height.get() };
+    pFrameBufferObjectXenon->m_TileRects.push_back(rect);
+}
+
+bool ClearMsaaFrameBuffer(PPCRegister& r31)
+{
+    const auto pFrameBufferObjectXenon = reinterpret_cast<Sonicteam::SoX::Graphics::Xenon::FrameBufferObjectXenon*>(g_memory.Translate(r31.u32));
+
+    // Ensure an MSAA framebuffer is cleared before re-use.
+    return pFrameBufferObjectXenon->m_MSAALevel != 0;
+}
+
+void ResolveMsaaFrameBuffers(PPCRegister& r31, PPCRegister& r8)
+{
+    const auto pFrameBufferObjectXenon = reinterpret_cast<Sonicteam::SoX::Graphics::Xenon::FrameBufferObjectXenon*>(g_memory.Translate(r31.u32));
+
+    // Set bit mask to always resolve color targets for MSAA framebuffers.
+    if (pFrameBufferObjectXenon->m_MSAALevel)
+        r8.u32 = 0xF;
+}
+
+bool CopyResolvedMsaaFrameBuffer(PPCRegister& r27)
+{
+    const auto pFrameBufferObjectXenon = *reinterpret_cast<xpointer<Sonicteam::SoX::Graphics::Xenon::FrameBufferObjectXenon>*>(g_memory.Translate(r27.u32));
+
+    // Ensure an MSAA framebuffer's resolved output is copied.
+    return pFrameBufferObjectXenon->m_MSAALevel != 0;
 }
 
 static GuestShader* g_movieVertexShader;

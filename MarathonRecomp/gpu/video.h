@@ -15,10 +15,6 @@
 #define D3DCLEAR_ZBUFFER 0x10
 #define D3DCLEAR_STENCIL 0x20
 
-// TODO: remove
-#define SPEC_CONSTANT_ALPHA_TO_COVERAGE (1 << 3)
-#define SPEC_CONSTANT_REVERSE_Z         (1 << 4)
-
 #define LOAD_ZSTD_TEXTURE(name) LoadTexture(decompressZstd(name, name##_uncompressed_size).get(), name##_uncompressed_size)
 
 static inline constexpr uint32_t PITCH_ALIGNMENT = 0x100;
@@ -293,8 +289,9 @@ struct GuestSurfaceCreateParams
 struct GuestSurface : GuestBaseTexture
 {
     uint32_t guestFormat = 0;
-    ankerl::unordered_dense::map<const RenderTexture*, std::unique_ptr<RenderFramebuffer>> framebuffers;
+    uint32_t multiSampleType = 0;
     RenderSampleCounts sampleCount = RenderSampleCount::COUNT_1;
+    ankerl::unordered_dense::map<const RenderTexture*, std::unique_ptr<RenderFramebuffer>> framebuffers;
     ankerl::unordered_dense::map<GuestTexture*, uint32_t> destinationTextures;
     struct SurfaceVariant* variant = nullptr;
 };

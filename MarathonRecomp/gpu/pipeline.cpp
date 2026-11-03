@@ -2,6 +2,9 @@
 #include "guest_shader.h"
 #include "video_internal.h"
 
+#define MARATHON_RECOMP
+#include "../../tools/XenosRecomp/XenosRecomp/shader_common.h"
+
 #include <shader/shader_cache.h>
 
 #ifdef ASYNC_PSO_DEBUG
@@ -75,6 +78,13 @@ void SanitizePipelineState(PipelineState& pipelineState)
         pipelineState.srcBlendAlpha = RenderBlend::ONE;
         pipelineState.destBlendAlpha = RenderBlend::ZERO;
         pipelineState.blendOpAlpha = RenderBlendOperation::ADD;
+    }
+
+    if (pipelineState.alphaBlendEnable && (pipelineState.specConstants & SPEC_CONSTANT_ALPHA_TO_COVERAGE))
+    {
+        pipelineState.specConstants &= ~SPEC_CONSTANT_ALPHA_TO_COVERAGE;
+        pipelineState.specConstants |= SPEC_CONSTANT_ALPHA_TEST;
+        pipelineState.enableAlphaToCoverage = false;
     }
 
     for (size_t i = 0; i < 16; i++)

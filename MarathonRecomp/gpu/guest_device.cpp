@@ -390,39 +390,7 @@ static void SetViewport(GuestDevice* device, const GuestViewport* viewport)
     device->viewport.maxZ = viewport->maxZ;
 }
 
-struct Rect
-{
-    be<uint32_t> x1;
-    be<uint32_t> y1;
-    be<uint32_t> x2;
-    be<uint32_t> y2;
-};
-
-struct RESOLVE_PARAMS
-{
-    be<uint32_t> format;
-    be<uint32_t> unk;
-    be<uint32_t> format2;
-};
-
-int D3DDevice_BeginTiling(GuestDevice* device, uint32_t flags, uint32_t count, Rect* pTileRects, const be<float>* pClearColor, float clearZ, uint32_t clearStencil)
-{
-    Clear(device, 0x3F, 0, pClearColor, clearZ, clearStencil);
-
-    return 0;
-}
-
-int D3DDevice_EndTiling(GuestDevice* device, uint32_t flags, Rect* pResolveRects, GuestTexture* pDestTexture, be<float>* pClearColor, float clearZ, uint32_t clearStencil, RESOLVE_PARAMS* resolveParams)
-{
-    if (pDestTexture)
-    {
-        StretchRect(device, flags, 0, pDestTexture, 0, 0, 0);
-    }
-
-    return 0;
-}
-
-int D3DDevice_BeginShaderConstantF4(GuestDevice* device, uint32_t isPixelShader, uint32_t startRegister, be<uint32_t>* cachedConstantData, be<uint32_t>* writeCombinedConstantData, uint32_t vectorCount)
+int BeginShaderConstantF4(GuestDevice* device, uint32_t isPixelShader, uint32_t startRegister, be<uint32_t>* cachedConstantData, be<uint32_t>* writeCombinedConstantData, uint32_t vectorCount)
 {
     uint32_t* constants;
     be<uint64_t>* dirtyFlags;
@@ -513,6 +481,4 @@ GUEST_FUNCTION_HOOK(sub_82555B30, Clear);
 
 GUEST_FUNCTION_HOOK(sub_825436F0, SetViewport);
 
-GUEST_FUNCTION_HOOK(sub_82558F88, D3DDevice_BeginTiling);
-GUEST_FUNCTION_HOOK(sub_82559480, D3DDevice_EndTiling);
-GUEST_FUNCTION_HOOK(sub_825466E8, D3DDevice_BeginShaderConstantF4);
+GUEST_FUNCTION_HOOK(sub_825466E8, BeginShaderConstantF4);
