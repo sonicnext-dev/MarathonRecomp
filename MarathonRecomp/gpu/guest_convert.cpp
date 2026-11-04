@@ -139,9 +139,9 @@ RenderFormat ConvertFormat(uint32_t format)
     case D3DFMT_DXT4:
         return RenderFormat::BC3_UNORM;
     default:
-        LOGF_WARNING("{:x}\n", format);
-        assert(false && "Unknown format");
-        return RenderFormat::R16G16B16A16_FLOAT;
+        LOGFN_ERROR("Unknown format from guest: {:d}\n", (uint32_t)format);
+        __builtin_trap();
+        return RenderFormat::UNKNOWN;
     }
 }
 

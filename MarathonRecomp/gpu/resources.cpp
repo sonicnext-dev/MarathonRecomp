@@ -314,7 +314,7 @@ static void* LockIndexBuffer(GuestBuffer* buffer, uint32_t, uint32_t, uint32_t f
 static void GetSurfaceDesc(GuestSurface* surface, GuestSurfaceDesc* desc)
 {
     if (surface->width == 0 && surface->height == 0) {
-        LOGF_WARNING("{:p} {:d} {:d} \n", reinterpret_cast<void*>(desc), surface->width, surface->height);
+        LOGF_WARNING("Encountered surface with size 0: {:p} {:d} {:d} \n", reinterpret_cast<void*>(desc), surface->width, surface->height);
         __builtin_trap();
     }
     desc->width = surface->width;
@@ -343,7 +343,7 @@ int GetType(GuestResource* resource)
     if (resource->type == ResourceType::VolumeTexture) return 17;
     if (resource->type == ResourceType::ArrayTexture) return 19;
 
-    LOGF_WARNING("unknown resource type {:d}!", (int32_t)resource->type);
+    LOGF_WARNING("Unmapped guest resource type {:d}!", (int32_t)resource->type);
     __builtin_trap();
     return 0;
 }

@@ -244,7 +244,7 @@ void ModLoader::Init()
             {
                 if (def->GetName() == codes[i])
                 {
-                    LOGF_UTILITY("Mod Loader", "Loading code: \"{}\"", codes[i]);
+                    LOGFN_UTILITY("Loading mod code: \"{}\"", codes[i]);
                     *(bool*)def->GetValue() = true;
                     break;
                 }
