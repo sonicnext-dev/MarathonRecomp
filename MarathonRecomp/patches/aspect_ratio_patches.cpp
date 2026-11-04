@@ -1640,13 +1640,11 @@ PPC_FUNC(sub_8262D868)
 
     if (!App::s_isDrawUI || (textModifier & CSD_SKIP) != 0)
     {
-        for (size_t i = 0; i < pTextEntity->m_CharacterVertexCount; i++)
-        {
-            auto& vertex = pTextEntity->m_pCharacterVertices[i];
+        for (size_t i = 0; i < pTextEntity->m_TextVertexCount; i++)
+            pTextEntity->m_pTextVertices[i].Color.A(0);
 
-            // Mask out alpha bits.
-            vertex.Colour = vertex.Colour.get() & 0x00FFFFFF;
-        }
+        for (size_t i = 0; i < pTextEntity->m_VariableVertexCount; i++)
+            pTextEntity->m_pVariableVertices[i].Color.A(0);
 
         return;
     }
