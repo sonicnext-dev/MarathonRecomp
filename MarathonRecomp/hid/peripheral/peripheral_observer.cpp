@@ -103,7 +103,9 @@ namespace HID
 
     bool PeripheralObserver::Walk(const PeripheralWalker& in_rVisitor)
     {
-        for (const auto& wpPeripheral : m_Observees)
+        const auto observees = m_Observees;
+
+        for (const auto& wpPeripheral : observees)
         {
             const auto spPeripheral = wpPeripheral.lock();
 
