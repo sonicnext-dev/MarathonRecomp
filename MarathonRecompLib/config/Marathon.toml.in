@@ -196,11 +196,6 @@ address = 0x82311E50
 jump_address_on_true = 0x82311E54
 
 [[midasm_hook]]
-name = "PostureControl_RotationSpeedFix"
-address = 0x82201C6C
-registers = ["f1", "r1"]
-
-[[midasm_hook]]
 name = "CriCueUpdateDeltaTimeFix"
 address = 0x8260F238
 registers = ["f13"]
@@ -396,18 +391,6 @@ address = 0x82191FC0
 registers = ["r31", "r5", "f31"]
 
 [[midasm_hook]]
-name = "SonicCamera_RotationSpeedFix"
-address = 0x82191DA0
-registers = ["f0", "f31", "f13"]
-jump_address = 0x82191DA4
-
-[[midasm_hook]]
-name = "SonicCamera_RotationSpeedFix"
-address = 0x82191E28
-registers = ["f0", "f31", "f13"]
-jump_address = 0x82191E2C
-
-[[midasm_hook]]
 name = "RestoreChaosSpearFlips"
 address = 0x821A6730
 jump_address_on_true = 0x821A6734
@@ -427,128 +410,11 @@ name = "DisablePushState"
 address = 0x821A03F0
 jump_address_on_true = 0x821A03FC
 
-[[midasm_hook]]
-name = "ObjTarzan_VolatileBranch"
-address = 0x8232D3E0
-registers = ["r30"]
-jump_address_on_true = 0x8232D3E4
-
-[[midasm_hook]]
-name = "ObjTarzan_PatchStaticDeltaTime"
-address = 0x8232D3E4
-registers = ["f0", "r30"]
-after_instruction = true
-
-[[midasm_hook]]
-name = "ObjTarzan_PatchStaticDeltaTime"
-address = 0x8232D49C
-registers = ["f1", "f3"]
-after_instruction = true
-
-[[midasm_hook]]
-name = "ObjTarzan_PatchStaticDeltaTime"
-address = 0x8232D530
-registers = ["f1", "f3"]
-after_instruction = true
-
-[[midasm_hook]]
-name = "ObjTarzan_PatchStaticDeltaTime"
-address = 0x8232D57C
-registers = ["f0", "f3"]
-after_instruction = true
-
-[[midasm_hook]]
-name = "ObjTarzan_PatchDeltaTimeArgument"
-address = 0x8232D818
-registers = ["f3", "r4", "r1"]
-
-[[midasm_hook]]
-name = "ObjEspSwing_DecayRateFix"
-address = 0x8232A4D0
-registers = ["f0", "f13", "f28"]
-jump_address = 0x8232A4D4
-
-[[midasm_hook]]
-name = "ObjectInputWarp_ExtendMsgSuckPlayer"
-address = 0x82389D70
-registers = ["r3", "r4", "f25"]
-jump_address = 0x82389D74
-
-[[midasm_hook]]
-name = "ObjectInputWarp_ExtendMsgSuckPlayer"
-address = 0x82389E48
-registers = ["r3", "r4", "f25"]
-jump_address = 0x82389E4C
-
-[[midasm_hook]]
-name = "PlayerObject_ProcessMsgSuckPlayer_FixForce"
-address = 0x8219B64C
-registers = ["r28", "f1"]
-
-[[midasm_hook]]
-name = "PlayerObject_ProcessMsgSuckPlayer_FixDeltaTime"
-address = 0x8219B660
-registers = ["r28", "f31"]
-
 # Sonicteam::MyPE::CManageParticle::ManageParticleTask
 [[midasm_hook]]
 name = "NOP"
 address = 0x82645518
 jump_address = 0x8264551C
-
-# Sonicteam::MyPE::MyEmitter / Sonicteam::GE1PE::Emitter
-[[midasm_hook]]
-name = "Spanverse_GE1PE_DeltaTimeFix"
-address = 0x82670728
-registers = ["f1"]
-
-# Sonicteam::Spanverse::SpangleParticle
-[[midasm_hook]]
-name = "Spanverse_GE1PE_DeltaTimeFix"
-address = 0x82674030
-registers = ["f13"]
-
-# Sonicteam::Spanverse::SpangleLight
-[[midasm_hook]]
-name = "Spanverse_GE1PE_DeltaTimeFix"
-address = 0x82674800
-registers = ["f13"]
-
-[[midasm_hook]]
-name = "HUDLoadingAlloc"
-address = 0x824FAE14
-registers = ["r3"]
-
-[[midasm_hook]]
-name = "HUDLoadingAlloc"
-address = 0x824FAF60
-registers = ["r3"]
-
-[[midasm_hook]]
-name = "HUDLoadingAlloc"
-address = 0x824FB008
-registers = ["r3"]
-
-[[midasm_hook]]
-name = "HUDLoading_DeltaTimeFix"
-address = 0x824D7510
-registers = ["r31", "f1"]
-
-[[midasm_hook]]
-name = "HUDWindow_PreserveDeltaTime"
-address = 0x824FA03C
-registers = ["f31", "f1"]
-
-[[midasm_hook]]
-name = "HUDWindow_Callback"
-address = 0x824FA088
-registers = ["f1", "f31"]
-
-[[midasm_hook]]
-name = "ObjectVehicleBike_EnemyShot_DisableVehicleCollisionLayer"
-address = 0x822ADBC4
-registers = ["r31"]
-jump_address_on_true = 0x822ADBC8
 
 [[midasm_hook]]
 name = "SonicGauge_FixFlags"

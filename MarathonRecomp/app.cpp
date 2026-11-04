@@ -102,9 +102,6 @@ PPC_FUNC(sub_825EA610)
         GameWindow::Update();
     }
 
-    // Allow variable FPS when config is not 60 FPS.
-    pDoc->m_VFrame = Config::FPS != 60;
-
     AudioPatches::Update(App::s_deltaTime);
 
     __imp__sub_825EA610(ctx, base);
