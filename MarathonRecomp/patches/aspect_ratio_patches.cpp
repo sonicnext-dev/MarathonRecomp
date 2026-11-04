@@ -464,7 +464,8 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
         // Prevent chevron arrows from being unaligned by centred aspect ratio.
         if ((modifier.Flags & CSD_CHEVRON) == 0)
         {
-            if (g_aspectRatio > WIDE_ASPECT_RATIO)
+            // Prevent multiplayer HUD from being offset at ultrawide.
+            if (g_aspectRatio > WIDE_ASPECT_RATIO && (modifier.Flags & CSD_MULTIPLAYER) == 0)
             {
                 // Remove horizontal alignments at wide aspect ratios.
                 modifier.Flags &= ~(CSD_ALIGN_LEFT | CSD_ALIGN_RIGHT);
