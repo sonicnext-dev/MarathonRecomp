@@ -19,10 +19,10 @@ namespace Sonicteam::SoX::Scenery
             xpointer<CameraImp> m_pCameraImp;
             be<uint32_t> m_Field18;
             MARATHON_INSERT_PADDING(0x14);
-            SoX::Math::Matrix4x4 m_Field30;
-            SoX::Math::Matrix4x4 m_Field70;
-            SoX::Math::Quaternion m_FieldB0;
-            SoX::Math::Vector m_FieldC0;
+            Math::Matrix4x4 m_Field30;
+            Math::Matrix4x4 m_Field70;
+            Math::Quaternion m_FieldB0;
+            Math::Vector m_FieldC0;
             MARATHON_INSERT_PADDING(0x20);
             xpointer<void> m_pWorldIntersectionStandard;
             MARATHON_INSERT_PADDING(0x10);
@@ -32,15 +32,14 @@ namespace Sonicteam::SoX::Scenery
 
         stdx::string m_Name;
         be<float> m_FOV;
-        be<float> m_AspectRatioWidth;
-        be<float> m_AspectRatioHeight;
+        Math::Vector2 m_AspectRatio;
         be<float> m_Near;
         be<float> m_Far;
-        xpointer<void> m_pWorldImp;
+        xpointer<void> m_pWorld;
         MARATHON_INSERT_PADDING(0x18);
-        SoX::Math::Matrix4x4 m_ViewMatrix;
-        SoX::Math::Matrix4x4 m_Field90;
-        SoX::Math::Matrix4x4 m_FieldD0;
+        Math::Matrix4x4 m_ViewMatrix;
+        Math::Matrix4x4 m_Field90;
+        Math::Matrix4x4 m_FieldD0;
         frameObserver m_FrameObserver;
     };
 
@@ -56,11 +55,10 @@ namespace Sonicteam::SoX::Scenery
 
     MARATHON_ASSERT_OFFSETOF(CameraImp, m_Name, 0x04);
     MARATHON_ASSERT_OFFSETOF(CameraImp, m_FOV, 0x20);
-    MARATHON_ASSERT_OFFSETOF(CameraImp, m_AspectRatioWidth, 0x24);
-    MARATHON_ASSERT_OFFSETOF(CameraImp, m_AspectRatioHeight, 0x28);
+    MARATHON_ASSERT_OFFSETOF(CameraImp, m_AspectRatio, 0x24);
     MARATHON_ASSERT_OFFSETOF(CameraImp, m_Near, 0x2C);
     MARATHON_ASSERT_OFFSETOF(CameraImp, m_Far, 0x30);
-    MARATHON_ASSERT_OFFSETOF(CameraImp, m_pWorldImp, 0x34);
+    MARATHON_ASSERT_OFFSETOF(CameraImp, m_pWorld, 0x34);
     MARATHON_ASSERT_OFFSETOF(CameraImp, m_ViewMatrix, 0x50);
     MARATHON_ASSERT_OFFSETOF(CameraImp, m_Field90, 0x90);
     MARATHON_ASSERT_OFFSETOF(CameraImp, m_FieldD0, 0xD0);
