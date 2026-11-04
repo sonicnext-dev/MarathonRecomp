@@ -909,11 +909,17 @@ EControllerIcons Config::GetPreferredControllerIcons(uint32_t in_userId)
     if (Config::ControllerIcons != EControllerIcons::Auto)
         return Config::ControllerIcons;
 
+    static EControllerIcons lastIcons = EControllerIcons::Xbox;
+
+    // Don't allow auto icons to change in-game.
+    if (App::s_pApp && App::s_pApp->GetGame())
+        return lastIcons;
+
     if (const auto pMutator = HID::GetManager()->GetUser(in_userId)->GetMutator())
     {
         if (pMutator->GetVendor() == HID::PeripheralVendor::PlayStation)
-            return EControllerIcons::PlayStation;
+            return lastIcons = EControllerIcons::PlayStation;
     }
 
-    return EControllerIcons::Xbox;
+    return lastIcons = EControllerIcons::Xbox;
 }

@@ -1506,98 +1506,97 @@ PPC_FUNC(sub_8264CC90)
 
 void ReplaceTextVariables(Sonicteam::TextEntity* pTextEntity)
 {
-    if (!pTextEntity || !pTextEntity->m_ImageVertexCount)
+    if (!pTextEntity || !pTextEntity->m_VariableVertexCount)
         return;
 
+    const auto& pftModifier = Config::GetPreferredControllerIcons() == EControllerIcons::PlayStation
+        ? g_buttonCropsPS3
+        : g_buttonCropsXenon;
+
     const auto variables = Sonicteam::TextCard::MapVariables(pTextEntity->m_pVariables);
+    const auto relativeVariableCount = pTextEntity->GetRelativeVariableCount(pTextEntity->m_PageIndex);
 
-    auto variablesIndex = 0;
-    auto pictureIndex = 0;
+    int pageVariableIndex{};
+    int pagePictureCount{};
 
-    for (int i = 0; i < pTextEntity->m_Text.size(); i++)
+    for (int i = 0; i < pTextEntity->m_Page.size(); i++)
     {
-        const auto c = ByteSwap(pTextEntity->m_Text.c_str()[i]);
+        const auto c = ByteSwap(pTextEntity->m_Page.c_str()[i]);
 
-        if (c != L'$')
+        if (c != u'$')
             continue;
+
+        const auto globalVariableIndex = relativeVariableCount + pageVariableIndex;
 
         // Some strings may have more placeholder
         // characters than variables in the map.
-        if (variablesIndex >= variables.size())
+        if (globalVariableIndex >= variables.size())
             break;
 
-        const auto& variable = variables[variablesIndex];
+        const auto& variable = variables[globalVariableIndex];
 
         if (variable.first == "picture")
         {
-            const auto isPlayStation = Config::GetPreferredControllerIcons() == EControllerIcons::PlayStation;
-
-            const auto& pftModifier = isPlayStation
-                ? g_buttonCropsPS3
-                : g_buttonCropsXenon;
-
             const auto hash = HashStr(variable.second);
-
             const auto pBaseParams = FindHash(g_buttonCropsXenon, hash);
             const auto pNewParams = FindHash(pftModifier, hash);
 
             if (pBaseParams && pNewParams)
             {
-                const auto  uv = PIXELS_TO_UV_COORDS(g_fontPictureWidth, g_fontPictureHeight, pNewParams->X, pNewParams->Y, pNewParams->Width, pNewParams->Height);
-                const auto& min = std::get<0>(uv);
-                const auto& max = std::get<1>(uv);
+                const auto vi = pagePictureCount * 6;
 
-                const auto vi = pictureIndex * 6;
-                auto& v0 = pTextEntity->m_pImageVertices[vi + 0];
-                auto& v1 = pTextEntity->m_pImageVertices[vi + 1];
-                auto& v2 = pTextEntity->m_pImageVertices[vi + 2];
-                auto& v3 = pTextEntity->m_pImageVertices[vi + 3];
-                auto& v4 = pTextEntity->m_pImageVertices[vi + 4];
-                auto& v5 = pTextEntity->m_pImageVertices[vi + 5];
+                auto& v0 = pTextEntity->m_pVariableVertices[vi + 0];
+                auto& v1 = pTextEntity->m_pVariableVertices[vi + 1];
+                auto& v2 = pTextEntity->m_pVariableVertices[vi + 2];
+                auto& v3 = pTextEntity->m_pVariableVertices[vi + 3];
+                auto& v4 = pTextEntity->m_pVariableVertices[vi + 4];
+                auto& v5 = pTextEntity->m_pVariableVertices[vi + 5];
 
                 const auto centreX = (v0.X + v2.X) / 2.0f;
-                const auto widthAdjust = (float)pNewParams->Width / (float)pBaseParams->Width;
+                const auto widthAdjust = float(pNewParams->Width) / float(pBaseParams->Width);
 
-                auto adjust = [&](auto& vertex)
+                const auto adjust = [&](auto& in_rVertex)
                 {
-                    vertex.X = centreX + (vertex.X - centreX) * widthAdjust;
+                    in_rVertex.X = centreX + (in_rVertex.X - centreX) * widthAdjust;
                 };
+
+                const auto& [rMin, rMax] = PIXELS_TO_UV_COORDS(g_fontPictureWidth, g_fontPictureHeight, pNewParams->X, pNewParams->Y, pNewParams->Width, pNewParams->Height);
 
                 // Bottom Left (Triangle 1)
                 adjust(v0);
-                v0.U = min.x;
-                v0.V = min.y;
+                v0.U = rMin.x;
+                v0.V = rMin.y;
 
                 // Top Left (Triangle 1)
                 adjust(v1);
-                v1.U = min.x;
-                v1.V = max.y;
+                v1.U = rMin.x;
+                v1.V = rMax.y;
 
                 // Top Right (Triangle 1)
                 adjust(v2);
-                v2.U = max.x;
-                v2.V = max.y;
+                v2.U = rMax.x;
+                v2.V = rMax.y;
 
                 // Bottom Left (Triangle 2)
                 adjust(v3);
-                v3.U = min.x;
-                v3.V = min.y;
+                v3.U = rMin.x;
+                v3.V = rMin.y;
 
                 // Top Right (Triangle 2)
                 adjust(v4);
-                v4.U = max.x;
-                v4.V = max.y;
+                v4.U = rMax.x;
+                v4.V = rMax.y;
 
                 // Bottom Right (Triangle 2)
                 adjust(v5);
-                v5.U = max.x;
-                v5.V = min.y;
-            }
+                v5.U = rMax.x;
+                v5.V = rMin.y;
 
-            pictureIndex++;
+                pagePictureCount++;
+            }
         }
 
-        variablesIndex++;
+        pageVariableIndex++;
     }
 }
 
@@ -1641,13 +1640,11 @@ PPC_FUNC(sub_8262D868)
 
     if (!App::s_isDrawUI || (textModifier & CSD_SKIP) != 0)
     {
-        for (size_t i = 0; i < pTextEntity->m_CharacterVertexCount; i++)
-        {
-            auto& vertex = pTextEntity->m_pCharacterVertices[i];
+        for (size_t i = 0; i < pTextEntity->m_TextVertexCount; i++)
+            pTextEntity->m_pTextVertices[i].Color.A(0);
 
-            // Mask out alpha bits.
-            vertex.Colour = vertex.Colour.get() & 0x00FFFFFF;
-        }
+        for (size_t i = 0; i < pTextEntity->m_VariableVertexCount; i++)
+            pTextEntity->m_pVariableVertices[i].Color.A(0);
 
         return;
     }
