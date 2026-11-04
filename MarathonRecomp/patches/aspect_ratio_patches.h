@@ -114,7 +114,10 @@ enum CsdFlags : uint64_t
     CSD_CROP = MAKE_BITFLAG64(42),
     CSD_FIT = MAKE_BITFLAG64(43),
 
-    CSD_3D = MAKE_BITFLAG64(44)
+    CSD_3D = MAKE_BITFLAG64(44),
+
+    // please god let this be the last bit flag...
+    CSD_LOADING_ARROW = MAKE_BITFLAG64(45)
 };
 
 struct CsdUVs
