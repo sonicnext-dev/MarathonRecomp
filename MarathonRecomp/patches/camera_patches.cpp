@@ -165,6 +165,10 @@ public:
             return false;
 
         const auto pStateMachine = pPlayer->GetStateMachine<Sonicteam::Player::State::Machine2>();
+
+        if (!pStateMachine)
+            return false;
+
         const auto pStateMachineContext = pStateMachine->GetContext<Sonicteam::Player::State::CommonContext>();
         
         if (!pStateMachineContext)

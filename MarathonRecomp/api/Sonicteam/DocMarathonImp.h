@@ -2,6 +2,7 @@
 
 #include <Marathon.inl>
 #include <boost/smart_ptr/shared_ptr.hpp>
+#include <Sonicteam/GameRule/Context.h>
 #include <Sonicteam/SoX/Engine/Doc.h>
 #include <Sonicteam/SoX/Input/Manager.h>
 #include <Sonicteam/SoX/LinkNode.h>
@@ -39,7 +40,9 @@ namespace Sonicteam
         be<uint32_t> m_PauseFlags;
         MARATHON_INSERT_PADDING(0x08);
         xpointer<SoX::LinkedList<SoX::Thread>> m_pThreads;
-        MARATHON_INSERT_PADDING(0x288);
+        MARATHON_INSERT_PADDING(0x258);
+        xpointer<GameRule::Context> m_pGameRuleContext;
+        MARATHON_INSERT_PADDING(0x2C);
         xpointer<void> m_pParticleManager;
         MARATHON_INSERT_PADDING(0x04);
         xpointer<TextBook::TextBookContext> m_pTextBookContext;
@@ -62,6 +65,7 @@ namespace Sonicteam
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_pPostprocessController, 0xE4);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_PauseFlags, 0xEC);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_pThreads, 0xF8);
+    MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_pGameRuleContext, 0x354);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_pParticleManager, 0x384);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_pTextBookContext, 0x38C);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_IsLoading, 0x390);

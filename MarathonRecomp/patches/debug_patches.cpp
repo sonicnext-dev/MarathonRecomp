@@ -6,6 +6,8 @@
 #include <user/config.h>
 #include <app.h>
 
+static bool g_isStageSelectMultiplayer{};
+
 PPC_FUNC_IMPL(__imp__sub_8259A638);
 PPC_FUNC(sub_8259A638)
 {
@@ -49,6 +51,88 @@ PPC_FUNC(sub_8289CB70)
     {
         ImGui::GetBackgroundDrawList()->AddText(g_pFntArialUni, Scale(12), position, color, text.c_str());
     });
+}
+
+void StageSelectMode_SetMultiplayerGameMode(PPCRegister& r3)
+{
+    const auto pStageSelectMode = reinterpret_cast<Sonicteam::StageSelectMode*>(g_memory.Translate(r3.u32));
+
+    const auto selectedStageParams = std::string_view(pStageSelectMode->m_pSelectedStageMap->m_Name.c_str());
+    const auto delimiterPos = selectedStageParams.find(':');
+
+    if (delimiterPos == std::string_view::npos)
+        return;
+
+    // Splits on the colon delimiter to get the Lua script path.
+    // The left hand side is the area path, and the right hand side is the script path.
+    const auto missionPath = selectedStageParams.substr(delimiterPos + 1);
+
+    const auto pResourceManager = Sonicteam::SoX::ResourceManager::GetInstance();
+    const auto pMissionScript = pResourceManager->LoadResource<Sonicteam::LuaSystem, Sonicteam::LuaSystemManager>(missionPath.data());
+
+    if (!pMissionScript)
+        return;
+
+    if (const auto pMissionInfoTable = pMissionScript->GetTableNode("g_mission_information"))
+    {
+        if (const auto pRule = pMissionInfoTable->GetString("mission_userule"))
+        {
+            const auto pDoc = reinterpret_cast<Sonicteam::DocMarathonState*>(pStageSelectMode->m_pDoc.get());
+
+            if (const auto pGameRuleContext = pDoc->m_pGameRuleContext)
+            {
+                if (strstr(pRule, "tag"))
+                {
+                    pGameRuleContext->m_GameMode = Sonicteam::GameRule::Context::GameMode_Tag;
+                }
+                else if (strstr(pRule, "battle"))
+                {
+                    pGameRuleContext->m_GameMode = Sonicteam::GameRule::Context::GameMode_Battle;
+                }
+
+                if (pGameRuleContext->m_GameMode != Sonicteam::GameRule::Context::GameMode_None)
+                    g_isStageSelectMultiplayer = true;
+            }
+        }
+    }
+
+    pMissionScript->Destroy();
+}
+
+void StageSelectMode_SetMultiplayerContext(PPCRegister& r3, PPCRegister& r4)
+{
+    if (!g_isStageSelectMultiplayer)
+        return;
+
+    const auto pGame = reinterpret_cast<Sonicteam::GameImp*>(g_memory.Translate(r3.u32));
+    const auto pDoc = reinterpret_cast<Sonicteam::DocMarathonState*>(pGame->m_pDoc.get());
+    
+    int i{};
+
+    // GameRule::Context requires the player names to be
+    // populated in order for specific game modes to work.
+    for (const auto& rPlayerInfo : pGame->m_PlayerInfo)
+    {
+        if (i >= pDoc->m_pGameRuleContext->m_PlayerNames.Capacity())
+            break;
+
+        if (rPlayerInfo.StartPlayer.empty())
+            continue;
+
+        auto name = std::string(rPlayerInfo.StartPlayer.c_str());
+
+        // Infer player name from Lua script.
+        if (const auto extensionPos = name.find(".lua"); extensionPos != std::string::npos)
+            name = name.substr(0, extensionPos);
+
+        pDoc->m_pGameRuleContext->m_PlayerNames[i] = name.c_str();
+
+        i++;
+    }
+
+    r4.u32 = pGame->GetPlayerCount();
+
+    g_isStageSelectMultiplayer = false;
 }
 
 // Sonicteam::DocMarathonState::StartMainMode

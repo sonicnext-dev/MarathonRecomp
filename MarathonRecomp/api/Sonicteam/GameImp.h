@@ -7,6 +7,7 @@
 #include <Sonicteam/SoX/Physics/World.h>
 #include <Sonicteam/SoX/Scenery/Camera.h>
 #include <Sonicteam/SoX/Scenery/CameraImp.h>
+#include <Sonicteam/SoX/Array.h>
 #include <Sonicteam/SoX/RefLinkNode.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
 #include <Sonicteam/ActorManager.h>
@@ -16,6 +17,7 @@
 #include <Sonicteam/PopupScreenTask.h>
 #include <Sonicteam/TaskAdapter.h>
 #include <Sonicteam/TextBook.h>
+#include <stdx/string.h>
 #include <stdx/vector.h>
 
 namespace Sonicteam
@@ -52,6 +54,23 @@ namespace Sonicteam
             GameFlags_LoadArea2 = 0x200000
         };
 
+        struct PlayerInfo
+        {
+            stdx::string StartPlayer;
+            SoX::Math::Vector StartRotation;
+            SoX::Math::Vector StartPosition;
+            uint8_t Field40;
+            stdx::string RespawnPlayer;
+            SoX::Math::Vector RespawnRotation;
+            SoX::Math::Vector RespawnPosition;
+            SoX::Math::Vector Field80;
+            SoX::Math::Vector Field90;
+            SoX::Math::Vector FieldA0;
+            SoX::Math::Vector FieldB0;
+            uint8_t FieldC0;
+            MARATHON_INSERT_PADDING(0x2C);
+        };
+
         struct PlayerData
         {
             be<uint32_t> ActorID;
@@ -61,7 +80,7 @@ namespace Sonicteam
             be<uint32_t> ScoreCount;
             be<float> AliveTime;
             be<float> Time;
-            MARATHON_INSERT_PADDING(0x04);
+            be<float> SavePointTime;
             be<float> SectionTime;
             be<float> GaugeValue;
             be<uint32_t> MaturityLevel;
@@ -76,11 +95,10 @@ namespace Sonicteam
         be<GameState> m_State;
         xpointer<DocMarathonState> m_pDoc;
         be<GameFlags> m_Flags;
-        MARATHON_INSERT_PADDING(0x420);
-        xpointer<PauseAdapter> m_pPauseAdapter;
-        MARATHON_INSERT_PADDING(0xA08);
-        PlayerData m_PlayerData[4];
-        MARATHON_INSERT_PADDING(0x130);
+        MARATHON_INSERT_PADDING(0x1C);
+        SoX::Array<PlayerInfo, 15> m_PlayerInfo;
+        SoX::Array<PlayerData, 4> m_PlayerData;
+        SoX::Array<PlayerData, 4> m_PlayerDataCopy; // I have no idea.
         xpointer<TaskAdapter> m_pHeadUpDisplayAdapter;
         MARATHON_INSERT_PADDING(0x0C);
         xpointer<TaskAdapter> m_pNonStopTaskAdapter;
@@ -89,7 +107,7 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(0x0C);
         be<uint32_t> m_Field1180;
         xpointer<GameScript> m_pGameScript;
-        be<uint32_t> m_PlayerActorIDs[15];
+        SoX::Array<be<uint32_t>, 15> m_PlayerActorIDs;
         boost::shared_ptr<ActorManager> m_spActorManager;
         xpointer<TextBook> m_pSystemTextBook;
         MARATHON_INSERT_PADDING(0x08);
@@ -116,6 +134,21 @@ namespace Sonicteam
                 return nullptr;
 
             return m_spActorManager->Find<Player::Object>(m_PlayerData[in_index].ActorID);
+        }
+
+        int GetPlayerCount()
+        {
+            int result{};
+
+            for (const auto& rPlayerInfo : m_PlayerInfo)
+            {
+                if (rPlayerInfo.RespawnPlayer.empty())
+                    continue;
+
+                result++;
+            }
+
+            return result;
         }
 
         int GetPlayerIndexFromActorID(uint32_t in_actorId) const
@@ -158,12 +191,27 @@ namespace Sonicteam
         }
     };
 
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerInfo, StartPlayer, 0x00);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerInfo, StartRotation, 0x20);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerInfo, StartPosition, 0x30);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerInfo, Field40, 0x40);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerInfo, RespawnPlayer, 0x44);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerInfo, RespawnRotation, 0x60);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerInfo, RespawnPosition, 0x70);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerInfo, Field80, 0x80);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerInfo, Field90, 0x90);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerInfo, FieldA0, 0xA0);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerInfo, FieldB0, 0xB0);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerInfo, FieldC0, 0xC0);
+    MARATHON_ASSERT_SIZEOF(GameImp::PlayerInfo, 0xF0);
+
     MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, ActorID, 0x00);
     MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, RingCount, 0x04);
     MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, LifeCount, 0x0C);
     MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, ScoreCount, 0x10);
     MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, AliveTime, 0x14);
     MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, Time, 0x18);
+    MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, SavePointTime, 0x1C);
     MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, SectionTime, 0x20);
     MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, GaugeValue, 0x24);
     MARATHON_ASSERT_OFFSETOF(GameImp::PlayerData, MaturityLevel, 0x28);
@@ -175,8 +223,9 @@ namespace Sonicteam
     MARATHON_ASSERT_OFFSETOF(GameImp, m_State, 0x08);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pDoc, 0x0C);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_Flags, 0x10);
-    MARATHON_ASSERT_OFFSETOF(GameImp, m_pPauseAdapter, 0x434);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_PlayerInfo, 0x30);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_PlayerData, 0xE40);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_PlayerDataCopy, 0xF70);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pHeadUpDisplayAdapter, 0x10A0);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pNonStopTaskAdapter, 0x10B0);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_IsStage, 0x1170);

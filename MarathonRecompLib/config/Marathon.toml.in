@@ -825,3 +825,13 @@ name = "CopyResolvedMsaaFrameBuffer"
 address = 0x828B4DDC
 registers = ["r27"]
 jump_address_on_true = 0x828B4DE0
+
+[[midasm_hook]]
+name = "StageSelectMode_SetMultiplayerGameMode"
+address = 0x82161F6C
+registers = ["r3"]
+
+[[midasm_hook]]
+name = "StageSelectMode_SetMultiplayerContext"
+address = 0x82184D18
+registers = ["r3", "r4"]
