@@ -217,11 +217,13 @@ static void GenerateGlyphRanges(ImFontType in_fontType, bool in_isInstaller = fa
                         {
                             do
                             {
-                                GetGlyphs(glyphs, os::locale::ConvertToUTF8(os::locale::Encoding::ShiftJIS, pStageListTable->GetElement("Comment")));
+                                GetGlyphs(glyphs, os::locale::ConvertToUTF8(os::locale::Encoding::ShiftJIS, pStageListTable->PopString("Comment")));
                             }
                             while (pStageListTable->Iterate());
                         }
                     }
+
+                    pStageSelectLua->Destroy();
                 }
             }
         }

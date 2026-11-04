@@ -13,7 +13,7 @@ namespace Sonicteam
     public:
         xpointer<StageMap> m_pRootStageMap;
         xpointer<StageMap> m_pCurrentStageMap;
-        MARATHON_INSERT_PADDING(0x04);
+        xpointer<StageMap> m_pSelectedStageMap;
         be<uint32_t> m_StageMapIndex;
         be<uint32_t> m_StageMapDepth;
         MARATHON_INSERT_PADDING(0x18);
@@ -50,6 +50,7 @@ namespace Sonicteam
 
     MARATHON_ASSERT_OFFSETOF(StageSelectMode, m_pRootStageMap, 0x50);
     MARATHON_ASSERT_OFFSETOF(StageSelectMode, m_pCurrentStageMap, 0x54);
+    MARATHON_ASSERT_OFFSETOF(StageSelectMode, m_pSelectedStageMap, 0x58);
     MARATHON_ASSERT_OFFSETOF(StageSelectMode, m_StageMapIndex, 0x5C);
     MARATHON_ASSERT_OFFSETOF(StageSelectMode, m_StageMapDepth, 0x60);
     MARATHON_ASSERT_OFFSETOF(StageSelectMode, m_pMenuListener, 0x7C);

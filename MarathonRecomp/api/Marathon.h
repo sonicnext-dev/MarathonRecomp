@@ -51,6 +51,7 @@
 #include "Sonicteam/Game.h"
 #include "Sonicteam/GameImp.h"
 #include "Sonicteam/GameMode.h"
+#include "Sonicteam/GameRule/Context.h"
 #include "Sonicteam/Globals.h"
 #include "Sonicteam/HUDButtonWindow.h"
 #include "Sonicteam/HUDCALLBACK.h"

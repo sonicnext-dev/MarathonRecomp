@@ -12,7 +12,9 @@ namespace Sonicteam
     public:
         struct Vftable
         {
-            MARATHON_INSERT_PADDING(0x30);
+            MARATHON_INSERT_PADDING(0x0C);
+            be<uint32_t> fpGetTableNode;
+            MARATHON_INSERT_PADDING(0x20);
             be<uint32_t> fpIsNumber;
             be<uint32_t> fpGetInteger;
             be<uint32_t> fpSetInteger;
@@ -30,6 +32,16 @@ namespace Sonicteam
 
         xpointer<Vftable> m_pVftable;
         xpointer<lua50::lua_State> m_pLuaState;
+
+        boost::shared_ptr<LuaNode> GetTableNode(const char* in_pName)
+        {
+            const auto result = guest_stack_var<boost::shared_ptr<LuaNode>>();
+            const auto name = guest_stack_var<stdx::string>(in_pName);
+
+            GuestToHostFunction<LuaNode*>(m_pVftable->fpGetTableNode.get(), result.get(), this, name->c_str());
+
+            return *result;
+        }
 
         bool IsNumber(const char* in_pName)
         {
@@ -109,6 +121,11 @@ namespace Sonicteam
             GuestToHostFunction<void>(m_pVftable->fpUnregister.get(), this, name->c_str());
         }
 
+        int RegisterFunctions(lua50::luaL_reg* in_pFunctions, uint32_t in_functionCount)
+        {
+            return GuestToHostFunction<int>(m_pVftable->fpRegisterFunctions, this, in_pFunctions, in_functionCount);
+        }
+
         boost::shared_ptr<LuaTableAccess> GetTable(const char* in_pName)
         {
             const auto result = guest_stack_var<boost::shared_ptr<LuaTableAccess>>();
@@ -120,6 +137,7 @@ namespace Sonicteam
         }
     };
 
+    MARATHON_ASSERT_OFFSETOF(LuaNode::Vftable, fpGetTableNode, 0x0C);
     MARATHON_ASSERT_OFFSETOF(LuaNode::Vftable, fpIsNumber, 0x30);
     MARATHON_ASSERT_OFFSETOF(LuaNode::Vftable, fpGetInteger, 0x34);
     MARATHON_ASSERT_OFFSETOF(LuaNode::Vftable, fpSetInteger, 0x38);

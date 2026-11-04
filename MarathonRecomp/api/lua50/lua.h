@@ -25,18 +25,23 @@ namespace lua50
         lua_CFunction func;
     };
 
-    inline void* lua_topointer(lua_State* L, int idx)
+    inline void* lua_topointer(lua_State* L, int index)
     {
-        return GuestToHostFunction<void*>(sub_825D5800, L, idx);
+        return GuestToHostFunction<void*>(sub_825D5800, L, index);
     }
 
-    inline bool lua_isstring(lua_State* L, int idx)
+    inline int lua_type(lua_State* L, int index)
     {
-        return GuestToHostFunction<bool>(sub_825D5468, L, idx);
+        return GuestToHostFunction<int>(sub_825D5368, L, index);
     }
 
-    inline const char* lua_tostring(lua_State* L, int idx)
+    inline bool lua_isstring(lua_State* L, int index)
     {
-        return GuestToHostFunction<const char*>(sub_825D5660, L, idx);
+        return GuestToHostFunction<bool>(sub_825D5468, L, index);
+    }
+
+    inline const char* lua_tostring(lua_State* L, int index)
+    {
+        return GuestToHostFunction<const char*>(sub_825D5660, L, index);
     }
 }
