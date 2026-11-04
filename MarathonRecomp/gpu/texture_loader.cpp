@@ -197,8 +197,8 @@ static RenderFormat ConvertDXGIFormat(ddspp::DXGIFormat format)
     case ddspp::BC7_UNORM_SRGB:
         return RenderFormat::BC7_UNORM_SRGB;
     default:
-        printf("format: %x\n", format);
-        assert(false && "Unsupported format from DDS.");
+        LOGFN_ERROR("Unsupported format from DDS: {:d}\n", (uint32_t)format);
+        __builtin_trap();
         return RenderFormat::UNKNOWN;
     }
 }

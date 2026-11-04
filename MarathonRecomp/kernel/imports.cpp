@@ -752,7 +752,6 @@ uint32_t KeSetAffinityThread(uint32_t Thread, uint32_t Affinity, be<uint32_t>* l
 
 void RtlLeaveCriticalSection(XRTL_CRITICAL_SECTION* cs)
 {
-    // printf("RtlLeaveCriticalSection");
     cs->RecursionCount = cs->RecursionCount.get() - 1;
 
     if (cs->RecursionCount.get() != 0)
@@ -766,7 +765,6 @@ void RtlLeaveCriticalSection(XRTL_CRITICAL_SECTION* cs)
 void RtlEnterCriticalSection(XRTL_CRITICAL_SECTION* cs)
 {
     be<uint32_t> thisThread = g_ppcContext->r13.u32;
-    // printf("RtlEnterCriticalSection %x %x %x %x\n", thisThread, cs->OwningThread, cs->LockCount, cs->RecursionCount);
     assert(thisThread != NULL);
 
     std::atomic_ref owningThread(cs->OwningThread);
@@ -781,9 +779,7 @@ void RtlEnterCriticalSection(XRTL_CRITICAL_SECTION* cs)
             return;
         }
 
-        // printf("wait start %x\n", cs);
         owningThread.wait(previousOwner);
-        // printf("wait end\n");
     }
 }
 
@@ -819,7 +815,6 @@ void RtlCompareMemoryUlong()
 
 uint32_t RtlInitializeCriticalSection(XRTL_CRITICAL_SECTION* cs)
 {
-    // printf("RtlInitializeCriticalSection %x\n", cs);
     cs->Header.Absolute = 0;
     cs->LockCount = -1;
     cs->RecursionCount = 0;
@@ -917,7 +912,6 @@ void VdInitializeRingBuffer()
 
 uint32_t MmGetPhysicalAddress(uint32_t address)
 {
-    LOGF_UTILITY("0x{:x}", address);
     return address;
 }
 
@@ -1037,7 +1031,6 @@ uint32_t MmAllocatePhysicalMemoryEx
     uint32_t alignment
 )
 {
-    LOGF_UTILITY("0x{:x}, 0x{:x}, 0x{:x}, 0x{:x}, 0x{:x}, 0x{:x}", flags, size, protect, minAddress, maxAddress, alignment);
     return g_memory.MapVirtual(g_userHeap.AllocPhysical(size, alignment));
 }
 
@@ -1281,7 +1274,6 @@ void XexGetModuleHandle()
 
 bool RtlTryEnterCriticalSection(XRTL_CRITICAL_SECTION* cs)
 {
-    // printf("RtlTryEnterCriticalSection\n");
     be<uint32_t> thisThread = g_ppcContext->r13.u32;
     assert(thisThread != NULL);
 
@@ -1300,7 +1292,6 @@ bool RtlTryEnterCriticalSection(XRTL_CRITICAL_SECTION* cs)
 
 void RtlInitializeCriticalSectionAndSpinCount(XRTL_CRITICAL_SECTION* cs, uint32_t spinCount)
 {
-    // printf("RtlInitializeCriticalSectionAndSpinCount\n");
     cs->Header.Absolute = (spinCount + 255) >> 8;
     cs->LockCount = -1;
     cs->RecursionCount = 0;
@@ -1593,8 +1584,6 @@ uint32_t ExCreateThread(be<uint32_t>* handle, uint32_t stackSize, be<uint32_t>* 
     uint32_t hostThreadId;
 
     *handle = GetKernelHandle(GuestThread::Start({ startAddress, startContext, creationFlags }, &hostThreadId));
-    LOGF_UTILITY("0x{:X}, 0x{:X}, 0x{:X}, 0x{:X}, 0x{:X}, 0x{:X}, 0x{:X} {:X}",
-        (intptr_t)handle, stackSize, (intptr_t)threadId, xApiThreadStartup, startAddress, startContext, creationFlags, hostThreadId);
     if (threadId != nullptr)
         *threadId = hostThreadId;
 
@@ -1763,31 +1752,8 @@ void XMACreateContext()
     LOG_UTILITY("!!! STUB !!!");
 }
 
-// uint32_t XAudioRegisterRenderDriverClient(be<uint32_t>* callback, be<uint32_t>* driver)
-// {
-//     //printf("XAudioRegisterRenderDriverClient(): %x %x\n");
-// 
-//     *driver = apu::RegisterClient(callback[0], callback[1]);
-//     return 0;
-// }
-
-// void XAudioUnregisterRenderDriverClient()
-// {
-//     printf("!!! STUB !!! XAudioUnregisterRenderDriverClient\n");
-// }
-
-// uint32_t XAudioSubmitRenderDriverFrame(uint32_t driver, void* samples)
-// {
-//     // printf("!!! STUB !!! XAudioSubmitRenderDriverFrame\n");
-//     apu::SubmitFrames(samples);
-// 
-//     return 0;
-// }
-
 void XapiInitProcess()
 {
-    printf("XapiInitProcess Invoked\n");
-
     int *XapiProcessHeap = (int *)g_memory.Translate(0x82D57540);
 
     *XapiProcessHeap = 1;

@@ -142,14 +142,6 @@ PPC_FUNC(sub_82582648)
     __imp__sub_82582648(ctx, base);
 }
 
-PPC_FUNC_IMPL(__imp__sub_82744840);
-PPC_FUNC(sub_82744840)
-{
-    LOG_UTILITY("RenderFrame");
-
-    __imp__sub_82744840(ctx, base);
-}
-
 // Sonicteam::SpanverseHeap::Alloc
 PPC_FUNC_IMPL(__imp__sub_825E7918);
 PPC_FUNC(sub_825E7918)
@@ -181,16 +173,6 @@ PPC_FUNC(sub_825E7958)
 
     __imp__sub_825E7958(ctx, base);
 }
-
-#if _DEBUG
-PPC_FUNC_IMPL(__imp__sub_825822D0);
-PPC_FUNC(sub_825822D0)
-{
-    LOG_UTILITY("!!!");
-
-    __imp__sub_825822D0(ctx, base);
-}
-#endif
 
 std::array<XXH64_hash_t, 29> g_taskUpdatesOnPause =
 {

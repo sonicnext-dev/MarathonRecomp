@@ -68,7 +68,7 @@ SurfaceVariant* AcquireSurfaceVariant(uint32_t base, uint32_t width, uint32_t he
             created = false;
 
 #ifdef _DEBUG
-            LOGF_UTILITY("[surface] shared variant: base {} {}x{} format {:X} refs {} name {}",
+            LOGF_UTILITY("Shared variant: base {} {}x{} format {:X} refs {} name {}",
                 base, width, height, guestFormat, variant->refCount,
                 g_surfaceCreationName ? g_surfaceCreationName : "<none>");
 #endif
@@ -78,7 +78,7 @@ SurfaceVariant* AcquireSurfaceVariant(uint32_t base, uint32_t width, uint32_t he
     }
 
 #ifdef _DEBUG
-    LOGF_UTILITY("[surface] new variant: base {} {}x{} format {:X} samples {} name {}",
+    LOGF_UTILITY("New variant: base {} {}x{} format {:X} samples {} name {}",
         base, width, height, guestFormat, uint32_t(sampleCount),
         g_surfaceCreationName ? g_surfaceCreationName : "<none>");
 #endif
