@@ -154,18 +154,16 @@ jobs:
           Move-Item -Path ".\out\build\${{ env.CMAKE_PRESET }}\MarathonRecomp\dxil.dll" -Destination ".\release\dxil.dll"
           Move-Item -Path ".\out\build\${{ env.CMAKE_PRESET }}\MarathonRecomp\MarathonRecomp.exe" -Destination ".\release\MarathonRecomp.exe"
 
+      - name: Pack PDB
+        if: ${{ (matrix.preset.name != 'x64-Clang-Release') && (matrix.preset.name != 'arm64-Clang-Release') }}
+        run: |
+          Move-Item -Path ".\out\build\${{ env.CMAKE_PRESET }}\MarathonRecomp\MarathonRecomp.pdb" -Destination ".\release\MarathonRecomp.pdb"
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v7
         with:
           name: MarathonRecomp-Windows-${{ env.CMAKE_PRESET }}
           path: .\release
-
-      - name: Upload PDB
-        uses: actions/upload-artifact@v7
-        if: ${{ (matrix.preset.name != 'x64-Clang-Release') && (matrix.preset.name != 'arm64-Clang-Release') }}
-        with:
-          name: MarathonRecomp-Windows-${{ env.CMAKE_PRESET }}-PDB
-          path: .\out\build\${{ env.CMAKE_PRESET }}\MarathonRecomp\MarathonRecomp.pdb
   build-flatpak:
     name: Build Flatpak (${{ matrix.arch.name }})
     runs-on: ${{ matrix.arch.runner }}
