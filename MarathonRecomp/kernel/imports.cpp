@@ -707,18 +707,7 @@ void ObDereferenceObject()
 
 void KeSetBasePriorityThread(GuestThreadHandle* hThread, int priority)
 {
-#ifdef _WIN32
-    if (priority == 16)
-    {
-        priority = 15;
-    }
-    else if (priority == -16)
-    {
-        priority = -15;
-    }
-
-    SetThreadPriority(hThread == GetKernelObject(CURRENT_THREAD_HANDLE) ? GetCurrentThread() : hThread->thread.native_handle(), priority);
-#endif
+    LOG_UTILITY("!!! STUB !!!");
 }
 
 uint32_t ObReferenceObjectByHandle(uint32_t handle, uint32_t objectType, be<uint32_t>* object)
