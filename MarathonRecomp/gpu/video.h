@@ -518,6 +518,27 @@ enum GuestTextureAddress
     D3DTADDRESS_BORDER = 6
 };
 
+struct BufferInfo
+{
+    uint32_t Index;
+    uint32_t Flags;
+};
+
+static const std::map<std::string, BufferInfo> g_BufferInfo
+{
+    { "framebuffer0",       { 0, 4 } },
+    { "framebuffer1",       { 0, 0 } },
+    { "framebuffer_1_4_0",  { 3, 2 } },
+    { "framebuffer_1_4_1",  { 0, 2 } },
+    { "framebuffer_1_8_0",  { 3, 2 } },
+    { "framebuffer_1_8_1",  { 0, 2 } },
+    { "framebuffer_1_16_0", { 3, 2 } },
+    { "framebuffer_1_16_1", { 0, 2 } },
+    { "framebuffer_1_32_0", { 3, 2 } },
+    { "framebuffer_1_32_1", { 0, 2 } },
+    { "depthstencil_1_4",   { 6, 0 } },
+};
+
 extern std::unique_ptr<GuestTexture> LoadTexture(const uint8_t* data, size_t dataSize, RenderComponentMapping componentMapping = RenderComponentMapping());
 
 extern void VideoConfigValueChangedCallback(const class IConfigDef* config);
