@@ -2,6 +2,7 @@
 
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
+#include <utils/host_thread.h>
 
 #include "version.h"
 
@@ -137,8 +138,8 @@ bool UpdateChecker::start()
 
     g_updateCheckerInProgress = true;
     g_updateCheckerFinished = false;
-    std::thread thread(&updateCheckerThread);
-    thread.detach();
+    HostThread thread("Update Checker Thread", &updateCheckerThread);
+    thread.Detach();
 
     return true;
 }

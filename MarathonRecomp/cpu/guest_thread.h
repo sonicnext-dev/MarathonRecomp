@@ -1,8 +1,7 @@
 #pragma once
 
 #include <kernel/xdm.h>
-
-typedef struct SDL_Thread SDL_Thread;
+#include <utils/host_thread.h>
 
 #define CURRENT_THREAD_HANDLE uint32_t(-2)
 
@@ -26,12 +25,11 @@ struct GuestThreadHandle : KernelObject
 {
     GuestThreadParams params;
     std::atomic<bool> suspended;
-    SDL_Thread* thread;
+    HostThread thread;
     // HACK(1)
     std::atomic<bool> isFinished = false;
 
     GuestThreadHandle(const GuestThreadParams& params);
-    ~GuestThreadHandle() override;
 
     uint32_t GetThreadId() const;
 

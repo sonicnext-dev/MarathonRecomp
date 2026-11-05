@@ -1,6 +1,7 @@
 #include "guest_thread.h"
 #include <stdafx.h>
 #include <api/Marathon.h>
+#include <fmt/format.h>
 #include <kernel/memory.h>
 #include <kernel/heap.h>
 #include <kernel/function.h>
@@ -42,47 +43,28 @@ GuestThreadContext::~GuestThreadContext()
     g_userHeap.Free(thread);
 }
 
-static int GuestThreadFunc(void* arg)
+static std::string GetGuestThreadName(const GuestThreadParams& params)
 {
-    auto* hThread = static_cast<GuestThreadHandle*>(arg);
+    // Sonicteam::SoX::Thread::ThreadProc
+    if (params.function == 0x825866A8) {
+        return static_cast<Sonicteam::SoX::Thread*>(g_memory.Translate(params.value))->m_pName.get();
+    }
+    return fmt::format("Guest Thread (0x{:x})", params.function);
+}
+
+static void GuestThreadFunc(void* data)
+{
+    auto* hThread = static_cast<GuestThreadHandle*>(data);
     hThread->suspended.wait(true);
     GuestThread::Start(hThread->params);
     // HACK(1)
     hThread->isFinished = true;
-    return 0;
 }
 
 GuestThreadHandle::GuestThreadHandle(const GuestThreadParams& params)
-    : params(params), suspended((params.flags & 0x1) != 0)
+    : params(params), suspended((params.flags & 0x1) != 0),
+      thread(GetGuestThreadName(params), GuestThreadFunc, this)
 {
-    SDL_PropertiesID props = SDL_CreateProperties();
-    if (props == 0) {
-        LOGF_ERROR("SDL_CreateProperties failed: {}\n", SDL_GetError());
-        return;
-    }
-
-    SDL_SetPointerProperty(props, SDL_PROP_THREAD_CREATE_ENTRY_FUNCTION_POINTER, reinterpret_cast<void*>(GuestThreadFunc));
-    SDL_SetPointerProperty(props, SDL_PROP_THREAD_CREATE_USERDATA_POINTER, this);
-    SDL_SetNumberProperty(props, SDL_PROP_THREAD_CREATE_STACKSIZE_NUMBER, 1 * 1024 * 1024);
-
-    // Sonicteam::SoX::Thread::ThreadProc
-    if (params.function == 0x825866A8) {
-        const auto* name = static_cast<Sonicteam::SoX::Thread*>(g_memory.Translate(params.value))->m_pName.get();
-        SDL_SetStringProperty(props, SDL_PROP_THREAD_CREATE_NAME_STRING, name);
-    }
-
-    thread = SDL_CreateThreadWithProperties(props);
-    if (thread == nullptr) {
-        LOGF_ERROR("SDL_CreateThreadWithProperties failed: {}\n", SDL_GetError());
-        return;
-    }
-
-    SDL_DestroyProperties(props);
-}
-
-GuestThreadHandle::~GuestThreadHandle()
-{
-    SDL_WaitThread(thread, nullptr);
 }
 
 template <typename ThreadType>
@@ -96,19 +78,19 @@ static uint32_t CalcThreadId(const ThreadType& id)
 
 uint32_t GuestThreadHandle::GetThreadId() const
 {
-    return CalcThreadId(SDL_GetThreadID(thread));
+    return CalcThreadId(thread.GetID());
 }
 
 uint32_t GuestThreadHandle::Wait(uint32_t timeout)
 {
     if (timeout == INFINITE || isFinished.load()) // HACK(1): isFinished
     {
-        SDL_WaitThread(thread, nullptr);
+        thread.Join();
         return STATUS_WAIT_0;
     }
     else if (timeout == 0)
     {
-        if (SDL_GetThreadState(thread) == SDL_THREAD_ALIVE)
+        if (thread.IsAlive())
             return STATUS_TIMEOUT;
 
         return STATUS_WAIT_0;
@@ -116,7 +98,7 @@ uint32_t GuestThreadHandle::Wait(uint32_t timeout)
     else
     {
         auto start = std::chrono::steady_clock::now();
-        while (SDL_GetThreadState(thread) == SDL_THREAD_ALIVE)
+        while (thread.IsAlive())
         {
             auto elapsed = std::chrono::steady_clock::now() - start;
             if (std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() >= timeout)
@@ -156,7 +138,7 @@ GuestThreadHandle* GuestThread::Start(const GuestThreadParams& params, uint32_t*
 
 uint32_t GuestThread::GetCurrentThreadId()
 {
-    return CalcThreadId(SDL_GetCurrentThreadID());
+    return CalcThreadId(HostThread::GetCurrentID());
 }
 
 void GuestThread::SetLastError(uint32_t error)

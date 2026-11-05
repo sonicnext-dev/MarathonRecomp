@@ -9,7 +9,16 @@
 
 // Almost all decoding code is from Xenia Canary, so leave the copyright here
 
-#include "xma_decoder.h"
+#include <condition_variable>
+#include <kernel/function.h>
+#include <kernel/heap.h>
+#include <utils/bit_stream.h>
+#include <utils/host_thread.h>
+#include <utils/ring_buffer.h>
+
+extern "C" {
+    #include <libavcodec/avcodec.h>
+}
 
 // #define ENABLE_DEBUG_XMA_DECODER
 
@@ -19,12 +28,169 @@
 #define debug_printf(...)
 #endif
 
+constexpr uint32_t kBytesPerPacket = 2048;
+constexpr uint32_t kBytesPerPacketHeader = 4;
+constexpr uint32_t kBytesPerPacketData = kBytesPerPacket - kBytesPerPacketHeader;
+constexpr uint32_t kBytesPerSample = 2;
+constexpr uint32_t kSamplesPerFrame = 512;
+constexpr uint32_t kBytesPerFrameChannel = kSamplesPerFrame * kBytesPerSample;
+
 constexpr uint32_t kOutputBytesPerBlock = 256;
 constexpr uint32_t kBitsPerPacketHeader = 32;
 constexpr uint32_t kBitsPerPacket = kBytesPerPacket * 8;
 constexpr uint32_t kMaxFrameLength = 0x7FFF;
 constexpr uint32_t kBitsPerFrameHeader = 15;
 constexpr uint32_t kMaxFrameSizeinBits = 0x4000 - kBitsPerPacketHeader;
+
+struct XMAPLAYBACKINIT {
+    be<uint32_t> sampleRate;
+    be<uint32_t> outputBufferSize;
+    uint8_t channelCount;
+    uint8_t subframes;
+};
+
+void DecoderThreadFunc(void* playback);
+
+struct XmaPlayback {
+    uint32_t sampleRate;
+    uint32_t outputBufferSize;
+    uint32_t channelCount;
+    uint32_t subframes;
+    uint8_t* outputBuffer;
+    uint32_t outputBufferVirtual;
+    uint32_t currentDataSize;
+
+    uint32_t partialBytesRead = 0;
+    uint32_t streamPosition = 0;
+
+    // ffmpeg
+    AVCodecContext *codec_ctx = nullptr;
+    const AVCodec *codec = nullptr;
+    AVPacket *av_packet_ = nullptr;
+    AVFrame *av_frame_ = nullptr;
+
+    // xenia
+    std::array<uint8_t, kBytesPerPacketData * 2> inputBuffer;
+    std::array<uint8_t, 1 + 4096> xmaFrame;
+    std::array<uint8_t, kBytesPerFrameChannel * 2> rawFrame;
+    uint32_t outputBufferBlockCount = 0;
+    uint32_t outputBufferReadOffset = 0;
+    uint32_t outputBufferWriteOffset = 0;
+    int32_t remainingSubframeBlocksInOutputBuffer = 0;
+    uint8_t currentFrameRemainingSubframes = 0;
+    uint32_t inputBufferReadOffset = 32;
+
+    uint32_t numSubframesToSkip = 0;
+
+    RingBuffer outputRb;
+    uint32_t inputBuffer1 = 0;
+    uint32_t inputBuffer2 = 0;
+    size_t inputBuffer1Size = 0;
+    size_t inputBuffer2Size = 0;
+    uint32_t validInputBuffer = 0;
+    std::atomic<uint32_t> inputBuffer1Valid = 0;
+    std::atomic<uint32_t> inputBuffer2Valid = 0;
+    uint32_t currentBuffer = 0;
+
+    uint32_t outputBufferValid = 1;
+
+    uint8_t numLoops = 0;
+    uint8_t loopSubframeEnd = 0;
+    uint8_t loopSubframeSkip = 0;
+    uint32_t loopStartOffset = 0;
+    uint32_t loopEndOffset = 0;
+
+    std::unique_ptr<HostThread> decoderThread;
+    std::mutex mutex;
+    std::condition_variable cv;
+    std::atomic<bool> isLocked { false };
+    std::atomic<bool> isRunning { true };
+
+    XmaPlayback(uint32_t sampleRate, uint32_t outputBufferSize,
+                uint32_t channelCount, uint32_t subframes)
+                : sampleRate(sampleRate), outputBufferSize(outputBufferSize),
+                  channelCount(channelCount), subframes(subframes),
+                  outputRb(nullptr, 0) {
+        outputBufferBlockCount =
+            (((channelCount * outputBufferSize) << 15) & 0x7C00000) >> 22;
+        outputBuffer =
+            static_cast<uint8_t*>(g_userHeap.AllocPhysical(0x2000, 0));
+        outputBufferVirtual = g_memory.MapVirtual(outputBuffer);
+
+        codec = avcodec_find_decoder(AV_CODEC_ID_XMAFRAMES);
+        if (!codec) {
+            throw std::runtime_error("Decoder not found");
+        }
+
+        codec_ctx = avcodec_alloc_context3(codec);
+        if (!codec_ctx) {
+            throw std::runtime_error("Failed to allocate codec context");
+        }
+
+        codec_ctx->sample_rate = sampleRate;
+        codec_ctx->ch_layout.nb_channels = channelCount;
+
+        av_frame_ = av_frame_alloc();
+        if (!av_frame_) {
+            throw std::runtime_error("Coulnd't allocate frame");
+        }
+
+        if (int err = avcodec_open2(codec_ctx, codec, nullptr); err < 0) {
+            throw std::runtime_error("Failed to open codec");
+        }
+        av_packet_ = av_packet_alloc();
+
+        decoderThread = std::make_unique<HostThread>("XMA Decode Thread", DecoderThreadFunc, this);
+    }
+
+    ~XmaPlayback() {
+        {
+            std::lock_guard lock(mutex);
+            isRunning = false;
+            cv.notify_one();
+        }
+
+        decoderThread->Join();
+
+        av_packet_free(&av_packet_);
+        av_frame_free(&av_frame_);
+        avcodec_free_context(&codec_ctx);
+
+        g_userHeap.Free(outputBuffer);
+    }
+
+    const uint32_t GetInputBufferAddress(uint8_t bufferIndex) const {
+        return bufferIndex == 0 ? inputBuffer1 : inputBuffer2;
+    }
+
+    const uint32_t GetCurrentInputBufferAddress() const {
+        return GetInputBufferAddress(currentBuffer);
+    }
+
+    const uint32_t GetInputBufferPacketCount(uint8_t bufferIndex) const {
+        return bufferIndex == 0 ? inputBuffer1Size : inputBuffer2Size;
+    }
+    const uint32_t GetCurrentInputBufferPacketCount() const {
+        return GetInputBufferPacketCount(currentBuffer);
+    }
+
+    uint8_t *GetCurrentInputBuffer() {
+        return (uint8_t *)g_memory.Translate(GetCurrentInputBufferAddress());
+    }
+
+    bool IsInputBufferValid(uint8_t bufferIndex) const {
+        return bufferIndex == 0 ? inputBuffer1Valid : inputBuffer2Valid;
+    }
+
+    bool IsCurrentInputBufferValid() const {
+        return IsInputBufferValid(currentBuffer);
+    }
+
+    bool IsAnyInputBufferValid() const {
+        return inputBuffer1Valid || inputBuffer2Valid;
+    }
+};
+
 
 uint32_t XMAPlaybackGetFrameOffsetFromPacketHeader(uint32_t header) {
     uint32_t result = 0;
@@ -364,7 +530,8 @@ void Consume(XmaPlayback *playback) {
     playback->currentFrameRemainingSubframes -= subframesToWrite;
 }
 
-void DecoderThreadFunc(XmaPlayback *playback) {
+void DecoderThreadFunc(void* data) {
+    auto* playback = static_cast<XmaPlayback*>(data);
     std::unique_lock lock(playback->mutex);
 
     while (playback->isRunning) {
@@ -383,8 +550,7 @@ void DecoderThreadFunc(XmaPlayback *playback) {
         const uint32_t outputReadOffset = playback->outputBufferReadOffset * kOutputBytesPerBlock;
         const uint32_t outputWriteOffset = playback->outputBufferWriteOffset * kOutputBytesPerBlock;
 
-        playback->outputRb = RingBuffer((uint8_t *)g_memory.Translate(playback->outputBuffer),
-                                        outputCapacity);
+        playback->outputRb = RingBuffer(playback->outputBuffer, outputCapacity);
         playback->outputRb.set_read_offset(outputReadOffset);
         playback->outputRb.set_write_offset(outputWriteOffset);
         playback->remainingSubframeBlocksInOutputBuffer = (int32_t)playback->outputRb.write_count()
@@ -414,7 +580,6 @@ uint32_t XMAPlaybackCreate(uint32_t streams, XMAPLAYBACKINIT *init, uint32_t fla
     const auto xmaPlayback = g_userHeap.AllocPhysical<XmaPlayback>(
             init->sampleRate.get(), init->outputBufferSize.get(), init->channelCount,
             init->subframes);
-    xmaPlayback->decoderThread = std::thread(DecoderThreadFunc, xmaPlayback);
     *outPlayback = g_memory.MapVirtual(xmaPlayback);
 
     return 0;
@@ -558,7 +723,7 @@ uint32_t XMAPlaybackAccessDecodedData(XmaPlayback *playback, uint32_t stream, be
     std::lock_guard lock(playback->mutex);
 
     uint32_t partialBytesRead = playback->partialBytesRead;
-    uint32_t addr = playback->outputBuffer +
+    uint32_t addr = playback->outputBufferVirtual +
                     ((playback->outputBufferReadOffset << 8) & 0x1F00) +
                     partialBytesRead;
 
@@ -601,7 +766,7 @@ uint32_t XMAPlaybackConsumeDecodedData(XmaPlayback *playback, uint32_t stream, u
 
     uint32_t totalBytes = 0;
     uint32_t partialBytesRead = playback->partialBytesRead;
-    uint32_t addr = playback->outputBuffer +
+    uint32_t addr = playback->outputBufferVirtual +
                     ((playback->outputBufferReadOffset << 8) & 0x1F00) +
                     partialBytesRead;
 
@@ -681,13 +846,8 @@ uint32_t XMAPlaybackQueryModifyLockObtained(XmaPlayback *playback) {
 uint32_t XMAPlaybackDestroy(XmaPlayback *playback) {
     debug_printf("XMAPlaybackDestroy %x\n", playback);
 
-    {
-        std::lock_guard lock(playback->mutex);
-        playback->isRunning = false;
-        playback->cv.notify_all();
-    }
-
-    playback->decoderThread.join();
+    playback->~XmaPlayback();
+    g_userHeap.Free(playback);
 
     return 0;
 }

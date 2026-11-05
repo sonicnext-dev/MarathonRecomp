@@ -55,7 +55,7 @@ void XAudioInitializeSystem()
     CreateAudioDevice();
 }
 
-static std::unique_ptr<std::thread> g_audioThread;
+static std::unique_ptr<HostThread> g_audioThread;
 static volatile bool g_audioThreadShouldExit;
 
 static void AudioThread()
@@ -96,7 +96,7 @@ static void CreateAudioThread()
 {
     SDL_ResumeAudioStreamDevice(g_audioStream);
     g_audioThreadShouldExit = false;
-    g_audioThread = std::make_unique<std::thread>(AudioThread);
+    g_audioThread = std::make_unique<HostThread>("Audio Thread", AudioThread);
 }
 
 void XAudioRegisterClient(PPCFunc* callback, uint32_t param)
@@ -168,11 +168,8 @@ void XAudioConfigValueChangedCallback(IConfigDef* configDef)
 {
     if (configDef == &Config::ChannelConfiguration)
     {
-        if (g_audioThread->joinable())
-        {
-            g_audioThreadShouldExit = true;
-            g_audioThread->join();
-        }
+        g_audioThreadShouldExit = true;
+        g_audioThread->Join();
 
         CreateAudioDevice();
         CreateAudioThread();
