@@ -1,11 +1,10 @@
 #include "guest_thread.h"
-#include <cstdio>
 #include <stdafx.h>
 #include <api/Marathon.h>
 #include <kernel/memory.h>
 #include <kernel/heap.h>
 #include <kernel/function.h>
-#include <os/thread.h>
+#include <os/logger.h>
 #include "ppc_context.h"
 
 constexpr size_t PCR_SIZE = 0xAB0;
@@ -43,71 +42,47 @@ GuestThreadContext::~GuestThreadContext()
     g_userHeap.Free(thread);
 }
 
-#ifdef USE_PTHREAD
-static size_t GetStackSize()
+static int GuestThreadFunc(void* arg)
 {
-    // Cache as this should not change.
-    static size_t stackSize = 0;
-    if (stackSize == 0)
-    {
-        // 8 MiB is a typical default.
-        constexpr auto defaultSize = 8 * 1024 * 1024;
-        struct rlimit lim;
-        const auto ret = getrlimit(RLIMIT_STACK, &lim);
-        if (ret == 0 && lim.rlim_cur < defaultSize)
-        {
-            // Use what the system allows.
-            stackSize = lim.rlim_cur;
-        }
-        else
-        {
-            stackSize = defaultSize;
-        }
-    }
-    return stackSize;
-}
-
-static void* GuestThreadFunc(void* arg)
-{
-    GuestThreadHandle* hThread = (GuestThreadHandle*)arg;
-#else
-static void* GuestThreadFunc(GuestThreadHandle* hThread)
-{
-#endif
+    auto* hThread = static_cast<GuestThreadHandle*>(arg);
     hThread->suspended.wait(true);
     GuestThread::Start(hThread->params);
     // HACK(1)
     hThread->isFinished = true;
-    return nullptr;
+    return 0;
 }
 
 GuestThreadHandle::GuestThreadHandle(const GuestThreadParams& params)
     : params(params), suspended((params.flags & 0x1) != 0)
-#ifdef USE_PTHREAD
 {
-    pthread_attr_t attr;
-    pthread_attr_init(&attr);
-    pthread_attr_setstacksize(&attr, GetStackSize());
-    const auto ret = pthread_create(&thread, &attr, GuestThreadFunc, this);
-    if (ret != 0) {
-        fprintf(stderr, "pthread_create failed with error code 0x%X.\n", ret);
+    SDL_PropertiesID props = SDL_CreateProperties();
+    if (props == 0) {
+        LOGF_ERROR("SDL_CreateProperties failed: {}\n", SDL_GetError());
         return;
     }
+
+    SDL_SetPointerProperty(props, SDL_PROP_THREAD_CREATE_ENTRY_FUNCTION_POINTER, reinterpret_cast<void*>(GuestThreadFunc));
+    SDL_SetPointerProperty(props, SDL_PROP_THREAD_CREATE_USERDATA_POINTER, this);
+    SDL_SetNumberProperty(props, SDL_PROP_THREAD_CREATE_STACKSIZE_NUMBER, 1 * 1024 * 1024);
+
+    // Sonicteam::SoX::Thread::ThreadProc
+    if (params.function == 0x825866A8) {
+        const auto* name = static_cast<Sonicteam::SoX::Thread*>(g_memory.Translate(params.value))->m_pName.get();
+        SDL_SetStringProperty(props, SDL_PROP_THREAD_CREATE_NAME_STRING, name);
+    }
+
+    thread = SDL_CreateThreadWithProperties(props);
+    if (thread == nullptr) {
+        LOGF_ERROR("SDL_CreateThreadWithProperties failed: {}\n", SDL_GetError());
+        return;
+    }
+
+    SDL_DestroyProperties(props);
 }
-#else
-, thread(GuestThreadFunc, this)
-{
-}
-#endif
 
 GuestThreadHandle::~GuestThreadHandle()
 {
-#ifdef USE_PTHREAD
-    pthread_join(thread, nullptr);
-#else
-    if (thread.joinable())
-        thread.join();
-#endif
+    SDL_WaitThread(thread, nullptr);
 }
 
 template <typename ThreadType>
@@ -121,42 +96,27 @@ static uint32_t CalcThreadId(const ThreadType& id)
 
 uint32_t GuestThreadHandle::GetThreadId() const
 {
-#ifdef USE_PTHREAD
-    return CalcThreadId(thread);
-#else
-    return CalcThreadId(thread.get_id());
-#endif
+    return CalcThreadId(SDL_GetThreadID(thread));
 }
 
 uint32_t GuestThreadHandle::Wait(uint32_t timeout)
 {
     if (timeout == INFINITE || isFinished.load()) // HACK(1): isFinished
     {
-#ifdef USE_PTHREAD
-        pthread_join(thread, nullptr);
-#else
-        if (thread.joinable())
-            thread.join();
-#endif
-
+        SDL_WaitThread(thread, nullptr);
         return STATUS_WAIT_0;
     }
     else if (timeout == 0)
     {
-#ifndef USE_PTHREAD
-        if (thread.joinable())
+        if (SDL_GetThreadState(thread) == SDL_THREAD_ALIVE)
             return STATUS_TIMEOUT;
-#endif
 
         return STATUS_WAIT_0;
     }
     else
     {
-#ifdef USE_PTHREAD
-        pthread_join(thread, nullptr);
-#else
         auto start = std::chrono::steady_clock::now();
-        while (thread.joinable())
+        while (SDL_GetThreadState(thread) == SDL_THREAD_ALIVE)
         {
             auto elapsed = std::chrono::steady_clock::now() - start;
             if (std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() >= timeout)
@@ -164,7 +124,6 @@ uint32_t GuestThreadHandle::Wait(uint32_t timeout)
 
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
-#endif
 
         return STATUS_WAIT_0;
     }
@@ -197,11 +156,7 @@ GuestThreadHandle* GuestThread::Start(const GuestThreadParams& params, uint32_t*
 
 uint32_t GuestThread::GetCurrentThreadId()
 {
-#ifdef USE_PTHREAD
-    return CalcThreadId(pthread_self());
-#else
-    return CalcThreadId(std::this_thread::get_id());
-#endif
+    return CalcThreadId(SDL_GetCurrentThreadID());
 }
 
 void GuestThread::SetLastError(uint32_t error)
@@ -215,15 +170,6 @@ void GuestThread::SetLastError(uint32_t error)
 
     // TEB + 0x160 : Win32LastError
     *(uint32_t*)(thread + TEB_OFFSET + 0x160) = ByteSwap(error);
-}
-
-// Sonicteam::SoX::Thread::ThreadProc
-PPC_FUNC_IMPL(__imp__sub_825866A8);
-PPC_FUNC(sub_825866A8)
-{
-    os::thread::SetCurrentThreadName(reinterpret_cast<Sonicteam::SoX::Thread*>(base + ctx.r3.u32)->m_pName.get());
-
-    __imp__sub_825866A8(ctx, base);
 }
 
 uint32_t XSetThreadProcessor(GuestThreadHandle* hThread, uint32_t dwIdealProcessor)
