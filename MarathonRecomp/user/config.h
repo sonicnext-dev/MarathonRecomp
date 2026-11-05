@@ -141,6 +141,12 @@ enum class ERadialBlur : uint32_t
     Enhanced
 };
 
+enum class EParticleFade : uint32_t
+{
+    Original,
+    Soft
+};
+
 enum class ECutsceneAspectRatio : uint32_t
 {
     Original,

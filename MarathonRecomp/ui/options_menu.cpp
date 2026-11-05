@@ -867,6 +867,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
             DrawOption(rowCount++, &Config::ShadowResolution, true);
             DrawOption(rowCount++, &Config::ReflectionResolution, true);
             DrawOption(rowCount++, &Config::RadialBlur, true);
+            DrawOption(rowCount++, &Config::ParticleFade, true);
             DrawOption(rowCount++, &Config::CutsceneAspectRatio, true);
             DrawOption(rowCount++, &Config::UIAlignmentMode, true);
 
