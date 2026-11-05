@@ -224,7 +224,7 @@ void TraverseCast(Chao::CSD::Scene* scene, uint32_t castNodeIndex, Chao::CSD::Ca
 
     TraverseCast(scene, castNodeIndex, castNode, castNode->pCastLinks[castIndex].ChildCastIndex, path);
 
-    // LOGFN_UTILITY("CSD hierarchy: {}", path);
+    // printf("CSD hierarchy: %s\n", path.c_str());
 }
 
 void TraverseScene(Chao::CSD::Scene* scene, std::string path)
@@ -464,7 +464,8 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
         // Prevent chevron arrows from being unaligned by centred aspect ratio.
         if ((modifier.Flags & CSD_CHEVRON) == 0)
         {
-            if (g_aspectRatio > WIDE_ASPECT_RATIO)
+            // Prevent multiplayer HUD and loading arrows being offset at ultrawide.
+            if (g_aspectRatio > WIDE_ASPECT_RATIO && (modifier.Flags & CSD_MULTIPLAYER) == 0 && (modifier.Flags & CSD_LOADING_ARROW) == 0)
             {
                 // Remove horizontal alignments at wide aspect ratios.
                 modifier.Flags &= ~(CSD_ALIGN_LEFT | CSD_ALIGN_RIGHT);
@@ -573,6 +574,16 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
                     offsetX += g_horzCentre - g_aspectRatioOffsetX;
 
                 offsetX += pivotX * g_aspectRatioScale;
+            }
+
+            // Use camera aspect ratio to correct 3D CSD scenes, rather than viewport aspect ratio.
+            if ((modifier.Flags & CSD_3D) != 0 && g_aspectRatio > WIDE_ASPECT_RATIO)
+            {
+                if (const auto pApp = App::s_pApp; const auto pGame = pApp->GetGame())
+                {
+                    if (const auto pMainCamera = pGame->GetCamera("Main"))
+                        offsetX = g_aspectRatioOffsetX * (pMainCamera->m_AspectRatio.X / pMainCamera->m_AspectRatio.Y / g_aspectRatio);
+                }
             }
         }
     }
@@ -1988,6 +1999,9 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/logo/cri_logo/Scene_0000/Null_0002/bg"), { CSD_STRETCH } },
     { HashStr("sprite/logo/cri_logo/Scene_0000/Null_0002/criware"), { CSD_CRI_LOGO | CSD_SCALE } },
 
+    // enemy_powergage
+    { HashStr("sprite/enemy_powergage/enemy_powergage/enemy_powergage/enemy_powergage"), { CSD_3D } },
+
     // gadget_ber
     { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar"), { CSD_ALIGN_BOTTOM_RIGHT } },
     { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar_anime"), { CSD_ALIGN_BOTTOM_RIGHT } },
@@ -2019,9 +2033,9 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     // loading
     { HashStr("sprite/loading/loading/Scene_0000/Loading"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
     { HashStr("sprite/loading/loading/Scene_0000/Loading_02"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
-    { HashStr("sprite/loading/loading/Scene_0000/arrow_01"), { .Flags = CSD_ALIGN_BOTTOM_RIGHT | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
-    { HashStr("sprite/loading/loading/Scene_0000/arrow_02"), { .Flags = CSD_ALIGN_BOTTOM_RIGHT | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
-    { HashStr("sprite/loading/loading/Scene_0000/arrow_03"), { .Flags = CSD_ALIGN_BOTTOM_RIGHT | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
+    { HashStr("sprite/loading/loading/Scene_0000/arrow_01"), { .Flags = CSD_LOADING_ARROW | CSD_ALIGN_BOTTOM_RIGHT | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
+    { HashStr("sprite/loading/loading/Scene_0000/arrow_02"), { .Flags = CSD_LOADING_ARROW | CSD_ALIGN_BOTTOM_RIGHT | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
+    { HashStr("sprite/loading/loading/Scene_0000/arrow_03"), { .Flags = CSD_LOADING_ARROW | CSD_ALIGN_BOTTOM_RIGHT | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
 
     // maindisplay
     { HashStr("sprite/maindisplay/power"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
