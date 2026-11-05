@@ -13,6 +13,7 @@
 #include <ui/game_window.h>
 #include <ui/imgui_utils.h>
 #include <ui/message_window.h>
+#include <utils/host_thread.h>
 #include <decompressor.h>
 #include <exports.h>
 #include <nfd.h>
@@ -59,7 +60,7 @@ static std::array<bool, int(DLC::Count)> g_dlcInstalled{};
 static Journal g_installerJournal{};
 static Installer::Sources g_installerSources{};
 static uint64_t g_installerAvailableSize{};
-static std::unique_ptr<std::thread> g_installerThread{};
+static std::unique_ptr<HostThread> g_installerThread{};
 static double g_installerStartTime{};
 static double g_installerEndTime{ DBL_MAX };
 static float g_installerProgressRatioCurrent{};
@@ -155,7 +156,7 @@ static int g_currentMessageResult{ -1 };
 static std::list<std::filesystem::path> g_currentPickerResults{};
 static std::atomic<bool> g_currentPickerResultsReady{};
 static std::string g_currentPickerErrorMessage{};
-static std::unique_ptr<std::thread> g_currentPickerThread{};
+static std::unique_ptr<HostThread> g_currentPickerThread{};
 
 static bool g_pickerTutorialCleared[2]{};
 static bool g_pickerTutorialTriggered{};
@@ -530,7 +531,7 @@ static void PickerStart(bool folderMode)
 {
     if (g_currentPickerThread != nullptr)
     {
-        g_currentPickerThread->join();
+        g_currentPickerThread->Join();
         g_currentPickerThread.reset();
     }
 
@@ -551,7 +552,7 @@ static void PickerStart(bool folderMode)
     if (singleThreadMode)
         PickerThreadProcess();
     else
-        g_currentPickerThread = std::make_unique<std::thread>(PickerThreadProcess);
+        g_currentPickerThread = std::make_unique<HostThread>("Picker Thread", PickerThreadProcess);
 }
 
 static void PickerShow(bool folderMode)
@@ -677,7 +678,7 @@ static void InstallerStart()
     g_installerProgressRatioTarget = 0.0f;
     g_installerFailed = false;
     g_installerFinished = false;
-    g_installerThread = std::make_unique<std::thread>(InstallerThread);
+    g_installerThread = std::make_unique<HostThread>("Installer Thread", InstallerThread);
 
     g_commonMenu.SetTitle(Localise("Installer_Header_Installing"));
 }
@@ -1058,7 +1059,7 @@ static void DrawInstallingPage(ImVec2 originMin, ImVec2 originMax)
 
     if (g_installerFinished)
     {
-        g_installerThread->join();
+        g_installerThread->Join();
         g_installerThread.reset();
 
         g_installerEndTime = ImGui::GetTime();
@@ -1363,13 +1364,13 @@ void InstallerWizard::Shutdown()
     // Wait for and reset the threads.
     if (g_installerThread != nullptr)
     {
-        g_installerThread->join();
+        g_installerThread->Join();
         g_installerThread.reset();
     }
 
     if (g_currentPickerThread != nullptr)
     {
-        g_currentPickerThread->join();
+        g_currentPickerThread->Join();
         g_currentPickerThread.reset();
     }
 

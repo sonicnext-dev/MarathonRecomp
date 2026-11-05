@@ -7,12 +7,12 @@
 #include <app.h>
 #include <cpu/guest_thread.h>
 #include <Marathon.h>
-#include <os/thread.h>
 #include <patches/hook_event.h>
 #include <patches/loading_patches.h>
 #include <sdl_listener.h>
 #include <shader/shader_cache.h>
 #include <user/config.h>
+#include <utils/host_thread.h>
 #include <xxHashMap.h>
 
 #if defined(ASYNC_PSO_DEBUG) || defined(PSO_CACHING)
@@ -51,7 +51,7 @@ class LoadingPipelineCompilationEvent : public ContextHookEvent<Sonicteam::Loadi
 public:
     void Postfix(Sonicteam::LoadingTask* in_pThis) override
     {
-        assert(std::this_thread::get_id() == g_mainThreadId);
+        assert(HostThread::GetCurrentID() == g_mainThreadId);
 
         // Wait for pipeline compilations to finish.
         uint32_t value;
@@ -151,8 +151,6 @@ static void CompilePipeline(XXH64_hash_t pipelineHash, const PipelineState& pipe
 
 static void PipelineCompilerThread()
 {
-    os::thread::SetCurrentThreadName("Pipeline Compiler Thread");
-
 #ifdef _WIN32
     int threadPriority = THREAD_PRIORITY_LOWEST;
     SetThreadPriority(GetCurrentThread(), threadPriority);
@@ -193,13 +191,13 @@ static void PipelineCompilerThread()
     }
 }
 
-static std::vector<std::unique_ptr<std::thread>> g_pipelineCompilerThreads = []()
+static std::vector<std::unique_ptr<HostThread>> g_pipelineCompilerThreads = []()
     {
         size_t threadCount = std::max(2u, (std::thread::hardware_concurrency() * 2) / 3);
 
-        std::vector<std::unique_ptr<std::thread>> threads(threadCount);
+        std::vector<std::unique_ptr<HostThread>> threads(threadCount);
         for (auto& thread : threads)
-            thread = std::make_unique<std::thread>(PipelineCompilerThread);
+            thread = std::make_unique<HostThread>("Pipeline Compiler Thread", PipelineCompilerThread);
 
         return threads;
     }();
@@ -271,8 +269,6 @@ static void EnqueueGraphicsPipelineCompilation(
 
 static void PipelineTaskConsumerThread()
 {
-    os::thread::SetCurrentThreadName("Pipeline Task Consumer Thread");
-
 #ifdef _WIN32
     SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_IDLE);
 #endif
@@ -418,7 +414,7 @@ static void PipelineTaskConsumerThread()
     }
 }
 
-static std::thread g_pipelineTaskConsumerThread(PipelineTaskConsumerThread);
+static HostThread g_pipelineTaskConsumerThread("Pipeline Task Consumer Thread", PipelineTaskConsumerThread);
 
 #ifdef PSO_CACHING
 class SDLEventListenerForPSOCaching : public SDLEventListener

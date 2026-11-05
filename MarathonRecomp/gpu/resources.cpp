@@ -8,6 +8,7 @@
 #include <kernel/heap.h>
 #include <kernel/memory.h>
 #include <user/config.h>
+#include <utils/host_thread.h>
 
 std::atomic<uint32_t> g_bufferUploadCount = 0;
 
@@ -204,7 +205,7 @@ static void LockTextureRect(GuestTexture* texture, uint32_t, GuestLockedRect* lo
 
 static void UnlockTextureRect(GuestTexture* texture)
 {
-    assert(std::this_thread::get_id() == g_mainThreadId);
+    assert(HostThread::GetCurrentID() == g_mainThreadId);
 
     g_renderQueue.enqueue(RenderCommands::UnlockTextureRect { texture });
 }

@@ -13,9 +13,10 @@
 #include <user/config.h>
 #include <user/paths.h>
 #include <user/registry.h>
+#include <utils/host_thread.h>
 #include <xxHashMap.h>
 
-static std::thread::id g_mainThreadId = std::this_thread::get_id();
+static uint32_t g_mainThreadId = HostThread::GetCurrentID();
 extern std::array<XXH64_hash_t, 29> g_taskUpdatesOnPause;
 
 void App::Restart(std::vector<std::string> restartArgs)
@@ -94,7 +95,7 @@ PPC_FUNC(sub_825EA610)
     // which SDL does not like. To prevent the OS from thinking
     // the process is unresponsive, we will flush while waiting
     // for the pipelines to finish compiling in video.cpp.
-    if (std::this_thread::get_id() == g_mainThreadId)
+    if (HostThread::GetCurrentID() == g_mainThreadId)
     {
         SDL_PumpEvents();
         SDL_FlushEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);

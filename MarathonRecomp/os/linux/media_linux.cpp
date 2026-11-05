@@ -8,6 +8,7 @@
 #include <gio/gio.h>
 #include <os/media.h>
 #include <os/logger.h>
+#include <utils/host_thread.h>
 
 enum class PlaybackStatus
 {
@@ -23,7 +24,7 @@ static const char* MPRIS2Interface = "org.mpris.MediaPlayer2";
 static const char* MPRIS2PlayerInterface = "org.mpris.MediaPlayer2.Player";
 static const char* MPRIS2Path = "/org/mpris/MediaPlayer2";
 
-static std::optional<std::thread> g_dbusThread;
+static std::optional<HostThread> g_dbusThread;
 static std::unordered_map<std::string, PlaybackStatus> g_playerStatus;
 static std::atomic<bool> g_isPlaying = false;
 
@@ -320,8 +321,8 @@ bool os::media::IsExternalMediaPlaying()
 {
     if (!g_dbusThread)
     {
-        g_dbusThread.emplace(DBusThreadProc);
-        g_dbusThread->detach();
+        g_dbusThread.emplace("DBus Thread", DBusThreadProc);
+        g_dbusThread->Detach();
     }
 
     return g_isPlaying;

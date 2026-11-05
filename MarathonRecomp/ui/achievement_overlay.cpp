@@ -9,6 +9,8 @@
 #include <app.h>
 #include <exports.h>
 
+#include "utils/host_thread.h"
+
 constexpr double OVERLAY_DURATION = 5.0;
 
 static bool g_isClosing{};
@@ -17,11 +19,11 @@ static double g_appearTime{};
 static Achievement g_achievement{};
 
 // Dequeue achievements only in the main thread. This is also extra thread safety.
-static std::thread::id g_mainThreadId = std::this_thread::get_id();
+static uint32_t g_mainThreadId = HostThread::GetCurrentID();
 
 static bool CanDequeueAchievement()
 {
-    return std::this_thread::get_id() == g_mainThreadId && !AchievementOverlay::s_queue.empty();
+    return HostThread::GetCurrentID() == g_mainThreadId && !AchievementOverlay::s_queue.empty();
 }
 
 void AchievementOverlay::Draw()

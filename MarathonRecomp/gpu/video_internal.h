@@ -33,7 +33,7 @@ extern Backend g_backend;
 
 #endif
 
-extern std::thread::id g_mainThreadId;
+extern uint32_t g_mainThreadId;
 extern std::unique_ptr<RenderPipelineLayout> g_pipelineLayout;
 
 void DiscardTexture(GuestBaseTexture* texture, RenderTextureLayout layout);

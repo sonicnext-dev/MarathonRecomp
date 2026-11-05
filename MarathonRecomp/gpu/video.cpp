@@ -20,7 +20,6 @@
 #include <kernel/memory.h>
 #include <kernel/xdbf.h>
 #include <os/process.h>
-#include <os/thread.h>
 #include <patches/aspect_ratio_patches.h>
 #include <plume_render_interface.h>
 #include <ranges>
@@ -35,6 +34,7 @@
 #include <ui/message_window.h>
 #include <ui/options_menu.h>
 #include <user/config.h>
+#include <utils/host_thread.h>
 #include <xxHashMap.h>
 
 #if defined(ASYNC_PSO_DEBUG) || defined(PSO_CACHING)
@@ -283,7 +283,7 @@ static std::string g_pipelineDebugText;
 static Mutex g_debugMutex;
 #endif
 
-std::thread::id g_mainThreadId = std::this_thread::get_id();
+uint32_t g_mainThreadId = HostThread::GetCurrentID();
 
 static xxHashMap<std::pair<uint32_t, std::unique_ptr<RenderSampler>>> g_samplerStates;
 
@@ -3866,10 +3866,8 @@ static void ProcRenderCommand(const RenderCommands::SetClipPlane& args)
     SetDirtyValue(g_dirtyStates.sharedConstants, g_sharedConstants.clipPlane[3], args.plane[3]);
 }
 
-static std::thread g_renderThread([]
+static HostThread g_renderThread("Render Thread", []
     {
-        os::thread::SetCurrentThreadName("Render Thread");
-
 #ifdef _WIN32
         SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
 #endif
