@@ -20,6 +20,7 @@ static const char *CHECK_URL = "https://api.github.com/repos/sonicnext-dev/Marat
 static const char *VISIT_URL = "https://github.com/sonicnext-dev/MarathonRecomp/releases/latest";
 static const char *USER_AGENT = "MarathonRecomp-Agent";
 
+static std::unique_ptr<HostThread> g_updateCheckerThread = nullptr;
 static std::atomic<bool> g_updateCheckerInProgress = false;
 static std::atomic<bool> g_updateCheckerFinished = false;
 static UpdateChecker::Result g_updateCheckerResult = UpdateChecker::Result::NotStarted;
@@ -138,8 +139,8 @@ bool UpdateChecker::start()
 
     g_updateCheckerInProgress = true;
     g_updateCheckerFinished = false;
-    HostThread thread("Update Checker Thread", &updateCheckerThread);
-    thread.Detach();
+    g_updateCheckerThread = std::make_unique<HostThread>("Update Checker Thread", &updateCheckerThread);
+    g_updateCheckerThread->Detach();
 
     return true;
 }
