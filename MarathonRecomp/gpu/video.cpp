@@ -212,6 +212,7 @@ Backend g_backend;
 #endif
 
 static bool g_triangleStripWorkaround = false;
+static bool g_enableHardwareDepthResolve = false;
 
 static std::unique_ptr<RenderInterface> g_interface;
 static std::unique_ptr<RenderDevice> g_device;
@@ -1144,6 +1145,10 @@ static bool TryCreateHostDevice(std::vector<RenderInterfaceFunction*>& interface
                 // Enable triangle strip workaround if we are on AMD, as there is a bug where
                 // restart indices cause triangles to be culled incorrectly. Converting them to degenerate triangles fixes it.
                 g_triangleStripWorkaround = (deviceDescription.vendor == RenderDeviceVendor::AMD);
+
+                // Only NVIDIA is confirmed to work with hardware depth resolve; AMD seems to just leave
+                // the destination blank for some reason.
+                g_enableHardwareDepthResolve = (deviceDescription.vendor == RenderDeviceVendor::NVIDIA);
 
                 break;
             }
@@ -2995,7 +3000,7 @@ static bool UseShaderResolve(GuestSurface* surface)
         // or the surface is depth and resolve modes are not supported.
         if (surface->sampleCount == RenderSampleCount::COUNT_1 ||
             surface->format != texture->format ||
-            (RenderFormatIsDepth(surface->format) && !g_capabilities.resolveModes))
+            (RenderFormatIsDepth(surface->format) && (!g_capabilities.resolveModes || !g_enableHardwareDepthResolve)))
             return true;
     }
 
