@@ -46,7 +46,7 @@ std::optional<BufferSize> RenderResolution::FindBufferSize(std::string_view name
         std::from_chars(name.data() + 14, name.data() + name.size(), divisor);
 
         if (divisor != 0)
-            return BufferSize { internalSize.Width / divisor, internalSize.Height / divisor };
+            return BufferSize { Video::s_viewportWidth / divisor, Video::s_viewportHeight / divisor };
     }
 
     // Reflections are an eighth of the internal resolution at the default setting.
