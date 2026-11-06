@@ -21,15 +21,15 @@ float4 shaderMain(
     Texture2D<float4> texture = g_Texture2DDescriptorHeap[s0_Texture2DDescriptorIndex];
 
     float2 pixelCoord = oTexCoord0.xy * float2(getTexture2DDimensions(texture));
-    float2 step = float2(ddx(pixelCoord.x), ddy(pixelCoord.y)) / 4.0;
+    float2 step = float2(ddx(pixelCoord.x), ddy(pixelCoord.y)) / 2.0;
 
     float4 color = 0.0;
 
-    for (int y = 0; y < 4; y++)
+    for (int y = 0; y < 2; y++)
     {
-        for (int x = 0; x < 4; x++)
-            color += texture.Load(int3(int2(pixelCoord + (float2(x, y) - 1.5) * step), 0));
+        for (int x = 0; x < 2; x++)
+            color += texture.Load(int3(int2(pixelCoord + (float2(x, y) - 0.5) * step), 0));
     }
 
-    return color / 16.0;
+    return color / 4.0;
 }
