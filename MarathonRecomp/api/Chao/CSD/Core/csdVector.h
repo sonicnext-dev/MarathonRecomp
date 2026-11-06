@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Sonicteam/SoX/Math/Vector.h>
+#include <Sonicteam/SoX/Math/Vector2.h>
 
 namespace Chao::CSD
 {

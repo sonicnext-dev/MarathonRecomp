@@ -42,7 +42,7 @@ PPC_FUNC(sub_8289CB70)
 
     if (ctx.r7.u32)
     {
-        const auto pColor = reinterpret_cast<Sonicteam::SoX::ARGB8888*>(base + ctx.r7.u32);
+        const auto pColor = reinterpret_cast<Sonicteam::SoX::ARGB8*>(base + ctx.r7.u32);
 
         color = IM_COL32(pColor->R(), pColor->G(), pColor->B(), pColor->A());
     }

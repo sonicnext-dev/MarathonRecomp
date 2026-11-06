@@ -16,7 +16,7 @@ namespace Sonicteam::SoX::Graphics
         Array<RefSharedPointer<Surface>, 4> m_FrameBufferSurfaces;
         RefSharedPointer<Surface> m_spDepthStencilSurface;
         be<BufferType> m_Type;
-        ARGB8888 m_ClearColor;
+        ARGB8 m_ClearColor;
         be<float> m_ClearZ;
         MARATHON_INSERT_PADDING(0x04);
         uint8_t m_Field2C;

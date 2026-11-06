@@ -4,5 +4,5 @@
 
 namespace Chao::CSD
 {
-    using Color = Sonicteam::SoX::RGBA8888;
+    using Color = Sonicteam::SoX::RGBA8;
 }

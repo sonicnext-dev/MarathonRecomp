@@ -21,6 +21,9 @@
 
 namespace Sonicteam::SoX
 {
+    template <typename T>
+    concept ColorNumeric = std::integral<T> || std::floating_point<T>;
+
     enum ColorFormat
     {
         ColorFormat_RGB,
@@ -81,10 +84,10 @@ namespace Sonicteam::SoX
         return true;
     }
 
-    template <std::integral TChannelType, ColorFormat Format, size_t Fields = GetColorChannelCount<Format>()>
+    template <ColorNumeric TChannelType, ColorFormat Format, size_t Fields = GetColorChannelCount<Format>()>
     struct Color
     {
-        TChannelType Data[Fields]{};
+        be<TChannelType> Data[Fields]{};
 
         Color() = default;
 
@@ -111,11 +114,17 @@ namespace Sonicteam::SoX
         MAKE_COLOR_CHANNEL(A);
     };
     
-    struct RGB888 : Color<uint8_t, ColorFormat_RGB> {};
+    struct RGB8 : Color<uint8_t, ColorFormat_RGB> {};
 
-    struct RGBA8888 : Color<uint8_t, ColorFormat_RGBA> {};
+    struct RGBF32 : Color<float, ColorFormat_RGB> {};
 
-    struct ARGB8888 : Color<uint8_t, ColorFormat_ARGB> {};
+    struct RGBA8 : Color<uint8_t, ColorFormat_RGBA> {};
+
+    struct RGBAF32 : Color<float, ColorFormat_RGBA> {};
+
+    struct ARGB8 : Color<uint8_t, ColorFormat_ARGB> {};
+
+    struct ARGBF32 : Color<float, ColorFormat_ARGB> {};
 }
 
 #undef MAKE_COLOR_CHANNEL

@@ -10,7 +10,7 @@ namespace Sonicteam::SoX::Graphics
         be<float> X;
         be<float> Y;
         MARATHON_INSERT_PADDING(0x10);
-        ARGB8888 Color;
+        ARGB8 Color;
         be<float> U;
         be<float> V;
         MARATHON_INSERT_PADDING(0x18);

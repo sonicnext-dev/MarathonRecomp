@@ -43,4 +43,7 @@ namespace Sonicteam::SoX::Math
             return Multiply(other);
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(Matrix4x4, M, 0x00);
+    MARATHON_ASSERT_SIZEOF(Matrix4x4, 0x40);
 }
