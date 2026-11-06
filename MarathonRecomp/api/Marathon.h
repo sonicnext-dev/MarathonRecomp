@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Acroarts/data/SpChunk.h"
+#include "Acroarts/data/SpTypes.h"
 #include "Acroarts/data/_acdBranch.h"
 #include "Acroarts/data/_acdBranchChain.h"
 #include "Acroarts/data/_acdBranchControl.h"
