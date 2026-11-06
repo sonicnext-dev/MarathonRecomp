@@ -14,7 +14,7 @@
 class _ackMomBase : public _ackBase
 {
 public:
-    struct Vftable
+    struct Vftable : public _ackBase::Vftable
     {
         be<uint32_t> fpExecCalling1st;
         be<uint32_t> fpExecCallingNow;
@@ -43,6 +43,21 @@ public:
     be<SpUint16> _User_Status;
     xpointer<_acdMomParam> _pParam;
 };
+
+MARATHON_ASSERT_OFFSETOF(_ackMomBase::Vftable, fpExecCalling1st, 0x04);
+MARATHON_ASSERT_OFFSETOF(_ackMomBase::Vftable, fpExecCallingNow, 0x08);
+MARATHON_ASSERT_OFFSETOF(_ackMomBase::Vftable, fpExecCallingFinished, 0x0C);
+MARATHON_ASSERT_OFFSETOF(_ackMomBase::Vftable, fpExecCallingAfter, 0x10);
+MARATHON_ASSERT_OFFSETOF(_ackMomBase::Vftable, fpExec, 0x14);
+MARATHON_ASSERT_OFFSETOF(_ackMomBase::Vftable, fpDrawCalling1st, 0x18);
+MARATHON_ASSERT_OFFSETOF(_ackMomBase::Vftable, fpDrawCallingNow, 0x1C);
+MARATHON_ASSERT_OFFSETOF(_ackMomBase::Vftable, fpDrawCallingFinished, 0x20);
+MARATHON_ASSERT_OFFSETOF(_ackMomBase::Vftable, fpDrawCallingAfter, 0x24);
+MARATHON_ASSERT_OFFSETOF(_ackMomBase::Vftable, fpDraw, 0x28);
+MARATHON_ASSERT_OFFSETOF(_ackMomBase::Vftable, fpControlCallback, 0x2C);
+MARATHON_ASSERT_OFFSETOF(_ackMomBase::Vftable, fpSetExternControlParam, 0x30);
+MARATHON_ASSERT_OFFSETOF(_ackMomBase::Vftable, fpClearExternControlParam, 0x34);
+MARATHON_ASSERT_SIZEOF(_ackMomBase::Vftable, 0x38);
 
 MARATHON_ASSERT_OFFSETOF(_ackMomBase, _pDataInst, 0x10);
 MARATHON_ASSERT_OFFSETOF(_ackMomBase, _pCtrl, 0x14);

@@ -17,6 +17,9 @@ public:
     be<SpUint16> _ObjectStatus;
 };
 
+MARATHON_ASSERT_OFFSETOF(SpkBase::Vftable, fpDtor, 0x00);
+MARATHON_ASSERT_SIZEOF(SpkBase::Vftable, 0x04);
+
 MARATHON_ASSERT_OFFSETOF(SpkBase, _vptr_SpkBase, 0x00);
 MARATHON_ASSERT_OFFSETOF(SpkBase, _TagName, 0x04);
 MARATHON_ASSERT_OFFSETOF(SpkBase, _CreatePtr, 0x08);
