@@ -1846,6 +1846,17 @@ PPC_FUNC(sub_824E11D0)
     __imp__sub_824E11D0(ctx, base);
 }
 
+// Sonicteam::Spanverse::_acmSubtitle::ExecCallingNow
+PPC_FUNC_IMPL(__imp__sub_82666490);
+PPC_FUNC(sub_82666490)
+{
+    const auto pAcmSubtitle = reinterpret_cast<Sonicteam::Spanverse::_acmSubtitle*>(base + ctx.r3.u32);
+
+    SetTextEntityModifier(pAcmSubtitle->m_spTextEntity.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
+
+    __imp__sub_82666490(ctx, base);
+}
+
 // Sonicteam::HUDMainDisplay::Update
 PPC_FUNC_IMPL(__imp__sub_824DCF40);
 PPC_FUNC(sub_824DCF40)

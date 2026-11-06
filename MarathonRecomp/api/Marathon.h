@@ -364,6 +364,7 @@
 #include "Sonicteam/SoX/Scenery/CameraImp.h"
 #include "Sonicteam/SoX/Scenery/Drawable.h"
 #include "Sonicteam/SoX/Thread.h"
+#include "Sonicteam/Spanverse/_acmSubtitle.h"
 #include "Sonicteam/StageMap.h"
 #include "Sonicteam/StageSelectMode.h"
 #include "Sonicteam/StageTitleTask.h"
