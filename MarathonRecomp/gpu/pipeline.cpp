@@ -19,7 +19,7 @@ XXH64_hash_t GetPipelineStateHash(const PipelineState& pipelineState)
     struct {
         RenderShader* vertex;
         RenderShader* pixel;
-    } replacements(GetReplacementShader(pipelineState.vertexShader), GetReplacementShader(pipelineState.pixelShader));
+    } replacements(GetReplacementShader(pipelineState.vertexShader, pipelineState.renderTargetFormat), GetReplacementShader(pipelineState.pixelShader, pipelineState.renderTargetFormat));
     if (replacements.vertex != nullptr || replacements.pixel != nullptr)
         seed = XXH3_64bits(&replacements, sizeof(replacements));
 
@@ -111,11 +111,11 @@ std::unique_ptr<RenderPipeline> CreateGraphicsPipeline(const PipelineState& pipe
 
     RenderGraphicsPipelineDesc desc;
     desc.pipelineLayout = g_pipelineLayout.get();
-    desc.vertexShader = GetOrLinkShader(pipelineState.vertexShader, pipelineState.specConstants);
+    desc.vertexShader = GetOrLinkShader(pipelineState.vertexShader, pipelineState.specConstants, pipelineState.renderTargetFormat);
     if (pipelineState.enableConditionalSurvey)
-        desc.pixelShader = GetOrLinkShader(g_conditionalSurveyPSShader.get(), pipelineState.specConstants);
+        desc.pixelShader = GetOrLinkShader(g_conditionalSurveyPSShader.get(), pipelineState.specConstants, pipelineState.renderTargetFormat);
     else if (pipelineState.pixelShader != nullptr)
-        desc.pixelShader = GetOrLinkShader(pipelineState.pixelShader, pipelineState.specConstants);
+        desc.pixelShader = GetOrLinkShader(pipelineState.pixelShader, pipelineState.specConstants, pipelineState.renderTargetFormat);
     else
         desc.pixelShader = nullptr;
     desc.depthFunction = pipelineState.zFunc;

@@ -56,7 +56,7 @@ void CreateReplacementShaders()
     g_conditionalSurveyPSShader->shader = CREATE_SHADER(conditional_survey_ps);
 }
 
-RenderShader* GetReplacementShader(const GuestShader* guestShader)
+RenderShader* GetReplacementShader(const GuestShader* guestShader, RenderFormat renderTargetFormat)
 {
     if (guestShader == nullptr)
         return nullptr;
@@ -78,7 +78,9 @@ RenderShader* GetReplacementShader(const GuestShader* guestShader)
         case 0x88EB0AA82E4257B0:
             return g_MoviePSShader.get();
         case 0x62573AB4C9EC44EE:
-            return g_downsamplePSShader.get();
+            if (renderTargetFormat == RenderFormat::B8G8R8A8_UNORM)
+                return g_downsamplePSShader.get();
+            break;
         default:
             break;
         }
@@ -87,9 +89,9 @@ RenderShader* GetReplacementShader(const GuestShader* guestShader)
     return nullptr;
 }
 
-RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specConstants)
+RenderShader* GetOrLinkShader(GuestShader* guestShader, uint32_t specConstants, RenderFormat renderTargetFormat)
 {
-    auto* replacementShader = GetReplacementShader(guestShader);
+    auto* replacementShader = GetReplacementShader(guestShader, renderTargetFormat);
     if (replacementShader != nullptr)
         return replacementShader;
 
