@@ -3,7 +3,7 @@
 class BlackBar
 {
 public:
-    static constexpr double ms_MenuBorderMargin = 70.0;
+    static constexpr double ms_MenuBorderMargin = 30.0;
 
     static inline float s_pillarboxWidth{};
     static inline float s_letterboxHeight{};

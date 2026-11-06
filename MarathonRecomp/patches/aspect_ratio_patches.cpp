@@ -126,7 +126,7 @@ g_chevronAnimResetEvent{};
 
 float ComputeScale(float aspectRatio)
 {
-    return ((aspectRatio * 720.0f) / 1280.0f) / sqrt((aspectRatio * 720.0f) / 1280.0f);
+    return (aspectRatio * 720.0f) / 1280.0f;
 }
 
 void AspectRatioPatches::Init()
@@ -487,18 +487,9 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
     auto stack = base + ctx.r1.u32;
     memcpy(stack, base + ctx.r4.u32, size);
 
-    struct CSDVertex
-    {
-        be<float> X;
-        be<float> Y;
-        be<uint32_t> Colour;
-        be<float> U;
-        be<float> V;
-    };
-
     auto getVertex = [&](size_t index)
     {
-        return reinterpret_cast<CSDVertex*>(stack + (index * stride));
+        return reinterpret_cast<Chao::CSD::Vertex*>(stack + (index * stride));
     };
 
     auto offsetX = 0.0f;
@@ -552,7 +543,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
                 offsetX += pivotX * scaleX;
             }
-            else if ((modifier.Flags & CSD_FIT) != 0)
+            else if ((modifier.Flags & CSD_SCALE) != 0)
             {
                 const auto fitScale = std::min((vpWidth / 1280.0f) / g_aspectRatioScale, 1.0f);
 
@@ -562,17 +553,6 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
                     offsetX += 1280.0f * (1.0f - fitScale) * g_aspectRatioScale;
                 else if ((modifier.Flags & CSD_ALIGN_LEFT) == 0)
                     offsetX += g_aspectRatioOffsetX + 640.0f * (1.0f - fitScale) * g_aspectRatioScale - g_aspectRatioOffsetX;
-
-                offsetX += pivotX * g_aspectRatioScale;
-            }
-            else if ((modifier.Flags & CSD_SCALE) != 0)
-            {
-                scaleX *= g_aspectRatioGameplayScale;
-
-                if ((modifier.Flags & CSD_ALIGN_RIGHT) != 0)
-                    offsetX += 1280.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
-                else if ((modifier.Flags & CSD_ALIGN_LEFT) == 0)
-                    offsetX += g_horzCentre - g_aspectRatioOffsetX;
 
                 offsetX += pivotX * g_aspectRatioScale;
             }
@@ -615,7 +595,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
             offsetY += pivotY * scaleY;
         }
-        else if ((modifier.Flags & CSD_FIT) != 0)
+        else if ((modifier.Flags & CSD_SCALE) != 0)
         {
             const auto fitScale = std::min((vpWidth / 1280.0f) / g_aspectRatioScale, 1.0f);
 
@@ -625,17 +605,6 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
                 offsetY += 720.0f * (1.0f - fitScale) * g_aspectRatioScale;
             else if ((modifier.Flags & CSD_ALIGN_TOP) == 0)
                 offsetY += g_aspectRatioOffsetY + 360.0f * (1.0f - fitScale) * g_aspectRatioScale - g_aspectRatioOffsetY;
-
-            offsetY += pivotY * g_aspectRatioScale;
-        }
-        else if ((modifier.Flags & CSD_SCALE) != 0)
-        {
-            scaleY *= g_aspectRatioGameplayScale;
-
-            if ((modifier.Flags & CSD_ALIGN_BOTTOM) != 0)
-                offsetY += 720.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
-            else if ((modifier.Flags & CSD_ALIGN_TOP) == 0)
-                offsetY += g_vertCentre - g_aspectRatioOffsetY;
 
             offsetY += pivotY * g_aspectRatioScale;
         }
@@ -760,10 +729,10 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
     auto applyColourModifier = [&](CsdColours colourModifier)
     {
-        getVertex(0)->Colour = colourModifier.C0;
-        getVertex(1)->Colour = colourModifier.C1;
-        getVertex(2)->Colour = colourModifier.C2;
-        getVertex(3)->Colour = colourModifier.C3;
+        getVertex(0)->Color.FromU32(colourModifier.C0);
+        getVertex(1)->Color.FromU32(colourModifier.C1);
+        getVertex(2)->Color.FromU32(colourModifier.C2);
+        getVertex(3)->Color.FromU32(colourModifier.C3);
     };
 
     if ((modifier.Flags & CSD_UV_MODIFIER) != 0)
@@ -840,7 +809,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 
         for (size_t i = 0; i < r5.u32; i++)
         {
-            auto vertex = reinterpret_cast<CSDVertex*>(scaled + (i * stride));
+            auto vertex = reinterpret_cast<Chao::CSD::Vertex*>(scaled + (i * stride));
             vertex->X = round(vertex->X * targetScaleX);
             vertex->Y = round(vertex->Y * targetScaleY);
         }
@@ -928,7 +897,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
                     for (size_t i = 0; i < r5.u32; i++)
                     {
                         getVertex(i)->X = (getVertex(i)->X - arrowWidth) - g_bgArrows[arrowIndex].CurrentOffsetX;
-                        getVertex(i)->Colour = 0xFFFFFF00 | g_fgArrows[arrowIndex].CurrentAlpha;
+                        getVertex(i)->Color.A(g_fgArrows[arrowIndex].CurrentAlpha);
                     }
 
                     arrowIndex++;
@@ -1011,7 +980,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
                     for (size_t i = 0; i < r5.u32; i++)
                     {
                         getVertex(i)->X = (getVertex(i)->X + arrowWidth) + g_bgArrows[arrowIndex].CurrentOffsetX;
-                        getVertex(i)->Colour = 0xFFFFFF00 | g_bgArrows[arrowIndex].CurrentAlpha;
+                        getVertex(i)->Color.A(g_bgArrows[arrowIndex].CurrentAlpha);
                     }
 
                     arrowIndex++;
@@ -1728,21 +1697,36 @@ PPC_FUNC(sub_8262D868)
     auto offsetY = 0.0f;
     auto scale = g_aspectRatioScale;
 
-    // Ensure subtitle text appears inside movie viewport.
-    if (g_isMoviePlaying && (textModifier & CSD_EVENT) != 0)
-        textModifier &= ~(CSD_ALIGN_TOP | CSD_ALIGN_BOTTOM);
-
     if (Config::UIAlignmentMode == EUIAlignmentMode::Centre || BlackBar::IsVisible())
     {
-        if (g_aspectRatio > WIDE_ASPECT_RATIO && (textModifier & CSD_ALIGN_IGNORE_PREFERENCE_H) == 0)
+        if (g_aspectRatio > WIDE_ASPECT_RATIO)
         {
-            textModifier &= ~(CSD_ALIGN_LEFT | CSD_ALIGN_RIGHT);
+            textModifier |= CSD_ALIGN_IGNORE_PREFERENCE_H;
         }
-        else if (g_aspectRatio < WIDE_ASPECT_RATIO && (textModifier & CSD_ALIGN_IGNORE_PREFERENCE_V) == 0)
+        else if (g_aspectRatio < WIDE_ASPECT_RATIO)
         {
-            textModifier &= ~(CSD_ALIGN_TOP | CSD_ALIGN_BOTTOM);
+            textModifier |= CSD_ALIGN_IGNORE_PREFERENCE_V;
         }
     }
+
+    // Ensure subtitle text appears inside movie viewport.
+    if ((textModifier & CSD_EVENT) != 0)
+    {
+        if (g_isMoviePlaying)
+        {
+            textModifier |= CSD_ALIGN_IGNORE_PREFERENCE_V;
+        }
+        else
+        {
+            textModifier &= ~CSD_ALIGN_IGNORE_PREFERENCE_V;
+        }
+    }
+
+    if ((textModifier & CSD_ALIGN_IGNORE_PREFERENCE_H) != 0)
+        textModifier &= ~(CSD_ALIGN_LEFT | CSD_ALIGN_RIGHT);
+
+    if ((textModifier & CSD_ALIGN_IGNORE_PREFERENCE_V) != 0)
+        textModifier &= ~(CSD_ALIGN_TOP | CSD_ALIGN_BOTTOM);
 
     if ((textModifier & CSD_ALIGN_RIGHT) != 0)
         offsetX = g_aspectRatioOffsetX * 2.0f;
@@ -1756,17 +1740,19 @@ PPC_FUNC(sub_8262D868)
 
     if ((textModifier & CSD_SCALE) != 0)
     {
-        scale *= g_aspectRatioGameplayScale;
+        const auto fitScale = std::min((Video::s_viewportWidth / 1280.0f) / g_aspectRatioScale, 1.0f);
+
+        scale *= fitScale;
 
         if ((textModifier & CSD_ALIGN_RIGHT) != 0)
-            offsetX += 1280.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
+            offsetX += 1280.0f * (1.0f - fitScale) * g_aspectRatioScale;
         else if ((textModifier & CSD_ALIGN_LEFT) == 0)
-            offsetX += 640.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
+            offsetX += g_aspectRatioOffsetX + 640.0f * (1.0f - fitScale) * g_aspectRatioScale - g_aspectRatioOffsetX;
 
         if ((textModifier & CSD_ALIGN_BOTTOM) != 0)
-            offsetY += 720.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
+            offsetY += 720.0f * (1.0f - fitScale) * g_aspectRatioScale;
         else if ((textModifier & CSD_ALIGN_TOP) == 0)
-            offsetY += 360.0f * (1.0f - g_aspectRatioGameplayScale) * g_aspectRatioScale;
+            offsetY += g_aspectRatioOffsetY + 360.0f * (1.0f - fitScale) * g_aspectRatioScale - g_aspectRatioOffsetY;
     }
 
     pTextEntity->m_X = offsetX + pTextEntity->m_X * scale;
@@ -1847,7 +1833,7 @@ PPC_FUNC(sub_824E11D0)
     s_preservedTextParams = true;
 
     // Draw faded letterbox at tall aspect ratios.
-    if (!OptionsMenu::s_isVisible && g_aspectRatio < NARROW_ASPECT_RATIO)
+    if (!OptionsMenu::s_isVisible && g_aspectRatio <= NARROW_ASPECT_RATIO)
     {
         BlackBar::Show(true);
         BlackBar::SetBorderMargin(Scale(BlackBar::ms_MenuBorderMargin, true));
@@ -1862,7 +1848,7 @@ PPC_FUNC(sub_82666490)
 {
     const auto pAcmSubtitle = reinterpret_cast<Sonicteam::Spanverse::_acmSubtitle*>(base + ctx.r3.u32);
 
-    SetTextEntityModifier(pAcmSubtitle->m_spTextEntity.get(), CSD_ALIGN_BOTTOM | CSD_EVENT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_V);
+    SetTextEntityModifier(pAcmSubtitle->m_spTextEntity.get(), CSD_ALIGN_BOTTOM | CSD_SCALE | CSD_EVENT);
 
     __imp__sub_82666490(ctx, base);
 }
@@ -2026,15 +2012,15 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/battledisplay_2p/custom_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
 
     // battle_result
-    { HashStr("sprite/battle_result/battle_result/congratulations"), { CSD_ALIGN_TOP } },
-    { HashStr("sprite/battle_result/battle_result/plate/plate_ue/plate1"), { CSD_ALIGN_TOP | CSD_EXTEND_LEFT } },
-    { HashStr("sprite/battle_result/battle_result/plate/plate_ue/plate2"), { CSD_ALIGN_TOP } },
-    { HashStr("sprite/battle_result/battle_result/plate/plate_ue/plate3"), { CSD_ALIGN_TOP } },
-    { HashStr("sprite/battle_result/battle_result/plate/plate_ue/plate4"), { CSD_ALIGN_TOP | CSD_EXTEND_RIGHT } },
-    { HashStr("sprite/battle_result/battle_result/plate/plate_sita/plate5"), { CSD_ALIGN_BOTTOM | CSD_EXTEND_LEFT } },
-    { HashStr("sprite/battle_result/battle_result/plate/plate_sita/plate6"), { CSD_ALIGN_BOTTOM } },
-    { HashStr("sprite/battle_result/battle_result/plate/plate_sita/plate7"), { CSD_ALIGN_BOTTOM } },
-    { HashStr("sprite/battle_result/battle_result/plate/plate_sita/plate8"), { CSD_ALIGN_BOTTOM | CSD_EXTEND_RIGHT } },
+    { HashStr("sprite/battle_result/battle_result/congratulations"), { CSD_ALIGN_TOP | CSD_SCALE } },
+    { HashStr("sprite/battle_result/battle_result/plate/plate_ue/plate1"), { CSD_ALIGN_TOP | CSD_EXTEND_LEFT | CSD_SCALE } },
+    { HashStr("sprite/battle_result/battle_result/plate/plate_ue/plate2"), { CSD_ALIGN_TOP | CSD_SCALE } },
+    { HashStr("sprite/battle_result/battle_result/plate/plate_ue/plate3"), { CSD_ALIGN_TOP | CSD_SCALE } },
+    { HashStr("sprite/battle_result/battle_result/plate/plate_ue/plate4"), { CSD_ALIGN_TOP | CSD_SCALE | CSD_EXTEND_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/battle_result/battle_result/plate/plate_sita/plate5"), { CSD_ALIGN_BOTTOM | CSD_EXTEND_LEFT | CSD_SCALE } },
+    { HashStr("sprite/battle_result/battle_result/plate/plate_sita/plate6"), { CSD_ALIGN_BOTTOM | CSD_SCALE } },
+    { HashStr("sprite/battle_result/battle_result/plate/plate_sita/plate7"), { CSD_ALIGN_BOTTOM | CSD_SCALE } },
+    { HashStr("sprite/battle_result/battle_result/plate/plate_sita/plate8"), { CSD_ALIGN_BOTTOM | CSD_EXTEND_RIGHT | CSD_SCALE } },
 
     // black_out
     { HashStr("sprite/black_out/black_out"), { CSD_STRETCH } },
@@ -2074,13 +2060,13 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/logo/cri_logo/Scene_0000/Null_0002/criware"), { CSD_CRI_LOGO | CSD_SCALE } },
 
     // enemy_powergage
-    { HashStr("sprite/enemy_powergage/enemy_powergage/enemy_powergage/enemy_powergage"), { CSD_3D } },
+    { HashStr("sprite/enemy_powergage/enemy_powergage/enemy_powergage/enemy_powergage"), { CSD_SCALE | CSD_3D } },
 
     // gadget_ber
-    { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar"), { CSD_ALIGN_BOTTOM_RIGHT } },
-    { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar_anime"), { CSD_ALIGN_BOTTOM_RIGHT } },
-    { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar_ue"), { CSD_ALIGN_BOTTOM_RIGHT } },
-    { HashStr("sprite/gadget_ber/gadget_bar/icon_text"), { CSD_ALIGN_BOTTOM_RIGHT } },
+    { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar_anime"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/gadget_ber/gadget_bar/gadgetbar_ue"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
+    { HashStr("sprite/gadget_ber/gadget_bar/icon_text"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
 
     // goldmedal
     { HashStr("sprite/goldmedal/goldmedal/ranking"), { CSD_SCALE } },
@@ -2105,11 +2091,11 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/interlude/tips_x/tips_so_x/Scene_0000"), { CSD_SCALE } },
 
     // loading
-    { HashStr("sprite/loading/loading/Scene_0000/Loading"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
-    { HashStr("sprite/loading/loading/Scene_0000/Loading_02"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
-    { HashStr("sprite/loading/loading/Scene_0000/arrow_01"), { .Flags = CSD_ALIGN_IGNORE_PREFERENCE_H | CSD_ALIGN_BOTTOM_RIGHT | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
-    { HashStr("sprite/loading/loading/Scene_0000/arrow_02"), { .Flags = CSD_ALIGN_IGNORE_PREFERENCE_H | CSD_ALIGN_BOTTOM_RIGHT | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
-    { HashStr("sprite/loading/loading/Scene_0000/arrow_03"), { .Flags = CSD_ALIGN_IGNORE_PREFERENCE_H | CSD_ALIGN_BOTTOM_RIGHT | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
+    { HashStr("sprite/loading/loading/Scene_0000/Loading"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE | CSD_MODIFIER_NARROW_ONLY } },
+    { HashStr("sprite/loading/loading/Scene_0000/Loading_02"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE | CSD_MODIFIER_NARROW_ONLY } },
+    { HashStr("sprite/loading/loading/Scene_0000/arrow_01"), { .Flags = CSD_ALIGN_IGNORE_PREFERENCE_H | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
+    { HashStr("sprite/loading/loading/Scene_0000/arrow_02"), { .Flags = CSD_ALIGN_IGNORE_PREFERENCE_H | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
+    { HashStr("sprite/loading/loading/Scene_0000/arrow_03"), { .Flags = CSD_ALIGN_IGNORE_PREFERENCE_H | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
 
     // maindisplay
     { HashStr("sprite/maindisplay/power"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
@@ -2422,17 +2408,23 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     // title
     { HashStr("sprite/title/title/Scene_Title/Logo_add"), { CSD_SCALE } },
     { HashStr("sprite/title/title/Scene_Title/Logo"), { CSD_SCALE } },
-    { HashStr("sprite/title/title/Scene_Title/copyright"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
+    { HashStr("sprite/title/title/Scene_Title/PRESS_START"), { CSD_SCALE } },
+    { HashStr("sprite/title/title/Scene_Title/PRESS_START_add"), { CSD_SCALE } },
+    { HashStr("sprite/title/title/Scene_Title/copyright"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE | CSD_MODIFIER_NARROW_ONLY } },
+    { HashStr("sprite/title/title/Scene_Title/NEW_GAME"), { CSD_SCALE } },
+    { HashStr("sprite/title/title/Scene_Title/CONTINUE"), { CSD_SCALE } },
+    { HashStr("sprite/title/title/Scene_Title/NEW_GAME_add"), { CSD_SCALE } },
+    { HashStr("sprite/title/title/Scene_Title/CONTINUE_add"), { CSD_SCALE } },
 
     // title (2005)
     { HashStr("/back_aoita/Null_0064"), { CSD_CROP | CSD_ALIGN_LEFT } },
-    { HashStr("/title_menu/Null_0030kage"), { CSD_FIT } },
+    { HashStr("/title_menu/Null_0030kage"), { CSD_SCALE } },
     { HashStr("/title_menu/Cast_0157"), { CSD_SCALE | CSD_ALIGN_BOTTOM_RIGHT } },
-    { HashStr("/title_menu/Null_0030"), { CSD_FIT } },
-    { HashStr("/title_menu/Null_0030boke"), { CSD_FIT } },
+    { HashStr("/title_menu/Null_0030"), { CSD_SCALE } },
+    { HashStr("/title_menu/Null_0030boke"), { CSD_SCALE } },
 
     // titleloop_sth
-    { HashStr("sprite/logo/titleloop_sth/Scene_0000"), { CSD_FIT } },
+    { HashStr("sprite/logo/titleloop_sth/Scene_0000"), { CSD_SCALE } },
 
     // towndisplay
     { HashStr("sprite/towndisplay/ring"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
