@@ -28,6 +28,7 @@ namespace Sonicteam
     }
 
     class GameScript;
+    class MovieTask;
 
     class GameImp : public Game
     {
@@ -118,7 +119,9 @@ namespace Sonicteam
         xpointer<TextBook> m_pHintTextBook;
         MARATHON_INSERT_PADDING(0x04);
         xpointer<Mission::Core> m_pMissionCore;
-        MARATHON_INSERT_PADDING(0x248);
+        MARATHON_INSERT_PADDING(0x38);
+        SoX::RefLinkNode<MovieTask> m_rMovieTask;
+        MARATHON_INSERT_PADDING(0x200);
         SoX::RefLinkNode<PopupScreenTask> m_rPopupScreenTask;
         MARATHON_INSERT_PADDING(0x04);
         SoX::RefLinkNode<LoadingTask> m_rLoadingTask;
@@ -238,6 +241,7 @@ namespace Sonicteam
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pBgmCue, 0x139C);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pHintTextBook, 0x170C);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pMissionCore, 0x1714);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_rMovieTask, 0x1750);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_rPopupScreenTask, 0x1960);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_rLoadingTask, 0x1974);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_rStageTitleTask, 0x1984);

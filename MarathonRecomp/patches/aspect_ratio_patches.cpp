@@ -20,6 +20,8 @@ constexpr float CHEVRON_OUTRO_DURATION = 2.01666666666667f;
 static Mutex g_pathMutex;
 static std::map<const void*, XXH64_hash_t> g_paths{};
 
+static bool g_isMoviePlaying{};
+
 static std::optional<CsdModifier> g_sceneModifier{};
 static std::optional<CsdModifier> g_castNodeModifier{};
 static std::optional<CsdModifier> g_castModifier{};
@@ -464,13 +466,12 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
         // Prevent chevron arrows from being unaligned by centred aspect ratio.
         if ((modifier.Flags & CSD_CHEVRON) == 0)
         {
-            // Prevent multiplayer HUD and loading arrows being offset at ultrawide.
-            if (g_aspectRatio > WIDE_ASPECT_RATIO && (modifier.Flags & CSD_MULTIPLAYER) == 0 && (modifier.Flags & CSD_LOADING_ARROW) == 0)
+            if (g_aspectRatio > WIDE_ASPECT_RATIO && (modifier.Flags & CSD_ALIGN_IGNORE_PREFERENCE_H) == 0)
             {
                 // Remove horizontal alignments at wide aspect ratios.
                 modifier.Flags &= ~(CSD_ALIGN_LEFT | CSD_ALIGN_RIGHT);
             }
-            else if (g_aspectRatio < WIDE_ASPECT_RATIO)
+            else if (g_aspectRatio < WIDE_ASPECT_RATIO && (modifier.Flags & CSD_ALIGN_IGNORE_PREFERENCE_V) == 0)
             {
                 // Remove vertical alignments at narrow aspect ratios.
                 modifier.Flags &= ~(CSD_ALIGN_TOP | CSD_ALIGN_BOTTOM);
@@ -637,19 +638,6 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
                 offsetY += g_vertCentre - g_aspectRatioOffsetY;
 
             offsetY += pivotY * g_aspectRatioScale;
-        }
-    }
-
-    // Offset cast to movie aspect ratio boundaries.
-    if ((modifier.Flags & CSD_MOVIE) != 0)
-    {
-        if (g_aspectRatio > g_aspectRatioMovie)
-        {
-            offsetX -= (vpWidth - (vpHeight * g_aspectRatioMovie)) / 2.0f;
-        }
-        else
-        {
-            offsetY -= (vpHeight - (vpWidth / g_aspectRatioMovie)) / 2.0f;
         }
     }
 
@@ -1448,11 +1436,22 @@ PPC_FUNC(sub_82352220)
     __imp__sub_82352220(ctx, base);
 }
 
+// Sonicteam::MovieObject::~MovieObject
+PPC_FUNC_IMPL(__imp__sub_8264D3C8);
+PPC_FUNC(sub_8264D3C8)
+{
+    g_isMoviePlaying = false;
+
+    __imp__sub_8264D3C8(ctx, base);
+}
+
 // Sonicteam::MovieObjectWmv::Draw
 PPC_FUNC_IMPL(__imp__sub_8264CC90);
 PPC_FUNC(sub_8264CC90)
 {
-    auto pMovieObjectWmv = (Sonicteam::MovieObjectWmv*)(base + ctx.r3.u32);
+    const auto pMovieObjectWmv = reinterpret_cast<Sonicteam::MovieObjectWmv*>(base + ctx.r3.u32);
+
+    g_isMoviePlaying = true;
 
     static XXH64_hash_t s_movieNameHash{};
     static bool s_movieUsesCustomDimensions{};
@@ -1475,9 +1474,9 @@ PPC_FUNC(sub_8264CC90)
         LOGFN_UTILITY("Movie: {} - {}x{}", pMovieObjectWmv->m_FilePath.c_str(), pMovieObjectWmv->m_Width.get(), pMovieObjectWmv->m_Height.get());
     }
 
-    g_aspectRatioMovie = (float)pMovieObjectWmv->m_Width / (float)pMovieObjectWmv->m_Height;
+    const auto aspectRatioMovie = float(pMovieObjectWmv->m_Width) / float(pMovieObjectWmv->m_Height);
 
-    float width, height, left, right, top, bottom;
+    float width{}, height{}, left{}, right{}, top{}, bottom{};
 
     MovieModifier movieModifier{};
 
@@ -1497,17 +1496,17 @@ PPC_FUNC(sub_8264CC90)
         auto movieRectTop = s_movieTop;
         auto movieRectBottom = s_movieBottom;
 
-        if (g_aspectRatio > g_aspectRatioMovie)
+        if (g_aspectRatio > aspectRatioMovie)
         {
             // Scale width at wide aspect ratios.
-            movieRectLeft = s_movieLeft / (g_aspectRatio / g_aspectRatioMovie);
-            movieRectRight = s_movieRight / (g_aspectRatio / g_aspectRatioMovie);
+            movieRectLeft = s_movieLeft / (g_aspectRatio / aspectRatioMovie);
+            movieRectRight = s_movieRight / (g_aspectRatio / aspectRatioMovie);
         }
         else
         {
             // Scale height at narrow aspect ratios.
-            movieRectTop = s_movieTop / (g_aspectRatioMovie / g_aspectRatio);
-            movieRectBottom = s_movieBottom / (g_aspectRatioMovie / g_aspectRatio);
+            movieRectTop = s_movieTop / (aspectRatioMovie / g_aspectRatio);
+            movieRectBottom = s_movieBottom / (aspectRatioMovie / g_aspectRatio);
         }
 
         auto movieRectCentreX = (movieRectLeft + movieRectRight) / 2.0f;
@@ -1526,17 +1525,17 @@ PPC_FUNC(sub_8264CC90)
         width = 2.0f;
         height = 2.0f;
 
-        if (g_aspectRatio > g_aspectRatioMovie)
+        if (g_aspectRatio > aspectRatioMovie)
         {
             if ((movieModifier.Flags & MOVIE_CROP_WIDE) != 0)
             {
                 // Crop vertically at wide aspect ratios.
-                height = 2.0f * (g_aspectRatio / g_aspectRatioMovie);
+                height = 2.0f * (g_aspectRatio / aspectRatioMovie);
             }
             else
             {
                 // Pillarbox at wide aspect ratios.
-                width = 2.0f * (g_aspectRatioMovie / g_aspectRatio);
+                width = 2.0f * (aspectRatioMovie / g_aspectRatio);
             }
         }
         else
@@ -1544,12 +1543,12 @@ PPC_FUNC(sub_8264CC90)
             if ((movieModifier.Flags & MOVIE_CROP_NARROW) != 0)
             {
                 // Crop horizontally at narrow aspect ratios.
-                width = 2.0f * (g_aspectRatioMovie / g_aspectRatio);
+                width = 2.0f * (aspectRatioMovie / g_aspectRatio);
             }
             else
             {
                 // Letterbox at narrow aspect ratios.
-                height = 2.0f * (g_aspectRatio / g_aspectRatioMovie);
+                height = 2.0f * (g_aspectRatio / aspectRatioMovie);
             }
         }
 
@@ -1678,19 +1677,25 @@ void SetTextEntityModifier(Sonicteam::TextEntity* pTextEntity, uint64_t flags)
     pTextEntity->Update();
 }
 
+class TextEntityEx : public Sonicteam::TextEntity
+{
+public:
+    uint64_t m_Modifier;
+};
+
 void TextEntityAlloc(PPCRegister& r3)
 {
-    r3.u32 += sizeof(uint64_t);
+    r3.u32 = sizeof(TextEntityEx);
 }
 
 // Sonicteam::TextEntity::TextEntity
 PPC_FUNC_IMPL(__imp__sub_8262DC60);
 PPC_FUNC(sub_8262DC60)
 {
-    auto pTextModifier = (uint64_t*)(base + ctx.r3.u32 + sizeof(Sonicteam::TextEntity));
+    const auto pTextEntity = reinterpret_cast<TextEntityEx*>(base + ctx.r3.u32);
 
     // Default text modifier to scale.
-    *pTextModifier = CSD_SCALE;
+    pTextEntity->m_Modifier = CSD_SCALE;
 
     __imp__sub_8262DC60(ctx, base);
 }
@@ -1699,8 +1704,9 @@ PPC_FUNC(sub_8262DC60)
 PPC_FUNC_IMPL(__imp__sub_8262D868);
 PPC_FUNC(sub_8262D868)
 {
-    auto pTextEntity = (Sonicteam::TextEntity*)(base + ctx.r3.u32);
-    auto textModifier = *(uint64_t*)(base + ctx.r3.u32 + sizeof(Sonicteam::TextEntity));
+    const auto pTextEntity = reinterpret_cast<TextEntityEx*>(base + ctx.r3.u32);
+
+    auto textModifier = pTextEntity->m_Modifier;
 
     if (!App::s_isDrawUI || (textModifier & CSD_SKIP) != 0)
     {
@@ -1722,13 +1728,17 @@ PPC_FUNC(sub_8262D868)
     auto offsetY = 0.0f;
     auto scale = g_aspectRatioScale;
 
+    // Ensure subtitle text appears inside movie viewport.
+    if (g_isMoviePlaying && (textModifier & CSD_EVENT) != 0)
+        textModifier &= ~(CSD_ALIGN_TOP | CSD_ALIGN_BOTTOM);
+
     if (Config::UIAlignmentMode == EUIAlignmentMode::Centre || BlackBar::IsVisible())
     {
-        if (g_aspectRatio > WIDE_ASPECT_RATIO)
+        if (g_aspectRatio > WIDE_ASPECT_RATIO && (textModifier & CSD_ALIGN_IGNORE_PREFERENCE_H) == 0)
         {
             textModifier &= ~(CSD_ALIGN_LEFT | CSD_ALIGN_RIGHT);
         }
-        else if (g_aspectRatio < WIDE_ASPECT_RATIO)
+        else if (g_aspectRatio < WIDE_ASPECT_RATIO && (textModifier & CSD_ALIGN_IGNORE_PREFERENCE_V) == 0)
         {
             textModifier &= ~(CSD_ALIGN_TOP | CSD_ALIGN_BOTTOM);
         }
@@ -1844,6 +1854,17 @@ PPC_FUNC(sub_824E11D0)
     }
 
     __imp__sub_824E11D0(ctx, base);
+}
+
+// Sonicteam::Spanverse::_acmSubtitle::ExecCallingNow
+PPC_FUNC_IMPL(__imp__sub_82666490);
+PPC_FUNC(sub_82666490)
+{
+    const auto pAcmSubtitle = reinterpret_cast<Sonicteam::Spanverse::_acmSubtitle*>(base + ctx.r3.u32);
+
+    SetTextEntityModifier(pAcmSubtitle->m_spTextEntity.get(), CSD_ALIGN_BOTTOM | CSD_EVENT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_V);
+
+    __imp__sub_82666490(ctx, base);
 }
 
 // Sonicteam::HUDMainDisplay::Update
@@ -1975,14 +1996,14 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/battledisplay_1p/power_a"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
     { HashStr("sprite/battledisplay_1p/power_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
     { HashStr("sprite/battledisplay_1p/itembox_01"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
-    { HashStr("sprite/battledisplay_1p/ring"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/battledisplay_1p/ring_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/battledisplay_1p/enemy"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/battledisplay_1p/bronze_medal"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/battledisplay_1p/gold_medal"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_1p/ring"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/battledisplay_1p/ring_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/battledisplay_1p/enemy"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/battledisplay_1p/bronze_medal"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/battledisplay_1p/gold_medal"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
     { HashStr("sprite/battledisplay_1p/bar_ue"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
     { HashStr("sprite/battledisplay_1p/power_bar_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
-    { HashStr("sprite/battledisplay_1p/ring_000_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_1p/ring_000_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
     { HashStr("sprite/battledisplay_1p/custom_gem"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
     { HashStr("sprite/battledisplay_1p/custom_level1"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
     { HashStr("sprite/battledisplay_1p/custom_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
@@ -1992,14 +2013,14 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/battledisplay_2p/power_a"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
     { HashStr("sprite/battledisplay_2p/power_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
     { HashStr("sprite/battledisplay_2p/itembox_01"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
-    { HashStr("sprite/battledisplay_2p/ring"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/battledisplay_2p/ring_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/battledisplay_2p/enemy"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/battledisplay_2p/bronze_medal"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/battledisplay_2p/gold_medal"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_2p/ring"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/battledisplay_2p/ring_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/battledisplay_2p/enemy"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/battledisplay_2p/bronze_medal"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/battledisplay_2p/gold_medal"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
     { HashStr("sprite/battledisplay_2p/bar_ue"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
     { HashStr("sprite/battledisplay_2p/power_bar_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
-    { HashStr("sprite/battledisplay_2p/ring_000_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/battledisplay_2p/ring_000_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
     { HashStr("sprite/battledisplay_2p/custom_gem"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
     { HashStr("sprite/battledisplay_2p/custom_level1"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
     { HashStr("sprite/battledisplay_2p/custom_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
@@ -2086,9 +2107,9 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     // loading
     { HashStr("sprite/loading/loading/Scene_0000/Loading"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
     { HashStr("sprite/loading/loading/Scene_0000/Loading_02"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_MODIFIER_NARROW_ONLY } },
-    { HashStr("sprite/loading/loading/Scene_0000/arrow_01"), { .Flags = CSD_LOADING_ARROW | CSD_ALIGN_BOTTOM_RIGHT | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
-    { HashStr("sprite/loading/loading/Scene_0000/arrow_02"), { .Flags = CSD_LOADING_ARROW | CSD_ALIGN_BOTTOM_RIGHT | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
-    { HashStr("sprite/loading/loading/Scene_0000/arrow_03"), { .Flags = CSD_LOADING_ARROW | CSD_ALIGN_BOTTOM_RIGHT | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
+    { HashStr("sprite/loading/loading/Scene_0000/arrow_01"), { .Flags = CSD_ALIGN_IGNORE_PREFERENCE_H | CSD_ALIGN_BOTTOM_RIGHT | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
+    { HashStr("sprite/loading/loading/Scene_0000/arrow_02"), { .Flags = CSD_ALIGN_IGNORE_PREFERENCE_H | CSD_ALIGN_BOTTOM_RIGHT | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
+    { HashStr("sprite/loading/loading/Scene_0000/arrow_03"), { .Flags = CSD_ALIGN_IGNORE_PREFERENCE_H | CSD_ALIGN_BOTTOM_RIGHT | CSD_OFFSET_SCALE_LEFT, .CornerMax = 1281.013f } },
 
     // maindisplay
     { HashStr("sprite/maindisplay/power"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
@@ -2358,17 +2379,17 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/tagdisplay_1p/power_a"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
     { HashStr("sprite/tagdisplay_1p/power_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
     { HashStr("sprite/tagdisplay_1p/itembox_01"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
-    { HashStr("sprite/tagdisplay_1p/score"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/tagdisplay_1p/time"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/tagdisplay_1p/ring"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/tagdisplay_1p/ring_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_1p/score"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/tagdisplay_1p/time"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/tagdisplay_1p/ring"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/tagdisplay_1p/ring_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
     { HashStr("sprite/tagdisplay_1p/bar_ue"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
-    { HashStr("sprite/tagdisplay_1p/life_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/tagdisplay_1p/life"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/tagdisplay_1p/item_ber_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/tagdisplay_1p/item"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_1p/life_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/tagdisplay_1p/life"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/tagdisplay_1p/item_ber_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/tagdisplay_1p/item"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
     { HashStr("sprite/tagdisplay_1p/power_bar_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
-    { HashStr("sprite/tagdisplay_1p/ring_000_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_1p/ring_000_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
     { HashStr("sprite/tagdisplay_1p/custom_gem"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
     { HashStr("sprite/tagdisplay_1p/custom_level1"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
     { HashStr("sprite/tagdisplay_1p/custom_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
@@ -2378,17 +2399,17 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/tagdisplay_2p/power_a"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
     { HashStr("sprite/tagdisplay_2p/power_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
     { HashStr("sprite/tagdisplay_2p/itembox_01"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
-    { HashStr("sprite/tagdisplay_2p/score"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/tagdisplay_2p/time"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/tagdisplay_2p/ring"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/tagdisplay_2p/ring_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_2p/score"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/tagdisplay_2p/time"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/tagdisplay_2p/ring"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/tagdisplay_2p/ring_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
     { HashStr("sprite/tagdisplay_2p/bar_ue"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
-    { HashStr("sprite/tagdisplay_2p/life_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/tagdisplay_2p/life"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/tagdisplay_2p/item_ber_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/tagdisplay_2p/item"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_2p/life_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/tagdisplay_2p/life"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/tagdisplay_2p/item_ber_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/tagdisplay_2p/item"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
     { HashStr("sprite/tagdisplay_2p/power_bar_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
-    { HashStr("sprite/tagdisplay_2p/ring_000_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/tagdisplay_2p/ring_000_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
     { HashStr("sprite/tagdisplay_2p/custom_gem"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
     { HashStr("sprite/tagdisplay_2p/custom_level1"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
     { HashStr("sprite/tagdisplay_2p/custom_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
@@ -2411,7 +2432,7 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("/title_menu/Null_0030boke"), { CSD_FIT } },
 
     // titleloop_sth
-    { HashStr("sprite/logo/titleloop_sth/Scene_0000"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE | CSD_MOVIE | CSD_MODIFIER_NARROW_ONLY } },
+    { HashStr("sprite/logo/titleloop_sth/Scene_0000"), { CSD_FIT } },
 
     // towndisplay
     { HashStr("sprite/towndisplay/ring"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },

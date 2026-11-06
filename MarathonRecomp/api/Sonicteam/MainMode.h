@@ -30,9 +30,9 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(0x1C);
         boost::shared_ptr<SoX::Scenery::Camera> m_spSelectCamera;
         xpointer<SoX::Graphics::FrameGP> m_pFrameGP;
-        MARATHON_INSERT_PADDING(4);
+        MARATHON_INSERT_PADDING(0x04);
         xpointer<Task> m_pMainTask;
-        MARATHON_INSERT_PADDING(4);
+        MARATHON_INSERT_PADDING(0x04);
     };
 
     MARATHON_ASSERT_OFFSETOF(MainMode, m_State, 0x50);

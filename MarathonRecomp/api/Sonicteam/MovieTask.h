@@ -2,6 +2,8 @@
 
 #include <Marathon.inl>
 #include <boost/smart_ptr/shared_ptr.hpp>
+#include <Sonicteam/SoX/Engine/Task.h>
+#include <Sonicteam/CsdLink.h>
 #include <stdx/string.h>
 
 namespace Sonicteam

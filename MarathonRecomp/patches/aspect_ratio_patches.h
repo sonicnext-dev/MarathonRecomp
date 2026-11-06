@@ -11,7 +11,6 @@ inline constexpr float WIDE_ASPECT_RATIO = 16.0f / 9.0f;
 inline constexpr float STEAM_DECK_ASPECT_RATIO = 16.0f / 10.0f;
 
 inline float g_aspectRatio;
-inline float g_aspectRatioMovie;
 inline float g_aspectRatioOffsetX;
 inline float g_aspectRatioOffsetY;
 inline float g_aspectRatioMultiplayerOffsetX;
@@ -52,7 +51,6 @@ enum CsdFlags : uint64_t
 
     CSD_STRETCH_HORIZONTAL = MAKE_BITFLAG64(4),
     CSD_STRETCH_VERTICAL = MAKE_BITFLAG64(5),
-
     CSD_STRETCH = CSD_STRETCH_HORIZONTAL | CSD_STRETCH_VERTICAL,
 
     CSD_SCALE = MAKE_BITFLAG64(6),
@@ -100,7 +98,7 @@ enum CsdFlags : uint64_t
 
     CSD_SCENE_DISABLE_MOTION = MAKE_BITFLAG64(34),
 
-    CSD_MOVIE = MAKE_BITFLAG64(35),
+    CSD_EVENT = MAKE_BITFLAG64(35),
 
     CSD_CRI_LOGO = MAKE_BITFLAG64(36),
 
@@ -116,8 +114,9 @@ enum CsdFlags : uint64_t
 
     CSD_3D = MAKE_BITFLAG64(44),
 
-    // please god let this be the last bit flag...
-    CSD_LOADING_ARROW = MAKE_BITFLAG64(45)
+    CSD_ALIGN_IGNORE_PREFERENCE_H = MAKE_BITFLAG64(45),
+    CSD_ALIGN_IGNORE_PREFERENCE_V = MAKE_BITFLAG64(46),
+    CSD_ALIGN_IGNORE_PREFERENCE = CSD_ALIGN_IGNORE_PREFERENCE_H | CSD_ALIGN_IGNORE_PREFERENCE_V
 };
 
 struct CsdUVs

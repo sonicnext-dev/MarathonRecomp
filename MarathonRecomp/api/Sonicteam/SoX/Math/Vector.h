@@ -4,21 +4,6 @@
 
 namespace Sonicteam::SoX::Math
 {
-    class Vector2
-    {
-    public:
-        be<float> X;
-        be<float> Y;
-    };
-
-    class Vector3
-    {
-    public:
-        be<float> X;
-        be<float> Y;
-        be<float> Z;
-    };
-
     class alignas(16) Vector
     {
     public:
@@ -81,4 +66,10 @@ namespace Sonicteam::SoX::Math
             return { X * in_rOther.X, Y * in_rOther.Y, Z * in_rOther.Z, W * in_rOther.W };
         }
     };
+
+    MARATHON_ASSERT_OFFSETOF(Vector, X, 0x00);
+    MARATHON_ASSERT_OFFSETOF(Vector, Y, 0x04);
+    MARATHON_ASSERT_OFFSETOF(Vector, Z, 0x08);
+    MARATHON_ASSERT_OFFSETOF(Vector, W, 0x0C);
+    MARATHON_ASSERT_SIZEOF(Vector, 0x10);
 }

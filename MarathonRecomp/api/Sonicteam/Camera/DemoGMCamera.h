@@ -3,7 +3,9 @@
 #include <Marathon.inl>
 #include <Sonicteam/Camera/Cameraman.h>
 #include <Sonicteam/Camera/CameraMode.h>
+#include <Sonicteam/SoX/Math/Quaternion.h>
 #include <Sonicteam/SoX/Math/Vector.h>
+#include <Sonicteam/SoX/Math/Vector3.h>
 
 namespace Sonicteam::Camera
 {
