@@ -19,7 +19,13 @@ struct Memory
     void* Translate(size_t offset) const noexcept
     {
         if (offset)
+        {
             assert(offset < PPC_MEMORY_SIZE);
+        }
+        else
+        {
+            return nullptr;
+        }
 
         return base + offset;
     }
