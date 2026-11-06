@@ -3,12 +3,14 @@
 #ifdef __spirv__
 
 #define s0_Texture2DDescriptorIndex vk::RawBufferLoad<uint>(g_PushConstants.SharedConstants + 0)
+#define s0_SamplerDescriptorIndex vk::RawBufferLoad<uint>(g_PushConstants.SharedConstants + 192)
 
 #else
 
 cbuffer SharedConstants : register(b2, space4)
 {
     uint s0_Texture2DDescriptorIndex : packoffset(c0.x);
+    uint s0_SamplerDescriptorIndex : packoffset(c12.x);
     DEFINE_SHARED_CONSTANTS();
 };
 
@@ -19,10 +21,15 @@ float4 shaderMain(
     in float4 oTexCoord0 : TEXCOORD0) : SV_Target
 {
     Texture2D<float4> texture = g_Texture2DDescriptorHeap[s0_Texture2DDescriptorIndex];
+    SamplerState samplerState = g_SamplerDescriptorHeap[s0_SamplerDescriptorIndex];
 
     float2 pixelCoord = oTexCoord0.xy * float2(getTexture2DDimensions(texture));
-    float2 step = float2(ddx(pixelCoord.x), ddy(pixelCoord.y)) / 4.0;
+    float2 texelsPerPixel = float2(ddx(pixelCoord.x), ddy(pixelCoord.y));
 
+    if (texelsPerPixel.x <= 1.0 && texelsPerPixel.y <= 1.0)
+        return texture.SampleLevel(samplerState, oTexCoord0.xy, 0);
+
+    float2 step = texelsPerPixel / 4.0;
     float4 color = 0.0;
 
     for (int y = 0; y < 4; y++)
