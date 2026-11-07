@@ -111,7 +111,6 @@ CONFIG_DEFINE_HIDDEN("Codes", bool, ControllableBoundAttack, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, ControllableSpinkick, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, ControllableTeleportDash, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, DisableDWMRoundedCorners, false, true);
-CONFIG_DEFINE_HIDDEN("Codes", bool, DisableEdgeGrabLeftover, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, DisableKingdomValleyMist, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, DisableLowResolutionFontOnCustomUI, false, false);
 CONFIG_DEFINE_HIDDEN("Codes", bool, DisablePushState, false, false);
