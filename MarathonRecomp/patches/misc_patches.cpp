@@ -88,16 +88,6 @@ void SetRingBarIndex(PPCRegister& r5, PPCRegister& r31)
 // Redirects 2P HUD to 1P HUD to remove overscan compensation.
 void Load2PDisplayMidAsmHook() {}
 
-void PostureDisableEdgeGrabLeftover(PPCRegister& posture)
-{
-    if (!Config::DisableEdgeGrabLeftover)
-        return;
-
-    auto base = g_memory.base;
-
-    *(volatile uint8_t*)(base + (posture.u32 + 0x3C0)) = 1;
-}
-
 void PedestrianAnimationLOD(PPCRegister& val)
 {
     val.u32 = 0;
