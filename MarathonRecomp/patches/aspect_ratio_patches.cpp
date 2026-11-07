@@ -19,6 +19,7 @@ constexpr float CHEVRON_OUTRO_DURATION = 2.01666666666667f;
 
 static Mutex g_pathMutex;
 static std::map<const void*, XXH64_hash_t> g_paths{};
+static std::map<Chao::CSD::Project*, ptrdiff_t> g_projects{};
 
 static bool g_isMoviePlaying{};
 
@@ -192,18 +193,27 @@ float AspectRatioPatches::AlignY(float in_offset)
     return in_offset;
 }
 
-void EmplacePath(const void* key, const std::string_view& value)
+void EmplacePath(Chao::CSD::Project* in_pProject, const void* key, const std::string_view& value)
 {
     std::lock_guard lock(g_pathMutex);
-    g_paths.emplace(key, HashStr(value));
+
+    const auto hash = HashStr(value);
+    g_paths.emplace(key, hash);
+
+    auto length = ptrdiff_t(key) - ptrdiff_t(in_pProject);
+
+    if (const auto it = g_projects.find(in_pProject); it != g_projects.end())
+        length = std::max(it->second, length);
+
+    g_projects[in_pProject] = length;
 }
 
-void TraverseCast(Chao::CSD::Scene* scene, uint32_t castNodeIndex, Chao::CSD::CastNode* castNode, uint32_t castIndex, const std::string& parentPath)
+void TraverseCast(Chao::CSD::Project* in_pProject, Chao::CSD::Scene* scene, uint32_t castNodeIndex, Chao::CSD::CastNode* castNode, uint32_t castIndex, const std::string& parentPath)
 {
     if (castIndex == ~0)
         return;
 
-    TraverseCast(scene, castNodeIndex, castNode, castNode->pCastLinks[castIndex].SiblingCastIndex, parentPath);
+    TraverseCast(in_pProject, scene, castNodeIndex, castNode, castNode->pCastLinks[castIndex].SiblingCastIndex, parentPath);
 
     std::string path = parentPath;
 
@@ -217,45 +227,45 @@ void TraverseCast(Chao::CSD::Scene* scene, uint32_t castNodeIndex, Chao::CSD::Ca
         }
     }
 
-    EmplacePath(castNode->pCasts[castIndex].get(), path);
+    EmplacePath(in_pProject, castNode->pCasts[castIndex].get(), path);
 
     if (castNode->RootCastIndex == castIndex)
-        EmplacePath(castNode, path);
+        EmplacePath(in_pProject, castNode, path);
 
     path += "/";
 
-    TraverseCast(scene, castNodeIndex, castNode, castNode->pCastLinks[castIndex].ChildCastIndex, path);
+    TraverseCast(in_pProject, scene, castNodeIndex, castNode, castNode->pCastLinks[castIndex].ChildCastIndex, path);
 
     // printf("CSD hierarchy: %s\n", path.c_str());
 }
 
-void TraverseScene(Chao::CSD::Scene* scene, std::string path)
+void TraverseScene(Chao::CSD::Project* in_pProject, Chao::CSD::Scene* scene, std::string path)
 {
-    EmplacePath(scene, path);
+    EmplacePath(in_pProject, scene, path);
     path += "/";
 
     for (size_t i = 0; i < scene->CastNodeCount; i++)
     {
         auto& castNode = scene->pCastNodes[i];
-        TraverseCast(scene, i, &castNode, castNode.RootCastIndex, path);
+        TraverseCast(in_pProject, scene, i, &castNode, castNode.RootCastIndex, path);
     }
 }
 
-void TraverseSceneNode(Chao::CSD::SceneNode* sceneNode, std::string path)
+void TraverseSceneNode(Chao::CSD::Project* in_pProject, Chao::CSD::SceneNode* sceneNode, std::string path)
 {
-    EmplacePath(sceneNode, path);
+    EmplacePath(in_pProject, sceneNode, path);
     path += "/";
 
     for (size_t i = 0; i < sceneNode->SceneCount; i++)
     {
         auto& sceneIndex = sceneNode->pSceneIndices[i];
-        TraverseScene(sceneNode->pScenes[sceneIndex.SceneIndex], path + sceneIndex.pSceneName.get());
+        TraverseScene(in_pProject, sceneNode->pScenes[sceneIndex.SceneIndex], path + sceneIndex.pSceneName.get());
     }
 
     for (size_t i = 0; i < sceneNode->SceneNodeCount; i++)
     {
         auto& sceneNodeIndex = sceneNode->pSceneNodeIndices[i];
-        TraverseSceneNode(&sceneNode->pSceneNodes[sceneNodeIndex.SceneNodeIndex], path + sceneNodeIndex.pSceneNodeName.get());
+        TraverseSceneNode(in_pProject, &sceneNode->pSceneNodes[sceneNodeIndex.SceneNodeIndex], path + sceneNodeIndex.pSceneNodeName.get());
     }
 }
 
@@ -263,26 +273,31 @@ void TraverseSceneNode(Chao::CSD::SceneNode* sceneNode, std::string path)
 PPC_FUNC_IMPL(__imp__sub_82617570);
 PPC_FUNC(sub_82617570)
 {
-    auto pName = reinterpret_cast<char*>(base + PPC_LOAD_U32(ctx.r4.u32 + 4));
+    const auto pFilePath = reinterpret_cast<char*>(base + PPC_LOAD_U32(ctx.r4.u32 + 4));
 
     __imp__sub_82617570(ctx, base);
 
     if (!ctx.r3.u32)
         return;
 
-    auto ppCsdObject = PPC_LOAD_U32(ctx.r3.u32);
+    const auto ppCsdObject = PPC_LOAD_U32(ctx.r3.u32);
 
     if (!ppCsdObject)
         return;
 
-    auto pCsdObject = reinterpret_cast<Sonicteam::CsdObject*>(base + ppCsdObject);
+    const auto pCsdObject = reinterpret_cast<Sonicteam::CsdObject*>(base + ppCsdObject);
 
-    if (!pCsdObject || !pCsdObject->m_pCsdProject)
+    if (!pCsdObject)
         return;
 
-    LOGFN_UTILITY("CSD loaded: {} (0x{:08X})", pName, (uint64_t)pCsdObject->m_pCsdProject.get());
+    const auto pCsdProject = pCsdObject->m_pCsdProject.get();
 
-    static const char* s_languages[7] =
+    if (!pCsdProject)
+        return;
+
+    LOGFN_UTILITY("CSD loaded: {} (0x{:08X})", pFilePath, uintptr_t(pCsdProject));
+
+    static const char* languages[7] =
     {
         nullptr, // Maps to ELanguages enum.
         "_English",
@@ -293,45 +308,52 @@ PPC_FUNC(sub_82617570)
         "_Italian"
     };
 
-    auto pSuffix = s_languages[(int)Config::Language.Value];
-
-    auto nameLen = strlen(pName);
-    auto suffixLen = strlen(pSuffix);
+    const auto filePathLen = strlen(pFilePath);
+    const auto pSuffix = languages[int(Config::Language.Value)];
+    const auto suffixLen = strlen(pSuffix);
 
     // Truncate language names to redirect CSD modifiers.
-    if (suffixLen < nameLen)
+    if (suffixLen < filePathLen)
     {
-        if (strcmpIgnoreCase(pName + nameLen - suffixLen, pSuffix))
+        if (strcmpIgnoreCase(pFilePath + filePathLen - suffixLen, pSuffix))
         {
-            pName[nameLen - suffixLen] = '\0';
+            pFilePath[filePathLen - suffixLen] = '\0';
 
-            LOGFN_UTILITY("CSD modifier(s) redirected: {}", pName);
+            LOGFN_UTILITY("CSD modifier(s) redirected: {}", pFilePath);
         }
     }
 
-    TraverseSceneNode(pCsdObject->m_pCsdProject->m_pResource->pRootNode, pName);
+    TraverseSceneNode(pCsdProject->m_pResource, pCsdProject->m_pResource->pRootNode, pFilePath);
 }
 
-// Chao::CSD::CMemoryAlloc::Free
-PPC_FUNC_IMPL(__imp__sub_82656650);
-PPC_FUNC(sub_82656650)
+// Chao::CSD::CProject::~CProject
+PPC_FUNC_IMPL(__imp__sub_825CE5F0);
+PPC_FUNC(sub_825CE5F0)
 {
-    if (ctx.r4.u32 != NULL && PPC_LOAD_U32(ctx.r4.u32) == 0x4649584E && PPC_LOAD_U32(ctx.r4.u32 + 0x20) == 0x6E43504A) // NXIF, nCPJ
-    {
-        uint32_t fileSize = PPC_LOAD_U32(ctx.r4.u32 + 0x14);
-    
-        std::lock_guard lock(g_pathMutex);
-        const uint8_t* key = base + ctx.r4.u32;
-    
-        auto lower = g_paths.lower_bound(key);
-        auto upper = g_paths.lower_bound(key + fileSize);
-    
-        g_paths.erase(lower, upper);
+    const auto pProject = reinterpret_cast<Chao::CSD::CProject*>(base + ctx.r3.u32);
 
-        LOGFN_UTILITY("CSD freed: 0x{:08X}", (uint64_t)key);
+    std::lock_guard lock(g_pathMutex);
+
+    const auto key = pProject->m_pResource.get();
+
+    if (const auto it = g_projects.find(key); it != g_projects.end())
+    {
+        const auto length = g_projects[key];
+
+        const auto lower = g_paths.lower_bound(key);
+        const auto upper = g_paths.lower_bound(key + length);
+
+        g_paths.erase(lower, upper);
+        g_projects.erase(key);
+
+        LOGFN_UTILITY("CSD freed: 0x{:08X} - 0x{:08X}", uintptr_t(key), uintptr_t(key + length));
+    }
+    else
+    {
+        LOGFN_ERROR("CSD leaked: 0x{:08X}", uintptr_t(key));
     }
 
-    __imp__sub_82656650(ctx, base);
+    __imp__sub_825CE5F0(ctx, base);
 }
 
 // Chao::CSD::Scene::Render
