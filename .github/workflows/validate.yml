@@ -29,6 +29,8 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v7
         with:
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || '' }}
+          allow-unsafe-pr-checkout: true
           submodules: recursive
 
       - name: Checkout Private Repository
@@ -98,6 +100,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || '' }}
+          allow-unsafe-pr-checkout: true
           submodules: recursive
 
       - name: Checkout private repository
@@ -183,6 +187,8 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v7
         with:
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || '' }}
+          allow-unsafe-pr-checkout: true
           submodules: recursive
 
       - name: Checkout Private Repository
@@ -236,6 +242,8 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v7
         with:
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || '' }}
+          allow-unsafe-pr-checkout: true
           submodules: recursive
 
       - name: Checkout Private Repository
