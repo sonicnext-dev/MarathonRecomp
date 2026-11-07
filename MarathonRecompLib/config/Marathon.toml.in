@@ -187,8 +187,8 @@ jump_address_on_true = 0x82653840
 
 [[midasm_hook]]
 name = "DisableKingdomValleyMist"
-address = 0x82311E50
-jump_address_on_true = 0x82311E54
+address = 0x82311E3C
+jump_address_on_true = 0x82311EB8
 
 [[midasm_hook]]
 name = "CriCueUpdateDeltaTimeFix"
