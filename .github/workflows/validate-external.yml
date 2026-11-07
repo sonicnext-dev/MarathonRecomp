@@ -2,13 +2,14 @@ name: validate-external
 on:
   pull_request_target:
     types: [opened, synchronize]
+permissions:
+  contents: read
 jobs:
   authorize:
     if: github.repository != github.event.pull_request.head.repo.full_name
     environment:
-      ${{ github.event_name == 'pull_request_target' &&
-      github.event.pull_request.head.repo.full_name != github.repository &&
-      'external' || 'internal' }}
+      ${{ contains(fromJSON('["OWNER", "MEMBER"]'), github.event.pull_request.author_association) &&
+      'internal' || 'external' }}
     runs-on: ubuntu-26.04
     steps:
       - run: echo ✓
