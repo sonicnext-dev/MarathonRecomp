@@ -16,7 +16,7 @@ namespace Sonicteam::SoX::Graphics
         xpointer<DrawPrimitive> m_pPrimitivesB; // 1000 elements
         MARATHON_INSERT_PADDING(0x04);
         xpointer<DrawPrimitive> m_pPrimitivesC; // 400 elements
-        MARATHON_INSERT_PADDING(0x18);
+        MARATHON_INSERT_PADDING(0x24);
     };
 
     MARATHON_ASSERT_OFFSETOF(DrawPrimitiveCache, m_pDevice, 0x08);
