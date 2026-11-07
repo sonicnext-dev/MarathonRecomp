@@ -355,7 +355,7 @@ void CommonMenu::Draw()
     }
 
     // Draw faded letterbox at narrow aspect ratios.
-    if (g_aspectRatio < NARROW_ASPECT_RATIO)
+    if (g_aspectRatio <= NARROW_ASPECT_RATIO)
     {
         BlackBar::Show(true);
         BlackBar::SetBorderMargin(Scale(BlackBar::ms_MenuBorderMargin, true));

@@ -947,7 +947,7 @@ void OptionsMenu::Draw()
     auto* drawList = ImGui::GetBackgroundDrawList();
     auto& res = ImGui::GetIO().DisplaySize;
 
-    ImVec2 min = { g_horzCentre + g_aspectRatioNarrowMargin, g_vertCentre };
+    ImVec2 min = { g_horzCentre, g_vertCentre };
     ImVec2 max = { res.x - min.x, res.y - min.y };
 
     auto alphaMotionTime = s_isPause ? ComputeLinearMotion(g_stateTime, 0, 10, s_state == OptionsMenuState::Closing) : 0.0;

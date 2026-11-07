@@ -112,6 +112,14 @@ namespace Sonicteam::SoX
         MAKE_COLOR_CHANNEL(G);
         MAKE_COLOR_CHANNEL(B);
         MAKE_COLOR_CHANNEL(A);
+
+        void FromU32(const uint32_t in_color)
+        {
+            R((in_color & 0xFF000000) >> 24);
+            G((in_color & 0x00FF0000) >> 16);
+            B((in_color & 0x0000FF00) >> 8);
+            A((in_color & 0x000000FF));
+        }
     };
     
     struct RGB8 : Color<uint8_t, ColorFormat_RGB> {};
