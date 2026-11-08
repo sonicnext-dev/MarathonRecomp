@@ -1158,27 +1158,86 @@ uint32_t XMsgInProcessCall(uint32_t app, uint32_t message, be<uint32_t>* param1,
     return 0;
 }
 
-void XamUserReadProfileSettings
+struct X_USER_DATA {
+    uint8_t type;
+    union {
+        be<int32_t> s32;
+        be<int64_t> s64;
+        be<uint32_t> u32;
+        be<double> f64;
+        struct {
+            be<uint32_t> size;
+            be<uint32_t> ptr;
+        } unicode;
+        be<float> f32;
+        struct {
+            be<uint32_t> size;
+            be<uint32_t> ptr;
+        } binary;
+        be<uint64_t> filetime;
+    };
+};
+
+struct X_USER_PROFILE_SETTING {
+    be<uint32_t> source;
+    union {
+        be<uint32_t> userIndex;
+        be<uint64_t> xuid;
+    };
+    be<uint32_t> settingId;
+    X_USER_DATA data;
+};
+
+typedef struct {
+    be<uint32_t> settingCount;
+    xpointer<X_USER_PROFILE_SETTING> settings;
+} X_USER_READ_PROFILE_SETTINGS;
+
+static_assert(sizeof(X_USER_DATA) == 0x10);
+static_assert(sizeof(X_USER_PROFILE_SETTING) == 0x28);
+static_assert(sizeof(X_USER_READ_PROFILE_SETTINGS) == 0x8);
+
+#define X_USER_PROFILE_SETTING_SOURCE_DEFAULT 0x1
+#define X_USER_DATA_TYPE_INT32 0x1
+#define XPROFILE_GAMER_YAXIS_INVERSION 0x10040002
+
+uint32_t XamUserReadProfileSettings
 (
     uint32_t titleId,
     uint32_t userIndex,
     uint32_t xuidCount,
-    uint64_t* xuids,
+    be<uint64_t>* xuids,
     uint32_t settingCount,
-    uint32_t* settingIds,
+    be<uint32_t>* settingIds,
     be<uint32_t>* bufferSize,
     void* buffer,
     void* overlapped
 )
 {
+    // The game only ever queries this one setting
+    assert(settingCount == 1 && settingIds[0] == XPROFILE_GAMER_YAXIS_INVERSION);
+
     if (buffer != nullptr)
     {
-        memset(buffer, 0, *bufferSize);
+        auto* header = static_cast<X_USER_READ_PROFILE_SETTINGS*>(buffer);
+        auto* setting = reinterpret_cast<X_USER_PROFILE_SETTING*>(header + 1);
+
+        header->settingCount = 1;
+        header->settings = setting;
+
+        setting->source = X_USER_PROFILE_SETTING_SOURCE_DEFAULT;
+        setting->userIndex = userIndex;
+        setting->settingId = XPROFILE_GAMER_YAXIS_INVERSION;
+
+        setting->data.type = X_USER_DATA_TYPE_INT32;
+        setting->data.u32 = 0;
     }
     else
     {
-        *bufferSize = 4;
+        *bufferSize = sizeof(X_USER_READ_PROFILE_SETTINGS) + settingCount * sizeof(X_USER_PROFILE_SETTING);
     }
+
+    return 0;
 }
 
 void NetDll_WSAStartup()
