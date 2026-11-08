@@ -115,43 +115,65 @@ static bool GetRelativeMouseForPlayer(const uint32_t in_playerIndex, float* out_
 class SonicCameraEx : public Sonicteam::Camera::SonicCamera
 {
 public:
-    enum MouseLookState : uint8_t
+    enum MouseState : uint8_t
     {
-        MouseLookState_Disabled,
-        MouseLookState_Resetting,
-        MouseLookState_Enabled
+        MouseState_Disabled,
+        MouseState_Resetting,
+        MouseState_Enabled
     };
 
-    MouseLookState m_MouseLookState;
-    Sonicteam::SoX::Math::Vector m_InterpolateOffset;
-    float m_InterpolateTime;
-    float m_InactiveTime;
-    float m_Distance;
-    float m_Yaw;
-    float m_Pitch;
-
-    void ResetYawPitch(bool in_useDefaultPitch = false)
+    enum MouseOrbit : uint8_t
     {
-        const auto dx = m_Position.X - m_Target.X;
-        const auto dy = m_Position.Y - m_Target.Y;
-        const auto dz = m_Position.Z - m_Target.Z;
+        MouseOrbit_Distance = (0 << 0),
+        MouseOrbit_Yaw = (1 << 0),
+        MouseOrbit_Pitch = (1 << 1)
+    };
 
-        m_Yaw = std::atan2(dx, dz);
+    MouseState m_MouseState;
+    Sonicteam::SoX::Math::Vector m_MouseTransitionPosition;
+    float m_MouseTransitionTime;
+    float m_MouseInactiveTime;
+    Sonicteam::SoX::Math::Vector m_MouseOrbit;
 
-        if (in_useDefaultPitch)
-        {
-            m_Pitch = -10.0f * DEG2RADf;
-        }
-        else
-        {
-            m_Pitch = -std::atan2(dy, std::sqrt(dx * dx + dz * dz));
-        }
+    void ConfigureMouse()
+    {
+        m_MouseState = SonicCameraEx::MouseState_Disabled;
+        m_MouseTransitionPosition = m_Position;
+        m_MouseTransitionTime = 0.0f;
+        m_MouseInactiveTime = Config::MouseAutoCenterTime;
+        m_MouseOrbit = m_Orbit;
     }
 
-    void SetInterpolateStart(const Sonicteam::SoX::Math::Vector& in_rStart)
+    void ResetMouseOrbit(std::underlying_type_t<MouseOrbit> in_resetAxes)
     {
-        m_InterpolateOffset = in_rStart - m_Target;
-        m_InterpolateTime = 0.0f;
+        if (in_resetAxes)
+        {
+            const auto dx = m_Position.X - m_Target.X;
+            const auto dy = m_Position.Y - m_Target.Y;
+            const auto dz = m_Position.Z - m_Target.Z;
+
+            if ((in_resetAxes & MouseOrbit_Yaw) != 0)
+                m_MouseOrbit.Y = std::atan2(dx, dz);
+
+            if ((in_resetAxes & MouseOrbit_Pitch) != 0)
+            {
+                m_MouseOrbit.Z = -10.0f * DEG2RADf;
+            }
+            else
+            {
+                m_MouseOrbit.Z = -std::atan2(dy, std::sqrt(dx * dx + dz * dz));
+            }
+        }
+
+        StartMouseTransition(m_Position);
+
+        m_Orbit = m_MouseOrbit;
+    }
+
+    void StartMouseTransition(const Sonicteam::SoX::Math::Vector& in_rStart)
+    {
+        m_MouseTransitionPosition = in_rStart - m_Target;
+        m_MouseTransitionTime = 0.0f;
     }
 
     bool IsPlayerOutOfControl()
@@ -198,7 +220,7 @@ PPC_FUNC(sub_82192218)
 
     __imp__sub_82192218(ctx, base);
 
-    pSonicCamera->m_Distance = pSonicCamera->m_Orbit.X;
+    pSonicCamera->ConfigureMouse();
 }
 
 void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_deltaTime)
@@ -222,39 +244,30 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
     if (!hasMouse)
         return;
 
-    switch (pSonicCamera->m_MouseLookState)
+    switch (pSonicCamera->m_MouseState)
     {
-        case SonicCameraEx::MouseLookState_Disabled:
+        case SonicCameraEx::MouseState_Disabled:
         {
             if (std::fabsf(x) > 0.0f || std::fabsf(y) > 0.0f)
             {
-                // Sync current camera orbit to mouse look.
-                pSonicCamera->m_Yaw = pSonicCamera->m_Orbit.Y;
-                pSonicCamera->m_Pitch = pSonicCamera->m_Orbit.Z;
-
-                pSonicCamera->SetInterpolateStart(*pOutput);
-
-                pSonicCamera->m_MouseLookState = SonicCameraEx::MouseLookState_Enabled;
+                // Sync current camera orbit to mouse orbit.
+                pSonicCamera->m_MouseOrbit.Y = pSonicCamera->m_Orbit.Y;
+                pSonicCamera->m_MouseOrbit.Z = pSonicCamera->m_Orbit.Z;
+                pSonicCamera->StartMouseTransition(*pOutput);
+                pSonicCamera->m_MouseState = SonicCameraEx::MouseState_Enabled;
             }
 
             return;
         }
 
-        case SonicCameraEx::MouseLookState_Resetting:
-        {
-            // Sync current mouse look to camera orbit.
-            pSonicCamera->m_Orbit.X = pSonicCamera->m_Distance;
-            pSonicCamera->m_Orbit.Y = pSonicCamera->m_Yaw;
-            pSonicCamera->m_Orbit.Z = pSonicCamera->m_Pitch;
-
-            pSonicCamera->ResetYawPitch();
-
-            pSonicCamera->m_MouseLookState = SonicCameraEx::MouseLookState_Disabled;
-
+        // Sync current mouse orbit to camera orbit.
+        case SonicCameraEx::MouseState_Resetting:
+            pSonicCamera->m_Orbit = pSonicCamera->m_MouseOrbit;
+            pSonicCamera->ResetMouseOrbit(SonicCameraEx::MouseOrbit_Yaw);
+            pSonicCamera->m_MouseState = SonicCameraEx::MouseState_Disabled;
             return;
-        }
 
-        case SonicCameraEx::MouseLookState_Enabled:
+        case SonicCameraEx::MouseState_Enabled:
         {
             const auto pMutator = HID::GetManager()->GetUser(playerIndex)->GetMutator();
 
@@ -265,7 +278,7 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
                 // Right stick moved beyond threshold, reset back to original camera behaviour.
                 if (std::abs(padState.sThumbRX) >= 8000 || std::abs(padState.sThumbRY) >= 8000)
                 {
-                    pSonicCamera->m_MouseLookState = SonicCameraEx::MouseLookState_Resetting;
+                    pSonicCamera->m_MouseState = SonicCameraEx::MouseState_Resetting;
                     return;
                 }
             }
@@ -274,22 +287,22 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
             {
                 if (std::fabsf(x) > 0.0f || std::fabsf(y) > 0.0f)
                 {
-                    pSonicCamera->m_InactiveTime = 0.0f;
+                    pSonicCamera->m_MouseInactiveTime = 0.0f;
                 }
                 else
                 {
-                    pSonicCamera->m_InactiveTime += App::s_deltaTime;
+                    pSonicCamera->m_MouseInactiveTime += App::s_deltaTime;
                 }
 
-                if (pSonicCamera->m_InactiveTime >= Config::MouseAutoCenterTime)
+                if (pSonicCamera->m_MouseInactiveTime >= Config::MouseAutoCenterTime)
                 {
-                    pSonicCamera->m_MouseLookState = SonicCameraEx::MouseLookState_Resetting;
+                    pSonicCamera->m_MouseState = SonicCameraEx::MouseState_Resetting;
                     return;
                 }
             }
             else
             {
-                pSonicCamera->m_InactiveTime = 0.0f;
+                pSonicCamera->m_MouseInactiveTime = 0.0f;
             }
 
             if (pSonicCamera->IsPlayerOutOfControl())
@@ -298,8 +311,8 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
                 pSonicCamera->m_Acceleration.X = x;
                 pSonicCamera->m_Acceleration.Y = y;
 
-                pSonicCamera->ResetYawPitch();
-                pSonicCamera->SetInterpolateStart(*pOutput);
+                pSonicCamera->ResetMouseOrbit(SonicCameraEx::MouseOrbit_Yaw);
+                pSonicCamera->StartMouseTransition(*pOutput);
 
                 return;
             }
@@ -313,9 +326,9 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
     // Maps relative mouse X/Y to expected values for the orbit vector.
     // X = Distance, Y = Yaw (wrapped pi squared), Z = Pitch (45 degrees clamped).
     // This vector is usually used for interpolating the camera position to look ahead of the player.
-    pSonicCamera->m_Orbit.X = pSonicCamera->m_Distance;
-    pSonicCamera->m_Orbit.Y = pSonicCamera->m_Yaw = Sonicteam::SoX::Math::WrapAngle(pSonicCamera->m_Yaw + (x * k_mouseSensitivityBase));
-    pSonicCamera->m_Orbit.Z = pSonicCamera->m_Pitch = std::clamp(pSonicCamera->m_Pitch + (y * k_mouseSensitivityBase), -maxPitch, maxPitch);
+    pSonicCamera->m_MouseOrbit.Y = Sonicteam::SoX::Math::WrapAngle(pSonicCamera->m_MouseOrbit.Y + (x * k_mouseSensitivityBase));
+    pSonicCamera->m_MouseOrbit.Z = std::clamp(pSonicCamera->m_MouseOrbit.Z + (y * k_mouseSensitivityBase), -maxPitch, maxPitch);
+    pSonicCamera->m_Orbit = pSonicCamera->m_MouseOrbit;
 
     auto normalisedOrbit = guest_stack_var<Sonicteam::SoX::Math::Vector>();
 
@@ -329,11 +342,11 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
 
     // Scales the distance of the camera to the player based on the shape cast hit position.
     if (pSonicCamera->m_pShapeCastA->CastShape(distance.get(), listener.get()))
-        pSonicCamera->m_Orbit.X = std::min(context->HitPosition.DistanceTo(pSonicCamera->m_Target), pSonicCamera->m_Distance);
+        pSonicCamera->m_Orbit.X = std::min(context->HitPosition.DistanceTo(pSonicCamera->m_Target), pSonicCamera->m_MouseOrbit.X.get());
 
     GuestToHostFunction<Sonicteam::SoX::Math::Vector*>(sub_8218C4F0, normalisedOrbit.get(), &pSonicCamera->m_Orbit);
 
-    const auto offset = Sonicteam::SoX::Math::Hermite(pSonicCamera->m_InterpolateOffset, *normalisedOrbit, pSonicCamera->m_InterpolateTime, 2.75f, in_deltaTime.f64);
+    const auto offset = Sonicteam::SoX::Math::Hermite(pSonicCamera->m_MouseTransitionPosition, *normalisedOrbit, pSonicCamera->m_MouseTransitionTime, 2.75f, in_deltaTime.f64);
 
     *pOutput = pSonicCamera->m_Target + offset;
 }
@@ -346,10 +359,7 @@ PPC_FUNC(sub_82191200)
 
     __imp__sub_82191200(ctx, base);
 
-    pSonicCamera->ResetYawPitch(true);
-    pSonicCamera->m_Orbit.X = pSonicCamera->m_Distance;
-    pSonicCamera->m_Orbit.Y = pSonicCamera->m_Yaw;
-    pSonicCamera->m_Orbit.Z = pSonicCamera->m_Pitch;
+    pSonicCamera->ResetMouseOrbit(SonicCameraEx::MouseOrbit_Yaw | SonicCameraEx::MouseOrbit_Pitch);
 }
 
 // Sonicteam::Camera::SonicCamera::EndInterpolate
@@ -360,10 +370,7 @@ PPC_FUNC(sub_82190710)
 
     __imp__sub_82190710(ctx, base);
 
-    // TODO: check this.
-    pSonicCamera->ResetYawPitch();
-    pSonicCamera->m_Orbit.Y = pSonicCamera->m_Yaw;
-    pSonicCamera->m_Orbit.Z = pSonicCamera->m_Pitch;
+    pSonicCamera->ResetMouseOrbit(SonicCameraEx::MouseOrbit_Yaw);
 }
 
 // Sonicteam::Camera::DemoGMCamera::Update

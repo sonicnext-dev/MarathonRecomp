@@ -21,17 +21,17 @@ namespace Sonicteam::SoX::Scenery
 
         xpointer<Vftable> m_pVftable;
 
-        int SetFar(double zFar)
+        int SetFar(double in_far)
         {
-            return GuestToHostFunction<int>(m_pVftable->fpSetFar.get(), this, zFar);
+            return GuestToHostFunction<int>(m_pVftable->fpSetFar.get(), this, in_far);
         }
 
-        int SetFOV(double fov)
+        int SetFOV(double in_fov)
         {
-            return GuestToHostFunction<int>(m_pVftable->fpSetFOV.get(), this, fov);
+            return GuestToHostFunction<int>(m_pVftable->fpSetFOV.get(), this, in_fov);
         }
 
-        int SetAspectRatio(float width, float height)
+        int SetAspectRatio(float in_width, float in_height)
         {
             struct AspectRatio
             {
@@ -39,7 +39,7 @@ namespace Sonicteam::SoX::Scenery
                 be<float> Height;
             };
 
-            guest_stack_var<AspectRatio> aspectRatio(width, height);
+            const auto aspectRatio = guest_stack_var<AspectRatio>(in_width, in_height);
 
             return GuestToHostFunction<int>(m_pVftable->fpSetAspectRatio.get(), this, aspectRatio.get());
         }
@@ -58,5 +58,5 @@ namespace Sonicteam::SoX::Scenery
     };
 
     MARATHON_ASSERT_OFFSETOF(Camera, m_pVftable, 0x00);
-    MARATHON_ASSERT_SIZEOF(Camera, 4);
+    MARATHON_ASSERT_SIZEOF(Camera, 0x04);
 }

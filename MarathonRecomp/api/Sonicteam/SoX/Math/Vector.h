@@ -7,10 +7,10 @@ namespace Sonicteam::SoX::Math
     class alignas(16) Vector
     {
     public:
-        be<float> X;
-        be<float> Y;
-        be<float> Z;
-        be<float> W;
+        be<float> X{};
+        be<float> Y{};
+        be<float> Z{};
+        be<float> W{};
 
         Vector() = default;
 
@@ -20,6 +20,11 @@ namespace Sonicteam::SoX::Math
             Y = in_y;
             Z = in_z;
             W = in_w;
+        }
+
+        static Vector Zero()
+        {
+            return Vector(0, 0, 0, 0);
         }
 
         float DistanceTo(const Vector& in_rOther) const

@@ -2,6 +2,7 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/Camera/CameraMode.h>
+#include <Sonicteam/SoX/Math/Transform.h>
 #include <Sonicteam/SoX/Math/Vector.h>
 #include <Sonicteam/SoX/Physics/Entity.h>
 #include <Sonicteam/SoX/Physics/ShapeCast.h>
@@ -37,7 +38,7 @@ namespace Sonicteam::Camera
             }
         };
 
-        SoX::Math::Quaternion m_Rotation;
+        SoX::Math::Vector m_Field30;
         MARATHON_INSERT_PADDING(0x04);
         be<float> m_Spring;
         be<float> m_Damping;
@@ -49,7 +50,10 @@ namespace Sonicteam::Camera
         be<uint32_t> m_TargetActorID;
         xpointer<SoX::Physics::ShapeCast> m_pShapeCastA;
         xpointer<SoX::Physics::ShapeCast> m_pShapeCastB;
-        MARATHON_INSERT_PADDING(0x30);
+        SoX::Math::Transform m_TransitionTransform;
+        be<float> m_TransitionDuration;
+        be<float> m_TransitionTime;
+        MARATHON_INSERT_PADDING(0x08);
         be<float> m_FOV;
         MARATHON_INSERT_PADDING(0x0C);
         SoX::Math::Vector m_Position;
@@ -68,7 +72,7 @@ namespace Sonicteam::Camera
     MARATHON_ASSERT_OFFSETOF(SonicCamera::MoveShapeCastListener, m_pContext, 0x08);
     MARATHON_ASSERT_SIZEOF(SonicCamera::MoveShapeCastListener, 0x0C);
 
-    MARATHON_ASSERT_OFFSETOF(SonicCamera, m_Rotation, 0x30);
+    MARATHON_ASSERT_OFFSETOF(SonicCamera, m_Field30, 0x30);
     MARATHON_ASSERT_OFFSETOF(SonicCamera, m_Spring, 0x44);
     MARATHON_ASSERT_OFFSETOF(SonicCamera, m_Damping, 0x48);
     MARATHON_ASSERT_OFFSETOF(SonicCamera, m_Acceleration, 0x4C);
@@ -79,6 +83,9 @@ namespace Sonicteam::Camera
     MARATHON_ASSERT_OFFSETOF(SonicCamera, m_TargetActorID, 0x64);
     MARATHON_ASSERT_OFFSETOF(SonicCamera, m_pShapeCastA, 0x68);
     MARATHON_ASSERT_OFFSETOF(SonicCamera, m_pShapeCastB, 0x6C);
+    MARATHON_ASSERT_OFFSETOF(SonicCamera, m_TransitionTransform, 0x70);
+    MARATHON_ASSERT_OFFSETOF(SonicCamera, m_TransitionDuration, 0x90);
+    MARATHON_ASSERT_OFFSETOF(SonicCamera, m_TransitionTime, 0x94);
     MARATHON_ASSERT_OFFSETOF(SonicCamera, m_FOV, 0xA0);
     MARATHON_ASSERT_OFFSETOF(SonicCamera, m_Position, 0xB0);
     MARATHON_ASSERT_OFFSETOF(SonicCamera, m_Target, 0xC0);
