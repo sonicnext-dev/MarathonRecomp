@@ -27,6 +27,7 @@ uint32_t XAudioRegisterRenderDriverClient(be<uint32_t>* callback, be<uint32_t>* 
 
 uint32_t XAudioUnregisterRenderDriverClient(uint32_t driver)
 {
+    XAudioUnregisterClient();
     return 0;
 }
 
