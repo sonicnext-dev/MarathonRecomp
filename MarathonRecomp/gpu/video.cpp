@@ -14,6 +14,7 @@
 
 #include <Marathon.h>
 #include <app.h>
+#include <cpu/guest_thread.h>
 #include <cstdint>
 #include <hid/peripheral/keyboard.h>
 #include <hid/peripheral/mouse.h>
@@ -1785,15 +1786,15 @@ static void DrawProfiler()
             ImGui::Checkbox("Show FPS", &Config::ShowFPS.Value);
         }
 
-        if (g_userHeap.heap && g_userHeap.physicalHeap)
+        if (g_memory.heap && g_memory.physicalHeap)
         {
             if (ImGui::CollapsingHeader("Memory", ImGuiTreeNodeFlags_DefaultOpen))
             {
-                std::lock_guard heapLock(g_userHeap.mutex);
-                O1HeapDiagnostics heapDiagnostics = o1heapGetDiagnostics(g_userHeap.heap);
+                std::lock_guard heapLock(g_memory.mutex);
+                O1HeapDiagnostics heapDiagnostics = o1heapGetDiagnostics(g_memory.heap);
 
-                std::lock_guard physicalHeapLock(g_userHeap.physicalMutex);
-                O1HeapDiagnostics physicalHeapDiagnostics = o1heapGetDiagnostics(g_userHeap.physicalHeap);
+                std::lock_guard physicalHeapLock(g_memory.physicalMutex);
+                O1HeapDiagnostics physicalHeapDiagnostics = o1heapGetDiagnostics(g_memory.physicalHeap);
 
                 if (ImGui::BeginTable("Memory", 2))
                 {
@@ -3913,11 +3914,15 @@ static HostThread g_renderThread("Render Thread", []
         SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
 #endif
 
+        std::unique_ptr<GuestThreadContext> ctx;
         RenderCommand commands[32];
 
         while (true)
         {
             size_t count = g_renderQueue.wait_dequeue_bulk(commands, std::size(commands));
+
+            if (ctx == nullptr)
+                ctx = std::make_unique<GuestThreadContext>(0);
 
             for (size_t i = 0; i < count; i++)
                 std::visit([](const auto& cmd) { ProcRenderCommand(cmd); }, commands[i]);

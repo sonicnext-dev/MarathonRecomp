@@ -71,8 +71,6 @@ void KiSystemStartup()
         std::_Exit(1);
     }
 
-    g_userHeap.Init();
-
     const auto gameContent = XamMakeContent(XCONTENTTYPE_RESERVED, "Game");
     const std::string gamePath = (const char*)(GetGamePath() / "game").u8string().c_str();
 

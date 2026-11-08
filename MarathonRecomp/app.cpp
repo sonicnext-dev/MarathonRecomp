@@ -84,6 +84,8 @@ PPC_FUNC(sub_8262A568)
 
     ImFontAtlasSnapshot::Init();
     InitPatches();
+
+    Video::StartPipelinePrecompilation();
 }
 
 // Sonicteam::DocMarathonState::Update

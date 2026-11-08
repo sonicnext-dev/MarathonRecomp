@@ -435,9 +435,9 @@ static void MakePictureData(Sonicteam::MyTexture* pictureData, uint8_t* data, ui
 #endif
             DiffPatchTexture(texture, data, dataSize);
 
-            pictureData->m_pTexture = (void*)g_memory.MapVirtual(g_userHeap.AllocPhysical<GuestTexture>(std::move(texture)));
             pictureData->m_Width = texture.width;
             pictureData->m_Height = texture.height;
+            pictureData->m_pTexture = (void*)g_memory.MapVirtual(g_userHeap.AllocPhysical<GuestTexture>(std::move(texture)));
         }
     }
 }

@@ -9,7 +9,17 @@ struct Memory
 {
     uint8_t* base{};
 
+    Mutex mutex;
+    O1HeapInstance* heap;
+
+    Mutex physicalMutex;
+    O1HeapInstance* physicalHeap;
+
     Memory();
+
+    void* Alloc(size_t size, size_t alignment, bool physical);
+    void Free(void* ptr, bool physical);
+    size_t Size(void* ptr);
 
     bool IsInMemoryRange(const void* host) const noexcept
     {
