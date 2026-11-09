@@ -441,6 +441,9 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
     if ((modifier.Flags & CSD_BUTTON_WINDOW) != 0 && MainMenuTaskPatches::s_hideButtonWindow)
         return;
 
+    if ((modifier.Flags & CSD_LIFE_COUNTER) != 0 && Config::DisableLives)
+        return;
+
     // Remove all flags if the aspect ratio is above 16:9.
     if ((modifier.Flags & CSD_MODIFIER_ULTRAWIDE_ONLY) != 0 && g_aspectRatio <= WIDE_ASPECT_RATIO)
         modifier.Flags &= (~modifier.Flags) | CSD_MODIFIER_ULTRAWIDE_ONLY;
@@ -1699,7 +1702,8 @@ PPC_FUNC(sub_8262D868)
 
     auto textModifier = pTextEntity->m_Modifier;
 
-    if (!App::s_isDrawUI || (textModifier & CSD_SKIP) != 0)
+    if (!App::s_isDrawUI || (textModifier & CSD_SKIP) != 0 ||
+        ((textModifier & CSD_LIFE_COUNTER) != 0 && Config::DisableLives))
     {
         for (size_t i = 0; i < pTextEntity->m_TextVertexCount; i++)
             pTextEntity->m_pTextVertices[i].Color.A(0);
@@ -2126,8 +2130,8 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/maindisplay/power_bar_anime"), { CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
     { HashStr("sprite/maindisplay/itembox_01"), { CSD_ALIGN_BOTTOM | CSD_SCALE } },
     { HashStr("sprite/maindisplay/score"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/maindisplay/life_ber_anime"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
-    { HashStr("sprite/maindisplay/life"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
+    { HashStr("sprite/maindisplay/life_ber_anime"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_LIFE_COUNTER } },
+    { HashStr("sprite/maindisplay/life"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_LIFE_COUNTER } },
     { HashStr("sprite/maindisplay/time"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
     { HashStr("sprite/maindisplay/ring"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
     { HashStr("sprite/maindisplay/ring_anime"), { CSD_ALIGN_TOP_LEFT | CSD_SCALE } },
@@ -2155,9 +2159,9 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita8"), { CSD_SCALE | CSD_EXTEND_RIGHT } },
     { HashStr("sprite/main_menu/savedate/savedata/Null_1074/sita9"), { CSD_SCALE } },
     { HashStr("sprite/main_menu/savedate/savedata/goldmedal"), { CSD_SCALE } },
-    { HashStr("sprite/main_menu/savedate/savedata/zanki_3"), { CSD_SCALE } },
-    { HashStr("sprite/main_menu/savedate/savedata/zanki_2"), { CSD_SCALE } },
-    { HashStr("sprite/main_menu/savedate/savedata/zanki"), { CSD_SCALE } },
+    { HashStr("sprite/main_menu/savedate/savedata/zanki_3"), { CSD_SCALE | CSD_LIFE_COUNTER } },
+    { HashStr("sprite/main_menu/savedate/savedata/zanki_2"), { CSD_SCALE | CSD_LIFE_COUNTER } },
+    { HashStr("sprite/main_menu/savedate/savedata/zanki"), { CSD_SCALE | CSD_LIFE_COUNTER } },
     { HashStr("sprite/main_menu/savedate/savedata/ring"), { CSD_SCALE } },
     { HashStr("sprite/main_menu/character_choice"), { CSD_SCALE } },
     { HashStr("sprite/main_menu/character_cursor1"), { CSD_SCALE } },
@@ -2392,8 +2396,8 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/tagdisplay_1p/ring"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
     { HashStr("sprite/tagdisplay_1p/ring_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
     { HashStr("sprite/tagdisplay_1p/bar_ue"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
-    { HashStr("sprite/tagdisplay_1p/life_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
-    { HashStr("sprite/tagdisplay_1p/life"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/tagdisplay_1p/life_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H | CSD_LIFE_COUNTER } },
+    { HashStr("sprite/tagdisplay_1p/life"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H | CSD_LIFE_COUNTER } },
     { HashStr("sprite/tagdisplay_1p/item_ber_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
     { HashStr("sprite/tagdisplay_1p/item"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
     { HashStr("sprite/tagdisplay_1p/power_bar_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
@@ -2412,8 +2416,8 @@ const xxHashMap<CsdModifier> g_csdModifiers =
     { HashStr("sprite/tagdisplay_2p/ring"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
     { HashStr("sprite/tagdisplay_2p/ring_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
     { HashStr("sprite/tagdisplay_2p/bar_ue"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },
-    { HashStr("sprite/tagdisplay_2p/life_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
-    { HashStr("sprite/tagdisplay_2p/life"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
+    { HashStr("sprite/tagdisplay_2p/life_bar_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H | CSD_LIFE_COUNTER } },
+    { HashStr("sprite/tagdisplay_2p/life"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H | CSD_LIFE_COUNTER } },
     { HashStr("sprite/tagdisplay_2p/item_ber_anime"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
     { HashStr("sprite/tagdisplay_2p/item"), { CSD_MULTIPLAYER | CSD_ALIGN_TOP_LEFT | CSD_SCALE | CSD_ALIGN_IGNORE_PREFERENCE_H } },
     { HashStr("sprite/tagdisplay_2p/power_bar_effect"), { CSD_MULTIPLAYER | CSD_ALIGN_BOTTOM_RIGHT | CSD_SCALE } },

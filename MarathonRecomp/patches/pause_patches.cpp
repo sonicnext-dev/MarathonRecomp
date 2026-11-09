@@ -207,3 +207,11 @@ void PauseTask_ConfigureMissionWindow(PPCRegister& r31)
     pPauseTask->m_pHUDPause->m_ShowMissionWindow = showMissionWindow;
     pPauseTask->m_pHUDPause->ProcessMessage(msgChangeState.get());
 }
+
+void DisableLives_RestoreStartOverOption(PPCRegister& r11)
+{
+    // Make sure "Start Over" option is always available with lives disabled,
+    // in case the user enabled the option with 0 lives remaining.
+    if (Config::DisableLives)
+        r11.u32 = 1;
+}
