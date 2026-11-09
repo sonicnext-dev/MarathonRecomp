@@ -63,6 +63,8 @@ PPC_FUNC(sub_8262A568)
 
     LOGFN_UTILITY("Changed resolution: {}x{}", pRenderConfig->Width.get(), pRenderConfig->Height.get());
 
+    Video::StartPipelinePrecompilation();
+
     __imp__sub_8262A568(ctx, base);
 
     App::s_pApp = reinterpret_cast<Sonicteam::AppMarathon*>(base + ctx.r3.u32);

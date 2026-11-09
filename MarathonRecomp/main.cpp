@@ -342,8 +342,6 @@ int main(int argc, char *argv[])
         }
     }
 
-    Video::StartPipelinePrecompilation();
-
     LOGN_WARNING("Start Guest Thread");
     LOGN_WARNING(modulePath.string());
 
