@@ -10,9 +10,9 @@ namespace Sonicteam::SoX
     class Component : public Object
     {
     public:
-        struct Vftable : Object::Vftable
+        struct Vftable : public Object::Vftable
         {
-            be<uint32_t> fpDestroy;
+            be<uint32_t> fpDtor;
             be<uint32_t> fpUpdate;
         };
 

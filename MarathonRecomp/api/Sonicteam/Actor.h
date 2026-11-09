@@ -8,7 +8,7 @@ namespace Sonicteam
     class Actor : public SoX::Engine::Task
     {
     public:
-        MARATHON_INSERT_PADDING(8); // boost::weak_ptr<Sonicteam::GameImp> GameImp;
+        MARATHON_INSERT_PADDING(0x08); // boost::weak_ptr<Sonicteam::Game> m_wpGame;
         be<uint32_t> m_ActorID;
     };
 

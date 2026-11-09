@@ -9,7 +9,7 @@ namespace Sonicteam::SoX
     public:
         struct Vftable
         {
-            be<uint32_t> fpDestroy;
+            be<uint32_t> fpDtor;
         };
 
         xpointer<Vftable> m_pVftable;
@@ -17,7 +17,7 @@ namespace Sonicteam::SoX
 
         void* Destroy(uint32_t flag = 1)
         {
-            return GuestToHostFunction<void*>(m_pVftable->fpDestroy, this, flag);
+            return GuestToHostFunction<void*>(m_pVftable->fpDtor, this, flag);
         }
 
         void Release(uint32_t flag = 1)
