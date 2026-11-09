@@ -23,6 +23,11 @@ PPC_FUNC(sub_824FFCF8)
         // Hide original "OPTIONS" title.
         if (const auto pOptionsSelect = pHUDMainMenu->m_pHudTextRoot->Find("options_select", "options"))
             pOptionsSelect->m_Priority = -1.0f;
+
+        // Apply life counter hint to save data text.
+        const auto pSaveDataText02 = pHUDMainMenu->m_pHudTextRoot->Find("savedate", "savedata_text02");
+        if (pSaveDataText02 && pSaveDataText02->m_spTextEntity)
+            SetTextEntityModifier(pSaveDataText02->m_spTextEntity.get(), CSD_LIFE_COUNTER);
     }
 
     switch (pMainMenuTask->m_State)
