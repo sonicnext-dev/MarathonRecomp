@@ -4,6 +4,7 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/SoX/Component.h>
+#include <Sonicteam/SoX/LinkNeighbor.h>
 #include <Sonicteam/SoX/LinkNode.h>
 #include <Sonicteam/SoX/MessageReceiver.h>
 
@@ -17,10 +18,9 @@ namespace Sonicteam::SoX::Engine
         struct Vftable : public Component::Vftable {};
 
         uint8_t m_Flags;
-        MARATHON_INSERT_PADDING(3);
+        MARATHON_INSERT_PADDING(0x03);
         be<uint32_t> m_Timestamp;
-        xpointer<Task> m_pPrevSibling;
-        xpointer<Task> m_pNextSibling;
+        LinkNeighbor<Task> m_Siblings;
         xpointer<Task> m_pDependency;
         xpointer<Task> m_pDependencies;
         xpointer<Doc> m_pDoc;
@@ -52,8 +52,8 @@ namespace Sonicteam::SoX::Engine
 
             auto pCurrent = m_pDependencies.get();
 
-            while (pCurrent->m_pPrevSibling && pCurrent->m_pPrevSibling != m_pDependencies.get())
-                pCurrent = pCurrent->m_pPrevSibling.get();
+            while (pCurrent->m_Siblings.m_pPrev && pCurrent->m_Siblings.m_pPrev != m_pDependencies.get())
+                pCurrent = pCurrent->m_Siblings.m_pPrev.get();
 
             return pCurrent;
         }
@@ -102,7 +102,7 @@ namespace Sonicteam::SoX::Engine
             iterator& operator++()
             {
                 if (m_pCurrent)
-                    m_pCurrent = m_pCurrent->m_pPrevSibling.get();
+                    m_pCurrent = m_pCurrent->m_Siblings.m_pPrev.get();
 
                 return *this;
             }
@@ -126,8 +126,7 @@ namespace Sonicteam::SoX::Engine
 
     MARATHON_ASSERT_OFFSETOF(Task, m_Flags, 0x24);
     MARATHON_ASSERT_OFFSETOF(Task, m_Timestamp, 0x28);
-    MARATHON_ASSERT_OFFSETOF(Task, m_pPrevSibling, 0x2C);
-    MARATHON_ASSERT_OFFSETOF(Task, m_pNextSibling, 0x30);
+    MARATHON_ASSERT_OFFSETOF(Task, m_Siblings, 0x2C);
     MARATHON_ASSERT_OFFSETOF(Task, m_pDependency, 0x34);
     MARATHON_ASSERT_OFFSETOF(Task, m_pDependencies, 0x38);
     MARATHON_ASSERT_OFFSETOF(Task, m_pDoc, 0x3C);
