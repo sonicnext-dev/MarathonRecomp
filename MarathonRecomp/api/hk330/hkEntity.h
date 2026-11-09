@@ -1,10 +1,10 @@
 #pragma once
 
-#include <hk330/hkpWorldObject.h>
+#include <hk330/hkWorldObject.h>
 
 namespace hk330
 {
-    class hkpEntity : public hkpWorldObject
+    class hkEntity : public hkWorldObject
     {
     public:
         MARATHON_INSERT_PADDING(0x1E0);

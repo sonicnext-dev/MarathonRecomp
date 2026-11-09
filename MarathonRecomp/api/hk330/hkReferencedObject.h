@@ -15,4 +15,5 @@ namespace hk330
     MARATHON_ASSERT_OFFSETOF(hkReferencedObject, m_pVftable, 0x00);
     MARATHON_ASSERT_OFFSETOF(hkReferencedObject, m_memSizeAndFlags, 0x04);
     MARATHON_ASSERT_OFFSETOF(hkReferencedObject, m_referenceCount, 0x06);
+    MARATHON_ASSERT_SIZEOF(hkReferencedObject, 0x08);
 }

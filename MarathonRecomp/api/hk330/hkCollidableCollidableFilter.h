@@ -4,7 +4,7 @@
 
 namespace hk330
 {
-    class hkpRayCollidableFilter
+    class hkCollidableCollidableFilter
     {
     public:
         struct Vftable
@@ -16,5 +16,5 @@ namespace hk330
         xpointer<Vftable> m_pVftable;
     };
 
-    MARATHON_ASSERT_OFFSETOF(hkpRayCollidableFilter, m_pVftable, 0x00);
+    MARATHON_ASSERT_OFFSETOF(hkCollidableCollidableFilter, m_pVftable, 0x00);
 }
