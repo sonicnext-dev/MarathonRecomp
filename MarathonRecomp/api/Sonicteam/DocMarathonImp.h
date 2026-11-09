@@ -13,14 +13,13 @@
 #include <Sonicteam/PostprocessController.h>
 #include <Sonicteam/RaderMapManager.h>
 #include <Sonicteam/RenderTargetContainer.h>
+#include <Sonicteam/SceneParamManager.h>
 #include <Sonicteam/SFXAgent.h>
 #include <Sonicteam/TextBook.h>
 #include <stdx/vector.h>
 
 namespace Sonicteam
 {
-    class SceneParamManager;
-
     class DocMarathonImp : public DocMarathon
     {
     public:
