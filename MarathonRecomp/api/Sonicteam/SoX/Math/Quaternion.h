@@ -7,10 +7,20 @@ namespace Sonicteam::SoX::Math
     class alignas(16) Quaternion
     {
     public:
-        be<float> X;
-        be<float> Y;
-        be<float> Z;
-        be<float> W;
+        be<float> X{};
+        be<float> Y{};
+        be<float> Z{};
+        be<float> W{};
+
+        Quaternion() = default;
+
+        Quaternion(float in_x, float in_y, float in_z, float in_w = 1.0f)
+            : X(in_x), Y(in_y), Z(in_z), W(in_w) {}
+
+        static Quaternion Identity()
+        {
+            return Quaternion(0, 0, 0, 1.0f);
+        }
     };
 
     MARATHON_ASSERT_OFFSETOF(Quaternion, X, 0x00);

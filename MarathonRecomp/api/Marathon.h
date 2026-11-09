@@ -343,6 +343,7 @@
 #include "Sonicteam/SoX/Math/Math.h"
 #include "Sonicteam/SoX/Math/Matrix.h"
 #include "Sonicteam/SoX/Math/Quaternion.h"
+#include "Sonicteam/SoX/Math/Transform.h"
 #include "Sonicteam/SoX/Math/Vector.h"
 #include "Sonicteam/SoX/Math/Vector2.h"
 #include "Sonicteam/SoX/Math/Vector3.h"
