@@ -6,9 +6,6 @@
 
 static class UIToggleListener : public SDLEventListener
 {
-private:
-    bool m_IsKeyDown{};
-
 public:
     bool OnSDLEvent(SDL_Event* event) override
     {
@@ -19,7 +16,7 @@ public:
         {
             case SDL_EVENT_KEY_DOWN:
             {
-                if (event->key.key != SDLK_F8 || m_IsKeyDown)
+                if (event->key.key != SDLK_F8 || event->key.repeat)
                     break;
 
                 App::s_isDrawUI = !App::s_isDrawUI;
@@ -38,14 +35,8 @@ public:
 
                 LOGFN("UI: {}", App::s_isDrawUI ? "Enabled" : "Disabled");
 
-                m_IsKeyDown = true;
-
                 break;
             }
-
-            case SDL_EVENT_KEY_UP:
-                m_IsKeyDown = event->key.key != SDLK_F8;
-                break;
         }
 
         return false;
