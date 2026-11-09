@@ -20,6 +20,22 @@ void BeginBlockGetName(PPCRegister& r3)
 #endif
 }
 
+// Sonicteam::RenderAction::ReadBlock
+PPC_FUNC_IMPL(__imp__sub_8260DF88);
+PPC_FUNC(sub_8260DF88)
+{
+    if (!Video::s_needsResize)
+    {
+        const auto pFilePath = reinterpret_cast<stdx::string*>(base + ctx.r4.u32);
+
+        // Don't process render script if it's the same one currently in use.
+        if (pFilePath && Sonicteam::Globals::ms_pCurrentRenderScript && *pFilePath == *Sonicteam::Globals::ms_pCurrentRenderScript)
+            return;
+    }
+
+    __imp__sub_8260DF88(ctx, base);
+}
+
 // EndBlock
 PPC_FUNC_IMPL(__imp__sub_826078D8);
 PPC_FUNC(sub_826078D8)
