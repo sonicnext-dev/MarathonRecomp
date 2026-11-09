@@ -1,6 +1,6 @@
+#include <api/Marathon.h>
 #include <gpu/render_resolution.h>
 #include <gpu/video.h>
-#include <api/Marathon.h>
 #include <kernel/memory.h>
 #include <os/logger.h>
 #include <user/config.h>
@@ -101,6 +101,41 @@ PPC_FUNC(sub_82619FF0)
     g_surfaceCreationName = pName->c_str();
     __imp__sub_82619FF0(ctx, base);
     g_surfaceCreationName = nullptr;
+}
+
+// Sonicteam::MyReflectionArea::Update
+PPC_FUNC_IMPL(__imp__sub_822740A8);
+PPC_FUNC(sub_822740A8)
+{
+    const auto pMyReflectionArea = reinterpret_cast<Sonicteam::MyReflectionArea*>(base + ctx.r3.u32);
+
+    // Force planar reflections to draw all objects and terrain.
+    pMyReflectionArea->m_ClumpCutoffCoverage = 0.0f;
+    pMyReflectionArea->m_SectorCutoffCoverage = 0.0f;
+
+    __imp__sub_822740A8(ctx, base);
+
+    if (pMyReflectionArea->m_IsInsideArea)
+        return;
+
+    const auto pGame = static_cast<Sonicteam::GameImp*>(pMyReflectionArea->m_spGame.get());
+    const auto pConvexShape = static_cast<Sonicteam::SoX::Physics::Havok::ConvexShapeHavok*>(pMyReflectionArea->m_pConvexShape.get());
+
+    for (const auto& rActorId : pGame->m_PlayerActorIDs)
+    {
+        const auto pPlayer = pGame->m_spActorManager->Find<Sonicteam::Player::Object>(rActorId);
+
+        if (!pPlayer)
+            continue;
+
+        const auto pCameraman = static_cast<Sonicteam::Camera::Cameraman*>(pPlayer->m_pCameraman.get());
+
+        if (!pCameraman)
+            continue;
+
+        // Fix reflection areas not updating with camera inside.
+        pMyReflectionArea->m_IsInsideArea = pConvexShape->m_pConvexVerticesShape->hasPoint(pCameraman->m_Transform.m_Position);
+    }
 }
 
 std::string g_renderWorldFBO;
