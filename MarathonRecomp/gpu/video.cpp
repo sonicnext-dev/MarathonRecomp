@@ -2358,6 +2358,22 @@ PPC_FUNC(sub_8260AAB0)
     }
 }
 
+// RenderPostprocess callback
+PPC_FUNC_IMPL(__imp__sub_8260ABB0);
+PPC_FUNC(sub_8260ABB0)
+{
+    const auto L = reinterpret_cast<lua50::lua_State*>(ctx.r3.u32 + base);
+
+    if (FindRenderProcess(L, "Postprocess"))
+    {
+        ctx.r3.u32 = 1;
+    }
+    else
+    {
+        __imp__sub_8260ABB0(ctx, base);
+    }
+}
+
 // RenderSpanverse callback
 PPC_FUNC_IMPL(__imp__sub_8260A9D0);
 PPC_FUNC(sub_8260A9D0)
@@ -2649,8 +2665,9 @@ void Video::Resize(uint32_t width, uint32_t height)
     pDoc->m_pSFXAgent->m_aSFXMatrices1 = nullptr;
     pDoc->m_pSFXAgent->m_aSFXMatrices2 = nullptr;
 
-    // Cache particle render processes.
+    // Cache render processes.
     CacheRenderProcess(pDoc->m_pRenderScheduler, "GE1Particle");
+    CacheRenderProcess(pDoc->m_pRenderScheduler, "Postprocess");
     CacheRenderProcess(pDoc->m_pRenderScheduler, "Spanverse");
 
     // Reload current render script.
