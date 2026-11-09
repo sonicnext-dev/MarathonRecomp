@@ -184,7 +184,7 @@ void RestoreChainJumpFlips(PPCRegister& r31, PPCRegister& r30, PPCRegister& r11,
 
     auto magnitudeHorz = f1.f64;
     auto magnitudeForward = f2.f64;
-    auto distance = origin.DistanceTo(target);
+    auto distance = origin.Distance(target);
     auto magnitude = std::sqrt(magnitudeHorz * magnitudeHorz + magnitudeForward * magnitudeForward);
     auto time = 1.0;
 

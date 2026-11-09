@@ -4,7 +4,7 @@
 
 namespace hk330
 {
-    class hkpRayShapeCollectionFilter
+    class hkRayShapeCollectionFilter
     {
     public:
         struct Vftable
@@ -16,5 +16,6 @@ namespace hk330
         xpointer<Vftable> m_pVftable;
     };
 
-    MARATHON_ASSERT_OFFSETOF(hkpRayShapeCollectionFilter, m_pVftable, 0x00);
+    MARATHON_ASSERT_OFFSETOF(hkRayShapeCollectionFilter, m_pVftable, 0x00);
+    MARATHON_ASSERT_SIZEOF(hkRayShapeCollectionFilter, 0x04);
 }

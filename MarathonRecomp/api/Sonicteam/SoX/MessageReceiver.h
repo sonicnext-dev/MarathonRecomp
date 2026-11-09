@@ -10,7 +10,7 @@ namespace Sonicteam::SoX
     public:
         struct Vftable
         {
-            be<uint32_t> fpDestroy;
+            be<uint32_t> fpDtor;
             be<uint32_t> fpProcessMessage;
         };
 
@@ -18,7 +18,7 @@ namespace Sonicteam::SoX
 
         void* Destroy(uint8_t flags = 1)
         {
-            return GuestToHostFunction<void*>(m_pVftable->fpDestroy, this, flags);
+            return GuestToHostFunction<void*>(m_pVftable->fpDtor, this, flags);
         }
 
         bool ProcessMessage(IMessage* pMessage)

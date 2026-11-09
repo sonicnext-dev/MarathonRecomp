@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Marathon.inl>
-#include <Sonicteam/SoX/RefSharedPointer.h>
-#include <Sonicteam/SoX/RefCountObject.h>
+#include <hk330/hkRigidBody.h>
 #include <Sonicteam/SoX/Math/Quaternion.h>
 #include <Sonicteam/SoX/Math/Vector.h>
 #include <Sonicteam/SoX/Physics/Havok/WorldHavok.h>
-#include <hk330/hkpRigidBody.h>
+#include <Sonicteam/SoX/RefCountObject.h>
+#include <Sonicteam/SoX/RefSharedPointer.h>
 
 namespace Sonicteam::SoX::Physics::Havok
 {
@@ -15,7 +15,7 @@ namespace Sonicteam::SoX::Physics::Havok
     public:
         xpointer<void> m_pVftable;
         MARATHON_INSERT_PADDING(0x0C);
-        xpointer<hk330::hkpRigidBody> m_pRigidBody;
+        xpointer<hk330::hkRigidBody> m_pRigidBody;
         RefSharedPointer<WorldHavok> m_spWorldHavok;
         Math::Quaternion m_Rotation;
         Math::Vector m_Translation;

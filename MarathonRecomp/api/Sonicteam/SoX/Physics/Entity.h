@@ -23,25 +23,25 @@ namespace Sonicteam::SoX::Physics
         };
 
         MARATHON_INSERT_PADDING(0x10);
-        RefSharedPointer<Shape> m_spPhantomListener;
-        xpointer<MessageReceiver> m_pReceiver;
+        RefSharedPointer<PhantomListener> m_spPhantomListener;
+        xpointer<MessageReceiver> m_pOwner;
         RefSharedPointer<Shape> m_spShape;
 
-        void InitializeToWorld(RefSharedPointer<World>& world)
+        void InitializeToWorld(const RefSharedPointer<World>& in_rspWorld)
         {
-            auto vft = static_cast<Vftable*>(MessageReceiver::m_pVftable.get());
-            GuestToHostFunction<void>(vft->fpInitializeToWorld, this, &world);
+            const auto vft = static_cast<Vftable*>(MessageReceiver::m_pVftable.get());
+            GuestToHostFunction<void>(vft->fpInitializeToWorld, this, &in_rspWorld);
         }
 
-        void SetPhantomListener(RefSharedPointer<PhantomListener>& phantomListener)
+        void SetPhantomListener(const RefSharedPointer<PhantomListener>& in_rspPhantomListener)
         {
-            auto vft = static_cast<Vftable*>(MessageReceiver::m_pVftable.get());
-            GuestToHostFunction<void>(vft->fpSetPhantomListener, this, &phantomListener);
+            const auto vft = static_cast<Vftable*>(MessageReceiver::m_pVftable.get());
+            GuestToHostFunction<void>(vft->fpSetPhantomListener, this, &in_rspPhantomListener);
         }
     };
 
     MARATHON_ASSERT_OFFSETOF(Entity, m_spPhantomListener, 0x1C);
-    MARATHON_ASSERT_OFFSETOF(Entity, m_pReceiver, 0x20);
+    MARATHON_ASSERT_OFFSETOF(Entity, m_pOwner, 0x20);
     MARATHON_ASSERT_OFFSETOF(Entity, m_spShape, 0x24);
     MARATHON_ASSERT_SIZEOF(Entity, 0x28);
 }

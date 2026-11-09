@@ -14,6 +14,8 @@ namespace Sonicteam::SoX::Engine
     class Task : public Component, public MessageReceiver
     {
     public:
+        struct Vftable : public Component::Vftable {};
+
         uint8_t m_Flags;
         MARATHON_INSERT_PADDING(3);
         be<uint32_t> m_Timestamp;
