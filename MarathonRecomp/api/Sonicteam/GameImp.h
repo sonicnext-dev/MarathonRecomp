@@ -12,6 +12,7 @@
 #include <Sonicteam/SoX/RefSharedPointer.h>
 #include <Sonicteam/ActorManager.h>
 #include <Sonicteam/Game.h>
+#include <Sonicteam/KhronoController.h>
 #include <Sonicteam/LoadingTask.h>
 #include <Sonicteam/PauseAdapter.h>
 #include <Sonicteam/PopupScreenTask.h>
@@ -115,7 +116,9 @@ namespace Sonicteam
         stdx::vector<stdx::vector<boost::shared_ptr<SoX::Scenery::Camera>>> m_Screens;
         MARATHON_INSERT_PADDING(0x1B4);
         xpointer<SoX::Audio::Cue> m_pBgmCue;
-        MARATHON_INSERT_PADDING(0x36C);
+        MARATHON_INSERT_PADDING(0x90);
+        xpointer<KhronoController> m_pKhronoController;
+        MARATHON_INSERT_PADDING(0x2D8);
         xpointer<TextBook> m_pHintTextBook;
         MARATHON_INSERT_PADDING(0x04);
         xpointer<Mission::Core> m_pMissionCore;
@@ -239,6 +242,7 @@ namespace Sonicteam
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pSystemTextBook, 0x11CC);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_Screens, 0x11D8);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pBgmCue, 0x139C);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_pKhronoController, 0x1430);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pHintTextBook, 0x170C);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pMissionCore, 0x1714);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_rMovieTask, 0x1750);

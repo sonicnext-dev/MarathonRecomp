@@ -136,6 +136,8 @@
 #include "Sonicteam/HudTextParts.h"
 #include "Sonicteam/ISceneParam.h"
 #include "Sonicteam/ImageFilter.h"
+#include "Sonicteam/KhronoControlInputListener.h"
+#include "Sonicteam/KhronoController.h"
 #include "Sonicteam/LoadingTask.h"
 #include "Sonicteam/LuaNode.h"
 #include "Sonicteam/LuaNodeImp.h"
