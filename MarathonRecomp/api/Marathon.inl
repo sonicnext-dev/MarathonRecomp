@@ -3,12 +3,6 @@
 #include <cpu/guest_stack_var.h>
 #include <kernel/function.h>
 
-constexpr float RAD2DEGf = 57.2958f;
-constexpr float DEG2RADf = 0.0174533f;
-
-constexpr double RAD2DEG = 57.29578018188477;
-constexpr double DEG2RAD = 0.01745329238474369;
-
 #define MARATHON_CONCAT2(x, y) x##y
 #define MARATHON_CONCAT(x, y) MARATHON_CONCAT2(x, y)
 
