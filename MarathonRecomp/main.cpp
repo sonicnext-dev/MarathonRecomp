@@ -224,6 +224,9 @@ int main(int argc, char *argv[])
 
     Config::Load();
 
+    // TODO: Remove this when FPS change is supported.
+    Config::FPS = 60;
+
     if (forceInstallationCheck)
     {
         // Create the console to show progress to the user, otherwise it will seem as if the game didn't boot at all.
