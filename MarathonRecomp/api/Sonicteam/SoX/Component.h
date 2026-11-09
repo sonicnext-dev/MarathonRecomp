@@ -17,7 +17,7 @@ namespace Sonicteam::SoX
         };
 
         xpointer<Component> m_pParent;
-        LinkNode<Component> m_Sibling;
+        LinkNode<Component> m_Siblings;
         LinkedList<Component> m_Children;
 
         template <typename T = Component>
@@ -33,7 +33,7 @@ namespace Sonicteam::SoX
     };
 
     MARATHON_ASSERT_OFFSETOF(Component, m_pParent, 0x04);
-    MARATHON_ASSERT_OFFSETOF(Component, m_Sibling, 0x08);
+    MARATHON_ASSERT_OFFSETOF(Component, m_Siblings, 0x08);
     MARATHON_ASSERT_OFFSETOF(Component, m_Children, 0x14);
     MARATHON_ASSERT_SIZEOF(Component, 0x20);
 }
