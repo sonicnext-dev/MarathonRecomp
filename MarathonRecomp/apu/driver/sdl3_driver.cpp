@@ -110,6 +110,24 @@ void XAudioRegisterClient(PPCFunc* callback, uint32_t param)
     CreateAudioThread();
 }
 
+void XAudioUnregisterClient()
+{
+    if (g_audioThread)
+    {
+        g_audioThreadShouldExit = true;
+        g_audioThread->Join();
+        g_audioThread.reset();
+    }
+
+    if (g_clientCallbackParam)
+    {
+        g_userHeap.Free(g_memory.Translate(g_clientCallbackParam));
+        g_clientCallbackParam = 0;
+    }
+
+    g_clientCallback = nullptr;
+}
+
 void XAudioSubmitFrame(void* samples)
 {
     auto floatSamples = reinterpret_cast<be<float>*>(samples);

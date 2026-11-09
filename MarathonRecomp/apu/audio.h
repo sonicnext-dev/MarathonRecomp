@@ -9,6 +9,7 @@
 
 void XAudioInitializeSystem();
 void XAudioRegisterClient(PPCFunc* callback, uint32_t param);
+void XAudioUnregisterClient();
 void XAudioSubmitFrame(void* samples);
 void XAudioConfigValueChangedCallback(class IConfigDef* configDef);
 
