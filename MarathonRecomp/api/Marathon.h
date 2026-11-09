@@ -79,6 +79,7 @@
 #include "Chao/CSD/Manager/csdmScene.h"
 #include "Chao/CSD/Manager/csdmSceneObserver.h"
 #include "Chao/CSD/Manager/csdmSubjectBase.h"
+#include "Common/ArrayIterator.h"
 #include "Sonicteam/Actor.h"
 #include "Sonicteam/ActorManager.h"
 #include "Sonicteam/AlertWindowTask.h"
