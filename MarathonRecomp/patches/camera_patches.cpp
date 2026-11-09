@@ -157,7 +157,7 @@ public:
 
             if ((in_resetAxes & MouseOrbit_Pitch) != 0)
             {
-                m_MouseOrbit.Z = -10.0f * DEG2RADf;
+                m_MouseOrbit.Z = Sonicteam::SoX::Math::ToRadians(-10.0f);
             }
             else
             {
@@ -321,7 +321,7 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
         }
     }
 
-    static constexpr float maxPitch = 45.0f * DEG2RADf;
+    static constexpr float maxPitch = Sonicteam::SoX::Math::ToRadians(45.0f);
 
     // Maps relative mouse X/Y to expected values for the orbit vector.
     // X = Distance, Y = Yaw (wrapped pi squared), Z = Pitch (45 degrees clamped).
@@ -342,7 +342,7 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
 
     // Scales the distance of the camera to the player based on the shape cast hit position.
     if (pSonicCamera->m_pShapeCastA->CastShape(distance.get(), listener.get()))
-        pSonicCamera->m_Orbit.X = std::min(context->HitPosition.DistanceTo(pSonicCamera->m_Target), pSonicCamera->m_MouseOrbit.X.get());
+        pSonicCamera->m_Orbit.X = std::min(context->HitPosition.Distance(pSonicCamera->m_Target), pSonicCamera->m_MouseOrbit.X.get());
 
     GuestToHostFunction<Sonicteam::SoX::Math::Vector*>(sub_8218C4F0, normalisedOrbit.get(), &pSonicCamera->m_Orbit);
 

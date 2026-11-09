@@ -27,18 +27,23 @@ namespace Sonicteam::SoX::Math
             return Vector(0, 0, 0, 0);
         }
 
-        float DistanceTo(const Vector& in_rOther) const
+        bool IsZero() const
         {
-            float dx = static_cast<float>(X) - static_cast<float>(in_rOther.X);
-            float dy = static_cast<float>(Y) - static_cast<float>(in_rOther.Y);
-            float dz = static_cast<float>(Z) - static_cast<float>(in_rOther.Z);
+            return X == 0 && Y == 0 && Z == 0 && W == 0;
+        }
+
+        float Distance(const Vector& in_rOther) const
+        {
+            const auto dx = X - in_rOther.X;
+            const auto dy = Y - in_rOther.Y;
+            const auto dz = Z - in_rOther.Z;
 
             return std::sqrt(dx * dx + dy * dy + dz * dz);
         }
 
-        bool IsZero() const
+        float Dot(const Vector& in_rOther) const
         {
-            return X == 0 && Y == 0 && Z == 0 && W == 0;
+            return (X * in_rOther.X) + (Y * in_rOther.Y) + (Z * in_rOther.Z);
         }
 
         Vector operator+(float in_addend) const
