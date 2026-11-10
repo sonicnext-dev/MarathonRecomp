@@ -161,6 +161,7 @@ set(MARATHON_RECOMP_PATCHES_CXX_SOURCES
     "patches/lua_patches.cpp"
     "patches/MainMenuTask_patches.cpp"
     "patches/misc_patches.cpp"
+    "patches/pause_listener.cpp"
     "patches/pause_patches.cpp"
     "patches/player_patches.cpp"
     "patches/SaveDataTask_patches.cpp"

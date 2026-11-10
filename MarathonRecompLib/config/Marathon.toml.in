@@ -736,3 +736,9 @@ registers = ["r3"]
 name = "StageSelectMode_SetMultiplayerContext"
 address = 0x82184D18
 registers = ["r3", "r4"]
+
+[[midasm_hook]]
+name = "SetPause"
+address = 0x8217D954
+registers = ["r25"]
+after_instruction = true
