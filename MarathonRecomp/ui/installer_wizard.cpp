@@ -982,7 +982,7 @@ static void DrawSource(ImVec2 pos, const char* text, bool isEnabled)
 
     drawList->AddText(g_pFntRodin, g_fntRodinSize, { categoryMin.x + Scale(129, true), categoryMin.y + Scale(6, true) }, colour, text);
 
-    if (isEnabled)
+    if (isEnabled && g_currentMessagePrompt.empty())
     {
         auto cursorOffsetX = Scale(80, true);
         auto cursorOffsetY = Scale(8, true);
@@ -1395,11 +1395,6 @@ bool InstallerWizard::Run(std::filesystem::path installPath, bool skipGame)
     EmbeddedPlayer::Init();
     NFD_Init();
 
-    // Guarantee that one controller is initialised.
-    // We'll rely on SDL's event loop to get the controller events.
-    XAMINPUT_STATE inputState{};
-    HID::GetState(0, &inputState);
-
     if (skipGame)
     {
         for (int i = 0; i < int(DLC::Count); i++)
@@ -1417,6 +1412,12 @@ bool InstallerWizard::Run(std::filesystem::path installPath, bool skipGame)
     {
         Video::WaitOnSwapChain();
         EmbeddedPlayer::PlayMusic();
+
+        // Guarantee that one controller is initialised.
+        // We'll rely on SDL's event loop to get the controller events.
+        XAMINPUT_STATE inputState{};
+        HID::GetState(0, &inputState);
+
         SDL_PumpEvents();
         SDL_FlushEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
         GameWindow::Update();
