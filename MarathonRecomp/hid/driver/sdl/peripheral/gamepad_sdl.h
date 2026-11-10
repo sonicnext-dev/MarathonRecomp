@@ -61,6 +61,9 @@ namespace HID
         {
             m_State = {};
 
+            if (!HID::IsInputAllowed())
+                return m_State;
+
             const auto pGamepad = GetContext<SDL_Gamepad>();
 
             m_State.sThumbLX = SDL_GetGamepadAxis(pGamepad, SDL_GAMEPAD_AXIS_LEFTX);
