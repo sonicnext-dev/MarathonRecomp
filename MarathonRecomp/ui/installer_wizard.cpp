@@ -982,7 +982,7 @@ static void DrawSource(ImVec2 pos, const char* text, bool isEnabled)
 
     drawList->AddText(g_pFntRodin, g_fntRodinSize, { categoryMin.x + Scale(129, true), categoryMin.y + Scale(6, true) }, colour, text);
 
-    if (isEnabled)
+    if (isEnabled && g_currentMessagePrompt.empty())
     {
         auto cursorOffsetX = Scale(80, true);
         auto cursorOffsetY = Scale(8, true);
