@@ -10,6 +10,7 @@ namespace HID
     private:
         XAMINPUT_GAMEPAD m_LastState{};
         XAMINPUT_VIBRATION m_LastVibration{};
+        bool m_IsLocked{};
 
     public:
         const uint32_t ID{};
@@ -23,6 +24,9 @@ namespace HID
 
         XAMINPUT_VIBRATION GetVibration();
         bool SetVibration(const XAMINPUT_VIBRATION& in_rVibration, const uint32_t in_duration = 5000);
+
+        void Lock();
+        void Unlock();
 
         bool IsFree() const;
 

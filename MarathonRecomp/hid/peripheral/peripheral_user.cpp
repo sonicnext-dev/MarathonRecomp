@@ -111,9 +111,19 @@ namespace HID
         return result;
     }
 
+    void PeripheralUser::Lock()
+    {
+        m_IsLocked = true;
+    }
+
+    void PeripheralUser::Unlock()
+    {
+        m_IsLocked = false;
+    }
+
     bool PeripheralUser::IsFree() const
     {
-        return m_Observees.empty();
+        return !m_IsLocked && m_Observees.empty();
     }
 
     bool PeripheralUser::OnBroadcastMessage(IMessage& io_rMessage)
