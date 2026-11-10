@@ -18,7 +18,9 @@ namespace Sonicteam
             be<uint32_t> fpSetDocState;
             MARATHON_INSERT_PADDING(0x0C);
             be<uint32_t> fpGetTextBookContext;
-            MARATHON_INSERT_PADDING(0x60);
+            MARATHON_INSERT_PADDING(0x2C);
+            be<uint32_t> fpSetPause;
+            MARATHON_INSERT_PADDING(0x30);
             be<uint32_t> fpSetLoading;
             MARATHON_INSERT_PADDING(0x44);
             be<uint32_t> fpGetLanguage;
@@ -34,6 +36,11 @@ namespace Sonicteam
         TextBook::TextBookContext* GetTextBookContext()
         {
             return GuestToHostFunction<TextBook::TextBookContext*>(static_cast<Vftable*>(m_pVftable.get())->fpGetTextBookContext, this);
+        }
+
+        void SetPause(bool in_isPaused)
+        {
+            GuestToHostFunction<void>(static_cast<Vftable*>(m_pVftable.get())->fpSetPause, this, in_isPaused);
         }
 
         void SetLoading(bool in_isLoading)
@@ -54,6 +61,7 @@ namespace Sonicteam
 
     MARATHON_ASSERT_OFFSETOF(DocMarathon::Vftable, fpSetDocState, 0x54);
     MARATHON_ASSERT_OFFSETOF(DocMarathon::Vftable, fpGetTextBookContext, 0x64);
+    MARATHON_ASSERT_OFFSETOF(DocMarathon::Vftable, fpSetPause, 0x94);
     MARATHON_ASSERT_OFFSETOF(DocMarathon::Vftable, fpSetLoading, 0xC8);
     MARATHON_ASSERT_OFFSETOF(DocMarathon::Vftable, fpGetLanguage, 0x110);
     MARATHON_ASSERT_OFFSETOF(DocMarathon::Vftable, fpStartMainMode, 0x160);

@@ -4,6 +4,7 @@
 #include <hid/message/messages.h>
 #include <hid/peripheral/gamepad.h>
 #include <hid/hid.h>
+#include <patches/pause_listener.h>
 #include <SDL3/SDL.h>
 #include <app.h>
 
@@ -137,6 +138,10 @@ namespace HID
                     if (const auto pPlayer = pGame->GetPlayer(rUser->ID))
                         ProcessMessage<MsgSetCharacterLED>(pPlayer->m_Name.c_str());
                 }
+            }
+            else if (io_rMessage.Is<MsgPeripheralDetached>())
+            {
+                PauseListener::SignalPause();
             }
             else if (io_rMessage.Is<MsgSetCharacterLED>())
             {
