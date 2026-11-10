@@ -1,5 +1,6 @@
 #pragma once
 
+#include <hid/message/messages.h>
 #include <hid/peripheral/i_peripheral.h>
 
 #define HID_MAKE_PERIPHERAL_ID(X)             \
@@ -14,6 +15,7 @@ namespace HID
         XAMINPUT_GAMEPAD m_State{};
         XAMINPUT_GAMEPAD m_LastState{};
         XAMINPUT_VIBRATION m_LastVibration{};
+        bool m_IsActive{ true };
 
     public:
         HID_MAKE_PERIPHERAL_ID(0);
@@ -50,8 +52,21 @@ namespace HID
             return true;
         }
 
+        virtual bool GetActive() const override
+        {
+            return m_IsActive;
+        }
+
+        virtual void SetActive(bool in_isActive) override
+        {
+            m_IsActive = in_isActive;
+        }
+
         virtual bool IsMutator(const float in_deadzone = 0.12f) const override
         {
+            if (!m_IsActive)
+                return false;
+
             return m_State.wButtons != 0 ||
                    m_State.bLeftTrigger != 0 ||
                    m_State.bRightTrigger != 0 ||

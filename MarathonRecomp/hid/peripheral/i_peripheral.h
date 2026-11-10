@@ -23,6 +23,9 @@ namespace HID
         virtual const XAMINPUT_VIBRATION& GetVibration() const = 0;
         virtual bool SetVibration(const XAMINPUT_VIBRATION& in_rVibration, const uint32_t in_duration = 5000) = 0;
 
+        virtual bool GetActive() const = 0;
+        virtual void SetActive(bool in_isActive) = 0;
+
         virtual bool IsMutator(const float in_deadzone = 0.12f) const = 0;
     };
 }

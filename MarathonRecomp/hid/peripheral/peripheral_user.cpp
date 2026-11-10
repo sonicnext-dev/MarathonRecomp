@@ -46,6 +46,9 @@ namespace HID
 
         Walk([&](IPeripheral* in_pNode) -> bool
         {
+            if (!in_pNode->GetActive())
+                return true;
+
             const auto& rState = in_pNode->GetState();
 
             result.wButtons |= rState.wButtons;

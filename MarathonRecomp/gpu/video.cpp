@@ -15,6 +15,8 @@
 #include <Marathon.h>
 #include <app.h>
 #include <cstdint>
+#include <hid/peripheral/keyboard.h>
+#include <hid/peripheral/mouse.h>
 #include <hid/hid.h>
 #include <kernel/function.h>
 #include <kernel/heap.h>
@@ -2008,6 +2010,14 @@ static void DrawImGui()
             }
         }
     }
+
+    const auto pHidManager = HID::GetManager();
+
+    if (const auto pKeyboard = pHidManager->Find(HID::Keyboard::ID))
+        pKeyboard->SetActive(!io.WantCaptureKeyboard);
+
+    if (const auto pMouse = pHidManager->Find(HID::Mouse::ID))
+        pMouse->SetActive(!io.WantCaptureMouse);
 
     ImGui::NewFrame();
 
