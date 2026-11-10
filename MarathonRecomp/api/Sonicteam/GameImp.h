@@ -44,7 +44,8 @@ namespace Sonicteam
             GameState_Message,
             GameState_6,
             GameState_Save,
-            GameState_ReturnToMainMenu
+            GameState_Quit,
+            GameState_9
         };
 
         enum GameFlags : uint32_t

@@ -77,7 +77,7 @@ PPC_FUNC(sub_8262A568)
 PPC_FUNC_IMPL(__imp__sub_825EA610);
 PPC_FUNC(sub_825EA610)
 {
-    auto pDoc = reinterpret_cast<Sonicteam::DocMarathonState*>(base + ctx.r3.u32);
+    const auto pDoc = reinterpret_cast<Sonicteam::DocMarathonState*>(base + ctx.r3.u32);
 
     Video::WaitOnSwapChain();
 
@@ -128,7 +128,26 @@ PPC_FUNC(sub_825EA610)
         });
     }
 
-    HID::GetManager()->BroadcastMessage<HID::MsgSetMouseCapture>(pDoc->GetDocMode("GameMode") && !App::s_isPaused);
+    const auto pHidManager = HID::GetManager();
+
+    if (const auto pGameMode = pDoc->GetDocMode<Sonicteam::GameMode>("GameMode"))
+    {
+        switch (pGameMode->GetGame()->m_State)
+        {
+            case Sonicteam::GameImp::GameState_Stage:
+            case Sonicteam::GameImp::GameState_Quit:
+                pHidManager->BroadcastMessage<HID::MsgSetMouseCapture>(!App::s_isPaused);
+                break;
+
+            default:
+                pHidManager->BroadcastMessage<HID::MsgSetMouseCapture>(false);
+                break;
+        }
+    }
+    else
+    {
+        pHidManager->BroadcastMessage<HID::MsgSetMouseCapture>(false);
+    }
 }
 
 PPC_FUNC_IMPL(__imp__sub_82582648);

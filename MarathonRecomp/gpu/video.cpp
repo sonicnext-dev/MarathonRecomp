@@ -1678,11 +1678,7 @@ static void DrawProfiler()
     const auto toggleProfiler = SDL_GetKeyboardState(nullptr)[SDL_SCANCODE_F1] != 0;
 
     if (!g_profilerWasToggled && toggleProfiler)
-    {
         g_profilerVisible = !g_profilerVisible;
-
-        GameWindow::SetFullscreenCursorVisibility(App::s_isInit ? g_profilerVisible : true);
-    }
 
     g_profilerWasToggled = toggleProfiler;
 
