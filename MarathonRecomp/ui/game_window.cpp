@@ -21,6 +21,8 @@
 static bool g_isFullscreenKeyReleased = true;
 static bool g_isResizing = false;
 
+static double g_lastCursorMotionTime{};
+
 static SDL_DisplayID GetDisplayID(int displayIndex)
 {
     int displayCount = 0;
@@ -70,8 +72,6 @@ bool Window_OnSDLEvent(void*, SDL_Event* event)
 
         case SDL_EVENT_KEY_DOWN:
         {
-            SDL_HideCursor();
-
             switch (event->key.key)
             {
                 // Toggle fullscreen on ALT+ENTER.
@@ -131,6 +131,11 @@ bool Window_OnSDLEvent(void*, SDL_Event* event)
             break;
         }
 
+        case SDL_EVENT_MOUSE_MOTION:
+            g_lastCursorMotionTime = App::s_time;
+            SDL_ShowCursor();
+            break;
+
         case SDL_EVENT_GAMEPAD_AXIS_MOTION:
         case SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN:
         case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
@@ -149,35 +154,14 @@ bool Window_OnSDLEvent(void*, SDL_Event* event)
             break;
         }
 
-        case SDL_EVENT_MOUSE_MOTION:
-        case SDL_EVENT_MOUSE_BUTTON_DOWN:
-        case SDL_EVENT_MOUSE_BUTTON_UP:
-        {
-            if (!GameWindow::IsFullscreen() || GameWindow::s_isFullscreenCursorVisible)
-                SDL_ShowCursor();
-
-            break;
-        }
-
         case SDL_EVENT_WINDOW_FOCUS_LOST:
             GameWindow::s_isFocused = false;
             SDL_ShowCursor();
             break;
 
         case SDL_EVENT_WINDOW_FOCUS_GAINED:
-        {
             GameWindow::s_isFocused = true;
-
-            if (GameWindow::IsFullscreen())
-            {
-                if (GameWindow::s_isFullscreenCursorVisible)
-                    SDL_ShowCursor();
-                else
-                    SDL_HideCursor();
-            }
-
             break;
-        }
 
         case SDL_EVENT_WINDOW_RESTORED:
             Config::WindowState = EWindowState::Normal;
@@ -251,9 +235,6 @@ void GameWindow::Init(const char* sdlVideoDriver)
 
     OnWindowDisplayChanged();
 
-    if (IsFullscreen())
-        SDL_HideCursor();
-
     SetDisplay(Config::Monitor);
     SetIcon();
     SetTitle();
@@ -283,6 +264,16 @@ void GameWindow::Init(const char* sdlVideoDriver)
 
 void GameWindow::Update()
 {
+    if (SDL_GetWindowRelativeMouseMode(s_pWindow))
+    {
+        SDL_HideCursor();
+    }
+    else
+    {
+        if (App::s_time - g_lastCursorMotionTime >= 2.0)
+            SDL_HideCursor();
+    }
+
     if (!GameWindow::IsFullscreen() && !GameWindow::IsMaximised() && !s_isChangingDisplay)
     {
         Config::WindowX = GameWindow::s_x;
@@ -415,16 +406,10 @@ bool GameWindow::SetFullscreen(bool isEnabled)
     {
         SDL_SetWindowFullscreenMode(s_pWindow, nullptr);
         SDL_SetWindowFullscreen(s_pWindow, true);
-
-        if (s_isFullscreenCursorVisible)
-            SDL_ShowCursor();
-        else
-            SDL_HideCursor();
     }
     else
     {
         SDL_SetWindowFullscreen(s_pWindow, false);
-        SDL_ShowCursor();
 
         SetIcon(GameWindow::s_playerCharacter);
         SetDimensions(Config::WindowWidth, Config::WindowHeight, Config::WindowX, Config::WindowY);
@@ -432,20 +417,6 @@ bool GameWindow::SetFullscreen(bool isEnabled)
     }
 
     return isEnabled;
-}
-
-void GameWindow::SetFullscreenCursorVisibility(bool isVisible)
-{
-    s_isFullscreenCursorVisible = isVisible;
-
-    if (IsFullscreen() && !s_isFullscreenCursorVisible)
-    {
-        SDL_HideCursor();
-    }
-    else
-    {
-        SDL_ShowCursor();
-    }
 }
 
 bool GameWindow::IsMaximised()

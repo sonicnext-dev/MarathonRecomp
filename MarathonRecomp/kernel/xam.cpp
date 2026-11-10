@@ -430,8 +430,7 @@ uint32_t XamInputGetState(uint32_t userIndex, uint32_t flags, XAMINPUT_STATE* st
 
     memset(state, 0, sizeof(XAMINPUT_STATE));
 
-    if (HID::IsInputAllowed())
-        HID::GetState(userIndex, state);
+    HID::GetState(userIndex, state);
 
     ByteSwapInplace(state->Gamepad.wButtons);
     ByteSwapInplace(state->Gamepad.sThumbLX);

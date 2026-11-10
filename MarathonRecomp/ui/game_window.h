@@ -25,7 +25,6 @@ public:
     static inline EPlayerCharacter s_playerCharacter;
 
     static inline bool s_isFocused;
-    static inline bool s_isFullscreenCursorVisible;
     static inline bool s_isChangingDisplay;
 
     static SDL_Surface* GetIconSurface(void* pIcon, size_t iconSize);
@@ -36,7 +35,6 @@ public:
     static void ConfigurePlatformWindow();
     static bool IsFullscreen();
     static bool SetFullscreen(bool isEnabled);
-    static void SetFullscreenCursorVisibility(bool isVisible);
     static bool IsMaximised();
     static EWindowState SetMaximised(bool isEnabled);
     static SDL_Rect GetDimensions();
