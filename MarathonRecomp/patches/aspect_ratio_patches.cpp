@@ -341,7 +341,7 @@ PPC_FUNC(sub_825CE5F0)
         const auto length = g_projects[key];
 
         const auto lower = g_paths.lower_bound(key);
-        const auto upper = g_paths.lower_bound(key + length);
+        const auto upper = g_paths.upper_bound(key + length);
 
         g_paths.erase(lower, upper);
         g_projects.erase(key);
