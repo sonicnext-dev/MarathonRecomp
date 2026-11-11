@@ -1,5 +1,6 @@
 #include "loading_patches.h"
 #include <api/Marathon.h>
+#include <os/logger.h>
 #include <user/config.h>
 #include <app.h>
 
@@ -80,4 +81,21 @@ bool RestoreLoadingTransition(PPCRegister& r30)
     // Prevent LoadingTask from being deleted here, as
     // the game deletes it when the outro animation ends.
     return true;
+}
+
+PPC_FUNC_IMPL(__imp__sub_82582648);
+PPC_FUNC(sub_82582648)
+{
+    const auto pPath = reinterpret_cast<stdx::string*>(base + ctx.r5.u32);
+
+    if (pPath && !pPath->empty())
+        LOGFN_UTILITY("Loading file: {}", pPath->c_str());
+
+    // The game spins up a NoSyncThread to render the loading screens,
+    // and does all of the resource loading on the main thread, so this
+    // is really the only solution we have to pump SDL events when loading.
+    if (App::s_isLoading)
+        App::Update(App::s_deltaTime);
+
+    __imp__sub_82582648(ctx, base);
 }

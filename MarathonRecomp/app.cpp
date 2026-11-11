@@ -19,6 +19,19 @@
 static uint32_t g_mainThreadId = HostThread::GetCurrentID();
 extern std::array<XXH64_hash_t, 29> g_taskUpdatesOnPause;
 
+void App::Update(double in_deltaTime)
+{
+    if (HostThread::GetCurrentID() == g_mainThreadId)
+    {
+        SDL_PumpEvents();
+        SDL_FlushEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
+
+        GameWindow::Update();
+    }
+
+    AudioPatches::Update(in_deltaTime);
+}
+
 void App::Restart(std::vector<std::string> restartArgs)
 {
     os::process::StartProcess(os::process::GetExecutablePath(), restartArgs, os::process::GetWorkingDirectory());
@@ -92,20 +105,7 @@ PPC_FUNC(sub_825EA610)
 
     App::s_deltaTime = ctx.f1.f64;
     App::s_time += App::s_deltaTime;
-
-    // This function can also be called by the loading thread,
-    // which SDL does not like. To prevent the OS from thinking
-    // the process is unresponsive, we will flush while waiting
-    // for the pipelines to finish compiling in video.cpp.
-    if (HostThread::GetCurrentID() == g_mainThreadId)
-    {
-        SDL_PumpEvents();
-        SDL_FlushEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
-
-        GameWindow::Update();
-    }
-
-    AudioPatches::Update(App::s_deltaTime);
+    App::Update(App::s_deltaTime);
 
     __imp__sub_825EA610(ctx, base);
 
@@ -148,17 +148,6 @@ PPC_FUNC(sub_825EA610)
     {
         pHidManager->BroadcastMessage<HID::MsgSetMouseCapture>(false);
     }
-}
-
-PPC_FUNC_IMPL(__imp__sub_82582648);
-PPC_FUNC(sub_82582648)
-{
-    const auto pPath = reinterpret_cast<stdx::string*>(base + ctx.r5.u32);
-
-    if (pPath && !pPath->empty())
-        LOGFN_UTILITY("Loading file: {}", pPath->c_str());
-
-    __imp__sub_82582648(ctx, base);
 }
 
 // Sonicteam::SpanverseHeap::Alloc
