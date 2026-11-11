@@ -128,7 +128,7 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(0x200);
         SoX::RefLinkNode<PopupScreenTask> m_rPopupScreenTask;
         MARATHON_INSERT_PADDING(0x04);
-        SoX::RefLinkNode<LoadingTask> m_rLoadingTask;
+        SoX::RefLinkNode<SoX::Engine::Task> m_rLoadingTask;
         SoX::RefLinkNode<void> m_rStageTitleTask;
         MARATHON_INSERT_PADDING(0x28);
         SoX::RefSharedPointer<SoX::Physics::World> m_spPhysicsWorld;

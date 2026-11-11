@@ -1,5 +1,6 @@
 #include "loading_patches.h"
 #include <api/Marathon.h>
+#include <os/logger.h>
 #include <user/config.h>
 #include <app.h>
 
@@ -70,7 +71,7 @@ bool RestoreLoadingTransition(PPCRegister& r30)
 
     const auto pGame = reinterpret_cast<Sonicteam::GameImp*>(g_memory.Translate(r30.u32));
 
-    if (const auto pLoadingTask = pGame->m_rLoadingTask.m_pRef)
+    if (const auto pLoadingTask = static_cast<Sonicteam::LoadingTask*>(pGame->m_rLoadingTask.m_pRef.get()))
     {
         // Send message to LoadingTask to advance HUDLoading animation.
         guest_stack_var<Sonicteam::SoX::IMessage> msg(0x1B000);
@@ -80,4 +81,21 @@ bool RestoreLoadingTransition(PPCRegister& r30)
     // Prevent LoadingTask from being deleted here, as
     // the game deletes it when the outro animation ends.
     return true;
+}
+
+PPC_FUNC_IMPL(__imp__sub_82582648);
+PPC_FUNC(sub_82582648)
+{
+    const auto pPath = reinterpret_cast<stdx::string*>(base + ctx.r5.u32);
+
+    if (pPath && !pPath->empty())
+        LOGFN_UTILITY("Loading file: {}", pPath->c_str());
+
+    // The game spins up a NoSyncThread to render the loading screens,
+    // and does all of the resource loading on the main thread, so this
+    // is really the only solution we have to pump SDL events when loading.
+    if (App::s_isLoading)
+        App::Update(App::s_deltaTime);
+
+    __imp__sub_82582648(ctx, base);
 }

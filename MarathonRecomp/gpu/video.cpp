@@ -2495,6 +2495,12 @@ void Video::Present()
 
 void Video::Resize(uint32_t width, uint32_t height)
 {
+    // Resizing is disabled on loading screens.
+    // This prevents minimising from also requesting
+    // a resize, which breaks the loading screens.
+    if (App::s_isLoading)
+        return;
+
     const auto pApp = App::s_pApp;
 
     if (!pApp)

@@ -3,7 +3,9 @@
 #include <os/logger.h>
 #include <os/user.h>
 #include <os/version.h>
+#include <utils/unique_queue.h>
 #include <app.h>
+#include <functional>
 #include <sdl_listener.h>
 #include <stdafx.h>
 
@@ -17,6 +19,11 @@
 #else
 #include <res/images/game_icon.bmp.h>
 #endif
+
+#define QUEUE_WINDOW_CMD(FUNCTION) \
+    g_commandQueue.Push(__LINE__, FUNCTION)
+
+static UniqueQueue<int, std::function<void()>> g_commandQueue{};
 
 static bool g_isFullscreenKeyReleased = true;
 static bool g_isResizing = false;
@@ -80,16 +87,19 @@ bool Window_OnSDLEvent(void*, SDL_Event* event)
                     if (!(event->key.mod & SDL_KMOD_ALT) || !g_isFullscreenKeyReleased)
                         break;
 
-                    Config::Fullscreen = GameWindow::SetFullscreen(!GameWindow::IsFullscreen());
+                    QUEUE_WINDOW_CMD([]()
+                    {
+                        Config::Fullscreen = GameWindow::SetFullscreen(!GameWindow::IsFullscreen());
 
-                    if (Config::Fullscreen)
-                    {
-                        Config::Monitor = GameWindow::GetDisplay();
-                    }
-                    else
-                    {
-                        Config::WindowState = GameWindow::SetMaximised(Config::WindowState == EWindowState::Maximised);
-                    }
+                        if (Config::Fullscreen)
+                        {
+                            Config::Monitor = GameWindow::GetDisplay();
+                        }
+                        else
+                        {
+                            Config::WindowState = GameWindow::SetMaximised(Config::WindowState == EWindowState::Maximised);
+                        }
+                    });
 
                     // Block holding ALT+ENTER spamming window changes.
                     g_isFullscreenKeyReleased = false;
@@ -99,9 +109,15 @@ bool Window_OnSDLEvent(void*, SDL_Event* event)
 
                 // Restore original window dimensions on F2.
                 case SDLK_F2:
-                    Config::Fullscreen = GameWindow::SetFullscreen(false);
-                    GameWindow::ResetDimensions();
+                {
+                    QUEUE_WINDOW_CMD([]()
+                    {
+                        Config::Fullscreen = GameWindow::SetFullscreen(false);
+                        GameWindow::ResetDimensions();
+                    });
+
                     break;
+                }
 
                 // Recentre window on F3.
                 case SDLK_F3:
@@ -109,7 +125,10 @@ bool Window_OnSDLEvent(void*, SDL_Event* event)
                     if (GameWindow::IsFullscreen())
                         break;
 
-                    GameWindow::SetDimensions(GameWindow::s_width, GameWindow::s_height);
+                    QUEUE_WINDOW_CMD([]()
+                    {
+                        GameWindow::SetDimensions(GameWindow::s_width, GameWindow::s_height);
+                    });
 
                     break;
                 }
@@ -264,6 +283,17 @@ void GameWindow::Init(const char* sdlVideoDriver)
 
 void GameWindow::Update()
 {
+    // Disable resizing on loading screens, as buffer
+    // resize is inoperable on the loading thread.
+    SDL_SetWindowResizable(s_pWindow, !App::s_isLoading);
+
+    // Execute window commands after loading is complete.
+    if (!App::s_isLoading && !g_commandQueue.Empty())
+    {
+        g_commandQueue.Front()();
+        g_commandQueue.Pop();
+    }
+
     if (SDL_GetWindowRelativeMouseMode(s_pWindow))
     {
         SDL_HideCursor();
