@@ -1,12 +1,14 @@
 #include "pause_listener.h"
 #include <ui/game_window.h>
 #include <user/config.h>
+#include <app.h>
 
 static bool g_isPaused{};
 
 void PauseListener::SignalPause()
 {
-    g_isPaused = true;
+    // Only signal pause in game mode.
+    g_isPaused = App::s_pApp && App::s_pApp->GetGame();
 }
 
 void SetPause(PPCRegister& r25)
