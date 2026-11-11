@@ -1,4 +1,5 @@
 #include <api/Marathon.h>
+#include <install/update_checker.h>
 #include <os/logger.h>
 #include <ui/fader.h>
 #include <ui/message_window.h>
@@ -8,15 +9,28 @@
 #include <user/paths.h>
 #include <app.h>
 #include <exports.h>
+#include <functional>
 
 constexpr auto TITLE_OPTION_OUTRO_FRAMES = (1.0 / 60.0) * 45.0;
 constexpr auto TITLE_OUTRO_FRAMES = (1.0 / 60.0) * 25.0;
 constexpr auto TITLE_OPTION_OUTRO_TOTAL_FRAMES = TITLE_OPTION_OUTRO_FRAMES + TITLE_OUTRO_FRAMES;
 
 static double g_titleProceedOutroTime{};
-static double g_titleExitOutroTime{};
 
-static bool g_quitMessageOpen{};
+struct YesNoMessage
+{
+    const char* pLocaleKey{};
+    double DelayTime{};
+    double DelayDuration{};
+    int DefaultIndex{};
+    std::function<void()> YesCallback{};
+    std::function<void()> NoCallback{};
+    bool IsOpen{};
+    int Result{ -1 };
+}
+g_yesNoMessage{};
+
+static bool g_ignoreDelayPreference{};
 static bool g_saveDataExists{};
 
 enum class DevTitleState
@@ -39,38 +53,87 @@ enum
     SECRET_ALL = SECRET_UP | SECRET_DOWN | SECRET_LEFT | SECRET_RIGHT
 };
 
-bool ProcessQuitMessage(Sonicteam::TitleTask* pTitleTask)
+// TODO (Hyper): make the MessageWindow API less stupid.
+static bool ProcessYesNoMessage()
 {
-    static auto s_quitMessageResult = -1;
-    static std::atomic<bool> s_faderBegun = false;
+    static bool isFading{};
 
-    if (!g_quitMessageOpen)
-        return false;
-
-    if ((App::s_time - g_titleExitOutroTime) < TITLE_OUTRO_FRAMES)
+    if (isFading)
         return true;
 
-    static std::array<std::string, 2> s_options = { Localise("Common_Yes"), Localise("Common_No") };
+    if (!g_yesNoMessage.IsOpen)
+        return false;
 
-    if (MessageWindow::Open(Localise("Title_Message_Quit"), &s_quitMessageResult, s_options, 1) == MSG_CLOSED)
+    if ((App::s_time - g_yesNoMessage.DelayTime) < g_yesNoMessage.DelayDuration)
+        return true;
+
+    static std::array<std::string, 2> options = { Localise("Common_Yes"), Localise("Common_No") };
+
+    if (MessageWindow::Open(Localise(g_yesNoMessage.pLocaleKey), &g_yesNoMessage.Result, options, g_yesNoMessage.DefaultIndex) == MSG_CLOSED)
     {
-        if (s_quitMessageResult == 0)
+        if (g_yesNoMessage.Result == 0)
         {
-            Fader::FadeOut(1, []() { App::Exit(); });
-            s_faderBegun = true;
+            Fader::FadeOut(1, [&]() { g_yesNoMessage.YesCallback(); });
+            isFading = true;
         }
         else
         {
-            // Play Title_Open.
-            pTitleTask->m_MovieWaitTime = Sonicteam::TitleTask::ms_DefaultMovieWaitTime;
-            GuestToHostFunction<int>(sub_825119D8, pTitleTask, 0, 0);
+            g_yesNoMessage.NoCallback();
         }
 
-        g_quitMessageOpen = false;
-        s_quitMessageResult = -1;
+        g_yesNoMessage.IsOpen = false;
+        g_yesNoMessage.Result = -1;
     }
 
     return true;
+}
+
+static void OpenYesNoMessage(const char* in_pLocaleKey, double in_delayDuration, int in_defaultIndex, const std::function<void()>& in_rYesCallback, const std::function<void()>& in_rNoCallback)
+{
+    g_yesNoMessage =
+    {
+        .pLocaleKey = in_pLocaleKey,
+        .DelayTime = App::s_time,
+        .DelayDuration = in_delayDuration,
+        .DefaultIndex = in_defaultIndex,
+
+        .YesCallback = in_rYesCallback,
+        .NoCallback = in_rNoCallback,
+
+        .IsOpen = true,
+        .Result = -1
+    };
+}
+
+static void ProcessUpdateMessage(Sonicteam::TitleTask* in_pTitleTask, double in_delayDuration)
+{
+    static bool isUpdateMessageOpen{};
+
+    if (isUpdateMessageOpen)
+        return;
+
+    OpenYesNoMessage("Title_Message_UpdateAvailable", in_delayDuration, 0,
+    //
+        [&]()
+        {
+            isUpdateMessageOpen = false;
+            UpdateChecker::visitWebsite();
+            App::Exit();
+        },
+
+        [&]()
+        {
+            isUpdateMessageOpen = false;
+            GuestToHostFunction<int>(sub_82511CA0, in_pTitleTask, 9);
+        }
+    );
+
+    isUpdateMessageOpen = true;
+}
+
+static bool ShouldPlayInOutTransition()
+{
+    return !Config::DisableTitleInputDelay || g_ignoreDelayPreference;
 }
 
 void TitleTask_SetDefaultOption(PPCRegister& r3, PPCRegister& r4)
@@ -85,9 +148,9 @@ void TitleTask_SetDefaultOption(PPCRegister& r3, PPCRegister& r4)
 
 bool TitleTask_RedirectStateTransitionToOutroAnim(PPCRegister& r31)
 {
-    if (!g_saveDataExists || Config::DisableTitleInputDelay)
+    if (!g_saveDataExists || !ShouldPlayInOutTransition())
         return false;
-
+    
     // Play Title_Close_02.
     GuestToHostFunction<int>(sub_825119D8, r31.u32, 8, 0);
 
@@ -98,13 +161,17 @@ bool TitleTask_RedirectStateTransitionToOutroAnim(PPCRegister& r31)
 PPC_FUNC_IMPL(__imp__sub_825126A0);
 PPC_FUNC(sub_825126A0)
 {
-    auto pTitleTask = reinterpret_cast<Sonicteam::TitleTask*>(base + ctx.r3.u32);
-    auto deltaTime = ctx.f1.f64;
+    const auto pTitleTask = reinterpret_cast<Sonicteam::TitleTask*>(base + ctx.r3.u32);
+    const auto deltaTime = ctx.f1.f64;
+
+    const auto isUpdateAvailable = UpdateChecker::check() == UpdateChecker::Result::UpdateAvailable;
 
     switch (pTitleTask->m_State)
     {
         case Sonicteam::TitleTask::TitleState_Open:
         {
+            g_ignoreDelayPreference = false;
+
             // Skip open animation.
             if (Config::DisableTitleInputDelay)
                 GuestToHostFunction<int>(sub_82511CA0, pTitleTask, int(Sonicteam::TitleTask::TitleState_Wait));
@@ -165,13 +232,13 @@ PPC_FUNC(sub_825126A0)
             if (pTitleTask->m_SelectedIndex == 0)
             {
                 LOGN("Resetting achievements...");
-
                 AchievementManager::Reset();
             }
 
+            g_ignoreDelayPreference = isUpdateAvailable;
             g_titleProceedOutroTime += deltaTime;
 
-            if (Config::DisableTitleInputDelay)
+            if (!ShouldPlayInOutTransition())
                 g_titleProceedOutroTime = TITLE_OPTION_OUTRO_TOTAL_FRAMES + deltaTime;
 
             // Wait for outro animation to complete before entering menu.
@@ -183,7 +250,14 @@ PPC_FUNC(sub_825126A0)
                 }
                 else
                 {
-                    GuestToHostFunction<int>(sub_82511CA0, pTitleTask, 9);
+                    if (isUpdateAvailable)
+                    {
+                        ProcessUpdateMessage(pTitleTask, 0.0);
+                    }
+                    else
+                    {
+                        GuestToHostFunction<int>(sub_82511CA0, pTitleTask, 9);
+                    }
                 }
             }
 
@@ -194,9 +268,15 @@ PPC_FUNC(sub_825126A0)
         {
             g_saveDataExists = std::filesystem::exists(GetSaveFilePath(false));
 
-            // Redirect PRESS START proceed to options open.
             if (g_saveDataExists)
-                GuestToHostFunction<int>(sub_82511CA0, pTitleTask, (int)Sonicteam::TitleTask::TitleState_OptionsOpen);
+            {
+                // Redirect PRESS START proceed to options open.
+                GuestToHostFunction<int>(sub_82511CA0, pTitleTask, int(Sonicteam::TitleTask::TitleState_OptionsOpen));
+            }
+            else if (isUpdateAvailable)
+            {
+                ProcessUpdateMessage(pTitleTask, TITLE_OUTRO_FRAMES);
+            }
 
             break;
         }
@@ -205,9 +285,7 @@ PPC_FUNC(sub_825126A0)
     if (pTitleTask->m_State != Sonicteam::TitleTask::TitleState_OptionsProceed)
         g_titleProceedOutroTime = 0.0;
 
-    auto skipStateUpdate = ProcessQuitMessage(pTitleTask);
-
-    if (skipStateUpdate)
+    if (ProcessYesNoMessage())
     {
         GuestToHostFunction<int>(sub_82511B10, pTitleTask, deltaTime);
 
@@ -230,9 +308,14 @@ PPC_FUNC(sub_825126A0)
                     // Play Title_Close_03.
                     Game_PlaySound("deside");
                     GuestToHostFunction<int>(sub_825119D8, pTitleTask, 9, 0);
-
-                    g_titleExitOutroTime = App::s_time;
-                    g_quitMessageOpen = true;
+                    
+                    OpenYesNoMessage("Title_Message_Quit", TITLE_OUTRO_FRAMES, 1, []() { App::Exit(); }, [&]()
+                    {
+                        // Play Title_Open.
+                        pTitleTask->m_MovieWaitTime = Sonicteam::TitleTask::ms_DefaultMovieWaitTime;
+                        GuestToHostFunction<int>(sub_825119D8, pTitleTask, 0, 0);
+                        g_ignoreDelayPreference = true;
+                    });
                 }
                 else if (pTitleTask->m_State == Sonicteam::TitleTask::TitleState_OptionsWait)
                 {
@@ -251,7 +334,7 @@ PPC_FUNC(sub_825126A0)
 PPC_FUNC_IMPL(__imp__sub_82511540);
 PPC_FUNC(sub_82511540)
 {
-    if (Config::DisableTitleInputDelay)
+    if (!ShouldPlayInOutTransition())
     {
         ctx.r3.u32 = 1;
         return;
@@ -269,9 +352,7 @@ PPC_FUNC(sub_82161A48)
     if (g_devTitleState == DevTitleState::Start)
     {
         g_devTitleState = DevTitleState::Idle;
-
         ctx.r3.u32 = g_memory.MapVirtual(pDoc->SetDocState(StateDevTitle::GetInstance()));
-
         return;
     }
 
