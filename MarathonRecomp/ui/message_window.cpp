@@ -101,6 +101,7 @@ public:
                         break;
 
                     case SDL_GAMEPAD_BUTTON_SOUTH:
+                    case SDL_GAMEPAD_BUTTON_WEST:
                         g_isAccepted = true;
                         break;
 
@@ -182,12 +183,15 @@ static void ResetSelection()
 {
     g_selectedRowIndex = g_defaultButtonIndex;
 
-    if (const auto pMutator = HID::GetManager()->GetUser(0)->GetMutator())
+    if (!App::s_isInit)
     {
-        // Always use -1 for mouse input to prevent the selection
-        // cursor from erroneously appearing where it shouldn't.
-        if (pMutator->GetType() == HID::PeripheralType::Mouse)
-            g_selectedRowIndex = -1;
+        if (const auto pMutator = HID::GetManager()->GetUser(0)->GetMutator())
+        {
+            // Always use -1 for mouse input to prevent the selection
+            // cursor from erroneously appearing where it shouldn't.
+            if (pMutator->GetType() == HID::PeripheralType::Mouse)
+                g_selectedRowIndex = -1;
+        }
     }
 
     g_upWasHeld = false;
@@ -233,7 +237,9 @@ void MessageWindow::Draw()
             if (rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_DPadDown))
                 g_joypadAxis.y = -1.0f;
 
-            g_isAccepted = rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_South);
+            g_isAccepted = rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_South) ||
+                           rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_West);
+
             g_isDeclined = rPadState.IsPressed(Sonicteam::SoX::Input::PadButton_East);
 
             if (peripheralType == HID::PeripheralType::Keyboard)

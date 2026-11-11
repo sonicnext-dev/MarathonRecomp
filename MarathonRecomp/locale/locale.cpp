@@ -727,12 +727,12 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
     {
         "Title_Message_UpdateAvailable",
         {
-            { ELanguage::English,  "An update is available!\n\nWould you like to visit the\nreleases page to download it?" },
-            { ELanguage::Japanese, "アップデートが利用可能です\n\nリリースページにアクセスして\nダウンロードしますか？" },
-            { ELanguage::German,   "Ein Update ist verfügbar!\n\nMöchtest du die Release-Seite\nbesuchen um es herunterzuladen?" },
-            { ELanguage::French,   "Une mise à jour est disponible !\n\nVoulez-vous visiter la page\ndes mises à jour pour la\ntélécharger ?" },
-            { ELanguage::Spanish,  "¡Hay una actualización disponible!\n\n¿Quieres ir a la página\npara descargarla?" },
-            { ELanguage::Italian,  "È disponibile un aggiornamento!\n\nVuoi visitare la pagina releases\nper scaricarlo?" }
+            { ELanguage::English,  "An update is available!\nWould you like to visit the releases page\nto download it?" },
+            { ELanguage::Japanese, "アップデートが利用可能です\nリリースページにアクセスしてダウンロードしますか？" },
+            { ELanguage::German,   "Ein Update ist verfügbar!\nMöchtest du die Release-Seite besuchen um\nes herunterzuladen?" },
+            { ELanguage::French,   "Une mise à jour est disponible !\nVoulez-vous visiter la page des mises à jour pour\nla télécharger ?" },
+            { ELanguage::Spanish,  "¡Hay una actualización disponible!\n¿Quieres ir a la página para descargarla?" },
+            { ELanguage::Italian,  "È disponibile un aggiornamento!\nVuoi visitare la pagina releases per scaricarlo?" }
         }
     },
     {
