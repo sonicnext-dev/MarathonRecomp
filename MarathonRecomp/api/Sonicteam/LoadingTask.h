@@ -8,13 +8,10 @@
 
 namespace Sonicteam
 {
-    // TODO (Hyper): revise guest vftable inheritance. SoX::RefCountObject is
-    // supposed to override the vftable at offset 0 here, but it adds its own
-    // vftable pointer, which is wrong.
-    class LoadingTask : /* public SoX::RefCountObject, */ public SoX::Engine::Task
+    class LoadingTask : public SoX::RefCountObject, public SoX::Engine::Task
     {
     public:
-        MARATHON_INSERT_PADDING(0x0C);
+        MARATHON_INSERT_PADDING(0x04);
         SoX::RefSharedPointer<HUDLoading> m_spHUDLoading;
     };
 

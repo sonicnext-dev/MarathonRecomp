@@ -71,7 +71,7 @@ bool RestoreLoadingTransition(PPCRegister& r30)
 
     const auto pGame = reinterpret_cast<Sonicteam::GameImp*>(g_memory.Translate(r30.u32));
 
-    if (const auto pLoadingTask = pGame->m_rLoadingTask.m_pRef)
+    if (const auto pLoadingTask = static_cast<Sonicteam::LoadingTask*>(pGame->m_rLoadingTask.m_pRef.get()))
     {
         // Send message to LoadingTask to advance HUDLoading animation.
         guest_stack_var<Sonicteam::SoX::IMessage> msg(0x1B000);
