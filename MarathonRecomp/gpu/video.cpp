@@ -562,6 +562,14 @@ static void DestructTempResources()
     g_tempBuffers[g_frame].clear();
 }
 
+static std::atomic<bool> g_readyForCommands{};
+
+void App_AcquireD3DThread()
+{
+    // Guard against thread ownership changes when between command lists.
+    g_readyForCommands.wait(false);
+}
+
 static ankerl::unordered_dense::map<RenderTexture*, RenderTextureLayout> g_barrierMap;
 
 static RenderTextureLayout& GetLayoutRef(GuestBaseTexture* texture)
@@ -1045,6 +1053,9 @@ static void BeginCommandList()
     commandList->setGraphicsDescriptorSet(g_textureDescriptorSet.get(), 2);
     commandList->setGraphicsDescriptorSet(g_samplerDescriptorSet.get(), 3);
     commandList->setGraphicsDescriptorSet(g_conditionalSurveyDescriptorSet.get(), 4);
+
+    g_readyForCommands = true;
+    g_readyForCommands.notify_one();
 }
 
 template<typename T>
@@ -2398,6 +2409,8 @@ PPC_FUNC(sub_8260A9D0)
 
 void Video::Present()
 {
+    g_readyForCommands = false;
+
     g_renderQueue.enqueue(RenderCommands::ExecutePendingStretchRectCommands{});
 
     DrawImGui();
