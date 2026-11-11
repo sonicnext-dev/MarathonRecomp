@@ -81,6 +81,7 @@ PPC_FUNC(sub_824FFCF8)
                 if (pMutator && pMutator->GetType() != HID::PeripheralType::Gamepad)
                 {
                     HID::GetManager()->ProcessMessage<HID::MsgSetKeyboardUser>(0);
+                    HID::GetManager()->GetUser(0)->Lock();
                     g_isMultiplayerP1KeyboardUser = true;
                 }
             }
@@ -97,6 +98,7 @@ PPC_FUNC(sub_824FFCF8)
                 {
                     // Restore original gamepad locations from keyboard assignment.
                     HID::GetManager()->ProcessMessage<HID::MsgPopGamepads>(0);
+                    HID::GetManager()->GetUser(0)->Unlock();
                     g_isMultiplayerP1KeyboardUser = false;
                 }
             }
