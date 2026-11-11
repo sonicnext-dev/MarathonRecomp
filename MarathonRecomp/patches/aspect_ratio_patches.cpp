@@ -421,8 +421,8 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 {
     CsdModifier modifier{};
 
-    auto vpWidth = float(Video::s_viewportWidth);
-    auto vpHeight = float(Video::s_viewportHeight);
+    const auto vpWidth = float(Video::s_viewportWidth);
+    const auto vpHeight = float(Video::s_viewportHeight);
 
     if (g_castModifier.has_value())
     {
@@ -435,6 +435,15 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
     else if (g_sceneModifier.has_value())
     {
         modifier = g_sceneModifier.value();
+    }
+
+    if (!App::s_isDrawUI)
+    {
+        // Hide radar map... elegantly...
+        if ((modifier.Flags & CSD_RADARMAP) != 0)
+            g_radarMapX = vpWidth * 2;
+
+        return;
     }
 
     // Hide original button window whilst the options menu is visible.
@@ -452,7 +461,7 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
     if ((modifier.Flags & CSD_MODIFIER_NARROW_ONLY) != 0 && g_aspectRatio >= WIDE_ASPECT_RATIO)
         modifier.Flags &= (~modifier.Flags) | CSD_MODIFIER_NARROW_ONLY;
     
-    if (!App::s_isDrawUI || (modifier.Flags & CSD_SKIP) != 0)
+    if ((modifier.Flags & CSD_SKIP) != 0)
     {
         if ((modifier.Flags & CSD_CHEVRON) != 0)
         {

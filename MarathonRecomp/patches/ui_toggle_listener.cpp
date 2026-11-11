@@ -21,18 +21,6 @@ public:
 
                 App::s_isDrawUI = !App::s_isDrawUI;
 
-                if (!App::s_isDrawUI)
-                {
-                    if (const auto pGame = App::s_pApp->GetGame())
-                    {
-                        if (const auto pPopupScreenTask = pGame->m_rPopupScreenTask.m_pRef)
-                        {
-                            pPopupScreenTask->m_spHUDPopupScreen->m_State = Sonicteam::HUDPopupScreen::HUDPopupScreenState_Deleting;
-                            pPopupScreenTask->m_IsDeleting = true;
-                        }
-                    }
-                }
-
                 LOGFN("UI: {}", App::s_isDrawUI ? "Enabled" : "Disabled");
 
                 break;
