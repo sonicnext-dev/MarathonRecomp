@@ -742,3 +742,7 @@ name = "SetPause"
 address = 0x8217D954
 registers = ["r25"]
 after_instruction = true
+
+[[midasm_hook]]
+name = "App_AcquireD3DThread"
+address = 0x825B2474
