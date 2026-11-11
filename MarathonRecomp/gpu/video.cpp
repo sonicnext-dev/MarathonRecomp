@@ -2788,7 +2788,7 @@ static void ProcRenderCommand(const RenderCommands::ExecuteCommandList& cmd)
             commandList->setFramebuffer(framebuffer.get());
             commandList->setViewports(RenderViewport(0.0f, 0.0f, g_swapChain->getWidth(), g_swapChain->getHeight()));
             commandList->setScissors(RenderRect(0, 0, g_swapChain->getWidth(), g_swapChain->getHeight()));
-            commandList->drawInstanced(6, 1, 0, 0);
+            commandList->drawInstanced(3, 1, 0, 0);
             commandList->barriers(RenderBarrierStage::GRAPHICS, RenderTextureBarrier(swapChainTexture, RenderTextureLayout::PRESENT));
         }
         else
@@ -3178,7 +3178,7 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
                     commandList->setViewports(RenderViewport(0.0f, 0.0f, static_cast<float>(texture->width), static_cast<float>(texture->height), 0.0f, 1.0f));
                     commandList->setScissors(RenderRect(0, 0, texture->width, texture->height));
                     commandList->setGraphicsPushConstants(0, &surface->descriptorIndex, 0, sizeof(uint32_t));
-                    commandList->drawInstanced(6, 1, 0, 0);
+                    commandList->drawInstanced(3, 1, 0, 0);
 
                     g_dirtyStates.renderTargetAndDepthStencil = true;
                     g_dirtyStates.viewport = true;
