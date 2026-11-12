@@ -2926,8 +2926,8 @@ static void FlushViewport()
     {
         auto viewport = g_viewport;
 
-        // if (viewport.minDepth > viewport.maxDepth)
-        //     std::swap(viewport.minDepth, viewport.maxDepth);
+        if (viewport.minDepth > viewport.maxDepth)
+            std::swap(viewport.minDepth, viewport.maxDepth);
 
         commandList->setViewports(viewport);
 
@@ -3387,6 +3387,14 @@ static void ProcRenderCommand(const RenderCommands::SetViewport& args)
     SetDirtyValue<float>(g_dirtyStates.viewport, g_viewport.height, args.height);
     SetDirtyValue<float>(g_dirtyStates.viewport, g_viewport.minDepth, args.minDepth);
     SetDirtyValue<float>(g_dirtyStates.viewport, g_viewport.maxDepth, args.maxDepth);
+
+    uint32_t specConstants = g_pipelineState.specConstants;
+    if (args.minDepth > args.maxDepth)
+        specConstants |= SPEC_CONSTANT_REVERSE_Z;
+    else
+        specConstants &= ~SPEC_CONSTANT_REVERSE_Z;
+
+    SetDirtyValue(g_dirtyStates.pipelineState, g_pipelineState.specConstants, specConstants);
 
     g_dirtyStates.scissorRect |= g_dirtyStates.viewport;
 }
