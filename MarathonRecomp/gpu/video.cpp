@@ -1514,7 +1514,7 @@ bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
     g_backBuffer->format = BACKBUFFER_FORMAT;
     g_backBuffer->textureHolder = g_device->createTexture(RenderTextureDesc::Texture2D(1, 1, 1, BACKBUFFER_FORMAT, RenderTextureFlag::RENDER_TARGET));
 
-    Video::ComputeViewportDimensions();
+    ComputeViewportDimensions();
     CheckSwapChain();
     BeginCommandList();
 
@@ -2457,13 +2457,16 @@ void Video::Present()
     g_triangleFanIndexData.reset();
     g_quadIndexData.reset();
 
-    if (s_needsResize)
+    CheckSwapChain();
+
+    // Resizing is deferred on loading screens.
+    // This prevents minimising from also requesting
+    // a resize, which breaks the loading screens.
+    if (s_needsResize && !App::s_isLoading)
     {
         Resize(s_viewportWidth, s_viewportHeight);
         s_needsResize = false;
     }
-
-    CheckSwapChain();
 
     g_renderQueue.enqueue(RenderCommands::BeginCommandList{});
 
@@ -2495,12 +2498,6 @@ void Video::Present()
 
 void Video::Resize(uint32_t width, uint32_t height)
 {
-    // Resizing is disabled on loading screens.
-    // This prevents minimising from also requesting
-    // a resize, which breaks the loading screens.
-    if (App::s_isLoading)
-        return;
-
     const auto pApp = App::s_pApp;
 
     if (!pApp)
@@ -3941,9 +3938,6 @@ void VideoConfigValueChangedCallback(const IConfigDef* config)
         config == &Config::AntiAliasing ||
         config == &Config::ShadowResolution ||
         config == &Config::ReflectionResolution;
-
-    if (Video::s_needsResize)
-        Video::ComputeViewportDimensions();
 
     // Config options that require pipeline recompilation
     bool shouldRecompile =
