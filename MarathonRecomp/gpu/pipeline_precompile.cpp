@@ -336,7 +336,7 @@ static void PipelineTaskConsumerThread()
                         pipelineState.depthStencilFormat == RenderFormat::D32_FLOAT_S8_UINT)
                     {
                         auto msaaPipelineState = pipelineState;
-                        msaaPipelineState.sampleCount = int32_t(Config::AntiAliasing.Value);
+                        msaaPipelineState.sampleCount = GetRenderSampleCount();
 
                         if (Config::TransparencyAntiAliasing && (msaaPipelineState.specConstants & SPEC_CONSTANT_ALPHA_TEST) != 0)
                         {
@@ -375,7 +375,7 @@ static void PipelineTaskConsumerThread()
 
                     if (msaa && Config::AntiAliasing != EAntiAliasing::Off)
                     {
-                        pipelineState.sampleCount = int32_t(Config::AntiAliasing.Value);
+                        pipelineState.sampleCount = GetRenderSampleCount();
 
                         if (alphaTest)
                         {

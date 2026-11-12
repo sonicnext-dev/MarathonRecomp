@@ -36,4 +36,5 @@ extern Backend g_backend;
 extern uint32_t g_mainThreadId;
 extern std::unique_ptr<RenderPipelineLayout> g_pipelineLayout;
 
+RenderSampleCounts GetRenderSampleCount();
 void DiscardTexture(GuestBaseTexture* texture, RenderTextureLayout layout);

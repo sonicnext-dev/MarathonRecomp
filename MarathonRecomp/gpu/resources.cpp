@@ -105,27 +105,10 @@ GuestTexture* CreateTexture(uint32_t width, uint32_t height, uint32_t depth, uin
     return texture;
 }
 
-static RenderSampleCounts GetSurfaceSampleCount(uint32_t multiSampleType) {
-    if (multiSampleType == 0)
-        return RenderSampleCount::COUNT_1;
-
-    switch (Config::AntiAliasing)
-    {
-    case EAntiAliasing::MSAA2x:
-        return RenderSampleCount::COUNT_2;
-    case EAntiAliasing::MSAA4x:
-        return RenderSampleCount::COUNT_4;
-    case EAntiAliasing::MSAA8x:
-        return RenderSampleCount::COUNT_8;
-    default:
-        return RenderSampleCount::COUNT_1;
-    }
-}
-
 GuestSurface* CreateSurface(uint32_t width, uint32_t height, uint32_t format, uint32_t multiSample, const GuestSurfaceCreateParams* params)
 {
     const RenderFormat renderFormat = ConvertFormat(format);
-    const RenderSampleCounts sampleCount = GetSurfaceSampleCount(multiSample);
+    const RenderSampleCounts sampleCount = multiSample != 0 ? GetRenderSampleCount() : RenderSampleCount::COUNT_1;
     const bool isDepthStencil = RenderFormatIsDepth(renderFormat);
 
     const auto surface = g_userHeap.AllocPhysical<GuestSurface>();
