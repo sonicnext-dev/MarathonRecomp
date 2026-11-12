@@ -2359,6 +2359,8 @@ static bool FindRenderProcess(lua50::lua_State* L, const char* pName)
     return true;
 }
 
+using RenderProcessListenerList = Sonicteam::SoX::LinkNode<Sonicteam::SoX::Engine::RenderProcessListener>;
+
 // RenderGE1Particle callback
 PPC_FUNC_IMPL(__imp__sub_8260AAB0);
 PPC_FUNC(sub_8260AAB0)
@@ -2666,6 +2668,7 @@ void Video::Resize(uint32_t width, uint32_t height)
     pRenderTargetContainer->m_PostEffectAfterTextures.clear();
 
     Sonicteam::HUDRaderMap* pHUDRaderMap{};
+    Sonicteam::Enemy::FigureFirstMefiress* pFirstMefiress{};
 
     const auto pGame = pApp->GetGame();
     auto& rTextureResources = pResourceManager->m_Resources[pTextureMgr->m_ID];
@@ -2682,6 +2685,20 @@ void Video::Resize(uint32_t width, uint32_t height)
         }
     }
 
+    for (auto& rRenderProcess : pDoc->m_pRenderScheduler->m_lRenderProcesses)
+    {
+        for (auto& rNode : rRenderProcess.second.get()->m_Listeners)
+        {
+            const auto pListener = static_cast<Sonicteam::Enemy::FigureFirstMefiress::MyRenderProcessListener*>(rNode.m_pData.get());
+
+            if (pListener->m_pVftable.ptr == 0x820226C0) // MyRenderProcessListener::`vftable'
+                pFirstMefiress = pListener->m_pFigure.get();
+        }
+    }
+
+    if (pFirstMefiress)
+        pFirstMefiress->m_spUserTexture.reset();
+
     const auto sfxMatrices1 = pDoc->m_pSFXAgent->m_aSFXMatrices1;
     const auto sfxMatrices2 = pDoc->m_pSFXAgent->m_aSFXMatrices2;
     pDoc->m_pSFXAgent->m_aSFXMatrices1 = nullptr;
@@ -2692,11 +2709,45 @@ void Video::Resize(uint32_t width, uint32_t height)
     CacheRenderProcess(pDoc->m_pRenderScheduler, "Postprocess");
     CacheRenderProcess(pDoc->m_pRenderScheduler, "Spanverse");
 
+    std::vector<std::pair<std::string, RenderProcessListenerList*>> detachedListeners{};
+
+    for (auto& rRenderProcess : pDoc->m_pRenderScheduler->m_lRenderProcesses)
+    {
+        auto& rListeners = rRenderProcess.second.get()->m_Listeners;
+
+        if (rListeners.empty())
+            continue;
+
+        const auto pDetached = g_userHeap.AllocPhysical<RenderProcessListenerList>();
+        pDetached->m_pPrev = pDetached;
+        pDetached->m_pNext = pDetached;
+
+        pDetached->splice_front(rListeners);
+        detachedListeners.emplace_back(rRenderProcess.first.c_str(), pDetached);
+    }
+
     // Reload current render script.
     GuestToHostFunction<void>(sub_8260DF88, pDoc, Sonicteam::Globals::ms_pCurrentRenderScript, pGame ? pGame->m_Screens.size() : 1);
 
     // Drop cached render processes, no longer needed after reloading render script.
     g_renderProcessCache.clear();
+
+    // Reattach listeners to the render processes recreated by the Lua script reload.
+    for (auto& [name, pDetached] : detachedListeners)
+    {
+        for (auto& rRenderProcess : pDoc->m_pRenderScheduler->m_lRenderProcesses)
+        {
+            if (rRenderProcess.first != name.c_str())
+                continue;
+
+            rRenderProcess.second.get()->m_Listeners.splice_front(*pDetached);
+            break;
+        }
+
+        // Listeners whose render process wasn't recreated are left unlinked.
+        pDetached->clear();
+        g_userHeap.Free(pDetached);
+    }
 
     if (pDoc->m_pSFXAgent->m_aSFXMatrices1)
         g_userHeap.Free(pDoc->m_pSFXAgent->m_aSFXMatrices1->GetArray());
@@ -2718,6 +2769,12 @@ void Video::Resize(uint32_t width, uint32_t height)
         // Set new "radermap" textures after Lua script reload.
         setTexture("radermap", &pHUDRaderMap->m_pMainTexture);
         setTexture("radermap_mask", &pHUDRaderMap->m_pMaskTexture);
+    }
+
+    if (pFirstMefiress)
+    {
+        if (auto it = rTextureResources.find("user0"); it != rTextureResources.end())
+            pFirstMefiress->m_spUserTexture = reinterpret_cast<Sonicteam::MyTexture*>(it->second.get());
     }
 }
 

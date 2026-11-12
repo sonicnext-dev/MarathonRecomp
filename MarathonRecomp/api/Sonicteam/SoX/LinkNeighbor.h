@@ -190,6 +190,46 @@ namespace Sonicteam::SoX
         {
             return end();
         }
+
+        bool empty() const
+        {
+            return m_pNext.get() == static_cast<const T*>(this);
+        }
+
+        void splice_front(LinkNeighbor& rSource)
+        {
+            if (rSource.empty())
+                return;
+
+            const auto pSource = static_cast<T*>(&rSource);
+            const auto pFirst = rSource.m_pNext.get();
+            const auto pLast = rSource.m_pPrev.get();
+            const auto pHead = m_pNext.get();
+
+            m_pNext = pFirst;
+            pFirst->m_pPrev = static_cast<T*>(this);
+            pLast->m_pNext = pHead;
+            pHead->m_pPrev = pLast;
+
+            rSource.m_pPrev = pSource;
+            rSource.m_pNext = pSource;
+        }
+
+        void clear()
+        {
+            auto pNode = m_pNext.get();
+
+            while (pNode != static_cast<T*>(this))
+            {
+                const auto pNext = pNode->m_pNext.get();
+                pNode->m_pPrev = nullptr;
+                pNode->m_pNext = nullptr;
+                pNode = pNext;
+            }
+
+            m_pPrev = static_cast<T*>(this);
+            m_pNext = static_cast<T*>(this);
+        }
     };
 
     MARATHON_ASSERT_OFFSETOF(LinkNeighbor<void>, m_pPrev, 0x00);
