@@ -13,13 +13,36 @@ static float GetReflectionScale()
     switch (Config::ReflectionResolution)
     {
         case EReflectionResolution::Eighth:
-            return 0.5f;
+            return 0.125f;
+        case EReflectionResolution::Quarter:
+            return 0.25f;
         case EReflectionResolution::Half:
-            return 2.0f;
+            return 0.5f;
         case EReflectionResolution::Full:
-            return 4.0f;
-        default:
             return 1.0f;
+        default:
+            assert(false && "Unimplemented reflection resolution");
+            return 0.25f;
+    }
+}
+
+static uint32_t GetShadowResolution()
+{
+    switch (Config::ShadowResolution)
+    {
+        case EShadowResolution::x512:
+            return 512;
+        case EShadowResolution::x1024:
+            return 1024;
+        case EShadowResolution::x2048:
+            return 2048;
+        case EShadowResolution::x4096:
+            return 4096;
+        case EShadowResolution::x8192:
+            return 8192;
+        default:
+            assert(false && "Unimplemented shadow resolution");
+            return 1024;
     }
 }
 
@@ -49,23 +72,20 @@ std::optional<BufferSize> RenderResolution::FindBufferSize(std::string_view name
             return BufferSize { Video::s_viewportWidth / divisor, Video::s_viewportHeight / divisor };
     }
 
-    // Reflections are an eighth of the internal resolution at the default setting.
-    if (name == "reflection0" || name == "depthstencil_1_4")
-        return BufferSize { ScaleDimension(internalSize.Width >> 3, GetReflectionScale()), ScaleDimension(internalSize.Height >> 3, GetReflectionScale()) };
-
     if (name == "radermap" || blockName == "radermap0")
         return BufferSize { uint32_t(g_radarMapScale), uint32_t(g_radarMapScale) };
 
-    const auto shadowResolution = uint32_t(Config::ShadowResolution.Value);
-
-    if (shadowResolution > 0)
+    if (name == "reflection0" || name == "depthstencil_1_4")
     {
-        // RenderMefiress
-        if (name == "user0" || (blockName == "user0" && name == "depthstencil_256"))
-            return BufferSize { shadowResolution, shadowResolution };
+        const auto reflectionScale = GetReflectionScale();
+        return BufferSize { ScaleDimension(internalSize.Width, reflectionScale), ScaleDimension(internalSize.Height, reflectionScale) };
+    }
 
-        if (name == "csm")
-            return BufferSize { shadowResolution, shadowResolution };
+    // RenderMefiress uses "user0" for Mephiles' shadow form
+    if (name == "csm" || name == "user0" || (blockName == "user0" && name == "depthstencil_256"))
+    {
+        const auto shadowResolution = GetShadowResolution();
+        return BufferSize { shadowResolution, shadowResolution };
     }
 
     return {};

@@ -111,19 +111,19 @@ static constexpr int32_t FPS_MAX = 241;
 
 enum class EAntiAliasing : uint32_t
 {
-    Off = 0,
-    MSAA2x = 2,
-    MSAA4x = 4,
-    MSAA8x = 8
+    Off,
+    MSAA2x,
+    MSAA4x,
+    MSAA8x
 };
 
 enum class EShadowResolution : int32_t
 {
-    x512 = 512,
-    x1024 = 1024,
-    x2048 = 2048,
-    x4096 = 4096,
-    x8192 = 8192
+    x512,
+    x1024,
+    x2048,
+    x4096,
+    x8192
 };
 
 enum class EReflectionResolution : int32_t

@@ -2848,6 +2848,21 @@ static GuestSurface* GetDepthStencil()
     return g_depthStencil;
 }
 
+RenderSampleCounts GetRenderSampleCount()
+{
+    switch (Config::AntiAliasing)
+    {
+        case EAntiAliasing::MSAA2x:
+            return RenderSampleCount::COUNT_2;
+        case EAntiAliasing::MSAA4x:
+            return RenderSampleCount::COUNT_4;
+        case EAntiAliasing::MSAA8x:
+            return RenderSampleCount::COUNT_8;
+        default:
+            return RenderSampleCount::COUNT_1;
+    }
+}
+
 void Video::ComputeViewportDimensions()
 {
     uint32_t width = g_swapChain->getWidth();
