@@ -1864,7 +1864,7 @@ PPC_FUNC(sub_824E11D0)
     s_preservedTextParams = true;
 
     // Draw faded letterbox at tall aspect ratios.
-    if (!OptionsMenu::s_isVisible && g_aspectRatio <= NARROW_ASPECT_RATIO_MAIN_MENU)
+    if (!OptionsMenu::s_isVisible && g_aspectRatio < NARROW_ASPECT_RATIO_MAIN_MENU)
     {
         BlackBar::Show(true);
         BlackBar::SetBorderMargin(Scale(BlackBar::ms_MenuBorderMargin, true));
