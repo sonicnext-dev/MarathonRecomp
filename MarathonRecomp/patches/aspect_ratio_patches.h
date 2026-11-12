@@ -7,6 +7,7 @@
 #define MAKE_BITFLAG64(bit) 1ULL << bit
 
 inline constexpr float NARROW_ASPECT_RATIO = 4.0f / 3.0f;
+inline constexpr float NARROW_ASPECT_RATIO_MAIN_MENU = 1071.0f / 720.0f;
 inline constexpr float WIDE_ASPECT_RATIO = 16.0f / 9.0f;
 inline constexpr float STEAM_DECK_ASPECT_RATIO = 16.0f / 10.0f;
 
