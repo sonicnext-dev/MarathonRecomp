@@ -215,7 +215,10 @@ void WorldIntersectionCSM_SetCameraAspectRatio(PPCRegister& r4)
 
     const auto pAspectRatio = reinterpret_cast<Sonicteam::SoX::Math::Vector2*>(g_memory.Translate(r4.u32));
 
-    // Extend shadow map draw distance for multiplayer.
+    // Extend shadow map draw distance in multiplayer by 5x for parity with single player.
+    // The game uses an identical shadow map config between single player and multiplayer,
+    // even the cameras use the same parameters, so the distance being shorter is likely
+    // down to something weird going on with there being more than one screen.
     pAspectRatio->X = pAspectRatio->X * 5.0f;
     pAspectRatio->Y = pAspectRatio->Y * 5.0f;
 }
@@ -228,6 +231,8 @@ void SetRenderConfig(PPCRegister& r1)
     pLuaSystem->SetString("MSAAType", "2x");
 
     // Force shadow cascades to 4.
+    // "GenerateCSMObjects" gets passed in as the third argument to "RenderCSM",
+    // but that function doesn't do anything with it, so we only need to change this.
     pLuaSystem->SetInteger("GenerateCSMLevels", 4);
 }
 
