@@ -24,12 +24,12 @@ void SetLifeBarAnimation(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5, PPCR
 
         if (Config::RestoreContextualHUDColours)
         {
-            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Shadow] = 1.0f;
-            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Omega] = 1.0f;
-            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Rouge] = 1.0f;
-            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Silver] = 2.0f;
-            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Amy] = 2.0f;
-            *Sonicteam::Globals::ms_MainDisplayColours[Sonicteam::Character_Blaze] = 2.0f;
+            (*Sonicteam::Globals::ms_pMainDisplayColors)[Sonicteam::Character_Shadow] = 1.0f;
+            (*Sonicteam::Globals::ms_pMainDisplayColors)[Sonicteam::Character_Omega] = 1.0f;
+            (*Sonicteam::Globals::ms_pMainDisplayColors)[Sonicteam::Character_Rouge] = 1.0f;
+            (*Sonicteam::Globals::ms_pMainDisplayColors)[Sonicteam::Character_Silver] = 2.0f;
+            (*Sonicteam::Globals::ms_pMainDisplayColors)[Sonicteam::Character_Amy] = 2.0f;
+            (*Sonicteam::Globals::ms_pMainDisplayColors)[Sonicteam::Character_Blaze] = 2.0f;
         }
 
         s_initContextualHUD = true;
