@@ -21,7 +21,7 @@ namespace Sonicteam
             return GuestToHostFunction<const char*>(static_cast<Vftable*>(m_pVftable.get())->fpGetName.get(), this);
         }
 
-        ISceneParam* fpUpdateSerial(double in_deltaTime = 0.0)
+        ISceneParam* UpdateSerial(double in_deltaTime = 0.0)
         {
             return GuestToHostFunction<ISceneParam*>(static_cast<Vftable*>(m_pVftable.get())->fpUpdateSerial.get(), this, in_deltaTime);
         }
