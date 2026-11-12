@@ -196,12 +196,15 @@ void SetShadowResolutionMidAsmHook(PPCRegister& r11)
         r11.u64 = res;
 }
 
-void SetMsaaLevel(PPCRegister& r1)
+void SetRenderConfig(PPCRegister& r1)
 {
     const auto pLuaSystem = reinterpret_cast<xpointer<Sonicteam::LuaSystem>*>(g_memory.Translate(r1.u32 + 0x54))->get();
 
-    // Force Lua MSAA type to 2x to override stages that disable it.
+    // Force MSAA type to 2x to override stages that disable it.
     pLuaSystem->SetString("MSAAType", "2x");
+
+    // Force shadow cascades to 4.
+    pLuaSystem->SetInteger("GenerateCSMLevels", 4);
 }
 
 void SetMsaaLevelForBuffers(PPCRegister& r31, PPCRegister& r4)
