@@ -3,6 +3,8 @@
 #include <Marathon.inl>
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include <Sonicteam/Mission/Core.h>
+#include <Sonicteam/Prop/ActiveArea.h>
+#include <Sonicteam/Prop/GenerateArea.h>
 #include <Sonicteam/SoX/Audio/Cue.h>
 #include <Sonicteam/SoX/Physics/World.h>
 #include <Sonicteam/SoX/Scenery/Camera.h>
@@ -130,7 +132,9 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(0x04);
         SoX::RefLinkNode<SoX::Engine::Task> m_rLoadingTask;
         SoX::RefLinkNode<void> m_rStageTitleTask;
-        MARATHON_INSERT_PADDING(0x28);
+        SoX::Array<SoX::RefSharedPointer<Prop::ActiveArea>, 4> m_ActiveAreas;
+        SoX::Array<SoX::RefSharedPointer<Prop::GenerateArea>, 4> m_GenerateAreas;
+        MARATHON_INSERT_PADDING(0x08);
         SoX::RefSharedPointer<SoX::Physics::World> m_spPhysicsWorld;
         xpointer<void> m_pMyCollisionFilter;
         MARATHON_INSERT_PADDING(0x0C);
@@ -250,6 +254,8 @@ namespace Sonicteam
     MARATHON_ASSERT_OFFSETOF(GameImp, m_rPopupScreenTask, 0x1960);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_rLoadingTask, 0x1974);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_rStageTitleTask, 0x1984);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_ActiveAreas, 0x1994);
+    MARATHON_ASSERT_OFFSETOF(GameImp, m_GenerateAreas, 0x19A4);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_spPhysicsWorld, 0x19BC);
     MARATHON_ASSERT_OFFSETOF(GameImp, m_pMyCollisionFilter, 0x19C0);
     MARATHON_ASSERT_SIZEOF(GameImp, 0x19D0);

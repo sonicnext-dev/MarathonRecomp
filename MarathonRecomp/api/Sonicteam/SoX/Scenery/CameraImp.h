@@ -2,10 +2,11 @@
 
 #include <Marathon.inl>
 #include <Sonicteam/SoX/Graphics/FrameObserver.h>
+#include <Sonicteam/SoX/Graphics/Transforms.h>
 #include <Sonicteam/SoX/Math/Matrix.h>
 #include <Sonicteam/SoX/Math/Quaternion.h>
 #include <Sonicteam/SoX/Math/Vector.h>
-#include <Sonicteam/MyTransforms.h>
+#include <Sonicteam/SoX/Scenery/WorldIntersection.h>
 #include <stdx/string.h>
 
 namespace Sonicteam::SoX::Scenery
@@ -24,10 +25,10 @@ namespace Sonicteam::SoX::Scenery
             Math::Quaternion m_FieldB0;
             Math::Vector m_FieldC0;
             MARATHON_INSERT_PADDING(0x20);
-            xpointer<void> m_pWorldIntersectionStandard;
+            xpointer<WorldIntersection> m_pWorldIntersection;
             MARATHON_INSERT_PADDING(0x10);
-            xpointer<MyTransforms> m_pMyTransforms;
-            MARATHON_INSERT_PADDING(8);
+            xpointer<Graphics::Transforms> m_pTransforms;
+            MARATHON_INSERT_PADDING(0x08);
         };
 
         stdx::string m_Name;
@@ -49,8 +50,8 @@ namespace Sonicteam::SoX::Scenery
     MARATHON_ASSERT_OFFSETOF(CameraImp::frameObserver, m_Field70, 0x70);
     MARATHON_ASSERT_OFFSETOF(CameraImp::frameObserver, m_FieldB0, 0xB0);
     MARATHON_ASSERT_OFFSETOF(CameraImp::frameObserver, m_FieldC0, 0xC0);
-    MARATHON_ASSERT_OFFSETOF(CameraImp::frameObserver, m_pWorldIntersectionStandard, 0xF0);
-    MARATHON_ASSERT_OFFSETOF(CameraImp::frameObserver, m_pMyTransforms, 0x104);
+    MARATHON_ASSERT_OFFSETOF(CameraImp::frameObserver, m_pWorldIntersection, 0xF0);
+    MARATHON_ASSERT_OFFSETOF(CameraImp::frameObserver, m_pTransforms, 0x104);
     MARATHON_ASSERT_SIZEOF(CameraImp::frameObserver, 0x110);
 
     MARATHON_ASSERT_OFFSETOF(CameraImp, m_Name, 0x04);

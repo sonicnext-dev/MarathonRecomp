@@ -4,6 +4,7 @@
 #include <kernel/memory.h>
 #include <os/logger.h>
 #include <user/config.h>
+#include <app.h>
 
 const char* g_pBlockName{};
 
@@ -196,12 +197,43 @@ void SetShadowResolutionMidAsmHook(PPCRegister& r11)
         r11.u64 = res;
 }
 
-void SetMsaaLevel(PPCRegister& r1)
+void WorldIntersectionCSM_SetCameraAspectRatio(PPCRegister& r4)
+{
+    const auto pApp = App::s_pApp;
+
+    // Just in case.
+    if (!pApp || !pApp->m_pDoc || !pApp->m_pDoc->m_pGameRuleContext)
+        return;
+
+    if (pApp->m_pDoc->m_pGameRuleContext->m_PlayerCount <= 1)
+        return;
+
+    const auto pGame = pApp->GetGame();
+
+    if (!pGame)
+        return;
+
+    const auto pAspectRatio = reinterpret_cast<Sonicteam::SoX::Math::Vector2*>(g_memory.Translate(r4.u32));
+
+    // Extend shadow map draw distance in multiplayer by 5x for parity with single player.
+    // The game uses an identical shadow map config between single player and multiplayer,
+    // even the cameras use the same parameters, so the distance being shorter is likely
+    // down to something weird going on with there being more than one screen.
+    pAspectRatio->X = pAspectRatio->X * 5.0f;
+    pAspectRatio->Y = pAspectRatio->Y * 5.0f;
+}
+
+void SetRenderConfig(PPCRegister& r1)
 {
     const auto pLuaSystem = reinterpret_cast<xpointer<Sonicteam::LuaSystem>*>(g_memory.Translate(r1.u32 + 0x54))->get();
 
-    // Force Lua MSAA type to 2x to override stages that disable it.
+    // Force MSAA type to 2x to override stages that disable it.
     pLuaSystem->SetString("MSAAType", "2x");
+
+    // Force shadow cascades to 4.
+    // "GenerateCSMObjects" gets passed in as the third argument to "RenderCSM",
+    // but that function doesn't do anything with it, so we only need to change this.
+    pLuaSystem->SetInteger("GenerateCSMLevels", 4);
 }
 
 void SetMsaaLevelForBuffers(PPCRegister& r31, PPCRegister& r4)
