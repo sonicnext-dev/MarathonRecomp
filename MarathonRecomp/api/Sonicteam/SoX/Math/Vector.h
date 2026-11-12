@@ -56,6 +56,26 @@ namespace Sonicteam::SoX::Math
             return { X + in_rOther.X, Y + in_rOther.Y, Z + in_rOther.Z, W + in_rOther.W };
         }
 
+        Vector& operator+=(float in_addend)
+        {
+            X = X + in_addend;
+            Y = Y + in_addend;
+            Z = Z + in_addend;
+            W = W + in_addend;
+
+            return *this;
+        }
+
+        Vector& operator+=(const Vector& in_rOther)
+        {
+            X = X + in_rOther.X;
+            Y = Y + in_rOther.Y;
+            Z = Z + in_rOther.Z;
+            W = W + in_rOther.W;
+
+            return *this;
+        }
+
         Vector operator-(float in_subtrahend) const
         {
             return { X - in_subtrahend, Y - in_subtrahend, Z - in_subtrahend, W - in_subtrahend };
@@ -66,6 +86,26 @@ namespace Sonicteam::SoX::Math
             return { X - in_rOther.X, Y - in_rOther.Y, Z - in_rOther.Z, W - in_rOther.W };
         }
 
+        Vector& operator-=(float in_subtrahend)
+        {
+            X = X - in_subtrahend;
+            Y = Y - in_subtrahend;
+            Z = Z - in_subtrahend;
+            W = W - in_subtrahend;
+
+            return *this;
+        }
+
+        Vector& operator-=(const Vector& in_rOther)
+        {
+            X = X - in_rOther.X;
+            Y = Y - in_rOther.Y;
+            Z = Z - in_rOther.Z;
+            W = W - in_rOther.W;
+
+            return *this;
+        }
+
         Vector operator*(float in_multiplier) const
         {
             return { X * in_multiplier, Y * in_multiplier, Z * in_multiplier, W * in_multiplier };
@@ -74,6 +114,26 @@ namespace Sonicteam::SoX::Math
         Vector operator*(const Vector& in_rOther) const
         {
             return { X * in_rOther.X, Y * in_rOther.Y, Z * in_rOther.Z, W * in_rOther.W };
+        }
+
+        Vector& operator*=(float in_multiplier)
+        {
+            X = X * in_multiplier;
+            Y = Y * in_multiplier;
+            Z = Z * in_multiplier;
+            W = W * in_multiplier;
+
+            return *this;
+        }
+
+        Vector& operator*=(const Vector& in_rOther)
+        {
+            X = X * in_rOther.X;
+            Y = Y * in_rOther.Y;
+            Z = Z * in_rOther.Z;
+            W = W * in_rOther.W;
+
+            return *this;
         }
     };
 
