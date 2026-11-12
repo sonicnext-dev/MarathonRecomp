@@ -560,10 +560,6 @@ void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
             else if ((modifier.Flags & CSD_ALIGN_LEFT) == 0)
                 offsetX = g_aspectRatioOffsetX;
 
-            // Don't offset arrows at 16:9 or narrower.
-            if ((modifier.Flags & CSD_CHEVRON) != 0 && g_aspectRatio <= WIDE_ASPECT_RATIO)
-                offsetX = 0.0f;
-
             if ((modifier.Flags & CSD_CROP) != 0)
             {
                 scaleX = std::max(vpWidth / 1280.0f, vpHeight / 720.0f);
