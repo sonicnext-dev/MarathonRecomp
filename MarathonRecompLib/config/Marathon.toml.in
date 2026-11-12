@@ -746,3 +746,8 @@ after_instruction = true
 [[midasm_hook]]
 name = "App_AcquireD3DThread"
 address = 0x825B2474
+
+[[midasm_hook]]
+name = "WorldIntersectionCSM_SetCameraAspectRatio"
+address = 0x826146D4
+registers = ["r4"]

@@ -4,6 +4,7 @@
 #include <kernel/memory.h>
 #include <os/logger.h>
 #include <user/config.h>
+#include <app.h>
 
 const char* g_pBlockName{};
 
@@ -194,6 +195,29 @@ void SetShadowResolutionMidAsmHook(PPCRegister& r11)
 
     if (res > 0)
         r11.u64 = res;
+}
+
+void WorldIntersectionCSM_SetCameraAspectRatio(PPCRegister& r4)
+{
+    const auto pApp = App::s_pApp;
+
+    // Just in case.
+    if (!pApp || !pApp->m_pDoc || !pApp->m_pDoc->m_pGameRuleContext)
+        return;
+
+    if (pApp->m_pDoc->m_pGameRuleContext->m_PlayerCount <= 1)
+        return;
+
+    const auto pGame = pApp->GetGame();
+
+    if (!pGame)
+        return;
+
+    const auto pAspectRatio = reinterpret_cast<Sonicteam::SoX::Math::Vector2*>(g_memory.Translate(r4.u32));
+
+    // Extend shadow map draw distance for multiplayer.
+    pAspectRatio->X = pAspectRatio->X * 5.0f;
+    pAspectRatio->Y = pAspectRatio->Y * 5.0f;
 }
 
 void SetRenderConfig(PPCRegister& r1)
