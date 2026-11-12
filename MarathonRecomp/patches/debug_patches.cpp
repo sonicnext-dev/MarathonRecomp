@@ -130,7 +130,7 @@ void StageSelectMode_SetMultiplayerContext(PPCRegister& r3, PPCRegister& r4)
         i++;
     }
 
-    r4.u32 = pGame->GetPlayerCount();
+    r4.u32 = pDoc->m_pGameRuleContext->m_PlayerCount = pGame->GetPlayerCount();
 
     g_isStageSelectMultiplayer = false;
 }
