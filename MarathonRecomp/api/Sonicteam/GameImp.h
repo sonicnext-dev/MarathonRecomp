@@ -132,8 +132,8 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(0x04);
         SoX::RefLinkNode<SoX::Engine::Task> m_rLoadingTask;
         SoX::RefLinkNode<void> m_rStageTitleTask;
-        SoX::Array<xpointer<Prop::ActiveArea>, 4> m_ActiveAreas;
-        SoX::Array<xpointer<Prop::GenerateArea>, 4> m_GenerateAreas;
+        SoX::Array<SoX::RefSharedPointer<Prop::ActiveArea>, 4> m_ActiveAreas;
+        SoX::Array<SoX::RefSharedPointer<Prop::GenerateArea>, 4> m_GenerateAreas;
         MARATHON_INSERT_PADDING(0x08);
         SoX::RefSharedPointer<SoX::Physics::World> m_spPhysicsWorld;
         xpointer<void> m_pMyCollisionFilter;
