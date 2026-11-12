@@ -22,9 +22,19 @@ namespace Sonicteam::Camera
             MARATHON_INSERT_PADDING(0x08);
         };
 
+        enum CameraType
+        {
+            CameraType_CameraTargetAtPosition,
+            CameraType_LineChaseCamera,
+            CameraType_FixCamera,
+            CameraType_FixChaseCamera,
+            CameraType_ReverseCamera
+        };
+
         boost::shared_ptr<Game> m_spGame;
         xpointer<void> m_pInputListener;
-        MARATHON_INSERT_PADDING(0x14);
+        MARATHON_INSERT_PADDING(0x10);
+        be<CameraType> m_Type;
         xpointer<SoX::Engine::Doc> m_pDoc;
 
         SoX::Math::Transform GetTransform()
@@ -45,6 +55,7 @@ namespace Sonicteam::Camera
 
     MARATHON_ASSERT_OFFSETOF(CameraMode, m_spGame, 0x04);
     MARATHON_ASSERT_OFFSETOF(CameraMode, m_pInputListener, 0x0C);
+    MARATHON_ASSERT_OFFSETOF(CameraMode, m_Type, 0x20);
     MARATHON_ASSERT_OFFSETOF(CameraMode, m_pDoc, 0x24);
     MARATHON_ASSERT_SIZEOF(CameraMode, 0x28);
 }

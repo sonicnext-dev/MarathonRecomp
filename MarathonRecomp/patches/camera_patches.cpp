@@ -239,6 +239,11 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
         return;
 
     const auto pSonicCamera = reinterpret_cast<SonicCameraEx*>(g_memory.Translate(r31.u32));
+
+    // Only enable mouse look for the standard camera.
+    if (pSonicCamera->m_Type != Sonicteam::Camera::CameraMode::CameraType_CameraTargetAtPosition)
+        return;
+
     const auto pOutput = reinterpret_cast<Sonicteam::SoX::Math::Vector*>(g_memory.Translate(r5.u32));
 
     const auto pGame = static_cast<Sonicteam::GameImp*>(pSonicCamera->m_spGame.get());
