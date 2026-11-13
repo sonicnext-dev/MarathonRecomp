@@ -10,7 +10,7 @@ namespace Sonicteam::SoX::Audio
     class Cue : public RefCountObject
     {
     public:
-        struct Vftable : RefCountObject::Vftable
+        struct Vftable : public RefCountObject::Vftable
         {
             MARATHON_INSERT_PADDING(0x18);
             be<uint32_t> fpSetPause;
@@ -29,7 +29,7 @@ namespace Sonicteam::SoX::Audio
 
         void SetPause(bool isPaused)
         {
-            GuestToHostFunction<int>(((Vftable*)m_pVftable.get())->fpSetPause, this, isPaused);
+            GuestToHostFunction<int>(static_cast<Vftable*>(m_pVftable.get())->fpSetPause, this, isPaused);
         }
     };
 
