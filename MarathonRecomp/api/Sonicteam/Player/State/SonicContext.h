@@ -60,7 +60,7 @@ namespace Sonicteam::Player::State
         bool m_IsGunDriveCharge;
         bool m_IsGunDriveThrow;
         bool m_IsRedGem;
-        bool m_IsBlueAura;
+        bool m_IsMachSpeed;
         bool m_IsGemsEnabled;
         bool m_Field24A;
         bool m_Field24B;
@@ -83,7 +83,7 @@ namespace Sonicteam::Player::State
     MARATHON_ASSERT_OFFSETOF(SonicContext, m_IsGunDriveCharge, 0x245);
     MARATHON_ASSERT_OFFSETOF(SonicContext, m_IsGunDriveThrow, 0x246);
     MARATHON_ASSERT_OFFSETOF(SonicContext, m_IsRedGem, 0x247);
-    MARATHON_ASSERT_OFFSETOF(SonicContext, m_IsBlueAura, 0x248);
+    MARATHON_ASSERT_OFFSETOF(SonicContext, m_IsMachSpeed, 0x248);
     MARATHON_ASSERT_OFFSETOF(SonicContext, m_IsGemsEnabled, 0x249);
     MARATHON_ASSERT_OFFSETOF(SonicContext, m_Field24A, 0x24A);
     MARATHON_ASSERT_OFFSETOF(SonicContext, m_Field24B, 0x24B);
