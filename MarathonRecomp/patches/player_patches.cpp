@@ -173,6 +173,11 @@ bool DisablePushState()
     return Config::DisablePushState;
 }
 
+bool DisableSandJump()
+{
+    return Config::DisableSandJump;
+}
+
 bool MidairControlForMachSpeed()
 {
     return Config::MidairControlForMachSpeed;

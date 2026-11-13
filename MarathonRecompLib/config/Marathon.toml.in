@@ -808,3 +808,8 @@ jump_address_on_true = 0x821A4338
 name = "ControllableTornadoAttack"
 address = 0x821A31B8
 jump_address_on_true = 0x821A31C8
+
+[[midasm_hook]]
+name = "DisableSandJump"
+address = 0x8220924C
+jump_address_on_true = 0x82209258

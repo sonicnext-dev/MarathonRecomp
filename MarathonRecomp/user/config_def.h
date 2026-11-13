@@ -120,6 +120,7 @@ CONFIG_DEFINE("Codes", bool, DisableKingdomValleyMist, false, false);
 CONFIG_DEFINE("Codes", bool, DisableLives, false, false);
 CONFIG_DEFINE("Codes", bool, DisableLowResolutionFontOnCustomUI, false, false);
 CONFIG_DEFINE("Codes", bool, DisablePushState, false, false);
+CONFIG_DEFINE("Codes", bool, DisableSandJump, false, false);
 CONFIG_DEFINE("Codes", bool, DisableTitleInputDelay, false, false);
 CONFIG_DEFINE("Codes", bool, EnableDebugMode, false, false);
 CONFIG_DEFINE("Codes", bool, FixEnvironmentMaps, true, false);
