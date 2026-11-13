@@ -1306,10 +1306,11 @@ const xxHashMap<ImGuiTextPictureCrop> g_buttonCropsPS3 =
     { HashStr("button_b"),     { 28, 56, 28, 28 } },
     { HashStr("button_x"),     { 56, 56, 28, 28 } },
     { HashStr("button_y"),     { 84, 56, 28, 28 } },
-    { HashStr("button_lb"),    { 112, 56, 48, 28 } },
-    { HashStr("button_rb"),    { 0, 84, 48, 28 } },
-    { HashStr("button_lt"),    { 168, 56, 48, 28 } },
-    { HashStr("button_rt"),    { 56, 84, 48, 28 } },
+    // NOTE: LB/LT and RB/RT icons are currently swapped to account for differences in 360 vs PS3 bindings.
+    { HashStr("button_lb"),    { 168, 56, 48, 28 } },
+    { HashStr("button_rb"),    { 56, 84, 48, 28 } },
+    { HashStr("button_lt"),    { 112, 56, 48, 28 } },
+    { HashStr("button_rt"),    { 0, 84, 48, 28 } },
     { HashStr("button_start"), { 140, 84, 28, 28 } },
     { HashStr("button_back"),  { 112, 84, 28, 28 } }
 };
