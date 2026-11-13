@@ -119,6 +119,7 @@ CONFIG_DEFINE("Codes", bool, DisableDWMRoundedCorners, false, true);
 CONFIG_DEFINE("Codes", bool, DisableKingdomValleyMist, false, false);
 CONFIG_DEFINE("Codes", bool, DisableLives, false, false);
 CONFIG_DEFINE("Codes", bool, DisableLowResolutionFontOnCustomUI, false, false);
+CONFIG_DEFINE("Codes", bool, DisableMidairSpinningClaw, false, false);
 CONFIG_DEFINE("Codes", bool, DisablePushState, false, false);
 CONFIG_DEFINE("Codes", bool, DisableSandJump, false, false);
 CONFIG_DEFINE("Codes", bool, DisableTitleInputDelay, false, false);

@@ -168,6 +168,11 @@ bool ControllableTornadoAttack()
     return Config::ControllableTornadoAttack;
 }
 
+bool DisableMidairSpinningClaw()
+{
+    return Config::DisableMidairSpinningClaw;
+}
+
 bool DisablePushState()
 {
     return Config::DisablePushState;

@@ -836,3 +836,8 @@ after_instruction = true
 name = "E3ChainJumpSpeed_SetWaitTime"
 address = 0x82211EAC
 registers = ["f12"]
+
+[[midasm_hook]]
+name = "DisableMidairSpinningClaw"
+address = 0x821ABFD8
+jump_address_on_true = 0x821AC00C
