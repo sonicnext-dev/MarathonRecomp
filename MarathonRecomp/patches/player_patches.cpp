@@ -135,6 +135,39 @@ bool ControllableTeleportDash()
     return Config::ControllableTeleportDash;
 }
 
+// Sonicteam::Player::Sound::Sonic::Sonic
+PPC_FUNC_IMPL(__imp__sub_8226A478);
+PPC_FUNC(sub_8226A478)
+{
+    if (Config::ControllableTornadoAttack)
+    {
+        // Redirect unused air tornado sound to ground tornado sound.
+        // No need to recover this, as the cue is mute.
+        *reinterpret_cast<be<uint32_t>*>(base + 0x8200FCEC) = 0x8200E474; // "tornado_move" -> "tornado"
+    }
+
+    __imp__sub_8226A478(ctx, base);
+}
+
+PPC_FUNC_IMPL(__imp__sub_821A3118); // Sonicteam::Player::State::SonicTornadoAir::SonicTornadoAir
+PPC_FUNC_IMPL(__imp__sub_821A2F98); // Sonicteam::Player::State::SonicTornadoGround::SonicTornadoGround
+PPC_FUNC(sub_821A2F98)
+{
+    // Redirect ground state to air state.
+    if (Config::ControllableTornadoAttack)
+    {
+        __imp__sub_821A3118(ctx, base);
+        return;
+    }
+
+    __imp__sub_821A2F98(ctx, base);
+}
+
+bool ControllableTornadoAttack()
+{
+    return Config::ControllableTornadoAttack;
+}
+
 bool DisablePushState()
 {
     return Config::DisablePushState;

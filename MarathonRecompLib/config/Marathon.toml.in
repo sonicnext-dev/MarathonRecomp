@@ -803,3 +803,8 @@ jump_address_on_true = 0x821A4324
 name = "ControllablePsychoShock"
 address = 0x821A4334
 jump_address_on_true = 0x821A4338
+
+[[midasm_hook]]
+name = "ControllableTornadoAttack"
+address = 0x821A31B8
+jump_address_on_true = 0x821A31C8

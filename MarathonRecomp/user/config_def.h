@@ -114,6 +114,7 @@ CONFIG_DEFINE("Codes", bool, ControllableHomingRecovery, false, false);
 CONFIG_DEFINE("Codes", bool, ControllablePsychoShock, false, false);
 CONFIG_DEFINE("Codes", bool, ControllableSpinkick, false, false);
 CONFIG_DEFINE("Codes", bool, ControllableTeleportDash, false, false);
+CONFIG_DEFINE("Codes", bool, ControllableTornadoAttack, false, false);
 CONFIG_DEFINE("Codes", bool, DisableDWMRoundedCorners, false, true);
 CONFIG_DEFINE("Codes", bool, DisableKingdomValleyMist, false, false);
 CONFIG_DEFINE("Codes", bool, DisableLives, false, false);
