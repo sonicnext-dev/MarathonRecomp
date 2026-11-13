@@ -3,6 +3,9 @@
 #include <Marathon.inl>
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include <Sonicteam/GameRule/Context.h>
+#include <Sonicteam/SoX/Audio/Cue.h>
+#include <Sonicteam/SoX/Audio/ObjectManager.h>
+#include <Sonicteam/SoX/Audio/Player.h>
 #include <Sonicteam/SoX/Engine/Doc.h>
 #include <Sonicteam/SoX/Input/Manager.h>
 #include <Sonicteam/SoX/LinkNode.h>
@@ -15,6 +18,7 @@
 #include <Sonicteam/RenderTargetContainer.h>
 #include <Sonicteam/SceneParamManager.h>
 #include <Sonicteam/SFXAgent.h>
+#include <Sonicteam/sonicXmaPlayer.h>
 #include <Sonicteam/TextBook.h>
 #include <stdx/vector.h>
 
@@ -23,12 +27,42 @@ namespace Sonicteam
     class DocMarathonImp : public DocMarathon
     {
     public:
+        class AudioPlayerXenon : public SoX::Audio::ObjectManager
+        {
+        public:
+            class MyCue : public SoX::Audio::Cue {};
+            
+            class MyCueAttenuate
+            {
+            public:
+                be<float> m_Time;
+                be<float> m_FadeOutRate;
+                be<float> m_FadeInRate;
+                be<float> m_MinVolume;
+                be<float> m_MaxVolume;
+                bool m_IsFadeOut;
+                MARATHON_INSERT_PADDING(0x03);
+            };
+
+            class MyCueAdx : public MyCue, public MyCueAttenuate
+            {
+            public:
+                MARATHON_INSERT_PADDING(0x0C);
+                be<float> m_Field50;
+                be<float> m_Field54;
+                xpointer<sonicXmaPlayer> m_pXmaPlayer;
+                bool m_IsPaused;
+                MARATHON_INSERT_PADDING(0x03);
+            };
+        };
+
         xpointer<DocState> m_pDocState;
         xpointer<MyGraphicsDevice> m_pMyGraphicsDevice;
         xpointer<SceneParamManager> m_pSceneParamManager;
         MARATHON_INSERT_PADDING(0x34);
         stdx::vector<boost::shared_ptr<SoX::Input::Manager>> m_InputManagers;
-        MARATHON_INSERT_PADDING(0x24);
+        MARATHON_INSERT_PADDING(0x1C);
+        boost::shared_ptr<SoX::Audio::Player> m_spAudioPlayer;
         bool m_VFrame;
         MARATHON_INSERT_PADDING(0x04);
         xpointer<RenderTargetContainer> m_pRenderTargetContainer;
@@ -54,10 +88,29 @@ namespace Sonicteam
         MARATHON_INSERT_PADDING(0x2C);
     };
 
+    MARATHON_ASSERT_SIZEOF(DocMarathonImp::AudioPlayerXenon::MyCue, 0x2C);
+
+    MARATHON_ASSERT_OFFSETOF(DocMarathonImp::AudioPlayerXenon::MyCueAttenuate, m_Time, 0x00);
+    MARATHON_ASSERT_OFFSETOF(DocMarathonImp::AudioPlayerXenon::MyCueAttenuate, m_FadeOutRate, 0x04);
+    MARATHON_ASSERT_OFFSETOF(DocMarathonImp::AudioPlayerXenon::MyCueAttenuate, m_FadeInRate, 0x08);
+    MARATHON_ASSERT_OFFSETOF(DocMarathonImp::AudioPlayerXenon::MyCueAttenuate, m_MinVolume, 0x0C);
+    MARATHON_ASSERT_OFFSETOF(DocMarathonImp::AudioPlayerXenon::MyCueAttenuate, m_MaxVolume, 0x10);
+    MARATHON_ASSERT_OFFSETOF(DocMarathonImp::AudioPlayerXenon::MyCueAttenuate, m_IsFadeOut, 0x14);
+    MARATHON_ASSERT_SIZEOF(DocMarathonImp::AudioPlayerXenon::MyCueAttenuate, 0x18);
+
+    MARATHON_ASSERT_OFFSETOF(DocMarathonImp::AudioPlayerXenon::MyCueAdx, m_Field50, 0x50);
+    MARATHON_ASSERT_OFFSETOF(DocMarathonImp::AudioPlayerXenon::MyCueAdx, m_Field54, 0x54);
+    MARATHON_ASSERT_OFFSETOF(DocMarathonImp::AudioPlayerXenon::MyCueAdx, m_pXmaPlayer, 0x58);
+    MARATHON_ASSERT_OFFSETOF(DocMarathonImp::AudioPlayerXenon::MyCueAdx, m_IsPaused, 0x5C);
+    MARATHON_ASSERT_SIZEOF(DocMarathonImp::AudioPlayerXenon::MyCueAdx, 0x60);
+
+    MARATHON_ASSERT_SIZEOF(DocMarathonImp::AudioPlayerXenon, 0x04);
+
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_pDocState, 0x5C);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_pMyGraphicsDevice, 0x60);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_pSceneParamManager, 0x64);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_InputManagers, 0x9C);
+    MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_spAudioPlayer, 0xC8);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_VFrame, 0xD0);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_pRenderTargetContainer, 0xD8);
     MARATHON_ASSERT_OFFSETOF(DocMarathonImp, m_pSFXAgent, 0xDC);

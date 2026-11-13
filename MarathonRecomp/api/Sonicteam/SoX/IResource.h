@@ -9,11 +9,12 @@ namespace Sonicteam::SoX
     class IResource : public RefCountObject
     {
     public:
-        struct Vftable : RefCountObject::Vftable
+        struct Vftable : public RefCountObject::Vftable
         {
             be<uint32_t> fpInit;
             be<uint32_t> fpGetPath;
-            be<uint32_t> fpIsInArcFile; 
+            be<uint32_t> fpIsInArcFile;
+            MARATHON_INSERT_PADDING(0x04);
         };
 
         be<uint32_t> m_MgrRegistryIndex; // Used to free resource.
