@@ -5,6 +5,7 @@
 #include <os/logger.h>
 #include <user/config.h>
 #include <app.h>
+#include <functional>
 
 const char* g_pBlockName{};
 
@@ -248,18 +249,34 @@ void SetMsaaLevelForBuffers(PPCRegister& r31, PPCRegister& r4)
     const auto pDepthStencilName = lua50::lua_tostring(L, 3);
     const auto bufferType = Sonicteam::SoX::Graphics::GetBufferTypeByName(lua50::lua_tostring(L, 4));
 
-    static const std::array<std::tuple<const char*, const char*, Sonicteam::SoX::Graphics::BufferType>, 2> buffers =
+    struct BufferFilter
+    {
+        const char* BufferName{};
+        const char* DepthStencilName{};
+        Sonicteam::SoX::Graphics::BufferType BufferType{};
+        std::function<bool()> EnabledCallback{};
+    };
+
+    const auto isVendor = [](plume::RenderDeviceVendor in_vendor)
+    {
+        return Video::GetRenderDevice()->getDescription().vendor == in_vendor;
+    };
+
+    static const std::array<BufferFilter, 2> buffers =
     {{
         // Force MSAA level for multiplayer.
         { "coframebuffer", "codepthstencil", Sonicteam::SoX::Graphics::BufferType_All },
 
         // Force MSAA level for radar.
-        { "radermap", "depthstencil_256", Sonicteam::SoX::Graphics::BufferType_ColorDepth }
+        { "radermap", "depthstencil_256", Sonicteam::SoX::Graphics::BufferType_ColorDepth, [&]() { return !isVendor(plume::RenderDeviceVendor::INTEL); } }
     }};
 
-    for (const auto& [rBufferName, rDepthStencilName, rBufferType] : buffers)
+    for (const auto& rBuffer : buffers)
     {
-        if (strstr(pBufferName, rBufferName) && strcmp(pDepthStencilName, rDepthStencilName) == 0 && bufferType == rBufferType)
+        if (rBuffer.EnabledCallback && !rBuffer.EnabledCallback())
+            continue;
+
+        if (strstr(pBufferName, rBuffer.BufferName) && strcmp(pDepthStencilName, rBuffer.DepthStencilName) == 0 && bufferType == rBuffer.BufferType)
             r4.u32 = Config::AntiAliasing != EAntiAliasing::Off;
     }
 }
