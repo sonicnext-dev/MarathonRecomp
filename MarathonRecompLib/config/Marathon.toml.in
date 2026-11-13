@@ -751,3 +751,15 @@ address = 0x825B2474
 name = "WorldIntersectionCSM_SetCameraAspectRatio"
 address = 0x826146D4
 registers = ["r4"]
+
+# Use max LOD particles in multiplayer.
+[[midasm_hook]]
+name = "NOP"
+address = 0x826651E4
+jump_address = 0x826651EC
+
+# Allow all multiplayer screens to render max LOD particles.
+[[midasm_hook]]
+name = "NOP"
+address = 0x82648D70
+jump_address = 0x82648D74
