@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/SoX/Message.h>
 
 namespace Sonicteam::Message::Mission
 {
@@ -9,9 +10,10 @@ namespace Sonicteam::Message::Mission
         be<uint32_t> FlagID{};
         be<uint32_t> FlagValue{};
 
-        MsgGetGlobalFlag(uint32_t flagId) : FlagID(flagId) {}
+        explicit MsgGetGlobalFlag(const uint32_t in_flagId) : FlagID(in_flagId) {}
     };
 
     MARATHON_ASSERT_OFFSETOF(MsgGetGlobalFlag, FlagID, 0x04);
     MARATHON_ASSERT_OFFSETOF(MsgGetGlobalFlag, FlagValue, 0x08);
+    MARATHON_ASSERT_SIZEOF(MsgGetGlobalFlag, 0x0C);
 }

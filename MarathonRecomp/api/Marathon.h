@@ -165,6 +165,7 @@
 #include "Sonicteam/Message/HUDMessageWindow/MsgChangeState.h"
 #include "Sonicteam/Message/HUDPause/MsgChangeState.h"
 #include "Sonicteam/Message/Mission/MsgGetGlobalFlag.h"
+#include "Sonicteam/Message/Mission/VirtualMachine/MsgGetShortMission.h"
 #include "Sonicteam/Message/ObjJump123/MsgGetNextPoint.h"
 #include "Sonicteam/Message/PauseAdapter/MsgGetText.h"
 #include "Sonicteam/Message/Player/MsgAmigoChange.h"
