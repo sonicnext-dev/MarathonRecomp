@@ -120,6 +120,11 @@ bool ControllableBoundAttack2(PPCCRRegister& cmp)
     return cmp.eq;
 }
 
+bool ControllableHammerAttack()
+{
+    return Config::ControllableHammerAttack;
+}
+
 bool ControllablePsychoShock()
 {
     return Config::ControllablePsychoShock;

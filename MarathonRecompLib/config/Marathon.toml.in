@@ -862,3 +862,13 @@ registers = ["r3"]
 name = "RestoreRingExplosionPhysics"
 address = 0x821E91A4
 registers = ["r5"]
+
+[[midasm_hook]]
+name = "ControllableHammerAttack"
+address = 0x821AB6AC
+jump_address_on_true = 0x821AB6B0
+
+[[midasm_hook]]
+name = "ControllableHammerAttack"
+address = 0x821AB6B4
+jump_address_on_true = 0x821AB6B8
