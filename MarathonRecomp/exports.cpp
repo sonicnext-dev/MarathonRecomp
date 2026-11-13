@@ -4,28 +4,37 @@
 #include <kernel/heap.h>
 #include <app.h>
 
-void Game_PlaySound(const char* pName)
+void Game_PlaySound(const char* in_pName)
 {
      if (EmbeddedPlayer::s_isActive)
      {
-         EmbeddedPlayer::Play(pName);
+         EmbeddedPlayer::Play(in_pName);
      }
      else
      {
-         Game_PlaySound("system", pName);
+         Game_PlaySound("system", in_pName);
      }
 }
 
-void Game_PlaySound(const char* pBankName, const char* pName)
+void Game_PlaySound(const char* in_pSoundBankName, const char* in_pSoundName)
 {
-    auto pBankNameGuest = g_userHeap.Alloc(strlen(pBankName) + 1);
-    auto pNameGuest = g_userHeap.Alloc(strlen(pName) + 1);
+    if (!App::s_pApp || !App::s_pApp->m_pDoc)
+        return;
 
-    strcpy((char*)pBankNameGuest, pBankName);
-    strcpy((char*)pNameGuest, pName);
+    const auto pAudioPlayer = App::s_pApp->m_pDoc->m_spAudioPlayer.get();
 
-    GuestToHostFunction<int>(sub_824C7868, App::s_pApp->m_pDoc->m_pRootTask.get(), pBankNameGuest, pNameGuest);
+    if (!pAudioPlayer)
+        return;
 
-    g_userHeap.Free(pBankNameGuest);
-    g_userHeap.Free(pNameGuest);
+    const auto soundBankId = pAudioPlayer->GetSoundBankID(in_pSoundBankName);
+
+    if (soundBankId == -1)
+        return;
+
+    const auto soundId = pAudioPlayer->GetSoundID(soundBankId, in_pSoundName);
+
+    if (soundId == -1)
+        return;
+
+    pAudioPlayer->CreateCue(soundId);
 }
