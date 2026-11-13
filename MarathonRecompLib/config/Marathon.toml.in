@@ -883,3 +883,8 @@ jump_address_on_true = 0x82215004
 name = "AlwaysHaveHighSpeed"
 address = 0x8220CBFC
 jump_address_on_true = 0x8220CC00
+
+[[midasm_hook]]
+name = "AlwaysHaveInvincibility"
+address = 0x8220CBE4
+jump_address_on_true = 0x8220CBE8

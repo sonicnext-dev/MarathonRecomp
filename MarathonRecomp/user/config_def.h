@@ -106,6 +106,7 @@ CONFIG_DEFINE_ENUM_LOCALISED("Video", EUIAlignmentMode, UIAlignmentMode, EUIAlig
 
 CONFIG_DEFINE("Codes", bool, AlwaysExitVehicles, false, false);
 CONFIG_DEFINE("Codes", bool, AlwaysHaveHighSpeed, false, false);
+CONFIG_DEFINE("Codes", bool, AlwaysHaveInvincibility, false, false);
 CONFIG_DEFINE("Codes", bool, AlwaysHoldPhysicsObjects, false, false);
 CONFIG_DEFINE("Codes", bool, AntigravityRetainsMomentum, false, false);
 CONFIG_DEFINE("Codes", bool, BootDirectlyToTitle, false, false);

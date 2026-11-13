@@ -107,6 +107,11 @@ bool AlwaysHaveHighSpeed()
     return Config::AlwaysHaveHighSpeed;
 }
 
+bool AlwaysHaveInvincibility()
+{
+    return Config::AlwaysHaveInvincibility;
+}
+
 bool AntigravityRetainsMomentum()
 {
     return Config::AntigravityRetainsMomentum;
