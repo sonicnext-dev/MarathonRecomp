@@ -766,3 +766,23 @@ jump_address_on_true = 0x82217618
 name = "RestoreHomingSpam"
 address = 0x822175D8
 jump_address_on_true = 0x822175E4
+
+[[midasm_hook]]
+name = "AlwaysExitVehicles"
+address = 0x821A845C
+jump_address_on_true = 0x821A8460
+
+[[midasm_hook]]
+name = "AlwaysExitVehicles"
+address = 0x821A7F00
+jump_address_on_true = 0x821A7F04
+
+[[midasm_hook]]
+name = "AlwaysExitVehicles"
+address = 0x821A8298
+jump_address_on_true = 0x821A829C
+
+[[midasm_hook]]
+name = "AlwaysExitVehicles"
+address = 0x821A8100
+jump_address_on_true = 0x821A8104

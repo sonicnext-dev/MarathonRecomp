@@ -103,6 +103,7 @@ CONFIG_DEFINE_ENUM_LOCALISED("Video", ERadialBlur, RadialBlur, ERadialBlur::Orig
 CONFIG_DEFINE_ENUM_LOCALISED("Video", ECutsceneAspectRatio, CutsceneAspectRatio, ECutsceneAspectRatio::Original, false);
 CONFIG_DEFINE_ENUM_LOCALISED("Video", EUIAlignmentMode, UIAlignmentMode, EUIAlignmentMode::Edge, false);
 
+CONFIG_DEFINE("Codes", bool, AlwaysExitVehicles, false, false);
 CONFIG_DEFINE("Codes", bool, AlwaysHoldPhysicsObjects, false, false);
 CONFIG_DEFINE("Codes", bool, AntigravityRetainsMomentum, false, false);
 CONFIG_DEFINE("Codes", bool, BootDirectlyToTitle, false, false);

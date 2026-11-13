@@ -4,6 +4,7 @@
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include <Sonicteam/Player/State/CommonMiscFlagsSlot.h>
 #include <Sonicteam/Player/State/ICommonContext.h>
+#include <Sonicteam/Player/State/VehicleFlags.h>
 #include <Sonicteam/Player/Gravity.h>
 #include <Sonicteam/Player/IExportPostureRequestFlag.h>
 #include <Sonicteam/Player/IExportWeaponRequestFlag.h>
@@ -31,7 +32,7 @@ namespace Sonicteam::Player::State
         MARATHON_INSERT_PADDING(0x14);
         be<PostureControlFlags> m_PostureFlags;
         be<uint64_t> m_ExternalFlags;
-        be<uint32_t> m_VehicleFlags;
+        be<VehicleFlags> m_VehicleFlags;
         be<uint32_t> m_AmigoFlags;
         SoX::Array<uint8_t, 80> m_MiscFlags;
         boost::shared_ptr<Score> m_spScore;

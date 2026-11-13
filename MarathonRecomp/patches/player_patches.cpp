@@ -97,6 +97,11 @@ PPC_FUNC(sub_8219A5B0)
     __imp__sub_8219A5B0(ctx, base);
 }
 
+bool AlwaysExitVehicles()
+{
+    return Config::AlwaysExitVehicles;
+}
+
 bool AntigravityRetainsMomentum()
 {
     return Config::AntigravityRetainsMomentum;
