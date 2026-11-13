@@ -39,12 +39,6 @@ CONFIG_DEFINE_ENUM_TEMPLATE(ELightDash)
     { "Y", ELightDash::Y }
 };
 
-CONFIG_DEFINE_ENUM_TEMPLATE(ESlidingAttack)
-{
-    { "B", ESlidingAttack::B },
-    { "X", ESlidingAttack::X }
-};
-
 CONFIG_DEFINE_ENUM_TEMPLATE(SDL_Scancode)
 {
     { "???", SDL_SCANCODE_UNKNOWN },

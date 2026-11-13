@@ -392,62 +392,6 @@ CONFIG_DEFINE_ENUM_LOCALE(ELightDash)
     }
 };
 
-CONFIG_DEFINE_LOCALE(SlidingAttack)
-{
-    { ELanguage::English,  { "Sliding Attack", "Change how the Sliding Attack is activated for Sonic." } },
-    { ELanguage::Japanese, { "スライディングアタック", "ソニックのスライディングアタックの発動方法を変更します" } },
-    { ELanguage::German,   { "Schlitterangriff", "Ändere wie der Schlitterangriff von Sonic aktiviert wird." } },
-    { ELanguage::French,   { "Attaque-dérapage", "Modifier la façon dont l'Attaque-dérapage est activée pour Sonic." } },
-    { ELanguage::Spanish,  { "Ataque derrape", "Cambia cómo se activa el ataque derrape para Sonic." } },
-    { ELanguage::Italian,  { "Scivolata", "Cambia il modo in cui viene attivata la Scivolata per Sonic." } }
-};
-
-CONFIG_DEFINE_ENUM_LOCALE(ESlidingAttack)
-{
-    {
-        ELanguage::English,
-        {
-            { ESlidingAttack::B, { "Release ${picture(button_b)}", "" } },
-            { ESlidingAttack::X, { "Release ${picture(button_x)}", "" } }
-        }
-    },
-    {
-        ELanguage::Japanese,
-        {
-            { ESlidingAttack::B, { "${picture(button_b)}を離す", "" } },
-            { ESlidingAttack::X, { "${picture(button_x)}を離す", "" } }
-        }
-    },
-    {
-        ELanguage::German,
-        {
-            { ESlidingAttack::B, { "Lasse ${picture(button_b)} los", "" } },
-            { ESlidingAttack::X, { "Lasse ${picture(button_x)} los", "" } }
-        }
-    },
-    {
-        ELanguage::French,
-        {
-            { ESlidingAttack::B, { "Relâcher ${picture(button_b)}", "" } },
-            { ESlidingAttack::X, { "Relâcher ${picture(button_x)}", "" } }
-        }
-    },
-    {
-        ELanguage::Spanish,
-        {
-            { ESlidingAttack::B, { "Soltar ${picture(button_b)}", "" } },
-            { ESlidingAttack::X, { "Soltar ${picture(button_x)}", "" } }
-        }
-    },
-    {
-        ELanguage::Italian,
-        {
-            { ESlidingAttack::B, { "Rilascia ${picture(button_b)}", "" } },
-            { ESlidingAttack::X, { "Rilascia ${picture(button_x)}", "" } }
-        }
-    }
-};
-
 CONFIG_DEFINE_LOCALE(MasterVolume)
 {
     { ELanguage::English,  { "Master Volume", "Adjust the overall volume." } },
