@@ -255,7 +255,15 @@ public:
                                pStateMachineContext->GetMiscFlags(Sonicteam::Player::State::CommonMiscFlagsSlot_10C);
 
         return (flags & Sonicteam::Player::CommonContextIFFlags_OutOfControl) != 0 || miscFlags;
+    }
 
+    void UpdateMouseLookAccel(const float in_deltaX, const float in_deltaY, const Sonicteam::SoX::Math::Vector& in_rMouseTransitionPosition)
+    {
+        m_Acceleration.X = in_deltaX;
+        m_Acceleration.Y = in_deltaY;
+
+        ResetMouseOrbit(SonicCameraEx::MouseOrbitAxis_Yaw);
+        StartMouseTransition(in_rMouseTransitionPosition);
     }
 };
 
@@ -361,15 +369,13 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
                 pSonicCamera->m_MouseInactiveTime = 0.0f;
             }
 
-            if (pSonicCamera->IsPlayerOutOfControl())
+            // HACK (Hyper): the rodeo state typically tends to extend the camera distance,
+            // which breaks mouse look due to it using its own distance value. This should
+            // be fixed in the future by hooking the vector maths that adds the distance...
+            // ...when I have more time.
+            if (pSonicCamera->IsPlayerState(Sonicteam::Player::State::State_CommonRodeo))
             {
-                // Fall back to acceleration-based mouse look.
-                pSonicCamera->m_Acceleration.X = x;
-                pSonicCamera->m_Acceleration.Y = y;
-
-                pSonicCamera->ResetMouseOrbit(SonicCameraEx::MouseOrbitAxis_Yaw);
-                pSonicCamera->StartMouseTransition(*pOutput);
-
+                pSonicCamera->UpdateMouseLookAccel(x, y, *pOutput);
                 return;
             }
 
@@ -399,6 +405,13 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
     // Scales the distance of the camera to the player based on the shape cast hit position.
     if (pSonicCamera->m_pShapeCastA->CastShape(distance.get(), listener.get()))
         pSonicCamera->m_Orbit.X = std::min(context->HitPosition.Distance(pSonicCamera->m_Target), pSonicCamera->m_MouseOrbit.X.get());
+
+    // Fall back to acceleration-based mouse look.
+    if (pSonicCamera->IsPlayerOutOfControl())
+    {
+        pSonicCamera->UpdateMouseLookAccel(x, y, *pOutput);
+        return;
+    }
 
     GuestToHostFunction<Sonicteam::SoX::Math::Vector*>(sub_8218C4F0, normalisedOrbit.get(), &pSonicCamera->m_Orbit);
 
