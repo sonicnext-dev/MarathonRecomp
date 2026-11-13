@@ -5,6 +5,7 @@
 #include <Sonicteam/Player/State/ICommonContextIF.h>
 #include <Sonicteam/Player/Unit/ITestCase.h>
 #include <Sonicteam/Player/CommonContextIFFlags.h>
+#include <Sonicteam/Player/Gravity.h>
 #include <Sonicteam/Player/IDynamicLink.h>
 #include <Sonicteam/Player/IFlagCommunicator.h>
 #include <Sonicteam/Player/IPosturePlugIn.h>
@@ -25,7 +26,7 @@ namespace Sonicteam::Player
         SoX::Math::Quaternion m_RotationFixed;
         SoX::Math::Vector m_PositionFixed;
         SoX::RefSharedPointer<SoX::Physics::World> m_spWorld;
-        boost::shared_ptr<void> m_spGravity;
+        boost::shared_ptr<Gravity> m_spGravity;
         boost::shared_ptr<void> m_spInputListener;
         boost::shared_ptr<void> m_spAmigoListener;
         boost::shared_ptr<State::ICommonContextIF> m_spCommonContextIF;

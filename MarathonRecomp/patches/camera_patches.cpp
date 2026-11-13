@@ -122,11 +122,11 @@ public:
         MouseState_Enabled
     };
 
-    enum MouseOrbit : uint8_t
+    enum MouseOrbitAxis : uint8_t
     {
-        MouseOrbit_Distance = (0 << 0),
-        MouseOrbit_Yaw = (1 << 0),
-        MouseOrbit_Pitch = (1 << 1)
+        MouseOrbitAxis_Distance = (0 << 0),
+        MouseOrbitAxis_Yaw = (1 << 0),
+        MouseOrbitAxis_Pitch = (1 << 1)
     };
 
     MouseState m_MouseState;
@@ -144,7 +144,7 @@ public:
         m_MouseOrbit = m_Orbit;
     }
 
-    void ResetMouseOrbit(std::underlying_type_t<MouseOrbit> in_resetAxes)
+    void ResetMouseOrbit(std::underlying_type_t<MouseOrbitAxis> in_resetAxes)
     {
         if (in_resetAxes)
         {
@@ -152,10 +152,10 @@ public:
             const auto dy = m_Position.Y - m_Target.Y;
             const auto dz = m_Position.Z - m_Target.Z;
 
-            if ((in_resetAxes & MouseOrbit_Yaw) != 0)
+            if ((in_resetAxes & MouseOrbitAxis_Yaw) != 0)
                 m_MouseOrbit.Y = std::atan2(dx, dz);
 
-            if ((in_resetAxes & MouseOrbit_Pitch) != 0)
+            if ((in_resetAxes & MouseOrbitAxis_Pitch) != 0)
             {
                 m_MouseOrbit.Z = Sonicteam::SoX::Math::ToRadians(-10.0f);
             }
@@ -166,8 +166,18 @@ public:
         }
 
         StartMouseTransition(m_Position);
+    }
 
-        m_Orbit = m_MouseOrbit;
+    void SyncMouseToOrbit()
+    {
+        m_MouseOrbit.Y = m_Orbit.Y;
+        m_MouseOrbit.Z = m_Orbit.Z;
+    }
+
+    void SyncOrbitToMouse()
+    {
+        m_Orbit.Y = m_MouseOrbit.Y;
+        m_Orbit.Z = m_MouseOrbit.Z;
     }
 
     void StartMouseTransition(const Sonicteam::SoX::Math::Vector& in_rStart)
@@ -176,12 +186,32 @@ public:
         m_MouseTransitionTime = 0.0f;
     }
 
-    bool IsPlayerOutOfControl()
+    Sonicteam::Player::Object* GetPlayer()
     {
         const auto pGame = static_cast<Sonicteam::GameImp*>(m_spGame.get());
-
         const auto playerIndex = pGame->GetPlayerIndexFromActorID(m_TargetActorID);
-        const auto pPlayer = pGame->GetPlayer(playerIndex);
+
+        return pGame->GetPlayer(playerIndex);
+    }
+
+    bool IsPlayerState(int in_stateId)
+    {
+        const auto pPlayer = GetPlayer();
+
+        if (!pPlayer)
+            return false;
+
+        const auto pStateMachine = pPlayer->GetStateMachine<Sonicteam::Player::State::Machine2>();
+
+        if (!pStateMachine)
+            return false;
+
+        return pStateMachine->m_StateID == in_stateId;
+    }
+
+    bool IsPlayerOutOfControl()
+    {
+        const auto pPlayer = GetPlayer();
 
         if (!pPlayer)
             return false;
@@ -196,14 +226,44 @@ public:
         if (!pStateMachineContext)
             return false;
 
+        static std::array<int, 2> allowedStates =
+        {
+            Sonicteam::Player::State::State_CommonWideSpring,
+            Sonicteam::Player::State::State_CommonBalancer
+        };
+
+        for (const auto& rStateId : allowedStates)
+        {
+            if (pStateMachine->m_StateID == rStateId)
+                return false;
+        }
+
+        // TODO: figure out the true source of these flags, pulling them from a
+        // random plugin that happens to store a copy of them feels a bit wrong.
+        if (const auto pGravity = pStateMachineContext->m_spGravity.get())
+        {
+            if ((pGravity->m_Flags.get() & Sonicteam::Player::PostureControlFlags_Rope) != 0)
+                return false;
+
+            if ((pGravity->m_Flags.get() & Sonicteam::Player::PostureControlFlags_LightDash) != 0)
+                return true;
+        }
+
         const auto flags = pStateMachineContext->m_CommonContextIFFlags3.get();
 
         const auto miscFlags = pStateMachineContext->GetMiscFlags(Sonicteam::Player::State::CommonMiscFlagsSlot_100) &&
                                pStateMachineContext->GetMiscFlags(Sonicteam::Player::State::CommonMiscFlagsSlot_10C);
 
-        const auto isCommonBalancer = pStateMachine->GetState()->m_pVftable.ptr == 0x820038F0;
+        return (flags & Sonicteam::Player::CommonContextIFFlags_OutOfControl) != 0 || miscFlags;
+    }
 
-        return (flags & Sonicteam::Player::CommonContextIFFlags_OutOfControl) != 0 || miscFlags && !isCommonBalancer;
+    void UpdateMouseLookAccel(const float in_deltaX, const float in_deltaY, const Sonicteam::SoX::Math::Vector& in_rMouseTransitionPosition)
+    {
+        m_Acceleration.X = in_deltaX;
+        m_Acceleration.Y = in_deltaY;
+
+        ResetMouseOrbit(SonicCameraEx::MouseOrbitAxis_Yaw);
+        StartMouseTransition(in_rMouseTransitionPosition);
     }
 };
 
@@ -229,6 +289,11 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
         return;
 
     const auto pSonicCamera = reinterpret_cast<SonicCameraEx*>(g_memory.Translate(r31.u32));
+
+    // Only enable mouse look for the standard camera.
+    if (pSonicCamera->m_Type != Sonicteam::Camera::CameraMode::CameraType_CameraTargetAtPosition)
+        return;
+
     const auto pOutput = reinterpret_cast<Sonicteam::SoX::Math::Vector*>(g_memory.Translate(r5.u32));
 
     const auto pGame = static_cast<Sonicteam::GameImp*>(pSonicCamera->m_spGame.get());
@@ -251,8 +316,7 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
             if (std::fabsf(x) > 0.0f || std::fabsf(y) > 0.0f)
             {
                 // Sync current camera orbit to mouse orbit.
-                pSonicCamera->m_MouseOrbit.Y = pSonicCamera->m_Orbit.Y;
-                pSonicCamera->m_MouseOrbit.Z = pSonicCamera->m_Orbit.Z;
+                pSonicCamera->SyncMouseToOrbit();
                 pSonicCamera->StartMouseTransition(*pOutput);
                 pSonicCamera->m_MouseState = SonicCameraEx::MouseState_Enabled;
             }
@@ -262,8 +326,8 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
 
         // Sync current mouse orbit to camera orbit.
         case SonicCameraEx::MouseState_Resetting:
-            pSonicCamera->m_Orbit = pSonicCamera->m_MouseOrbit;
-            pSonicCamera->ResetMouseOrbit(SonicCameraEx::MouseOrbit_Yaw);
+            pSonicCamera->SyncOrbitToMouse();
+            pSonicCamera->ResetMouseOrbit(SonicCameraEx::MouseOrbitAxis_Yaw);
             pSonicCamera->m_MouseState = SonicCameraEx::MouseState_Disabled;
             return;
 
@@ -305,15 +369,13 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
                 pSonicCamera->m_MouseInactiveTime = 0.0f;
             }
 
-            if (pSonicCamera->IsPlayerOutOfControl())
+            // HACK (Hyper): the rodeo state typically tends to extend the camera distance,
+            // which breaks mouse look due to it using its own distance value. This should
+            // be fixed in the future by hooking the vector maths that adds the distance...
+            // ...when I have more time.
+            if (pSonicCamera->IsPlayerState(Sonicteam::Player::State::State_CommonRodeo))
             {
-                // Fall back to acceleration-based mouse look.
-                pSonicCamera->m_Acceleration.X = x;
-                pSonicCamera->m_Acceleration.Y = y;
-
-                pSonicCamera->ResetMouseOrbit(SonicCameraEx::MouseOrbit_Yaw);
-                pSonicCamera->StartMouseTransition(*pOutput);
-
+                pSonicCamera->UpdateMouseLookAccel(x, y, *pOutput);
                 return;
             }
 
@@ -344,6 +406,13 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
     if (pSonicCamera->m_pShapeCastA->CastShape(distance.get(), listener.get()))
         pSonicCamera->m_Orbit.X = std::min(context->HitPosition.Distance(pSonicCamera->m_Target), pSonicCamera->m_MouseOrbit.X.get());
 
+    // Fall back to acceleration-based mouse look.
+    if (pSonicCamera->IsPlayerOutOfControl())
+    {
+        pSonicCamera->UpdateMouseLookAccel(x, y, *pOutput);
+        return;
+    }
+
     GuestToHostFunction<Sonicteam::SoX::Math::Vector*>(sub_8218C4F0, normalisedOrbit.get(), &pSonicCamera->m_Orbit);
 
     const auto offset = Sonicteam::SoX::Math::Hermite(pSonicCamera->m_MouseTransitionPosition, *normalisedOrbit, pSonicCamera->m_MouseTransitionTime, 2.75f, in_deltaTime.f64);
@@ -359,7 +428,8 @@ PPC_FUNC(sub_82191200)
 
     __imp__sub_82191200(ctx, base);
 
-    pSonicCamera->ResetMouseOrbit(SonicCameraEx::MouseOrbit_Yaw | SonicCameraEx::MouseOrbit_Pitch);
+    pSonicCamera->ResetMouseOrbit(SonicCameraEx::MouseOrbitAxis_Yaw | SonicCameraEx::MouseOrbitAxis_Pitch);
+    pSonicCamera->SyncOrbitToMouse();
 }
 
 // Sonicteam::Camera::SonicCamera::EndInterpolate
@@ -370,7 +440,8 @@ PPC_FUNC(sub_82190710)
 
     __imp__sub_82190710(ctx, base);
 
-    pSonicCamera->ResetMouseOrbit(SonicCameraEx::MouseOrbit_Yaw);
+    pSonicCamera->ResetMouseOrbit(SonicCameraEx::MouseOrbitAxis_Yaw);
+    pSonicCamera->SyncOrbitToMouse();
 }
 
 // Sonicteam::Camera::DemoGMCamera::Update

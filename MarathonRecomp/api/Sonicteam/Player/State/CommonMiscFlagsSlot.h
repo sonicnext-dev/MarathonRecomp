@@ -21,12 +21,12 @@ namespace Sonicteam::Player::State
         CommonMiscFlagsSlot_E6,
         CommonMiscFlagsSlot_E7,
         CommonMiscFlagsSlot_E8,
-        CommonMiscFlagsSlot_E9,
-        CommonMiscFlagsSlot_EA,
+        CommonMiscFlagsSlot_IsMovingAir,
+        CommonMiscFlagsSlot_IsMoving,
         CommonMiscFlagsSlot_EB,
         CommonMiscFlagsSlot_EC,
-        CommonMiscFlagsSlot_ED,
-        CommonMiscFlagsSlot_EE,
+        CommonMiscFlagsSlot_IsGrinding,
+        CommonMiscFlagsSlot_IsTrajectoryGimmick,
         CommonMiscFlagsSlot_EF,
         CommonMiscFlagsSlot_F0,
         CommonMiscFlagsSlot_F1,
@@ -38,7 +38,7 @@ namespace Sonicteam::Player::State
         CommonMiscFlagsSlot_F7,
         CommonMiscFlagsSlot_F8,
         CommonMiscFlagsSlot_F9,
-        CommonMiscFlagsSlot_FA,
+        CommonMiscFlagsSlot_IsMovingGround,
         CommonMiscFlagsSlot_FB,
         CommonMiscFlagsSlot_FC,
         CommonMiscFlagsSlot_FD,
@@ -83,7 +83,6 @@ namespace Sonicteam::Player::State
         CommonMiscFlagsSlot_124,
         CommonMiscFlagsSlot_125,
         CommonMiscFlagsSlot_126,
-        CommonMiscFlagsSlot_127,
-        CommonMiscFlagsSlot_128
+        CommonMiscFlagsSlot_127
     };
 }

@@ -4,10 +4,12 @@
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include <Sonicteam/Player/State/CommonMiscFlagsSlot.h>
 #include <Sonicteam/Player/State/ICommonContext.h>
+#include <Sonicteam/Player/Gravity.h>
 #include <Sonicteam/Player/IExportPostureRequestFlag.h>
 #include <Sonicteam/Player/IExportWeaponRequestFlag.h>
 #include <Sonicteam/Player/PostureControlFlags.h>
 #include <Sonicteam/Player/Score.h>
+#include <Sonicteam/SoX/Array.h>
 #include <Sonicteam/SoX/RefSharedPointer.h>
 
 namespace Sonicteam::Combo
@@ -31,9 +33,9 @@ namespace Sonicteam::Player::State
         be<uint64_t> m_ExternalFlags;
         be<uint32_t> m_VehicleFlags;
         be<uint32_t> m_AmigoFlags;
-        uint8_t m_MiscFlags[80];
+        SoX::Array<uint8_t, 80> m_MiscFlags;
         boost::shared_ptr<Score> m_spScore;
-        MARATHON_INSERT_PADDING(8);
+        boost::shared_ptr<Gravity> m_spGravity;
         boost::shared_ptr<Input::ListenerNormal> m_spInputListenerNormal;
         boost::anonymous_shared_ptr m_spInputListenerAmigo;
         MARATHON_INSERT_PADDING(0xE8);
@@ -67,6 +69,7 @@ namespace Sonicteam::Player::State
     MARATHON_ASSERT_OFFSETOF(CommonContext, m_AmigoFlags, 0xD4);
     MARATHON_ASSERT_OFFSETOF(CommonContext, m_MiscFlags, 0xD8);
     MARATHON_ASSERT_OFFSETOF(CommonContext, m_spScore, 0x128);
+    MARATHON_ASSERT_OFFSETOF(CommonContext, m_spGravity, 0x130);
     MARATHON_ASSERT_OFFSETOF(CommonContext, m_spInputListenerNormal, 0x138);
     MARATHON_ASSERT_OFFSETOF(CommonContext, m_spInputListenerAmigo, 0x140);
     MARATHON_ASSERT_SIZEOF(CommonContext, 0x230);

@@ -204,14 +204,14 @@ PPC_FUNC(sub_82195500)
 
             if (const auto pCameraMode = pCameraman->m_spCameraModeManager->m_spCameraMode.get())
             {
-                guest_stack_var<Sonicteam::Message::Camera::Cameraman::MsgChangeMode> msgChangeMode;
-                msgChangeMode->PadID = pInputManager->ID;
-                msgChangeMode->TargetActorID = pPlayer->m_ActorID;
-                msgChangeMode->IsDemoCamera = pCameraMode->m_pVftable.ptr != 0x82002004;
+                guest_stack_var<Sonicteam::Message::Camera::Cameraman::MsgSetDemoCameraMode> msgSetDemoCameraMode;
+                msgSetDemoCameraMode->PadID = pInputManager->ID;
+                msgSetDemoCameraMode->TargetActorID = pPlayer->m_ActorID;
+                msgSetDemoCameraMode->Enabled = pCameraMode->m_pVftable.ptr != 0x82002004;
 
-                LOGFN("Demo Camera: {}", msgChangeMode->IsDemoCamera ? "Enabled" : "Disabled");
+                LOGFN("Demo Camera: {}", msgSetDemoCameraMode->Enabled ? "Enabled" : "Disabled");
 
-                pCameraman->ProcessMessage(msgChangeMode.get());
+                pCameraman->ProcessMessage(msgSetDemoCameraMode.get());
             }
         }
     }
