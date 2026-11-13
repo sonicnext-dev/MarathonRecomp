@@ -279,6 +279,20 @@ bool RestoreHomingFlips(PPCCRRegister& cr6)
         : !cr6.eq;
 }
 
+bool RestoreHomingGravity(PPCRegister& r1, PPCRegister& r4, PPCRegister& r5)
+{
+    if (!Config::RestoreHomingGravity)
+        return false;
+
+    const auto pResult = reinterpret_cast<Sonicteam::SoX::Math::Vector*>(g_memory.Translate(r1.u32 + 0x80));
+    const auto pVectorA = reinterpret_cast<Sonicteam::SoX::Math::Vector*>(g_memory.Translate(r4.u32));
+    const auto pVectorB = reinterpret_cast<Sonicteam::SoX::Math::Vector*>(g_memory.Translate(r5.u32));
+
+    *pResult = *pVectorA + *pVectorB;
+
+    return true;
+}
+
 bool RestoreRotationInterpolation(PPCRegister& r28)
 {
     if (!Config::RestoreRotationInterpolation)
