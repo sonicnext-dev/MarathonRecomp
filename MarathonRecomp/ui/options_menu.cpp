@@ -881,7 +881,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
 
                 def->SetHidden(false);
 
-                DrawOption(rowCount++, (ConfigDef<bool, true>*)def, true);
+                DrawOption(rowCount++, dynamic_cast<ConfigDef<bool> *>(def), true);
             }
 
             break;
