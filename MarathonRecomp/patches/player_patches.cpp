@@ -102,6 +102,11 @@ bool AlwaysExitVehicles()
     return Config::AlwaysExitVehicles;
 }
 
+bool AlwaysHaveHighSpeed()
+{
+    return Config::AlwaysHaveHighSpeed;
+}
+
 bool AntigravityRetainsMomentum()
 {
     return Config::AntigravityRetainsMomentum;
