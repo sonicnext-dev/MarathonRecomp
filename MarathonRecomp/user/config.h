@@ -56,12 +56,6 @@ enum class ELightDash : uint32_t
     Y
 };
 
-enum class ESlidingAttack : uint32_t
-{
-    B,
-    X
-};
-
 enum class EControllerIcons : uint32_t
 {
     Auto,
