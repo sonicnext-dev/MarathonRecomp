@@ -4,6 +4,7 @@
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include <Sonicteam/Camera/Cameraman.h>
 #include <Sonicteam/Player/State/Machine2.h>
+#include <Sonicteam/Player/Gravity.h>
 #include <Sonicteam/Player/IGauge.h>
 #include <Sonicteam/Player/IPlugIn.h>
 #include <Sonicteam/Player/RootFrame.h>
@@ -49,7 +50,7 @@ namespace Sonicteam::Player
         boost::shared_ptr<void> m_spModel;
         boost::shared_ptr<IPostureControl> m_spPostureControl;
         boost::shared_ptr<State::IMachine> m_spStateMachine;
-        boost::shared_ptr<void> m_spGravity;
+        boost::shared_ptr<Gravity> m_spGravity;
         boost::shared_ptr<void> m_spImpulse;
         be<uint32_t> m_SetupModuleIndexPrefix;
         be<uint32_t> m_SetupModuleIndexPostfix;

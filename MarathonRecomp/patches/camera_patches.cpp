@@ -186,12 +186,32 @@ public:
         m_MouseTransitionTime = 0.0f;
     }
 
-    bool IsPlayerOutOfControl()
+    Sonicteam::Player::Object* GetPlayer()
     {
         const auto pGame = static_cast<Sonicteam::GameImp*>(m_spGame.get());
-
         const auto playerIndex = pGame->GetPlayerIndexFromActorID(m_TargetActorID);
-        const auto pPlayer = pGame->GetPlayer(playerIndex);
+
+        return pGame->GetPlayer(playerIndex);
+    }
+
+    bool IsPlayerState(int in_stateId)
+    {
+        const auto pPlayer = GetPlayer();
+
+        if (!pPlayer)
+            return false;
+
+        const auto pStateMachine = pPlayer->GetStateMachine<Sonicteam::Player::State::Machine2>();
+
+        if (!pStateMachine)
+            return false;
+
+        return pStateMachine->m_StateID == in_stateId;
+    }
+
+    bool IsPlayerOutOfControl()
+    {
+        const auto pPlayer = GetPlayer();
 
         if (!pPlayer)
             return false;
@@ -206,14 +226,36 @@ public:
         if (!pStateMachineContext)
             return false;
 
+        static std::array<int, 2> allowedStates =
+        {
+            Sonicteam::Player::State::State_CommonWideSpring,
+            Sonicteam::Player::State::State_CommonBalancer
+        };
+
+        for (const auto& rStateId : allowedStates)
+        {
+            if (pStateMachine->m_StateID == rStateId)
+                return false;
+        }
+
+        // TODO: figure out the true source of these flags, pulling them from a
+        // random plugin that happens to store a copy of them feels a bit wrong.
+        if (const auto pGravity = pStateMachineContext->m_spGravity.get())
+        {
+            if ((pGravity->m_Flags.get() & Sonicteam::Player::PostureControlFlags_Rope) != 0)
+                return false;
+
+            if ((pGravity->m_Flags.get() & Sonicteam::Player::PostureControlFlags_LightDash) != 0)
+                return true;
+        }
+
         const auto flags = pStateMachineContext->m_CommonContextIFFlags3.get();
 
         const auto miscFlags = pStateMachineContext->GetMiscFlags(Sonicteam::Player::State::CommonMiscFlagsSlot_100) &&
                                pStateMachineContext->GetMiscFlags(Sonicteam::Player::State::CommonMiscFlagsSlot_10C);
 
-        const auto isCommonBalancer = pStateMachine->GetState()->m_pVftable.ptr == 0x820038F0;
+        return (flags & Sonicteam::Player::CommonContextIFFlags_OutOfControl) != 0 || miscFlags;
 
-        return (flags & Sonicteam::Player::CommonContextIFFlags_OutOfControl) != 0 || miscFlags && !isCommonBalancer;
     }
 };
 

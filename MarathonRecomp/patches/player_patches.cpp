@@ -218,7 +218,7 @@ PPC_FUNC(sub_82217FC0)
     }
 
     auto pSonicContext = (Sonicteam::Player::State::SonicContext*)(base + ctx.r3.u32);
-    auto pSonicGauge = pSonicContext->m_Gauge.get();
+    auto pSonicGauge = pSonicContext->m_spGauge.get();
 
     using enum Sonicteam::Player::State::SonicContext::Gem;
 
@@ -229,7 +229,7 @@ PPC_FUNC(sub_82217FC0)
         case Gem_Yellow:
         {
             // Prevent Yellow Gem spam.
-            if (pSonicContext->m_ThunderGuard)
+            if (pSonicContext->m_IsThunderGuard)
                 break;
         }
 
@@ -276,7 +276,7 @@ PPC_FUNC(sub_82218068)
     }
 
     auto pSonicContext = (Sonicteam::Player::State::SonicContext*)(base + ctx.r3.u32);
-    auto pSonicGauge = pSonicContext->m_Gauge.get();
+    auto pSonicGauge = pSonicContext->m_spGauge.get();
     auto deltaTime = ctx.f1.f64;
 
     using enum Sonicteam::Player::State::SonicContext::Gem;
@@ -307,8 +307,8 @@ PPC_FUNC(sub_82218068)
             if (pSonicGauge->m_Value <= 0)
             {
                 pSonicGauge->m_Value = 0.0;
-                pSonicContext->m_Shrink = 0;
-                pSonicContext->m_SlowTime = 0;
+                pSonicContext->m_IsPurpleGem = 0;
+                pSonicContext->m_IsRedGem = 0;
                 pSonicContext->m_Field24A = 1;
             }
 
@@ -408,7 +408,7 @@ void SonicGauge_FixFlags(PPCRegister& r3, PPCRegister& r31)
             pSonicGauge->m_GroundedFlags = 1;
     }
 
-    if (pSonicContext->m_Tornado != 0 || pSonicWeapons->m_rGunDrive.m_pRef)
+    if (pSonicContext->m_IsTornado != 0 || pSonicWeapons->m_rGunDrive.m_pRef)
     {
         pSonicGauge->m_GroundedFlags = 1;
     }
@@ -426,8 +426,8 @@ void SonicGauge_FixFlags(PPCRegister& r3, PPCRegister& r31)
             if (pSonicContext->m_Field24A)
             {
                 pSonicGauge->m_GroundedFlags = 0;
-                pSonicContext->m_Shrink = 0;
-                pSonicContext->m_SlowTime = 0;
+                pSonicContext->m_IsPurpleGem = 0;
+                pSonicContext->m_IsRedGem = 0;
             }
         }
         else if ((pSonicContext->m_PostureFlags.get() & Sonicteam::Player::PostureControlFlags_Grounded) != 0 || pSonicContext->m_Field24A)
