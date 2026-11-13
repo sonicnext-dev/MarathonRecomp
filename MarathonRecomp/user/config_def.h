@@ -136,6 +136,7 @@ CONFIG_DEFINE("Codes", bool, RestoreHomingFlips, false, false);
 CONFIG_DEFINE("Codes", bool, RestoreHomingSpam, false, false)
 CONFIG_DEFINE("Codes", bool, RestoreLoadingTransition, false, false);
 CONFIG_DEFINE("Codes", bool, RestorePauseMissionText, false, false);
+CONFIG_DEFINE("Codes", bool, RestoreRotationInterpolation, false, false);
 CONFIG_DEFINE("Codes", bool, RestoreSonicActionGauge, false, false);
 CONFIG_DEFINE("Codes", bool, TailsGauge, false, false);
 CONFIG_DEFINE("Codes", bool, ToggleUIOnF8, false, false);

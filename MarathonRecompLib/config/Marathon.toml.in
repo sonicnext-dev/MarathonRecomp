@@ -813,3 +813,15 @@ jump_address_on_true = 0x821A31C8
 name = "DisableSandJump"
 address = 0x8220924C
 jump_address_on_true = 0x82209258
+
+[[midasm_hook]]
+name = "RestoreRotationInterpolation"
+address = 0x82200900
+registers = ["r28"]
+jump_address_on_true = 0x8220090C
+
+[[midasm_hook]]
+name = "RestoreRotationInterpolation2"
+address = 0x822009E8
+registers = ["r10", "r31"]
+after_instruction = true

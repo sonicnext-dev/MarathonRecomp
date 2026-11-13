@@ -258,6 +258,26 @@ bool RestoreHomingFlips(PPCCRRegister& cr6)
         : !cr6.eq;
 }
 
+bool RestoreRotationInterpolation(PPCRegister& r28)
+{
+    if (!Config::RestoreRotationInterpolation)
+        return false;
+
+    r28.u32 = 1;
+
+    return true;
+}
+
+void RestoreRotationInterpolation2(PPCRegister& r10, PPCRegister& r31)
+{
+    if (!Config::RestoreRotationInterpolation)
+        return;
+
+    const auto base = g_memory.base;
+
+    r10.u64 = PPC_LOAD_U32(r31.u32 + 0x3F0);
+}
+
 bool UnlimitedAntigravity()
 {
     return Config::UnlimitedAntigravity;
