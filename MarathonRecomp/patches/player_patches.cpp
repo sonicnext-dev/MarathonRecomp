@@ -334,6 +334,16 @@ bool UnlimitedAntigravity()
     return Config::UnlimitedAntigravity;
 }
 
+bool UnlockSnowboardControl(PPCRegister& r3)
+{
+    if (!Config::UnlockSnowboardControl)
+        return false;
+
+    r3.u32 = 1;
+
+    return true;
+}
+
 PPC_FUNC_IMPL(__imp__sub_82217FC0);
 PPC_FUNC(sub_82217FC0)
 {

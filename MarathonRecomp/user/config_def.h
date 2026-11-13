@@ -146,6 +146,7 @@ CONFIG_DEFINE("Codes", bool, RestoreSonicActionGauge, false, false);
 CONFIG_DEFINE("Codes", bool, TailsGauge, false, false);
 CONFIG_DEFINE("Codes", bool, ToggleUIOnF8, false, false);
 CONFIG_DEFINE("Codes", bool, UnlimitedAntigravity, false, false);
+CONFIG_DEFINE("Codes", bool, UnlockSnowboardControl, false, false);
 CONFIG_DEFINE("Codes", bool, UseOfficialAchievementText, false, false);
 CONFIG_DEFINE("Codes", bool, UseOfficialTitleOnTitleBar, false, true);
 CONFIG_DEFINE("Codes", bool, UsePS3TypoFixes, true, false);

@@ -872,3 +872,9 @@ jump_address_on_true = 0x821AB6B0
 name = "ControllableHammerAttack"
 address = 0x821AB6B4
 jump_address_on_true = 0x821AB6B8
+
+[[midasm_hook]]
+name = "UnlockSnowboardControl"
+address = 0x82215000
+registers = ["r3"]
+jump_address_on_true = 0x82215004
