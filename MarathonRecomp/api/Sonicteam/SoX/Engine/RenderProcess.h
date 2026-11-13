@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Marathon.inl>
-#include <Sonicteam/SoX/Engine/GTask.h>
 #include <Sonicteam/SoX/LinkNode.h>
 
 namespace Sonicteam::SoX::Engine
 {
     class RenderScheduler;
+    class RenderProcessListener;
 
     class RenderProcess
     {
@@ -27,7 +27,7 @@ namespace Sonicteam::SoX::Engine
         be<float> m_Field18;
         MARATHON_INSERT_PADDING(4);
         xpointer<RenderScheduler> m_pRenderScheduler;
-        LinkNode<RenderProcess> m_Siblings; // TODO: verify.
+        LinkNode<RenderProcessListener> m_Listeners;
     };
 
     MARATHON_ASSERT_OFFSETOF(RenderProcess, m_Flag1, 0x04);
@@ -35,5 +35,5 @@ namespace Sonicteam::SoX::Engine
     MARATHON_ASSERT_OFFSETOF(RenderProcess, m_Flag2, 0x0C);
     MARATHON_ASSERT_OFFSETOF(RenderProcess, m_Field18, 0x18);
     MARATHON_ASSERT_OFFSETOF(RenderProcess, m_pRenderScheduler, 0x20);
-    MARATHON_ASSERT_OFFSETOF(RenderProcess, m_Siblings, 0x24);
+    MARATHON_ASSERT_OFFSETOF(RenderProcess, m_Listeners, 0x24);
 }
