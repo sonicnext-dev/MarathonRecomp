@@ -9,6 +9,7 @@ CONFIG_DEFINE_LOCALISED("System", bool, ControlTutorial, true, false);
 CONFIG_DEFINE_LOCALISED("System", bool, Autosave, true, false);
 CONFIG_DEFINE_LOCALISED("System", bool, AchievementNotifications, true, false);
 CONFIG_DEFINE("System", bool, ShowConsole, false, false);
+CONFIG_DEFINE("System", bool, ShowDebugSettings, false, false);
 
 CONFIG_DEFINE_ENUM_LOCALISED("Input", ECameraRotationMode, HorizontalCamera, ECameraRotationMode::Reverse, false);
 CONFIG_DEFINE_ENUM_LOCALISED("Input", ECameraRotationMode, VerticalCamera, ECameraRotationMode::Normal, false);

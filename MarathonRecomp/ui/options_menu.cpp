@@ -1237,6 +1237,9 @@ void OptionsMenu::Open(bool isPause)
     s_isVisible = true;
     s_isPause = isPause;
 
+    if (Config::ShowDebugSettings)
+        s_isDebugUnlocked = true;
+
     // Update stored values for config definitions
     // to check if their values have changed later.
     for (auto& def : g_configDefinitions)
