@@ -793,3 +793,13 @@ address = 0x822173F0
 registers = ["cr6"]
 jump_address_on_true = 0x82217404
 jump_address_on_false = 0x822173F4
+
+[[midasm_hook]]
+name = "ControllablePsychoShock"
+address = 0x821A4320
+jump_address_on_true = 0x821A4324
+
+[[midasm_hook]]
+name = "ControllablePsychoShock"
+address = 0x821A4334
+jump_address_on_true = 0x821A4338
