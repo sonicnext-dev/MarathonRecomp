@@ -178,6 +178,22 @@ bool DisableSandJump()
     return Config::DisableSandJump;
 }
 
+void E3ChainJumpSpeed_SetJumpSpeed(PPCRegister& f0)
+{
+    if (!Config::E3ChainJumpSpeed)
+        return;
+
+    f0.f64 = 8000.0;
+}
+
+void E3ChainJumpSpeed_SetWaitTime(PPCRegister& f12)
+{
+    if (!Config::E3ChainJumpSpeed)
+        return;
+
+    f12.f64 = 0.0;
+}
+
 bool MidairControlForMachSpeed()
 {
     return Config::MidairControlForMachSpeed;

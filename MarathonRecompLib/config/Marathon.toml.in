@@ -825,3 +825,14 @@ name = "RestoreRotationInterpolation2"
 address = 0x822009E8
 registers = ["r10", "r31"]
 after_instruction = true
+
+[[midasm_hook]]
+name = "E3ChainJumpSpeed_SetJumpSpeed"
+address = 0x821EE2F0
+registers = ["f0"]
+after_instruction = true
+
+[[midasm_hook]]
+name = "E3ChainJumpSpeed_SetWaitTime"
+address = 0x82211EAC
+registers = ["f12"]
