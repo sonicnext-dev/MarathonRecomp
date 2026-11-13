@@ -2501,6 +2501,21 @@ void Video::Present()
     g_presentProfiler.Reset();
 }
 
+const std::map<std::string, BufferInfo> g_bufferInfo
+{
+    { "framebuffer0",       { 0, 4 } },
+    { "framebuffer1",       { 0, 0 } },
+    { "framebuffer_1_4_0",  { 3, 2 } },
+    { "framebuffer_1_4_1",  { 0, 2 } },
+    { "framebuffer_1_8_0",  { 3, 2 } },
+    { "framebuffer_1_8_1",  { 0, 2 } },
+    { "framebuffer_1_16_0", { 3, 2 } },
+    { "framebuffer_1_16_1", { 0, 2 } },
+    { "framebuffer_1_32_0", { 3, 2 } },
+    { "framebuffer_1_32_1", { 0, 2 } },
+    { "depthstencil_1_4",   { 6, 0 } }
+};
+
 void Video::Resize(uint32_t width, uint32_t height)
 {
     const auto pApp = App::s_pApp;
@@ -2630,10 +2645,10 @@ void Video::Resize(uint32_t width, uint32_t height)
     {
         const auto pSurfaceName = rSurface.first.c_str();
 
-        if (!g_BufferInfo.contains(pSurfaceName))
+        if (!g_bufferInfo.contains(pSurfaceName))
             continue;
 
-        const auto& rBufferInfo = g_BufferInfo.at(pSurfaceName);
+        const auto& rBufferInfo = g_bufferInfo.at(pSurfaceName);
         const auto size = *RenderResolution::FindBufferSize(pSurfaceName, nullptr);
 
         auto pSurfaceParams = getSurfaceParams(rBufferInfo.Index, rBufferInfo.Flags);
@@ -2647,10 +2662,10 @@ void Video::Resize(uint32_t width, uint32_t height)
     {
         const auto pTextureName = rTexture.first.c_str();
 
-        if (!g_BufferInfo.contains(pTextureName))
+        if (!g_bufferInfo.contains(pTextureName))
             continue;
 
-        const auto& rBufferInfo = g_BufferInfo.at(pTextureName);
+        const auto& rBufferInfo = g_bufferInfo.at(pTextureName);
         const auto size = *RenderResolution::FindBufferSize(pTextureName, nullptr);
 
         CreateTextureLocal(rTexture.second.get(), size.Width, size.Height, 1, 1, pFormatConfigs[rBufferInfo.Index].Usage, pFormatConfigs[rBufferInfo.Index].TextureFormat, 0, 3);
