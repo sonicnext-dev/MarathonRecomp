@@ -149,20 +149,18 @@ void AspectRatioPatches::ComputeOffsets()
         g_aspectRatioOffsetY = 0.0f;
         g_aspectRatioScale = height / 720.0f;
 
-        // keep same scale above Steam Deck aspect ratio
+        // Keep same scale at 16:10.
         if (g_aspectRatio < WIDE_ASPECT_RATIO)
         {
-            // interpolate to original 4:3 scale
-            float steamDeckScale = g_aspectRatio / WIDE_ASPECT_RATIO;
-            float narrowScale = ComputeScale(NARROW_ASPECT_RATIO);
-            float lerpFactor = std::clamp((g_aspectRatio - NARROW_ASPECT_RATIO) / (STEAM_DECK_ASPECT_RATIO - NARROW_ASPECT_RATIO), 0.0f, 1.0f);
+            const auto narrowScale = ComputeScale(NARROW_ASPECT_RATIO);
+            const auto lerpFactor = std::clamp((g_aspectRatio - NARROW_ASPECT_RATIO) / (WIDE_ASPECT_RATIO - NARROW_ASPECT_RATIO), 0.0f, 1.0f);
 
-            g_aspectRatioGameplayScale = narrowScale + (steamDeckScale - narrowScale) * lerpFactor;
+            g_aspectRatioGameplayScale = std::lerp(narrowScale, 1.0f, lerpFactor);
         }
     }
     else
     {
-        // 4:3 crop
+        // 4:3 crop.
         g_aspectRatioOffsetX = (width - width * NARROW_ASPECT_RATIO) / 2.0f;
         g_aspectRatioOffsetY = (height - width / NARROW_ASPECT_RATIO) / 2.0f;
         g_aspectRatioScale = width / 960.0f;
