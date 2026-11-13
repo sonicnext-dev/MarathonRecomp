@@ -786,3 +786,10 @@ jump_address_on_true = 0x821A829C
 name = "AlwaysExitVehicles"
 address = 0x821A8100
 jump_address_on_true = 0x821A8104
+
+[[midasm_hook]]
+name = "RestoreHomingFlips"
+address = 0x822173F0
+registers = ["cr6"]
+jump_address_on_true = 0x82217404
+jump_address_on_false = 0x822173F4

@@ -208,6 +208,13 @@ bool RestoreChaosSpearFlips()
     return Config::RestoreChaosSpearFlips;
 }
 
+bool RestoreHomingFlips(PPCCRRegister& cr6)
+{
+    return Config::RestoreHomingFlips
+        ? !cr6.gt
+        : !cr6.eq;
+}
+
 bool UnlimitedAntigravity()
 {
     return Config::UnlimitedAntigravity;

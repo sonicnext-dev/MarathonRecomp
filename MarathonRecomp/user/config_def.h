@@ -129,6 +129,7 @@ CONFIG_DEFINE("Codes", bool, RestoreChaosBoostJump, false, false);
 CONFIG_DEFINE("Codes", bool, RestoreChaosSpearFlips, false, false);
 CONFIG_DEFINE("Codes", bool, RestoreContextualHUDColours, false, false);
 CONFIG_DEFINE("Codes", bool, RestoreDemoCameraMode, false, false);
+CONFIG_DEFINE("Codes", bool, RestoreHomingFlips, false, false);
 CONFIG_DEFINE("Codes", bool, RestoreHomingSpam, false, false)
 CONFIG_DEFINE("Codes", bool, RestoreLoadingTransition, false, false);
 CONFIG_DEFINE("Codes", bool, RestorePauseMissionText, false, false);
