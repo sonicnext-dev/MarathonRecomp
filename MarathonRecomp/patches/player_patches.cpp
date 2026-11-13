@@ -293,6 +293,17 @@ bool RestoreHomingGravity(PPCRegister& r1, PPCRegister& r4, PPCRegister& r5)
     return true;
 }
 
+void RestoreRingExplosionPhysics(PPCRegister& vec)
+{
+    if (!Config::RestoreRingExplosionPhysics)
+        return;
+
+    const auto pRingSpreadVector = reinterpret_cast<Sonicteam::SoX::Math::Vector*>(g_memory.Translate(vec.u32));
+
+    pRingSpreadVector->Y = 50.0f;
+    pRingSpreadVector->Z = 100.0f;
+}
+
 bool RestoreRotationInterpolation(PPCRegister& r28)
 {
     if (!Config::RestoreRotationInterpolation)

@@ -847,3 +847,18 @@ name = "RestoreHomingGravity"
 address = 0x821F8724
 registers = ["r1", "r4", "r5"]
 jump_address_on_true = 0x821F8730
+
+[[midasm_hook]]
+name = "RestoreRingExplosionPhysics"
+address = 0x821E8E98
+registers = ["r5"]
+
+[[midasm_hook]]
+name = "RestoreRingExplosionPhysics"
+address = 0x821E911C
+registers = ["r3"]
+
+[[midasm_hook]]
+name = "RestoreRingExplosionPhysics"
+address = 0x821E91A4
+registers = ["r5"]

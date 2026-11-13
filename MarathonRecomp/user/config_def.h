@@ -139,6 +139,7 @@ CONFIG_DEFINE("Codes", bool, RestoreHomingGravity, false, false);
 CONFIG_DEFINE("Codes", bool, RestoreHomingSpam, false, false)
 CONFIG_DEFINE("Codes", bool, RestoreLoadingTransition, false, false);
 CONFIG_DEFINE("Codes", bool, RestorePauseMissionText, false, false);
+CONFIG_DEFINE("Codes", bool, RestoreRingExplosionPhysics, false, false);
 CONFIG_DEFINE("Codes", bool, RestoreRotationInterpolation, false, false);
 CONFIG_DEFINE("Codes", bool, RestoreSonicActionGauge, false, false);
 CONFIG_DEFINE("Codes", bool, TailsGauge, false, false);
