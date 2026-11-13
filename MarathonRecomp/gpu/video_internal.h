@@ -38,3 +38,11 @@ extern std::unique_ptr<RenderPipelineLayout> g_pipelineLayout;
 
 RenderSampleCounts GetRenderSampleCount();
 void DiscardTexture(GuestBaseTexture* texture, RenderTextureLayout layout);
+
+struct BufferInfo
+{
+    uint32_t Index;
+    uint32_t Flags;
+};
+
+extern const std::map<std::string, BufferInfo> g_bufferInfo;
