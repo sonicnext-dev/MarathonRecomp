@@ -955,3 +955,9 @@ after_instruction = true
 name = "UnlimitedSpinningClaw"
 address = 0x821AC5A4
 jump_address_on_true = 0x821AC5A8
+
+[[midasm_hook]]
+name = "RestoreSilverBossThrow"
+address = 0x821B271C
+registers = ["r12"]
+after_instruction = true

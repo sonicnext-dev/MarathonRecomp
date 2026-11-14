@@ -392,6 +392,14 @@ void RestoreRotationInterpolation2(PPCRegister& r10, PPCRegister& r31)
     r10.u64 = PPC_LOAD_U32(r31.u32 + 0x3F0);
 }
 
+void RestoreSilverBossThrow(PPCRegister& r12)
+{
+    if (!Config::RestoreSilverBossThrow)
+        return;
+
+    r12.u64 = 0;
+}
+
 bool UnlimitedAntigravity()
 {
     return Config::UnlimitedAntigravity;
