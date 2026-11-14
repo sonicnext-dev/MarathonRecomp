@@ -1040,7 +1040,7 @@ CONFIG_DEFINE_LOCALE(E3ChainJumpSpeed)
 
 CONFIG_DEFINE_LOCALE(E3CheckpointBehavior)
 {
-    { ELanguage::English, { "E3 Checkpoint Behavior", "Resets the checkpoint state upon respawning." } }
+    { ELanguage::English, { "E3 Checkpoint Behavior", "Resets the checkpoint state upon respawning. A reload may be required for this to take effect." } }
 };
 
 CONFIG_DEFINE_LOCALE(E3RespawnTime)
@@ -1105,7 +1105,7 @@ CONFIG_DEFINE_LOCALE(RestoreChaosSpearFlips)
 
 CONFIG_DEFINE_LOCALE(RestoreContextualHUDColors)
 {
-    { ELanguage::English, { "Restore Contextual HUD Colors", "Restores the HUD colors matching the current character's episode theme." } }
+    { ELanguage::English, { "Restore Contextual HUD Colors", "Restores the HUD colors matching the current character's episode theme. A reload may be required for this to take effect." } }
 };
 
 CONFIG_DEFINE_LOCALE(RestoreDemoCameraMode)

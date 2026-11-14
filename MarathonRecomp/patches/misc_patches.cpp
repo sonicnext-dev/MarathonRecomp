@@ -11,28 +11,13 @@ void UnlockAchievement(PPCRegister& id)
 
 void SetLifeBarAnimation(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5, PPCRegister& r31)
 {
-    static bool s_initContextualHUD{};
-    static char* s_lifeBarSceneName{};
+    static char* lifeBarSceneName{};
 
-    if (!s_initContextualHUD)
+    if (!lifeBarSceneName)
     {
         constexpr const char* LIFE_BAR_ANIME = "life_bar_anime";
-
-        s_lifeBarSceneName = (char*)g_userHeap.Alloc(strlen(LIFE_BAR_ANIME) + 1);
-
-        strcpy(s_lifeBarSceneName, LIFE_BAR_ANIME);
-
-        if (Config::RestoreContextualHUDColors)
-        {
-            (*Sonicteam::Globals::ms_pMainDisplayColors)[Sonicteam::Character_Shadow] = 1.0f;
-            (*Sonicteam::Globals::ms_pMainDisplayColors)[Sonicteam::Character_Omega] = 1.0f;
-            (*Sonicteam::Globals::ms_pMainDisplayColors)[Sonicteam::Character_Rouge] = 1.0f;
-            (*Sonicteam::Globals::ms_pMainDisplayColors)[Sonicteam::Character_Silver] = 2.0f;
-            (*Sonicteam::Globals::ms_pMainDisplayColors)[Sonicteam::Character_Amy] = 2.0f;
-            (*Sonicteam::Globals::ms_pMainDisplayColors)[Sonicteam::Character_Blaze] = 2.0f;
-        }
-
-        s_initContextualHUD = true;
+        lifeBarSceneName = (char*)g_userHeap.Alloc(strlen(LIFE_BAR_ANIME) + 1);
+        strcpy(lifeBarSceneName, LIFE_BAR_ANIME);
     }
 
     auto base = g_memory.base;
@@ -45,34 +30,47 @@ void SetLifeBarAnimation(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5, PPCR
         pCsdObject->m_pCsdResource->m_MgrResourceName == "sprite/tagdisplay_2p") &&
         strcmp(pSceneName, "life_ber_anime") == 0)
     {
-        r4.u32 = g_memory.MapVirtual(s_lifeBarSceneName);
+        r4.u32 = g_memory.MapVirtual(lifeBarSceneName);
     }
 
-    if (!Config::RestoreContextualHUDColors)
-        return;
-
-    auto pHUDMainDisplay = (Sonicteam::HUDMainDisplay*)g_memory.Translate(r31.u32);
-
-    switch (pHUDMainDisplay->m_Character)
+    if (Config::RestoreContextualHUDColors)
     {
-        case Sonicteam::Character_Sonic:
-        case Sonicteam::Character_Tails:
-        case Sonicteam::Character_Knuckles:
-            r5.u32 = 0x82036778; // "sonic_in"
-            break;
+        (*Sonicteam::Globals::ms_pMainDisplayColors)[Sonicteam::Character_Shadow] = 1.0f;
+        (*Sonicteam::Globals::ms_pMainDisplayColors)[Sonicteam::Character_Omega] = 1.0f;
+        (*Sonicteam::Globals::ms_pMainDisplayColors)[Sonicteam::Character_Rouge] = 1.0f;
+        (*Sonicteam::Globals::ms_pMainDisplayColors)[Sonicteam::Character_Silver] = 2.0f;
+        (*Sonicteam::Globals::ms_pMainDisplayColors)[Sonicteam::Character_Amy] = 2.0f;
+        (*Sonicteam::Globals::ms_pMainDisplayColors)[Sonicteam::Character_Blaze] = 2.0f;
 
-        case Sonicteam::Character_Shadow:
-        case Sonicteam::Character_Omega:
-        case Sonicteam::Character_Rouge:
-            r5.u32 = 0x8203676C; // "shadow_in"
-            break;
+        auto pHUDMainDisplay = (Sonicteam::HUDMainDisplay*)g_memory.Translate(r31.u32);
 
-        case Sonicteam::Character_Silver:
-        case Sonicteam::Character_Amy:
-        case Sonicteam::Character_Blaze:
-            r5.u32 = 0x82036760; // "silver_in"
-            break;
+        switch (pHUDMainDisplay->m_Character)
+        {
+            case Sonicteam::Character_Sonic:
+            case Sonicteam::Character_Tails:
+            case Sonicteam::Character_Knuckles:
+                r5.u32 = 0x82036778; // "sonic_in"
+                break;
+
+            case Sonicteam::Character_Shadow:
+            case Sonicteam::Character_Omega:
+            case Sonicteam::Character_Rouge:
+                r5.u32 = 0x8203676C; // "shadow_in"
+                break;
+
+            case Sonicteam::Character_Silver:
+            case Sonicteam::Character_Amy:
+            case Sonicteam::Character_Blaze:
+                r5.u32 = 0x82036760; // "silver_in"
+                break;
+        }
     }
+    else
+    {
+        for (auto& rColor : *Sonicteam::Globals::ms_pMainDisplayColors)
+            rColor = 0.0f;
+    }
+
 }
 
 void SetRingBarIndex(PPCRegister& r5, PPCRegister& r31)
