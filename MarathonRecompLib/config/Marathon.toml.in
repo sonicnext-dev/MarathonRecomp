@@ -920,3 +920,15 @@ name = "IncreasedHeatKnuckleRange"
 address = 0x822460EC
 registers = ["f0"]
 after_instruction = true
+
+# Knuckles
+[[midasm_hook]]
+name = "DisableClimbFromJump"
+address = 0x821AD1A8
+jump_address_on_true = 0x821AD1B4
+
+# Rouge
+[[midasm_hook]]
+name = "DisableClimbFromJump"
+address = 0x821AF140
+jump_address_on_true = 0x821AF14C

@@ -193,6 +193,11 @@ bool ControllableTornadoAttack()
     return Config::ControllableTornadoAttack;
 }
 
+bool DisableClimbFromJump()
+{
+    return Config::DisableClimbFromJump;
+}
+
 bool DisableMidairSpinningClaw()
 {
     return Config::DisableMidairSpinningClaw;
