@@ -762,10 +762,17 @@ name = "ControllableHomingRecovery"
 address = 0x82217600
 jump_address_on_true = 0x82217618
 
+# Sonic
 [[midasm_hook]]
 name = "RestoreHomingSpam"
 address = 0x822175D8
 jump_address_on_true = 0x822175E4
+
+# Shadow
+[[midasm_hook]]
+name = "RestoreHomingSpam"
+address = 0x821A68AC
+jump_address_on_true = 0x821A68B8
 
 [[midasm_hook]]
 name = "AlwaysExitVehicles"
