@@ -132,6 +132,7 @@ CONFIG_DEFINE("Codes", bool, E3ChainJumpSpeed, false, false);
 CONFIG_DEFINE("Codes", bool, EnableDebugMode, false, false);
 CONFIG_DEFINE("Codes", bool, FixEnvironmentMaps, true, false);
 CONFIG_DEFINE("Codes", bool, FixPowerUpJingleDuration, true, false);
+CONFIG_DEFINE("Codes", bool, IncreasedChaosBlastRange, false, false);
 CONFIG_DEFINE("Codes", bool, IncreasedHeatKnuckleRange, false, false);
 CONFIG_DEFINE("Codes", bool, MidairControlForMachSpeed, false, false);
 CONFIG_DEFINE("Codes", bool, MidairControlForSnowboards, false, false);

@@ -910,6 +910,12 @@ address = 0x821AA910
 jump_address_on_true = 0x821AA914
 
 [[midasm_hook]]
+name = "IncreasedChaosBlastRange"
+address = 0x82253560
+registers = ["f0"]
+after_instruction = true
+
+[[midasm_hook]]
 name = "IncreasedHeatKnuckleRange"
 address = 0x822460EC
 registers = ["f0"]

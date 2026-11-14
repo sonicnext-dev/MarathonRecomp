@@ -224,6 +224,14 @@ void E3ChainJumpSpeed_SetWaitTime(PPCRegister& f12)
     f12.f64 = 0.0;
 }
 
+void IncreasedChaosBlastRange(PPCRegister& f0)
+{
+    if (!Config::IncreasedChaosBlastRange)
+        return;
+
+    f0.f64 = 2500.0;
+}
+
 void IncreasedHeatKnuckleRange(PPCRegister& f0)
 {
     if (!Config::IncreasedHeatKnuckleRange)
