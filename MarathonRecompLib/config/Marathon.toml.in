@@ -574,7 +574,37 @@ name = "Super3_DisableChangeRequestHint"
 address = 0x8226AB4C
 jump_address_on_true = 0x8226AB70
 
-# Skip decrementing lives on death
+# Skip 1-UP from 100 rings (Tag)
+[[midasm_hook]]
+name = "DisableLives"
+address = 0x8216B7D4
+jump_address_on_true = 0x8216B7EC
+
+# Skip 1-UP from 100 rings (Self)
+[[midasm_hook]]
+name = "DisableLives"
+address = 0x8216B810
+jump_address_on_true = 0x8216B828
+
+# Skip 1-UP from 100 rings (1-UP Sound)
+[[midasm_hook]]
+name = "DisableLives"
+address = 0x8216B834
+jump_address_on_true = 0x8216B83C
+
+# Skip incrementing lives from 1-UP container
+[[midasm_hook]]
+name = "DisableLives"
+address = 0x8216CB6C
+jump_address_on_true = 0x8216CBE8
+
+# Skip decrementing lives on restart
+[[midasm_hook]]
+name = "DisableLives"
+address = 0x821855F0
+jump_address_on_true = 0x821855F4
+
+# Skip decrementing lives on death (Self)
 [[midasm_hook]]
 name = "DisableLives"
 address = 0x821857B0
@@ -585,24 +615,6 @@ jump_address_on_true = 0x821857B4
 name = "DisableLives"
 address = 0x82185A54
 jump_address_on_true = 0x82185A80
-
-# Skip decrementing lives on restart
-[[midasm_hook]]
-name = "DisableLives"
-address = 0x821855F0
-jump_address_on_true = 0x821855F4
-
-# Skip incrementing lives from 1-UP container
-[[midasm_hook]]
-name = "DisableLives"
-address = 0x8216CB6C
-jump_address_on_true = 0x8216CBE8
-
-# Skip 1-UP from 100 rings
-[[midasm_hook]]
-name = "DisableLives"
-address = 0x8216B754
-jump_address_on_true = 0x8216B83C
 
 [[midasm_hook]]
 name = "DisableLives_RestoreStartOverOption"
