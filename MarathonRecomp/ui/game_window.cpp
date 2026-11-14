@@ -337,7 +337,8 @@ SDL_Surface* GameWindow::GetIconSurface(void* pIcon, size_t iconSize)
             return nullptr;
         }
 
-        surface = SDL_CreateSurfaceFrom(width, height, SDL_PIXELFORMAT_RGBA32, stbImage, width * 4);
+        surface = SDL_CreateSurface(width, height, SDL_PIXELFORMAT_RGBA32);
+        memcpy(surface->pixels, stbImage, width * height * 4);
         stbi_image_free(stbImage);
     } else {
         auto io = SDL_IOFromMem(pIcon, iconSize);
