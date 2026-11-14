@@ -193,6 +193,20 @@ bool ControllableTornadoAttack()
     return Config::ControllableTornadoAttack;
 }
 
+PPC_FUNC_IMPL(__imp__sub_821B6B20); // Sonicteam::Player::State::ShadowHoming<1>::Update
+PPC_FUNC_IMPL(__imp__sub_821B66E8); // Sonicteam::Player::State::ShadowHoming<0>::Update
+PPC_FUNC(sub_821B66E8)
+{
+    // Redirect state update with attacks to one without.
+    if (Config::DisableChaosAttack)
+    {
+        __imp__sub_821B6B20(ctx, base);
+        return;
+    }
+
+    __imp__sub_821B66E8(ctx, base);
+}
+
 bool DisableClimbFromJump()
 {
     return Config::DisableClimbFromJump;
