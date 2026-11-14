@@ -981,3 +981,9 @@ registers = ["r11", "r4"]
 name = "DisableAmigoChangeCutscenes"
 address = 0x8223A168
 jump_address_on_true = 0x8223A2D4
+
+[[midasm_hook]]
+name = "FixOmegaShotCollision"
+address = 0x822488F0
+registers = ["r6"]
+after_instruction = true

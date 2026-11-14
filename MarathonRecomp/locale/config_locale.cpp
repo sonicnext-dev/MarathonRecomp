@@ -1058,6 +1058,11 @@ CONFIG_DEFINE_LOCALE(FixEnvironmentMaps)
     { ELanguage::English, { "Fix Environment Maps", "Fixes the game not loading new environment maps correctly, resulting in mismatching reflections in some areas." } }
 };
 
+CONFIG_DEFINE_LOCALE(FixOmegaShotCollision)
+{
+    { ELanguage::English, { "Fix Omega Shot Collision", "Fixes Omega Shot using incorrect collision properties, resulting in Homing Attacks colliding with it as an amigo. A reload may be required for this to take effect." } }
+};
+
 CONFIG_DEFINE_LOCALE(FixPowerUpJingleDuration)
 {
     { ELanguage::English, { "Fix Power Up Jingle Duration", "Fixes the power up jingle ending before the power up has expired." } }

@@ -275,6 +275,14 @@ void E3RespawnTime(PPCRegister& f0)
     f0.f64 = 1.5;
 }
 
+void FixOmegaShotCollision(PPCRegister& r6)
+{
+    if (!Config::FixOmegaShotCollision)
+        return;
+
+    r6.u32 = 0x1C80;
+}
+
 void IncreasedChaosBlastRange(PPCRegister& f0)
 {
     if (!Config::IncreasedChaosBlastRange)
