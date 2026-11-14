@@ -939,3 +939,8 @@ jump_address_on_true = 0x821AD1B4
 name = "DisableClimbFromJump"
 address = 0x821AF140
 jump_address_on_true = 0x821AF14C
+
+[[midasm_hook]]
+name = "E3CheckpointBehaviour"
+address = 0x82298C38
+jump_address_on_true = 0x82298C5C

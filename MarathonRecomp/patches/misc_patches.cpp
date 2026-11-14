@@ -211,4 +211,9 @@ PPC_FUNC(sub_82188460)
     ctx.r3.u64 = Config::Subtitles;
 }
 
+bool E3CheckpointBehaviour()
+{
+    return Config::E3CheckpointBehaviour;
+}
+
 void NOP() {}

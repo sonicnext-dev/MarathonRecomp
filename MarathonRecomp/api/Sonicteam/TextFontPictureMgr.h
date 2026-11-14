@@ -1,6 +1,9 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/SoX/IResourceMgr.h>
+#include <Sonicteam/System/CreateStatic.h>
+#include <Sonicteam/System/Singleton.h>
 
 namespace Sonicteam
 {
