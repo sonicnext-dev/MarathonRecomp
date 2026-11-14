@@ -328,17 +328,16 @@ void RestoreChainJumpFlips(PPCRegister& r31, PPCRegister& r30, PPCRegister& r11,
         be<uint32_t> ActorID;
     };
 
-    auto pPlayer = (Sonicteam::Player::Object*)g_memory.Translate(r31.u32);
-    auto pMessage = (Message*)g_memory.Translate(r30.u32);
-    auto pPlayerContext = (Sonicteam::Player::State::ICommonContext*)g_memory.Translate(r11.u32);
-    auto pActorManager = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->GetGame()->m_spActorManager.get();
+    const auto pPlayer = reinterpret_cast<Sonicteam::Player::Object*>(g_memory.Translate(r31.u32));
+    const auto pMessage = reinterpret_cast<Message*>(g_memory.Translate(r30.u32));
+    const auto pPlayerContext = reinterpret_cast<Sonicteam::Player::State::ICommonContext*>(g_memory.Translate(r11.u32));
+    const auto pActorManager = pPlayer->m_pDoc->GetDocMode<Sonicteam::GameMode>()->GetGame()->m_spActorManager.get();
 
-    auto origin = pPlayer->m_spRootFrame->m_PositionF0;
     auto target = pMessage->Position;
 
     if (pMessage->ActorID != -1)
     {
-        auto pFixture = GuestToHostFunction<Sonicteam::Fixture*>(sub_821609D0, pActorManager, &pMessage->ActorID);
+        const auto pFixture = GuestToHostFunction<Sonicteam::Fixture*>(sub_821609D0, pActorManager, &pMessage->ActorID);
 
         auto msgGetNextPoint = guest_stack_var<Sonicteam::Message::ObjJump123::MsgGetNextPoint>();
         msgGetNextPoint->Rotation = { 0, 0, 0, 1 };
@@ -348,17 +347,18 @@ void RestoreChainJumpFlips(PPCRegister& r31, PPCRegister& r30, PPCRegister& r11,
             target = msgGetNextPoint->Position;
     }
 
-    auto magnitudeHorz = f1.f64;
-    auto magnitudeForward = f2.f64;
-    auto distance = origin.Distance(target);
-    auto magnitude = std::sqrt(magnitudeHorz * magnitudeHorz + magnitudeForward * magnitudeForward);
+    const auto magnitudeHorz = f1.f64;
+    const auto magnitudeForward = f2.f64;
+    const auto distance = pPlayer->m_spRootFrame->m_PositionF0.Distance(target);
+    const auto magnitude = std::sqrt(magnitudeHorz * magnitudeHorz + magnitudeForward * magnitudeForward);
+
     auto time = 1.0;
 
     if (distance > 0.0 && magnitude > 0.0)
         time = distance / magnitude;
 
     // CommonContext has a slightly different algorithm to process chain flips.
-    if (((Sonicteam::Player::IPlugIn*)pPlayerContext)->m_pVftable.ptr != 0x8200A728)
+    if (static_cast<Sonicteam::Player::IPlugIn*>(pPlayerContext)->m_pVftable.ptr != 0x8200A728)
         time *= 0.35;
 
     f3.f64 = time;
