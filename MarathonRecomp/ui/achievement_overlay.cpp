@@ -23,7 +23,34 @@ static uint32_t g_mainThreadId = HostThread::GetCurrentID();
 
 static bool CanDequeueAchievement()
 {
-    return HostThread::GetCurrentID() == g_mainThreadId && !AchievementOverlay::s_queue.empty();
+    if (HostThread::GetCurrentID() != g_mainThreadId)
+        return false;
+
+    if (AchievementOverlay::s_queue.empty())
+        return false;
+
+    const auto pApp = App::s_pApp;
+
+    if (!pApp)
+        return false;
+
+    const auto pDoc = pApp->m_pDoc;
+
+    if (!pDoc || pDoc->m_IsLoading)
+        return false;
+
+    const auto soundBankId = pDoc->m_spAudioPlayer->GetSoundBankID("system");
+
+    if (soundBankId == -1)
+        return false;
+
+    const auto soundId = pDoc->m_spAudioPlayer->GetSoundID(soundBankId, "deside");
+
+    if (soundId == -1)
+        return false;
+
+    // Only dequeue achievements when achievement sound is available.
+    return true;
 }
 
 void AchievementOverlay::Draw()

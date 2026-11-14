@@ -332,8 +332,7 @@ static void PipelineTaskConsumerThread()
 
                     // Compile both MSAA and non MSAA variants to work with reflection maps. The render formats are an assumption but it should hold true.
                     if (Config::AntiAliasing != EAntiAliasing::Off &&
-                        pipelineState.renderTargetFormat == RenderFormat::R16G16B16A16_FLOAT &&
-                        pipelineState.depthStencilFormat == RenderFormat::D32_FLOAT_S8_UINT)
+                        pipelineState.renderTargetFormat == RenderFormat::R16G16B16A16_FLOAT)
                     {
                         auto msaaPipelineState = pipelineState;
                         msaaPipelineState.sampleCount = GetRenderSampleCount();

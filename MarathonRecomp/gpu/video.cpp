@@ -215,7 +215,7 @@ Backend g_backend;
 #endif
 
 static bool g_triangleStripWorkaround = false;
-static bool g_enableHardwareDepthResolve = false;
+static bool g_hardwareDepthResolve = false;
 
 static std::unique_ptr<RenderInterface> g_interface;
 static std::unique_ptr<RenderDevice> g_device;
@@ -1133,9 +1133,12 @@ static bool TryCreateHostDevice(std::vector<RenderInterfaceFunction*>& interface
                     {
                         bool redirectToVulkan = false;
 
-                        // ...
-                        // There used to be driver redirections here, but they are all free from Vulkan purgatory for now...
-                        // ...
+                        if (deviceDescription.vendor == RenderDeviceVendor::INTEL)
+                        {
+                            // Intel drivers on D3D12 may corrupt the radar map mask, redirect to Vulkan for now.
+                            if (Config::GraphicsAPI == EGraphicsAPI::Auto)
+                                redirectToVulkan = true;
+                        }
 
                         if (redirectToVulkan)
                         {
@@ -1163,9 +1166,9 @@ static bool TryCreateHostDevice(std::vector<RenderInterfaceFunction*>& interface
                 // restart indices cause triangles to be culled incorrectly. Converting them to degenerate triangles fixes it.
                 g_triangleStripWorkaround = (deviceDescription.vendor == RenderDeviceVendor::AMD);
 
-                // Only NVIDIA is confirmed to work with hardware depth resolve; AMD seems to just leave
-                // the destination blank for some reason.
-                g_enableHardwareDepthResolve = (deviceDescription.vendor == RenderDeviceVendor::NVIDIA);
+                // AMD depth resolve is leaving the destination empty for some reason.
+                // Intel behavior is not confirmed, but we redirect to Vulkan already for other reasons.
+                g_hardwareDepthResolve = (deviceDescription.vendor != RenderDeviceVendor::AMD);
 
                 break;
             }
@@ -1844,10 +1847,11 @@ static void DrawProfiler()
                 IMGUI_GENERIC_ROW("GPU Waits", "%u", g_waitForGPUCount);
                 IMGUI_GENERIC_ROW("Buffer Uploads", "%u", g_bufferUploadCount.load());
 
-                IMGUI_GENERIC_ROW("Resolution", "%ux%u (%ux%u)",
+                IMGUI_GENERIC_ROW("Resolution", "%ux%u (%ux%u) (%ux)",
                     Video::s_viewportWidth, Video::s_viewportHeight,
                     static_cast<uint32_t>(round(Video::s_viewportWidth * Config::ResolutionScale)),
-                    static_cast<uint32_t>(round(Video::s_viewportHeight * Config::ResolutionScale)));
+                    static_cast<uint32_t>(round(Video::s_viewportHeight * Config::ResolutionScale)),
+                    GetRenderSampleCount());
 
                 ImGui::EndTable();
             }
@@ -2501,6 +2505,21 @@ void Video::Present()
     g_presentProfiler.Reset();
 }
 
+const std::map<std::string, BufferInfo> g_bufferInfo
+{
+    { "framebuffer0",       { 0, 4 } },
+    { "framebuffer1",       { 0, 0 } },
+    { "framebuffer_1_4_0",  { 3, 2 } },
+    { "framebuffer_1_4_1",  { 0, 2 } },
+    { "framebuffer_1_8_0",  { 3, 2 } },
+    { "framebuffer_1_8_1",  { 0, 2 } },
+    { "framebuffer_1_16_0", { 3, 2 } },
+    { "framebuffer_1_16_1", { 0, 2 } },
+    { "framebuffer_1_32_0", { 3, 2 } },
+    { "framebuffer_1_32_1", { 0, 2 } },
+    { "depthstencil_1_4",   { 6, 0 } }
+};
+
 void Video::Resize(uint32_t width, uint32_t height)
 {
     const auto pApp = App::s_pApp;
@@ -2630,10 +2649,10 @@ void Video::Resize(uint32_t width, uint32_t height)
     {
         const auto pSurfaceName = rSurface.first.c_str();
 
-        if (!g_BufferInfo.contains(pSurfaceName))
+        if (!g_bufferInfo.contains(pSurfaceName))
             continue;
 
-        const auto& rBufferInfo = g_BufferInfo.at(pSurfaceName);
+        const auto& rBufferInfo = g_bufferInfo.at(pSurfaceName);
         const auto size = *RenderResolution::FindBufferSize(pSurfaceName, nullptr);
 
         auto pSurfaceParams = getSurfaceParams(rBufferInfo.Index, rBufferInfo.Flags);
@@ -2647,10 +2666,10 @@ void Video::Resize(uint32_t width, uint32_t height)
     {
         const auto pTextureName = rTexture.first.c_str();
 
-        if (!g_BufferInfo.contains(pTextureName))
+        if (!g_bufferInfo.contains(pTextureName))
             continue;
 
-        const auto& rBufferInfo = g_BufferInfo.at(pTextureName);
+        const auto& rBufferInfo = g_bufferInfo.at(pTextureName);
         const auto size = *RenderResolution::FindBufferSize(pTextureName, nullptr);
 
         CreateTextureLocal(rTexture.second.get(), size.Width, size.Height, 1, 1, pFormatConfigs[rBufferInfo.Index].Usage, pFormatConfigs[rBufferInfo.Index].TextureFormat, 0, 3);
@@ -3093,7 +3112,7 @@ static bool UseShaderResolve(GuestSurface* surface)
         // or the surface is depth and resolve modes are not supported.
         if (surface->sampleCount == RenderSampleCount::COUNT_1 ||
             surface->format != texture->format ||
-            (RenderFormatIsDepth(surface->format) && (!g_capabilities.resolveModes || !g_enableHardwareDepthResolve)))
+            (RenderFormatIsDepth(surface->format) && (!g_capabilities.resolveModes || !g_hardwareDepthResolve)))
             return true;
     }
 
