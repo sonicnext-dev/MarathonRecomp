@@ -103,11 +103,11 @@ CONFIG_DEFINE_ENUM_LOCALISED("Video", ERadialBlur, RadialBlur, ERadialBlur::Orig
 CONFIG_DEFINE_ENUM_LOCALISED("Video", ECutsceneAspectRatio, CutsceneAspectRatio, ECutsceneAspectRatio::Original, false);
 CONFIG_DEFINE_ENUM_LOCALISED("Video", EUIAlignmentMode, UIAlignmentMode, EUIAlignmentMode::Edge, false);
 
+CONFIG_DEFINE_LOCALISED("Codes", bool, AlwaysUnlockedDebugSettings, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, AlwaysExitVehicles, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, AlwaysHaveHighSpeed, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, AlwaysHaveInvincibility, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, AlwaysHoldPhysicsObjects, false, false);
-CONFIG_DEFINE_LOCALISED("Codes", bool, AlwaysUnlockedDebugSettings, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, BootDirectlyToTitle, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, BootDirectlyToDevTitle, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, ControllableBoundAttack, false, false);
