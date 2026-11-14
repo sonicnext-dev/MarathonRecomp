@@ -824,6 +824,12 @@ void Config::CreateCallbacks()
     {
         GameWindow::SetTitle();
     };
+
+    Config::AlwaysUnlockedDebugSettings.Callback = [](ConfigDef<bool>* def)
+    {
+        if (def->Value)
+            OptionsMenu::s_isDebugUnlocked = true;
+    };
 }
 
 void Config::Load()

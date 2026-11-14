@@ -157,6 +157,23 @@ bool TitleTask_RedirectStateTransitionToOutroAnim(PPCRegister& r31)
     return true;
 }
 
+static void CheckDevTitleCombo() {
+    if (g_devTitleState == DevTitleState::Idle)
+    {
+        if (auto& spInputManager = App::s_pApp->m_pDoc->m_InputManagers[0])
+        {
+            auto& rPadState = spInputManager->PadState;
+
+            if (g_secretFlags == SECRET_ALL &&
+                rPadState.IsDown(Sonicteam::SoX::Input::PadButton_South) &&
+                rPadState.IsDown(Sonicteam::SoX::Input::PadButton_Start))
+            {
+                g_devTitleState = DevTitleState::Open;
+            }
+        }
+    }
+}
+
 // Sonicteam::TitleTask::Update
 PPC_FUNC_IMPL(__imp__sub_825126A0);
 PPC_FUNC(sub_825126A0)
@@ -214,18 +231,7 @@ PPC_FUNC(sub_825126A0)
 
         case Sonicteam::TitleTask::TitleState_OptionsWait:
         {
-            if (auto& spInputManager = App::s_pApp->m_pDoc->m_InputManagers[0])
-            {
-                auto& rPadState = spInputManager->PadState;
-
-                if (g_secretFlags == SECRET_ALL &&
-                    rPadState.IsDown(Sonicteam::SoX::Input::PadButton_South) &&
-                    rPadState.IsDown(Sonicteam::SoX::Input::PadButton_Start))
-                {
-                    g_devTitleState = DevTitleState::Open;
-                }
-            }
-
+            CheckDevTitleCombo();
             break;
         }
 
@@ -237,6 +243,8 @@ PPC_FUNC(sub_825126A0)
                 LOGN("Resetting achievements...");
                 AchievementManager::Reset();
             }
+
+            CheckDevTitleCombo();
 
             g_ignoreDelayPreference = isUpdateAvailable;
             g_titleProceedOutroTime += deltaTime;
