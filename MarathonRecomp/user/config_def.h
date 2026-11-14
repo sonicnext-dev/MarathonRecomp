@@ -137,7 +137,7 @@ CONFIG_DEFINE_LOCALISED("Codes", bool, E3CheckpointBehavior, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, E3RespawnTime, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, EnableDebugMode, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, FixEnvironmentMaps, true, false);
-CONFIG_DEFINE_LOCALISED("Codes", bool, FixOmegaShotCollision, true, false);
+CONFIG_DEFINE_LOCALISED("Codes", bool, FixOmegaShotCollision, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, FixPowerUpJingleDuration, true, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, IncreasedChaosBlastRange, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, IncreasedHeatKnuckleRange, false, false);
