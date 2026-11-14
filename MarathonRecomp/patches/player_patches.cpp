@@ -140,6 +140,11 @@ bool ControllableOmegaLauncher()
     return Config::ControllableOmegaLauncher;
 }
 
+bool ControllableOmegaLockOnShot()
+{
+    return Config::ControllableOmegaLockOnShot;
+}
+
 bool ControllablePsychoShock()
 {
     return Config::ControllablePsychoShock;

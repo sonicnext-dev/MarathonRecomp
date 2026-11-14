@@ -898,3 +898,13 @@ jump_address_on_true = 0x821AA6D0
 name = "ControllableOmegaLauncher"
 address = 0x821AA6D4
 jump_address_on_true = 0x821AA6D8
+
+[[midasm_hook]]
+name = "ControllableOmegaLockOnShot"
+address = 0x821AA908
+jump_address_on_true = 0x821AA90C
+
+[[midasm_hook]]
+name = "ControllableOmegaLockOnShot"
+address = 0x821AA910
+jump_address_on_true = 0x821AA914

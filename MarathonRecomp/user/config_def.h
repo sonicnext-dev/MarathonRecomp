@@ -115,6 +115,7 @@ CONFIG_DEFINE("Codes", bool, ControllableBoundAttack, false, false);
 CONFIG_DEFINE("Codes", bool, ControllableHammerAttack, false, false);
 CONFIG_DEFINE("Codes", bool, ControllableHomingRecovery, false, false);
 CONFIG_DEFINE("Codes", bool, ControllableOmegaLauncher, false, false);
+CONFIG_DEFINE("Codes", bool, ControllableOmegaLockOnShot, false, false);
 CONFIG_DEFINE("Codes", bool, ControllablePsychoShock, false, false);
 CONFIG_DEFINE("Codes", bool, ControllableSpinkick, false, false);
 CONFIG_DEFINE("Codes", bool, ControllableTeleportDash, false, false);
