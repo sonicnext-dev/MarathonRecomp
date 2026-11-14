@@ -950,3 +950,8 @@ name = "E3RespawnTime"
 address = 0x821692E8
 registers = ["f0"]
 after_instruction = true
+
+[[midasm_hook]]
+name = "UnlimitedSpinningClaw"
+address = 0x821AC5A4
+jump_address_on_true = 0x821AC5A8

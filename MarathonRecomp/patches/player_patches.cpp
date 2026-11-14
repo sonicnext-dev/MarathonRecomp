@@ -397,6 +397,11 @@ bool UnlimitedAntigravity()
     return Config::UnlimitedAntigravity;
 }
 
+bool UnlimitedSpinningClaw()
+{
+    return Config::UnlimitedSpinningClaw;
+}
+
 bool UnlockSnowboardControl(PPCRegister& r3)
 {
     if (!Config::UnlockSnowboardControl)
