@@ -216,4 +216,17 @@ bool E3CheckpointBehaviour()
     return Config::E3CheckpointBehaviour;
 }
 
+// Sonicteam::ObjSavePoint::Update
+PPC_FUNC_IMPL(__imp__sub_822986E8);
+PPC_FUNC(sub_822986E8)
+{
+    if (Config::DisableCheckpoints)
+    {
+        reinterpret_cast<Sonicteam::ObjSavePoint*>(base + ctx.r3.u32)->Destroy();
+        return;
+    }
+
+    __imp__sub_822986E8(ctx, base);
+}
+
 void NOP() {}
