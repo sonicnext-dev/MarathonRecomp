@@ -888,3 +888,13 @@ jump_address_on_true = 0x8220CC00
 name = "AlwaysHaveInvincibility"
 address = 0x8220CBE4
 jump_address_on_true = 0x8220CBE8
+
+[[midasm_hook]]
+name = "ControllableOmegaLauncher"
+address = 0x821AA6CC
+jump_address_on_true = 0x821AA6D0
+
+[[midasm_hook]]
+name = "ControllableOmegaLauncher"
+address = 0x821AA6D4
+jump_address_on_true = 0x821AA6D8

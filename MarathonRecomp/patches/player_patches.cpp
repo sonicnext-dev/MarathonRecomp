@@ -135,6 +135,11 @@ bool ControllableHammerAttack()
     return Config::ControllableHammerAttack;
 }
 
+bool ControllableOmegaLauncher()
+{
+    return Config::ControllableOmegaLauncher;
+}
+
 bool ControllablePsychoShock()
 {
     return Config::ControllablePsychoShock;
