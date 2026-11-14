@@ -130,6 +130,7 @@ CONFIG_DEFINE("Codes", bool, DisableLowResolutionFontOnCustomUI, false, false);
 CONFIG_DEFINE("Codes", bool, DisableMidairSpinningClaw, false, false);
 CONFIG_DEFINE("Codes", bool, DisablePushState, false, false);
 CONFIG_DEFINE("Codes", bool, DisableSandJump, false, false);
+CONFIG_DEFINE("Codes", bool, DisableSuperSwitchDelay, false, false);
 CONFIG_DEFINE("Codes", bool, DisableTitleInputDelay, false, false);
 CONFIG_DEFINE("Codes", bool, E3CheckpointBehaviour, false, false);
 CONFIG_DEFINE("Codes", bool, E3ChainJumpSpeed, false, false);

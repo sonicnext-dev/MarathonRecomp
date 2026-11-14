@@ -227,6 +227,20 @@ bool DisableSandJump()
     return Config::DisableSandJump;
 }
 
+bool DisableSuperSwitchDelay()
+{
+    return Config::DisableSuperSwitchDelay;
+}
+
+void DisableSuperSwitchDelay2(PPCRegister& r11, PPCRegister& r4)
+{
+    if (!Config::DisableSuperSwitchDelay)
+        return;
+
+    r11.u64 = 0;
+    r4.u64 = 0x69;
+}
+
 void E3ChainJumpSpeed_SetJumpSpeed(PPCRegister& f0)
 {
     if (!Config::E3ChainJumpSpeed)

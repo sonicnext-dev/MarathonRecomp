@@ -961,3 +961,18 @@ name = "RestoreSilverBossThrow"
 address = 0x821B271C
 registers = ["r12"]
 after_instruction = true
+
+[[midasm_hook]]
+name = "DisableSuperSwitchDelay"
+address = 0x821B1318
+jump_address_on_true = 0x821B131C
+
+[[midasm_hook]]
+name = "DisableSuperSwitchDelay"
+address = 0x821B1370
+jump_address_on_true = 0x821B1374
+
+[[midasm_hook]]
+name = "DisableSuperSwitchDelay2"
+address = 0x821B1404
+registers = ["r11", "r4"]
