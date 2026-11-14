@@ -893,6 +893,11 @@ CONFIG_DEFINE_ENUM_LOCALE(EUIAlignmentMode)
     }
 };
 
+CONFIG_DEFINE_LOCALE(AlwaysUnlockedDebugSettings)
+{
+    { ELanguage::English, { "Always Unlocked Debug Settings", "Always unlocks the debug settings without having to enter the title code." } }
+};
+
 CONFIG_DEFINE_LOCALE(AlwaysExitVehicles)
 {
     { ELanguage::English, { "Always Exit Vehicles", "Allows Shadow to exit vehicles at any time." } }

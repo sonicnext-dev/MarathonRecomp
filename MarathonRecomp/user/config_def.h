@@ -9,7 +9,6 @@ CONFIG_DEFINE_LOCALISED("System", bool, ControlTutorial, true, false);
 CONFIG_DEFINE_LOCALISED("System", bool, Autosave, true, false);
 CONFIG_DEFINE_LOCALISED("System", bool, AchievementNotifications, true, false);
 CONFIG_DEFINE("System", bool, ShowConsole, false, false);
-CONFIG_DEFINE("System", bool, ShowDebugSettings, false, false);
 
 CONFIG_DEFINE_ENUM_LOCALISED("Input", ECameraRotationMode, HorizontalCamera, ECameraRotationMode::Reverse, false);
 CONFIG_DEFINE_ENUM_LOCALISED("Input", ECameraRotationMode, VerticalCamera, ECameraRotationMode::Normal, false);
@@ -108,6 +107,7 @@ CONFIG_DEFINE_LOCALISED("Codes", bool, AlwaysExitVehicles, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, AlwaysHaveHighSpeed, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, AlwaysHaveInvincibility, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, AlwaysHoldPhysicsObjects, false, false);
+CONFIG_DEFINE_LOCALISED("Codes", bool, AlwaysUnlockedDebugSettings, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, BootDirectlyToTitle, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, BootDirectlyToDevTitle, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, ControllableBoundAttack, false, false);

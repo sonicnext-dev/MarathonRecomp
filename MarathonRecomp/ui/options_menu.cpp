@@ -1237,7 +1237,7 @@ void OptionsMenu::Open(bool isPause)
     s_isVisible = true;
     s_isPause = isPause;
 
-    if (Config::ShowDebugSettings)
+    if (Config::AlwaysUnlockedDebugSettings)
         s_isDebugUnlocked = true;
 
     // Update stored values for config definitions
