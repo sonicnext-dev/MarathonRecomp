@@ -3,7 +3,11 @@
 #include <Marathon.inl>
 #include <Sonicteam/Camera/Cameraman.h>
 #include <Sonicteam/Player/Input/AccumulativeAction.h>
+#include <Sonicteam/Player/Input/IListener.h>
 #include <Sonicteam/Player/Input/TimedAction.h>
+#include <Sonicteam/Player/IPlugIn.h>
+#include <Sonicteam/Player/IStepable.h>
+#include <Sonicteam/Player/IVariable.h>
 #include <Sonicteam/SoX/Input/Manager.h>
 #include <Sonicteam/SoX/Math/Vector.h>
 #include <stdx/deque.h>

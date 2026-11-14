@@ -1,16 +1,15 @@
 #pragma once
 
 #include <Marathon.inl>
+#include <Sonicteam/Player/Input/Listener.h>
 
 namespace Sonicteam::Player::Input
 {
-    class IListener
+    class IListener : public Listener
     {
     public:
-        xpointer<void> m_pVftable;
         MARATHON_INSERT_PADDING(0x14);
     };
 
-    MARATHON_ASSERT_OFFSETOF(IListener, m_pVftable, 0x00);
     MARATHON_ASSERT_SIZEOF(IListener, 0x18);
 }

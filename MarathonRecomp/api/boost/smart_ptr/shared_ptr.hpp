@@ -18,8 +18,10 @@ namespace boost
                 be<uint32_t> destroy;
                 be<uint32_t> get_deleter;
             };
+
         public:
             xpointer<vftable_t> vftable_;
+
         protected:
             be<uint32_t> use_count_;
             be<uint32_t> weak_count_;

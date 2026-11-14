@@ -879,9 +879,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
                 if (def->GetSection() != "Codes")
                     continue;
 
-                def->SetHidden(false);
-
-                DrawOption(rowCount++, (ConfigDef<bool, true>*)def, true);
+                DrawOption(rowCount++, reinterpret_cast<ConfigDef<bool>*>(def), true);
             }
 
             break;
@@ -1238,6 +1236,9 @@ void OptionsMenu::Open(bool isPause)
     s_state = OptionsMenuState::Opening;
     s_isVisible = true;
     s_isPause = isPause;
+
+    if (Config::AlwaysUnlockedDebugSettings)
+        s_isDebugUnlocked = true;
 
     // Update stored values for config definitions
     // to check if their values have changed later.

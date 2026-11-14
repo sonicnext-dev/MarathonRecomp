@@ -288,12 +288,12 @@ jump_address_on_true = 0x82217DD8
 jump_address_on_false = 0x82217DCC
 
 [[midasm_hook]]
-name = "ControllableSpinkick"
+name = "ControllableSpinKick"
 address = 0x821A2984
 jump_address_on_true = 0x821A2988
 
 [[midasm_hook]]
-name = "ControllableSpinkick"
+name = "ControllableSpinKick"
 address = 0x821A7A04
 jump_address_on_true = 0x821A7A08
 
@@ -538,17 +538,17 @@ address = 0x821A6794
 registers = ["r3", "r11"]
 
 [[midasm_hook]]
-name = "AntigravityRetainsMomentum"
+name = "SlidingAttackRetainsSpeed"
 address = 0x82217968
 jump_address_on_true = 0x8221796C
 
 [[midasm_hook]]
-name = "AntigravityRetainsMomentum"
+name = "SlidingAttackRetainsSpeed"
 address = 0x82217970
 jump_address_on_true = 0x82217974
 
 [[midasm_hook]]
-name = "UnlimitedAntigravity"
+name = "UnlimitedSlidingAttack"
 address = 0x82217A94
 jump_address_on_true = 0x82217A98
 
@@ -763,6 +763,242 @@ address = 0x825B2474
 name = "WorldIntersectionCSM_SetCameraAspectRatio"
 address = 0x826146D4
 registers = ["r4"]
+
+[[midasm_hook]]
+name = "AlwaysHoldPhysicsObjects"
+address = 0x8221ACBC
+jump_address_on_true = 0x8221ACC0
+
+[[midasm_hook]]
+name = "ControllableHomingRecovery"
+address = 0x82217600
+jump_address_on_true = 0x82217618
+
+# Sonic
+[[midasm_hook]]
+name = "RestoreHomingSpam"
+address = 0x822175D8
+jump_address_on_true = 0x822175E4
+
+# Shadow
+[[midasm_hook]]
+name = "RestoreHomingSpam"
+address = 0x821A68AC
+jump_address_on_true = 0x821A68B8
+
+[[midasm_hook]]
+name = "AlwaysExitVehicles"
+address = 0x821A845C
+jump_address_on_true = 0x821A8460
+
+[[midasm_hook]]
+name = "AlwaysExitVehicles"
+address = 0x821A7F00
+jump_address_on_true = 0x821A7F04
+
+[[midasm_hook]]
+name = "AlwaysExitVehicles"
+address = 0x821A8298
+jump_address_on_true = 0x821A829C
+
+[[midasm_hook]]
+name = "AlwaysExitVehicles"
+address = 0x821A8100
+jump_address_on_true = 0x821A8104
+
+[[midasm_hook]]
+name = "RestoreHomingFlips"
+address = 0x822173F0
+registers = ["cr6"]
+jump_address_on_true = 0x82217404
+jump_address_on_false = 0x822173F4
+
+[[midasm_hook]]
+name = "ControllablePsychoShock"
+address = 0x821A4320
+jump_address_on_true = 0x821A4324
+
+[[midasm_hook]]
+name = "ControllablePsychoShock"
+address = 0x821A4334
+jump_address_on_true = 0x821A4338
+
+[[midasm_hook]]
+name = "ControllableTornadoAttack"
+address = 0x821A31B8
+jump_address_on_true = 0x821A31C8
+
+[[midasm_hook]]
+name = "DisableSandJump"
+address = 0x8220924C
+jump_address_on_true = 0x82209258
+
+[[midasm_hook]]
+name = "RestoreRotationInterpolation"
+address = 0x82200900
+registers = ["r28"]
+jump_address_on_true = 0x8220090C
+
+[[midasm_hook]]
+name = "RestoreRotationInterpolation2"
+address = 0x822009E8
+registers = ["r10", "r31"]
+after_instruction = true
+
+[[midasm_hook]]
+name = "E3ChainJumpSpeed_SetJumpSpeed"
+address = 0x821EE2F0
+registers = ["f0"]
+after_instruction = true
+
+[[midasm_hook]]
+name = "E3ChainJumpSpeed_SetWaitTime"
+address = 0x82211EAC
+registers = ["f12"]
+
+[[midasm_hook]]
+name = "DisableMidairSpinningClaw"
+address = 0x821ABFD8
+jump_address_on_true = 0x821AC00C
+
+[[midasm_hook]]
+name = "RestoreHomingGravity"
+address = 0x821F8724
+registers = ["r1", "r4", "r5"]
+jump_address_on_true = 0x821F8730
+
+[[midasm_hook]]
+name = "RestoreRingExplosionPhysics"
+address = 0x821E8E98
+registers = ["r5"]
+
+[[midasm_hook]]
+name = "RestoreRingExplosionPhysics"
+address = 0x821E911C
+registers = ["r3"]
+
+[[midasm_hook]]
+name = "RestoreRingExplosionPhysics"
+address = 0x821E91A4
+registers = ["r5"]
+
+[[midasm_hook]]
+name = "ControllableHammerAttack"
+address = 0x821AB6AC
+jump_address_on_true = 0x821AB6B0
+
+[[midasm_hook]]
+name = "ControllableHammerAttack"
+address = 0x821AB6B4
+jump_address_on_true = 0x821AB6B8
+
+[[midasm_hook]]
+name = "UnlockSnowboardControl"
+address = 0x82215000
+registers = ["r3"]
+jump_address_on_true = 0x82215004
+
+[[midasm_hook]]
+name = "AlwaysHaveHighSpeed"
+address = 0x8220CBFC
+jump_address_on_true = 0x8220CC00
+
+[[midasm_hook]]
+name = "AlwaysHaveInvincibility"
+address = 0x8220CBE4
+jump_address_on_true = 0x8220CBE8
+
+[[midasm_hook]]
+name = "ControllableOmegaLauncher"
+address = 0x821AA6CC
+jump_address_on_true = 0x821AA6D0
+
+[[midasm_hook]]
+name = "ControllableOmegaLauncher"
+address = 0x821AA6D4
+jump_address_on_true = 0x821AA6D8
+
+[[midasm_hook]]
+name = "ControllableOmegaLockOnShot"
+address = 0x821AA908
+jump_address_on_true = 0x821AA90C
+
+[[midasm_hook]]
+name = "ControllableOmegaLockOnShot"
+address = 0x821AA910
+jump_address_on_true = 0x821AA914
+
+[[midasm_hook]]
+name = "IncreasedChaosBlastRange"
+address = 0x82253560
+registers = ["f0"]
+after_instruction = true
+
+[[midasm_hook]]
+name = "IncreasedHeatKnuckleRange"
+address = 0x822460EC
+registers = ["f0"]
+after_instruction = true
+
+# Knuckles
+[[midasm_hook]]
+name = "DisableClimbFromJump"
+address = 0x821AD1A8
+jump_address_on_true = 0x821AD1B4
+
+# Rouge
+[[midasm_hook]]
+name = "DisableClimbFromJump"
+address = 0x821AF140
+jump_address_on_true = 0x821AF14C
+
+[[midasm_hook]]
+name = "E3CheckpointBehavior"
+address = 0x82298C38
+jump_address_on_true = 0x82298C5C
+
+[[midasm_hook]]
+name = "E3RespawnTime"
+address = 0x821692E8
+registers = ["f0"]
+after_instruction = true
+
+[[midasm_hook]]
+name = "UnlimitedSpinningClaw"
+address = 0x821AC5A4
+jump_address_on_true = 0x821AC5A8
+
+[[midasm_hook]]
+name = "RestoreSilverBossThrow"
+address = 0x821B271C
+registers = ["r12"]
+after_instruction = true
+
+[[midasm_hook]]
+name = "DisableSuperSwitchDelay"
+address = 0x821B1318
+jump_address_on_true = 0x821B131C
+
+[[midasm_hook]]
+name = "DisableSuperSwitchDelay"
+address = 0x821B1370
+jump_address_on_true = 0x821B1374
+
+[[midasm_hook]]
+name = "DisableSuperSwitchDelay2"
+address = 0x821B1404
+registers = ["r11", "r4"]
+
+[[midasm_hook]]
+name = "DisableAmigoChangeCutscenes"
+address = 0x8223A168
+jump_address_on_true = 0x8223A2D4
+
+[[midasm_hook]]
+name = "FixOmegaShotCollision"
+address = 0x822488F0
+registers = ["r6"]
+after_instruction = true
 
 # Use max LOD particles in multiplayer.
 [[midasm_hook]]

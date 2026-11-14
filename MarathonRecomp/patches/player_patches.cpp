@@ -97,9 +97,19 @@ PPC_FUNC(sub_8219A5B0)
     __imp__sub_8219A5B0(ctx, base);
 }
 
-bool AntigravityRetainsMomentum()
+bool AlwaysExitVehicles()
 {
-    return Config::AntigravityRetainsMomentum;
+    return Config::AlwaysExitVehicles;
+}
+
+bool AlwaysHaveHighSpeed()
+{
+    return Config::AlwaysHaveHighSpeed;
+}
+
+bool AlwaysHaveInvincibility()
+{
+    return Config::AlwaysHaveInvincibility;
 }
 
 bool ControllableBoundAttack()
@@ -115,9 +125,29 @@ bool ControllableBoundAttack2(PPCCRRegister& cmp)
     return cmp.eq;
 }
 
-bool ControllableSpinkick()
+bool ControllableHammerAttack()
 {
-    return Config::ControllableSpinkick;
+    return Config::ControllableHammerAttack;
+}
+
+bool ControllableOmegaLauncher()
+{
+    return Config::ControllableOmegaLauncher;
+}
+
+bool ControllableOmegaLockOnShot()
+{
+    return Config::ControllableOmegaLockOnShot;
+}
+
+bool ControllablePsychoShock()
+{
+    return Config::ControllablePsychoShock;
+}
+
+bool ControllableSpinKick()
+{
+    return Config::ControllableSpinKick;
 }
 
 bool ControllableTeleportDash()
@@ -125,9 +155,148 @@ bool ControllableTeleportDash()
     return Config::ControllableTeleportDash;
 }
 
+// Sonicteam::Player::Sound::Sonic::Sonic
+PPC_FUNC_IMPL(__imp__sub_8226A478);
+PPC_FUNC(sub_8226A478)
+{
+    if (Config::ControllableTornadoAttack)
+    {
+        // Redirect unused air tornado sound to ground tornado sound.
+        // No need to recover this, as the cue is mute.
+        *reinterpret_cast<be<uint32_t>*>(base + 0x8200FCEC) = 0x8200E474; // "tornado_move" -> "tornado"
+    }
+
+    __imp__sub_8226A478(ctx, base);
+}
+
+PPC_FUNC_IMPL(__imp__sub_821A3118); // Sonicteam::Player::State::SonicTornadoAir::SonicTornadoAir
+PPC_FUNC_IMPL(__imp__sub_821A2F98); // Sonicteam::Player::State::SonicTornadoGround::SonicTornadoGround
+PPC_FUNC(sub_821A2F98)
+{
+    // Redirect ground state to air state.
+    if (Config::ControllableTornadoAttack)
+    {
+        __imp__sub_821A3118(ctx, base);
+        return;
+    }
+
+    __imp__sub_821A2F98(ctx, base);
+}
+
+bool ControllableTornadoAttack()
+{
+    return Config::ControllableTornadoAttack;
+}
+
+// Sonicteam::Player::State::CommonAmigo::Update
+PPC_FUNC_IMPL(__imp__sub_821A1B20);
+PPC_FUNC(sub_821A1B20)
+{
+    if (Config::DisableAmigoChangeCutscenes)
+        reinterpret_cast<Sonicteam::Player::State::CommonAmigo*>(base + ctx.r3.u32)->m_Time = 0.0f;
+
+    __imp__sub_821A1B20(ctx, base);
+}
+
+bool DisableAmigoChangeCutscenes()
+{
+    return Config::DisableAmigoChangeCutscenes;
+}
+
+PPC_FUNC_IMPL(__imp__sub_821B6B20); // Sonicteam::Player::State::ShadowHoming<1>::Update
+PPC_FUNC_IMPL(__imp__sub_821B66E8); // Sonicteam::Player::State::ShadowHoming<0>::Update
+PPC_FUNC(sub_821B66E8)
+{
+    // Redirect state update with attacks to one without.
+    if (Config::DisableChaosAttack)
+    {
+        __imp__sub_821B6B20(ctx, base);
+        return;
+    }
+
+    __imp__sub_821B66E8(ctx, base);
+}
+
+bool DisableClimbFromJump()
+{
+    return Config::DisableClimbFromJump;
+}
+
+bool DisableMidairSpinningClaw()
+{
+    return Config::DisableMidairSpinningClaw;
+}
+
 bool DisablePushState()
 {
     return Config::DisablePushState;
+}
+
+bool DisableSandJump()
+{
+    return Config::DisableSandJump;
+}
+
+bool DisableSuperSwitchDelay()
+{
+    return Config::DisableSuperSwitchDelay;
+}
+
+void DisableSuperSwitchDelay2(PPCRegister& r11, PPCRegister& r4)
+{
+    if (!Config::DisableSuperSwitchDelay)
+        return;
+
+    r11.u64 = 0;
+    r4.u64 = 0x69;
+}
+
+void E3ChainJumpSpeed_SetJumpSpeed(PPCRegister& f0)
+{
+    if (!Config::E3ChainJumpSpeed)
+        return;
+
+    f0.f64 = 8000.0;
+}
+
+void E3ChainJumpSpeed_SetWaitTime(PPCRegister& f12)
+{
+    if (!Config::E3ChainJumpSpeed)
+        return;
+
+    f12.f64 = 0.0;
+}
+
+void E3RespawnTime(PPCRegister& f0)
+{
+    if (!Config::E3RespawnTime)
+        return;
+
+    f0.f64 = 1.5;
+}
+
+void FixOmegaShotCollision(PPCRegister& r6)
+{
+    if (!Config::FixOmegaShotCollision)
+        return;
+
+    r6.u32 = 0x1C80;
+}
+
+void IncreasedChaosBlastRange(PPCRegister& f0)
+{
+    if (!Config::IncreasedChaosBlastRange)
+        return;
+
+    f0.f64 = 2500.0;
+}
+
+void IncreasedHeatKnuckleRange(PPCRegister& f0)
+{
+    if (!Config::IncreasedHeatKnuckleRange)
+        return;
+
+    f0.f64 = 800.0;
 }
 
 bool MidairControlForMachSpeed()
@@ -162,17 +331,16 @@ void RestoreChainJumpFlips(PPCRegister& r31, PPCRegister& r30, PPCRegister& r11,
         be<uint32_t> ActorID;
     };
 
-    auto pPlayer = (Sonicteam::Player::Object*)g_memory.Translate(r31.u32);
-    auto pMessage = (Message*)g_memory.Translate(r30.u32);
-    auto pPlayerContext = (Sonicteam::Player::State::ICommonContext*)g_memory.Translate(r11.u32);
-    auto pActorManager = App::s_pApp->m_pDoc->GetDocMode<Sonicteam::GameMode>()->GetGame()->m_spActorManager.get();
+    const auto pPlayer = reinterpret_cast<Sonicteam::Player::Object*>(g_memory.Translate(r31.u32));
+    const auto pMessage = reinterpret_cast<Message*>(g_memory.Translate(r30.u32));
+    const auto pPlayerContext = reinterpret_cast<Sonicteam::Player::State::ICommonContext*>(g_memory.Translate(r11.u32));
+    const auto pActorManager = pPlayer->m_pDoc->GetDocMode<Sonicteam::GameMode>()->GetGame()->m_spActorManager.get();
 
-    auto origin = pPlayer->m_spRootFrame->m_PositionF0;
     auto target = pMessage->Position;
 
     if (pMessage->ActorID != -1)
     {
-        auto pFixture = GuestToHostFunction<Sonicteam::Fixture*>(sub_821609D0, pActorManager, &pMessage->ActorID);
+        const auto pFixture = GuestToHostFunction<Sonicteam::Fixture*>(sub_821609D0, pActorManager, &pMessage->ActorID);
 
         auto msgGetNextPoint = guest_stack_var<Sonicteam::Message::ObjJump123::MsgGetNextPoint>();
         msgGetNextPoint->Rotation = { 0, 0, 0, 1 };
@@ -182,17 +350,18 @@ void RestoreChainJumpFlips(PPCRegister& r31, PPCRegister& r30, PPCRegister& r11,
             target = msgGetNextPoint->Position;
     }
 
-    auto magnitudeHorz = f1.f64;
-    auto magnitudeForward = f2.f64;
-    auto distance = origin.Distance(target);
-    auto magnitude = std::sqrt(magnitudeHorz * magnitudeHorz + magnitudeForward * magnitudeForward);
+    const auto magnitudeHorz = f1.f64;
+    const auto magnitudeForward = f2.f64;
+    const auto distance = pPlayer->m_spRootFrame->m_PositionF0.Distance(target);
+    const auto magnitude = std::sqrt(magnitudeHorz * magnitudeHorz + magnitudeForward * magnitudeForward);
+
     auto time = 1.0;
 
     if (distance > 0.0 && magnitude > 0.0)
         time = distance / magnitude;
 
     // CommonContext has a slightly different algorithm to process chain flips.
-    if (((Sonicteam::Player::IPlugIn*)pPlayerContext)->m_pVftable.ptr != 0x8200A728)
+    if (static_cast<Sonicteam::Player::IPlugIn*>(pPlayerContext)->m_pVftable.ptr != 0x8200A728)
         time *= 0.35;
 
     f3.f64 = time;
@@ -203,9 +372,89 @@ bool RestoreChaosSpearFlips()
     return Config::RestoreChaosSpearFlips;
 }
 
-bool UnlimitedAntigravity()
+bool RestoreHomingFlips(PPCCRRegister& cr6)
 {
-    return Config::UnlimitedAntigravity;
+    return Config::RestoreHomingFlips
+        ? !cr6.gt
+        : !cr6.eq;
+}
+
+bool RestoreHomingGravity(PPCRegister& r1, PPCRegister& r4, PPCRegister& r5)
+{
+    if (!Config::RestoreHomingGravity)
+        return false;
+
+    const auto pResult = reinterpret_cast<Sonicteam::SoX::Math::Vector*>(g_memory.Translate(r1.u32 + 0x80));
+    const auto pVectorA = reinterpret_cast<Sonicteam::SoX::Math::Vector*>(g_memory.Translate(r4.u32));
+    const auto pVectorB = reinterpret_cast<Sonicteam::SoX::Math::Vector*>(g_memory.Translate(r5.u32));
+
+    *pResult = *pVectorA + *pVectorB;
+
+    return true;
+}
+
+void RestoreRingExplosionPhysics(PPCRegister& vec)
+{
+    if (!Config::RestoreRingExplosionPhysics)
+        return;
+
+    const auto pRingSpreadVector = reinterpret_cast<Sonicteam::SoX::Math::Vector*>(g_memory.Translate(vec.u32));
+
+    pRingSpreadVector->Y = 50.0f;
+    pRingSpreadVector->Z = 100.0f;
+}
+
+bool RestoreRotationInterpolation(PPCRegister& r28)
+{
+    if (!Config::RestoreRotationInterpolation)
+        return false;
+
+    r28.u32 = 1;
+
+    return true;
+}
+
+void RestoreRotationInterpolation2(PPCRegister& r10, PPCRegister& r31)
+{
+    if (!Config::RestoreRotationInterpolation)
+        return;
+
+    const auto base = g_memory.base;
+
+    r10.u64 = PPC_LOAD_U32(r31.u32 + 0x3F0);
+}
+
+void RestoreSilverBossThrow(PPCRegister& r12)
+{
+    if (!Config::RestoreSilverBossThrow)
+        return;
+
+    r12.u64 = 0;
+}
+
+bool SlidingAttackRetainsSpeed()
+{
+    return Config::SlidingAttackRetainsSpeed;
+}
+
+bool UnlimitedSlidingAttack()
+{
+    return Config::UnlimitedSlidingAttack;
+}
+
+bool UnlimitedSpinningClaw()
+{
+    return Config::UnlimitedSpinningClaw;
+}
+
+bool UnlockSnowboardControl(PPCRegister& r3)
+{
+    if (!Config::UnlockSnowboardControl)
+        return false;
+
+    r3.u32 = 1;
+
+    return true;
 }
 
 PPC_FUNC_IMPL(__imp__sub_82217FC0);
@@ -440,4 +689,19 @@ void SonicGauge_FixFlags(PPCRegister& r3, PPCRegister& r31)
 bool DisableLives()
 {
     return Config::DisableLives;
+}
+
+bool AlwaysHoldPhysicsObjects()
+{
+    return Config::AlwaysHoldPhysicsObjects;
+}
+
+bool ControllableHomingRecovery()
+{
+    return Config::ControllableHomingRecovery;
+}
+
+bool RestoreHomingSpam()
+{
+    return Config::RestoreHomingSpam;
 }
