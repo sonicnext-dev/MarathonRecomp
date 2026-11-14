@@ -944,3 +944,9 @@ jump_address_on_true = 0x821AF14C
 name = "E3CheckpointBehaviour"
 address = 0x82298C38
 jump_address_on_true = 0x82298C5C
+
+[[midasm_hook]]
+name = "E3RespawnTime"
+address = 0x821692E8
+registers = ["f0"]
+after_instruction = true

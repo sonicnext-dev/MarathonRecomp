@@ -243,6 +243,14 @@ void E3ChainJumpSpeed_SetWaitTime(PPCRegister& f12)
     f12.f64 = 0.0;
 }
 
+void E3RespawnTime(PPCRegister& f0)
+{
+    if (!Config::E3RespawnTime)
+        return;
+
+    f0.f64 = 1.5;
+}
+
 void IncreasedChaosBlastRange(PPCRegister& f0)
 {
     if (!Config::IncreasedChaosBlastRange)

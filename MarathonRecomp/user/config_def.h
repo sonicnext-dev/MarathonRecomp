@@ -132,6 +132,7 @@ CONFIG_DEFINE("Codes", bool, DisableSandJump, false, false);
 CONFIG_DEFINE("Codes", bool, DisableTitleInputDelay, false, false);
 CONFIG_DEFINE("Codes", bool, E3CheckpointBehaviour, false, false);
 CONFIG_DEFINE("Codes", bool, E3ChainJumpSpeed, false, false);
+CONFIG_DEFINE("Codes", bool, E3RespawnTime, false, false);
 CONFIG_DEFINE("Codes", bool, EnableDebugMode, false, false);
 CONFIG_DEFINE("Codes", bool, FixEnvironmentMaps, true, false);
 CONFIG_DEFINE("Codes", bool, FixPowerUpJingleDuration, true, false);
