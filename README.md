@@ -4,9 +4,6 @@
 
 ---
 
-> [!CAUTION]
-> This recompilation is still under active development and is NOT meant for public use. Support will not be provided until an official release.
-
 Marathon Recompiled is an unofficial PC port of the Xbox 360 version of Sonic the Hedgehog (2006) created through the process of static recompilation. The port offers Windows, Linux, and macOS support.
 
 **This project does not include any game assets. You must provide the files from your own legally acquired copy of the game to install or build Marathon Recompiled.**
