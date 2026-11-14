@@ -23,7 +23,19 @@ Before reporting any issues, check if they are listed [here](https://github.com/
 
 ### Original Game Bugs
 
-Game bugs present on the original hardware are intentionally preserved and will not be fixed apart from a few minor exceptions in [#44](https://github.com/sonicnext-dev/MarathonRecomp/issues/44). Please do not report issues for these bugs and verify that the issue does not occur on original hardware before reporting. Bug reports for issues found in the original game will be rejected. Bugs that only happen in Marathon Recompiled must be accompanied by footage captured on original Xbox 360 hardware showing that the bug does not happen there.
+Game bugs present on the original hardware are intentionally preserved and will not be fixed apart from a few minor visual patches that do not affect gameplay. Please do not report issues for these bugs and verify that the issue does not occur on original hardware before reporting. Bug reports for issues found in the original game will be rejected. Bugs that only happen in Marathon Recompiled must be accompanied by footage captured on original Xbox 360 hardware showing that the bug does not happen there.
+
+Marathon Recompiled contains many patches for original game bugs and other annoyances that can be optionally enabled in the configuration file (see below) or by accessing the debug settings.
+
+<details>
+    <summary>Debug settings access combination</summary>
+
+On the title screen press the following sequence on the D-Pad or arrow keys:
+
+- Up, Down, Left, Right 
+
+A jingle will play, and a new section will reveal itself in the Options menu. 
+</details>
 
 ### File Picker Unavailable on Steam Deck in Game Mode
 
