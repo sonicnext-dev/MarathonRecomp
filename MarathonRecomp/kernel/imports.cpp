@@ -689,15 +689,63 @@ uint32_t NtDuplicateObject(uint32_t SourceHandle, be<uint32_t>* TargetHandle, ui
     }
 }
 
-void NtAllocateVirtualMemory()
+#define X_MEM_COMMIT 0x00001000
+#define X_MEM_RESERVE 0x00002000
+#define X_MEM_DECOMMIT 0x00004000
+#define X_MEM_RELEASE 0x00008000
+#define X_MEM_FREE 0x00010000
+#define X_MEM_PRIVATE 0x00020000
+#define X_MEM_RESET 0x00080000
+#define X_MEM_TOP_DOWN 0x00100000
+#define X_MEM_NOZERO 0x00800000
+#define X_MEM_LARGE_PAGES 0x20000000
+#define X_MEM_HEAP 0x40000000
+#define X_MEM_16MB_PAGES 0x80000000
+
+#define X_PAGE_SIZE 0x1000
+#define X_LARGE_PAGE_SIZE 0x10000
+
+uint32_t NtAllocateVirtualMemory(be<uint32_t>* BaseAddress, be<uint32_t>* RegionSize, uint32_t AllocationType, uint32_t Protect, uint32_t DebugMemory)
 {
-    __builtin_trap();
-    LOG_UTILITY("!!! STUB !!!");
+    bool commit = (AllocationType & X_MEM_COMMIT) != 0;
+    bool zero = commit && (AllocationType & X_MEM_NOZERO) == 0;
+    bool large = (AllocationType & X_MEM_LARGE_PAGES) != 0;
+
+    // Align to requested page size
+    uint32_t pageSize = large ? X_LARGE_PAGE_SIZE : X_PAGE_SIZE;
+    *BaseAddress = BaseAddress->get() & ~(pageSize - 1);
+
+    uint32_t alignedEnd = (BaseAddress->get() + RegionSize->get() + pageSize - 1) & ~(pageSize - 1);
+    *RegionSize = alignedEnd - *BaseAddress;
+
+    // Memory is allocated on reserve; don't allocate if we're committing existing space
+    if (!commit || *BaseAddress == 0)
+    {
+        void* ptr = g_memory.Alloc(*RegionSize, pageSize, false);
+        assert(ptr);
+        *BaseAddress = g_memory.MapVirtual(ptr);
+    }
+
+    // Zero if requested
+    if (zero)
+        memset(g_memory.Translate(*BaseAddress), 0, *RegionSize);
+
+    return 0;
 }
 
-void NtFreeVirtualMemory()
+uint32_t NtFreeVirtualMemory(be<uint32_t>* BaseAddress, be<uint32_t>* RegionSize, uint32_t FreeType, uint32_t DebugMemory)
 {
-    LOG_UTILITY("!!! STUB !!!");
+    // Memory is allocated on reserve, so only free on release
+    if ((FreeType & X_MEM_RELEASE) != 0)
+    {
+        void* hostPtr = g_memory.Translate(*BaseAddress);
+        uint32_t regionSize = g_memory.Size(hostPtr);
+
+        g_memory.Free(hostPtr, false);
+        *RegionSize = regionSize;
+    }
+
+    return 0;
 }
 
 void ObDereferenceObject()
@@ -753,7 +801,7 @@ void RtlLeaveCriticalSection(XRTL_CRITICAL_SECTION* cs)
 
 void RtlEnterCriticalSection(XRTL_CRITICAL_SECTION* cs)
 {
-    be<uint32_t> thisThread = g_ppcContext->r13.u32;
+    be<uint32_t> thisThread = GetPPCContext()->r13.u32;
     assert(thisThread != NULL);
 
     std::atomic_ref owningThread(cs->OwningThread);
@@ -797,9 +845,18 @@ uint32_t KeGetCurrentProcessType()
     return 1;
 }
 
-void RtlCompareMemoryUlong()
+uint32_t RtlCompareMemoryUlong(uint32_t Source, uint32_t Length, uint32_t Pattern)
 {
-    LOG_UTILITY("!!! STUB !!!");
+    const uint32_t* mem = static_cast<uint32_t*>(g_memory.Translate(Source));
+    assert(mem);
+
+    for (uint32_t i = 0; i < Length / 4; i++)
+    {
+        if (mem[i] != Pattern)
+            return i;
+    }
+
+    return Length / 4;
 }
 
 uint32_t RtlInitializeCriticalSection(XRTL_CRITICAL_SECTION* cs)
@@ -825,12 +882,13 @@ void KfReleaseSpinLock(uint32_t* spinLock)
 
 void KfAcquireSpinLock(uint32_t* spinLock)
 {
+    uint32_t thisThread = GetPPCContext()->r13.u32;
     std::atomic_ref spinLockRef(*spinLock);
 
     while (true)
     {
         uint32_t expected = 0;
-        if (spinLockRef.compare_exchange_weak(expected, g_ppcContext->r13.u32))
+        if (spinLockRef.compare_exchange_weak(expected, thisThread))
             break;
 
         std::this_thread::yield();
@@ -845,7 +903,7 @@ uint64_t KeQueryPerformanceFrequency()
 void MmFreePhysicalMemory(uint32_t type, uint32_t guestAddress)
 {
     if (guestAddress != NULL)
-        g_userHeap.Free(g_memory.Translate(guestAddress));
+        g_memory.Free(g_memory.Translate(guestAddress), true);
 }
 
 bool VdPersistDisplay(uint32_t a1, uint32_t* a2)
@@ -872,12 +930,13 @@ void KeReleaseSpinLockFromRaisedIrql(uint32_t* spinLock)
 
 void KeAcquireSpinLockAtRaisedIrql(uint32_t* spinLock)
 {
+    uint32_t thisThread = GetPPCContext()->r13.u32;
     std::atomic_ref spinLockRef(*spinLock);
 
     while (true)
     {
         uint32_t expected = 0;
-        if (spinLockRef.compare_exchange_weak(expected, g_ppcContext->r13.u32))
+        if (spinLockRef.compare_exchange_weak(expected, thisThread))
             break;
 
         std::this_thread::yield();
@@ -1020,7 +1079,7 @@ uint32_t MmAllocatePhysicalMemoryEx
     uint32_t alignment
 )
 {
-    return g_memory.MapVirtual(g_userHeap.AllocPhysical(size, alignment));
+    return g_memory.MapVirtual(g_memory.Alloc(size, alignment, true));
 }
 
 void ObDeleteSymbolicLink()
@@ -1322,7 +1381,7 @@ void XexGetModuleHandle()
 
 bool RtlTryEnterCriticalSection(XRTL_CRITICAL_SECTION* cs)
 {
-    be<uint32_t> thisThread = g_ppcContext->r13.u32;
+    be<uint32_t> thisThread = GetPPCContext()->r13.u32;
     assert(thisThread != NULL);
 
     std::atomic_ref owningThread(cs->OwningThread);
@@ -1800,14 +1859,6 @@ void XMACreateContext()
     LOG_UTILITY("!!! STUB !!!");
 }
 
-void XapiInitProcess()
-{
-    int *XapiProcessHeap = (int *)g_memory.Translate(0x82D57540);
-
-    *XapiProcessHeap = 1;
-}
-
-GUEST_FUNCTION_HOOK(sub_825383D8, XapiInitProcess)
 GUEST_FUNCTION_HOOK(__imp__XGetVideoMode, VdQueryVideoMode); // XGetVideoMode
 GUEST_FUNCTION_HOOK(__imp__XNotifyGetNext, XNotifyGetNext);
 GUEST_FUNCTION_HOOK(__imp__XGetGameRegion, XGetGameRegion);

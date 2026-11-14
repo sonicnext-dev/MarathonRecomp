@@ -8,7 +8,7 @@
 #include <wrl/client.h>
 
 using Microsoft::WRL::ComPtr;
-#elif defined(__linux__)
+#elif defined(__linux__) || defined(__APPLE__)
 #include <unistd.h>
 #include <pwd.h>
 #endif

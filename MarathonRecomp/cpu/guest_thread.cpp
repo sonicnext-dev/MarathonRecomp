@@ -20,7 +20,8 @@ GuestThreadContext::GuestThreadContext(uint32_t cpuNumber)
 {
     assert(thread == nullptr);
 
-    thread = (uint8_t*)g_userHeap.Alloc(TOTAL_SIZE);
+    // Guest may not be up yet, allocate directly
+    thread = (uint8_t*)g_memory.Alloc(TOTAL_SIZE, 0, false);
     memset(thread, 0, TOTAL_SIZE);
 
     *(uint32_t*)thread = ByteSwap(g_memory.MapVirtual(thread + PCR_SIZE)); // tls pointer
@@ -40,7 +41,7 @@ GuestThreadContext::GuestThreadContext(uint32_t cpuNumber)
 
 GuestThreadContext::~GuestThreadContext()
 {
-    g_userHeap.Free(thread);
+    g_memory.Free(thread, false);
 }
 
 static std::string GetGuestThreadName(const GuestThreadParams& params)
