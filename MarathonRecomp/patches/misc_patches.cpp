@@ -22,7 +22,7 @@ void SetLifeBarAnimation(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5, PPCR
 
         strcpy(s_lifeBarSceneName, LIFE_BAR_ANIME);
 
-        if (Config::RestoreContextualHUDColours)
+        if (Config::RestoreContextualHUDColors)
         {
             (*Sonicteam::Globals::ms_pMainDisplayColors)[Sonicteam::Character_Shadow] = 1.0f;
             (*Sonicteam::Globals::ms_pMainDisplayColors)[Sonicteam::Character_Omega] = 1.0f;
@@ -48,7 +48,7 @@ void SetLifeBarAnimation(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5, PPCR
         r4.u32 = g_memory.MapVirtual(s_lifeBarSceneName);
     }
 
-    if (!Config::RestoreContextualHUDColours)
+    if (!Config::RestoreContextualHUDColors)
         return;
 
     auto pHUDMainDisplay = (Sonicteam::HUDMainDisplay*)g_memory.Translate(r31.u32);
@@ -77,7 +77,7 @@ void SetLifeBarAnimation(PPCRegister& r3, PPCRegister& r4, PPCRegister& r5, PPCR
 
 void SetRingBarIndex(PPCRegister& r5, PPCRegister& r31)
 {
-    if (!Config::RestoreContextualHUDColours)
+    if (!Config::RestoreContextualHUDColors)
         return;
 
     auto pHUDMainDisplay = (Sonicteam::HUDMainDisplay*)g_memory.Translate(r31.u32);
@@ -211,9 +211,9 @@ PPC_FUNC(sub_82188460)
     ctx.r3.u64 = Config::Subtitles;
 }
 
-bool E3CheckpointBehaviour()
+bool E3CheckpointBehavior()
 {
-    return Config::E3CheckpointBehaviour;
+    return Config::E3CheckpointBehavior;
 }
 
 // Sonicteam::ObjSavePoint::Update

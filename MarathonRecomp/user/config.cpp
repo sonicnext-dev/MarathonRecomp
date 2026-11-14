@@ -814,6 +814,16 @@ void Config::CreateCallbacks()
     {
         def->Value = std::clamp(def->Value, 0.25f, 2.0f);
     };
+
+    Config::DisableRoundedCorners.Callback = [](ConfigDef<bool>* def)
+    {
+        GameWindow::ConfigurePlatformWindow();
+    };
+
+    Config::UseOfficialTitleOnTitleBar.Callback = [](ConfigDef<bool>* def)
+    {
+        GameWindow::SetTitle();
+    };
 }
 
 void Config::Load()

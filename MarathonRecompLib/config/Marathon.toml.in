@@ -288,12 +288,12 @@ jump_address_on_true = 0x82217DD8
 jump_address_on_false = 0x82217DCC
 
 [[midasm_hook]]
-name = "ControllableSpinkick"
+name = "ControllableSpinKick"
 address = 0x821A2984
 jump_address_on_true = 0x821A2988
 
 [[midasm_hook]]
-name = "ControllableSpinkick"
+name = "ControllableSpinKick"
 address = 0x821A7A04
 jump_address_on_true = 0x821A7A08
 
@@ -538,12 +538,12 @@ address = 0x821A6794
 registers = ["r3", "r11"]
 
 [[midasm_hook]]
-name = "AntigravityRetainsMomentum"
+name = "SlidingAttackRetainsSpeed"
 address = 0x82217968
 jump_address_on_true = 0x8221796C
 
 [[midasm_hook]]
-name = "AntigravityRetainsMomentum"
+name = "SlidingAttackRetainsSpeed"
 address = 0x82217970
 jump_address_on_true = 0x82217974
 
@@ -941,7 +941,7 @@ address = 0x821AF140
 jump_address_on_true = 0x821AF14C
 
 [[midasm_hook]]
-name = "E3CheckpointBehaviour"
+name = "E3CheckpointBehavior"
 address = 0x82298C38
 jump_address_on_true = 0x82298C5C
 

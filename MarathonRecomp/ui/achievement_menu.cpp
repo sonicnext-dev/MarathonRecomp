@@ -229,7 +229,7 @@ static void DrawAchievement(int rowIndex, Achievement& achievement, bool isUnloc
     std::string lockedDesc;
     std::string unlockedDesc;
 
-    if (Config::UseOfficialAchievementText)
+    if (Config::UseOriginalAchievementText)
     {
         name = achievement.Name;
         lockedDesc = achievement.LockedDesc;

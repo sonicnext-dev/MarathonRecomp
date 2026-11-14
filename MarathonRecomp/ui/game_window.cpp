@@ -387,9 +387,7 @@ void GameWindow::SetIcon(EPlayerCharacter player)
 const char* GameWindow::GetTitle()
 {
     if (Config::UseOfficialTitleOnTitleBar)
-    {
         return "SONIC THE HEDGEHOG";
-    }
 
     return "Marathon Recompiled";
 }
@@ -417,11 +415,11 @@ void GameWindow::ConfigurePlatformWindow()
         DwmSetWindowAttribute(s_renderWindow, flag, &useImmersiveDarkMode, sizeof(useImmersiveDarkMode));
     }
 
-    if (Config::DisableDWMRoundedCorners)
-    {
-        DWM_WINDOW_CORNER_PREFERENCE wcp = DWMWCP_DONOTROUND;
-        DwmSetWindowAttribute(GameWindow::s_renderWindow, DWMWA_WINDOW_CORNER_PREFERENCE, &wcp, sizeof(wcp));
-    }
+    const auto wcp = Config::DisableRoundedCorners
+        ? DWMWCP_DONOTROUND
+        : DWMWCP_ROUND;
+
+    DwmSetWindowAttribute(GameWindow::s_renderWindow, DWMWA_WINDOW_CORNER_PREFERENCE, &wcp, sizeof(wcp));
 #endif
 }
 

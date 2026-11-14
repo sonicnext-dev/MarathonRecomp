@@ -892,3 +892,308 @@ CONFIG_DEFINE_ENUM_LOCALE(EUIAlignmentMode)
         }
     }
 };
+
+CONFIG_DEFINE_LOCALE(AlwaysExitVehicles)
+{
+    { ELanguage::English, { "Always Exit Vehicles", "Allows Shadow to exit vehicles at any time." } }
+};
+
+CONFIG_DEFINE_LOCALE(AlwaysHaveHighSpeed)
+{
+    { ELanguage::English, { "Always Have High Speed", "Always have the High Speed power up." } }
+};
+
+CONFIG_DEFINE_LOCALE(AlwaysHaveInvincibility)
+{
+    { ELanguage::English, { "Always Have Invincibility", "Always have the Invincibility power up." } }
+};
+
+CONFIG_DEFINE_LOCALE(AlwaysHoldPhysicsObjects)
+{
+    { ELanguage::English, { "Always Hold Physics Objects", "Allows Silver to hold physics objects whilst levitating." } }
+};
+
+CONFIG_DEFINE_LOCALE(BootDirectlyToTitle)
+{
+    { ELanguage::English, { "Boot Directly to Title", "Boots the game directly to the title screen." } }
+};
+
+CONFIG_DEFINE_LOCALE(BootDirectlyToDevTitle)
+{
+    { ELanguage::English, { "Boot Directly to Dev Title", "Boots the game directly to the dev title screen." } }
+};
+
+CONFIG_DEFINE_LOCALE(ControllableBoundAttack)
+{
+    { ELanguage::English, { "Controllable Bound Attack", "Allows Sonic to move whilst performing the Bound Attack." } }
+};
+
+CONFIG_DEFINE_LOCALE(ControllableHammerAttack)
+{
+    { ELanguage::English, { "Controllable Hammer Attack", "Allows Amy to move whilst performing the Hammer Attack." } }
+};
+
+CONFIG_DEFINE_LOCALE(ControllableHomingRecovery)
+{
+    { ELanguage::English, { "Controllable Homing Recovery", "Allows the player to move after performing the Homing Attack." } }
+};
+
+CONFIG_DEFINE_LOCALE(ControllableOmegaLauncher)
+{
+    { ELanguage::English, { "Controllable Omega Launcher", "Allows Omega to move whilst shooting in mid-air." } }
+};
+
+CONFIG_DEFINE_LOCALE(ControllableOmegaLockOnShot)
+{
+    { ELanguage::English, { "Controllable Omega Lock-On Shot", "Allows Omega to move whilst shooting homing lasers." } }
+};
+
+CONFIG_DEFINE_LOCALE(ControllablePsychoShock)
+{
+    { ELanguage::English, { "Controllable Psycho Shock", "Allows Silver to move whilst performing Psycho Shock." } }
+};
+
+CONFIG_DEFINE_LOCALE(ControllableSpinKick)
+{
+    { ELanguage::English, { "Controllable Spin Kick", "Allows the player to move whilst performing the Spin Kick." } }
+};
+
+CONFIG_DEFINE_LOCALE(ControllableTeleportDash)
+{
+    { ELanguage::English, { "Controllable Teleport Dash", "Allows Silver to move whilst performing Teleport Dash." } }
+};
+
+CONFIG_DEFINE_LOCALE(ControllableTornadoAttack)
+{
+    { ELanguage::English, { "Controllable Tornado Attack", "Allows Sonic to move whilst performing the Tornado attack." } }
+};
+
+CONFIG_DEFINE_LOCALE(DisableAmigoChangeCutscenes)
+{
+    { ELanguage::English, { "Disable Amigo Change Cutscenes", "Disables the cutscenes when changing to different characters." } }
+};
+
+CONFIG_DEFINE_LOCALE(DisableChaosAttack)
+{
+    { ELanguage::English, { "Disable Chaos Attack", "Disables Shadow's Chaos Attack to make it behave more like a standard Homing Attack." } }
+};
+
+CONFIG_DEFINE_LOCALE(DisableCheckpoints)
+{
+    { ELanguage::English, { "Disable Checkpoints", "Disables checkpoints in stages." } }
+};
+
+CONFIG_DEFINE_LOCALE(DisableClimbFromJump)
+{
+    { ELanguage::English, { "Disable Climb from Jump", "Disables climbing walls by jumping into them, preventing the player from getting stuck." } }
+};
+
+CONFIG_DEFINE_LOCALE(DisableKingdomValleyMist)
+{
+    { ELanguage::English, { "Disable Kingdom Valley Mist", "Disables the mist effect on screen in Kingdom Valley's super speed section." } }
+};
+
+CONFIG_DEFINE_LOCALE(DisableLives)
+{
+    { ELanguage::English, { "Disable Lives", "Disables the life counter and hides the display." } }
+};
+
+CONFIG_DEFINE_LOCALE(DisableLowResolutionFont)
+{
+    { ELanguage::English, { "Disable Low Resolution Font", "Disables fonts rendering at a lower resolution for some custom UI text." } }
+};
+
+CONFIG_DEFINE_LOCALE(DisableMidairSpinningClaw)
+{
+    { ELanguage::English, { "Disable Mid-air Spinning Claw", "Disables Blaze's Spinning Claw attack in mid-air to prevent it from cancelling homing attacks." } }
+};
+
+CONFIG_DEFINE_LOCALE(DisablePushState)
+{
+    { ELanguage::English, { "Disable Push State", "Disables the broken push state that causes characters to get stuck sliding into walls." } }
+};
+
+CONFIG_DEFINE_LOCALE(DisableRoundedCorners)
+{
+    { ELanguage::English, { "Disable Rounded Corners", "Disables rounded corners on the game window." } }
+};
+
+CONFIG_DEFINE_LOCALE(DisableSandJump)
+{
+    { ELanguage::English, { "Disable Sand Jump", "Disables the shorter jump height used when colliding with sand or water." } }
+};
+
+CONFIG_DEFINE_LOCALE(DisableSuperSwitchDelay)
+{
+    { ELanguage::English, { "Disable Super Switch Delay", "Disables the delay when switching Super characters during the Solaris boss." } }
+};
+
+CONFIG_DEFINE_LOCALE(DisableTitleInputDelay)
+{
+    { ELanguage::English, { "Disable Title Input Delay", "Disables the input delay for the title screen prompts." } }
+};
+
+CONFIG_DEFINE_LOCALE(E3ChainJumpSpeed)
+{
+    { ELanguage::English, { "E3 Chain Jump Speed", "Removes the chain jump delay and increases the jump speed to be more akin to the E3 demo." } }
+};
+
+CONFIG_DEFINE_LOCALE(E3CheckpointBehavior)
+{
+    { ELanguage::English, { "E3 Checkpoint Behavior", "Resets the checkpoint state upon respawning." } }
+};
+
+CONFIG_DEFINE_LOCALE(E3RespawnTime)
+{
+    { ELanguage::English, { "E3 Respawn Time", "Decreases the respawn time to be more akin to the E3 demo." } }
+};
+
+CONFIG_DEFINE_LOCALE(EnableDebugMode)
+{
+    { ELanguage::English, { "Enable Debug Mode", "Enables debug mode to be toggled by pressing the ${picture(button_back)} button." } }
+};
+
+CONFIG_DEFINE_LOCALE(FixEnvironmentMaps)
+{
+    { ELanguage::English, { "Fix Environment Maps", "Fixes the game not loading new environment maps correctly, resulting in mismatching reflections in some areas." } }
+};
+
+CONFIG_DEFINE_LOCALE(FixPowerUpJingleDuration)
+{
+    { ELanguage::English, { "Fix Power Up Jingle Duration", "Fixes the power up jingle ending before the power up has expired." } }
+};
+
+CONFIG_DEFINE_LOCALE(IncreasedChaosBlastRange)
+{
+    { ELanguage::English, { "Increased Chaos Blast Range", "Increases the range of Shadow's Chaos Blast." } }
+};
+
+CONFIG_DEFINE_LOCALE(IncreasedHeatKnuckleRange)
+{
+    { ELanguage::English, { "Increased Heat Knuckle Range", "Increases the range of Knuckles' third attack combo." } }
+};
+
+CONFIG_DEFINE_LOCALE(MidairControlForMachSpeed)
+{
+    { ELanguage::English, { "Mid-air Control for Mach Speed", "Allows for free movement in the air at Mach Speed." } }
+};
+
+CONFIG_DEFINE_LOCALE(MidairControlForSnowboards)
+{
+    { ELanguage::English, { "Mid-air Control for Snowboards", "Allows for free movement in the air on the snowboard." } }
+};
+
+CONFIG_DEFINE_LOCALE(RestoreChainJumpFlips)
+{
+    { ELanguage::English, { "Restore Chain Jump Flips", "Restores the flipping animations between chain jumps." } }
+};
+
+CONFIG_DEFINE_LOCALE(RestoreChaosBoostJump)
+{
+    { ELanguage::English, { "Restore Chaos Boost Jump", "Restores Shadow's jump animation when activating Chaos Boost." } }
+};
+
+CONFIG_DEFINE_LOCALE(RestoreChaosSpearFlips)
+{
+    { ELanguage::English, { "Restore Chaos Spear Flips", "Restores Shadow's flipping animations when performing Chaos Spear." } }
+};
+
+CONFIG_DEFINE_LOCALE(RestoreContextualHUDColors)
+{
+    { ELanguage::English, { "Restore Contextual HUD Colors", "Restores the HUD colors matching the current character's episode theme." } }
+};
+
+CONFIG_DEFINE_LOCALE(RestoreDemoCameraMode)
+{
+    { ELanguage::English, { "Restore Demo Camera Mode", "Restores the demo camera used in the promotional trailers by pressing the right stick." } }
+};
+
+CONFIG_DEFINE_LOCALE(RestoreHomingFlips)
+{
+    { ELanguage::English, { "Restore Homing Flips", "Restores Sonic's extra flipping animations after homing, and resets them upon landing." } }
+};
+
+CONFIG_DEFINE_LOCALE(RestoreHomingGravity)
+{
+    { ELanguage::English, { "Restore Homing Gravity", "Restores Sonic's homing gravity from pre-release versions of the game." } }
+};
+
+CONFIG_DEFINE_LOCALE(RestoreHomingSpam)
+{
+    { ELanguage::English, { "Restore Homing Spam", "Restores the ability to spam the Homing Attack like the E3 demo." } }
+};
+
+CONFIG_DEFINE_LOCALE(RestoreLoadingTransition)
+{
+    { ELanguage::English, { "Restore Loading Transition", "Restores the loading screen's ending animation." } }
+};
+
+CONFIG_DEFINE_LOCALE(RestorePauseMissionText)
+{
+    { ELanguage::English, { "Restore Pause Mission Text", "Restores the mission text window when the game is paused." } }
+};
+
+CONFIG_DEFINE_LOCALE(RestoreRingExplosionPhysics)
+{
+    { ELanguage::English, { "Restore Ring Explosion Physics", "Restores the ring explosion effect after taking damage from pre-release versions of the game." } }
+};
+
+CONFIG_DEFINE_LOCALE(RestoreRotationInterpolation)
+{
+    { ELanguage::English, { "Restore Rotation Interpolation", "Restores the smooth player rotation from pre-release versions of the game." } }
+};
+
+CONFIG_DEFINE_LOCALE(RestoreSilverBossThrow)
+{
+    { ELanguage::English, { "Restore Silver Boss Throw", "Restores Silver's ability to throw bosses to damage them." } }
+};
+
+CONFIG_DEFINE_LOCALE(RestoreSonicActionGauge)
+{
+    { ELanguage::English, { "Restore Sonic's Action Gauge", "Restores action gauge draining and replenishment for Sonic." } }
+};
+
+CONFIG_DEFINE_LOCALE(SlidingAttackRetainsSpeed)
+{
+    { ELanguage::English, { "Sliding Attack Retains Speed", "Retains the last speed Sonic was moving at before performing the Sliding Attack." } }
+};
+
+CONFIG_DEFINE_LOCALE(TailsGauge)
+{
+    { ELanguage::English, { "Tails Gauge", "Implements the action gauge for Tails' flight." } }
+};
+
+CONFIG_DEFINE_LOCALE(ToggleUIOnF8)
+{
+    { ELanguage::English, { "Toggle UI on F8", "Toggles the UI when pressing the F8 key." } }
+};
+
+CONFIG_DEFINE_LOCALE(UnlimitedAntigravity)
+{
+    { ELanguage::English, { "Unlimited Antigravity", "Prevents Sonic's Antigravity attack from cancelling automatically." } }
+};
+
+CONFIG_DEFINE_LOCALE(UnlimitedSpinningClaw)
+{
+    { ELanguage::English, { "Unlimited Spinning Claw", "Prevents Blaze's Spinning Claw attack from cancelling automatically." } }
+};
+
+CONFIG_DEFINE_LOCALE(UnlockSnowboardControl)
+{
+    { ELanguage::English, { "Unlock Snowboard Control", "Allows for 360 degree movement without charging a snowboard jump." } }
+};
+
+CONFIG_DEFINE_LOCALE(UseOfficialTitleOnTitleBar)
+{
+    { ELanguage::English, { "Use Official Title on Title Bar", "Uses the official game title on the title bar." } }
+};
+
+CONFIG_DEFINE_LOCALE(UseOriginalAchievementText)
+{
+    { ELanguage::English, { "Use Original Achievement Text", "Uses the original localization for the achievements." } }
+};
+
+CONFIG_DEFINE_LOCALE(UsePS3TypoFixes)
+{
+    { ELanguage::English, { "Use PS3 Typo Fixes", "Uses the localization fixes from the PlayStation version of the game." } }
+};

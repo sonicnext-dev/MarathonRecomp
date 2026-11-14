@@ -112,11 +112,6 @@ bool AlwaysHaveInvincibility()
     return Config::AlwaysHaveInvincibility;
 }
 
-bool AntigravityRetainsMomentum()
-{
-    return Config::AntigravityRetainsMomentum;
-}
-
 bool ControllableBoundAttack()
 {
     return Config::ControllableBoundAttack;
@@ -150,9 +145,9 @@ bool ControllablePsychoShock()
     return Config::ControllablePsychoShock;
 }
 
-bool ControllableSpinkick()
+bool ControllableSpinKick()
 {
-    return Config::ControllableSpinkick;
+    return Config::ControllableSpinKick;
 }
 
 bool ControllableTeleportDash()
@@ -427,6 +422,11 @@ void RestoreSilverBossThrow(PPCRegister& r12)
         return;
 
     r12.u64 = 0;
+}
+
+bool SlidingAttackRetainsSpeed()
+{
+    return Config::SlidingAttackRetainsSpeed;
 }
 
 bool UnlimitedAntigravity()

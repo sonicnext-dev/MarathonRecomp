@@ -51,7 +51,7 @@ void AchievementOverlay::Draw()
     auto& strAchievementUnlocked = Localise("Achievements_Unlock");
     auto& strAchievementName = g_achievement.Name;
 
-    if (!Config::UseOfficialAchievementText)
+    if (!Config::UseOriginalAchievementText)
         strAchievementName = GetAchievementLocale(g_achievement.ID).Name;
 
     // Calculate text sizes.

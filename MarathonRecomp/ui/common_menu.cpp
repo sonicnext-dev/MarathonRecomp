@@ -157,6 +157,8 @@ void CommonMenu::Draw()
 
     if (ShowDescription)
     {
+        auto interpData = GetHidInterpTextData();
+
         auto textCoverCornerUVs = PIXELS_TO_UV_COORDS(1024, 1024, 801, 400, 150, 150);
         auto textCoverCornerExtendUVs = PIXELS_TO_UV_COORDS(1024, 1024, 801, 400, 125, 150);
         auto textCoverCentreUVs = PIXELS_TO_UV_COORDS(1024, 1024, 950, 400, 50, 150);
@@ -188,7 +190,7 @@ void CommonMenu::Draw()
         {
             auto descFadeScale = Scale(20, true);
             auto descFontSize = Scale(Config::Language == ELanguage::Japanese ? 28 : 27, true);
-            auto descSize = g_pFntRodin->CalcTextSizeA(descFontSize, FLT_MAX, 0.0f, Description.data());
+            auto descSize = MeasureInterpolatedText(g_pFntRodin, g_fntRodinSize, Description.data(), &interpData);
 
             ImVec2 descBoundsMin = { textCoverCentreMin.x - Scale(18, true), textCoverCentreMin.y + Scale(20, true) };
             ImVec2 descBoundsMax = { textCoverCentreMax.x + Scale(18, true), textCoverCentreMax.y - Scale(90, true) };
@@ -274,10 +276,10 @@ void CommonMenu::Draw()
 
             // Draw previous description fading out.
             if (!m_isClosing && !m_previousDesc.empty())
-                drawList->AddText(g_pFntRodin, descFontSize, m_previousDescPos, IM_COL32(255, 255, 255, Lerp(255, 0, descAlphaMotionTime)), m_previousDesc.data());
+                DrawInterpolatedText(g_pFntRodin, descFontSize, m_previousDescPos, IM_COL32(255, 255, 255, Lerp(255, 0, descAlphaMotionTime)), m_previousDesc.data(), &interpData);
 
             // Draw description.
-            drawList->AddText(g_pFntRodin, descFontSize, m_descPos, IM_COL32(255, 255, 255, Lerp(0, 255, descAlphaMotionTime)), Description.data());
+            DrawInterpolatedText(g_pFntRodin, descFontSize, m_descPos, IM_COL32(255, 255, 255, Lerp(0, 255, descAlphaMotionTime)), Description.data(), &interpData);
 
             // Draw left text cover.
             drawList->AddImage(g_upTexMainMenu1.get(), { 0.0f, textCoverCornerLeftMin.y }, { textCoverCornerLeftMin.x + textCoverCornerUVCompensation, textCoverCornerLeftMax.y }, GET_UV_COORDS(textCoverCornerExtendUVs), textCoverColour);
