@@ -548,7 +548,7 @@ address = 0x82217970
 jump_address_on_true = 0x82217974
 
 [[midasm_hook]]
-name = "UnlimitedAntigravity"
+name = "UnlimitedSlidingAttack"
 address = 0x82217A94
 jump_address_on_true = 0x82217A98
 

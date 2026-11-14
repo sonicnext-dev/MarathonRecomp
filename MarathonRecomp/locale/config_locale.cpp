@@ -1178,14 +1178,14 @@ CONFIG_DEFINE_LOCALE(ToggleUIOnF8)
     { ELanguage::English, { "Toggle UI on F8", "Toggles the UI when pressing the F8 key." } }
 };
 
-CONFIG_DEFINE_LOCALE(UnlimitedAntigravity)
+CONFIG_DEFINE_LOCALE(UnlimitedSlidingAttack)
 {
-    { ELanguage::English, { "Unlimited Antigravity", "Prevents Sonic's Antigravity attack from cancelling automatically." } }
+    { ELanguage::English, { "Unlimited Sliding Attack", "Prevents Sonic's Sliding Attack from cancelling automatically." } }
 };
 
 CONFIG_DEFINE_LOCALE(UnlimitedSpinningClaw)
 {
-    { ELanguage::English, { "Unlimited Spinning Claw", "Prevents Blaze's Spinning Claw attack from cancelling automatically." } }
+    { ELanguage::English, { "Unlimited Spinning Claw", "Prevents Blaze's Spinning Claw from cancelling automatically." } }
 };
 
 CONFIG_DEFINE_LOCALE(UnlockSnowboardControl)

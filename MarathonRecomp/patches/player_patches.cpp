@@ -437,9 +437,9 @@ bool SlidingAttackRetainsSpeed()
     return Config::SlidingAttackRetainsSpeed;
 }
 
-bool UnlimitedAntigravity()
+bool UnlimitedSlidingAttack()
 {
-    return Config::UnlimitedAntigravity;
+    return Config::UnlimitedSlidingAttack;
 }
 
 bool UnlimitedSpinningClaw()

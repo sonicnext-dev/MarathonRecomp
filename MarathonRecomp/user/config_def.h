@@ -160,7 +160,7 @@ CONFIG_DEFINE_LOCALISED("Codes", bool, RestoreSonicActionGauge, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, SlidingAttackRetainsSpeed, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, TailsGauge, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, ToggleUIOnF8, false, false);
-CONFIG_DEFINE_LOCALISED("Codes", bool, UnlimitedAntigravity, false, false);
+CONFIG_DEFINE_LOCALISED("Codes", bool, UnlimitedSlidingAttack, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, UnlimitedSpinningClaw, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, UnlockSnowboardControl, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, UseOfficialTitleOnTitleBar, false, false);
