@@ -215,7 +215,7 @@ Backend g_backend;
 #endif
 
 static bool g_triangleStripWorkaround = false;
-static bool g_enableHardwareDepthResolve = false;
+static bool g_hardwareDepthResolve = false;
 
 static std::unique_ptr<RenderInterface> g_interface;
 static std::unique_ptr<RenderDevice> g_device;
@@ -1133,9 +1133,12 @@ static bool TryCreateHostDevice(std::vector<RenderInterfaceFunction*>& interface
                     {
                         bool redirectToVulkan = false;
 
-                        // ...
-                        // There used to be driver redirections here, but they are all free from Vulkan purgatory for now...
-                        // ...
+                        if (deviceDescription.vendor == RenderDeviceVendor::INTEL)
+                        {
+                            // Intel drivers on D3D12 may corrupt the radar map mask, redirect to Vulkan for now.
+                            if (Config::GraphicsAPI == EGraphicsAPI::Auto)
+                                redirectToVulkan = true;
+                        }
 
                         if (redirectToVulkan)
                         {
@@ -1163,9 +1166,9 @@ static bool TryCreateHostDevice(std::vector<RenderInterfaceFunction*>& interface
                 // restart indices cause triangles to be culled incorrectly. Converting them to degenerate triangles fixes it.
                 g_triangleStripWorkaround = (deviceDescription.vendor == RenderDeviceVendor::AMD);
 
-                // Only NVIDIA is confirmed to work with hardware depth resolve; AMD seems to just leave
-                // the destination blank for some reason.
-                g_enableHardwareDepthResolve = (deviceDescription.vendor == RenderDeviceVendor::NVIDIA);
+                // AMD depth resolve is leaving the destination empty for some reason.
+                // Intel behavior is not confirmed, but we redirect to Vulkan already for other reasons.
+                g_hardwareDepthResolve = (deviceDescription.vendor != RenderDeviceVendor::AMD);
 
                 break;
             }
@@ -3109,7 +3112,7 @@ static bool UseShaderResolve(GuestSurface* surface)
         // or the surface is depth and resolve modes are not supported.
         if (surface->sampleCount == RenderSampleCount::COUNT_1 ||
             surface->format != texture->format ||
-            (RenderFormatIsDepth(surface->format) && (!g_capabilities.resolveModes || !g_enableHardwareDepthResolve)))
+            (RenderFormatIsDepth(surface->format) && (!g_capabilities.resolveModes || !g_hardwareDepthResolve)))
             return true;
     }
 
