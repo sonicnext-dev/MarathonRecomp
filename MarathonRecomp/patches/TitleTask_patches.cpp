@@ -180,7 +180,10 @@ PPC_FUNC(sub_825126A0)
         case Sonicteam::TitleTask::TitleState_Wait:
         {
             if (OptionsMenu::s_isDebugUnlocked)
+            {
+                g_secretFlags = SECRET_ALL;
                 break;
+            }
 
             if (auto& spInputManager = App::s_pApp->m_pDoc->m_InputManagers[0])
             {
