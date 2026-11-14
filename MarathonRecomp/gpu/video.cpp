@@ -1844,10 +1844,11 @@ static void DrawProfiler()
                 IMGUI_GENERIC_ROW("GPU Waits", "%u", g_waitForGPUCount);
                 IMGUI_GENERIC_ROW("Buffer Uploads", "%u", g_bufferUploadCount.load());
 
-                IMGUI_GENERIC_ROW("Resolution", "%ux%u (%ux%u)",
+                IMGUI_GENERIC_ROW("Resolution", "%ux%u (%ux%u) (%ux)",
                     Video::s_viewportWidth, Video::s_viewportHeight,
                     static_cast<uint32_t>(round(Video::s_viewportWidth * Config::ResolutionScale)),
-                    static_cast<uint32_t>(round(Video::s_viewportHeight * Config::ResolutionScale)));
+                    static_cast<uint32_t>(round(Video::s_viewportHeight * Config::ResolutionScale)),
+                    GetRenderSampleCount());
 
                 ImGui::EndTable();
             }
