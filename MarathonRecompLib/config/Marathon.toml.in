@@ -976,3 +976,8 @@ jump_address_on_true = 0x821B1374
 name = "DisableSuperSwitchDelay2"
 address = 0x821B1404
 registers = ["r11", "r4"]
+
+[[midasm_hook]]
+name = "DisableAmigoChangeCutscenes"
+address = 0x8223A168
+jump_address_on_true = 0x8223A2D4

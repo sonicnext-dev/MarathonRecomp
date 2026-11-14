@@ -241,6 +241,7 @@
 #include "Sonicteam/Player/RootFrame.h"
 #include "Sonicteam/Player/Score.h"
 #include "Sonicteam/Player/SonicGauge.h"
+#include "Sonicteam/Player/State/CommonAmigo.h"
 #include "Sonicteam/Player/State/CommonContext.h"
 #include "Sonicteam/Player/State/CommonFall.h"
 #include "Sonicteam/Player/State/CommonMiscFlagsSlot.h"

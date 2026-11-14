@@ -193,6 +193,21 @@ bool ControllableTornadoAttack()
     return Config::ControllableTornadoAttack;
 }
 
+// Sonicteam::Player::State::CommonAmigo::Update
+PPC_FUNC_IMPL(__imp__sub_821A1B20);
+PPC_FUNC(sub_821A1B20)
+{
+    if (Config::DisableAmigoChangeCutscenes)
+        reinterpret_cast<Sonicteam::Player::State::CommonAmigo*>(base + ctx.r3.u32)->m_Time = 0.0f;
+
+    __imp__sub_821A1B20(ctx, base);
+}
+
+bool DisableAmigoChangeCutscenes()
+{
+    return Config::DisableAmigoChangeCutscenes;
+}
+
 PPC_FUNC_IMPL(__imp__sub_821B6B20); // Sonicteam::Player::State::ShadowHoming<1>::Update
 PPC_FUNC_IMPL(__imp__sub_821B66E8); // Sonicteam::Player::State::ShadowHoming<0>::Update
 PPC_FUNC(sub_821B66E8)
