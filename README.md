@@ -22,7 +22,7 @@ Marathon Recompiled is an unofficial PC port of the Xbox 360 version of Sonic th
 ## Minimum System Requirements
 
 - CPU:
-    - x86_64: CPU with support for the AVX instruction set
+    - x86: 64-bit CPU with support for the AVX instruction set
         - Intel: Sandy Bridge (Intel Core 2nd Generation)
         - AMD: Bulldozer (AMD FX series)
     - ARM: 64-bit ARMv8 CPU
