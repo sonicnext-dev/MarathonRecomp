@@ -215,6 +215,7 @@ set(MARATHON_RECOMP_MOD_CXX_SOURCES
 set(MARATHON_RECOMP_UTILS_CXX_SOURCES
     "utils/bit_stream.cpp"
     "utils/host_thread.cpp"
+    "utils/message_box.cpp"
     "utils/ring_buffer.cpp"
 )
 

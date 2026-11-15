@@ -14,6 +14,7 @@
 #include <user/paths.h>
 #include <user/registry.h>
 #include <utils/host_thread.h>
+#include <utils/message_box.h>
 #include <xxHashMap.h>
 
 static uint32_t g_mainThreadId = HostThread::GetCurrentID();
@@ -34,12 +35,14 @@ void App::Update(double in_deltaTime)
 
 void App::Restart(std::vector<std::string> restartArgs)
 {
+    LOGN("Restarting game");
     os::process::StartProcess(os::process::GetExecutablePath(), restartArgs, os::process::GetWorkingDirectory());
     Exit();
 }
 
 void App::Exit()
 {
+    LOGN("Exiting game");
     Config::Save();
 
 #ifdef _WIN32
@@ -49,12 +52,73 @@ void App::Exit()
     std::_Exit(0);
 }
 
+void App::CheckIntegrity(IntegrityCheckType type)
+{
+    if (type != IntegrityCheckType::UserRequest)
+    {
+        std::string msg;
+        if (type == IntegrityCheckType::GameDataError)
+            msg = Localise("IntegrityCheck_GameError");
+        else if (type == IntegrityCheckType::DlcDataError)
+            msg = Localise("IntegrityCheck_DlcError");
+        MessageBox::ShowSimple(MessageType::Error, msg);
+    }
+
+    Journal journal;
+    double lastProgressMiB = 0.0;
+    double lastTotalMib = 0.0;
+    Installer::checkInstallIntegrity(GetGamePath(), journal, [&]()
+    {
+        constexpr double MiBDivisor = 1024.0 * 1024.0;
+        constexpr double MiBProgressThreshold = 128.0;
+        double progressMiB = double(journal.progressCounter) / MiBDivisor;
+        double totalMiB = double(journal.progressTotal) / MiBDivisor;
+        if (journal.progressCounter > 0)
+        {
+            if ((progressMiB - lastProgressMiB) > MiBProgressThreshold)
+            {
+                LOGFN("Checking files: {:.2f} MiB / {:.2f} MiB\n", progressMiB, totalMiB);
+                lastProgressMiB = progressMiB;
+            }
+        }
+        else
+        {
+            if ((totalMiB - lastTotalMib) > MiBProgressThreshold)
+            {
+                LOGFN("Scanning files: {:.2f} MiB\n", totalMiB);
+                lastTotalMib = totalMiB;
+            }
+        }
+
+        return true;
+    });
+
+    if (journal.lastResult == Journal::Result::Success)
+    {
+        MessageBox::ShowSimple(MessageType::Info, Localise("IntegrityCheck_Success"));
+        Exit();
+    }
+    else
+    {
+        char msg[512];
+        snprintf(msg, sizeof(msg), Localise("IntegrityCheck_Failed").c_str(), journal.lastErrorMessage.c_str());
+        const std::vector options = { Localise("Common_Yes"), Localise("Common_No") };
+
+        int buttonId = 0;
+        MessageBox::ShowChoice(MessageType::Error, msg, options, &buttonId);
+
+        if (buttonId == 0)
+            Restart({ type == IntegrityCheckType::DlcDataError ? "--install-dlc" : "--install" });
+        else
+            Exit();
+    }
+}
+
 // Sonicteam::AppMarathon::AppMarathon
 PPC_FUNC_IMPL(__imp__sub_8262A568);
 PPC_FUNC(sub_8262A568)
 {
     App::s_isInit = true;
-    App::s_isMissingDLC = true;
     App::s_language = Config::Language;
 
     Sonicteam::Globals::Init();
@@ -180,6 +244,18 @@ PPC_FUNC(sub_825E7958)
     ctx.r4.u32 = 1;
 
     __imp__sub_825E7958(ctx, base);
+}
+
+// DiscReadError
+PPC_FUNC(sub_82537750)
+{
+    App::CheckIntegrity(IntegrityCheckType::GameDataError);
+}
+
+// StorageReadError
+PPC_FUNC(sub_825B1588)
+{
+    App::CheckIntegrity(IntegrityCheckType::DlcDataError);
 }
 
 std::array<XXH64_hash_t, 29> g_taskUpdatesOnPause =
