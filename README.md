@@ -110,7 +110,7 @@ Refer to the left column of [this enum template](https://github.com/sonicnext-de
 The save data and configuration files are stored at the following locations:
 
 - Windows: `%APPDATA%\MarathonRecomp\`
-- Linux: `~/.config/MarathonRecomp/`
+- Linux: `$XDG_CONFIG_HOME/MarathonRecomp/`. For the Flatpak version, this is: `~/.var/app/io.github.sonicnext_dev.marathonrecomp/config/MarathonRecomp/`
 - macOS: `~/Library/Application Support/MarathonRecomp/`
 
 You will find the save data under the `save` folder. The configuration file is named `config.toml`.
