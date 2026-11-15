@@ -14,7 +14,8 @@ HostThread::HostThread(const std::string& name, std::function<void(void*)> func,
     : func(std::move(func)), data(data)
 {
     SDL_PropertiesID props = SDL_CreateProperties();
-    if (props == 0) {
+    if (props == 0)
+    {
         LOGF_ERROR("SDL_CreateProperties failed: {}\n", SDL_GetError());
         return;
     }
@@ -25,7 +26,8 @@ HostThread::HostThread(const std::string& name, std::function<void(void*)> func,
     SDL_SetStringProperty(props, SDL_PROP_THREAD_CREATE_NAME_STRING, name.c_str());
 
     thread = SDL_CreateThreadWithProperties(props);
-    if (thread == nullptr) {
+    if (thread == nullptr)
+    {
         LOGF_ERROR("SDL_CreateThreadWithProperties failed: {}\n", SDL_GetError());
         return;
     }
@@ -59,6 +61,33 @@ bool HostThread::IsAlive() const
     return SDL_GetThreadState(thread) == SDL_THREAD_ALIVE;
 }
 
-uint32_t HostThread::GetCurrentID() {
+uint32_t HostThread::GetCurrentID()
+{
     return SDL_GetCurrentThreadID();
+}
+
+void HostThread::SetCurrentThreadPriority(HostThreadPriority priority)
+{
+    SDL_ThreadPriority sdlPriority;
+    switch (priority)
+    {
+        case HostThreadPriority::Low:
+            sdlPriority = SDL_THREAD_PRIORITY_LOW;
+            break;
+        case HostThreadPriority::Normal:
+            sdlPriority = SDL_THREAD_PRIORITY_NORMAL;
+            break;
+        case HostThreadPriority::High:
+            sdlPriority = SDL_THREAD_PRIORITY_HIGH;
+            break;
+        case HostThreadPriority::Critical:
+            sdlPriority = SDL_THREAD_PRIORITY_TIME_CRITICAL;
+            break;
+        default:
+            assert(false && "Unimplemented thread priority");
+            sdlPriority = SDL_THREAD_PRIORITY_NORMAL;
+            break;
+    }
+
+    SDL_SetCurrentThreadPriority(sdlPriority);
 }
