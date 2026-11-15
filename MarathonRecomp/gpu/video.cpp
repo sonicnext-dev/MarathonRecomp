@@ -3993,9 +3993,7 @@ static void ProcRenderCommand(const RenderCommands::SetClipPlane& args)
 
 static HostThread g_renderThread("Render Thread", []
     {
-#ifdef _WIN32
-        SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
-#endif
+        HostThread::SetCurrentThreadPriority(HostThreadPriority::High);
 
         RenderCommand commands[32];
 

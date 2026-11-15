@@ -5,6 +5,13 @@
 
 typedef struct SDL_Thread SDL_Thread;
 
+enum class HostThreadPriority {
+    Low,
+    Normal,
+    High,
+    Critical
+};
+
 class HostThread
 {
 public:
@@ -23,6 +30,7 @@ public:
     bool IsAlive() const;
 
     static uint32_t GetCurrentID();
+    static void SetCurrentThreadPriority(HostThreadPriority priority);
 
 private:
     static int HostThreadFunc(void* data);

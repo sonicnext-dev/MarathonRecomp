@@ -151,10 +151,8 @@ static void CompilePipeline(XXH64_hash_t pipelineHash, const PipelineState& pipe
 
 static void PipelineCompilerThread()
 {
-#ifdef _WIN32
-    int threadPriority = THREAD_PRIORITY_LOWEST;
-    SetThreadPriority(GetCurrentThread(), threadPriority);
-#endif
+    HostThreadPriority threadPriority = HostThreadPriority::Low;
+    HostThread::SetCurrentThreadPriority(threadPriority);
 
     std::unique_ptr<GuestThreadContext> ctx;
 
@@ -166,20 +164,18 @@ static void PipelineCompilerThread()
         if (ctx == nullptr)
             ctx = std::make_unique<GuestThreadContext>(0);
 
-#ifdef _WIN32
-        int newThreadPriority = threadPriority;
+        HostThreadPriority newThreadPriority = threadPriority;
 
         if (App::s_isLoading)
-            newThreadPriority = THREAD_PRIORITY_HIGHEST;
+            newThreadPriority = HostThreadPriority::High;
         else
-            newThreadPriority = THREAD_PRIORITY_LOWEST;
+            newThreadPriority = HostThreadPriority::Low;
 
         if (newThreadPriority != threadPriority)
         {
-            SetThreadPriority(GetCurrentThread(), newThreadPriority);
+            HostThread::SetCurrentThreadPriority(threadPriority);
             threadPriority = newThreadPriority;
         }
-#endif
 
         CompilePipeline(queueItem.pipelineHash, queueItem.pipelineState
 #ifdef ASYNC_PSO_DEBUG
@@ -269,9 +265,7 @@ static void EnqueueGraphicsPipelineCompilation(
 
 static void PipelineTaskConsumerThread()
 {
-#ifdef _WIN32
-    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_IDLE);
-#endif
+    HostThread::SetCurrentThreadPriority(HostThreadPriority::Low);
 
     std::vector<PipelineTask> localPipelineTaskQueue;
     std::unique_ptr<GuestThreadContext> ctx;
