@@ -17,6 +17,8 @@ namespace HID
 
         explicit GamepadSDL(SDL_Gamepad* in_pSDLGamepad)
         {
+            assert(in_pSDLGamepad);
+
             m_pContext = in_pSDLGamepad;
 
             if (!m_pContext)

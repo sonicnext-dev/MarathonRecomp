@@ -19,8 +19,17 @@ namespace HID
         switch (in_pEvent->type)
         {
             case SDL_EVENT_GAMEPAD_ADDED:
-                g_manager.Attach(std::make_shared<GamepadSDL>(SDL_OpenGamepad(in_pEvent->gdevice.which)));
+            {
+                auto* pad = SDL_OpenGamepad(in_pEvent->gdevice.which);
+                if (!pad)
+                {
+                    LOGFN_WARNING("Failed to open gamepad (ID: {}): {}", in_pEvent->gdevice.which, SDL_GetError());
+                    return true;
+                }
+
+                g_manager.Attach(std::make_shared<GamepadSDL>(pad));
                 break;
+            }
 
             case SDL_EVENT_GAMEPAD_REMOVED:
                 g_manager.Detach(g_manager.Find(in_pEvent->gdevice.which));
