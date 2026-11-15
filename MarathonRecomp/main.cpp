@@ -113,9 +113,14 @@ void KiSystemStartup()
     {
         if (file.is_directory())
         {
-            std::u8string fileNameU8 = file.path().filename().u8string();
-            std::u8string filePathU8 = file.path().u8string();
-            XamRegisterContent(XamMakeContent(XCONTENTTYPE_DLC, (const char*)(fileNameU8.c_str())), (const char*)(filePathU8.c_str()));
+            // Only include directories with valid DLC content, otherwise the game will try to load it and error.
+            const auto arcFile = file.path() / "download.arc";
+            if (std::filesystem::exists(arcFile))
+            {
+                std::u8string fileNameU8 = file.path().filename().u8string();
+                std::u8string filePathU8 = file.path().u8string();
+                XamRegisterContent(XamMakeContent(XCONTENTTYPE_DLC, (const char*)(fileNameU8.c_str())), (const char*)(filePathU8.c_str()));
+            }
         }
     }
 
