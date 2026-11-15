@@ -35,7 +35,7 @@ Marathon Recompiled is an unofficial PC port of the Xbox 360 version of Sonic th
     - 8 GB minimum
 - Operating System:
     - Windows 10 (version 1909)
-    - A modern Linux distro such as Ubuntu 22.04 LTS
+    - A modern Linux distro such as Ubuntu 26.04 LTS
     - macOS 15.0 or newer
 - Storage: 6 GiB required
 
