@@ -18,7 +18,7 @@ Marathon Recompiled is an unofficial PC port of the Xbox 360 version of Sonic th
 - [FAQ](#faq)
 - [Building](#building)
 - [Credits](#credits)
-- 
+
 ## Minimum System Requirements
 
 - CPU:
