@@ -55,5 +55,4 @@
 10. You should now see a tree view of your hard drive's contents. Expand the tree nodes for `/Shared Items/Games/` (and optionally `/Shared Items/DLC/`, if you have the DLC installed).
 11. Hold the CTRL key and click on **SONIC THE HEDGEHOG** under the `Games` node, as well as the **DLC** under the `DLC` node, if you have the DLC installed. Ensure all are selected before the next step.
 12. Right-click any of the selected items and click **Copy Selected to Local Disk**, then navigate to the folder you created in step 7 and select it. Velocity will now begin copying the game files to your PC.
-13. Once the transfer is complete, close the **Device Content Viewer** window and navigate to **Tools > Device Tools > Raw Device Viewer**.
-14. Once the transfer is complete, you should now have all of the necessary files for installation. [Return to the readme and proceed to the next step](/README.md#how-to-install).
+13. Once the transfer is complete, you should now have all of the necessary files for installation. [Return to the readme and proceed to the next step](/README.md#how-to-install).

@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://raw.githubusercontent.com/IsaacMarovitz/MarathonRecompResources/refs/heads/main/images/logo/Logo.png" width="512"/>
+    <img src="https://raw.githubusercontent.com/IsaacMarovitz/MarathonRecompResources/refs/heads/main/images/logo/logo_GitHub.png" width="512"/>
 </p>
 
 ---
@@ -12,10 +12,73 @@ Marathon Recompiled is an unofficial PC port of the Xbox 360 version of Sonic th
 
 ## Table of Contents
 
+- [Minimum System Requirements](#minimum-system-requirements)
+- [How to Install](#how-to-install)
 - [Known Issues](#known-issues)
 - [FAQ](#faq)
 - [Building](#building)
 - [Credits](#credits)
+- 
+## Minimum System Requirements
+
+- CPU:
+    - x86_64: CPU with support for the AVX instruction set
+        - Intel: Sandy Bridge (Intel Core 2nd Generation)
+        - AMD: Bulldozer (AMD FX series)
+    - ARM: 64-bit ARMv8 CPU
+- GPU with support for Direct3D 12.0 (Shader Model 6), Vulkan 1.2, or Metal 3:
+    - NVIDIA: GeForce GT 630 (Kepler)
+    - AMD: Radeon HD 7750 (2012, not the RX 7000)
+    - Intel: HD Graphics 510 (Skylake)
+    - Apple: M1
+- Memory:
+    - 8 GB minimum
+- Operating System:
+    - Windows 10 (version 1909)
+    - A modern Linux distro such as Ubuntu 22.04 LTS
+    - macOS 15.0 or newer
+- Storage: 6 GiB required
+
+## How to Install
+
+1) You must have access to the following:
+
+    - For dumping from a real Xbox 360:
+        - Xbox 360 (modifications not necessary)
+        - Xbox 360 Storage Device (either an Xbox 360 hard drive or an external USB storage device)
+        - Xbox 360 Hard Drive Transfer Cable or a compatible SATA to USB adapter (only required for dumping from an Xbox 360 hard drive)
+    - For dumping on your PC:
+        - A disc drive compatible with [OmniDrive](https://github.com/RibShark/OmniDrive)
+    - Sonic the Hedgehog (2006) for Xbox 360
+        - Retail Disc or Digital Copy.
+        - All available DLC are optional.
+
+> [!TIP]
+> If you do not have the Xbox 360 Hard Drive Transfer Cable, please ensure that you purchase the correct revision of it for your console.
+>
+> The latest revision works with both original Xbox 360 and Xbox 360 S|E hard drives, but the first revision only works with original Xbox 360 hard drives.
+>
+> To know which is which, the first revision cable is gray, whereas the latest revision (which supports any Xbox 360 hard drive) is black.
+
+2) **Before proceeding with the installation**, make sure to follow the guide on how to acquire the game files from your Xbox 360.
+
+    - Xbox 360 Hard Drive Dumping Guide
+        - [English](/docs/DUMPING-en.md)
+    - Xbox 360 USB Dumping Guide
+        - [English](/docs/DUMPING-USB-en.md)
+    - OmniDrive Disc Dumping Guide
+        - [English](/docs/DUMPING-OMNIDRIVE-en.md)
+
+3) Download [the latest release](https://github.com/sonicnext-dev/MarathonRecomp/releases/latest) of Marathon Recompiled and extract it to where you'd like the game to be installed.
+
+4) Run the executable and you will be guided through the installation process. You will be asked to provide the files you acquired in the previous step. When presented with options for how to do this:
+
+    - **Add Files** will only allow you to provide **containers or images dumped from an Xbox 360**. These often come in the form of very large files without associated extensions. Don't worry if you're not aware of what's inside of them, the installer will automatically detect what type of content is inside the container.
+
+    - **Add Folder** will only allow you to provide a **directory with the game's raw files** corresponding to the piece of content that is requested. **It will NOT scan your folder for compatible content!**
+
+> [!NOTE]
+> Please note that it is **not possible** to complete the installation if your files have been **modified**. In case of other problems such as black screens or crashes, **do not try to reinstall the game** as it is not possible for the process to result in an invalid installation.
 
 ## Known Issues
 
