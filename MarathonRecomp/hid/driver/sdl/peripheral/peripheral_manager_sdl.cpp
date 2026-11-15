@@ -23,7 +23,7 @@ namespace HID
                 auto* pad = SDL_OpenGamepad(in_pEvent->gdevice.which);
                 if (!pad)
                 {
-                    LOGFN_WARNING("Failed to open gamepad (ID: {}): {}", in_pEvent->gdevice.which, SDL_GetError());
+                    LOGFN_ERROR("Failed to open gamepad (ID: {}): {}", in_pEvent->gdevice.which, SDL_GetError());
                     return true;
                 }
 
