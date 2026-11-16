@@ -57,12 +57,13 @@
 15. Turn off the console and connect the USB storage device to your PC.
 16. Download [the latest release of Velocity](https://github.com/Gualdimar/Velocity/releases/download/xex%2Biso-branch/Velocity-XEXISO.rar) and open the `*.rar` file using [7-Zip](https://7-zip.org/download.html), then extract its contents anywhere that's convenient to you.
 17. Create a new folder anywhere that's convenient to you for storing the game files.
+
 > [!NOTE]
 > If you're using Linux, skip to step 19.
 
 18. Right-click `Velocity.exe` and click **Properties**, then under the **Compatibility** tab, tick **Run this program as an administrator** and click **OK**. This is required in order for the program to recognize the storage device.
 19. Launch `Velocity.exe`. You should see a **Device Detected** message appear on launch asking if you would like to open the **Device Content Viewer**. Click **Yes**.
 20. You should now see a tree view of your storage device's contents. Expand the tree nodes for `/Shared Items/Games/` (and optionally `/Shared Items/DLC/`, if you have the DLC installed).
-21. Hold the CTRL key and click on **SONIC THE HEDGEHOG** under the `Games` node, as well as the **Adventure Pack(s)** under the `DLC` node, if you have the DLC installed. Ensure all are selected before the next step.
+21. Hold the CTRL key and click on **SONIC THE HEDGEHOG** under the `Games` node, as well as the **DLC** under the `DLC` node, if you have the DLC installed. Ensure all are selected before the next step.
 22. Right-click any of the selected items and click **Copy Selected to Local Disk**, then navigate to the folder you created in step 18 and select it. Velocity will now begin copying the game files to your PC.
 23. Once the transfer is complete, you should have all the necessary files for installation. You may now reconnect your hard drive to your console and restore your Xbox Live profile from the USB storage device. After that, [return to the readme and proceed to the next step](/README.md#how-to-install).
