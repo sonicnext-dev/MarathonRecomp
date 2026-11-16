@@ -35,14 +35,14 @@ void App::Update(double in_deltaTime)
 
 void App::Restart(std::vector<std::string> restartArgs)
 {
-    LOGN("Restarting game");
+    LOGN("Restarting game.");
     os::process::StartProcess(os::process::GetExecutablePath(), restartArgs, os::process::GetWorkingDirectory());
     Exit();
 }
 
 void App::Exit()
 {
-    LOGN("Exiting game");
+    LOGN("Exiting game.");
     Config::Save();
 
 #ifdef _WIN32
@@ -57,16 +57,19 @@ void App::CheckIntegrity(IntegrityCheckType type)
     if (type != IntegrityCheckType::UserRequest)
     {
         std::string msg;
+
         if (type == IntegrityCheckType::GameDataError)
             msg = Localise("IntegrityCheck_GameError");
         else if (type == IntegrityCheckType::DlcDataError)
             msg = Localise("IntegrityCheck_DlcError");
+
         MessageBox::ShowSimple(MessageType::Error, msg);
     }
 
     Journal journal;
     double lastProgressMiB = 0.0;
     double lastTotalMib = 0.0;
+
     Installer::checkInstallIntegrity(GetGamePath(), journal, [&]()
     {
         constexpr double MiBDivisor = 1024.0 * 1024.0;
@@ -77,7 +80,7 @@ void App::CheckIntegrity(IntegrityCheckType type)
         {
             if ((progressMiB - lastProgressMiB) > MiBProgressThreshold)
             {
-                LOGFN("Checking files: {:.2f} MiB / {:.2f} MiB\n", progressMiB, totalMiB);
+                LOGFN("Checking files: {:.2f} MiB / {:.2f} MiB", progressMiB, totalMiB);
                 lastProgressMiB = progressMiB;
             }
         }
@@ -85,7 +88,7 @@ void App::CheckIntegrity(IntegrityCheckType type)
         {
             if ((totalMiB - lastTotalMib) > MiBProgressThreshold)
             {
-                LOGFN("Scanning files: {:.2f} MiB\n", totalMiB);
+                LOGFN("Scanning files: {:.2f} MiB", totalMiB);
                 lastTotalMib = totalMiB;
             }
         }

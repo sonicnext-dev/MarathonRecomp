@@ -771,21 +771,21 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
     {
         "IntegrityCheck_GameError",
         {
-            { ELanguage::English,  "An error occurred while reading game data.\n\nInstalled data will now be validated." },
+            { ELanguage::English,  "An error occurred while reading game data. The installed data will now be validated." },
             // TODO: Finish localization
         }
     },
     {
         "IntegrityCheck_DlcError",
         {
-            { ELanguage::English,  "An error occurred while reading DLC data.\n\nInstalled data will now be validated." },
+            { ELanguage::English,  "An error occurred while reading DLC data. The installed data will now be validated." },
             // TODO: Finish localization
         }
     },
     {
         "IntegrityCheck_Success",
         {
-            { ELanguage::English,  "Installation check has finished.\n\nAll files seem to be correct.\n\nPlease check your system if you are experiencing issues.\n\nThe game will now close." }
+            { ELanguage::English,  "Installation check has passed.\n\nAll files seem to be correct. Please check your system if you are experiencing issues.\n\nThe game will now close." }
             // TODO: Finish localization
         }
     },
