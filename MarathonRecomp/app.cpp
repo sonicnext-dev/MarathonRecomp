@@ -63,7 +63,7 @@ void App::CheckIntegrity(IntegrityCheckType type)
         else if (type == IntegrityCheckType::DlcDataError)
             msg = Localise("IntegrityCheck_DlcError");
 
-        MessageBox::ShowSimple(MessageType::Error, msg);
+        SimpleMessageBox::Show(MessageType::Error, msg);
     }
 
     Journal journal;
@@ -98,7 +98,7 @@ void App::CheckIntegrity(IntegrityCheckType type)
 
     if (journal.lastResult == Journal::Result::Success)
     {
-        MessageBox::ShowSimple(MessageType::Info, Localise("IntegrityCheck_Success"));
+        SimpleMessageBox::Show(MessageType::Info, Localise("IntegrityCheck_Success"));
         Exit();
     }
     else
@@ -108,7 +108,7 @@ void App::CheckIntegrity(IntegrityCheckType type)
         const std::vector options = { Localise("Common_Yes"), Localise("Common_No") };
 
         int buttonId = 0;
-        MessageBox::ShowChoice(MessageType::Error, msg, options, &buttonId);
+        ChoiceMessageBox::Show(MessageType::Error, msg, options, &buttonId);
 
         if (buttonId == 0)
             Restart({ type == IntegrityCheckType::DlcDataError ? "--install-dlc" : "--install" });

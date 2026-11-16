@@ -1,6 +1,8 @@
 #include "message_box.h"
 #include <os/logger.h>
+#include <SDL3/SDL.h>
 #include <ui/game_window.h>
+#include <vector>
 
 struct MessageBoxData
 {
@@ -31,7 +33,7 @@ static void ShowMessageBox(void* data)
         SDL_ShowSimpleMessageBox(msgData->flags, GameWindow::GetTitle(), msgData->message->c_str(), GameWindow::s_pWindow);
 }
 
-void MessageBox::ShowSimple(MessageType type, const std::string& message)
+void SimpleMessageBox::Show(MessageType type, const std::string& message)
 {
     const auto error = type == MessageType::Error;
 
@@ -50,7 +52,7 @@ void MessageBox::ShowSimple(MessageType type, const std::string& message)
     SDL_RunOnMainThread(ShowMessageBox, &msgData, true);
 }
 
-void MessageBox::ShowChoice(MessageType type, const std::string& message, std::span<const std::string> buttons, int* choiceOut)
+void ChoiceMessageBox::Show(MessageType type, const std::string& message, std::span<const std::string> buttons, int* choiceOut)
 {
     const auto error = type == MessageType::Error;
 
