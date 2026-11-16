@@ -50,12 +50,14 @@ void MessageBox::ShowSimple(MessageType type, const std::string& message)
     SDL_RunOnMainThread(ShowMessageBox, &msgData, true);
 }
 
-void MessageBox::ShowChoice(MessageType type, const std::string& message, std::span<const std::string> buttons, int* choiceOut) {
+void MessageBox::ShowChoice(MessageType type, const std::string& message, std::span<const std::string> buttons, int* choiceOut)
+{
     const auto error = type == MessageType::Error;
 
     std::vector<SDL_MessageBoxButtonData> sdlButtons;
     sdlButtons.reserve(buttons.size());
-    for (int i = 0; i < buttons.size(); ++i)
+
+    for (int i = buttons.size() - 1; i >= 0; i--)
     {
         sdlButtons.push_back({
             .flags = i == 0 ? SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT : 0,
