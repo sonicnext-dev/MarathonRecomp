@@ -175,6 +175,7 @@
 #include "Sonicteam/Message/Player/MsgSuckPlayer.h"
 #include "Sonicteam/MessageWindowTask.h"
 #include "Sonicteam/Mission/Core.h"
+#include "Sonicteam/Mission/VirtualMachine.h"
 #include "Sonicteam/MovieObject.h"
 #include "Sonicteam/MovieObjectWmv.h"
 #include "Sonicteam/MovieTask.h"
