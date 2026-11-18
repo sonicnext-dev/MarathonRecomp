@@ -774,6 +774,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "An error occurred while reading game data. The installed data will now be validated." },
             { ELanguage::Japanese, "ゲームデータの読み込み中にエラーが発生しました。インストール済みのデータを検証します。" },
             { ELanguage::German,   "Beim Einlesen der Spieldaten ist ein Fehler aufgetreten. Die installierten Daten werden nun überprüft." },
+            { ELanguage::French,   "Une erreur s'est produite lors de la lecture des données du jeu. Les données installées vont maintenant être validées." },
             { ELanguage::Spanish,  "Se ha producido un error al leer los datos del juego. Se procederá a validar los datos instalados ahora." },
             { ELanguage::Italian,  "Si è verificato un errore durante la lettura dei dati di gioco. I dati installati verranno verificati." }
         }
@@ -784,6 +785,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "An error occurred while reading DLC data. The installed data will now be validated." },
             { ELanguage::Japanese, "DLCデータの読み込み中にエラーが発生しました。インストール済みのデータを検証します。" },
             { ELanguage::German,   "Beim Einlesen der DLC-Daten ist ein Fehler aufgetreten. Die installierten Daten werden nun überprüft." },
+            { ELanguage::French,   "Une erreur s'est produite lors de la lecture des données DLC. Les données installées vont maintenant être validées." },
             { ELanguage::Spanish,  "Se ha producido un error al leer los datos del DLC. Se procederá a validar los datos instalados ahora." },
             { ELanguage::Italian,  "Si è verificato un errore durante la lettura dei dati dei DLC. I dati installati verranno verificati." }
         }
@@ -794,6 +796,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Installation check has passed.\n\nAll files seem to be correct. Please check your system if you are experiencing issues.\n\nThe game will now close." },
             { ELanguage::Japanese, "インストールチェックに合格しました。\n\nすべてのファイルは正しいようです。問題が発生している場合は、システムを確認してください。\n\nこれでゲームは終了します。" },
             { ELanguage::German,   "Die Installationsprüfung wurde erfolgreich abgeschlossen.\n\nAlle Dateien scheinen in Ordnung zu sein. Bitte überprüfen Sie Ihr System, falls Probleme auftreten sollten.\n\nDas Spiel wird nun geschlossen." },
+            { ELanguage::French,   "La vérification de l'installation s'est terminée avec succès. \n\nTous les fichiers semblent corrects. Veuillez vérifier votre système si vous rencontrez des problèmes.\n\nLe jeu va maintenant se fermer." },
             { ELanguage::Spanish,  "La verificación de la instalación ha terminado.\n\nTodos los archivos parecen correctos. Por favor, revisa tu sistema si tienes problemas.\n\nEl juego se cerrará ahora." },
             { ELanguage::Italian,  "Il controllo dell'installazione è stato superato.\n\nTutti i file sembrano essere corretti. Se riscontri dei problemi, controlla il tuo sistema.\n\nIl gioco verrà chiuso ora." }
         }
@@ -804,6 +807,7 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
             { ELanguage::English,  "Installation check has failed.\n\nError: %s\n\nThe damaged files must be reinstalled.\n\nWould you like to launch the installer?" },
             { ELanguage::Japanese, "インストールチェックに失敗しました。\n\nエラー： %s\n\n破損したファイルは再インストールする必要があります。\n\nインストーラーを起動しますか？" },
             { ELanguage::German,   "Die Installationsprüfung ist fehlgeschlagen.\n\nFehler: %s\n\nDie beschädigten Dateien müssen neu installiert werden.\n\nMöchten Sie das Installationsprogramm starten?" },
+            { ELanguage::French,   "La vérification de l'installation a échoué.\n\nErreur : %s\n\nLes fichiers endommagés doivent être réinstallés.\n\nSouhaitez-vous lancer le programme d'installation ?" },
             { ELanguage::Spanish,  "La verificación de la instalación ha fallado.\n\nError: %s\n\nLos archivos dañados deben ser reinstalados.\n\n¿Quieres iniciar el instalador?" },
             { ELanguage::Italian,  "Il controllo dell'installazione è fallito.\n\nErrore: %s\n\nI file danneggiati dovranno essere reinstallati.\n\nVuoi aprire l'installatore?" }
         }
