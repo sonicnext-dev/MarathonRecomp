@@ -772,28 +772,28 @@ std::unordered_map<std::string_view, std::unordered_map<ELanguage, std::string>>
         "IntegrityCheck_GameError",
         {
             { ELanguage::English,  "An error occurred while reading game data. The installed data will now be validated." },
-            // TODO: Finish localization
+            { ELanguage::Italian,  "Si è verificato un errore durante la lettura dei dati di gioco. I dati installati verranno verificati." }
         }
     },
     {
         "IntegrityCheck_DlcError",
         {
             { ELanguage::English,  "An error occurred while reading DLC data. The installed data will now be validated." },
-            // TODO: Finish localization
+            { ELanguage::Italian,  "Si è verificato un errore durante la lettura dei dati dei DLC. I dati installati verranno verificati." }
         }
     },
     {
         "IntegrityCheck_Success",
         {
-            { ELanguage::English,  "Installation check has passed.\n\nAll files seem to be correct. Please check your system if you are experiencing issues.\n\nThe game will now close." }
-            // TODO: Finish localization
+            { ELanguage::English,  "Installation check has passed.\n\nAll files seem to be correct. Please check your system if you are experiencing issues.\n\nThe game will now close." },
+            { ELanguage::Italian,  "Il controllo dell'installazione è stato superato.\n\nTutti i file sembrano essere corretti. Se riscontri dei problemi, controlla il tuo sistema.\n\nIl gioco verrà chiuso ora." }
         }
     },
     {
         "IntegrityCheck_Failed",
         {
             { ELanguage::English,  "Installation check has failed.\n\nError: %s\n\nThe damaged files must be reinstalled.\n\nWould you like to launch the installer?" },
-            // TODO: Finish localization
+            { ELanguage::Italian,  "Il controllo dell'installazione è fallito.\n\nErrore: %s\n\nI file danneggiati dovranno essere reinstallati.\n\nVuoi aprire l'installatore?" }
         }
     },
     {
