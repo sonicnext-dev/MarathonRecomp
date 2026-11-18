@@ -1111,7 +1111,7 @@ void OptionsMenu::Draw()
             {
                 if (s_restartMessageResult == 0)
                 {
-                    Fader::FadeOut(1, []() { App::Restart({ "--use-cwd --skip-logos" }); });
+                    Fader::FadeOut(1, []() { App::Restart({ "--use-cwd", "--skip-logos" }); });
                     s_restartFaderBegun = true;
                 }
                 else

@@ -3,12 +3,17 @@
 #include <api/Marathon.h>
 #include <user/config.h>
 
+enum class IntegrityCheckType {
+    UserRequest,
+    GameDataError,
+    DlcDataError
+};
+
 class App
 {
 public:
     static inline bool s_isInit;
     static inline bool s_isSkipLogos;
-    static inline bool s_isMissingDLC;
     static inline bool s_isLoading;
     static inline bool s_isSaving;
     static inline bool s_isSaveDataCorrupt;
@@ -26,5 +31,6 @@ public:
     static void Update(double in_deltaTime);
     static void Restart(std::vector<std::string> restartArgs = {});
     static void Exit();
+    static void CheckIntegrity(IntegrityCheckType type);
 };
 
