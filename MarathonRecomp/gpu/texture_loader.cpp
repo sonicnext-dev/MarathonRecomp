@@ -196,6 +196,10 @@ static RenderFormat ConvertDXGIFormat(ddspp::DXGIFormat format)
         return RenderFormat::BC7_UNORM;
     case ddspp::BC7_UNORM_SRGB:
         return RenderFormat::BC7_UNORM_SRGB;
+    case ddspp::B5G6R5_UNORM:
+        return RenderFormat::B5G6R5_UNORM;
+    case ddspp::B5G5R5A1_UNORM:
+        return RenderFormat::B5G5R5A1_UNORM;
     default:
         LOGFN_ERROR("Unsupported format from DDS: {:d}\n", (uint32_t)format);
         __builtin_trap();
