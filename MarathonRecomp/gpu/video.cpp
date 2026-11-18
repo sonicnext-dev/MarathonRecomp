@@ -963,11 +963,15 @@ static void CheckSwapChain()
 
     if (!g_swapChainValid)
     {
+        const auto previousWidth = g_swapChain->getWidth();
+        const auto previousHeight = g_swapChain->getHeight();
+
         Video::WaitForGPU();
         g_backBuffer->framebuffers.clear();
         PurgeSurfaceVariantFramebuffers();
         g_swapChainValid = g_swapChain->resize();
-        Video::s_needsResize = g_swapChainValid;
+
+        Video::s_needsResize |= g_swapChainValid && (g_swapChain->getWidth() != previousWidth || g_swapChain->getHeight() != previousHeight);
 
         while (g_renderSemaphores.size() < g_swapChain->getTextureCount())
             g_renderSemaphores.emplace_back(g_device->createCommandSemaphore());
@@ -1522,6 +1526,9 @@ bool Video::CreateHostDevice(const char* sdlVideoDriver, bool graphicsApiRetry)
 
     ComputeViewportDimensions();
     CheckSwapChain();
+
+    s_needsResize = false;
+
     BeginCommandList();
 
     RenderTextureBarrier blankTextureBarriers[TEXTURE_DESCRIPTOR_NULL_COUNT];
@@ -2472,10 +2479,7 @@ void Video::Present()
     // This prevents minimising from also requesting
     // a resize, which breaks the loading screens.
     if (s_needsResize && !App::s_isLoading)
-    {
-        Resize(s_viewportWidth, s_viewportHeight);
-        s_needsResize = false;
-    }
+        s_needsResize = !Resize(s_viewportWidth, s_viewportHeight);
 
     g_renderQueue.enqueue(RenderCommands::BeginCommandList{});
 
@@ -2520,32 +2524,32 @@ const std::map<std::string, BufferInfo> g_bufferInfo
     { "depthstencil_1_4",   { 6, 0 } }
 };
 
-void Video::Resize(uint32_t width, uint32_t height)
+bool Video::Resize(uint32_t width, uint32_t height)
 {
     const auto pApp = App::s_pApp;
 
     if (!pApp)
-        return;
+        return false;
 
     const auto pDoc = pApp->m_pDoc.get();
     const auto pResourceManager = Sonicteam::SoX::ResourceManager::GetInstance();
     const auto pTextureMgr = Sonicteam::SoX::Graphics::TextureMgr::GetInstance();
 
     if (!pDoc || !pResourceManager || !pTextureMgr)
-        return;
+        return false;
 
     const auto pRenderTargetContainer = pDoc->m_pRenderTargetContainer.get();
     const auto pMyGraphicsDevice = pDoc->m_pMyGraphicsDevice.get();
 
     if (!pRenderTargetContainer || !pMyGraphicsDevice)
-        return;
+        return false;
 
     const auto internalSize = RenderResolution::GetInternalSize();
 
     if (!internalSize.Width || !internalSize.Height)
     {
         LOGN_ERROR("Attempting to resize buffers to 0x0.");
-        return;
+        return false;
     }
 
     if (g_backBuffer && g_backBuffer != pApp->m_pBackBufferSurface.get())
@@ -2798,6 +2802,8 @@ void Video::Resize(uint32_t width, uint32_t height)
         if (auto it = rTextureResources.find("user0"); it != rTextureResources.end())
             pFirstMefiress->m_spUserTexture = reinterpret_cast<Sonicteam::MyTexture*>(it->second.get());
     }
+
+    return true;
 }
 
 static void SetRootDescriptor(const UploadAllocation& allocation, size_t index)
