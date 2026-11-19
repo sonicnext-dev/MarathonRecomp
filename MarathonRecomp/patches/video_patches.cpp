@@ -12,7 +12,7 @@ extern const char* g_surfaceCreationName;
 
 void BeginBlockGetName(PPCRegister& r3)
 {
-    g_pBlockName = (const char*)g_memory.Translate(r3.u32);
+    g_pBlockName = reinterpret_cast<const char*>(g_memory.Translate(r3.u32));
 
 #if _DEBUG
     if (g_pBlockName)
@@ -63,12 +63,13 @@ static void ApplyBufferSize(PPCContext& ctx, const char* pName)
 PPC_FUNC_IMPL(__imp__sub_82619D00);
 PPC_FUNC(sub_82619D00)
 {
-    auto pName = (stdx::string*)g_memory.Translate(ctx.r4.u32);
+    const auto pName = reinterpret_cast<stdx::string*>(g_memory.Translate(ctx.r4.u32));
+
     ApplyBufferSize(ctx, pName->c_str());
 
 #if _DEBUG
-    auto width = ctx.r5.u32;
-    auto height = ctx.r6.u32;
+    const auto width = ctx.r5.u32;
+    const auto height = ctx.r6.u32;
 #endif
 
     g_surfaceCreationName = pName->c_str();
@@ -84,12 +85,13 @@ PPC_FUNC(sub_82619D00)
 PPC_FUNC_IMPL(__imp__sub_82619B88);
 PPC_FUNC(sub_82619B88)
 {
-    auto pName = (stdx::string*)g_memory.Translate(ctx.r4.u32);
+    const auto pName = reinterpret_cast<stdx::string*>(g_memory.Translate(ctx.r4.u32));
+
     ApplyBufferSize(ctx, pName->c_str());
 
 #if _DEBUG
-    auto width = ctx.r5.u32;
-    auto height = ctx.r6.u32;
+    const auto width = ctx.r5.u32;
+    const auto height = ctx.r6.u32;
 #endif
 
     g_surfaceCreationName = pName->c_str();
@@ -112,12 +114,32 @@ PPC_FUNC(sub_82619B88)
 PPC_FUNC_IMPL(__imp__sub_82619FF0);
 PPC_FUNC(sub_82619FF0)
 {
-    auto pName = (stdx::string*)g_memory.Translate(ctx.r4.u32);
+    const auto pName = reinterpret_cast<stdx::string*>(g_memory.Translate(ctx.r4.u32));
+
+    if (*pName == "csm")
+    {
+        if (!Video::s_needsShadowMapResize && Video::RestoreCachedRenderTarget("csm", RenderTargetType::PostEffect))
+        {
+            ctx.r3.u32 = 1;
+            return;
+        }
+    }
+
     ApplyBufferSize(ctx, pName->c_str());
+
+#if _DEBUG
+    const auto width = ctx.r5.u32;
+    const auto height = ctx.r6.u32;
+    const auto count = ctx.r7.u32;
+#endif
 
     g_surfaceCreationName = pName->c_str();
     __imp__sub_82619FF0(ctx, base);
     g_surfaceCreationName = nullptr;
+
+#if _DEBUG
+    LOGFN_UTILITY("Created array texture: {} ({}x{}x{})", pName->c_str(), width, height, count);
+#endif
 }
 
 // Sonicteam::MyReflectionArea::Update
@@ -159,7 +181,7 @@ std::string g_renderWorldFBO;
 
 void GetRenderWorldFBO(PPCRegister& name)
 {
-    auto pName = xpointer(reinterpret_cast<char*>(name.u32));
+    const auto pName = xpointer(reinterpret_cast<char*>(name.u32));
     g_renderWorldFBO = std::string(pName.get());
 }
 
@@ -207,7 +229,7 @@ void IndexBufferLengthMidAsmHook(PPCRegister& r3)
 
 void SetShadowResolutionMidAsmHook(PPCRegister& r11)
 {
-    auto res = (int32_t)Config::ShadowResolution.Value;
+    const auto res = (int32_t)Config::ShadowResolution.Value;
 
     if (res > 0)
         r11.u64 = res;
