@@ -36,16 +36,25 @@ namespace stdx
         xpointer<Node> _Myhead;
         be<uint32_t> _Mysize;
 
-        xpointer<Node> allocate_node(const Key& key, const T& value, xpointer<Node> parent = nullptr, char color = 0)
+        xpointer<Node> allocate_head()
         {
-            void* memory = g_userHeap.Alloc(sizeof(Node));
-            return xpointer<Node>(new (memory) Node(key, value, parent, color));
+            auto pHead = new (g_userHeap.Alloc(sizeof(Node))) Node(true);
+
+            pHead->_Left = pHead;
+            pHead->_Parent = pHead;
+            pHead->_Right = pHead;
+
+            return pHead;
         }
 
-        xpointer<Node> allocate_node(bool isnil = false)
+        xpointer<Node> allocate_node(const Key& key, const T& value, xpointer<Node> parent, char color = 0)
         {
-            void* memory = g_userHeap.Alloc(sizeof(Node));
-            return xpointer<Node>(new (memory) Node(isnil));
+            auto pNode = new (g_userHeap.Alloc(sizeof(Node))) Node(key, value, parent, color);
+
+            pNode->_Left = _Myhead;
+            pNode->_Right = _Myhead;
+
+            return pNode;
         }
 
         void deallocate_node(xpointer<Node> node)
@@ -211,7 +220,7 @@ namespace stdx
 
         map() : _Mysize(0)
         {
-            _Myhead = allocate_node(true);
+            _Myhead = allocate_head();
             _Myhead->_Left = _Myhead;
             _Myhead->_Parent = _Myhead;
             _Myhead->_Right = _Myhead;
