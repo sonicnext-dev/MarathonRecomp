@@ -381,14 +381,20 @@ address = 0x82192F54
 registers = ["r3"]
 
 [[midasm_hook]]
-name = "SonicCamera_MouseLook"
-address = 0x82191FC0
-registers = ["r31", "r5", "f31"]
-
-[[midasm_hook]]
 name = "SonicCamera_RedirectOrbitToMouse"
 address = 0x82191E58
 registers = ["r31", "r4"]
+
+[[midasm_hook]]
+name = "SonicCamera_SkipCollisionFallback"
+address = 0x82191FCC
+registers = ["r31"]
+jump_address_on_true = 0x82191FD0
+
+[[midasm_hook]]
+name = "SonicCamera_MouseLook"
+address = 0x82191FC0
+registers = ["r31", "r5", "f31"]
 
 [[midasm_hook]]
 name = "RestoreChaosSpearFlips"

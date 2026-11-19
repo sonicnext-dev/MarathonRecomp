@@ -129,11 +129,15 @@ public:
         MouseOrbitAxis_Pitch = (1 << 1)
     };
 
+    static constexpr float k_MouseOrbitDistanceInSpeed = 15.0f;
+    static constexpr float k_MouseOrbitDistanceOutSpeed = 5.0f;
+
     MouseState m_MouseState;
     Sonicteam::SoX::Math::Vector m_MouseTransitionPosition;
     float m_MouseTransitionTime;
     float m_MouseInactiveTime;
     Sonicteam::SoX::Math::Vector m_MouseOrbit;
+    float m_MouseOrbitDistanceInterp;
 
     void ConfigureMouse()
     {
@@ -142,6 +146,7 @@ public:
         m_MouseTransitionTime = 0.0f;
         m_MouseInactiveTime = Config::MouseAutoCenterTime;
         m_MouseOrbit = m_Orbit;
+        m_MouseOrbitDistanceInterp = m_Orbit.X;
     }
 
     void ResetMouseOrbit(std::underlying_type_t<MouseOrbitAxis> in_resetAxes)
@@ -268,6 +273,13 @@ void SonicCamera_RedirectOrbitToMouse(PPCRegister& r31, PPCRegister& r4)
     r4.u32 = g_memory.MapVirtual(&pSonicCamera->m_MouseOrbit);
 }
 
+bool SonicCamera_SkipCollisionFallback(PPCRegister& r31)
+{
+    const auto pSonicCamera = reinterpret_cast<SonicCameraEx*>(g_memory.Translate(r31.u32));
+
+    return pSonicCamera->m_MouseState == SonicCameraEx::MouseState_Enabled;
+}
+
 void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_deltaTime)
 {
     if (App::s_isPaused)
@@ -386,9 +398,18 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
     auto context = guest_stack_var<Sonicteam::Camera::SonicCamera::MoveShapeCastListener::MoveShapeCastContext>();
     auto listener = guest_stack_var<Sonicteam::Camera::SonicCamera::MoveShapeCastListener>(context.get());
 
+    auto targetDistance = pSonicCamera->m_Orbit.X.get();
+
     // Scales the distance of the camera to the player based on the shape cast hit position.
     if (pSonicCamera->m_pShapeCastA->CastShape(distance.get(), listener.get()))
-        pSonicCamera->m_MouseOrbit.X = std::min(context->HitPosition.Distance(pSonicCamera->m_Target), pSonicCamera->m_Orbit.X.get());
+        targetDistance = std::min(context->HitPosition.Distance(pSonicCamera->m_Target), targetDistance);
+
+    const auto interpSpeed = targetDistance < pSonicCamera->m_MouseOrbitDistanceInterp
+        ? SonicCameraEx::k_MouseOrbitDistanceInSpeed
+        : SonicCameraEx::k_MouseOrbitDistanceOutSpeed;
+
+    pSonicCamera->m_MouseOrbitDistanceInterp = std::lerp(pSonicCamera->m_MouseOrbitDistanceInterp, targetDistance, 1.0f - std::exp(-interpSpeed * in_deltaTime.f64));
+    pSonicCamera->m_MouseOrbit.X = pSonicCamera->m_MouseOrbitDistanceInterp;
 
     GuestToHostFunction<Sonicteam::SoX::Math::Vector*>(sub_8218C4F0, normalisedOrbit.get(), &pSonicCamera->m_MouseOrbit);
 
