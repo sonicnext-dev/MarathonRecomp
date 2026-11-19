@@ -386,6 +386,11 @@ address = 0x82191FC0
 registers = ["r31", "r5", "f31"]
 
 [[midasm_hook]]
+name = "SonicCamera_RedirectOrbitToMouse"
+address = 0x82191E58
+registers = ["r31", "r4"]
+
+[[midasm_hook]]
 name = "RestoreChaosSpearFlips"
 address = 0x821A6730
 jump_address_on_true = 0x821A6734
