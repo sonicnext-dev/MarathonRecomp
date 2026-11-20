@@ -127,6 +127,7 @@ CONFIG_DEFINE_LOCALISED("Codes", bool, DisableKingdomValleyMist, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, DisableLives, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, DisableLowResolutionFont, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, DisableMidairSpinningClaw, false, false);
+CONFIG_DEFINE_LOCALISED("Codes", bool, DisablePedestrianAnimationLOD, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, DisablePushState, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, DisableRoundedCorners, false, false);
 CONFIG_DEFINE_LOCALISED("Codes", bool, DisableSandJump, false, false);

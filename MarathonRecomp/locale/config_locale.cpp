@@ -1013,6 +1013,11 @@ CONFIG_DEFINE_LOCALE(DisableMidairSpinningClaw)
     { ELanguage::English, { "Disable Mid-air Spinning Claw", "Disables Blaze's Spinning Claw attack in mid-air to prevent it from cancelling homing attacks." } }
 };
 
+CONFIG_DEFINE_LOCALE(DisablePedestrianAnimationLOD)
+{
+    { ELanguage::English, { "Disable Pedestrian Animation LOD", "Keeps town NPCs always animating at full framerate, regardless of distance. Can heavily impact performance." } }
+};
+
 CONFIG_DEFINE_LOCALE(DisablePushState)
 {
     { ELanguage::English, { "Disable Push State", "Disables the broken push state that causes characters to get stuck sliding into walls." } }
