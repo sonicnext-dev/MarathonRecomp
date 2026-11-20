@@ -129,11 +129,15 @@ public:
         MouseOrbitAxis_Pitch = (1 << 1)
     };
 
+    static constexpr float k_MouseOrbitDistanceInSpeed = 15.0f;
+    static constexpr float k_MouseOrbitDistanceOutSpeed = 5.0f;
+
     MouseState m_MouseState;
     Sonicteam::SoX::Math::Vector m_MouseTransitionPosition;
     float m_MouseTransitionTime;
     float m_MouseInactiveTime;
     Sonicteam::SoX::Math::Vector m_MouseOrbit;
+    float m_MouseOrbitDistanceInterp;
 
     void ConfigureMouse()
     {
@@ -142,6 +146,7 @@ public:
         m_MouseTransitionTime = 0.0f;
         m_MouseInactiveTime = Config::MouseAutoCenterTime;
         m_MouseOrbit = m_Orbit;
+        m_MouseOrbitDistanceInterp = m_Orbit.X;
     }
 
     void ResetMouseOrbit(std::underlying_type_t<MouseOrbitAxis> in_resetAxes)
@@ -174,12 +179,6 @@ public:
         m_MouseOrbit.Z = m_Orbit.Z;
     }
 
-    void SyncOrbitToMouse()
-    {
-        m_Orbit.Y = m_MouseOrbit.Y;
-        m_Orbit.Z = m_MouseOrbit.Z;
-    }
-
     void StartMouseTransition(const Sonicteam::SoX::Math::Vector& in_rStart)
     {
         m_MouseTransitionPosition = in_rStart - m_Target;
@@ -192,21 +191,6 @@ public:
         const auto playerIndex = pGame->GetPlayerIndexFromActorID(m_TargetActorID);
 
         return pGame->GetPlayer(playerIndex);
-    }
-
-    bool IsPlayerState(int in_stateId)
-    {
-        const auto pPlayer = GetPlayer();
-
-        if (!pPlayer)
-            return false;
-
-        const auto pStateMachine = pPlayer->GetStateMachine<Sonicteam::Player::State::Machine2>();
-
-        if (!pStateMachine)
-            return false;
-
-        return pStateMachine->m_StateID == in_stateId;
     }
 
     bool IsPlayerOutOfControl()
@@ -256,15 +240,6 @@ public:
 
         return (flags & Sonicteam::Player::CommonContextIFFlags_OutOfControl) != 0 || miscFlags;
     }
-
-    void UpdateMouseLookAccel(const float in_deltaX, const float in_deltaY, const Sonicteam::SoX::Math::Vector& in_rMouseTransitionPosition)
-    {
-        m_Acceleration.X = in_deltaX;
-        m_Acceleration.Y = in_deltaY;
-
-        ResetMouseOrbit(SonicCameraEx::MouseOrbitAxis_Yaw);
-        StartMouseTransition(in_rMouseTransitionPosition);
-    }
 };
 
 void SonicCamera_Alloc(PPCRegister& r3)
@@ -281,6 +256,28 @@ PPC_FUNC(sub_82192218)
     __imp__sub_82192218(ctx, base);
 
     pSonicCamera->ConfigureMouse();
+}
+
+void SonicCamera_RedirectOrbitToMouse(PPCRegister& r31, PPCRegister& r4)
+{
+    const auto pSonicCamera = reinterpret_cast<SonicCameraEx*>(g_memory.Translate(r31.u32));
+
+    if (pSonicCamera->m_MouseState != SonicCameraEx::MouseState_Enabled)
+        return;
+
+    // Use original camera orbit if the player is out of control
+    // to allow acceleration-based mouse look to work.
+    if (pSonicCamera->IsPlayerOutOfControl())
+        return;
+
+    r4.u32 = g_memory.MapVirtual(&pSonicCamera->m_MouseOrbit);
+}
+
+bool SonicCamera_SkipCollisionFallback(PPCRegister& r31)
+{
+    const auto pSonicCamera = reinterpret_cast<SonicCameraEx*>(g_memory.Translate(r31.u32));
+
+    return pSonicCamera->m_MouseState == SonicCameraEx::MouseState_Enabled;
 }
 
 void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_deltaTime)
@@ -324,9 +321,7 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
             return;
         }
 
-        // Sync current mouse orbit to camera orbit.
         case SonicCameraEx::MouseState_Resetting:
-            pSonicCamera->SyncOrbitToMouse();
             pSonicCamera->ResetMouseOrbit(SonicCameraEx::MouseOrbitAxis_Yaw);
             pSonicCamera->m_MouseState = SonicCameraEx::MouseState_Disabled;
             return;
@@ -369,13 +364,15 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
                 pSonicCamera->m_MouseInactiveTime = 0.0f;
             }
 
-            // HACK (Hyper): the rodeo state typically tends to extend the camera distance,
-            // which breaks mouse look due to it using its own distance value. This should
-            // be fixed in the future by hooking the vector maths that adds the distance...
-            // ...when I have more time.
-            if (pSonicCamera->IsPlayerState(Sonicteam::Player::State::State_CommonRodeo))
+            // Fall back to acceleration-based mouse look.
+            if (pSonicCamera->IsPlayerOutOfControl())
             {
-                pSonicCamera->UpdateMouseLookAccel(x, y, *pOutput);
+                pSonicCamera->m_Acceleration.X = x;
+                pSonicCamera->m_Acceleration.Y = y;
+
+                pSonicCamera->ResetMouseOrbit(SonicCameraEx::MouseOrbitAxis_Yaw);
+                pSonicCamera->StartMouseTransition(*pOutput);
+
                 return;
             }
 
@@ -386,34 +383,35 @@ void SonicCamera_MouseLook(PPCRegister& r31, PPCRegister& r5, PPCRegister& in_de
     static constexpr float maxPitch = Sonicteam::SoX::Math::ToRadians(45.0f);
 
     // Maps relative mouse X/Y to expected values for the orbit vector.
-    // X = Distance, Y = Yaw (wrapped pi squared), Z = Pitch (45 degrees clamped).
+    // X = Distance, Y = Yaw (wrapped pi squared), Z = Pitch (45 degrees clamped in radians).
     // This vector is usually used for interpolating the camera position to look ahead of the player.
+    pSonicCamera->m_MouseOrbit.X = pSonicCamera->m_Orbit.X;
     pSonicCamera->m_MouseOrbit.Y = Sonicteam::SoX::Math::WrapAngle(pSonicCamera->m_MouseOrbit.Y + (x * k_mouseSensitivityBase));
     pSonicCamera->m_MouseOrbit.Z = std::clamp(pSonicCamera->m_MouseOrbit.Z + (y * k_mouseSensitivityBase), -maxPitch, maxPitch);
-    pSonicCamera->m_Orbit = pSonicCamera->m_MouseOrbit;
 
     auto normalisedOrbit = guest_stack_var<Sonicteam::SoX::Math::Vector>();
 
-    GuestToHostFunction<Sonicteam::SoX::Math::Vector*>(sub_8218C4F0, normalisedOrbit.get(), &pSonicCamera->m_Orbit);
+    GuestToHostFunction<Sonicteam::SoX::Math::Vector*>(sub_8218C4F0, normalisedOrbit.get(), &pSonicCamera->m_MouseOrbit);
 
     // Defines the shape cast distance to be from the player to the orbit position at max distance.
     auto distance = guest_stack_var<Sonicteam::SoX::Math::Distance>(pSonicCamera->m_Target, pSonicCamera->m_Target + *normalisedOrbit);
-
     auto context = guest_stack_var<Sonicteam::Camera::SonicCamera::MoveShapeCastListener::MoveShapeCastContext>();
     auto listener = guest_stack_var<Sonicteam::Camera::SonicCamera::MoveShapeCastListener>(context.get());
 
+    auto targetDistance = pSonicCamera->m_Orbit.X.get();
+
     // Scales the distance of the camera to the player based on the shape cast hit position.
     if (pSonicCamera->m_pShapeCastA->CastShape(distance.get(), listener.get()))
-        pSonicCamera->m_Orbit.X = std::min(context->HitPosition.Distance(pSonicCamera->m_Target), pSonicCamera->m_MouseOrbit.X.get());
+        targetDistance = std::min(context->HitPosition.Distance(pSonicCamera->m_Target), targetDistance);
 
-    // Fall back to acceleration-based mouse look.
-    if (pSonicCamera->IsPlayerOutOfControl())
-    {
-        pSonicCamera->UpdateMouseLookAccel(x, y, *pOutput);
-        return;
-    }
+    const auto interpSpeed = targetDistance < pSonicCamera->m_MouseOrbitDistanceInterp
+        ? SonicCameraEx::k_MouseOrbitDistanceInSpeed
+        : SonicCameraEx::k_MouseOrbitDistanceOutSpeed;
 
-    GuestToHostFunction<Sonicteam::SoX::Math::Vector*>(sub_8218C4F0, normalisedOrbit.get(), &pSonicCamera->m_Orbit);
+    pSonicCamera->m_MouseOrbitDistanceInterp = std::lerp(pSonicCamera->m_MouseOrbitDistanceInterp, targetDistance, 1.0f - std::exp(-interpSpeed * in_deltaTime.f64));
+    pSonicCamera->m_MouseOrbit.X = pSonicCamera->m_MouseOrbitDistanceInterp;
+
+    GuestToHostFunction<Sonicteam::SoX::Math::Vector*>(sub_8218C4F0, normalisedOrbit.get(), &pSonicCamera->m_MouseOrbit);
 
     const auto offset = Sonicteam::SoX::Math::Hermite(pSonicCamera->m_MouseTransitionPosition, *normalisedOrbit, pSonicCamera->m_MouseTransitionTime, 2.75f, in_deltaTime.f64);
 
@@ -429,7 +427,6 @@ PPC_FUNC(sub_82191200)
     __imp__sub_82191200(ctx, base);
 
     pSonicCamera->ResetMouseOrbit(SonicCameraEx::MouseOrbitAxis_Yaw | SonicCameraEx::MouseOrbitAxis_Pitch);
-    pSonicCamera->SyncOrbitToMouse();
 }
 
 // Sonicteam::Camera::SonicCamera::EndInterpolate
@@ -441,7 +438,6 @@ PPC_FUNC(sub_82190710)
     __imp__sub_82190710(ctx, base);
 
     pSonicCamera->ResetMouseOrbit(SonicCameraEx::MouseOrbitAxis_Yaw);
-    pSonicCamera->SyncOrbitToMouse();
 }
 
 // Sonicteam::Camera::DemoGMCamera::Update
