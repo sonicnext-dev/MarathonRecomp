@@ -88,7 +88,8 @@ void Load2PDisplayMidAsmHook() {}
 
 void PedestrianAnimationLOD(PPCRegister& val)
 {
-    val.u32 = 0;
+    if (Config::DisablePedestrianAnimationLOD)
+        val.u32 = 0;
 }
 
 // Sonicteam::CommonObjectHint::Update
