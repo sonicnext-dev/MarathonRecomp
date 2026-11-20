@@ -2524,6 +2524,60 @@ const std::map<std::string, BufferInfo> g_bufferInfo
     { "depthstencil_1_4",   { 6, 0 } }
 };
 
+static xxHashMap<std::pair<RenderTargetType, Sonicteam::SoX::RefSharedPointer<Sonicteam::MyTexture>>> g_renderTargetCache{};
+
+void CacheRenderTarget(std::string_view name, RenderTargetType type, Sonicteam::SoX::RefSharedPointer<Sonicteam::MyTexture> spRenderTarget)
+{
+    g_renderTargetCache[HashStr(name)] = std::make_pair(type, spRenderTarget);
+}
+
+bool Video::RestoreCachedRenderTarget(std::string_view name, const RenderTargetType type)
+{
+    const auto pApp = App::s_pApp;
+
+    if (!pApp)
+        return false;
+
+    const auto pDoc = pApp->m_pDoc.get();
+
+    if (!pDoc)
+        return false;
+
+    const auto pRenderTargetContainer = pDoc->m_pRenderTargetContainer.get();
+
+    if (!pRenderTargetContainer)
+        return false;
+
+    const auto restoreRenderTarget = [&](auto& in_rRenderTargets) -> bool
+    {
+        const auto pRenderTarget = FindHash(g_renderTargetCache, HashStr(name));
+
+        if (!pRenderTarget)
+            return false;
+
+        in_rRenderTargets.insert(std::make_pair(stdx::string(name.data()), pRenderTarget->second));
+
+        // This is now owned by RenderTargetContainer.
+        pRenderTarget->second.reset();
+
+        return true;
+    };
+
+    switch (type)
+    {
+        case RenderTargetType::FrameBuffer:
+            return restoreRenderTarget(pRenderTargetContainer->m_FrameBufferTextures);
+
+        case RenderTargetType::PostEffect:
+            return restoreRenderTarget(pRenderTargetContainer->m_PostEffectTextures);
+
+        case RenderTargetType::PostEffectAfter:
+            return restoreRenderTarget(pRenderTargetContainer->m_PostEffectAfterTextures);
+    }
+
+    return false;
+}
+
 bool Video::Resize(uint32_t width, uint32_t height)
 {
     const auto pApp = App::s_pApp;
@@ -2690,8 +2744,29 @@ bool Video::Resize(uint32_t width, uint32_t height)
 
     // Clear post-process buffers.
     pRenderTargetContainer->m_DepthStencil256xSurfaces.clear();
-    pRenderTargetContainer->m_PostEffectTextures.clear();
     pRenderTargetContainer->m_PostEffectAfterTextures.clear();
+
+    for (const auto& [rName, rTexture] : pRenderTargetContainer->m_PostEffectTextures)
+    {
+        if (rName != "csm")
+            continue;
+
+        const auto csmBufferSize = RenderResolution::FindBufferSize("csm", nullptr);
+
+        // Cache shadow map if it doesn't need resizing.
+        // Recreating the shadow map buffers takes the most amount of time on resize.
+        if (csmBufferSize.has_value() && rTexture->m_Width == csmBufferSize->Width && rTexture->m_Height == csmBufferSize->Height)
+        {
+            CacheRenderTarget("csm", RenderTargetType::PostEffect, std::move(rTexture));
+            s_needsShadowMapResize = false;
+            break;
+        }
+
+        s_needsShadowMapResize = true;
+        break;
+    }
+
+    pRenderTargetContainer->m_PostEffectTextures.clear();
 
     Sonicteam::HUDRaderMap* pHUDRaderMap{};
     Sonicteam::Enemy::FigureFirstMefiress* pFirstMefiress{};
@@ -2754,6 +2829,9 @@ bool Video::Resize(uint32_t width, uint32_t height)
 
     // Reload current render script.
     GuestToHostFunction<void>(sub_8260DF88, pDoc, Sonicteam::Globals::ms_pCurrentRenderScript, pGame ? pGame->m_Screens.size() : 1);
+
+    // Allow shadow maps to be created by the next render script.
+    s_needsShadowMapResize = true;
 
     // Drop cached render processes, no longer needed after reloading render script.
     g_renderProcessCache.clear();

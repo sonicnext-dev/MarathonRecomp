@@ -22,12 +22,20 @@ static inline constexpr uint32_t PLACEMENT_ALIGNMENT = 0x200;
 
 using namespace plume;
 
+enum class RenderTargetType
+{
+    FrameBuffer,
+    PostEffect,
+    PostEffectAfter
+};
+
 struct Video
 {
     static inline uint32_t s_viewportWidth;
     static inline uint32_t s_viewportHeight;
 
     static inline bool s_needsResize;
+    static inline bool s_needsShadowMapResize = true;
 
     // TODO: unspaghettify.
     static RenderDevice* GetRenderDevice();
@@ -41,6 +49,7 @@ struct Video
     static void StartPipelinePrecompilation();
     static void WaitForGPU();
     static void ComputeViewportDimensions();
+    static bool RestoreCachedRenderTarget(std::string_view name, const RenderTargetType type);
 };
 
 enum class Backend
