@@ -240,6 +240,7 @@ struct GuestTexture : GuestBaseTexture
     std::vector<std::unique_ptr<RenderTextureView>> framebufferViews;
     std::unique_ptr<GuestTexture> patchedTexture;
     struct GuestSurface* sourceSurface = nullptr;
+    ankerl::unordered_dense::set<GuestSurface*> sliceSurfaces;
 };
 
 struct GuestLockedRect
@@ -297,6 +298,8 @@ struct GuestSurface : GuestBaseTexture
     ankerl::unordered_dense::map<const RenderTexture*, std::unique_ptr<RenderFramebuffer>> framebuffers;
     ankerl::unordered_dense::map<GuestTexture*, uint32_t> destinationTextures;
     struct SurfaceVariant* variant = nullptr;
+    GuestTexture* sliceTexture = nullptr;
+    uint32_t slice = 0;
 };
 
 enum GuestDeclType
