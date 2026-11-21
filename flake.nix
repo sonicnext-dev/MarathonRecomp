@@ -12,6 +12,7 @@
 #     cmake --build out/build/nix --target MarathonRecomp
 #
 #  DCMAKE_BUILD_TYPE can be Release, Debug or RelWithDebInfo
+#  ofc; don't forget to copy files from ROM, per BUILDING.md
 {
   description = "Marathon Recompiled dev shell";
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
