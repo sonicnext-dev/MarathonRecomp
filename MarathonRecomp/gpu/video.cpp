@@ -461,6 +461,31 @@ static PrimitiveIndexData<D3DPT_QUADLIST> g_quadIndexData;
 static ankerl::unordered_dense::set<GuestSurface*> g_pendingSurfaceCopies;
 static ankerl::unordered_dense::set<GuestSurface*> g_pendingResolves;
 
+static bool CanRenderToSlice(const GuestSurface* surface, const GuestTexture* texture)
+{
+    return texture->type == ResourceType::ArrayTexture &&
+        RenderFormatIsDepth(surface->format) &&
+        surface->sampleCount == RenderSampleCount::COUNT_1 &&
+        surface->format == texture->format &&
+        surface->width == texture->width &&
+        surface->height == texture->height;
+}
+
+static void SetSliceRedirect(GuestSurface* surface, GuestTexture* texture, uint32_t slice)
+{
+    surface->sliceTexture = texture;
+    surface->slice = slice;
+    surface->texture = texture->texture;
+    texture->sliceSurfaces.emplace(surface);
+}
+
+static void ClearSliceRedirect(GuestSurface* surface)
+{
+    surface->sliceTexture = nullptr;
+    surface->texture = surface->variant != nullptr ? surface->variant->textureHolder.get() : surface->textureHolder.get();
+    g_dirtyStates.renderTargetAndDepthStencil = true;
+}
+
 static void DestructTempResources()
 {
     for (auto resource : g_tempResources[g_frame])
@@ -475,6 +500,9 @@ static void DestructTempResources()
 
             if (texture->sourceSurface != nullptr)
                 texture->sourceSurface->destinationTextures.erase(texture);
+
+            for (const auto surface : texture->sliceSurfaces)
+                ClearSliceRedirect(surface);
 
             if (texture->mappedMemory != nullptr) {
                 g_userHeap.Free(texture->mappedMemory);
@@ -528,6 +556,9 @@ static void DestructTempResources()
             for (const auto &texture : surface->destinationTextures | std::views::keys)
                 texture->sourceSurface = nullptr;
 
+            if (surface->sliceTexture != nullptr)
+                surface->sliceTexture->sliceSurfaces.erase(surface);
+
             if (surface->variant != nullptr)
             {
                 if (ReleaseSurfaceVariant(surface->variant))
@@ -577,6 +608,9 @@ static RenderTextureLayout& GetLayoutRef(GuestBaseTexture* texture)
     if (texture->type == ResourceType::RenderTarget || texture->type == ResourceType::DepthStencil)
     {
         const auto surface = reinterpret_cast<GuestSurface*>(texture);
+        if (surface->sliceTexture != nullptr)
+            return surface->sliceTexture->layout;
+
         if (surface->variant != nullptr && surface->texture == surface->variant->textureHolder.get())
             return surface->variant->layout;
     }
@@ -2074,6 +2108,37 @@ static void DrawImGui()
         g_renderQueue.enqueue(RenderCommands::DrawImGui{});
 }
 
+static RenderFramebuffer* GetTextureFramebuffer(GuestTexture* texture, uint32_t slice)
+{
+    auto& framebuffer = texture->framebuffers[slice];
+    if (framebuffer == nullptr)
+    {
+        if (RenderFormatIsDepth(texture->format))
+        {
+            RenderTextureViewDesc viewDesc;
+            viewDesc.format = texture->format;
+            viewDesc.dimension = texture->viewDimension;
+            viewDesc.mipLevels = texture->mipLevels;
+            viewDesc.arrayIndex = slice;
+            viewDesc.arraySize = 1;
+            auto& view = texture->framebufferViews.emplace_back(texture->texture->createTextureView(viewDesc));
+
+            RenderFramebufferDesc desc;
+            desc.depthAttachmentView = view.get();
+            framebuffer = g_device->createFramebuffer(desc);
+        }
+        else
+        {
+            RenderFramebufferDesc desc;
+            desc.colorAttachments = const_cast<const RenderTexture**>(&texture->texture);
+            desc.colorAttachmentsCount = 1;
+            framebuffer = g_device->createFramebuffer(desc);
+        }
+    }
+
+    return framebuffer.get();
+}
+
 static void SetFramebuffer(GuestSurface* renderTarget, GuestSurface* depthStencil, bool settingForClear)
 {
     if (settingForClear || g_dirtyStates.renderTargetAndDepthStencil)
@@ -2099,7 +2164,19 @@ static void SetFramebuffer(GuestSurface* renderTarget, GuestSurface* depthStenci
 
         auto& commandList = g_commandLists[g_frame];
 
-        if (framebufferContainer != nullptr)
+        if (depthStencil != nullptr && depthStencil->sliceTexture != nullptr)
+        {
+            assert(renderTarget == nullptr && "Rendering to a texture slice only supports depth-only framebuffers.");
+
+            const auto framebuffer = GetTextureFramebuffer(depthStencil->sliceTexture, depthStencil->slice);
+
+            if (g_framebuffer != framebuffer)
+            {
+                commandList->setFramebuffer(framebuffer);
+                g_framebuffer = framebuffer;
+            }
+        }
+        else if (framebufferContainer != nullptr)
         {
             auto& framebuffers = framebufferContainer->variant != nullptr ?
                 framebufferContainer->variant->framebuffers : framebufferContainer->framebuffers;
@@ -3138,6 +3215,24 @@ static void ProcRenderCommand(const RenderCommands::StretchRect& args)
     const bool isDepthStencil = (args.flags & 0x4) != 0;
     const auto surface = isDepthStencil ? g_depthStencil : g_renderTarget;
 
+    // Already rendered into the destination slice, so only the texture slots need rebinding.
+    if (surface->sliceTexture == args.texture && surface->slice == args.destSliceOrFace)
+    {
+        for (uint32_t i = 0; i < std::size(g_textures); i++)
+        {
+            if (g_textures[i] == args.texture)
+                SetTextureInRenderThread(i, args.texture);
+        }
+
+        return;
+    }
+
+    if (surface->sliceTexture != nullptr)
+    {
+        surface->sliceTexture->sliceSurfaces.erase(surface);
+        ClearSliceRedirect(surface);
+    }
+
     // Erase previous pending command so it doesn't cause the texture to be overridden.
     if (args.texture->sourceSurface != nullptr)
         args.texture->sourceSurface->destinationTextures.erase(args.texture);
@@ -3151,7 +3246,6 @@ static void ProcRenderCommand(const RenderCommands::StretchRect& args)
     {
         if (g_textures[i] == args.texture)
         {
-            // TODO: Render depth directly to slice and avoid copy
             // Set the original texture for MSAA and surface-to-array textures as they always get resolved.
             if (surface->sampleCount != RenderSampleCount::COUNT_1 ||
                 args.texture->type == ResourceType::ArrayTexture)
@@ -3317,36 +3411,12 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
                         }
                     }
 
-                    auto& framebuffer = texture->framebuffers[slice];
-                    if (framebuffer == nullptr)
-                    {
-                        if (isDepthStencil)
-                        {
-                            RenderTextureViewDesc viewDesc;
-                            viewDesc.format = texture->format;
-                            viewDesc.dimension = texture->viewDimension;
-                            viewDesc.mipLevels = texture->mipLevels;
-                            viewDesc.arrayIndex = slice;
-                            viewDesc.arraySize = 1;
-                            auto& view = texture->framebufferViews.emplace_back(texture->texture->createTextureView(viewDesc));
+                    const auto framebuffer = GetTextureFramebuffer(texture, slice);
 
-                            RenderFramebufferDesc desc;
-                            desc.depthAttachmentView = view.get();
-                            framebuffer = g_device->createFramebuffer(desc);
-                        }
-                        else
-                        {
-                            RenderFramebufferDesc desc;
-                            desc.colorAttachments = const_cast<const RenderTexture**>(&texture->texture);
-                            desc.colorAttachmentsCount = 1;
-                            framebuffer = g_device->createFramebuffer(desc);
-                        }
-                    }
-
-                    if (g_framebuffer != framebuffer.get())
+                    if (g_framebuffer != framebuffer)
                     {
-                        commandList->setFramebuffer(framebuffer.get());
-                        g_framebuffer = framebuffer.get();
+                        commandList->setFramebuffer(framebuffer);
+                        g_framebuffer = framebuffer;
                     }
 
                     commandList->setPipeline(pipeline);
@@ -3379,6 +3449,15 @@ static void ExecutePendingStretchRectCommands(GuestSurface* renderTarget, GuestS
                     if (g_textures[i] == texture)
                         SetTextureInRenderThread(i, texture);
                 }
+            }
+
+            // The slice now holds the surface's contents, so keep rendering there and skip future copies.
+            if (surface->destinationTextures.size() == 1)
+            {
+                const auto [texture, slice] = *surface->destinationTextures.begin();
+
+                if (CanRenderToSlice(surface, texture))
+                    SetSliceRedirect(surface, texture, slice);
             }
 
             surface->destinationTextures.clear();
@@ -3565,7 +3644,6 @@ static void ProcRenderCommand(const RenderCommands::SetTexture& args)
     bool shouldSetTexture = true;
     if (args.texture != nullptr && args.texture->sourceSurface != nullptr)
     {
-        // TODO: Render depth directly to slice and avoid copy
         // MSAA surfaces or surface-to-array need to be resolved and cannot be used directly.
         if (args.texture->sourceSurface->sampleCount != RenderSampleCount::COUNT_1 ||
             args.texture->type == ResourceType::ArrayTexture)
