@@ -22,6 +22,8 @@
 #  DCMAKE_BUILD_TYPE can be Release, Debug or RelWithDebInfo
 #  ofc; don't forget to copy files from ROM (-> MarathonRecompLib), per BUILDING.md
 #
+# ==========
+#
 # For non-NixOS (other-Linux or macOS with nix):
 #   This is untested. Build should work, but you may need to use something like
 #   `nixGL` for your host GPU drivers to be picked up.
@@ -37,6 +39,8 @@
 
     # Libraries loaded at runtime, i.e. by `ld`
     # If all you're familiar with is Windows, think of this as your LoadLibraryW targets.
+    #
+    # Use `https://search.nixos.org/packages?channel=unstable` or `nixd` to find packages.
     runtimeLibs = with pkgs; [
       # Prebuilt `libdxcompiler.so` (in XenosRecomp) needs zlib.
       zlib # what year is this ????
