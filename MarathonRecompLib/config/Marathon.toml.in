@@ -128,6 +128,24 @@ address = 0x824C2808
 registers = ["r29"]
 after_instruction = true
 
+# Skip original townsman camera visible test.
+[[midasm_hook]]
+name = "NOP"
+address = 0x8251F088
+jump_address = 0x8251F098
+
+[[midasm_hook]]
+name = "CTownsKeeper_SkipVertexIfOccluded"
+address = 0x8251EFE4
+registers = ["r30", "r1"]
+jump_address_on_true = 0x8251F0C0
+
+[[midasm_hook]]
+name = "CTownsKeeper_SkipIntersectIfOccluded"
+address = 0x8251F0B4
+registers = ["r30", "r5"]
+jump_address_on_false = 0x8251F0C0
+
 [[midasm_hook]]
 name = "MidairControlForMachSpeed"
 address = 0x82210380
