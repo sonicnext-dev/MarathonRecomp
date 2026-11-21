@@ -15,7 +15,7 @@
 #     ./out/build/nix/MarathonRecomp/MarathonRecomp
 #
 #  DCMAKE_BUILD_TYPE can be Release, Debug or RelWithDebInfo
-#  ofc; don't forget to copy files from ROM, per BUILDING.md
+#  ofc; don't forget to copy files from ROM (-> MarathonRecompLib), per BUILDING.md
 {
   description = "Marathon Recompiled dev shell";
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -82,6 +82,7 @@
       hardeningDisable = ["zerocallusedregs"];
 
       # Use LLD from LLVM from linking.
+      # It's a bit faster, so your builds go brr.
       NIX_CFLAGS_LINK = "-fuse-ld=lld";
 
       # Needs to be set for `CMakeLists.txt`.
