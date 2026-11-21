@@ -1015,7 +1015,7 @@ CONFIG_DEFINE_LOCALE(DisableMidairSpinningClaw)
 
 CONFIG_DEFINE_LOCALE(DisablePedestrianAnimationLOD)
 {
-    { ELanguage::English, { "Disable Pedestrian Animation LOD", "Keeps town NPCs always animating at full framerate, regardless of distance. Can heavily impact performance." } }
+    { ELanguage::English, { "Disable Pedestrian Animation LOD", "Disables town NPCs animating at a lower frame rate from afar. This may heavily impact performance." } }
 };
 
 CONFIG_DEFINE_LOCALE(DisablePushState)

@@ -92,6 +92,55 @@ void PedestrianAnimationLOD(PPCRegister& val)
         val.u32 = 0;
 }
 
+// The game does some checks for the spatial graph vertex to ensure it's
+// free of physics objects or other townsmen before committing to doing
+// camera occlusion checks. This skips those checks if the vertex is not
+// within the Kynapse view cone.
+bool CTownsKeeper_SkipVertexIfOccluded(PPCRegister& r30, PPCRegister& r1)
+{
+    const auto pKynapseRandomCreator = reinterpret_cast<Sonicteam::KynapseRandomCreator*>(g_memory.Translate(r30.u32));
+    const auto pVertex = reinterpret_cast<Kaim::CVector*>(g_memory.Translate(r1.u32 + 0x50));
+
+    return GuestToHostFunction<bool>(sub_8251DD00, pKynapseRandomCreator, pVertex);
+}
+
+// When spawning new townsmen, the game iterates every sixth vertex in the spatial
+// graph, and checks it for the following:
+// 
+// 1. Is there a physics object at this vertex?
+// 2. Is there a townsman at this vertex?
+// 3. Is this vertex visible to the camera?
+// 4. Is this vertex within 10 metres ahead of the camera inside a 40 degree view cone?
+//
+// The previous hook reorders the last check so that it happens first, reducing the
+// amount of entity checks by a small amount.
+// 
+// The remaining vertices continue on and encounter the third check, which is quite
+// expensive, as it delegates this check to the physics engine, rather than checking
+// the view cone first.
+//
+// This hook moves the camera visible test last, so that vertices only do this check
+// when within range. The original call to this function is skipped.
+bool CTownsKeeper_SkipIntersectIfOccluded(PPCRegister& r30, PPCRegister& r5)
+{
+    const auto pKynapseRandomCreator = reinterpret_cast<Sonicteam::KynapseRandomCreator*>(g_memory.Translate(r30.u32));
+    const auto pKyCameraEntity = pKynapseRandomCreator->m_pKyCameraEntity.get();
+
+    struct Query
+    {
+        xpointer<Kaim::CWorld> pWorld{};
+        be<float> X{};
+        be<float> Y{};
+    };
+
+    auto query = guest_stack_var<Query>();
+    query->pWorld = pKyCameraEntity->m_owner;
+    query->X = pKyCameraEntity->m_position.X;
+    query->Y = pKyCameraEntity->m_position.Y;
+
+    return GuestToHostFunction<bool>(sub_8251E358, pKynapseRandomCreator, query.get(), r5.u32);
+}
+
 // Sonicteam::CommonObjectHint::Update
 PPC_FUNC_IMPL(__imp__sub_822CE930);
 PPC_FUNC(sub_822CE930)
