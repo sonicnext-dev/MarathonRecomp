@@ -8,8 +8,11 @@
 #   Generate `ninja` build files:
 #     cmake -B out/build/nix -G Ninja -DCMAKE_BUILD_TYPE=Release
 #
-#   Build (Embrace Solaris):
+#   Build:
 #     cmake --build out/build/nix --target MarathonRecomp
+# 
+#   Run (Embrace Solaris):
+#     ./out/build/nix/MarathonRecomp/MarathonRecomp
 #
 #  DCMAKE_BUILD_TYPE can be Release, Debug or RelWithDebInfo
 #  ofc; don't forget to copy files from ROM, per BUILDING.md
@@ -24,6 +27,9 @@
     # Libraries loaded at runtime, i.e. by `ld`
     # If all you're familiar with is Windows, think of this as your LoadLibraryW targets.
     runtimeLibs = with pkgs; [
+      # Prebuilt `libdxcompiler.so` (in XenosRecomp) needs zlib.
+      zlib # what year is this ????
+
       # Vulkan
       vulkan-loader
 
@@ -64,7 +70,7 @@
         wayland-scanner
 
         # Linker for LTO (link-time optimization)
-        llvmPackages.lld
+        llvmPackages.bintools # wrapped ld
         llvmPackages.llvm
 
         git
