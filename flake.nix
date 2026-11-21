@@ -1,6 +1,11 @@
 # Nix dev shell for building Marathon Recompiled.
 # You will need to have flakes enabled in Nix.
 #
+# Suitable for development only. For build; is a bit hard; because of copyright-
+# we can't really vendor files in `MarathonRecompLib/private`.
+#
+# ==========
+#
 # Usage:
 #   First enter dev shell:
 #     nix develop
@@ -10,12 +15,18 @@
 #
 #   Build:
 #     cmake --build out/build/nix --target MarathonRecomp
-# 
+#
 #   Run (Embrace Solaris):
 #     ./out/build/nix/MarathonRecomp/MarathonRecomp
 #
 #  DCMAKE_BUILD_TYPE can be Release, Debug or RelWithDebInfo
 #  ofc; don't forget to copy files from ROM (-> MarathonRecompLib), per BUILDING.md
+#
+# For non-NixOS (other-Linux or macOS with nix):
+#   This is untested. Build should work, but you may need to use something like
+#   `nixGL` for your host GPU drivers to be picked up.
+#
+#   `nix run --impure github:nix-community/nixGL -- out/build/nix/MarathonRecomp/MarathonRecomp`
 {
   description = "Marathon Recompiled dev shell";
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
