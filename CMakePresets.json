@@ -68,6 +68,8 @@
             },
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_C_COMPILER_TARGET": "arm64-pc-windows-msvc",
+                "CMAKE_CXX_COMPILER_TARGET": "arm64-pc-windows-msvc",
                 "VCPKG_TARGET_TRIPLET": {
                     "value": "arm64-windows-static",
                     "type": "STRING"
@@ -79,7 +81,9 @@
             "displayName": "RelWithDebInfo (ARM64)",
             "inherits": "arm64-Clang-Debug",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "CMAKE_C_COMPILER_TARGET": "arm64-pc-windows-msvc",
+                "CMAKE_CXX_COMPILER_TARGET": "arm64-pc-windows-msvc"
             }
         },
         {
@@ -88,6 +92,8 @@
             "inherits": "arm64-Clang-Debug",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_C_COMPILER_TARGET": "arm64-pc-windows-msvc",
+                "CMAKE_CXX_COMPILER_TARGET": "arm64-pc-windows-msvc",
                 "CMAKE_INTERPROCEDURAL_OPTIMIZATION": true
             }
         },
