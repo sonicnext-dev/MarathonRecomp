@@ -22,8 +22,15 @@
 #  DCMAKE_BUILD_TYPE can be Release, Debug or RelWithDebInfo
 #  ofc; don't forget to copy files from ROM (-> MarathonRecompLib), per BUILDING.md
 #
-#  For editing code, move compile commands to root dir; for IDE support with clangd:
+# ==========
+#
+#  For editing code on Nix:
+#
+#  1. Move compile_commands.json to root, to make clangd happy.
 #     ln -sfn "$PWD/out/build/nix/compile_commands.json" compile_commands.json
+#
+#  2. `nix develop` before launching IDE, or use IDE plugin like `Niv Environment Selector`.
+#     - Ctrl+Shift+P -> Nix-Env: Select Environment [for VSCode]
 #
 # ==========
 #
@@ -91,6 +98,9 @@
         llvmPackages.bintools # wrapped ld
         llvmPackages.llvm
 
+        # clangd: IDE language server
+        clang-tools
+
         git
       ];
       buildInputs = with pkgs; [curl freetype gtk3] ++ runtimeLibs;
@@ -109,6 +119,15 @@
 
       # Tell `ld` about our runtime libs.
       LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath runtimeLibs;
+
+      # clangStdenv's `clang` package puts an 'unwrapped' toolset
+      # first on PATH. Its clangd can't find nix stdlib headers.
+      # Meaning that IDE support is fucked.
+      #
+      # Prepend wrapped clangd so VSCode and friends pick that one.
+      shellHook = ''
+        export PATH="${pkgs.clang-tools}/bin:$PATH"
+      '';
     };
   };
 }
