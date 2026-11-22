@@ -11,7 +11,7 @@
 #     nix develop
 #
 #   Generate `ninja` build files:
-#     cmake -B out/build/nix -G Ninja -DCMAKE_BUILD_TYPE=Release
+#     cmake -B out/build/nix -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 #
 #   Build:
 #     cmake --build out/build/nix --target MarathonRecomp
@@ -21,6 +21,9 @@
 #
 #  DCMAKE_BUILD_TYPE can be Release, Debug or RelWithDebInfo
 #  ofc; don't forget to copy files from ROM (-> MarathonRecompLib), per BUILDING.md
+#
+#  For editing code, move compile commands to root dir; for IDE support with clangd:
+#     ln -sfn "$PWD/out/build/nix/compile_commands.json" compile_commands.json
 #
 # ==========
 #
