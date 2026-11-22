@@ -129,6 +129,7 @@ jobs:
       - name: Install dependencies
         run: |
           choco install ninja
+          choco upgrade llvm --version=22.1.8
           Remove-Item -Path "C:\ProgramData\Chocolatey\bin\ccache.exe" -Force -ErrorAction SilentlyContinue
       
       - name: Configure Developer Command Prompt
