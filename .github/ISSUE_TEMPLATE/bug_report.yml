@@ -7,7 +7,7 @@ body:
     attributes:
       label: Validation
       options:
-        - label: I have checked the [Issues](https://github.com/sonicnext-dev/MarathonRecomp/issues) page to see if my problem has already been reported
+        - label: I have checked the [issue tracker](https://github.com/sonicnext-dev/MarathonRecomp/issues) to see if this bug has already been reported
           required: true
         - label: I have confirmed that this bug does not occur in the original game running on original Xbox 360 hardware
           required: true
@@ -25,15 +25,10 @@ body:
         - label: Additional Mission Pack "Shadow/Very Hard"
         - label: Additional Mission Pack "Silver/Very Hard"
   - type: textarea
-    id: mods
-    attributes:
-      label: Mods
-      description: Provide a list of your enabled mods in Mod Manager here. You will not receive support for issues *caused* by mods.
-  - type: textarea
     id: codes
     attributes:
       label: Codes
-      description: Provide a list of your enabled codes in Mod Manager here.
+      description: Provide a list of your enabled codes here.
   - type: textarea
     id: description
     attributes:
@@ -45,7 +40,7 @@ body:
     id: reproduction
     attributes:
       label: Steps to Reproduce
-      description: Provide steps to reproduce the bug
+      description: Provide steps to reproduce the bug.
       placeholder: |
         1. Go to '...'
         2. etc.
@@ -63,17 +58,35 @@ body:
     attributes:
       label: Footage
       description: Attach a screenshot or video of the bug. If possible, please also provide footage of the expected behaviour on original Xbox 360 hardware.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version of Marathon Recompiled are you using? This is located at the bottom right of the installer, or the options menu.
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      description: What operating system are you using?
+      options:
+        - Windows
+        - macOS
+        - Linux
+      default: 0
+    validations:
+      required: true
   - type: textarea
     id: specifications
     attributes:
       label: Specifications
-      description: Fill out the following details
+      description: Fill out the following details.
       value: |
-        - CPU: (e.g. Intel Core [...], AMD Ryzen [...], etc.)
-        - GPU: (e.g. NVIDIA GeForce [...], Radeon HD [...], Intel HD [...], etc.)
-        - GPU Driver: (e.g NVIDIA driver 545.XX, AMD driver 24.X.X, etc.)
-        - OS: (e.g. Windows 10, Windows 11, Linux distro)
-        - Version: (e.g. 1.0.0)
+        - CPU: (e.g. Intel Core [...], AMD FX [...], Qualcomm Snapdragon [...], Apple MX, etc.)
+        - GPU: (e.g. NVIDIA GeForce [...], AMD Radeon HD [...], Intel HD [...], etc.)
+        - GPU Driver: (e.g NVIDIA Driver 617.XX, AMD Driver 26.X.X, Intel Driver 32.X.X.X, etc.)
+        - OS Version: (e.g. Windows 10 22H2, Windows 11 26H2, macOS 15.X.X, Linux distro)
     validations:
       required: true
   - type: textarea
