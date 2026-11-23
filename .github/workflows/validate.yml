@@ -129,13 +129,18 @@ jobs:
       - name: Install dependencies
         run: |
           choco install ninja
-          choco upgrade llvm --version=22.1.8
           Remove-Item -Path "C:\ProgramData\Chocolatey\bin\ccache.exe" -Force -ErrorAction SilentlyContinue
       
       - name: Configure Developer Command Prompt
         uses: TheMrMilchmann/setup-msvc-dev@v4
         with:
           arch: ${{ matrix.preset.arch }}
+
+      - name: Configure Visual Studio LLVM
+        run: |
+          $llvm = "$env:VCINSTALLDIR\Tools\Llvm\${{ matrix.preset.arch }}\bin"
+          "Path=$llvm;$env:Path" >> $env:GITHUB_ENV
+          & "$llvm\clang-cl.exe" --version
 
       - name: Prepare Project
         run: |
