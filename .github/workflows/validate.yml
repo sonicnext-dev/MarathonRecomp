@@ -44,16 +44,16 @@ jobs:
         uses: hendrikmuhs/ccache-action@v1.2
         with:
           key: ccache-${{ runner.os }}-${{ matrix.arch.name }}-${{ matrix.preset }}
+
+      - name: Generate vcpkg package config
+        working-directory: ./thirdparty/vcpkg
+        run: ./bootstrap-vcpkg.sh && ./vcpkg install --dry-run --x-write-nuget-packages-config=vcpkg-config.xml
   
       - name: Cache vcpkg
         uses: actions/cache@v6
         with:
-          path: |
-            ./thirdparty/vcpkg/downloads
-            ./thirdparty/vcpkg/packages
-          key: vcpkg-${{ runner.os }}-${{ matrix.arch.name }}-${{ hashFiles('vcpkg.json') }}
-          restore-keys: |
-              vcpkg-${{ runner.os }}-${{ matrix.arch.name }}-
+          path: ~/.cache/vcpkg/archives
+          key: vcpkg-${{ hashFiles('thirdparty/vcpkg/vcpkg-config.xml') }}
 
       - name: Install Dependencies (Linux)
         run: |-
@@ -117,15 +117,15 @@ jobs:
       #  with:
       #    key: ccache-${{ runner.os }}-${{ matrix.preset.name }}
 
+      - name: Generate vcpkg package config
+        working-directory: ./thirdparty/vcpkg
+        run: ./bootstrap-vcpkg.bat && ./vcpkg.exe install --dry-run --x-write-nuget-packages-config=vcpkg-config.xml
+
       - name: Cache vcpkg
         uses: actions/cache@v6
         with:
-          path: |
-            ./thirdparty/vcpkg/downloads
-            ./thirdparty/vcpkg/packages
-          key: vcpkg-${{ runner.os }}-${{ matrix.preset.arch }}-${{ hashFiles('vcpkg.json') }}
-          restore-keys: |
-              vcpkg-${{ runner.os }}-${{ matrix.preset.arch }}-
+          path: ~/AppData/Local/vcpkg/archives
+          key: vcpkg-${{ hashFiles('thirdparty/vcpkg/vcpkg-config.xml') }}
 
       - name: Install dependencies
         run: |
@@ -266,15 +266,15 @@ jobs:
         with:
           key: ccache-${{ runner.os }}-${{ matrix.arch }}-${{ matrix.preset }}
 
+      - name: Generate vcpkg package config
+        working-directory: ./thirdparty/vcpkg
+        run: ./bootstrap-vcpkg.sh && ./vcpkg install --dry-run --x-write-nuget-packages-config=vcpkg-config.xml
+
       - name: Cache vcpkg
         uses: actions/cache@v6
         with:
-          path: |
-            ./thirdparty/vcpkg/downloads
-            ./thirdparty/vcpkg/packages
-          key: vcpkg-${{ runner.os }}-${{ matrix.arch }}-${{ hashFiles('vcpkg.json') }}
-          restore-keys: |
-            vcpkg-${{ runner.os }}-${{ matrix.arch }}-
+          path: ~/.cache/vcpkg/archives
+          key: vcpkg-${{ hashFiles('thirdparty/vcpkg/vcpkg-config.xml') }}
 
       - name: Install Dependencies (macOS)
         run: |
