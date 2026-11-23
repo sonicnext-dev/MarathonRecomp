@@ -23,11 +23,6 @@ if (APPLE)
     enable_language(OBJC OBJCXX)
 endif()
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    # Enable using content hashes when included file mtimes differ, to avoid ccache issues with pre-compiled headers.
-    add_compile_options(-Xclang -fvalidate-ast-input-files-content)
-endif()
-
 if (CMAKE_OSX_ARCHITECTURES)
     set(MARATHON_RECOMP_ARCHITECTURE ${CMAKE_OSX_ARCHITECTURES})
 elseif(CMAKE_SYSTEM_PROCESSOR)
