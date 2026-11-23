@@ -138,8 +138,8 @@ set(MARATHON_RECOMP_GPU_CXX_SOURCES
 
 set(MARATHON_RECOMP_APU_CXX_SOURCES
     "apu/audio.cpp"
-    "apu/xma_decoder.cpp"
     "apu/embedded_player.cpp"
+    "apu/host_pcm.cpp"
     "apu/driver/sdl3_driver.cpp"
 )
 
@@ -170,6 +170,7 @@ set(MARATHON_RECOMP_PATCHES_CXX_SOURCES
     "patches/TitleTask_patches.cpp"
     "patches/ui_toggle_listener.cpp"
     "patches/video_patches.cpp"
+    "patches/xma_patches.cpp"
 )
 
 set(MARATHON_RECOMP_UI_CXX_SOURCES
