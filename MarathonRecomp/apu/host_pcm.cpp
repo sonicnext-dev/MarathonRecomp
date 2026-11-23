@@ -200,7 +200,14 @@ uint32_t HostPcm::GetFrameCount()
 {
     std::lock_guard lock(m_mutex);
 
-    return m_frameCount;
+    return m_frameCount > m_startOffset ? m_frameCount - m_startOffset : 0;
+}
+
+void HostPcm::SetStartOffset(uint32_t frames)
+{
+    std::lock_guard lock(m_mutex);
+
+    m_startOffset = frames;
 }
 
 void HostPcm::SetLengthChangedCallback(std::function<void(uint32_t)> callback)
@@ -218,7 +225,7 @@ void HostPcm::SetFrameCount(uint32_t frames)
     m_frameCount = frames;
 
     if (m_lengthChanged)
-        m_lengthChanged(frames);
+        m_lengthChanged(frames > m_startOffset ? frames - m_startOffset : 0);
 }
 
 void HostPcm::ResetDecoder(int64_t target)
@@ -401,6 +408,8 @@ bool HostPcm::DecodeMore()
 uint32_t HostPcm::Read(uint32_t startFrame, uint32_t frameCount, int16_t* dst)
 {
     std::lock_guard lock(m_mutex);
+
+    startFrame += m_startOffset;
 
     if (startFrame != m_pendingStart && !Seek(startFrame))
         return 0;

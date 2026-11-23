@@ -1063,6 +1063,11 @@ CONFIG_DEFINE_LOCALE(EnableDebugMode)
     { ELanguage::English, { "Enable Debug Mode", "Enables debug mode to be toggled by pressing the ${picture(button_back)} button." } }
 };
 
+CONFIG_DEFINE_LOCALE(FixAudioOuttake)
+{
+    { ELanguage::English, { "Fix Audio Outtake", "Removes a left-in audio outtake during Shadow's story." } }
+};
+
 CONFIG_DEFINE_LOCALE(FixEnvironmentMaps)
 {
     { ELanguage::English, { "Fix Environment Maps", "Fixes the game not loading new environment maps correctly, resulting in mismatching reflections in some areas." } }

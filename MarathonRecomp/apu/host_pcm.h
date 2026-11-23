@@ -29,6 +29,7 @@ public:
     uint32_t GetLoopEnd() const { return m_loopEnd; }
 
     uint32_t GetFrameCount();
+    void SetStartOffset(uint32_t frames);
     void SetLengthChangedCallback(std::function<void(uint32_t)> callback);
     uint32_t Read(uint32_t startFrame, uint32_t frameCount, int16_t* dst);
 
@@ -50,6 +51,7 @@ private:
     uint32_t m_loopBegin{};
     uint32_t m_loopEnd{};
     uint32_t m_frameCount{};
+    uint32_t m_startOffset{};
     std::function<void(uint32_t)> m_lengthChanged;
 
     // Decoded frames not yet handed out. m_pendingStart is the stream index of the first one.

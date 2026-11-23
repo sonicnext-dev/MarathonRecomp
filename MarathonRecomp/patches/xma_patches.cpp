@@ -1,3 +1,5 @@
+#include "user/config.h"
+
 #include <api/Marathon.h>
 #include <apu/host_pcm.h>
 #include <kernel/heap.h>
@@ -168,6 +170,33 @@ static bool InstallSyntheticReader(uint32_t readerAddress, std::shared_ptr<HostP
     return true;
 }
 
+struct StartOffset
+{
+    const char* m_stem;
+    double m_seconds;
+};
+
+static constexpr StartOffset START_OFFSETS[] =
+{
+    { "twn01_e52_gn", 6.75 }
+};
+
+static std::optional<double> GetStartOffsetSeconds(const std::filesystem::path& path)
+{
+    const auto stem = path.stem().string();
+
+    if (Config::FixAudioOuttake)
+    {
+        for (auto& entry : START_OFFSETS)
+        {
+            if (stem == entry.m_stem)
+                return entry.m_seconds;
+        }
+    }
+
+    return std::nullopt;
+}
+
 static bool InstallStockReader(uint32_t readerAddress, const std::filesystem::path& path)
 {
     auto* pReader = static_cast<XmaStreamReader*>(g_memory.Translate(readerAddress));
@@ -195,6 +224,19 @@ static bool InstallStockReader(uint32_t readerAddress, const std::filesystem::pa
 
     if (!pcm)
         return false;
+
+    if (auto seconds = GetStartOffsetSeconds(path))
+    {
+        const uint32_t offset = static_cast<uint32_t>(*seconds * pcm->GetSampleRate());
+
+        pcm->SetStartOffset(offset);
+
+        // The loop points in the XMA2 chunk count from the original start.
+        auto shift = [offset](uint32_t frame) { return frame > offset ? frame - offset : 0u; };
+
+        pXma2->m_LoopBegin = shift(pXma2->m_LoopBegin);
+        pXma2->m_LoopEnd = shift(pXma2->m_LoopEnd);
+    }
 
     ApplyPcmGeometry(pReader, pXma2, pcm);
     RegisterHostReader(readerAddress, std::move(pcm), false);
