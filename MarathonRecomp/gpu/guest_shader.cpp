@@ -19,6 +19,8 @@ static std::unique_ptr<RenderShader> g_downsamplePSShader;
 
 std::unique_ptr<GuestShader> g_conditionalSurveyPSShader;
 
+static std::unique_ptr<RenderShader> g_particleDepthFadePSShader;
+
 void LoadEmbeddedResources()
 {
     switch (g_backend)
@@ -54,6 +56,8 @@ void CreateReplacementShaders()
     g_conditionalSurveyPSShader = std::make_unique<GuestShader>();
     g_conditionalSurveyPSShader->type = ResourceType::PixelShader;
     g_conditionalSurveyPSShader->shader = CREATE_SHADER(conditional_survey_ps);
+
+    g_particleDepthFadePSShader = CREATE_SHADER(particle_depth_fade_ps);
 }
 
 RenderShader* GetReplacementShader(const GuestShader* guestShader, RenderFormat renderTargetFormat)
@@ -80,6 +84,10 @@ RenderShader* GetReplacementShader(const GuestShader* guestShader, RenderFormat 
         case 0x62573AB4C9EC44EE:
             if (renderTargetFormat == RenderFormat::B8G8R8A8_UNORM)
                 return g_downsamplePSShader.get();
+            break;
+        case 0x402F6C3CD7D5B52E:
+            if (Config::ParticleFade == EParticleFade::Soft)
+                return g_particleDepthFadePSShader.get();
             break;
         default:
             break;
