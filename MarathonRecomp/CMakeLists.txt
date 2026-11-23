@@ -390,6 +390,7 @@ if (MARATHON_RECOMP_FLATPAK)
 endif()
 
 find_package(CURL REQUIRED)
+find_package(FFMPEG REQUIRED)
 
 if (MARATHON_RECOMP_METAL)
     target_compile_definitions(MarathonRecomp PRIVATE MARATHON_RECOMP_METAL)
@@ -441,10 +442,9 @@ target_link_libraries(MarathonRecomp PRIVATE
     MarathonRecompLib
     xxHash::xxhash
     CURL::libcurl
+    ${FFMPEG_LIBRARIES}
     plume
 )
-
-target_link_libraries(MarathonRecomp PRIVATE ffmpeg)
 
 target_include_directories(MarathonRecomp PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}

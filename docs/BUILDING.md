@@ -39,18 +39,18 @@ In the installer, you must select the following **Workloads** and **Individual c
 ### Linux
 The following command will install the required dependencies on a distro that uses `apt` (such as Debian-based distros).
 ```bash
-sudo apt install pkg-config curl cmake ninja-build clang clang-tools lld llvm libgtk-3-dev
+sudo apt install pkg-config curl cmake ninja-build nasm clang clang-tools lld llvm libgtk-3-dev
 ```
 The following command will install the required dependencies on a distro that uses `dnf` (such as Fedora-based distros).
 
 Note: The second line of dependencies is to satisfy the vcpkg OpenSSL build.
 ```bash
-sudo dnf install pkg-config curl cmake ninja-build clang lld llvm gtk3-devel \
+sudo dnf install pkg-config curl cmake ninja-build nasm clang lld llvm gtk3-devel \
                  perl-FindBin perl-IPC-Cmd perl-Time-Piece perl-File-Compare perl-File-Copy
 ```
 The following command will install the required dependencies on a distro that uses `pacman` (such as Arch-based distros).
 ```bash
-sudo pacman -S base-devel ninja lld clang gtk3
+sudo pacman -S base-devel ninja nasm lld clang gtk3
 ```
 You can also find the equivalent packages for your preferred distro.
 
