@@ -24,9 +24,8 @@ if (APPLE)
 endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    # Enable content hashes over mtimes for files used to build precompiled headers, to avoid ccache issues.
-    list(APPEND CMAKE_C_COMPILE_OPTIONS_CREATE_PCH -Xclang -fvalidate-ast-input-files-content)
-    list(APPEND CMAKE_CXX_COMPILE_OPTIONS_CREATE_PCH -Xclang -fvalidate-ast-input-files-content)
+    # Enable using content hashes when included file mtimes differ, to avoid ccache issues with pre-compiled headers.
+    add_compile_options(-Xclang -fvalidate-ast-input-files-content)
 endif()
 
 if (CMAKE_OSX_ARCHITECTURES)
