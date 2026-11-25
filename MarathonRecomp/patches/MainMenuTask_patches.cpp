@@ -2,6 +2,7 @@
 #include <hid/message/messages.h>
 #include <hid/hid.h>
 #include <patches/aspect_ratio_patches.h>
+#include <patches/csd_modifier.h>
 #include <ui/achievement_menu.h>
 #include <ui/button_window.h>
 #include <ui/options_menu.h>
@@ -27,7 +28,7 @@ PPC_FUNC(sub_824FFCF8)
         // Apply life counter hint to save data text.
         const auto pSaveDataText02 = pHUDMainMenu->m_pHudTextRoot->Find("savedate", "savedata_text02");
         if (pSaveDataText02 && pSaveDataText02->m_spTextEntity)
-            SetTextEntityModifier(pSaveDataText02->m_spTextEntity.get(), CSD_SCALE | CSD_LIFE_COUNTER);
+            SetTextEntityModifier(pSaveDataText02->m_spTextEntity.get(), CSD_LIFE_COUNTER);
     }
 
     switch (pMainMenuTask->m_State)

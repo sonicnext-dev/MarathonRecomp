@@ -155,6 +155,8 @@ set(MARATHON_RECOMP_PATCHES_CXX_SOURCES
     "patches/aspect_ratio_patches.cpp"
     "patches/audio_patches.cpp"
     "patches/camera_patches.cpp"
+    "patches/csd_modifier.cpp"
+    "patches/csd_modifier_manager.cpp"
     "patches/debug_patches.cpp"
     "patches/input_patches.cpp"
     "patches/loading_patches.cpp"
@@ -561,6 +563,7 @@ BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/images/com
 BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/images/common/arrow.dds" DEST_FILE "${RESOURCES_OUTPUT_PATH}/images/common/arrow.dds" ARRAY_NAME "g_arrow" COMPRESSION_TYPE "zstd")
 BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/images/common/window.dds" DEST_FILE "${RESOURCES_OUTPUT_PATH}/images/common/window.dds" ARRAY_NAME "g_window" COMPRESSION_TYPE "zstd")
 BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/images/common/select_arrow.dds" DEST_FILE "${RESOURCES_OUTPUT_PATH}/images/common/select_arrow.dds" ARRAY_NAME "g_select_arrow" COMPRESSION_TYPE "zstd")
+BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${PROJECT_SOURCE_DIR}/res/csd_modifiers.json" DEST_FILE "${PROJECT_SOURCE_DIR}/res/csd_modifiers.json" ARRAY_NAME "g_csd_modifiers" COMPRESSION_TYPE "zstd")
 
 ## Installer ##
 BIN2C(TARGET_OBJ MarathonRecomp SOURCE_FILE "${RESOURCES_SOURCE_PATH}/images/installer/install_001.dds" DEST_FILE "${RESOURCES_OUTPUT_PATH}/images/installer/install_001.dds" ARRAY_NAME "g_install_001" COMPRESSION_TYPE "zstd")

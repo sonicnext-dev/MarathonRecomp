@@ -1,0 +1,827 @@
+[
+    { "sprite/audio/audio/pod/pod/Cast_1084": { "Flags": ["CSD_EXTEND_RIGHT", "CSD_POD_BASE"] } },
+    { "sprite/audio/audio/pod/pod/Cast_1086": { "Flags": ["CSD_POD_CLONE"] } },
+    { "sprite/audio/audio/pod/pod/Cast_1088": { "Flags": ["CSD_EXTEND_RIGHT"] } },
+    
+    { "sprite/background/background/mainmenu_back":               { "Flags": ["CSD_STRETCH_HORIZONTAL", "CSD_PROHIBIT_BLACK_BAR"], "Narrow": { "Mask": ["CSD_PROHIBIT_BLACK_BAR"] } } },
+    { "sprite/background/background/main_menu":                   { "Flags": ["CSD_SCENE_DISABLE_MOTION"], "Narrow": { "Mask": ["CSD_SCENE_DISABLE_MOTION"] } } },
+    { "sprite/background/background/main_menu/main_menu1/yaji1":  { "Flags": ["CSD_SKIP", "CSD_CHEVRON"] } },
+    { "sprite/background/background/main_menu/main_menu1/yaji2":  { "Flags": ["CSD_SKIP", "CSD_CHEVRON"] } },
+    { "sprite/background/background/main_menu/main_menu1/yaji3":  { "Flags": ["CSD_SKIP", "CSD_CHEVRON"] } },
+    { "sprite/background/background/main_menu/main_menu1/yaji4":  { "Flags": ["CSD_SKIP", "CSD_CHEVRON"] } },
+    { "sprite/background/background/main_menu/main_menu1/yaji5":  { "Flags": ["CSD_SKIP", "CSD_CHEVRON"] } },
+    { "sprite/background/background/main_menu/main_menu1/yaji6":  { "Flags": ["CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT", "CSD_CHEVRON"] } },
+    { "sprite/background/background/main_menu/main_menu2/yaji7":  { "Flags": ["CSD_SKIP", "CSD_CHEVRON"] } },
+    { "sprite/background/background/main_menu/main_menu2/yaji8":  { "Flags": ["CSD_SKIP", "CSD_CHEVRON"] } },
+    { "sprite/background/background/main_menu/main_menu2/yaji9":  { "Flags": ["CSD_SKIP", "CSD_CHEVRON"] } },
+    { "sprite/background/background/main_menu/main_menu2/yaji10": { "Flags": ["CSD_SKIP", "CSD_CHEVRON"] } },
+    { "sprite/background/background/main_menu/main_menu2/yaji11": { "Flags": ["CSD_SKIP", "CSD_CHEVRON"] } },
+    { "sprite/background/background/main_menu/main_menu2/yaji12": { "Flags": ["CSD_SKIP", "CSD_CHEVRON"] } },
+    { "sprite/background/background/main_menu/main_menu2/yaji13": { "Flags": ["CSD_SKIP", "CSD_CHEVRON"] } },
+    { "sprite/background/background/main_menu/main_menu2/yaji14": { "Flags": ["CSD_SKIP", "CSD_CHEVRON"] } },
+    { "sprite/background/background/main_menu/main_menu2/yaji15": { "Flags": ["CSD_ALIGN_LEFT", "CSD_REPEAT_RIGHT", "CSD_CHEVRON"] } },
+    
+    { "sprite/battledisplay_1p/power":            { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/battledisplay_1p/power_a":          { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/battledisplay_1p/power_bar_anime":  { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/battledisplay_1p/itembox_01":       { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/battledisplay_1p/ring":             { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/battledisplay_1p/ring_anime":       { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/battledisplay_1p/enemy":            { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/battledisplay_1p/bronze_medal":     { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/battledisplay_1p/gold_medal":       { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/battledisplay_1p/bar_ue":           { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/battledisplay_1p/power_bar_effect": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/battledisplay_1p/ring_000_effect":  { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/battledisplay_1p/custom_gem":       { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/battledisplay_1p/custom_level1":    { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/battledisplay_1p/custom_bar_anime": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    
+    { "sprite/battledisplay_2p/power":            { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/battledisplay_2p/power_a":          { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/battledisplay_2p/power_bar_anime":  { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/battledisplay_2p/itembox_01":       { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/battledisplay_2p/ring":             { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/battledisplay_2p/ring_anime":       { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/battledisplay_2p/enemy":            { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/battledisplay_2p/bronze_medal":     { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/battledisplay_2p/gold_medal":       { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/battledisplay_2p/bar_ue":           { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/battledisplay_2p/power_bar_effect": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/battledisplay_2p/ring_000_effect":  { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/battledisplay_2p/custom_gem":       { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/battledisplay_2p/custom_level1":    { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/battledisplay_2p/custom_bar_anime": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    
+    { "sprite/battle_result/battle_result/congratulations":       { "Flags": ["CSD_ALIGN_TOP"] } },
+    { "sprite/battle_result/battle_result/plate/plate_ue/plate1": {
+        "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_EXTEND_LEFT"],
+        "Ultrawide": { "Edge": { "Mask": ["CSD_EXTEND_LEFT"] }, "Center": { "Mask": ["CSD_ALIGN_LEFT"] } },
+        "Narrow": { "Mask": ["CSD_EXTEND_LEFT"] }
+    } },
+    { "sprite/battle_result/battle_result/plate/plate_ue/plate2": {
+        "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": {
+            "Edge": {
+                "Repeat": { "TR": { "U": 0.85 }, "BR": { "U": 0.85 }, "ExtendBias": { "X": 0.5 } }
+            },
+            "Center": {
+                "Mask": ["CSD_ALIGN_LEFT", "CSD_REPEAT_RIGHT"]
+            }
+        },
+        "Narrow": { "Mask": ["CSD_REPEAT_RIGHT"] }
+    } },
+    { "sprite/battle_result/battle_result/plate/plate_ue/plate3": {
+        "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": {
+            "Edge": {
+                "Repeat": { "TL": { "U": 0.85 }, "BL": { "U": 0.85 }, "ExtendBias": { "X": 0.5 } }
+            },
+            "Center": {
+                "Mask": ["CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT"]
+            }
+        },
+        "Narrow": { "Mask": ["CSD_REPEAT_LEFT"] }
+    } },
+    { "sprite/battle_result/battle_result/plate/plate_ue/plate4": {
+        "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_RIGHT", "CSD_EXTEND_RIGHT"],
+        "Ultrawide": { "Edge": { "Mask": ["CSD_EXTEND_RIGHT"] }, "Center": { "Mask": ["CSD_ALIGN_RIGHT"] } },
+        "Narrow": { "Mask": ["CSD_EXTEND_RIGHT"] }
+    } },
+    { "sprite/battle_result/battle_result/plate/plate_sita/plate5": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_LEFT", "CSD_EXTEND_LEFT"],
+        "Ultrawide": { "Edge": { "Mask": ["CSD_EXTEND_LEFT"] }, "Center": { "Mask": ["CSD_ALIGN_LEFT"] } },
+        "Narrow": { "Mask": ["CSD_EXTEND_LEFT"] }
+    } },
+    { "sprite/battle_result/battle_result/plate/plate_sita/plate6": {
+        "Flags": ["CSD_ALIGN_LEFT", "CSD_ALIGN_BOTTOM", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": {
+            "Edge": {
+                "Repeat": { "TR": { "U": 0.85 }, "BR": { "U": 0.85 }, "ExtendBias": { "X": 0.5 } }
+            },
+            "Center": {
+                "Mask": ["CSD_ALIGN_LEFT", "CSD_REPEAT_RIGHT"]
+            }
+        },
+        "Narrow": { "Mask": ["CSD_REPEAT_RIGHT"] }
+    } },
+    { "sprite/battle_result/battle_result/plate/plate_sita/plate7": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": {
+            "Edge": {
+                "Repeat": { "TL": { "U": 0.85 }, "BL": { "U": 0.85 }, "ExtendBias": { "X": 0.5 } }
+            },
+            "Center": {
+                "Mask": ["CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT"]
+            }
+        },
+        "Narrow": { "Mask": ["CSD_REPEAT_LEFT"] }
+    } },
+    { "sprite/battle_result/battle_result/plate/plate_sita/plate8": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_EXTEND_RIGHT"],
+        "Ultrawide": { "Edge": { "Mask": ["CSD_EXTEND_RIGHT"] }, "Center": { "Mask": ["CSD_ALIGN_RIGHT"] } },
+        "Narrow": { "Mask": ["CSD_EXTEND_RIGHT"] }
+    } },
+    
+    { "sprite/black_out/black_out": { "Flags": ["CSD_STRETCH_HORIZONTAL", "CSD_STRETCH_VERTICAL"] } },
+    
+    { "sprite/bossname/egg_cerberus/Scene_0000":                     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "sprite/bossname/egg_cerberus/Scene_0000/Null_0002/Cast_0004": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "sprite/bossname/egg_cerberus/Scene_0000/Null_0002/Cast_0003": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+
+    { "event/e1071/egg_cerberus/Scene_0000":                     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "event/e1071/egg_cerberus/Scene_0000/Null_0002/Cast_0004": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "event/e1071/egg_cerberus/Scene_0000/Null_0002/Cast_0003": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+
+    { "event/e1081/egg_cerberus/Scene_0000":                     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "event/e1081/egg_cerberus/Scene_0000/Null_0002/Cast_0004": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "event/e1081/egg_cerberus/Scene_0000/Null_0002/Cast_0003": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+
+    { "sprite/bossname/egg_genesis/Scene_0000":                     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "sprite/bossname/egg_genesis/Scene_0000/Null_0002/Cast_0004": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "sprite/bossname/egg_genesis/Scene_0000/Null_0002/Cast_0003": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+
+    { "event/e1091/egg_genesis/Scene_0000":                      { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "event/e1091/egg_genesis/Scene_0000/Null_0002/Cast_0004":  { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "event/e1091/egg_genesis/Scene_0000/Null_0002/Cast_0003":  {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+
+    { "sprite/bossname/egg_wyvern/Scene_0000":                     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "sprite/bossname/egg_wyvern/Scene_0000/Null_0002/Cast_0004": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "sprite/bossname/egg_wyvern/Scene_0000/Null_0002/Cast_0003": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+
+    { "event/e1111/egg_wyvern/Scene_0000":                     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "event/e1111/egg_wyvern/Scene_0000/Null_0002/Cast_0004": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "event/e1111/egg_wyvern/Scene_0000/Null_0002/Cast_0003": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+
+    { "sprite/bossname/iblis/Scene_0000":                     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "sprite/bossname/iblis/Scene_0000/Null_0002/Cast_0004": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "sprite/bossname/iblis/Scene_0000/Null_0002/Cast_0003": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+
+    { "event/e1001/iblis/Scene_0000":                     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "event/e1001/iblis/Scene_0000/Null_0002/Cast_0004": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "event/e1001/iblis/Scene_0000/Null_0002/Cast_0003": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+
+    { "event/e1011/iblis/Scene_0000":                     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "event/e1011/iblis/Scene_0000/Null_0002/Cast_0004": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "event/e1011/iblis/Scene_0000/Null_0002/Cast_0003": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+
+    { "event/e1031/iblis/Scene_0000":                     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "event/e1031/iblis/Scene_0000/Null_0002/Cast_0004": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "event/e1031/iblis/Scene_0000/Null_0002/Cast_0003": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+
+    { "sprite/bossname/mephiles/Scene_0000":                     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "sprite/bossname/mephiles/Scene_0000/Null_0002/Cast_0004": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "sprite/bossname/mephiles/Scene_0000/Null_0002/Cast_0003": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+
+    { "event/e1041/mephiles/Scene_0000":                     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "event/e1041/mephiles/Scene_0000/Null_0002/Cast_0004": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "event/e1041/mephiles/Scene_0000/Null_0002/Cast_0003": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+
+    { "event/e1061/mephiles/Scene_0000":                     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "event/e1061/mephiles/Scene_0000/Null_0002/Cast_0004": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "event/e1061/mephiles/Scene_0000/Null_0002/Cast_0003": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+
+    { "sprite/bossname/shadow_the_hedgehog/Scene_0000":                     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "sprite/bossname/shadow_the_hedgehog/Scene_0000/Null_0002/Cast_0004": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "sprite/bossname/shadow_the_hedgehog/Scene_0000/Null_0002/Cast_0003": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+
+    { "event/e1161/shadow_the_hedgehog/Scene_0000":                     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "event/e1161/shadow_the_hedgehog/Scene_0000/Null_0002/Cast_0004": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "event/e1161/shadow_the_hedgehog/Scene_0000/Null_0002/Cast_0003": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+
+    { "sprite/bossname/silver_the_hedgehog/Scene_0000":                     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "sprite/bossname/silver_the_hedgehog/Scene_0000/Null_0002/Cast_0004": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "sprite/bossname/silver_the_hedgehog/Scene_0000/Null_0002/Cast_0003": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+
+    { "event/e1151/silver_the_hedgehog/Scene_0000":                     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "event/e1151/silver_the_hedgehog/Scene_0000/Null_0002/Cast_0004": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "event/e1151/silver_the_hedgehog/Scene_0000/Null_0002/Cast_0003": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+
+    { "sprite/bossname/solaris/Scene_0000":                     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "sprite/bossname/solaris/Scene_0000/Null_0002/Cast_0004": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "sprite/bossname/solaris/Scene_0000/Null_0002/Cast_0003": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+
+    { "event/e1121/solaris/Scene_0000":                     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "event/e1121/solaris/Scene_0000/Null_0002/Cast_0004": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "event/e1121/solaris/Scene_0000/Null_0002/Cast_0003": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+
+    { "sprite/bossname/sonic_the_hedgehog/Scene_0000":                     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "sprite/bossname/sonic_the_hedgehog/Scene_0000/Null_0002/Cast_0004": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "sprite/bossname/sonic_the_hedgehog/Scene_0000/Null_0002/Cast_0003": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+
+    { "event/e1141/sonic_the_hedgehog/Scene_0000":                     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "event/e1141/sonic_the_hedgehog/Scene_0000/Null_0002/Cast_0004": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"] } },
+    { "event/e1141/sonic_the_hedgehog/Scene_0000/Null_0002/Cast_0003": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": { "Center": { "Repeat": { "TR": { "U": 1.0 } } } }
+    } },
+    
+    { "sprite/button_window/button_window/Scene_0000/Null_0000/Cast_0001": { "Flags": ["CSD_BUTTON_WINDOW"] } },
+    { "sprite/button_window/button_window/Scene_0000/Null_0000/Cast_0002": { "Flags": ["CSD_EXTEND_RIGHT", "CSD_BUTTON_WINDOW"] } },
+    
+    { "sprite/logo/cri_logo/Scene_0000/Null_0002/bg":      { "Flags": ["CSD_STRETCH_HORIZONTAL", "CSD_STRETCH_VERTICAL"] } },
+    { "sprite/logo/cri_logo/Scene_0000/Null_0002/criware": { "Flags": ["CSD_CRI_LOGO"] } },
+    
+    { "sprite/enemy_powergage/enemy_powergage/enemy_powergage/enemy_powergage": { "Flags": ["CSD_3D"] } },
+    
+    { "sprite/gadget_ber/gadget_bar/gadgetbar":       { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "sprite/gadget_ber/gadget_bar/gadgetbar_anime": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "sprite/gadget_ber/gadget_bar/gadgetbar_ue":    { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "sprite/gadget_ber/gadget_bar/icon_text":       { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    
+    { "sprite/loading/loading/Scene_0000":            { "Flags": ["CSD_CORNER_EXTRACT"] } },
+    { "sprite/loading/loading/Scene_0000/Loading":    { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"], "Ultrawide": { "Mask": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } } },
+    { "sprite/loading/loading/Scene_0000/Loading_02": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"], "Ultrawide": { "Mask": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } } },
+    { "sprite/loading/loading/Scene_0000/arrow_01":   { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_STORE_RIGHT_CORNER", "CSD_OFFSET_SCALE_LEFT", "CSD_ALIGN_IGNORE_PREFERENCE_H"], "CornerMax": 1281.013 } },
+    { "sprite/loading/loading/Scene_0000/arrow_02":   { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_LEFT", "CSD_ALIGN_IGNORE_PREFERENCE_H"], "CornerMax": 1281.013 } },
+    { "sprite/loading/loading/Scene_0000/arrow_03":   { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_LEFT", "CSD_ALIGN_IGNORE_PREFERENCE_H"], "CornerMax": 1281.013 } },
+    
+    { "sprite/maindisplay/power":            { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "sprite/maindisplay/custom_bar_anime": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "sprite/maindisplay/power_a":          { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "sprite/maindisplay/power_bar_anime":  { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "sprite/maindisplay/itembox_01":       { "Flags": ["CSD_ALIGN_BOTTOM"] } },
+    { "sprite/maindisplay/score":            { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT"] } },
+    { "sprite/maindisplay/life_ber_anime":   { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_LIFE_COUNTER"] } },
+    { "sprite/maindisplay/life":             { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_LIFE_COUNTER"] } },
+    { "sprite/maindisplay/time":             { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT"] } },
+    { "sprite/maindisplay/ring":             { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT"] } },
+    { "sprite/maindisplay/ring_anime":       { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT"] } },
+    { "sprite/maindisplay/bar_ue":           { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "sprite/maindisplay/power_bar_effect": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "sprite/maindisplay/ring_000_effect":  { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT"] } },
+    { "sprite/maindisplay/boss_gauge":       { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_RIGHT"] } },
+    { "sprite/maindisplay/boss_gauge_anime": { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_RIGHT"] } },
+    { "sprite/maindisplay/item_ber_anime":   { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT"] } },
+    { "sprite/maindisplay/item":             { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT"] } },
+    { "sprite/maindisplay/custom_gem":       { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    { "sprite/maindisplay/custom_level":     { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    
+    { "sprite/main_menu/savedate/savedata/Null_1074/sita3":          { "Flags": ["CSD_EXTEND_RIGHT"] } },
+    { "sprite/main_menu/savedate/savedata/Null_1074/sita5":          { "Flags": ["CSD_EXTEND_RIGHT"] } },
+    { "sprite/main_menu/savedate/savedata/Null_1074/sita8":          { "Flags": ["CSD_EXTEND_RIGHT"] } },
+    { "sprite/main_menu/savedate/savedata/zanki_3":                  { "Flags": ["CSD_LIFE_COUNTER"] } },
+    { "sprite/main_menu/savedate/savedata/zanki_2":                  { "Flags": ["CSD_LIFE_COUNTER"] } },
+    { "sprite/main_menu/savedate/savedata/zanki":                    { "Flags": ["CSD_LIFE_COUNTER"] } },
+    { "sprite/main_menu/stage_plate/stage_plate/stage_plate2":       { "Flags": ["CSD_EXTEND_RIGHT"] } },
+    { "sprite/main_menu/stage_plate/stage_plate/Cast_1337":          { "Flags": ["CSD_EXTEND_RIGHT"] } },
+    { "sprite/main_menu/stage_plate/stage_plate/Cast_1340":          { "Flags": ["CSD_EXTEND_RIGHT"] } },
+    { "sprite/main_menu/mission_plate/mission_plate/mission_plate2": { "Flags": ["CSD_EXTEND_RIGHT"] } },
+    { "sprite/main_menu/mission_plate/mission_plate/Cast_1332":      { "Flags": ["CSD_EXTEND_RIGHT"] } },
+    { "sprite/main_menu/mission_plate/mission_plate/Cast_1336":      { "Flags": ["CSD_EXTEND_RIGHT"] } },
+    { "sprite/main_menu/text_cover/Null_0290/cover_l": {
+        "Flags": ["CSD_UV_MODIFIER", "CSD_REPEAT_LEFT", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": {
+            "Edge":   { "Base": { "TL": { "U": 0.0015 }, "BL": { "U": 0.0015 } }, "Repeat": { "TR": { "U": -0.05 }, "BR": { "U": -0.05 } } },
+            "Center": { "Base": { "TL": { "U": 0.0015 }, "BL": { "U": 0.0015 } }, "Repeat": { "TR": { "U": -0.05 }, "BR": { "U": -0.05 } } }
+        }
+    } },
+    { "sprite/main_menu/text_cover/Null_0290/vocer_r": {
+        "Flags": ["CSD_REPEAT_RIGHT", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": {
+            "Edge":   { "Repeat": { "TL": { "U": -0.05 }, "BL": { "U": -0.05 } } },
+            "Center": { "Repeat": { "TL": { "U": -0.05 }, "BL": { "U": -0.05 } } }
+        }
+    } },
+    { "sprite/main_menu/main_menu_parts/Null_0218/Cast_0221": {
+        "Flags": ["CSD_EXTEND_RIGHT", "CSD_REPEAT_UP", "CSD_REPEAT_FLIP_VERTICAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER"],
+        "Narrow": {
+            "Mask":   ["CSD_REPEAT_UP", "CSD_REPEAT_FLIP_VERTICAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER"],
+            "Edge":   { "Base": { "TL": { "V": 0.0045 }, "TR": { "V": 0.0045 } } },
+            "Center": { "Base": { "TL": { "V": 0.0045 }, "TR": { "V": 0.0045 } } }
+        }
+    } },
+    { "sprite/main_menu/main_menu_parts/Null_0218/Cast_0222": {
+        "Flags": ["CSD_REPEAT_LEFT", "CSD_REPEAT_UP", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_FLIP_VERTICAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER", "CSD_UV_MODIFIER"],
+        "Ultrawide": {
+            "Mask":   ["CSD_REPEAT_UP", "CSD_REPEAT_FLIP_VERTICAL"],
+            "Edge":   { "Base": { "TL": { "U": 0.0015 }, "BL": { "U": 0.0015 } }, "Repeat": { "TL": { "U": -0.1 }, "BL": { "U": -0.1 } } },
+            "Center": { "Base": { "TL": { "U": 0.0015 }, "BL": { "U": 0.0015 } }, "Repeat": { "TL": { "U": -0.1 }, "BL": { "U": -0.1 } } }
+        },
+        "Narrow": {
+            "Mask":   ["CSD_REPEAT_LEFT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
+            "Edge":   { "Base": { "TL": { "V": 0.0045 }, "TR": { "V": 0.0045 } } },
+            "Center": { "Base": { "TL": { "V": 0.0045 }, "TR": { "V": 0.0045 } } }
+        }
+    } },
+    { "sprite/main_menu/main_menu_parts/Null_0960/Cast_0964": { "Flags": ["CSD_EXTEND_RIGHT"] } },
+    { "sprite/main_menu/main_menu_parts/Null_0960/Cast_0965": {
+        "Flags": ["CSD_REPEAT_LEFT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": {
+            "Edge":   { "Repeat": { "TR": { "U": -0.5 }, "BR": { "U": -0.5 } } },
+            "Center": { "Repeat": { "TR": { "U": -0.5 }, "BR": { "U": -0.5 } } }
+        }
+    } },
+    { "sprite/main_menu/main_menu_parts/Null_0224/Cast_0226": {
+        "Flags": ["CSD_REPEAT_LEFT", "CSD_REPEAT_DOWN", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_FLIP_VERTICAL", "CSD_REPEAT_EXTEND", "CSD_POSITION_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": {
+            "Mask":   ["CSD_REPEAT_DOWN", "CSD_REPEAT_FLIP_VERTICAL"],
+            "Edge":   { "Repeat": { "TL": { "U": -0.6 }, "BL": { "U": -0.6 } } },
+            "Center": { "Repeat": { "TL": { "U": -0.6 }, "BL": { "U": -0.6 } } }
+        },
+        "Narrow": {
+            "Mask":   ["CSD_REPEAT_LEFT", "CSD_REPEAT_FLIP_HORIZONTAL"],
+            "Edge":   { "Repeat": { "TL": { "V": -0.02 }, "TR": { "V": -0.02 }, "Offset": { "Y": -16.0 } } },
+            "Center": { "Repeat": { "TL": { "V": -0.02 }, "TR": { "V": -0.02 }, "Offset": { "Y": -16.0 } } }
+        }
+    } },
+    { "sprite/main_menu/main_menu_parts/Null_0224/Cast_0227": {
+        "Flags": ["CSD_REPEAT_RIGHT", "CSD_REPEAT_DOWN", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_FLIP_VERTICAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": {
+            "Mask":   ["CSD_REPEAT_DOWN", "CSD_REPEAT_FLIP_VERTICAL"],
+            "Edge":   { "Repeat": { "TR": { "U": -0.6 }, "BR": { "U": -0.6 } } },
+            "Center": { "Repeat": { "TR": { "U": -0.6 }, "BR": { "U": -0.6 } } }
+        },
+        "Narrow": {
+            "Mask":   ["CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"],
+            "Edge":   { "Repeat": { "TL": { "V": -0.02 }, "TR": { "V": -0.02 }, "Offset": { "Y": -16.0 } } },
+            "Center": { "Repeat": { "TL": { "V": -0.02 }, "TR": { "V": -0.02 }, "Offset": { "Y": -16.0 } } }
+        }
+    } },
+    
+    { "sprite/pausemenu/pausemenu/mission": { "Flags": ["CSD_ALIGN_BOTTOM"] } },
+    
+    { "sprite/radarmap_cover/radarmap_cover/Scene_0000":                { "Flags": ["CSD_CORNER_EXTRACT"] } },
+    { "sprite/radarmap_cover/radarmap_cover/Scene_0000/radarmap_cover": {
+        "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_RIGHT", "CSD_STORE_LEFT_CORNER", "CSD_OFFSET_SCALE_RIGHT", "CSD_RADARMAP"],
+        "Ultrawide": {
+            "Edge": {
+                "Mask": ["CSD_OFFSET_SCALE_RIGHT"]
+            }
+        },
+        "Narrow": {
+            "Mask": ["CSD_OFFSET_SCALE_RIGHT"]
+        },
+        "CornerMax": 912.5
+    } },
+    
+    { "sprite/result/result/title_plate/plate_ue": { "Flags": ["CSD_ALIGN_TOP"] } },
+    { "sprite/result/result/title_plate/plate_ue/plate_ue_kage_l": {
+        "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": {
+            "Edge": {
+                "Mask":       ["CSD_REPEAT_LEFT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_UV_MODIFIER"],
+                "Repeat":     { "TL": { "U": 0.7 }, "BL": { "U": 0.7 },
+                "ExtendBias": { "X": 0.5 } }
+            },
+            "Center": {
+                "Mask":   ["CSD_ALIGN_LEFT", "CSD_REPEAT_RIGHT"],
+                "Base":   { "TL": { "U": 0.015 }, "BL": { "U": 0.015 } },
+                "Repeat": { "TL": { "U": -0.6 }, "BL": { "U": -0.6 } }
+            }
+        },
+        "Narrow": {
+            "Mask": ["CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT"]
+        }
+    } },
+    { "sprite/result/result/title_plate/plate_ue/plate_ue_kage_r": {
+        "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": {
+            "Edge": {
+                "Mask":       ["CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_UV_MODIFIER"],
+                "Repeat":     { "TR": { "U": 0.7 }, "BR": { "U": 0.7 },
+                "ExtendBias": { "X": 0.5 } }
+            },
+            "Center": {
+                "Mask":   ["CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT"],
+                "Base":   { "TR": { "U": 0.015 }, "BR": { "U": 0.015 } },
+                "Repeat": { "TR": { "U": -0.6 }, "BR": { "U": -0.6 } }
+            }
+        },
+        "Narrow": {
+            "Mask": ["CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT"]
+        }
+    } },
+    { "sprite/result/result/title_plate/plate_ue/plate_ue_plate_l": {
+        "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": {
+            "Edge": {
+                "Mask":       ["CSD_REPEAT_LEFT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_UV_MODIFIER"],
+                "Repeat":     { "TL": { "U": 0.7 }, "BL": { "U": 0.7 },
+                "ExtendBias": { "X": 0.5 } }
+            },
+            "Center": {
+                "Mask":   ["CSD_ALIGN_LEFT", "CSD_REPEAT_RIGHT"],
+                "Base":   { "TL": { "U": 0.015 }, "BL": { "U": 0.015 } },
+                "Repeat": { "TL": { "U": -0.6 }, "BL": { "U": -0.6 } }
+            }
+        },
+        "Narrow": {
+            "Mask": ["CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT"]
+        }
+    } },
+    { "sprite/result/result/title_plate/plate_ue/plate_ue_plate_r": {
+        "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": {
+            "Edge": {
+                "Mask":       ["CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_UV_MODIFIER"],
+                "Repeat":     { "TR": { "U": -0.7 }, "BR": { "U": -0.7 },
+                "ExtendBias": { "X": 0.5 } }
+            },
+            "Center": {
+                "Mask":   ["CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT"],
+                "Base":   { "TR": { "U": -0.015 }, "BR": { "U": -0.015 } },
+                "Repeat": { "TR": { "U": 0.6 }, "BR": { "U": 0.6 } }
+            }
+        },
+        "Narrow": {
+            "Mask": ["CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT"]
+        }
+    } },
+    { "sprite/result/result/title_plate/plate_sita": { "Flags": ["CSD_ALIGN_BOTTOM"] } },
+    { "sprite/result/result/title_plate/plate_sita/plate_sita_kage_l": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": {
+            "Edge": {
+                "Mask":       ["CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_UV_MODIFIER"],
+                "Repeat":     { "TL": { "U": 0.7 }, "BL": { "U": 0.7 },
+                "ExtendBias": { "X": 0.5 } }
+            },
+            "Center": {
+                "Mask":   ["CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT"],
+                "Base":   { "TL": { "U": 0.015 }, "BL": { "U": 0.015 } },
+                "Repeat": { "TL": { "U": -0.6 }, "BL": { "U": -0.6 } }
+            }
+        },
+        "Narrow": {
+            "Mask": ["CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT"]
+        }
+    } },
+    { "sprite/result/result/title_plate/plate_sita/plate_sita_kage_r": {
+        "Flags": ["CSD_ALIGN_LEFT", "CSD_ALIGN_BOTTOM", "CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": {
+            "Edge": {
+                "Mask":       ["CSD_REPEAT_LEFT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_UV_MODIFIER"],
+                "Repeat":     { "TR": { "U": 0.7 }, "BR": { "U": 0.7 },
+                "ExtendBias": { "X": 0.5 } }
+            },
+            "Center": {
+                "Mask":   ["CSD_ALIGN_LEFT", "CSD_REPEAT_RIGHT"],
+                "Base":   { "TR": { "U": 0.015 }, "BR": { "U": 0.015 } },
+                "Repeat": { "TR": { "U": -0.6 }, "BR": { "U": -0.6 } }
+            }
+        },
+        "Narrow": {
+            "Mask": ["CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT"]
+        }
+    } },
+    { "sprite/result/result/title_plate/plate_sita/plate_sita_plate_l": {
+        "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": {
+            "Edge": {
+                "Mask":       ["CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_UV_MODIFIER"],
+                "Repeat":     { "TL": { "U": 0.7 }, "BL": { "U": 0.7 },
+                "ExtendBias": { "X": 0.5 } }
+            },
+            "Center": {
+                "Mask":   ["CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT"],
+                "Base":   { "TL": { "U": 0.015 }, "BL": { "U": 0.015 } },
+                "Repeat": { "TL": { "U": -0.6 }, "BL": { "U": -0.6 } }
+            }
+        },
+        "Narrow": {
+            "Mask": ["CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT"]
+        }
+    } },
+    { "sprite/result/result/title_plate/plate_sita/plate_sita_plate_r": {
+        "Flags": ["CSD_ALIGN_LEFT", "CSD_ALIGN_BOTTOM", "CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
+        "Ultrawide": {
+            "Edge": {
+                "Mask":       ["CSD_REPEAT_LEFT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_UV_MODIFIER"],
+                "Repeat":     { "TR": { "U": -0.7 }, "BR": { "U": -0.7 },
+                "ExtendBias": { "X": 0.5 } }
+            },
+            "Center": {
+                "Mask":   ["CSD_ALIGN_LEFT", "CSD_REPEAT_RIGHT"],
+                "Base":   { "TR": { "U": -0.015 }, "BR": { "U": -0.015 } },
+                "Repeat": { "TR": { "U": 0.6 }, "BR": { "U": 0.6 } }
+            }
+        },
+        "Narrow": {
+            "Mask": ["CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT"]
+        }
+    } },
+    { "sprite/result/result/title_plate/result_title/result_title_ob":                                     { "Flags": ["CSD_ALIGN_TOP"] } },
+    { "sprite/result/result/result":                                                                       { "Flags": ["CSD_CORNER_EXTRACT"] } },
+    { "sprite/result/result/result/parts_anime_result/score/score_plate_kage":                             { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 528.0 } },
+    { "sprite/result/result/result/parts_anime_result/score/score_plate":                                  { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT", "CSD_STORE_RIGHT_CORNER"], "CornerMax": 528.0 } },
+    { "sprite/result/result/result/parts_anime_result/score/score_plate/score_text":                       { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 528.0 } },
+    { "sprite/result/result/result/parts_anime_result/score/score_plate/score_plate_title":                { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 528.0 } },
+    { "sprite/result/result/result/parts_anime_result/time/time_plate_kage":                               { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 528.0, "CornerIndex": 1 } },
+    { "sprite/result/result/result/parts_anime_result/time/time_plate":                                    { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT", "CSD_STORE_RIGHT_CORNER"], "CornerMax": 528.0, "CornerIndex": 1 } },
+    { "sprite/result/result/result/parts_anime_result/time/time_plate/time_text":                          { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 528.0, "CornerIndex": 1 } },
+    { "sprite/result/result/result/parts_anime_result/time/time_plate/time_plate_title":                   { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 528.0, "CornerIndex": 1 } },
+    { "sprite/result/result/result/parts_anime_result/ring/ring_plare_kage":                               { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 528.0, "CornerIndex": 2 } },
+    { "sprite/result/result/result/parts_anime_result/ring/ring_plate":                                    { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT", "CSD_STORE_RIGHT_CORNER"], "CornerMax": 528.0, "CornerIndex": 2 } },
+    { "sprite/result/result/result/parts_anime_result/ring/ring_plate/ring_text":                          { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 528.0, "CornerIndex": 2 } },
+    { "sprite/result/result/result/parts_anime_result/ring/ring_plate/ring_title":                         { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 528.0, "CornerIndex": 2 } },
+    { "sprite/result/result/result/parts_anime_result/time_bonus/time_bonus_kage":                         { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 528.0, "CornerIndex": 3 } },
+    { "sprite/result/result/result/parts_anime_result/time_bonus/time_bonus_plate":                        { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT", "CSD_STORE_RIGHT_CORNER"], "CornerMax": 528.0, "CornerIndex": 3 } },
+    { "sprite/result/result/result/parts_anime_result/time_bonus/time_bonus_plate/timebonus_text":         { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 528.0, "CornerIndex": 3 } },
+    { "sprite/result/result/result/parts_anime_result/time_bonus/time_bonus_plate/time_bonus_plate_title": { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 528.0, "CornerIndex": 3 } },
+    { "sprite/result/result/result/parts_anime_result/ring_bonus/ring_bonus_plate_kage":                   { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 528.0, "CornerIndex": 4 } },
+    { "sprite/result/result/result/parts_anime_result/ring_bonus/ring_bonus_plate":                        { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT", "CSD_STORE_RIGHT_CORNER"], "CornerMax": 528.0, "CornerIndex": 4 } },
+    { "sprite/result/result/result/parts_anime_result/ring_bonus/ring_bonus_plate/ringbonus_text":         { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 528.0, "CornerIndex": 4 } },
+    { "sprite/result/result/result/parts_anime_result/ring_bonus/ring_bonus_plate/ring_bonus_plate_title": { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 528.0, "CornerIndex": 4 } },
+    { "sprite/result/result/result/parts_anime_result/amiplate/ami_plate_kage":                            { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerIndex": 5 } },
+    { "sprite/result/result/result/parts_anime_result/amiplate/ami_plate": {
+        "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT", "CSD_COLOR_MODIFIER"],
+        "Ultrawide": {
+            "Edge": {
+                "Mask": ["CSD_COLOR_MODIFIER"]
+            },
+            "Center": {
+                "Base": {
+                    "TL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 160 } },
+                    "BL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 160 } },
+                    "TR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 0 } },
+                    "BR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 0 } }
+                }
+            }
+        },
+        "Narrow": {
+            "Mask": ["CSD_COLOR_MODIFIER"]
+        },
+        "CornerIndex": 5
+    } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/town_score_t/score_plate_kage_t":                          { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/town_score_t/score_plate_t":                               { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/town_score_t/score_plate_t/score_text_t":                  { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/town_score_t/score_plate_t/score_plate_title_t":           { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/time_t/time_plate_kage_t":                                 { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/time_t/time_plate_t":                                      { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/time_t/time_plate_t/time_text_t":                          { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/time_t/time_plate_t/time_plate_title_t":                   { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/ring_t/ring_plare_kage_t":                                 { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/ring_t/ring_plate_t":                                      { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/ring_t/ring_plate_t/ring_text_t":                          { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/ring_t/ring_plate_t/ring_title_t":                         { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/time_bonus_t/time_bonus_kage_t":                           { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/time_bonus_t/time_bonus_plate_t":                          { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/time_bonus_t/time_bonus_plate_t/timebonus_text_t":         { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/time_bonus_t/time_bonus_plate_t/time_bonus_plate_title_t": { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/ring_bonus_t/ring_bonus_plate_kage_t":                     { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/ring_bonus_t/ring_bonus_plate_t":                          { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/ring_bonus_t/ring_bonus_plate_t/ringbonus_text_t":         { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/ring_bonus_t/ring_bonus_plate_t/ring_bonus_plate_title_t": { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/record_t/record_plate_kage_t":                             { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/record_t/record_bonus_plate_t":                            { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/record_t/record_bonus_plate_t/record_text_t":              { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/record_t/record_bonus_plate_t/record_plate_title_t":       { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/record_t/item_icon":                                       { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/town_mission/parts_anime_result_t/amiplate_t":                                               { "Flags": ["CSD_ALIGN_RIGHT"] } },
+    { "sprite/result/result/bonus":                                                                                      { "Flags": ["CSD_CORNER_EXTRACT"] } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_s/list_plate_kage01":                                { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_s/list_plate01":                                     { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT", "CSD_STORE_LEFT_CORNER"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_s/list_plate01/list_text01":                         { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_s/list_plate01/list_text01/nyoro01":                 { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_s/list_plate01/ring01":                              { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_s/list_plate01/ring01/ring01_b":                     { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_s/list_plate01/bonus_text01":                        { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_s/list_plate01/rank_list_s_kage":                    { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_s/list_plate01/rank_list_s":                         { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_a/list_plate_kage02":                                { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_a/list_plate02":                                     { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_a/list_plate02/list_text02":                         { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_a/list_plate02/list_text02/nyoro02":                 { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_a/list_plate02/ring02":                              { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_a/list_plate02/ring02/ring02_b":                     { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_a/list_plate02/bonus_text02":                        { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_a/list_plate02/rank_list_a_kage":                    { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_a/list_plate02/rank_list_a":                         { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_b/list_plate_kage03":                                { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_b/list_plate03":                                     { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_b/list_plate03/list_text03":                         { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_b/list_plate03/list_text03/nyoro03":                 { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_b/list_plate03/ring03":                              { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_b/list_plate03/ring03/ring03_b":                     { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_b/list_plate03/bonus_text03":                        { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_b/list_plate03/rank_list_b_kage":                    { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_b/list_plate03/rank_list_b":                         { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_c/list_plate_kage04":                                { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_c/list_plate04":                                     { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_c/list_plate04/list_text04":                         { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_c/list_plate04/list_text04/nyoro04":                 { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_c/list_plate04/ring04":                              { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_c/list_plate04/ring04/ring04_b":                     { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_c/list_plate04/bonus_text04":                        { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_c/rank_list_c_kage":                                 { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_c/rank_list_c":                                      { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_d/list_plate_kage05":                                { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_d/list_plate05":                                     { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_d/list_plate05/list_text05":                         { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_d/list_plate05/list_text05/nyoro05":                 { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_d/list_plate05/ring05":                              { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_d/list_plate05/ring05/ring05_b":                     { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_d/list_plate05/bonus_text05":                        { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_d/list_plate05/rank_list_d_kage":                    { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_d/list_plate05/rank_list_d":                         { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/amiplate/ami_plate_kage":                                            { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 717.0, "CornerIndex": 2 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/amiplate/ami_plate": {
+        "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT", "CSD_COLOR_MODIFIER", "CSD_STORE_RIGHT_CORNER"],
+        "Ultrawide": {
+            "Edge": {
+                "Mask": ["CSD_COLOR_MODIFIER"]
+            },
+            "Center": {
+                "Base": {
+                    "TL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 0 } },
+                    "BL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 0 } },
+                    "TR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 160 } },
+                    "BR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 160 } }
+                }
+            }
+        },
+        "Narrow": {
+            "Mask": ["CSD_COLOR_MODIFIER"]
+        },
+        "CornerMax": 717.0,
+        "CornerIndex": 2
+    } },
+    { "sprite/result/result/bonus/parts_anime_bonus/rank_bonus/rank_bonus_plate_kage":                          { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 676.0 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/rank_bonus/rank_bonus_plate":                               { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT", "CSD_STORE_RIGHT_CORNER"], "CornerMax": 676.0 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/rank_bonus/rank_bonus_plate/rank_bonus_plate_text":         { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 676.0 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/rank_bonus/rank_bonus_plate/rank_bonus_plate_title":        { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 676.0 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/rank_bonus/rank_bonus_ring":                                { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 676.0 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/rank_bonus/rank_bonus_ring/rank_bonus_ring_b":              { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 676.0 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/total_ring/total_ring_plate_kage":                          { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 396.0, "CornerIndex": 3 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/total_ring/total_ring_plate":                               { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT", "CSD_STORE_RIGHT_CORNER"], "CornerMax": 396.0, "CornerIndex": 3 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/total_ring/total_ring_plate/total_ring_plate_title":        { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 396.0, "CornerIndex": 3 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/TotalRing_Goldfont/total_ring_text":                        { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 396.0, "CornerIndex": 3 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/TotalRing_Goldfont/ring_l":                                 { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 396.0, "CornerIndex": 3 } },
+    { "sprite/result/result/bonus/parts_anime_bonus/TotalRing_Goldfont/ring_l_b":                               { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 396.0, "CornerIndex": 3 } },
+    { "sprite/result/result/totalscore_rank":                                                                   { "Flags": ["CSD_CORNER_EXTRACT"] } },
+    { "sprite/result/result/totalscore_rank/parts_anime/total_score/total_score_plate_kage":                    { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 676.0 } },
+    { "sprite/result/result/totalscore_rank/parts_anime/total_score/total_score_plate":                         { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT", "CSD_STORE_RIGHT_CORNER"], "CornerMax": 676.0 } },
+    { "sprite/result/result/totalscore_rank/parts_anime/total_score/total_score_plate/totalscore_text":         { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 676.0 } },
+    { "sprite/result/result/totalscore_rank/parts_anime/total_score/total_score_plate/total_score_plate_title": { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 676.0 } },
+    { "sprite/result/result/totalscore_rank/parts_anime/rank/rank_plate_kage":                                  { "Flags": ["CSD_ALIGN_RIGHT"] } },
+    { "sprite/result/result/totalscore_rank/parts_anime/rank/rank_plate":                                       { "Flags": ["CSD_ALIGN_RIGHT"] } },
+    { "sprite/result/result/totalscore_rank/parts_anime/rank/rank_plate/rank_plate_title":                      { "Flags": ["CSD_ALIGN_RIGHT"] } },
+    { "sprite/result/result/rank_anime":                                                                        { "Flags": ["CSD_ALIGN_RIGHT"] } },
+    { "sprite/result/result/score_newrecord":                                                                   { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/time_newrecord":                                                                    { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/ring_newrecord":                                                                    { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/timebonus_newrecord":                                                               { "Flags": ["CSD_ALIGN_LEFT"] } },
+    { "sprite/result/result/ringbonus_newrecord":                                                               { "Flags": ["CSD_ALIGN_LEFT"] } },
+    
+    { "sprite/tag_character/tag_character/1p_tug/1p_tug/1p_tug1": {
+        "Flags": ["CSD_REPEAT_LEFT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER", "CSD_REPEAT_COLOR_MODIFIER"],
+        "Ultrawide": {
+            "Edge": {
+                "Repeat": {
+                    "TL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 }, "U": -0.5 },
+                    "BL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 }, "U": -0.5 },
+                    "TR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 } },
+                    "BR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 } }
+                }
+            },
+            "Center": {
+                "Repeat": {
+                    "TL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 }, "U": -0.5 },
+                    "BL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 }, "U": -0.5 },
+                    "TR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 } },
+                    "BR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 } }
+                }
+            }
+        }
+    } },
+    { "sprite/tag_character/tag_character/2p_tug/2p_tug/2p_tug1": {
+        "Flags": ["CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER", "CSD_REPEAT_COLOR_MODIFIER"],
+        "Ultrawide": {
+            "Edge": {
+                "Repeat": {
+                    "TL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 } },
+                    "BL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 } },
+                    "TR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 }, "U": 0.2 },
+                    "BR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 }, "U": 0.2 }
+                }
+            },
+            "Center": {
+                "Repeat": {
+                    "TL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 } },
+                    "BL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 } },
+                    "TR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 }, "U": 0.2 },
+                    "BR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 }, "U": 0.2 }
+                }
+            }
+        }
+    } },
+    
+    { "sprite/tagdisplay_1p/power":            { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/tagdisplay_1p/power_a":          { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/tagdisplay_1p/power_bar_anime":  { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/tagdisplay_1p/itembox_01":       { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/tagdisplay_1p/score":            { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/tagdisplay_1p/time":             { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/tagdisplay_1p/ring":             { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/tagdisplay_1p/ring_anime":       { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/tagdisplay_1p/bar_ue":           { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/tagdisplay_1p/life_bar_anime":   { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H", "CSD_LIFE_COUNTER"] } },
+    { "sprite/tagdisplay_1p/life":             { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H", "CSD_LIFE_COUNTER"] } },
+    { "sprite/tagdisplay_1p/item_ber_anime":   { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/tagdisplay_1p/item":             { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/tagdisplay_1p/power_bar_effect": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/tagdisplay_1p/ring_000_effect":  { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/tagdisplay_1p/custom_gem":       { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/tagdisplay_1p/custom_level1":    { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/tagdisplay_1p/custom_bar_anime": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    
+    { "sprite/tagdisplay_2p/power":            { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/tagdisplay_2p/power_a":          { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/tagdisplay_2p/power_bar_anime":  { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/tagdisplay_2p/itembox_01":       { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/tagdisplay_2p/score":            { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/tagdisplay_2p/time":             { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/tagdisplay_2p/ring":             { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/tagdisplay_2p/ring_anime":       { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/tagdisplay_2p/bar_ue":           { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/tagdisplay_2p/life_bar_anime":   { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H", "CSD_LIFE_COUNTER"] } },
+    { "sprite/tagdisplay_2p/life":             { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H", "CSD_LIFE_COUNTER"] } },
+    { "sprite/tagdisplay_2p/item_ber_anime":   { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/tagdisplay_2p/item":             { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/tagdisplay_2p/power_bar_effect": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/tagdisplay_2p/ring_000_effect":  { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_MULTIPLAYER", "CSD_ALIGN_IGNORE_PREFERENCE_H"] } },
+    { "sprite/tagdisplay_2p/custom_gem":       { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/tagdisplay_2p/custom_level1":    { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    { "sprite/tagdisplay_2p/custom_bar_anime": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_MULTIPLAYER"] } },
+    
+    { "sprite/talkwindow/talkwindow/window":     { "Flags": ["CSD_ALIGN_BOTTOM"] } },
+    { "sprite/talkwindow/talkwindow/nafuda":     { "Flags": ["CSD_ALIGN_BOTTOM"] } },
+    { "sprite/talkwindow/talkwindow/Scene_0021": { "Flags": ["CSD_ALIGN_BOTTOM"] } },
+    
+    { "sprite/title/title/Scene_Title/copyright": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"], "Ultrawide": { "Mask": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } } },
+    
+    { "/back_aoita/Null_0064": { "Flags": ["CSD_ALIGN_LEFT", "CSD_CROP"] } },
+    { "/title_menu/Cast_0157": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
+    
+    { "sprite/towndisplay/ring":       { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT"] } },
+    { "sprite/towndisplay/ring_anime": { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT"] } },
+    
+    { "sprite/trickpoint/trickpoint/Scene_0000": { "Flags": ["CSD_ALIGN_RIGHT"] } },
+    { "sprite/trickpoint/trickpoint/Scene_0001": { "Flags": ["CSD_ALIGN_RIGHT"] } },
+    { "sprite/trickpoint/trickpoint/score":      { "Flags": ["CSD_ALIGN_RIGHT"] } }
+]

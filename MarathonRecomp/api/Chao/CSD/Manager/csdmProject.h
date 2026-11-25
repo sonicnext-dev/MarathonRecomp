@@ -15,6 +15,7 @@ namespace Chao::CSD
     struct Project
     {
         xpointer<SceneNode> pRootNode;
+        MARATHON_INSERT_PADDING(0x14);
     };
 
     class CProject : public CResourceBase<Project>, CBase
@@ -28,8 +29,10 @@ namespace Chao::CSD
     };
 
     MARATHON_ASSERT_OFFSETOF(Project, pRootNode, 0x00);
+    MARATHON_ASSERT_SIZEOF(Project, 0x18);
 
     MARATHON_ASSERT_OFFSETOF(CProject, m_Scenes, 0x10);
     MARATHON_ASSERT_OFFSETOF(CProject, m_SortOrder, 0x1C);
     MARATHON_ASSERT_OFFSETOF(CProject, m_pTexList, 0x28);
+    MARATHON_ASSERT_SIZEOF(CProject, 0x48);
 }

@@ -9,6 +9,16 @@ namespace Sonicteam::SoX::Math
     public:
         be<float> X;
         be<float> Y;
+
+        bool IsZero() const
+        {
+            return X == 0 && Y == 0;
+        }
+
+        bool operator==(const Vector2& in_rOther) const
+        {
+            return X == in_rOther.X && Y == in_rOther.Y;
+        }
     };
 
     MARATHON_ASSERT_OFFSETOF(Vector2, X, 0x00);

@@ -110,7 +110,7 @@ bool CTownsKeeper_SkipVertexIfOccluded(PPCRegister& r30, PPCRegister& r1)
 // 1. Is there a physics object at this vertex?
 // 2. Is there a townsman at this vertex?
 // 3. Is this vertex visible to the camera?
-// 4. Is this vertex within 10 metres ahead of the camera inside a 40 degree view cone?
+// 4. Is this vertex within 100 metres ahead of the camera inside a 40 degree view cone?
 //
 // The previous hook reorders the last check so that it happens first, reducing the
 // amount of entity checks by a small amount.

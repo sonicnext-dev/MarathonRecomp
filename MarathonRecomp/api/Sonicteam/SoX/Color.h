@@ -120,6 +120,14 @@ namespace Sonicteam::SoX
             B((in_color & 0x0000FF00) >> 8);
             A((in_color & 0x000000FF));
         }
+
+        bool operator==(const Color& in_rOther) const
+        {
+            return this->Data[0] == in_rOther.Data[0] &&
+                   this->Data[1] == in_rOther.Data[1] &&
+                   this->Data[2] == in_rOther.Data[2] &&
+                   this->Data[3] == in_rOther.Data[3];
+        }
     };
     
     struct RGB8 : Color<uint8_t, ColorFormat_RGB> {};

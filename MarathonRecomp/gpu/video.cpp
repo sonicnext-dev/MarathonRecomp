@@ -24,6 +24,7 @@
 #include <kernel/xdbf.h>
 #include <os/process.h>
 #include <patches/aspect_ratio_patches.h>
+#include <patches/csd_modifier_manager.h>
 #include <plume_render_interface.h>
 #include <ranges>
 #include <ui/achievement_menu.h>
@@ -1750,16 +1751,6 @@ static void DrawProfiler()
     pFont->Scale = ImGui::GetDefaultFont()->FontSize / pFont->FontSize;
     ImGui::PushFont(pFont);
 
-#define IMGUI_GENERIC_ROW(name, value, ...) \
-    do                                      \
-    {                                       \
-        ImGui::TableNextColumn();           \
-        ImGui::Text(name);                  \
-        ImGui::TableNextColumn();           \
-        ImGui::Text(value, __VA_ARGS__);    \
-    }                                       \
-    while (false);
-
     if (ImGui::Begin("Profiler", &g_profilerVisible))
     {
         g_applicationValues[g_profilerValueIndex] = App::s_deltaTime * 1000.0;
@@ -1902,8 +1893,6 @@ static void DrawProfiler()
 #ifdef ASYNC_PSO_DEBUG
             if (ImGui::TreeNode("Async PSO"))
             {
-                ImGui::Indent();
-
                 if (ImGui::BeginTable("Async PSO", 2))
                 {
                     IMGUI_GENERIC_ROW("Pipelines created in render thread", "%u", g_pipelinesCreatedInRenderThread.load());
@@ -1920,24 +1909,17 @@ static void DrawProfiler()
 
                 if (ImGui::TreeNode("Pipeline States"))
                 {
-                    ImGui::Indent();
-
                     std::lock_guard lock(g_debugMutex);
                     ImGui::TextUnformatted(g_pipelineDebugText.c_str());
-
-                    ImGui::Unindent();
                     ImGui::TreePop();
                 }
 
-                ImGui::Unindent();
                 ImGui::TreePop();
             }
 #endif
 
             if (ImGui::TreeNode("Devices"))
             {
-                ImGui::Indent();
-
                 if (ImGui::BeginTable("Devices", 2))
                 {
                     auto deviceIndex = 0;
@@ -1954,14 +1936,11 @@ static void DrawProfiler()
                     ImGui::EndTable();
                 }
 
-                ImGui::Unindent();
                 ImGui::TreePop();
             }
 
             if (ImGui::TreeNode("Features"))
             {
-                ImGui::Indent();
-
                 if (ImGui::BeginTable("Features", 2))
                 {
                     IMGUI_GENERIC_ROW("Dynamic Depth Bias", "%s", g_capabilities.dynamicDepthBias ? "Supported" : "Unsupported");
@@ -1975,7 +1954,6 @@ static void DrawProfiler()
                     ImGui::EndTable();
                 }
 
-                ImGui::Unindent();
                 ImGui::TreePop();
             }
         }
@@ -2091,6 +2069,7 @@ static void DrawImGui()
     AchievementOverlay::Draw();
     Fader::Draw();
     BlackBar::Draw();
+    CsdModifierManager::DrawDebug();
 
     for (const auto& rEvent : g_imguiDrawQueue)
         rEvent();

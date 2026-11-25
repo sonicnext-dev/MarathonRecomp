@@ -18,6 +18,16 @@
 
 #define IM_COL32_WHITE_TRANS IM_COL32(255, 255, 255, 0)
 
+#define IMGUI_GENERIC_ROW(NAME, VALUE, ...) \
+    do                                      \
+    {                                       \
+        ImGui::TableNextColumn();           \
+        ImGui::Text(NAME);                  \
+        ImGui::TableNextColumn();           \
+        ImGui::Text(VALUE, __VA_ARGS__);    \
+    }                                       \
+    while (false);
+
 extern ImFont* g_pFntRodin;
 extern ImFont* g_pFntNewRodin;
 extern ImFont* g_pFntArialUni;

@@ -383,6 +383,7 @@
 #include "Sonicteam/RenderAction/SetZMode.h"
 #include "Sonicteam/RenderPostprocess.h"
 #include "Sonicteam/RenderTargetContainer.h"
+#include "Sonicteam/ResultTask.h"
 #include "Sonicteam/RootGTask.h"
 #include "Sonicteam/SFXAgent.h"
 #include "Sonicteam/SaveDataTask.h"

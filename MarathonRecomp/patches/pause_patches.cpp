@@ -1,6 +1,7 @@
 #include <api/Marathon.h>
 #include <kernel/memory.h>
 #include <patches/aspect_ratio_patches.h>
+#include <patches/csd_modifier.h>
 #include <ui/options_menu.h>
 #include <app.h>
 
@@ -173,7 +174,7 @@ PPC_FUNC(sub_82509870)
         });
     }
 
-    SetTextEntityModifier(pPauseTask->m_spMissionTextEntity.get(), CSD_ALIGN_BOTTOM | CSD_SCALE);
+    SetTextEntityModifier(pPauseTask->m_spMissionTextEntity.get(), CSD_ALIGN_BOTTOM);
 
     __imp__sub_82509870(ctx, base);
 }

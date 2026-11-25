@@ -7,11 +7,11 @@ namespace Chao::CSD
 {
     struct Vertex
     {
-        be<float> X;
-        be<float> Y;
-        Color Color;
-        be<float> U;
-        be<float> V;
+        be<float> X{};
+        be<float> Y{};
+        Color Color{};
+        be<float> U{};
+        be<float> V{};
     };
 
     MARATHON_ASSERT_OFFSETOF(Vertex, X, 0x00);
