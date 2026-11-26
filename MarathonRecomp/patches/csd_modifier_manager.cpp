@@ -1,9 +1,11 @@
 #include "csd_modifier_manager.h"
 #include <os/logger.h>
 #include <patches/aspect_ratio_patches.h>
+#include <res/csd_modifiers.json.h>
 #include <ui/imgui_utils.h>
 #include <user/config.h>
 #include <app.h>
+#include <decompressor.h>
 #include <nfd.h>
 #include <xxHashMap.h>
 
@@ -181,41 +183,103 @@ PPC_FUNC(sub_825CE5F0)
     __imp__sub_825CE5F0(ctx, base);
 }
 
-bool CsdModifierManager::Read(const nlohmann::json& in_rReader)
+CsdModifierManager::Status CsdModifierManager::Read(const nlohmann::json& in_rReader)
 {
-    for (const auto& item : in_rReader)
-    {
-        for (const auto& [rPath, rModifier] : item.items())
-        {
-            auto modifier = CsdModifier();
-            
-            if (!modifier.Read(rModifier))
-                continue;
+    if (!in_rReader.contains("Version"))
+        return CsdModifierManager::Status::MissingVersion;
 
-            modifier.Path = rPath;
+    const size_t version = in_rReader["Version"];
+
+    if (version != Version)
+        return CsdModifierManager::Status::UnsupportedVersion;
+
+    if (!in_rReader.contains("Modifiers"))
+        return CsdModifierManager::Status::MissingModifiers;
+
+    for (const auto& [rPath, rModifier] : in_rReader["Modifiers"].items())
+    {
+        auto modifier = CsdModifier();
             
-            g_Modifiers[HashStr(rPath)] = modifier;
-        }
+        if (!modifier.Read(rModifier))
+            continue;
+
+        modifier.Path = rPath;
+            
+        g_Modifiers[HashStr(rPath)] = modifier;
     }
 
-    return true;
+    return CsdModifierManager::Status::Success;
 }
 
-bool CsdModifierManager::Write(const std::filesystem::path& in_rPath)
+CsdModifierManager::Status CsdModifierManager::Read(const std::filesystem::path& in_rPath)
+{
+    auto file = std::ifstream(in_rPath);
+
+    if (!file)
+        return CsdModifierManager::Status::IOError;
+
+    nlohmann::json json{};
+
+    try
+    {
+        json = nlohmann::json::parse(file);
+    }
+    catch (const nlohmann::json::parse_error& ex)
+    {
+        LOGFN_ERROR("{}", ex.what());
+        return CsdModifierManager::Status::ParseError;
+    }
+
+    return Read(json);
+}
+
+CsdModifierManager::Status CsdModifierManager::Read()
+{
+    CsdModifierManager::Status result{};
+    nlohmann::json json{};
+
+    try
+    {
+        const auto data = decompressZstd(g_csd_modifiers, g_csd_modifiers_uncompressed_size);
+        json = nlohmann::json::parse(data.get(), data.get() + g_csd_modifiers_uncompressed_size);
+    }
+    catch (const nlohmann::json::parse_error& ex)
+    {
+        LOGFN_ERROR("{}", ex.what());
+        result = CsdModifierManager::Status::ParseError;
+    }
+
+    if (result == CsdModifierManager::Status::Success)
+        result = CsdModifierManager::Read(json);
+
+    if (result != CsdModifierManager::Status::Success)
+        LOGF_IMPL(os::logger::ELogType::Error, "CSD Modifier Manager", "{}", CsdModifierManager::GetStatusMessage(result));
+
+    return result;
+}
+
+CsdModifierManager::Status CsdModifierManager::Write(const std::filesystem::path& in_rPath)
 {
     auto file = std::ofstream(in_rPath);
 
     if (!file)
-        return false;
+        return CsdModifierManager::Status::IOError;
 
     nlohmann::json json{};
 
+    json["Version"] = CsdModifierManager::Version;
+
     for (auto& rModifier : g_Modifiers)
-        rModifier.second.Write(json[rModifier.second.Path]);
+        rModifier.second.Write(json["Modifiers"][rModifier.second.Path]);
 
     file << json.dump(4) << std::endl;
 
-    return true;
+    return CsdModifierManager::Status::Success;
+}
+
+const char* CsdModifierManager::GetStatusMessage(const Status in_status)
+{
+    return CsdModifierManager::ms_StatusMessages[int(in_status)];
 }
 
 CsdModifier* CsdModifierManager::Find(uint32_t in_data)
@@ -669,6 +733,7 @@ void CsdModifierManager::DrawDebug()
         }
     }
 
+    // TODO: add remove function that uses the mutex.
     for (const auto& rElement : deletions)
         g_Paths.erase(rElement);
 

@@ -6,7 +6,6 @@
 #include <patches/hook_event.h>
 #include <patches/loading_patches.h>
 #include <patches/MainMenuTask_patches.h>
-#include <res/csd_modifiers.json.h>
 #include <ui/achievement_menu.h>
 #include <ui/black_bar.h>
 #include <ui/game_window.h>
@@ -14,7 +13,6 @@
 #include <ui/options_menu.h>
 #include <user/config.h>
 #include <app.h>
-#include <decompressor.h>
 
 static float g_aspectRatio;
 static float g_aspectRatioOffsetX;
@@ -142,9 +140,7 @@ float ComputeScale(float aspectRatio)
 
 void AspectRatioPatches::Init()
 {
-    const auto json = decompressZstd(g_csd_modifiers, g_csd_modifiers_uncompressed_size);
-    CsdModifierManager::Read(nlohmann::json::parse(json.get(), json.get() + g_csd_modifiers_uncompressed_size));
-
+    CsdModifierManager::Read();
     MainMenuTaskPatches::s_events.push_back(&g_chevronAnimResetEvent);
 }
 
