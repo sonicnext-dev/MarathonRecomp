@@ -591,10 +591,10 @@
         "sprite/result/result/result/parts_anime_result/ring_bonus/ring_bonus_plate/ring_bonus_plate_title": { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 528.0, "CornerIndex": 4 },
         "sprite/result/result/result/parts_anime_result/amiplate/ami_plate_kage":                            { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerIndex": 5 },
         "sprite/result/result/result/parts_anime_result/amiplate/ami_plate": {
-            "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT", "CSD_COLOR_MODIFIER"],
+            "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT", "CSD_COLOR_MODIFIER", "CSD_CROP_TO_WIDESCREEN"],
             "Ultrawide": {
                 "Edge": {
-                    "Mask": ["CSD_COLOR_MODIFIER"]
+                    "Mask": ["CSD_COLOR_MODIFIER", "CSD_CROP_TO_WIDESCREEN"]
                 },
                 "Center": {
                     "Base": {
@@ -606,7 +606,7 @@
                 }
             },
             "Narrow": {
-                "Mask": ["CSD_COLOR_MODIFIER"]
+                "Mask": ["CSD_COLOR_MODIFIER", "CSD_CROP_TO_WIDESCREEN"]
             },
             "CornerIndex": 5
         },
@@ -684,10 +684,10 @@
         "sprite/result/result/bonus/parts_anime_bonus/bonus_list/rank_d/list_plate05/rank_list_d":                         { "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT"], "CornerMax": 760.0, "CornerIndex": 1 },
         "sprite/result/result/bonus/parts_anime_bonus/amiplate/ami_plate_kage":                                            { "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT"], "CornerMax": 717.0, "CornerIndex": 2 },
         "sprite/result/result/bonus/parts_anime_bonus/amiplate/ami_plate": {
-            "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT", "CSD_COLOR_MODIFIER", "CSD_STORE_RIGHT_CORNER"],
+            "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT", "CSD_COLOR_MODIFIER", "CSD_STORE_RIGHT_CORNER", "CSD_CROP_TO_WIDESCREEN"],
             "Ultrawide": {
                 "Edge": {
-                    "Mask": ["CSD_COLOR_MODIFIER"]
+                    "Mask": ["CSD_COLOR_MODIFIER", "CSD_CROP_TO_WIDESCREEN"]
                 },
                 "Center": {
                     "Base": {
@@ -699,7 +699,7 @@
                 }
             },
             "Narrow": {
-                "Mask": ["CSD_COLOR_MODIFIER"]
+                "Mask": ["CSD_COLOR_MODIFIER", "CSD_CROP_TO_WIDESCREEN"]
             },
             "CornerMax": 717.0,
             "CornerIndex": 2
@@ -818,7 +818,7 @@
         
         "sprite/title/title/Scene_Title/copyright": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"], "Ultrawide": { "Mask": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] } },
         
-        "/back_aoita/Null_0064": { "Flags": ["CSD_ALIGN_LEFT", "CSD_CROP"] },
+        "/back_aoita/Null_0064": { "Flags": ["CSD_ALIGN_LEFT", "CSD_CROP_TO_FIT"] },
         "/title_menu/Cast_0157": { "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT"] },
         
         "sprite/towndisplay/ring":       { "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT"] },

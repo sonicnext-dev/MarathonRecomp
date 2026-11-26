@@ -408,7 +408,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
                 offsetX = g_aspectRatioOffsetX;
             }
 
-            if ((flags & CSD_CROP) != 0)
+            if ((flags & CSD_CROP_TO_FIT) != 0)
             {
                 scaleX = std::max(vpWidth / 1280.0f, vpHeight / 720.0f);
 
@@ -475,7 +475,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
             offsetY = g_aspectRatioOffsetY;
         }
 
-        if ((flags & CSD_CROP) != 0)
+        if ((flags & CSD_CROP_TO_FIT) != 0)
         {
             scaleY = std::max(vpWidth / 1280.0f, vpHeight / 720.0f);
 
@@ -513,30 +513,18 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
         }
     }
 
-    if (g_aspectRatio > WIDE_ASPECT_RATIO)
+    if (g_aspectRatio > WIDE_ASPECT_RATIO && modifier->CornerMax)
     {
-        auto corner = 0.0f;
+        const auto corner = g_csdCorners[modifier->CornerIndex];
 
-        if (g_castModifier)
-            corner = g_csdCorners[modifier->CornerIndex];
-
-        if (g_castNodeModifier && modifier->CornerMax == 0.0f)
-            corner = g_csdCorners[modifier->CornerIndex];
-
-        if (g_sceneModifier && modifier->CornerMax == 0.0f)
-            corner = g_csdCorners[modifier->CornerIndex];
-
-        if (modifier->CornerMax)
+        if ((flags & CSD_OFFSET_SCALE_LEFT) != 0)
         {
-            if ((flags & CSD_OFFSET_SCALE_LEFT) != 0)
-            {
-                // Offset X by progress of current corner to corner max.
-                offsetX *= corner / modifier->CornerMax;
-            }
-            else if ((flags & CSD_OFFSET_SCALE_RIGHT) != 0)
-            {
-                offsetX = vpWidth - (vpWidth - offsetX) * (1280.0f - corner) / (1280.0f - modifier->CornerMax);
-            }
+            // Offset X by progress of current corner to corner max.
+            offsetX *= corner / modifier->CornerMax;
+        }
+        else if ((flags & CSD_OFFSET_SCALE_RIGHT) != 0)
+        {
+            offsetX = vpWidth - (vpWidth - offsetX) * (1280.0f - corner) / (1280.0f - modifier->CornerMax);
         }
     }
 
@@ -790,6 +778,39 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
 
     if ((flags & CSD_COLOR_MODIFIER) != 0)
         applyColorModifier(baseVertexModifiers);
+
+    if ((flags & CSD_CROP_TO_WIDESCREEN) != 0)
+    {
+        const auto v0 = getVertex(tl);
+        const auto v2 = getVertex(tr);
+
+        const float left = BlackBar::s_pillarboxWidth;
+        const float right = vpWidth - BlackBar::s_pillarboxWidth;
+        const float uvWidth = v2->U - v0->U;
+
+        const auto cropLeft = [&](Chao::CSD::Vertex* in_pVertex)
+        {
+            if (in_pVertex->X < left)
+            {
+                in_pVertex->U = in_pVertex->U + ((left - in_pVertex->X) / width) * uvWidth;
+                in_pVertex->X = left;
+            }
+        };
+
+        const auto cropRight = [&](Chao::CSD::Vertex* in_pVertex)
+        {
+            if (in_pVertex->X > right)
+            {
+                in_pVertex->U = in_pVertex->U - ((in_pVertex->X - right) / width) * uvWidth;
+                in_pVertex->X = right;
+            }
+        };
+
+        cropLeft(v0);
+        cropLeft(getVertex(bl));
+        cropRight(v2);
+        cropRight(getVertex(br));
+    }
 
     if ((flags & CSD_REPEAT_LEFT) != 0)
     {
