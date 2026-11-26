@@ -282,6 +282,18 @@ const char* CsdModifierManager::GetStatusMessage(const Status in_status)
     return CsdModifierManager::ms_StatusMessages[int(in_status)];
 }
 
+void CsdModifierManager::Add(const CsdModifier& in_rModifier)
+{
+    std::lock_guard lock(g_Mutex);
+    g_Modifiers[HashStr(in_rModifier.Path)] = in_rModifier;
+}
+
+bool CsdModifierManager::Remove(const std::string_view in_key)
+{
+    std::lock_guard lock(g_Mutex);
+    return g_Modifiers.erase(HashStr(in_key));
+}
+
 CsdModifier* CsdModifierManager::Find(uint32_t in_data)
 {
     std::lock_guard lock(g_Mutex);
@@ -338,16 +350,16 @@ void CsdModifierManager::DrawDebug()
 
     if (!hasSetWindowSize)
     {
-        ImGui::SetNextWindowSize({ 733.0f, 775.0f });
+        ImGui::SetNextWindowSize({ 733.0f, 905.0f });
         hasSetWindowSize = true;
     }
 
-    if (ImGui::Begin("CSD Debug", &isVisible))
+    if (ImGui::Begin("CSD Modifier Manager", &isVisible))
     {
         if (ImGui::CollapsingHeader("Configuration", ImGuiTreeNodeFlags_DefaultOpen))
         {
             static std::array<const char*, 2> alignmentModes = { "Edge", "Center" };
-            ImGui::Combo("Alignment Mode", reinterpret_cast<int*>(&Config::UIAlignmentMode.Value), alignmentModes.data(), alignmentModes.size());
+            ImGui::Combo("UI Alignment Mode", reinterpret_cast<int*>(&Config::UIAlignmentMode.Value), alignmentModes.data(), alignmentModes.size());
 
             ImGui::Checkbox("Disable Lives", &Config::DisableLives.Value);
         }
@@ -394,7 +406,7 @@ void CsdModifierManager::DrawDebug()
 
         if (ImGui::CollapsingHeader("Modifiers", ImGuiTreeNodeFlags_DefaultOpen))
         {
-            static size_t modifierCount{};
+            static size_t activeModifierCount{};
 
             if (ImGui::BeginTable("##Diagnostics", 2))
             {
@@ -403,13 +415,28 @@ void CsdModifierManager::DrawDebug()
                 for (const auto& [rProject, rSize] : g_Projects)
                     projectsLength += rSize + sizeof(Chao::CSD::Project);
 
+                IMGUI_GENERIC_ROW("Total Modifiers", "%zu (%.2f KiB)", g_Modifiers.size(), static_cast<double>(g_Modifiers.size() * sizeof(CsdModifier) / 1024.0));
+                IMGUI_GENERIC_ROW("Active Modifiers", "%zu (%.2f KiB)", activeModifierCount, static_cast<double>(activeModifierCount * sizeof(CsdModifier) / 1024.0));
                 IMGUI_GENERIC_ROW("Projects", "%zu (%.2f KiB)", g_Projects.size(), static_cast<double>(projectsLength / 1024.0));
                 IMGUI_GENERIC_ROW("Nodes", "%zu", g_Paths.size());
-                IMGUI_GENERIC_ROW("Modifiers", "%zu (%.2f KiB)", modifierCount, static_cast<double>(modifierCount * sizeof(CsdModifier) / 1024.0));
                 ImGui::EndTable();
             }
 
-            modifierCount = 0;
+            activeModifierCount = 0;
+
+            enum
+            {
+                Filter_All,
+                Filter_Active,
+                Filter_Inactive,
+            };
+
+            static int filter = Filter_Active;
+
+            ImGui::Separator();
+
+            static std::array<const char*, 3> filters = { "All", "Active", "Inactive" };
+            ImGui::Combo("Filter", &filter, filters.data(), filters.size());
 
             const auto expandAll = ImGui::Button("Expand All", { ImGui::GetContentRegionAvail().x * 0.5f, 0.0f });
             ImGui::SameLine();
@@ -420,15 +447,23 @@ void CsdModifierManager::DrawDebug()
 
             if (ImGui::BeginChild("##Modifiers", { 0, -footerHeight }))
             {
-                for (const auto& rElement : g_Paths)
+                for (auto& [rModifierHash, rModifier] : g_Modifiers)
                 {
-                    const auto addr = g_memory.MapVirtual(rElement.first);
-                    const auto modifier = Find(addr);
+                    uintptr_t addr{};
 
-                    if (!modifier)
+                    // Find first reference to this modifier.
+                    for (const auto& [rPath, rPathHash] : g_Paths)
+                    {
+                        if (rModifierHash == rPathHash)
+                        {
+                            addr = uintptr_t(rPath);
+                            activeModifierCount++;
+                            break;
+                        }
+                    }
+
+                    if (filter != Filter_All && filter != (addr ? Filter_Active : Filter_Inactive))
                         continue;
-
-                    modifierCount++;
 
                     ImGui::PushID(addr);
 
@@ -437,7 +472,19 @@ void CsdModifierManager::DrawDebug()
                     else if (collapseAll)
                         ImGui::SetNextItemOpen(false);
 
-                    if (ImGui::CollapsingHeader(std::format("{} (0x{:X})", modifier->Path, uintptr_t(rElement.first)).c_str()))
+                    if (!addr)
+                    {
+                        ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.25f, 0.25f, 0.25f, 1.0f));
+                        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+                        ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.62f, 0.62f, 0.62f, 1.0f));
+                    }
+
+                    const auto isHeaderOpen = ImGui::CollapsingHeader(rModifier.Path.c_str());
+
+                    if (!addr)
+                        ImGui::PopStyleColor(3);
+
+                    if (isHeaderOpen)
                     {
                         const auto tableFlags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_ScrollX | ImGuiTableFlags_ScrollY;
 
@@ -470,13 +517,13 @@ void CsdModifierManager::DrawDebug()
                                     }
                                 };
 
-                                createFlagsControls("Flags", &modifier->Flags);
-                                createFlagsControls("Ultrawide Mask", &modifier->Ultrawide.Mask);
-                                createFlagsControls("Ultrawide Edge Mask", &modifier->Ultrawide.Edge.Mask);
-                                createFlagsControls("Ultrawide Center Mask", &modifier->Ultrawide.Center.Mask);
-                                createFlagsControls("Narrow Mask", &modifier->Narrow.Mask);
-                                createFlagsControls("Narrow Edge Mask", &modifier->Narrow.Edge.Mask);
-                                createFlagsControls("Narrow Center Mask", &modifier->Narrow.Center.Mask);
+                                createFlagsControls("Flags", &rModifier.Flags);
+                                createFlagsControls("Ultrawide Mask", &rModifier.Ultrawide.Mask);
+                                createFlagsControls("Ultrawide Edge Mask", &rModifier.Ultrawide.Edge.Mask);
+                                createFlagsControls("Ultrawide Center Mask", &rModifier.Ultrawide.Center.Mask);
+                                createFlagsControls("Narrow Mask", &rModifier.Narrow.Mask);
+                                createFlagsControls("Narrow Edge Mask", &rModifier.Narrow.Edge.Mask);
+                                createFlagsControls("Narrow Center Mask", &rModifier.Narrow.Center.Mask);
 
                                 ImGui::EndTable();
                             }
@@ -510,13 +557,13 @@ void CsdModifierManager::DrawDebug()
                                     }
                                 };
 
-                                createRawFlagsControls("Flags", modifier->Flags);
-                                createRawFlagsControls("Ultrawide Mask", modifier->Ultrawide.Mask);
-                                createRawFlagsControls("Ultrawide Edge Mask", modifier->Ultrawide.Edge.Mask);
-                                createRawFlagsControls("Ultrawide Center Mask", modifier->Ultrawide.Center.Mask);
-                                createRawFlagsControls("Narrow Mask", modifier->Narrow.Mask);
-                                createRawFlagsControls("Narrow Edge Mask", modifier->Narrow.Edge.Mask);
-                                createRawFlagsControls("Narrow Center Mask", modifier->Narrow.Center.Mask);
+                                createRawFlagsControls("Flags", rModifier.Flags);
+                                createRawFlagsControls("Ultrawide Mask", rModifier.Ultrawide.Mask);
+                                createRawFlagsControls("Ultrawide Edge Mask", rModifier.Ultrawide.Edge.Mask);
+                                createRawFlagsControls("Ultrawide Center Mask", rModifier.Ultrawide.Center.Mask);
+                                createRawFlagsControls("Narrow Mask", rModifier.Narrow.Mask);
+                                createRawFlagsControls("Narrow Edge Mask", rModifier.Narrow.Edge.Mask);
+                                createRawFlagsControls("Narrow Center Mask", rModifier.Narrow.Center.Mask);
 
                                 ImGui::TreePop();
                             }
@@ -633,8 +680,8 @@ void CsdModifierManager::DrawDebug()
                                 }
                             };
 
-                            drawAlignmentModifierGroupNode("Ultrawide", &modifier->Ultrawide);
-                            drawAlignmentModifierGroupNode("Narrow", &modifier->Narrow);
+                            drawAlignmentModifierGroupNode("Ultrawide", &rModifier.Ultrawide);
+                            drawAlignmentModifierGroupNode("Narrow", &rModifier.Narrow);
 
                             ImGui::TreePop();
                         }
@@ -653,21 +700,49 @@ void CsdModifierManager::DrawDebug()
                                 ImGui::EndTable();
                             }
 
-                            ImGui::DragFloat("Corner Max", &modifier->CornerMax, 0.01f);
-                            ImGui::SliderInt("Corner Index", &modifier->CornerIndex, 0, 7);
+                            ImGui::DragFloat("Corner Max", &rModifier.CornerMax, 0.01f);
+                            ImGui::SliderInt("Corner Index", &rModifier.CornerIndex, 0, 7);
+
+                            ImGui::TreePop();
+                        }
+
+                        if (ImGui::TreeNode("References"))
+                        {
+                            if (ImGui::BeginTable("##References", 2))
+                            {
+                                ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed);
+
+                                for (const auto& [rPath, rPathHash] : g_Paths)
+                                {
+                                    if (rModifierHash != rPathHash)
+                                        continue;
+
+                                    ImGui::PushID(rPath);
+
+                                    ImGui::TableNextColumn();
+                                    ImGui::AlignTextToFramePadding();
+
+                                    const auto text = std::format("0x{:X}", uintptr_t(rPath));
+
+                                    ImGui::Text("- %s", text.c_str());
+                                    ImGui::TableNextColumn();
+
+                                    if (ImGui::Button("Copy"))
+                                        ImGui::SetClipboardText(text.c_str());
+
+                                    ImGui::PopID();
+                                }
+
+                                ImGui::EndTable();
+                            }
 
                             ImGui::TreePop();
                         }
 
                         ImGui::Separator();
 
-                        if (ImGui::Button("Copy Address"))
-                            ImGui::SetClipboardText(std::format("0x{:X}", uintptr_t(rElement.first)).c_str());
-
-                        ImGui::SameLine();
-
                         if (ImGui::Button("Copy Definition"))
-                            ImGui::SetClipboardText(modifier->ToString().c_str());
+                            ImGui::SetClipboardText(rModifier.ToString().c_str());
 
                         ImGui::SameLine();
 
@@ -679,12 +754,20 @@ void CsdModifierManager::DrawDebug()
 
                         if (ImGui::BeginPopupModal("Delete Modifier?", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
                         {
-                            ImGui::Text("Are you sure you want to delete this modifier?\nThis action is irreversible until reboot.");
+                            ImGui::Text("Are you sure you want to delete this modifier?\nThis action is irreversible until next reload.");
                             ImGui::Separator();
 
                             if (ImGui::Button("Yes"))
                             {
-                                deletions.push_back(rElement.first);
+                                // Delete modifier from all references.
+                                for (const auto& [rPath, rPathHash] : g_Paths)
+                                {
+                                    if (rModifierHash != rPathHash)
+                                        continue;
+
+                                    deletions.push_back(rPath);
+                                }
+
                                 ImGui::CloseCurrentPopup();
                             }
 
@@ -733,14 +816,15 @@ void CsdModifierManager::DrawDebug()
         }
     }
 
-    // TODO: add remove function that uses the mutex.
-    for (const auto& rElement : deletions)
-        g_Paths.erase(rElement);
-
-    deletions.clear();
-
     ImGui::End();
     ImGui::PopFont();
 
     pFont->Scale = defaultFontScale;
+
+    std::lock_guard lock(g_Mutex);
+
+    for (const auto& rDeleted : deletions)
+        g_Paths.erase(rDeleted);
+
+    deletions.clear();
 }

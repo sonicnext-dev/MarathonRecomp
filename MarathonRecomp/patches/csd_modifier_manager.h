@@ -40,6 +40,9 @@ public:
 
     static const char* GetStatusMessage(const Status in_status);
 
+    static void Add(const CsdModifier& in_rModifier);
+    static bool Remove(const std::string_view in_key);
+
     static CsdModifier* Find(uint32_t in_data);
 
     static void DrawDebug();
