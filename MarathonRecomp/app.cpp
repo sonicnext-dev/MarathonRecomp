@@ -138,8 +138,8 @@ PPC_FUNC(sub_8262A568)
     pRenderConfig->Height = Video::s_viewportHeight;
 
     auto pAudioEngine = Sonicteam::AudioEngineXenon::GetInstance();
-    pAudioEngine->m_MusicVolume = Config::MusicVolume * Config::MasterVolume;
-    pAudioEngine->m_EffectsVolume = Config::EffectsVolume * Config::MasterVolume;
+    pAudioEngine->m_MusicVolume = Config::MusicVolume;
+    pAudioEngine->m_EffectsVolume = Config::EffectsVolume;
 
     LOGFN_UTILITY("Changed resolution: {}x{}", pRenderConfig->Width.get(), pRenderConfig->Height.get());
 

@@ -33,7 +33,7 @@ void AudioPatches::Update(float deltaTime)
     if (!pAudioEngine)
         return;
 
-    const float musicVolume = Config::MusicVolume * Config::MasterVolume;
+    const float musicVolume = Config::MusicVolume;
 
     if (Config::MusicAttenuation && CanAttenuate())
     {
@@ -53,7 +53,7 @@ void AudioPatches::Update(float deltaTime)
         pAudioEngine->m_MusicVolume = musicVolume;
     }
 
-    pAudioEngine->m_EffectsVolume = Config::EffectsVolume * Config::MasterVolume;
+    pAudioEngine->m_EffectsVolume = Config::EffectsVolume;
 }
 
 // Update function for CRI cues.
