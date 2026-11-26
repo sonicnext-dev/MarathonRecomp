@@ -19,7 +19,7 @@ extern float g_horzCentre;
 extern float g_vertCentre;
 extern float g_radarMapScale;
 
-extern float g_csdCorners[8];
+extern std::array<float, 8> g_csdCorners;
 
 class AspectRatioPatches
 {

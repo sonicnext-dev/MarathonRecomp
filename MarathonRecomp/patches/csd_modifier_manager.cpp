@@ -643,7 +643,7 @@ void CsdModifierManager::DrawDebug()
                         {
                             if (ImGui::BeginTable("##Corners", 4, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
                             {
-                                for (int i = 0; i < 8; i++)
+                                for (int i = 0; i < g_csdCorners.size(); i++)
                                 {
                                     ImGui::TableNextColumn();
                                     ImGui::AlignTextToFramePadding();

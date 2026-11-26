@@ -299,7 +299,7 @@ bool CsdModifier::Read(const nlohmann::json& in_rReader)
         CornerMax = in_rReader["CornerMax"];
 
     if (in_rReader.contains("CornerIndex"))
-        CornerIndex = in_rReader["CornerIndex"];
+        CornerIndex = std::clamp(int(in_rReader["CornerIndex"]), 0, 7);
 
     return true;
 }

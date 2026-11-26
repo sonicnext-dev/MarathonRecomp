@@ -38,7 +38,7 @@ static CsdModifier* g_castModifier{};
 static float g_fontPictureWidth{};
 static float g_fontPictureHeight{};
 
-static float g_csdCorners[8]{};
+static std::array<float, 8> g_csdCorners{};
 static bool g_csdCornerExtract{};
 
 static float g_radarMapX{};
