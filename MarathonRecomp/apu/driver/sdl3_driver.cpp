@@ -5,10 +5,18 @@
 #include <ui/game_window.h>
 #include <user/config.h>
 
+#ifdef __APPLE__
+#include <apu/driver/av_audio_output.h>
+#endif
+
 static PPCFunc* g_clientCallback{};
 static uint32_t g_clientCallbackParam{}; // pointer in guest memory
 static SDL_AudioStream* g_audioStream{};
 static bool g_downMixToStereo;
+
+#ifdef __APPLE__
+static std::unique_ptr<AVAudioOutput> g_avAudioOutput;
+#endif
 
 static void CreateAudioDevice()
 {
@@ -17,6 +25,24 @@ static void CreateAudioDevice()
         SDL_DestroyAudioStream(g_audioStream);
         g_audioStream = nullptr;
     }
+
+#ifdef __APPLE__
+    g_avAudioOutput.reset();
+
+    if (Config::ChannelConfiguration == EChannelConfiguration::Surround)
+    {
+        g_avAudioOutput = std::make_unique<AVAudioOutput>();
+
+        if (g_avAudioOutput->IsValid())
+        {
+            g_downMixToStereo = false;
+            return;
+        }
+
+        LOGN_WARNING("Failed to create the AVFoundation audio output, falling back to SDL.");
+        g_avAudioOutput.reset();
+    }
+#endif
 
     bool surround = Config::ChannelConfiguration == EChannelConfiguration::Surround;
 
@@ -68,7 +94,12 @@ static void AudioThread()
 
     while (!g_audioThreadShouldExit)
     {
+#ifdef __APPLE__
+        int queuedAudioSize = g_avAudioOutput ? g_avAudioOutput->GetQueuedBytes() : SDL_GetAudioStreamQueued(g_audioStream);
+#else
         int queuedAudioSize = SDL_GetAudioStreamQueued(g_audioStream);
+#endif
+
         constexpr size_t MAX_LATENCY = 10;
         const size_t callbackAudioSize = channels * XAUDIO_NUM_SAMPLES * sizeof(float);
 
@@ -94,7 +125,9 @@ static void AudioThread()
 
 static void CreateAudioThread()
 {
-    SDL_ResumeAudioStreamDevice(g_audioStream);
+    if (g_audioStream)
+        SDL_ResumeAudioStreamDevice(g_audioStream);
+
     g_audioThreadShouldExit = false;
     g_audioThread = std::make_unique<HostThread>("Audio Thread", AudioThread);
 }
@@ -177,6 +210,14 @@ void XAudioSubmitFrame(void* samples)
                 audioFrames[i * XAUDIO_NUM_CHANNELS + j] = isnan(samp) ? 0.0f : samp;
             }
         }
+
+#ifdef __APPLE__
+        if (g_avAudioOutput)
+        {
+            g_avAudioOutput->Put(audioFrames.data(), XAUDIO_NUM_SAMPLES);
+            return;
+        }
+#endif
 
         SDL_PutAudioStreamData(g_audioStream, &audioFrames, sizeof(audioFrames));
     }
