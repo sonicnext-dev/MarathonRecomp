@@ -28,11 +28,15 @@ static constexpr uint32_t XMV_S_FALSE = 1;
 static constexpr uint32_t XMV_E_FAIL = 0x80004005;
 
 // CAL's audio renderer always creates a 16-bit stereo 44.1 kHz PCM voice.
+// We allow 5.1 movies to play without getting downmixed to stereo.
 static constexpr uint32_t AUDIO_SAMPLE_RATE = 44100;
-static constexpr uint32_t AUDIO_CHANNELS = 2;
 static constexpr uint32_t AUDIO_PACKET_FRAMES = 1024;
 static constexpr uint32_t AUDIO_PACKET_COUNT = 16;
-static constexpr size_t MAX_QUEUED_AUDIO_SAMPLES = AUDIO_SAMPLE_RATE * AUDIO_CHANNELS;
+static constexpr uint32_t MAX_QUEUED_AUDIO_SECONDS = 1;
+
+static constexpr size_t XAUDIO_VOICE_CHANNEL_COUNT_OFFSET = 0x00;
+
+static thread_local uint32_t t_movieVoiceChannels;
 
 struct XmvPlayer
 {
@@ -176,6 +180,7 @@ private:
     XAudioPacket* m_pAudioPackets{};
     be<int16_t>* m_pAudioBuffers{};
     uint32_t m_packetIndex{};
+    uint32_t m_audioChannels{};
     std::deque<uint32_t> m_packetFrames;
     std::deque<int16_t> m_audioSamples;
     uint64_t m_playedFrames{};
@@ -193,6 +198,7 @@ private:
 
     void OpenAudio(int32_t audioStreamId, bool isMusic);
     void CloseAudio();
+    bool CreateAudioRenderer(bool isMusic);
     void PumpAudio();
     double GetTime();
     void DecodeThread();
@@ -278,8 +284,25 @@ void MoviePlayer::OpenAudio(const int32_t audioStreamId, const bool isMusic)
         return;
     }
 
+    m_audioChannels = m_pAudioCodec->ch_layout.nb_channels >= 6 ? 6 : 2;
+
+    auto created = CreateAudioRenderer(isMusic);
+
+    // Fall back to CAL's stereo voice if XAudio rejects a 5.1 one.
+    if (!created && m_audioChannels != 2)
+    {
+        m_audioChannels = 2;
+        created = CreateAudioRenderer(isMusic);
+    }
+
+    if (!created)
+    {
+        m_audioStreamIndex = -1;
+        return;
+    }
+
     AVChannelLayout outputLayout;
-    av_channel_layout_default(&outputLayout, AUDIO_CHANNELS);
+    av_channel_layout_default(&outputLayout, m_audioChannels);
 
     swr_alloc_set_opts2(&m_pResampler, &outputLayout, AV_SAMPLE_FMT_S16, AUDIO_SAMPLE_RATE,
         &m_pAudioCodec->ch_layout, m_pAudioCodec->sample_fmt, m_pAudioCodec->sample_rate, 0, nullptr);
@@ -289,11 +312,22 @@ void MoviePlayer::OpenAudio(const int32_t audioStreamId, const bool isMusic)
 
     if (!m_pResampler || swr_init(m_pResampler) < 0)
     {
+        CloseAudio();
         m_audioStreamIndex = -1;
         return;
     }
 
-    // Create the renderer as XmvpCreateXmvPlayer does.
+    m_pAudioPackets = static_cast<XAudioPacket *>(
+        g_userHeap.Alloc(sizeof(XAudioPacket) * AUDIO_PACKET_COUNT));
+    memset(m_pAudioPackets, 0, sizeof(XAudioPacket) * AUDIO_PACKET_COUNT);
+
+    m_pAudioBuffers = static_cast<be<int16_t> *>(
+        g_userHeap.Alloc(AUDIO_PACKET_FRAMES * m_audioChannels *
+                         sizeof(int16_t) * AUDIO_PACKET_COUNT));
+}
+
+bool MoviePlayer::CreateAudioRenderer(bool isMusic)
+{
     // CCalAudioRenderer::operator new
     m_pAudioRenderer = GuestToHostFunction<CCalAudioRenderer*>(sub_82734F50, 0x5D0);
     // CCalAudioRenderer::CCalAudioRenderer
@@ -306,18 +340,17 @@ void MoviePlayer::OpenAudio(const int32_t audioStreamId, const bool isMusic)
     parameters->pEffectChain = nullptr;
 
     // CCalAudioRenderer::Create
-    if (GuestToHostFunction<int32_t>(sub_82735210, m_pAudioRenderer, parameters.get()) < 0)
+    t_movieVoiceChannels = m_audioChannels;
+    auto result = GuestToHostFunction<int32_t>(sub_82735210, m_pAudioRenderer, parameters.get());
+    t_movieVoiceChannels = 0;
+
+    if (result < 0)
     {
         CloseAudio();
-        m_audioStreamIndex = -1;
-        return;
+        return false;
     }
 
-    m_pAudioPackets = static_cast<XAudioPacket*>(g_userHeap.Alloc(sizeof(XAudioPacket) * AUDIO_PACKET_COUNT));
-    memset(m_pAudioPackets, 0, sizeof(XAudioPacket) * AUDIO_PACKET_COUNT);
-
-    m_pAudioBuffers = static_cast<be<int16_t>*>(g_userHeap.Alloc(AUDIO_PACKET_FRAMES * AUDIO_CHANNELS *
-                         sizeof(int16_t) * AUDIO_PACKET_COUNT));
+    return true;
 }
 
 void MoviePlayer::CloseAudio()
@@ -354,14 +387,14 @@ void MoviePlayer::PumpAudio()
 
     while (m_packetFrames.size() < AUDIO_PACKET_COUNT)
     {
-        auto frameCount = static_cast<uint32_t>(std::min<size_t>(m_audioSamples.size() / AUDIO_CHANNELS, AUDIO_PACKET_FRAMES));
+        auto frameCount = static_cast<uint32_t>(std::min<size_t>(m_audioSamples.size() / m_audioChannels, AUDIO_PACKET_FRAMES));
 
         // Only submit a partial packet for the tail of the stream.
         if (frameCount == 0 || (frameCount < AUDIO_PACKET_FRAMES && !m_decodeFinished))
             break;
 
-        const auto sampleCount = frameCount * AUDIO_CHANNELS;
-        const auto pBuffer = m_pAudioBuffers + m_packetIndex * AUDIO_PACKET_FRAMES * AUDIO_CHANNELS;
+        const auto sampleCount = frameCount * m_audioChannels;
+        const auto pBuffer = m_pAudioBuffers + m_packetIndex * AUDIO_PACKET_FRAMES * m_audioChannels;
 
         for (uint32_t i = 0; i < sampleCount; i++)
             pBuffer[i] = m_audioSamples[i];
@@ -588,7 +621,7 @@ void MoviePlayer::PushAudioFrame(const AVFrame* pFrame)
         return;
 
     const auto sampleCount = swr_get_out_samples(m_pResampler, pFrame->nb_samples);
-    m_resampleBuffer.resize(sampleCount * AUDIO_CHANNELS);
+    m_resampleBuffer.resize(sampleCount * m_audioChannels);
 
     const auto pOutput = reinterpret_cast<uint8_t*>(m_resampleBuffer.data());
     const auto convertedCount = swr_convert(m_pResampler, &pOutput, sampleCount, pFrame->extended_data, pFrame->nb_samples);
@@ -597,11 +630,11 @@ void MoviePlayer::PushAudioFrame(const AVFrame* pFrame)
 
     if (convertedCount > 0)
     {
-        m_audioSamples.insert(m_audioSamples.end(), m_resampleBuffer.begin(), m_resampleBuffer.begin() + convertedCount * AUDIO_CHANNELS);
+        m_audioSamples.insert(m_audioSamples.end(), m_resampleBuffer.begin(), m_resampleBuffer.begin() + convertedCount * m_audioChannels);
         m_decodedAudioFrames += convertedCount;
     }
 
-    m_condition.wait(lock, [this] { return m_stopping || m_audioSamples.size() < MAX_QUEUED_AUDIO_SAMPLES; });
+    m_condition.wait(lock, [this] { return m_stopping || m_audioSamples.size() < AUDIO_SAMPLE_RATE * m_audioChannels * MAX_QUEUED_AUDIO_SECONDS; });
 }
 
 static std::mutex g_moviePlayersMutex;
@@ -725,4 +758,17 @@ PPC_FUNC(sub_82631338)
     g_userHeap.Free(g_memory.Translate(handle));
 
     ctx.r3.u64 = 0;
+}
+
+// XAudioCreateSourceVoice
+PPC_FUNC_IMPL(__imp__sub_8255A4D8);
+PPC_FUNC(sub_8255A4D8)
+{
+    if (t_movieVoiceChannels != 0)
+    {
+        auto pInit = static_cast<XAUDIOSOURCEVOICEINIT *>(g_memory.Translate(ctx.r3.u32));
+        pInit->Format.ChannelCount = t_movieVoiceChannels;
+    }
+
+    __imp__sub_8255A4D8(ctx, base);
 }
