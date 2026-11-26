@@ -42,22 +42,33 @@ HostThread::~HostThread()
 
 void HostThread::Join()
 {
-    if (SDL_GetThreadState(thread) != SDL_THREAD_DETACHED)
+    if (thread && SDL_GetThreadState(thread) != SDL_THREAD_DETACHED)
+    {
         SDL_WaitThread(thread, nullptr);
+        // Thread is no longer valid, do not reuse.
+        thread = nullptr;
+    }
 }
 
 void HostThread::Detach()
 {
-    SDL_DetachThread(thread);
+    if (thread)
+        SDL_DetachThread(thread);
 }
 
 uint32_t HostThread::GetID() const
 {
+    if (!thread)
+        return 0;
+
     return SDL_GetThreadID(thread);
 }
 
 bool HostThread::IsAlive() const
 {
+    if (!thread)
+        return false;
+
     return SDL_GetThreadState(thread) == SDL_THREAD_ALIVE;
 }
 

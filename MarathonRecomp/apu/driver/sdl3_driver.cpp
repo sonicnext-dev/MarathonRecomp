@@ -1,69 +1,13 @@
+#include "sdl3_driver.h"
+
 #include <apu/audio.h>
-#include <cpu/guest_thread.h>
-#include <kernel/heap.h>
 #include <os/logger.h>
 #include <ui/game_window.h>
-#include <user/config.h>
 
-#ifdef __APPLE__
-#include <apu/driver/av_audio_output.h>
-#endif
+static std::once_flag g_initializedOnce;
+static bool g_initialized = false;
 
-static PPCFunc* g_clientCallback{};
-static uint32_t g_clientCallbackParam{}; // pointer in guest memory
-static SDL_AudioStream* g_audioStream{};
-static bool g_downMixToStereo;
-
-#ifdef __APPLE__
-static std::unique_ptr<AVAudioOutput> g_avAudioOutput;
-#endif
-
-static void CreateAudioDevice()
-{
-    if (g_audioStream != nullptr)
-    {
-        SDL_DestroyAudioStream(g_audioStream);
-        g_audioStream = nullptr;
-    }
-
-#ifdef __APPLE__
-    g_avAudioOutput.reset();
-
-    if (Config::ChannelConfiguration == EChannelConfiguration::Surround)
-    {
-        g_avAudioOutput = std::make_unique<AVAudioOutput>();
-
-        if (g_avAudioOutput->IsValid())
-        {
-            g_downMixToStereo = false;
-            return;
-        }
-
-        LOGN_WARNING("Failed to create the AVFoundation audio output, falling back to SDL.");
-        g_avAudioOutput.reset();
-    }
-#endif
-
-    bool surround = Config::ChannelConfiguration == EChannelConfiguration::Surround;
-
-    SDL_AudioSpec deviceSpec{};
-    if (surround && SDL_GetAudioDeviceFormat(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &deviceSpec, nullptr))
-        surround = deviceSpec.channels >= XAUDIO_NUM_CHANNELS;
-
-    SDL_AudioSpec desired{};
-    desired.freq = XAUDIO_SAMPLES_HZ;
-    desired.format = SDL_AUDIO_F32;
-    desired.channels = surround ? XAUDIO_NUM_CHANNELS : 2;
-    g_audioStream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &desired, nullptr, nullptr);
-
-    if (!g_audioStream)
-        LOGFN_ERROR("Failed to open audio device: {}", SDL_GetError());
-
-    g_downMixToStereo = (desired.channels == 2);
-}
-
-void XAudioInitializeSystem()
-{
+static void InitializeSDLAudio() {
 #ifdef _WIN32
     // Force wasapi on Windows.
     SDL_SetHint(SDL_HINT_AUDIO_DRIVER, "wasapi");
@@ -73,164 +17,55 @@ void XAudioInitializeSystem()
     SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING, "Marathon Recompiled");
 
     if (!SDL_InitSubSystem(SDL_INIT_AUDIO))
-    {
         LOGFN_ERROR("Failed to init audio subsystem: {}", SDL_GetError());
+
+    g_initialized = true;
+}
+
+SDL3AudioDriver::SDL3AudioDriver(bool surround)
+{
+    std::call_once(g_initializedOnce, InitializeSDLAudio);
+    if (!g_initialized)
+        return;
+
+    SDL_AudioSpec deviceSpec{};
+    if (surround && SDL_GetAudioDeviceFormat(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &deviceSpec, nullptr))
+        surround = deviceSpec.channels >= XAUDIO_NUM_CHANNELS;
+
+    m_channels = surround ? XAUDIO_NUM_CHANNELS : 2;
+
+    SDL_AudioSpec desired;
+    desired.freq = XAUDIO_SAMPLES_HZ;
+    desired.format = SDL_AUDIO_F32;
+    desired.channels = m_channels;
+    m_pAudioStream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &desired, nullptr, nullptr);
+
+    if (!m_pAudioStream)
+    {
+        LOGFN_ERROR("Failed to open audio device: {}", SDL_GetError());
         return;
     }
 
-    CreateAudioDevice();
+    if (!SDL_ResumeAudioStreamDevice(m_pAudioStream))
+        LOGFN_ERROR("Failed to resume audio device: {}", SDL_GetError());
 }
 
-static std::unique_ptr<HostThread> g_audioThread;
-static volatile bool g_audioThreadShouldExit;
-
-static void AudioThread()
+SDL3AudioDriver::~SDL3AudioDriver()
 {
-    using namespace std::chrono_literals;
-
-    GuestThreadContext ctx(0);
-
-    size_t channels = g_downMixToStereo ? 2 : XAUDIO_NUM_CHANNELS;
-
-    while (!g_audioThreadShouldExit)
-    {
-#ifdef __APPLE__
-        int queuedAudioSize = g_avAudioOutput ? g_avAudioOutput->GetQueuedBytes() : SDL_GetAudioStreamQueued(g_audioStream);
-#else
-        int queuedAudioSize = SDL_GetAudioStreamQueued(g_audioStream);
-#endif
-
-        constexpr size_t MAX_LATENCY = 10;
-        const size_t callbackAudioSize = channels * XAUDIO_NUM_SAMPLES * sizeof(float);
-
-        if (queuedAudioSize >= 0)
-        {
-			for (size_t i = queuedAudioSize / callbackAudioSize; i <= MAX_LATENCY; i++)
-			{
-	            ctx.ppcContext.r3.u32 = g_clientCallbackParam;
-    	        g_clientCallback(ctx.ppcContext, g_memory.base);
-			}
-        }
-
-        auto now = std::chrono::steady_clock::now();
-        constexpr auto INTERVAL = 1000000000ns * XAUDIO_NUM_SAMPLES / XAUDIO_SAMPLES_HZ;
-        auto next = now + (INTERVAL - now.time_since_epoch() % INTERVAL);
-
-        std::this_thread::sleep_for(std::chrono::floor<std::chrono::milliseconds>(next - now));
-
-        while (std::chrono::steady_clock::now() < next)
-            std::this_thread::yield();
-    }
+    if (m_pAudioStream)
+        SDL_DestroyAudioStream(m_pAudioStream);
 }
 
-static void CreateAudioThread()
-{
-    if (g_audioStream)
-        SDL_ResumeAudioStreamDevice(g_audioStream);
+int SDL3AudioDriver::GetQueuedBytes() {
+    if (!m_pAudioStream)
+        return -1;
 
-    g_audioThreadShouldExit = false;
-    g_audioThread = std::make_unique<HostThread>("Audio Thread", AudioThread);
+    return SDL_GetAudioStreamQueued(m_pAudioStream);
 }
 
-void XAudioRegisterClient(PPCFunc* callback, uint32_t param)
-{
-    auto* pClientParam = static_cast<uint32_t*>(g_userHeap.Alloc(sizeof(param)));
-    ByteSwapInplace(param);
-    *pClientParam = param;
-    g_clientCallbackParam = g_memory.MapVirtual(pClientParam);
-    g_clientCallback = callback;
+void SDL3AudioDriver::Put(const float *pSamples, uint32_t frameCount) {
+    if (!m_pAudioStream)
+        return;
 
-    CreateAudioThread();
-}
-
-void XAudioUnregisterClient()
-{
-    if (g_audioThread)
-    {
-        g_audioThreadShouldExit = true;
-        g_audioThread->Join();
-        g_audioThread.reset();
-    }
-
-    if (g_clientCallbackParam)
-    {
-        g_userHeap.Free(g_memory.Translate(g_clientCallbackParam));
-        g_clientCallbackParam = 0;
-    }
-
-    g_clientCallback = nullptr;
-}
-
-void XAudioSubmitFrame(void* samples)
-{
-    auto floatSamples = reinterpret_cast<be<float>*>(samples);
-    auto volume = Config::MasterVolume.Value;
-
-    if (Config::MuteOnFocusLost && !GameWindow::s_isFocused)
-        volume = 0.0f;
-
-    if (g_downMixToStereo)
-    {
-        // 0: left 1.0f, right 0.0f
-        // 1: left 0.0f, right 1.0f
-        // 2: left 0.75f, right 0.75f
-        // 3: left 0.0f, right 0.0f
-        // 4: left 1.0f, right 0.0f
-        // 5: left 0.0f, right 1.0f
-
-        std::array<float, 2 * XAUDIO_NUM_SAMPLES> audioFrames;
-
-        for (size_t i = 0; i < XAUDIO_NUM_SAMPLES; i++)
-        {
-            float ch0 = floatSamples[0 * XAUDIO_NUM_SAMPLES + i];
-            float ch1 = floatSamples[1 * XAUDIO_NUM_SAMPLES + i];
-            float ch2 = floatSamples[2 * XAUDIO_NUM_SAMPLES + i];
-            float ch3 = floatSamples[3 * XAUDIO_NUM_SAMPLES + i];
-            float ch4 = floatSamples[4 * XAUDIO_NUM_SAMPLES + i];
-            float ch5 = floatSamples[5 * XAUDIO_NUM_SAMPLES + i];
-
-            float samp0 = (ch0 + ch2 * 0.75f + ch4) * volume;
-            float samp1 = (ch1 + ch2 * 0.75f + ch5) * volume;
-
-            audioFrames[i * 2 + 0] = isnan(samp0) ? 0.0f : samp0;
-            audioFrames[i * 2 + 1] = isnan(samp1) ? 0.0f : samp1;
-        }
-
-        SDL_PutAudioStreamData(g_audioStream, &audioFrames, sizeof(audioFrames));
-    }
-    else
-    {
-        std::array<float, XAUDIO_NUM_CHANNELS * XAUDIO_NUM_SAMPLES> audioFrames;
-
-        for (size_t i = 0; i < XAUDIO_NUM_SAMPLES; i++)
-        {
-            for (size_t j = 0; j < XAUDIO_NUM_CHANNELS; j++)
-            {
-                float samp = floatSamples[j * XAUDIO_NUM_SAMPLES + i] * volume;
-                audioFrames[i * XAUDIO_NUM_CHANNELS + j] = isnan(samp) ? 0.0f : samp;
-            }
-        }
-
-#ifdef __APPLE__
-        if (g_avAudioOutput)
-        {
-            g_avAudioOutput->Put(audioFrames.data(), XAUDIO_NUM_SAMPLES);
-            return;
-        }
-#endif
-
-        SDL_PutAudioStreamData(g_audioStream, &audioFrames, sizeof(audioFrames));
-    }
-}
-
-void XAudioConfigValueChangedCallback(IConfigDef* configDef)
-{
-    if (configDef == &Config::ChannelConfiguration)
-    {
-        g_audioThreadShouldExit = true;
-        g_audioThread->Join();
-
-        CreateAudioDevice();
-        CreateAudioThread();
-    }
+    SDL_PutAudioStreamData(m_pAudioStream, pSamples, static_cast<int>(frameCount * m_channels * sizeof(float)));
 }

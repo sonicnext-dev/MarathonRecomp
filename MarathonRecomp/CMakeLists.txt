@@ -353,7 +353,7 @@ elseif (APPLE)
             MACOSX_BUNDLE_ICON_FILE "game_icon.icns"
     )
 
-    target_sources(MarathonRecomp PRIVATE apu/driver/av_audio_output.mm)
+    target_sources(MarathonRecomp PRIVATE apu/driver/avfoundation_driver.mm)
     target_link_libraries(MarathonRecomp PRIVATE "-framework AVFoundation" "-framework CoreMedia")
 
     if (${CMAKE_BUILD_TYPE} MATCHES "Release")
