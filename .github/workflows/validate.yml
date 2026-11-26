@@ -80,6 +80,13 @@ jobs:
         with:
           name: MarathonRecomp-Linux-${{ matrix.arch.name }}-${{ env.CMAKE_PRESET }}
           path: ./out/build/${{ env.CMAKE_PRESET }}/MarathonRecomp/MarathonRecomp
+
+      - name: Upload Symbols
+        if: ${{ matrix.preset == 'linux-release' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: MarathonRecomp-Linux-${{ matrix.arch.name }}-${{ env.CMAKE_PRESET }}-Symbols
+          path: ./out/build/${{ env.CMAKE_PRESET }}/MarathonRecomp/MarathonRecomp.debug
   build-windows:
     name: Build Windows (${{ matrix.preset.name }})
     runs-on: ${{ matrix.preset.runner }}
@@ -176,6 +183,13 @@ jobs:
         with:
           name: MarathonRecomp-Windows-${{ env.CMAKE_PRESET }}
           path: .\release
+
+      - name: Upload Symbols
+        if: ${{ (matrix.preset.name == 'x64-Clang-Release') || (matrix.preset.name == 'arm64-Clang-Release') }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: MarathonRecomp-Windows-${{ env.CMAKE_PRESET }}-Symbols
+          path: .\out\build\${{ env.CMAKE_PRESET }}\MarathonRecomp\MarathonRecomp.pdb
   build-flatpak:
     name: Build Flatpak (${{ matrix.arch.name }})
     runs-on: ${{ matrix.arch.runner }}
@@ -230,12 +244,19 @@ jobs:
           echo "commit_message=$(git log -1 --pretty=%s)" >> $GITHUB_ENV
           flatpak-builder --user --force-clean --install-deps-from=flathub --repo=repo --ccache builddir ./flatpak/${{ env.FLATPAK_ID }}.json
           flatpak build-bundle repo ./${{ env.FLATPAK_ID }}.flatpak ${{ env.FLATPAK_ID }} --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo
+          flatpak build-bundle --runtime repo ./${{ env.FLATPAK_ID }}.Debug.flatpak ${{ env.FLATPAK_ID }}.Debug
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v7
         with:
           name: MarathonRecomp-Flatpak-${{ matrix.arch.name }}
           path: ./${{ env.FLATPAK_ID }}.flatpak
+
+      - name: Upload Symbols
+        uses: actions/upload-artifact@v7
+        with:
+          name: MarathonRecomp-Flatpak-${{ matrix.arch.name }}-Symbols
+          path: ./${{ env.FLATPAK_ID }}.Debug.flatpak
   build-macos:
     name: Build macOS
     runs-on: macos-15
@@ -295,8 +316,20 @@ jobs:
           codesign --deep -fs - "./out/build/${{ env.CMAKE_PRESET }}/MarathonRecomp/Marathon Recompiled.app"
           tar -czf MarathonRecomp-macOS-${{ matrix.arch }}-${{ env.CMAKE_PRESET }}.tar.gz -C ./out/build/${{ env.CMAKE_PRESET }}/MarathonRecomp "Marathon Recompiled.app"
 
+      - name: Pack dSYM
+        if: ${{ matrix.preset == 'macos-release' }}
+        run: |
+          tar -czf MarathonRecomp-macOS-${{ matrix.arch }}-${{ env.CMAKE_PRESET }}.dSYM.tar.gz -C ./out/build/${{ env.CMAKE_PRESET }}/MarathonRecomp "Marathon Recompiled.app.dSYM"
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v7
         with:
           name: MarathonRecomp-macOS-${{ matrix.arch }}-${{ env.CMAKE_PRESET }}
           path: MarathonRecomp-macOS-${{ matrix.arch }}-${{ env.CMAKE_PRESET }}.tar.gz
+
+      - name: Upload Symbols
+        if: ${{ matrix.preset == 'macos-release' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: MarathonRecomp-macOS-${{ matrix.arch }}-${{ env.CMAKE_PRESET }}-Symbols
+          path: MarathonRecomp-macOS-${{ matrix.arch }}-${{ env.CMAKE_PRESET }}.dSYM.tar.gz

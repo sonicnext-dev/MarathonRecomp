@@ -323,9 +323,12 @@ if (WIN32)
     configure_file("res/win32/res.rc.template" "${CMAKE_BINARY_DIR}/res.rc" @ONLY)
     add_executable(MarathonRecomp ${MARATHON_RECOMP_CXX_SOURCES} "${CMAKE_BINARY_DIR}/res.rc")
 
-    # Hide console for release configurations.
     if (${CMAKE_BUILD_TYPE} MATCHES "Release")
+        # Hide console for release configurations.
         target_link_options(MarathonRecomp PRIVATE "/SUBSYSTEM:WINDOWS" "/ENTRY:mainCRTStartup")
+
+        # Emit a PDB without losing the size optimisations that /DEBUG disables.
+        target_link_options(MarathonRecomp PRIVATE "/DEBUG" "/OPT:REF" "/OPT:ICF")
     endif()
 elseif (APPLE)
     # Create version number for app bundle.
@@ -349,8 +352,29 @@ elseif (APPLE)
             MACOSX_BUNDLE_SHORT_VERSION_STRING ${MACOS_BUNDLE_VERSION}
             MACOSX_BUNDLE_ICON_FILE "game_icon.icns"
     )
+
+    if (${CMAKE_BUILD_TYPE} MATCHES "Release")
+        # Keep LTO objects after linking so dsymutil can read their debug info.
+        target_link_options(MarathonRecomp PRIVATE "-Wl,-object_path_lto,${CMAKE_CURRENT_BINARY_DIR}/lto")
+
+        # Collect debug info into a dSYM next to the bundle.
+        add_custom_command(TARGET MarathonRecomp POST_BUILD
+                COMMAND dsymutil $<TARGET_FILE:MarathonRecomp> -o $<TARGET_BUNDLE_DIR:MarathonRecomp>.dSYM
+                VERBATIM
+        )
+    endif()
 else()
     add_executable(MarathonRecomp ${MARATHON_RECOMP_CXX_SOURCES})
+
+    # Flatpak strips and extracts debug info itself, so only split it for other builds.
+    if (${CMAKE_BUILD_TYPE} MATCHES "Release" AND NOT MARATHON_RECOMP_FLATPAK)
+        # Move debug info into a separate file and link it back via .gnu_debuglink.
+        add_custom_command(TARGET MarathonRecomp POST_BUILD
+                COMMAND ${CMAKE_OBJCOPY} --only-keep-debug $<TARGET_FILE:MarathonRecomp> $<TARGET_FILE:MarathonRecomp>.debug
+                COMMAND ${CMAKE_OBJCOPY} --strip-debug --add-gnu-debuglink=$<TARGET_FILE:MarathonRecomp>.debug $<TARGET_FILE:MarathonRecomp>
+                VERBATIM
+        )
+    endif()
 endif()
 
 if (MARATHON_RECOMP_FLATPAK)
