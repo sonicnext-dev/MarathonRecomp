@@ -6,7 +6,7 @@
         "sprite/audio/audio/pod/pod/Cast_1086": { "Flags": ["CSD_POD_CLONE"] },
         "sprite/audio/audio/pod/pod/Cast_1088": { "Flags": ["CSD_EXTEND_RIGHT"] },
         
-        "sprite/background/background/mainmenu_back":               { "Flags": ["CSD_STRETCH_HORIZONTAL", "CSD_PROHIBIT_BLACK_BAR"], "Narrow": { "Mask": ["CSD_PROHIBIT_BLACK_BAR"] } },
+        "sprite/background/background/mainmenu_back":               { "Flags": ["CSD_STRETCH_HORIZONTAL"] },
         "sprite/background/background/main_menu":                   { "Flags": ["CSD_SCENE_DISABLE_MOTION"], "Narrow": { "Mask": ["CSD_SCENE_DISABLE_MOTION"] } },
         "sprite/background/background/main_menu/main_menu1/yaji1":  { "Flags": ["CSD_SKIP", "CSD_CHEVRON"] },
         "sprite/background/background/main_menu/main_menu1/yaji2":  { "Flags": ["CSD_SKIP", "CSD_CHEVRON"] },
@@ -58,72 +58,154 @@
         
         "sprite/battle_result/battle_result/congratulations":       { "Flags": ["CSD_ALIGN_TOP"] },
         "sprite/battle_result/battle_result/plate/plate_ue/plate1": {
-            "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_EXTEND_LEFT"],
-            "Ultrawide": { "Edge": { "Mask": ["CSD_EXTEND_LEFT"] }, "Center": { "Mask": ["CSD_ALIGN_LEFT"] } },
-            "Narrow": { "Mask": ["CSD_EXTEND_LEFT"] }
+            "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_EXTEND_LEFT", "CSD_UV_MODIFIER", "CSD_REPEAT_UP", "CSD_REPEAT_FLIP_VERTICAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER"],
+            "Ultrawide": {
+                "Mask": ["CSD_UV_MODIFIER", "CSD_REPEAT_UP"],
+                "Edge": { "Mask": ["CSD_EXTEND_LEFT"] }, "Center": { "Mask": ["CSD_ALIGN_LEFT"] }
+            },
+            "Narrow": {
+                "Mask": ["CSD_EXTEND_LEFT"],
+                "Edge": { "Mask": ["CSD_UV_MODIFIER", "CSD_REPEAT_UP"] },
+                "Center": {
+                    "Base":   { "TL": { "V": 0.02 }, "TR": { "V": 0.02 } },
+                    "Repeat": { "TL": { "V": -0.12 }, "TR": { "V": -0.12 } }
+                }
+            }
         },
         "sprite/battle_result/battle_result/plate/plate_ue/plate2": {
-            "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER"],
+            "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_UV_MODIFIER", "CSD_REPEAT_UP", "CSD_REPEAT_FLIP_VERTICAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER"],
             "Ultrawide": {
+                "Mask": ["CSD_UV_MODIFIER", "CSD_REPEAT_UP"],
                 "Edge": {
-                    "Repeat": { "TR": { "U": 0.85 }, "BR": { "U": 0.85 }, "ExtendBias": { "X": 0.5 } }
+                    "Base": {
+                        "Slices": [
+                            { "Flags": ["CSD_ALIGN_LEFT"] },
+                            { "Flags": ["CSD_EXTEND_LEFT"] },
+                            null
+                        ]
+                    }
                 },
-                "Center": {
-                    "Mask": ["CSD_ALIGN_LEFT", "CSD_REPEAT_RIGHT"]
-                }
+                "Center": { "Mask": ["CSD_ALIGN_LEFT"] }
             },
-            "Narrow": { "Mask": ["CSD_REPEAT_RIGHT"] }
+            "Narrow": {
+                "Edge": { "Mask": ["CSD_UV_MODIFIER", "CSD_REPEAT_UP"] },
+                "Center": {
+                    "Base":   { "TL": { "V": 0.02 }, "TR": { "V": 0.02 } },
+                    "Repeat": { "TL": { "V": -0.12 }, "TR": { "V": -0.12 } }
+                }
+            }
         },
         "sprite/battle_result/battle_result/plate/plate_ue/plate3": {
-            "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER"],
+            "Flags": ["CSD_ALIGN_TOP", "CSD_UV_MODIFIER", "CSD_REPEAT_UP", "CSD_REPEAT_FLIP_VERTICAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER"],
             "Ultrawide": {
+                "Mask": ["CSD_UV_MODIFIER", "CSD_REPEAT_UP"],
                 "Edge": {
-                    "Repeat": { "TL": { "U": 0.85 }, "BL": { "U": 0.85 }, "ExtendBias": { "X": 0.5 } }
-                },
-                "Center": {
-                    "Mask": ["CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT"]
+                    "Base": {
+                        "Slices": [
+                            { "Flags": ["CSD_ALIGN_LEFT"] },
+                            { "Flags": ["CSD_EXTEND_LEFT"] },
+                            null
+                        ]
+                    }
                 }
             },
-            "Narrow": { "Mask": ["CSD_REPEAT_LEFT"] }
+            "Narrow": {
+                "Edge": { "Mask": ["CSD_UV_MODIFIER", "CSD_REPEAT_UP"] },
+                "Center": {
+                    "Base":   { "TL": { "V": 0.02 }, "TR": { "V": 0.02 } },
+                    "Repeat": { "TL": { "V": -0.12 }, "TR": { "V": -0.12 } }
+                }
+            }
         },
         "sprite/battle_result/battle_result/plate/plate_ue/plate4": {
-            "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_RIGHT", "CSD_EXTEND_RIGHT"],
-            "Ultrawide": { "Edge": { "Mask": ["CSD_EXTEND_RIGHT"] }, "Center": { "Mask": ["CSD_ALIGN_RIGHT"] } },
-            "Narrow": { "Mask": ["CSD_EXTEND_RIGHT"] }
+            "Flags":     ["CSD_ALIGN_TOP", "CSD_ALIGN_RIGHT", "CSD_EXTEND_RIGHT", "CSD_UV_MODIFIER", "CSD_REPEAT_UP", "CSD_REPEAT_FLIP_VERTICAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER"],
+            "Ultrawide": {
+                "Mask": ["CSD_UV_MODIFIER", "CSD_REPEAT_UP"],
+                "Edge": { "Mask": ["CSD_EXTEND_RIGHT"] }, "Center": { "Mask": ["CSD_ALIGN_RIGHT"] }
+            },
+            "Narrow": {
+                "Mask": ["CSD_EXTEND_RIGHT"],
+                "Edge": { "Mask": ["CSD_UV_MODIFIER", "CSD_REPEAT_UP"] },
+                "Center": {
+                    "Base":   { "TL": { "V": 0.02 }, "TR": { "V": 0.02 } },
+                    "Repeat": { "TL": { "V": -0.12 }, "TR": { "V": -0.12 } }
+                }
+            }
         },
         "sprite/battle_result/battle_result/plate/plate_sita/plate5": {
-            "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_LEFT", "CSD_EXTEND_LEFT"],
-            "Ultrawide": { "Edge": { "Mask": ["CSD_EXTEND_LEFT"] }, "Center": { "Mask": ["CSD_ALIGN_LEFT"] } },
-            "Narrow": { "Mask": ["CSD_EXTEND_LEFT"] }
+            "Flags":     ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_LEFT", "CSD_EXTEND_LEFT", "CSD_UV_MODIFIER", "CSD_REPEAT_DOWN", "CSD_REPEAT_FLIP_VERTICAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER"],
+            "Ultrawide": {
+                "Mask": ["CSD_UV_MODIFIER", "CSD_REPEAT_DOWN"],
+                "Edge": { "Mask": ["CSD_EXTEND_LEFT"] }, "Center": { "Mask": ["CSD_ALIGN_LEFT"] }
+            },
+            "Narrow": {
+                "Mask": ["CSD_EXTEND_LEFT"],
+                "Edge": { "Mask": ["CSD_UV_MODIFIER", "CSD_REPEAT_DOWN"] },
+                "Center": {
+                    "Base":   { "BL": { "V": 0.02 }, "BR": { "V": 0.02 } },
+                    "Repeat": { "BL": { "V": -0.12 }, "BR": { "V": -0.12 } }
+                }
+            }
         },
         "sprite/battle_result/battle_result/plate/plate_sita/plate6": {
-            "Flags": ["CSD_ALIGN_LEFT", "CSD_ALIGN_BOTTOM", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER"],
+            "Flags": ["CSD_ALIGN_LEFT", "CSD_ALIGN_BOTTOM", "CSD_REPEAT_DOWN", "CSD_REPEAT_FLIP_VERTICAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER"],
             "Ultrawide": {
+                "Mask": ["CSD_UV_MODIFIER", "CSD_REPEAT_DOWN"],
                 "Edge": {
-                    "Repeat": { "TR": { "U": 0.85 }, "BR": { "U": 0.85 }, "ExtendBias": { "X": 0.5 } }
+                    "Base": {
+                        "Slices": [
+                            { "Flags": ["CSD_ALIGN_LEFT"] },
+                            { "Flags": ["CSD_EXTEND_LEFT"] },
+                            null
+                        ]
+                    }
                 },
-                "Center": {
-                    "Mask": ["CSD_ALIGN_LEFT", "CSD_REPEAT_RIGHT"]
-                }
+                "Center": { "Mask": ["CSD_ALIGN_LEFT"] }
             },
-            "Narrow": { "Mask": ["CSD_REPEAT_RIGHT"] }
+            "Narrow": {
+                "Edge": { "Mask": ["CSD_UV_MODIFIER", "CSD_REPEAT_DOWN"] },
+                "Center": {
+                    "Base":   { "BL": { "V": 0.02 }, "BR": { "V": 0.02 } },
+                    "Repeat": { "BL": { "V": -0.12 }, "BR": { "V": -0.12 } }
+                }
+            }
         },
         "sprite/battle_result/battle_result/plate/plate_sita/plate7": {
-            "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER"],
+            "Flags": ["CSD_ALIGN_BOTTOM", "CSD_REPEAT_DOWN", "CSD_REPEAT_FLIP_VERTICAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER"],
             "Ultrawide": {
+                "Mask": ["CSD_UV_MODIFIER", "CSD_REPEAT_DOWN"],
                 "Edge": {
-                    "Repeat": { "TL": { "U": 0.85 }, "BL": { "U": 0.85 }, "ExtendBias": { "X": 0.5 } }
-                },
-                "Center": {
-                    "Mask": ["CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT"]
+                    "Base": {
+                        "Slices": [
+                            { "Flags": ["CSD_ALIGN_LEFT"] },
+                            { "Flags": ["CSD_EXTEND_LEFT"] },
+                            null
+                        ]
+                    }
                 }
             },
-            "Narrow": { "Mask": ["CSD_REPEAT_LEFT"] }
+            "Narrow": {
+                "Edge": { "Mask": ["CSD_UV_MODIFIER", "CSD_REPEAT_DOWN"] },
+                "Center": {
+                    "Base":   { "BL": { "V": 0.02 }, "BR": { "V": 0.02 } },
+                    "Repeat": { "BL": { "V": -0.12 }, "BR": { "V": -0.12 } }
+                }
+            }
         },
         "sprite/battle_result/battle_result/plate/plate_sita/plate8": {
-            "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_EXTEND_RIGHT"],
-            "Ultrawide": { "Edge": { "Mask": ["CSD_EXTEND_RIGHT"] }, "Center": { "Mask": ["CSD_ALIGN_RIGHT"] } },
-            "Narrow": { "Mask": ["CSD_EXTEND_RIGHT"] }
+            "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_EXTEND_RIGHT", "CSD_UV_MODIFIER", "CSD_REPEAT_DOWN", "CSD_REPEAT_FLIP_VERTICAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER"],
+            "Ultrawide": {
+                "Mask": ["CSD_UV_MODIFIER", "CSD_REPEAT_DOWN"],
+                "Edge": { "Mask": ["CSD_EXTEND_RIGHT"] }, "Center": { "Mask": ["CSD_ALIGN_RIGHT"] }
+            },
+            "Narrow": {
+                "Mask": ["CSD_EXTEND_RIGHT"],
+                "Edge": { "Mask": ["CSD_UV_MODIFIER", "CSD_REPEAT_DOWN"] },
+                "Center": {
+                    "Base":   { "BL": { "V": 0.02 }, "BR": { "V": 0.02 } },
+                    "Repeat": { "BL": { "V": -0.12 }, "BR": { "V": -0.12 } }
+                }
+            }
         },
         
         "sprite/black_out/black_out": { "Flags": ["CSD_STRETCH_HORIZONTAL", "CSD_STRETCH_VERTICAL"] },
@@ -410,161 +492,248 @@
         "sprite/radarmap_cover/radarmap_cover/Scene_0000":                { "Flags": ["CSD_CORNER_EXTRACT"] },
         "sprite/radarmap_cover/radarmap_cover/Scene_0000/radarmap_cover": {
             "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_RIGHT", "CSD_STORE_LEFT_CORNER", "CSD_OFFSET_SCALE_RIGHT", "CSD_RADARMAP"],
-            "Ultrawide": {
-                "Edge": {
-                    "Mask": ["CSD_OFFSET_SCALE_RIGHT"]
-                }
-            },
-            "Narrow": {
-                "Mask": ["CSD_OFFSET_SCALE_RIGHT"]
-            },
+            "Ultrawide": { "Edge": { "Mask": ["CSD_OFFSET_SCALE_RIGHT"] } },
+            "Narrow": { "Mask": ["CSD_OFFSET_SCALE_RIGHT"] },
             "CornerMax": 912.5
         },
         
         "sprite/result/result/title_plate/plate_ue": { "Flags": ["CSD_ALIGN_TOP"] },
         "sprite/result/result/title_plate/plate_ue/plate_ue_kage_l": {
-            "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
+            "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_REPEAT_LEFT", "CSD_REPEAT_UP", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
             "Ultrawide": {
+                "Mask": ["CSD_REPEAT_UP"],
                 "Edge": {
-                    "Mask":       ["CSD_REPEAT_LEFT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_UV_MODIFIER"],
-                    "Repeat":     { "TL": { "U": 0.7 }, "BL": { "U": 0.7 },
-                    "ExtendBias": { "X": 0.5 } }
+                    "Mask": ["CSD_REPEAT_LEFT", "CSD_UV_MODIFIER"],
+                    "Base": {
+                        "Slices": [
+                            { "Flags": ["CSD_ALIGN_LEFT"] },
+                            { "Flags": ["CSD_EXTEND_LEFT"] },
+                            null
+                        ]
+                    }
                 },
                 "Center": {
-                    "Mask":   ["CSD_ALIGN_LEFT", "CSD_REPEAT_RIGHT"],
+                    "Mask":   ["CSD_ALIGN_LEFT"],
                     "Base":   { "TL": { "U": 0.015 }, "BL": { "U": 0.015 } },
                     "Repeat": { "TL": { "U": -0.6 }, "BL": { "U": -0.6 } }
                 }
             },
             "Narrow": {
-                "Mask": ["CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT"]
+                "Mask": ["CSD_REPEAT_LEFT"],
+                "Edge": { "Mask": ["CSD_REPEAT_UP"] },
+                "Center": {
+                    "Mask":   ["CSD_REPEAT_FLIP_HORIZONTAL"],
+                    "Base":   { "TL": { "V": 0.01 }, "TR": { "V": 0.01 } },
+                    "Repeat": { "BL": { "V": -0.07 }, "TR": { "U": -0.02 }, "BR": { "U": -0.02, "V": -0.07 } }
+                }
             }
         },
         "sprite/result/result/title_plate/plate_ue/plate_ue_kage_r": {
-            "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
+            "Flags": ["CSD_ALIGN_TOP", "CSD_REPEAT_RIGHT", "CSD_REPEAT_UP", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
             "Ultrawide": {
+                "Mask": ["CSD_REPEAT_UP"],
                 "Edge": {
-                    "Mask":       ["CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_UV_MODIFIER"],
-                    "Repeat":     { "TR": { "U": 0.7 }, "BR": { "U": 0.7 },
-                    "ExtendBias": { "X": 0.5 } }
+                    "Mask": ["CSD_REPEAT_RIGHT", "CSD_UV_MODIFIER"],
+                    "Base": {
+                        "Slices": [
+                            { "Flags": ["CSD_ALIGN_LEFT"] },
+                            { "Flags": ["CSD_EXTEND_LEFT"] },
+                            null
+                        ]
+                    }
                 },
                 "Center": {
-                    "Mask":   ["CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT"],
+                    "Mask":   ["CSD_REPEAT_FLIP_HORIZONTAL"],
                     "Base":   { "TR": { "U": 0.015 }, "BR": { "U": 0.015 } },
                     "Repeat": { "TR": { "U": -0.6 }, "BR": { "U": -0.6 } }
                 }
             },
             "Narrow": {
-                "Mask": ["CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT"]
+                "Mask": ["CSD_REPEAT_RIGHT"],
+                "Edge": { "Mask": ["CSD_REPEAT_UP"] },
+                "Center": {
+                    "Mask":   ["CSD_REPEAT_FLIP_HORIZONTAL"],
+                    "Base":   { "TL": { "V": 0.01 }, "TR": { "V": 0.01 } },
+                    "Repeat": { "BL": { "V": -0.07 }, "BR": { "V": -0.07 } }
+                }
             }
         },
         "sprite/result/result/title_plate/plate_ue/plate_ue_plate_l": {
-            "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
+            "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_LEFT", "CSD_REPEAT_LEFT", "CSD_REPEAT_UP", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
             "Ultrawide": {
+                "Mask": ["CSD_REPEAT_UP"],
                 "Edge": {
-                    "Mask":       ["CSD_REPEAT_LEFT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_UV_MODIFIER"],
-                    "Repeat":     { "TL": { "U": 0.7 }, "BL": { "U": 0.7 },
-                    "ExtendBias": { "X": 0.5 } }
+                    "Mask": ["CSD_REPEAT_LEFT", "CSD_UV_MODIFIER"],
+                    "Base": {
+                        "Slices": [
+                            { "Flags": ["CSD_ALIGN_LEFT"] },
+                            { "Flags": ["CSD_EXTEND_LEFT"] },
+                            null
+                        ]
+                    }
                 },
                 "Center": {
-                    "Mask":   ["CSD_ALIGN_LEFT", "CSD_REPEAT_RIGHT"],
+                    "Mask":   ["CSD_ALIGN_LEFT"],
                     "Base":   { "TL": { "U": 0.015 }, "BL": { "U": 0.015 } },
                     "Repeat": { "TL": { "U": -0.6 }, "BL": { "U": -0.6 } }
                 }
             },
             "Narrow": {
-                "Mask": ["CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT"]
+                "Mask": ["CSD_REPEAT_LEFT"],
+                "Edge": { "Mask": ["CSD_REPEAT_UP"] },
+                "Center": {
+                    "Mask":   ["CSD_REPEAT_FLIP_HORIZONTAL"],
+                    "Base":   { "TL": { "V": 0.01 }, "TR": { "V": 0.01 } },
+                    "Repeat": { "BL": { "V": -0.07 }, "BR": { "V": -0.07 } }
+                }
             }
         },
         "sprite/result/result/title_plate/plate_ue/plate_ue_plate_r": {
-            "Flags": ["CSD_ALIGN_TOP", "CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
+            "Flags": ["CSD_ALIGN_TOP", "CSD_REPEAT_RIGHT", "CSD_REPEAT_UP", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
             "Ultrawide": {
+                "Mask": ["CSD_REPEAT_UP"],
                 "Edge": {
-                    "Mask":       ["CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_UV_MODIFIER"],
-                    "Repeat":     { "TR": { "U": -0.7 }, "BR": { "U": -0.7 },
-                    "ExtendBias": { "X": 0.5 } }
+                    "Mask": ["CSD_REPEAT_RIGHT", "CSD_UV_MODIFIER"],
+                    "Base": {
+                        "Slices": [
+                            { "Flags": ["CSD_ALIGN_LEFT"] },
+                            { "Flags": ["CSD_EXTEND_LEFT"] },
+                            null
+                        ]
+                    }
                 },
                 "Center": {
-                    "Mask":   ["CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT"],
                     "Base":   { "TR": { "U": -0.015 }, "BR": { "U": -0.015 } },
                     "Repeat": { "TR": { "U": 0.6 }, "BR": { "U": 0.6 } }
                 }
             },
             "Narrow": {
-                "Mask": ["CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT"]
+                "Mask": ["CSD_REPEAT_RIGHT"],
+                "Edge": { "Mask": ["CSD_REPEAT_UP"] },
+                "Center": {
+                    "Mask":   ["CSD_REPEAT_FLIP_HORIZONTAL"],
+                    "Base":   { "TL": { "V": 0.01 }, "TR": { "V": 0.01 } },
+                    "Repeat": { "BL": { "V": -0.07 }, "BR": { "V": -0.07 } }
+                }
             }
         },
         "sprite/result/result/title_plate/plate_sita": { "Flags": ["CSD_ALIGN_BOTTOM"] },
         "sprite/result/result/title_plate/plate_sita/plate_sita_kage_l": {
-            "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
+            "Flags": ["CSD_ALIGN_BOTTOM", "CSD_REPEAT_RIGHT", "CSD_REPEAT_DOWN", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
             "Ultrawide": {
+                "Mask": ["CSD_REPEAT_DOWN"],
                 "Edge": {
-                    "Mask":       ["CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_UV_MODIFIER"],
-                    "Repeat":     { "TL": { "U": 0.7 }, "BL": { "U": 0.7 },
-                    "ExtendBias": { "X": 0.5 } }
+                    "Mask": ["CSD_REPEAT_RIGHT", "CSD_UV_MODIFIER"],
+                    "Base": {
+                        "Slices": [
+                            { "Flags": ["CSD_ALIGN_LEFT"] },
+                            { "Flags": ["CSD_EXTEND_LEFT"] },
+                            null
+                        ]
+                    }
                 },
                 "Center": {
-                    "Mask":   ["CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT"],
                     "Base":   { "TL": { "U": 0.015 }, "BL": { "U": 0.015 } },
                     "Repeat": { "TL": { "U": -0.6 }, "BL": { "U": -0.6 } }
                 }
             },
             "Narrow": {
-                "Mask": ["CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT"]
+                "Mask": ["CSD_REPEAT_RIGHT"],
+                "Edge": { "Mask": ["CSD_REPEAT_DOWN"] },
+                "Center": {
+                    "Mask":   ["CSD_REPEAT_FLIP_HORIZONTAL"],
+                    "Base":   { "TL": { "V": 0.01 }, "TR": { "V": 0.01 } },
+                    "Repeat": { "BL": { "V": -0.07 }, "BR": { "V": -0.07 } }
+                }
             }
         },
         "sprite/result/result/title_plate/plate_sita/plate_sita_kage_r": {
-            "Flags": ["CSD_ALIGN_LEFT", "CSD_ALIGN_BOTTOM", "CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
+            "Flags": ["CSD_ALIGN_LEFT", "CSD_ALIGN_BOTTOM", "CSD_REPEAT_LEFT", "CSD_REPEAT_DOWN", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
             "Ultrawide": {
+                "Mask": ["CSD_REPEAT_DOWN"],
                 "Edge": {
-                    "Mask":       ["CSD_REPEAT_LEFT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_UV_MODIFIER"],
-                    "Repeat":     { "TR": { "U": 0.7 }, "BR": { "U": 0.7 },
-                    "ExtendBias": { "X": 0.5 } }
+                    "Mask": ["CSD_REPEAT_LEFT", "CSD_UV_MODIFIER"],
+                    "Base": {
+                        "Slices": [
+                            { "Flags": ["CSD_ALIGN_LEFT"] },
+                            { "Flags": ["CSD_EXTEND_LEFT"] },
+                            null
+                        ]
+                    }
                 },
                 "Center": {
-                    "Mask":   ["CSD_ALIGN_LEFT", "CSD_REPEAT_RIGHT"],
+                    "Mask":   ["CSD_ALIGN_LEFT"],
                     "Base":   { "TR": { "U": 0.015 }, "BR": { "U": 0.015 } },
                     "Repeat": { "TR": { "U": -0.6 }, "BR": { "U": -0.6 } }
                 }
             },
             "Narrow": {
-                "Mask": ["CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT"]
+                "Mask": ["CSD_REPEAT_LEFT"],
+                "Edge": { "Mask": ["CSD_REPEAT_DOWN"] },
+                "Center": {
+                    "Mask":   ["CSD_REPEAT_FLIP_HORIZONTAL"],
+                    "Base":   { "TL": { "V": 0.01 }, "TR": { "V": 0.01 } },
+                    "Repeat": { "BL": { "V": -0.07 }, "BR": { "V": -0.07 } }
+                }
             }
         },
         "sprite/result/result/title_plate/plate_sita/plate_sita_plate_l": {
-            "Flags": ["CSD_ALIGN_BOTTOM", "CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
+            "Flags": ["CSD_ALIGN_BOTTOM", "CSD_REPEAT_RIGHT", "CSD_REPEAT_DOWN", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
             "Ultrawide": {
+                "Mask": ["CSD_REPEAT_DOWN"],
                 "Edge": {
-                    "Mask":       ["CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_UV_MODIFIER"],
-                    "Repeat":     { "TL": { "U": 0.7 }, "BL": { "U": 0.7 },
-                    "ExtendBias": { "X": 0.5 } }
+                    "Mask": ["CSD_REPEAT_RIGHT", "CSD_UV_MODIFIER"],
+                    "Base": {
+                        "Slices": [
+                            { "Flags": ["CSD_ALIGN_LEFT"] },
+                            { "Flags": ["CSD_EXTEND_LEFT"] },
+                            null
+                        ]
+                    }
                 },
                 "Center": {
-                    "Mask":   ["CSD_ALIGN_RIGHT", "CSD_REPEAT_LEFT"],
                     "Base":   { "TL": { "U": 0.015 }, "BL": { "U": 0.015 } },
                     "Repeat": { "TL": { "U": -0.6 }, "BL": { "U": -0.6 } }
                 }
             },
             "Narrow": {
-                "Mask": ["CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT"]
+                "Mask": ["CSD_REPEAT_RIGHT"],
+                "Edge": { "Mask": ["CSD_REPEAT_DOWN"] },
+                "Center": {
+                    "Mask":   ["CSD_REPEAT_FLIP_HORIZONTAL"],
+                    "Base":   { "TL": { "V": 0.01 }, "TR": { "V": 0.01 } },
+                    "Repeat": { "BL": { "V": -0.07 }, "BR": { "V": -0.07 } }
+                }
             }
         },
         "sprite/result/result/title_plate/plate_sita/plate_sita_plate_r": {
-            "Flags": ["CSD_ALIGN_LEFT", "CSD_ALIGN_BOTTOM", "CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
+            "Flags": ["CSD_ALIGN_LEFT", "CSD_ALIGN_BOTTOM", "CSD_REPEAT_LEFT", "CSD_REPEAT_DOWN", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
             "Ultrawide": {
+                "Mask": ["CSD_REPEAT_DOWN"],
                 "Edge": {
-                    "Mask":       ["CSD_REPEAT_LEFT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_UV_MODIFIER"],
-                    "Repeat":     { "TR": { "U": -0.7 }, "BR": { "U": -0.7 },
-                    "ExtendBias": { "X": 0.5 } }
+                    "Mask": ["CSD_REPEAT_LEFT", "CSD_UV_MODIFIER"],
+                    "Base": {
+                        "Slices": [
+                            { "Flags": ["CSD_ALIGN_LEFT"] },
+                            { "Flags": ["CSD_EXTEND_LEFT"] },
+                            null
+                        ]
+                    }
                 },
                 "Center": {
-                    "Mask":   ["CSD_ALIGN_LEFT", "CSD_REPEAT_RIGHT"],
+                    "Mask":   ["CSD_ALIGN_LEFT"],
                     "Base":   { "TR": { "U": -0.015 }, "BR": { "U": -0.015 } },
                     "Repeat": { "TR": { "U": 0.6 }, "BR": { "U": 0.6 } }
                 }
             },
             "Narrow": {
-                "Mask": ["CSD_REPEAT_LEFT", "CSD_REPEAT_RIGHT"]
+                "Mask": ["CSD_REPEAT_LEFT"],
+                "Edge": { "Mask": ["CSD_REPEAT_DOWN"] },
+                "Center": {
+                    "Mask":   ["CSD_REPEAT_FLIP_HORIZONTAL"],
+                    "Base":   { "TL": { "V": 0.01 }, "TR": { "V": 0.01 } },
+                    "Repeat": { "BL": { "V": -0.07 }, "BR": { "V": -0.07 } }
+                }
             }
         },
         "sprite/result/result/title_plate/result_title/result_title_ob":                                     { "Flags": ["CSD_ALIGN_TOP"] },
@@ -593,21 +762,10 @@
         "sprite/result/result/result/parts_anime_result/amiplate/ami_plate": {
             "Flags": ["CSD_ALIGN_RIGHT", "CSD_OFFSET_SCALE_RIGHT", "CSD_COLOR_MODIFIER", "CSD_CROP_TO_WIDESCREEN"],
             "Ultrawide": {
-                "Edge": {
-                    "Mask": ["CSD_COLOR_MODIFIER", "CSD_CROP_TO_WIDESCREEN"]
-                },
-                "Center": {
-                    "Base": {
-                        "TL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 160 } },
-                        "BL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 160 } },
-                        "TR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 0 } },
-                        "BR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 0 } }
-                    }
-                }
+                "Edge":   { "Mask": ["CSD_COLOR_MODIFIER", "CSD_CROP_TO_WIDESCREEN"] },
+                "Center": { "Base": { "TR": { "Color": { "A": 0.0 } }, "BR": { "Color": { "A": 0.0 } } } }
             },
-            "Narrow": {
-                "Mask": ["CSD_COLOR_MODIFIER", "CSD_CROP_TO_WIDESCREEN"]
-            },
+            "Narrow": { "Mask": ["CSD_COLOR_MODIFIER", "CSD_CROP_TO_WIDESCREEN"] },
             "CornerIndex": 5
         },
         "sprite/result/result/town_mission/parts_anime_result_t/town_score_t/score_plate_kage_t":                          { "Flags": ["CSD_ALIGN_LEFT"] },
@@ -686,21 +844,10 @@
         "sprite/result/result/bonus/parts_anime_bonus/amiplate/ami_plate": {
             "Flags": ["CSD_ALIGN_LEFT", "CSD_OFFSET_SCALE_LEFT", "CSD_COLOR_MODIFIER", "CSD_STORE_RIGHT_CORNER", "CSD_CROP_TO_WIDESCREEN"],
             "Ultrawide": {
-                "Edge": {
-                    "Mask": ["CSD_COLOR_MODIFIER", "CSD_CROP_TO_WIDESCREEN"]
-                },
-                "Center": {
-                    "Base": {
-                        "TL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 0 } },
-                        "BL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 0 } },
-                        "TR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 160 } },
-                        "BR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 160 } }
-                    }
-                }
+                "Edge":   { "Mask": ["CSD_COLOR_MODIFIER", "CSD_CROP_TO_WIDESCREEN"] },
+                "Center": { "Base": { "TL": { "Color": { "A": 0.0 } }, "BL": { "Color": { "A": 0.0 } } } }
             },
-            "Narrow": {
-                "Mask": ["CSD_COLOR_MODIFIER", "CSD_CROP_TO_WIDESCREEN"]
-            },
+            "Narrow": { "Mask": ["CSD_COLOR_MODIFIER", "CSD_CROP_TO_WIDESCREEN"] },
             "CornerMax": 717.0,
             "CornerIndex": 2
         },
@@ -734,43 +881,15 @@
         "sprite/tag_character/tag_character/1p_tug/1p_tug/1p_tug1": {
             "Flags": ["CSD_REPEAT_LEFT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER", "CSD_REPEAT_COLOR_MODIFIER"],
             "Ultrawide": {
-                "Edge": {
-                    "Repeat": {
-                        "TL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 }, "U": -0.5 },
-                        "BL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 }, "U": -0.5 },
-                        "TR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 } },
-                        "BR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 } }
-                    }
-                },
-                "Center": {
-                    "Repeat": {
-                        "TL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 }, "U": -0.5 },
-                        "BL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 }, "U": -0.5 },
-                        "TR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 } },
-                        "BR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 } }
-                    }
-                }
+                "Edge":   { "Repeat": { "TL": { "Color": { "A": 0.0 }, "U": -0.5 }, "BL": { "Color": { "A": 0.0 }, "U": -0.5 } } },
+                "Center": { "Repeat": { "TL": { "Color": { "A": 0.0 }, "U": -0.5 }, "BL": { "Color": { "A": 0.0 }, "U": -0.5 } } }
             }
         },
         "sprite/tag_character/tag_character/2p_tug/2p_tug/2p_tug1": {
             "Flags": ["CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER", "CSD_REPEAT_COLOR_MODIFIER"],
             "Ultrawide": {
-                "Edge": {
-                    "Repeat": {
-                        "TL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 } },
-                        "BL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 } },
-                        "TR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 }, "U": 0.2 },
-                        "BR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 }, "U": 0.2 }
-                    }
-                },
-                "Center": {
-                    "Repeat": {
-                        "TL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 } },
-                        "BL": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 } },
-                        "TR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 }, "U": 0.2 },
-                        "BR": { "Color": { "R": 255, "G": 255, "B": 255, "A": 80 }, "U": 0.2 }
-                    }
-                }
+                "Edge":   { "Repeat": { "TR": { "Color": { "A": 0.0 }, "U": 0.2 }, "BR": { "Color": { "A": 0.0 }, "U": 0.2 } } },
+                "Center": { "Repeat": { "TR": { "Color": { "A": 0.0 }, "U": 0.2 }, "BR": { "Color": { "A": 0.0 }, "U": 0.2 } } }
             }
         },
         

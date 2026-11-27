@@ -31,9 +31,9 @@ constexpr float CHEVRON_OUTRO_DURATION = 2.01666666666667f;
 
 static bool g_isMoviePlaying{};
 
-static CsdModifier* g_sceneModifier{};
-static CsdModifier* g_castNodeModifier{};
-static CsdModifier* g_castModifier{};
+static CsdModifier* g_pSceneModifier{};
+static CsdModifier* g_pCastNodeModifier{};
+static CsdModifier* g_pCastModifier{};
 
 static float g_fontPictureWidth{};
 static float g_fontPictureHeight{};
@@ -206,11 +206,11 @@ PPC_FUNC(sub_828C8F60)
 {
     const auto pScene = reinterpret_cast<Chao::CSD::Scene*>(base + ctx.r3.u32);
 
-    g_sceneModifier = CsdModifierManager::Find(ctx.r3.u32);
+    g_pSceneModifier = CsdModifierManager::Find(ctx.r3.u32);
 
-    if (g_sceneModifier)
+    if (g_pSceneModifier)
     {
-        const auto flags = g_sceneModifier->GetFlags();
+        const auto flags = g_pSceneModifier->GetFlags();
 
         pScene->FPS = ((flags & CSD_SCENE_DISABLE_MOTION) != 0) ? 0 : 60;
 
@@ -242,48 +242,204 @@ PPC_FUNC(sub_828C8F60)
 
 void RenderCsdCastNodeMidAsmHook(PPCRegister& r10, PPCRegister& r27)
 {
-    g_castNodeModifier = CsdModifierManager::Find(r10.u32 + r27.u32);
+    g_pCastNodeModifier = CsdModifierManager::Find(r10.u32 + r27.u32);
 }
 
 void RenderCsdCastMidAsmHook(PPCRegister& r4)
 {
-    g_castModifier = CsdModifierManager::Find(r4.u32);
+    g_pCastModifier = CsdModifierManager::Find(r4.u32);
+}
+
+struct CsdTransform
+{
+    CsdVector2 Offset{};
+    CsdVector2 Origin{};
+    CsdVector2 Scale{};
+};
+
+static CsdTransform GetTransform(CsdModifier* in_pModifier, uint64_t in_flags)
+{
+    CsdTransform result{};
+
+    const auto viewportWidth = float(Video::s_viewportWidth);
+    const auto viewportHeight = float(Video::s_viewportHeight);
+
+    if (g_aspectRatio >= WIDE_ASPECT_RATIO && (in_flags & CSD_STRETCH_HORIZONTAL) != 0)
+    {
+        result.Scale.X = viewportWidth / 1280.0f;
+    }
+    else
+    {
+        result.Scale.X = g_aspectRatioScale;
+
+        if ((in_flags & CSD_ALIGN_RIGHT) != 0)
+        {
+            result.Offset.X = g_aspectRatioOffsetX * 2.0f;
+
+            if ((in_flags & CSD_MULTIPLAYER) != 0 && g_aspectRatio > WIDE_ASPECT_RATIO)
+                result.Offset.X = g_aspectRatioMultiplayerOffsetX * 2.0f;
+        }
+        else if ((in_flags & CSD_ALIGN_LEFT) == 0)
+        {
+            result.Offset.X = g_aspectRatioOffsetX;
+        }
+
+        if ((in_flags & CSD_CROP_TO_FIT) != 0)
+        {
+            result.Scale.X = std::max(viewportWidth / 1280.0f, viewportHeight / 720.0f);
+
+            if ((in_flags & CSD_ALIGN_RIGHT) != 0)
+            {
+                result.Offset.X = viewportWidth - (1280.0f * result.Scale.X);
+            }
+            else if ((in_flags & CSD_ALIGN_LEFT) != 0)
+            {
+                result.Offset.X = 0.0f;
+            }
+            else
+            {
+                result.Offset.X = (viewportWidth - (1280.0f * result.Scale.X)) * 0.5f;
+            }
+
+            result.Offset.X += result.Origin.X * result.Scale.X;
+        }
+        else
+        {
+            const auto fitScale = std::min((viewportWidth / 1280.0f) / g_aspectRatioScale, 1.0f);
+
+            result.Scale.X *= fitScale;
+
+            if ((in_flags & CSD_ALIGN_RIGHT) != 0)
+            {
+                result.Offset.X += 1280.0f * (1.0f - fitScale) * g_aspectRatioScale;
+            }
+            else if ((in_flags & CSD_ALIGN_LEFT) == 0)
+            {
+                result.Offset.X += g_aspectRatioOffsetX + 640.0f * (1.0f - fitScale) * g_aspectRatioScale - g_aspectRatioOffsetX;
+            }
+
+            result.Offset.X += result.Origin.X * g_aspectRatioScale;
+        }
+
+        // Use camera aspect ratio to correct 3D CSD
+        // scenes, rather than viewport aspect ratio.
+        if ((in_flags & CSD_3D) != 0 && g_aspectRatio > WIDE_ASPECT_RATIO)
+        {
+            if (const auto pApp = App::s_pApp; const auto pGame = pApp->GetGame())
+            {
+                if (const auto pMainCamera = pGame->GetCamera("Main"))
+                    result.Offset.X = g_aspectRatioOffsetX * (pMainCamera->m_AspectRatio.X / pMainCamera->m_AspectRatio.Y / g_aspectRatio);
+            }
+        }
+    }
+
+    if ((in_flags & CSD_STRETCH_VERTICAL) != 0)
+    {
+        result.Scale.Y = viewportHeight / 720.0f;
+    }
+    else
+    {
+        result.Scale.Y = g_aspectRatioScale;
+
+        if ((in_flags & CSD_ALIGN_BOTTOM) != 0)
+        {
+            result.Offset.Y = g_aspectRatioOffsetY * 2.0f;
+        }
+        else if ((in_flags & CSD_ALIGN_TOP) == 0)
+        {
+            result.Offset.Y = g_aspectRatioOffsetY;
+        }
+
+        if ((in_flags & CSD_CROP_TO_FIT) != 0)
+        {
+            result.Scale.Y = std::max(viewportWidth / 1280.0f, viewportHeight / 720.0f);
+
+            if ((in_flags & CSD_ALIGN_BOTTOM) != 0)
+            {
+                result.Offset.Y = viewportHeight - (720.0f * result.Scale.Y);
+            }
+            else if ((in_flags & CSD_ALIGN_TOP) != 0)
+            {
+                result.Offset.Y = 0.0f;
+            }
+            else
+            {
+                result.Offset.Y = (viewportHeight - (720.0f * result.Scale.Y)) * 0.5f;
+            }
+
+            result.Offset.Y += result.Origin.Y * result.Scale.Y;
+        }
+        else
+        {
+            const auto fitScale = std::min((viewportWidth / 1280.0f) / g_aspectRatioScale, 1.0f);
+
+            result.Scale.Y *= fitScale;
+
+            if ((in_flags & CSD_ALIGN_BOTTOM) != 0)
+            {
+                result.Offset.Y += 720.0f * (1.0f - fitScale) * g_aspectRatioScale;
+            }
+            else if ((in_flags & CSD_ALIGN_TOP) == 0)
+            {
+                result.Offset.Y += g_aspectRatioOffsetY + 360.0f * (1.0f - fitScale) * g_aspectRatioScale - g_aspectRatioOffsetY;
+            }
+
+            result.Offset.Y += result.Origin.Y * g_aspectRatioScale;
+        }
+    }
+
+    if (g_aspectRatio > WIDE_ASPECT_RATIO && in_pModifier->CornerMax)
+    {
+        const auto corner = g_csdCorners[in_pModifier->CornerIndex];
+
+        if ((in_flags & CSD_OFFSET_SCALE_LEFT) != 0)
+        {
+            // Offset X by progress of current corner to corner max.
+            result.Offset.X *= corner / in_pModifier->CornerMax;
+        }
+        else if ((in_flags & CSD_OFFSET_SCALE_RIGHT) != 0)
+        {
+            result.Offset.X = viewportWidth - (viewportWidth - result.Offset.X) * (1280.0f - corner) / (1280.0f - in_pModifier->CornerMax);
+        }
+    }
+
+    return result;
 }
 
 static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t stride)
 {
-    CsdModifier* modifier{};
+    CsdModifier* pModifier{};
 
-    if (g_castModifier)
+    if (g_pCastModifier)
     {
-        modifier = g_castModifier;
+        pModifier = g_pCastModifier;
     }
-    else if (g_castNodeModifier)
+    else if (g_pCastNodeModifier)
     {
-        modifier = g_castNodeModifier;
+        pModifier = g_pCastNodeModifier;
     }
-    else if (g_sceneModifier)
+    else if (g_pSceneModifier)
     {
-        modifier = g_sceneModifier;
+        pModifier = g_pSceneModifier;
     }
 
-    if (!modifier)
+    if (!pModifier)
     {
         static CsdModifier defaultModifier{};
 
-        modifier = &defaultModifier;
+        pModifier = &defaultModifier;
     }
 
-    const auto flags = modifier->GetFlags();
+    const auto flags = pModifier->GetFlags();
 
-    const auto vpWidth = float(Video::s_viewportWidth);
-    const auto vpHeight = float(Video::s_viewportHeight);
+    const auto viewportWidth = float(Video::s_viewportWidth);
+    const auto viewportHeight = float(Video::s_viewportHeight);
 
     if (!App::s_isDrawUI)
     {
         // Hide radar map... elegantly...
         if ((flags & CSD_RADARMAP) != 0)
-            g_radarMapX = vpWidth * 2;
+            g_radarMapX = viewportWidth * 2;
 
         return;
     }
@@ -293,7 +449,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
         if ((flags & (CSD_STORE_LEFT_CORNER | CSD_STORE_RIGHT_CORNER)) != 0)
         {
             uint32_t vertexIndex = ((flags & CSD_STORE_LEFT_CORNER) != 0) ? 0 : 3;
-            g_csdCorners[modifier->CornerIndex] = *reinterpret_cast<be<float>*>(base + ctx.r4.u32 + vertexIndex * stride);
+            g_csdCorners[pModifier->CornerIndex] = *reinterpret_cast<be<float>*>(base + ctx.r4.u32 + vertexIndex * stride);
         }
 
         return;
@@ -307,33 +463,33 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
     if ((flags & CSD_LIFE_COUNTER) != 0 && Config::DisableLives)
         return;
 
-    CsdVertexModifierGroup* baseVertexModifiers{};
-    CsdVertexModifierGroup* repeatVertexModifiers{};
+    CsdVertexModifierGroup* pBaseVertexModifiers{};
+    CsdVertexModifierGroup* pRepeatVertexModifiers{};
 
     if (g_aspectRatio > WIDE_ASPECT_RATIO)
     {
         auto& rAlignment = Config::UIAlignmentMode == EUIAlignmentMode::Edge
-            ? modifier->Ultrawide.Edge
-            : modifier->Ultrawide.Center;
+            ? pModifier->Ultrawide.Edge
+            : pModifier->Ultrawide.Center;
 
-        baseVertexModifiers = &rAlignment.Base;
-        repeatVertexModifiers = &rAlignment.Repeat;
+        pBaseVertexModifiers = &rAlignment.Base;
+        pRepeatVertexModifiers = &rAlignment.Repeat;
     }
     else if (g_aspectRatio < WIDE_ASPECT_RATIO)
     {
         auto& rAlignment = Config::UIAlignmentMode == EUIAlignmentMode::Edge
-            ? modifier->Narrow.Edge
-            : modifier->Narrow.Center;
+            ? pModifier->Narrow.Edge
+            : pModifier->Narrow.Center;
 
-        baseVertexModifiers = &rAlignment.Base;
-        repeatVertexModifiers = &rAlignment.Repeat;
+        pBaseVertexModifiers = &rAlignment.Base;
+        pRepeatVertexModifiers = &rAlignment.Repeat;
     }
     else
     {
         static CsdVertexModifierGroup defaultVertexModifiers{};
 
-        baseVertexModifiers = &defaultVertexModifiers;
-        repeatVertexModifiers = &defaultVertexModifiers;
+        pBaseVertexModifiers = &defaultVertexModifiers;
+        pRepeatVertexModifiers = &defaultVertexModifiers;
     }
     
     if ((flags & CSD_SKIP) != 0)
@@ -351,14 +507,6 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
         }
     }
 
-    // Draw black bars if this cast is drawn.
-    if ((flags & CSD_BLACK_BAR) != 0)
-        BlackBar::Show();
-
-    // Prohibit black bars from being drawn if this cast is drawn.
-    if ((flags & CSD_PROHIBIT_BLACK_BAR) != 0)
-        BlackBar::Hide();
-
     // Reserve stack space for vertices.
     const auto size = ctx.r5.u32 * stride;
     ctx.r1.u32 -= (size + 0x0F) & ~0x0F;
@@ -367,167 +515,6 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
     const auto stack = base + ctx.r1.u32;
     memcpy(stack, base + ctx.r4.u32, size);
 
-    const auto getVertex = [&](const size_t in_index)
-    {
-        return reinterpret_cast<Chao::CSD::Vertex*>(stack + (in_index * stride));
-    };
-
-    auto offsetX = 0.0f;
-    auto offsetY = 0.0f;
-    auto pivotX = 0.0f;
-    auto pivotY = 0.0f;
-    auto scaleX = 1.0f;
-    auto scaleY = 1.0f;
-
-    const auto needsStretch = g_aspectRatio >= WIDE_ASPECT_RATIO;
-
-    if (needsStretch && (flags & CSD_STRETCH_HORIZONTAL) != 0)
-    {
-        scaleX = vpWidth / 1280.0f;
-    }
-    else
-    {
-        scaleX = g_aspectRatioScale;
-
-        if (needsStretch && (flags & CSD_UNSTRETCH_HORIZONTAL) != 0)
-        {
-            pivotX = getVertex(CSD_TL)->X;
-            offsetX = pivotX * vpWidth / 1280.0f;
-        }
-        else
-        {
-            if ((flags & CSD_ALIGN_RIGHT) != 0)
-            {
-                offsetX = g_aspectRatioOffsetX * 2.0f;
-
-                if ((flags & CSD_MULTIPLAYER) != 0 && g_aspectRatio > WIDE_ASPECT_RATIO)
-                    offsetX = g_aspectRatioMultiplayerOffsetX * 2.0f;
-            }
-            else if ((flags & CSD_ALIGN_LEFT) == 0)
-            {
-                offsetX = g_aspectRatioOffsetX;
-            }
-
-            if ((flags & CSD_CROP_TO_FIT) != 0)
-            {
-                scaleX = std::max(vpWidth / 1280.0f, vpHeight / 720.0f);
-
-                if ((flags & CSD_ALIGN_RIGHT) != 0)
-                {
-                    offsetX = vpWidth - (1280.0f * scaleX);
-                }
-                else if ((flags & CSD_ALIGN_LEFT) != 0)
-                {
-                    offsetX = 0.0f;
-                }
-                else
-                {
-                    offsetX = (vpWidth - (1280.0f * scaleX)) * 0.5f;
-                }
-
-                offsetX += pivotX * scaleX;
-            }
-            else
-            {
-                const auto fitScale = std::min((vpWidth / 1280.0f) / g_aspectRatioScale, 1.0f);
-
-                scaleX *= fitScale;
-
-                if ((flags & CSD_ALIGN_RIGHT) != 0)
-                {
-                    offsetX += 1280.0f * (1.0f - fitScale) * g_aspectRatioScale;
-                }
-                else if ((flags & CSD_ALIGN_LEFT) == 0)
-                {
-                    offsetX += g_aspectRatioOffsetX + 640.0f * (1.0f - fitScale) * g_aspectRatioScale - g_aspectRatioOffsetX;
-                }
-
-                offsetX += pivotX * g_aspectRatioScale;
-            }
-
-            // Use camera aspect ratio to correct 3D CSD scenes,
-            // rather than viewport aspect ratio.
-            if ((flags & CSD_3D) != 0 && g_aspectRatio > WIDE_ASPECT_RATIO)
-            {
-                if (const auto pApp = App::s_pApp; const auto pGame = pApp->GetGame())
-                {
-                    if (const auto pMainCamera = pGame->GetCamera("Main"))
-                        offsetX = g_aspectRatioOffsetX * (pMainCamera->m_AspectRatio.X / pMainCamera->m_AspectRatio.Y / g_aspectRatio);
-                }
-            }
-        }
-    }
-
-    if ((flags & CSD_STRETCH_VERTICAL) != 0)
-    {
-        scaleY = vpHeight / 720.0f;
-    }
-    else
-    {
-        scaleY = g_aspectRatioScale;
-
-        if ((flags & CSD_ALIGN_BOTTOM) != 0)
-        {
-            offsetY = g_aspectRatioOffsetY * 2.0f;
-        }
-        else if ((flags & CSD_ALIGN_TOP) == 0)
-        {
-            offsetY = g_aspectRatioOffsetY;
-        }
-
-        if ((flags & CSD_CROP_TO_FIT) != 0)
-        {
-            scaleY = std::max(vpWidth / 1280.0f, vpHeight / 720.0f);
-
-            if ((flags & CSD_ALIGN_BOTTOM) != 0)
-            {
-                offsetY = vpHeight - (720.0f * scaleY);
-            }
-            else if ((flags & CSD_ALIGN_TOP) != 0)
-            {
-                offsetY = 0.0f;
-            }
-            else
-            {
-                offsetY = (vpHeight - (720.0f * scaleY)) * 0.5f;
-            }
-
-            offsetY += pivotY * scaleY;
-        }
-        else
-        {
-            const auto fitScale = std::min((vpWidth / 1280.0f) / g_aspectRatioScale, 1.0f);
-
-            scaleY *= fitScale;
-
-            if ((flags & CSD_ALIGN_BOTTOM) != 0)
-            {
-                offsetY += 720.0f * (1.0f - fitScale) * g_aspectRatioScale;
-            }
-            else if ((flags & CSD_ALIGN_TOP) == 0)
-            {
-                offsetY += g_aspectRatioOffsetY + 360.0f * (1.0f - fitScale) * g_aspectRatioScale - g_aspectRatioOffsetY;
-            }
-
-            offsetY += pivotY * g_aspectRatioScale;
-        }
-    }
-
-    if (g_aspectRatio > WIDE_ASPECT_RATIO && modifier->CornerMax)
-    {
-        const auto corner = g_csdCorners[modifier->CornerIndex];
-
-        if ((flags & CSD_OFFSET_SCALE_LEFT) != 0)
-        {
-            // Offset X by progress of current corner to corner max.
-            offsetX *= corner / modifier->CornerMax;
-        }
-        else if ((flags & CSD_OFFSET_SCALE_RIGHT) != 0)
-        {
-            offsetX = vpWidth - (vpWidth - offsetX) * (1280.0f - corner) / (1280.0f - modifier->CornerMax);
-        }
-    }
-
     auto firstX = 0.0f;
     auto firstY = 0.0f;
     auto lastX = 0.0f;
@@ -535,25 +522,19 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
     auto width = 0.0f;
     auto height = 0.0f;
 
+    const auto transform = GetTransform(pModifier, flags);
+
+    const auto getVertex = [&](const size_t in_index)
+    {
+        return reinterpret_cast<Chao::CSD::Vertex*>(stack + (in_index * stride));
+    };
+
     for (size_t i = 0; i < ctx.r5.u32; i++)
     {
         const auto vertex = getVertex(i);
 
-        auto x = offsetX + (vertex->X - pivotX) * scaleX;
-        auto y = offsetY + (vertex->Y - pivotY) * scaleY;
-
-        if ((flags & CSD_EXTEND_LEFT) != 0 && (i == 0 || i == 1))
-        {
-            x = std::lerp(vpWidth, std::min(x, 0.0f), baseVertexModifiers->ExtendBias.X);
-        }
-        else if ((flags & CSD_EXTEND_RIGHT) != 0 && (i == 2 || i == 3))
-        {
-            // Preserve Audio Room "pod" base right edge.
-            if ((flags & CSD_POD_BASE) != 0)
-                g_podBaseRightX = x;
-
-            x = std::lerp(0.0f, std::max(x, vpWidth), baseVertexModifiers->ExtendBias.X);
-        }
+        const auto x = transform.Offset.X + (vertex->X - transform.Origin.X) * transform.Scale.X;
+        const auto y = transform.Offset.Y + (vertex->Y - transform.Origin.Y) * transform.Scale.Y;
 
         switch (i)
         {
@@ -604,6 +585,22 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
         br = lastTR;
     }
 
+    if ((flags & CSD_EXTEND_LEFT) != 0)
+    {
+        getVertex(tl)->X = std::lerp(viewportWidth, std::min(getVertex(tl)->X.get(), 0.0f), pBaseVertexModifiers->Extend.TopLeft.X);
+        getVertex(bl)->X = std::lerp(viewportWidth, std::min(getVertex(bl)->X.get(), 0.0f), pBaseVertexModifiers->Extend.TopLeft.X);
+    }
+
+    if ((flags & CSD_EXTEND_RIGHT) != 0)
+    {
+        // Preserve Audio Room "pod" base right edge.
+        if ((flags & CSD_POD_BASE) != 0)
+            g_podBaseRightX = getVertex(tr)->X;
+
+        getVertex(tr)->X = std::lerp(0.0f, std::max(getVertex(tr)->X.get(), viewportWidth), pBaseVertexModifiers->Extend.BottomRight.X);
+        getVertex(br)->X = std::lerp(0.0f, std::max(getVertex(br)->X.get(), viewportWidth), pBaseVertexModifiers->Extend.BottomRight.X);
+    }
+
     if ((flags & CSD_RADARMAP) != 0)
     {
         g_radarMapCoverWidth = width;
@@ -618,8 +615,8 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
         const auto pDevice = static_cast<GuestDevice*>(App::s_pApp->m_pDevice.get());
         const auto pFrameBufferObject = App::s_pApp->m_pDoc->m_pMyGraphicsDevice->m_spFrameBufferObject.get();
 
-        targetScaleX = float(pDevice->viewport.width) / vpWidth;
-        targetScaleY = float(pDevice->viewport.height) / vpHeight;
+        targetScaleX = float(pDevice->viewport.width) / viewportWidth;
+        targetScaleY = float(pDevice->viewport.height) / viewportHeight;
 
         if (pFrameBufferObject && pFrameBufferObject->m_FrameBufferSurfaces[0])
         {
@@ -752,32 +749,28 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
         in_pModifier->GetVertexModifier(br).ApplyColorModifier(getVertex(br));
     };
 
-    const auto applyRepeatModifiers = [&]()
+    const auto applyModifiers = [&](CsdVertexModifierGroup* in_pModifier, uint64_t in_flags, bool in_isRepeatModifier)
     {
-        if ((flags & CSD_REPEAT_FLIP_HORIZONTAL) != 0)
-            flipHorizontally();
+        if (in_isRepeatModifier)
+        {
+            if ((in_flags & CSD_REPEAT_FLIP_HORIZONTAL) != 0)
+                flipHorizontally();
 
-        if ((flags & CSD_REPEAT_FLIP_VERTICAL) != 0)
-            flipVertically();
+            if ((in_flags & CSD_REPEAT_FLIP_VERTICAL) != 0)
+                flipVertically();
+        }
 
-        if ((flags & CSD_REPEAT_POSITION_MODIFIER) != 0)
-            applyPositionModifier(repeatVertexModifiers);
+        if ((in_flags & (CSD_POSITION_MODIFIER | CSD_REPEAT_POSITION_MODIFIER)) != 0)
+            applyPositionModifier(in_pModifier);
 
-        if ((flags & CSD_REPEAT_UV_MODIFIER) != 0)
-            applyUVModifier(repeatVertexModifiers);
-            
-        if ((flags & CSD_REPEAT_COLOR_MODIFIER) != 0)
-            applyColorModifier(repeatVertexModifiers);
+        if ((in_flags & (CSD_UV_MODIFIER | CSD_REPEAT_UV_MODIFIER)) != 0)
+            applyUVModifier(in_pModifier);
+
+        if ((in_flags & (CSD_COLOR_MODIFIER | CSD_REPEAT_COLOR_MODIFIER)) != 0)
+            applyColorModifier(in_pModifier);
     };
 
-    if ((flags & CSD_POSITION_MODIFIER) != 0)
-        applyPositionModifier(baseVertexModifiers);
-
-    if ((flags & CSD_UV_MODIFIER) != 0)
-        applyUVModifier(baseVertexModifiers);
-
-    if ((flags & CSD_COLOR_MODIFIER) != 0)
-        applyColorModifier(baseVertexModifiers);
+    applyModifiers(pBaseVertexModifiers, flags, false);
 
     if ((flags & CSD_CROP_TO_WIDESCREEN) != 0)
     {
@@ -785,7 +778,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
         const auto v2 = getVertex(tr);
 
         const float left = BlackBar::s_pillarboxWidth;
-        const float right = vpWidth - BlackBar::s_pillarboxWidth;
+        const float right = viewportWidth - BlackBar::s_pillarboxWidth;
         const float uvWidth = v2->U - v0->U;
 
         const auto cropLeft = [&](Chao::CSD::Vertex* in_pVertex)
@@ -810,6 +803,89 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
         cropLeft(getVertex(bl));
         cropRight(v2);
         cropRight(getVertex(br));
+    }
+
+    if (!pBaseVertexModifiers->Slices.empty())
+    {
+        const auto baseLeft = std::min(getVertex(tl)->X, getVertex(bl)->X);
+        const auto baseRight = std::max(getVertex(tr)->X, getVertex(br)->X);
+        const auto baseWidth = baseRight - baseLeft;
+
+        const auto baseLeftU = std::min(getVertex(tl)->U, getVertex(bl)->U);
+        const auto baseRightU = std::max(getVertex(tr)->U, getVertex(br)->U);
+        const auto baseWidthU = baseRightU - baseLeftU;
+
+        const auto sliceCount = pBaseVertexModifiers->Slices.size();
+
+        struct SliceTransform
+        {
+            float LX{}, RX{};
+            float LU{}, RU{};
+        };
+
+        auto sliceTransforms = std::vector<SliceTransform>(sliceCount);
+
+        const auto getSliceWidth = [&](const int in_index, const float in_x, const float in_baseWidth) -> float
+        {
+            // If the slice has no neighbours, then revert to extending
+            // to the left-most or right-most edges of the viewport.
+            if (in_index < 0)
+            {
+                return 0.0f;
+            }
+            else if (in_index > sliceCount)
+            {
+                return viewportWidth;
+            }
+
+            // Gets the width of the slice at this index, starting from the
+            // left-most edge and shrinking the original width, proportionate
+            // to the total number of slices.
+            return in_x + (in_baseWidth * (float(in_index) / float(sliceCount)));
+        };
+
+        // Precompute each slice's bounds. This is necessary for slices to
+        // be able to extend to their neighbours without mutating each other.
+        for (size_t i = 0; i < sliceCount; i++)
+        {
+            const auto& rSlice = pBaseVertexModifiers->Slices[i];
+            const auto transform = GetTransform(pModifier, rSlice.Flags);
+
+            sliceTransforms[i].LX = getSliceWidth(i, baseLeft, baseWidth) + transform.Offset.X;
+            sliceTransforms[i].RX = getSliceWidth(i + 1, baseLeft, baseWidth) + transform.Offset.X;
+            sliceTransforms[i].LU = getSliceWidth(i, baseLeftU, baseWidthU);
+            sliceTransforms[i].RU = getSliceWidth(i + 1, baseLeftU, baseWidthU);
+        }
+
+        for (size_t i = 0; i < sliceCount; i++)
+        {
+            auto& rSlice = pBaseVertexModifiers->Slices[i];
+
+            auto leftX = sliceTransforms[i].LX;
+            auto rightX = sliceTransforms[i].RX;
+
+            // Extend slice to left neighbour, or left viewport edge.
+            if ((rSlice.Flags & CSD_EXTEND_LEFT) != 0)
+                leftX = ((i > 0) ? sliceTransforms[i - 1].RX : 0.0f) * rSlice.Extend.TopLeft.X;
+
+            // Extend slice to right neighbour, or right viewport edge.
+            if ((rSlice.Flags & CSD_EXTEND_RIGHT) != 0)
+                rightX = ((i + 1 < sliceCount) ? sliceTransforms[i + 1].LX : viewportWidth) * rSlice.Extend.BottomRight.X;
+
+            getVertex(tl)->X = leftX;
+            getVertex(bl)->X = leftX;
+            getVertex(tr)->X = rightX;
+            getVertex(br)->X = rightX;
+            getVertex(tl)->U = sliceTransforms[i].LU;
+            getVertex(bl)->U = sliceTransforms[i].LU;
+            getVertex(tr)->U = sliceTransforms[i].RU;
+            getVertex(br)->U = sliceTransforms[i].RU;
+
+            applyModifiers(&rSlice, rSlice.Flags, false);
+
+            if (i < sliceCount - 1)
+                drawOriginal();
+        }
     }
 
     if ((flags & CSD_REPEAT_LEFT) != 0)
@@ -843,6 +919,8 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
 
         while (x > 0.0f)
         {
+            const auto lastWidth = getVertex(tr)->X - getVertex(tl)->X;
+
             drawOriginal();
 
             if (hasExtendedLeft)
@@ -855,7 +933,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
                 ///////////////////////////////////////////////////////////
 
                 // These values are based off the animation in background.xncp.
-                auto endAlpha = uint8_t(std::lerp(30, 10, x / vpWidth));
+                auto endAlpha = uint8_t(std::lerp(30, 10, x / viewportWidth));
                 auto introDuration = CHEVRON_INTRO_DURATION;
                 auto introStartTime = (introDuration / 2.0f) * float(arrowIndex + 1) + g_bgArrowsEnd;
                 auto outroDuration = CHEVRON_OUTRO_DURATION;
@@ -886,13 +964,13 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
             {
                 // Move cloned cast to left edge of existing cast.
                 for (size_t i = 0; i < r5.u32; i++)
-                    getVertex(i)->X = getVertex(i)->X - (width + repeatVertexModifiers->Offset.X);
+                    getVertex(i)->X = getVertex(i)->X - (lastWidth + pRepeatVertexModifiers->Offset.X);
             }
 
             // Update loop condition.
             x = getVertex(tr)->X;
 
-            applyRepeatModifiers();
+            applyModifiers(pRepeatVertexModifiers, flags, true);
 
             // Extend to the left of the screen.
             if ((flags & CSD_REPEAT_EXTEND) != 0)
@@ -900,7 +978,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
                 for (size_t i = 0; i < r5.u32; i++)
                 {
                     if (i == tl || i == bl)
-                        getVertex(i)->X = std::lerp(vpWidth, std::min(getVertex(i)->X.get(), 0.0f), repeatVertexModifiers->ExtendBias.X);
+                        getVertex(i)->X = std::lerp(viewportWidth, std::min(getVertex(i)->X.get(), 0.0f), pRepeatVertexModifiers->Extend.TopLeft.X);
                 }
 
                 hasExtendedLeft = true;
@@ -923,7 +1001,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
                 getVertex(i)->X = getVertex(i)->X - arrowWidth;
 
             // Compute number of background arrows.
-            while (x < vpWidth)
+            while (x < viewportWidth)
             {
                 x = x + arrowWidth;
                 arrowCount++;
@@ -937,8 +1015,10 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
 
         bool hasExtendedRight{};
 
-        while (x < vpWidth)
+        while (x < viewportWidth)
         {
+            const auto lastWidth = getVertex(tr)->X - getVertex(tl)->X;
+
             drawOriginal();
 
             if (hasExtendedRight)
@@ -951,7 +1031,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
                 ///////////////////////////////////////////////////////////
 
                 // These values are based off the animation in background.xncp.
-                auto endAlpha = uint8_t(std::lerp(10, 35, x / vpWidth));
+                auto endAlpha = uint8_t(std::lerp(10, 35, x / viewportWidth));
                 auto introDuration = CHEVRON_INTRO_DURATION;
                 auto introStartTime = (introDuration / 2.0f) * float(arrowIndex + 1);
                 auto outroDuration = CHEVRON_OUTRO_DURATION;
@@ -978,13 +1058,13 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
             {
                 // Move cloned cast to right edge of existing cast.
                 for (size_t i = 0; i < r5.u32; i++)
-                    getVertex(i)->X = getVertex(i)->X + (width + repeatVertexModifiers->Offset.X);
+                    getVertex(i)->X = getVertex(i)->X + (lastWidth + pRepeatVertexModifiers->Offset.X);
             }
 
             // Update loop condition.
             x = getVertex(tl)->X;
 
-            applyRepeatModifiers();
+            applyModifiers(pRepeatVertexModifiers, flags, true);
 
             // Extend to the right of the screen.
             if ((flags & CSD_REPEAT_EXTEND) != 0)
@@ -992,7 +1072,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
                 for (size_t i = 0; i < r5.u32; i++)
                 {
                     if (i == tr || i == br)
-                        getVertex(i)->X = std::lerp(0.0f, std::max(getVertex(i)->X.get(), vpWidth), repeatVertexModifiers->ExtendBias.X);
+                        getVertex(i)->X = std::lerp(0.0f, std::max(getVertex(i)->X.get(), viewportWidth), pRepeatVertexModifiers->Extend.BottomRight.X);
                 }
 
                 hasExtendedRight = true;
@@ -1008,6 +1088,8 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
 
         while (y > 0.0f)
         {
+            const auto lastHeight = getVertex(bl)->Y - getVertex(tl)->Y;
+
             drawOriginal();
 
             if (hasExtendedUp)
@@ -1015,12 +1097,12 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
 
             // Move cloned cast to top edge of existing cast.
             for (size_t i = 0; i < r5.u32; i++)
-                getVertex(i)->Y = getVertex(i)->Y - (height + repeatVertexModifiers->Offset.Y);
+                getVertex(i)->Y = getVertex(i)->Y - (lastHeight + pRepeatVertexModifiers->Offset.Y);
 
             // Update loop condition.
             y = getVertex(bl)->Y;
 
-            applyRepeatModifiers();
+            applyModifiers(pRepeatVertexModifiers, flags, true);
 
             // Extend to the top of the screen.
             if ((flags & CSD_REPEAT_EXTEND) != 0)
@@ -1028,7 +1110,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
                 for (size_t i = 0; i < r5.u32; i++)
                 {
                     if (i == tl || i == tr)
-                        getVertex(i)->Y = std::lerp(vpHeight, std::min(getVertex(i)->Y.get(), 0.0f), repeatVertexModifiers->ExtendBias.Y);
+                        getVertex(i)->Y = std::lerp(viewportHeight, std::min(getVertex(i)->Y.get(), 0.0f), pRepeatVertexModifiers->Extend.TopLeft.Y);
                 }
 
                 hasExtendedUp = true;
@@ -1042,8 +1124,10 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
 
         bool hasExtendedDown{};
 
-        while (y < vpHeight)
+        while (y < viewportHeight)
         {
+            const auto lastHeight = getVertex(bl)->Y - getVertex(tl)->Y;
+
             drawOriginal();
 
             if (hasExtendedDown)
@@ -1051,12 +1135,12 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
 
             // Move cloned cast to bottom edge of existing cast.
             for (size_t i = 0; i < r5.u32; i++)
-                getVertex(i)->Y = getVertex(i)->Y + (height + repeatVertexModifiers->Offset.Y);
+                getVertex(i)->Y = getVertex(i)->Y + (lastHeight + pRepeatVertexModifiers->Offset.Y);
 
             // Update loop condition.
             y = getVertex(tl)->Y;
 
-            applyRepeatModifiers();
+            applyModifiers(pRepeatVertexModifiers, flags, true);
 
             // Extend to the bottom of the screen.
             if ((flags & CSD_REPEAT_EXTEND) != 0)
@@ -1064,7 +1148,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
                 for (size_t i = 0; i < r5.u32; i++)
                 {
                     if (i == bl || i == br)
-                        getVertex(i)->Y = std::lerp(0.0f, std::max(getVertex(i)->Y.get(), vpHeight), repeatVertexModifiers->ExtendBias.Y);
+                        getVertex(i)->Y = std::lerp(0.0f, std::max(getVertex(i)->Y.get(), viewportHeight), pRepeatVertexModifiers->Extend.BottomRight.Y);
                 }
 
                 hasExtendedDown = true;
@@ -1090,8 +1174,8 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
             v1->X = g_podBaseRightX;
 
             // Stretch cloned element to screen edge.
-            v2->X = vpWidth;
-            v3->X = vpWidth;
+            v2->X = viewportWidth;
+            v3->X = viewportWidth;
 
             // Shift UVs to remove cloned element edge line.
             v0->U = v0->U + 0.008f;
@@ -1124,7 +1208,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
             /////////////////////////////////////////////////////////////////////////
 
             const auto top = originalTop + (originalHeight - heightScaled);
-            const auto left = g_aspectRatio >= WIDE_ASPECT_RATIO ? 0.0f : vpWidth - widthScaled;
+            const auto left = g_aspectRatio >= WIDE_ASPECT_RATIO ? 0.0f : viewportWidth - widthScaled;
 
             // Top Left
             v0->X = left;
@@ -1134,19 +1218,19 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
 
             // Bottom Left
             v1->X = left;
-            v1->Y = vpHeight;
+            v1->Y = viewportHeight;
             v1->U = 0.0f;
             v1->V = 0.01f;
 
             // Top Right
-            v2->X = vpWidth;
+            v2->X = viewportWidth;
             v2->Y = top;
             v2->U = 0.0f;
             v2->V = 0.01f;
 
             // Bottom Right
-            v3->X = vpWidth;
-            v3->Y = vpHeight;
+            v3->X = viewportWidth;
+            v3->Y = viewportHeight;
             v3->U = 0.0f;
             v3->V = 0.01f;
 
@@ -1164,26 +1248,26 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
             const auto [min, max] = PIXELS_TO_UV_COORDS(2048, 512, 858, 380, width, height);
 
             // Top Left
-            v0->X = vpWidth - widthScaled;
-            v0->Y = vpHeight - heightScaled;
+            v0->X = viewportWidth - widthScaled;
+            v0->Y = viewportHeight - heightScaled;
             v0->U = min.x;
             v0->V = min.y;
 
             // Bottom Left
-            v1->X = vpWidth - widthScaled;
-            v1->Y = vpHeight;
+            v1->X = viewportWidth - widthScaled;
+            v1->Y = viewportHeight;
             v1->U = min.x;
             v1->V = max.y;
 
             // Top Right
-            v2->X = vpWidth;
-            v2->Y = vpHeight - heightScaled;
+            v2->X = viewportWidth;
+            v2->Y = viewportHeight - heightScaled;
             v2->U = max.x;
             v2->V = min.y;
 
             // Bottom Right
-            v3->X = vpWidth;
-            v3->Y = vpHeight;
+            v3->X = viewportWidth;
+            v3->Y = viewportHeight;
             v3->U = max.x;
             v3->V = max.y;
 

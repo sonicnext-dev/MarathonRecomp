@@ -12,7 +12,6 @@ std::map<uint64_t, const char*> g_CsdFlagNames =
     { CSD_ALIGN_RIGHT, "CSD_ALIGN_RIGHT" },
     { CSD_STRETCH_HORIZONTAL, "CSD_STRETCH_HORIZONTAL" },
     { CSD_STRETCH_VERTICAL, "CSD_STRETCH_VERTICAL" },
-    { CSD_UNSTRETCH_HORIZONTAL, "CSD_UNSTRETCH_HORIZONTAL" },
     { CSD_EXTEND_LEFT, "CSD_EXTEND_LEFT" },
     { CSD_EXTEND_RIGHT, "CSD_EXTEND_RIGHT" },
     { CSD_STORE_LEFT_CORNER, "CSD_STORE_LEFT_CORNER" },
@@ -33,8 +32,6 @@ std::map<uint64_t, const char*> g_CsdFlagNames =
     { CSD_REPEAT_POSITION_MODIFIER, "CSD_REPEAT_POSITION_MODIFIER" },
     { CSD_REPEAT_UV_MODIFIER, "CSD_REPEAT_UV_MODIFIER" },
     { CSD_REPEAT_COLOR_MODIFIER, "CSD_REPEAT_COLOR_MODIFIER" },
-    { CSD_BLACK_BAR, "CSD_BLACK_BAR" },
-    { CSD_PROHIBIT_BLACK_BAR, "CSD_PROHIBIT_BLACK_BAR" },
     { CSD_CORNER_EXTRACT, "CSD_CORNER_EXTRACT" },
     { CSD_RADARMAP, "CSD_RADARMAP" },
     { CSD_POD_BASE, "CSD_POD_BASE" },
@@ -192,8 +189,32 @@ bool CsdVertexModifier::Write(nlohmann::json& in_rWriter)
     return true;
 }
 
+bool CsdExtendTransform::Read(const nlohmann::json& in_rReader)
+{
+    if (in_rReader.contains("TopLeft"))
+        TopLeft.Read(in_rReader["TopLeft"]);
+
+    if (in_rReader.contains("BottomRight"))
+        BottomRight.Read(in_rReader["BottomRight"]);
+
+    return true;
+}
+
+bool CsdExtendTransform::Write(nlohmann::json& in_rWriter)
+{
+    if (TopLeft != CsdVector2(1.0f, 1.0f))
+        TopLeft.Write(in_rWriter);
+
+    if (BottomRight != CsdVector2(1.0f, 1.0f))
+        BottomRight.Write(in_rWriter);
+
+    return true;
+}
+
 bool CsdVertexModifierGroup::Read(const nlohmann::json& in_rReader)
 {
+    Flags = ReadFlags(in_rReader, "Flags");
+
     if (in_rReader.contains("TL"))
         TL.Read(in_rReader["TL"]);
 
@@ -209,14 +230,30 @@ bool CsdVertexModifierGroup::Read(const nlohmann::json& in_rReader)
     if (in_rReader.contains("Offset"))
         Offset.Read(in_rReader["Offset"]);
 
-    if (in_rReader.contains("ExtendBias"))
-        ExtendBias.Read(in_rReader["ExtendBias"]);
+    if (in_rReader.contains("Extend"))
+        Extend.Read(in_rReader["Extend"]);
+
+    if (in_rReader.contains("Slices"))
+    {
+        for (const auto& [rIndex, rSlice] : in_rReader["Slices"].items())
+        {
+            CsdVertexModifierGroup slice{};
+
+            if (!rSlice.is_null())
+                slice.Read(rSlice);
+
+            Slices.push_back(slice);
+        }
+    }
 
     return true;
 }
 
 bool CsdVertexModifierGroup::Write(nlohmann::json& in_rWriter)
 {
+    if (Flags != 0)
+        WriteFlags(in_rWriter, "Flags", Flags);
+
     if (!TL.IsDefault())
         TL.Write(in_rWriter["TL"]);
 
@@ -232,8 +269,14 @@ bool CsdVertexModifierGroup::Write(nlohmann::json& in_rWriter)
     if (!Offset.IsZero())
         Offset.Write(in_rWriter["Offset"]);
 
-    if (ExtendBias != CsdVector2(1.0f, 1.0f))
-        ExtendBias.Write(in_rWriter["ExtendBias"]);
+    if (!Extend.IsDefault())
+        Extend.Write(in_rWriter["Extend"]);
+
+    if (!Slices.empty())
+    {
+        for (size_t i = 0; i < Slices.size(); i++)
+            Slices[i].Write(in_rWriter["Slices"][i]);
+    }
 
     return true;
 }
@@ -306,7 +349,7 @@ bool CsdModifier::Read(const nlohmann::json& in_rReader)
         CornerMax = in_rReader["CornerMax"];
 
     if (in_rReader.contains("CornerIndex"))
-        CornerIndex = std::clamp(int(in_rReader["CornerIndex"]), 0, 7);
+        CornerIndex = std::clamp(size_t(in_rReader["CornerIndex"]), size_t(0), g_csdCorners.size());
 
     return true;
 }

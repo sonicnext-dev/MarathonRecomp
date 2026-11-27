@@ -312,6 +312,221 @@ CsdModifier* CsdModifierManager::Find(uint32_t in_data)
     return nullptr;
 }
 
+static bool CreateFlagsTable(const ImVec2& in_rSize = { 0, 0 })
+{
+    const auto tableFlags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_ScrollX | ImGuiTableFlags_ScrollY;
+    const auto result = ImGui::BeginTable("##Flags", g_CsdFlagNames.size() + 1, tableFlags, in_rSize);
+
+    if (!result)
+        return result;
+
+    ImGui::TableSetupScrollFreeze(1, 0);
+    ImGui::TableSetupColumn("");
+
+    for (const auto& [rFlag, rName] : g_CsdFlagNames)
+        ImGui::TableSetupColumn(rName, ImGuiTableColumnFlags_AngledHeader);
+
+    ImGui::TableAngledHeadersRow();
+
+    return result;
+}
+
+static void CreateFlagsRow(const char* in_pLabel, uint64_t* in_pFlags)
+{
+    ImGui::TableNextRow();
+    ImGui::TableNextColumn();
+    ImGui::AlignTextToFramePadding();
+    ImGui::Text("%s", in_pLabel);
+
+    for (const auto& [rFlag, rName] : g_CsdFlagNames)
+    {
+        ImGui::TableNextColumn();
+        ImGui::PushID(std::format("{}##{}", in_pLabel, rName).c_str());
+        ImGui::CheckboxFlags("", in_pFlags, rFlag);
+        ImGui::PopID();
+    }
+}
+
+static void DragRGBAF32(const char* in_pLabel, Sonicteam::SoX::RGBAF32* in_pColor, const float in_speed = 0.01f)
+{
+    ImGui::PushID(in_pLabel);
+    ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(2.0f, 0.0f));
+
+    if (ImGui::BeginTable("##RGBA", 5))
+    {
+        const float min = 0.0f;
+        const float max = 1.0f;
+
+        float r = in_pColor->Data[0].get();
+        float g = in_pColor->Data[1].get();
+        float b = in_pColor->Data[2].get();
+        float a = in_pColor->Data[3].get();
+
+        ImGui::TableNextColumn();
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::DragScalar("##R", ImGuiDataType_Float, &r, in_speed, &min, &max);
+        ImGui::TableNextColumn();
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::DragScalar("##G", ImGuiDataType_Float, &g, in_speed, &min, &max);
+        ImGui::TableNextColumn();
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::DragScalar("##B", ImGuiDataType_Float, &b, in_speed, &min, &max);
+        ImGui::TableNextColumn();
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::DragScalar("##A", ImGuiDataType_Float, &a, in_speed, &min, &max);
+        ImGui::TableNextColumn();
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("%s", in_pLabel);
+        ImGui::TableNextColumn();
+
+        in_pColor->Data[0] = r;
+        in_pColor->Data[1] = g;
+        in_pColor->Data[2] = b;
+        in_pColor->Data[3] = a;
+
+        ImGui::EndTable();
+    }
+
+    ImGui::PopStyleVar();
+    ImGui::PopID();
+}
+
+static void DrawPositionModifierNode(const char* in_pLabel, CsdVertexModifierGroup* in_pModifier, float in_speed = 1.0f)
+{
+    if (ImGui::TreeNode(in_pLabel))
+    {
+        ImGui::DragFloat2("Top Left", &in_pModifier->TL.X, in_speed);
+        ImGui::DragFloat2("Bottom Left", &in_pModifier->BL.X, in_speed);
+        ImGui::DragFloat2("Top Right", &in_pModifier->TR.X, in_speed);
+        ImGui::DragFloat2("Bottom Right", &in_pModifier->BR.X, in_speed);
+        ImGui::DragFloat2("All", &in_pModifier->Offset.X, in_speed);
+
+        if (ImGui::TreeNode("Extend Bias"))
+        {
+            ImGui::DragFloat2("Top Left", &in_pModifier->Extend.TopLeft.X, 0.01f);
+            ImGui::DragFloat2("Bottom Right", &in_pModifier->Extend.BottomRight.X, 0.01f);
+            ImGui::TreePop();
+        }
+
+        ImGui::TreePop();
+    }
+}
+
+static void DrawUVModifierNode(const char* in_pLabel, CsdVertexModifierGroup* in_pModifier, float in_speed = 0.01f)
+{
+    if (ImGui::TreeNode(in_pLabel))
+    {
+        ImGui::DragFloat2("Top Left", &in_pModifier->TL.U, in_speed);
+        ImGui::DragFloat2("Bottom Left", &in_pModifier->BL.U, in_speed);
+        ImGui::DragFloat2("Top Right", &in_pModifier->TR.U, in_speed);
+        ImGui::DragFloat2("Bottom Right", &in_pModifier->BR.U, in_speed);
+        ImGui::TreePop();
+    }
+}
+
+static void DrawColorModifierNode(const char* in_pLabel, CsdVertexModifierGroup* in_pModifier, float in_speed = 0.01f)
+{
+    if (ImGui::TreeNode(in_pLabel))
+    {
+        static std::array<const char*, 2> colorModes = { "Multiply", "Set" };
+
+        const auto createColorControls = [&](const std::string_view in_name, CsdVertexModifier* in_pModifier)
+        {
+            ImGui::PushID(in_pModifier);
+
+            ImGui::SetNextItemWidth(80.0f);
+            ImGui::Combo("##Mode", reinterpret_cast<int*>(&in_pModifier->ColorMode), colorModes.data(), colorModes.size());
+
+            ImGui::SameLine();
+
+            DragRGBAF32(in_name.data(), &in_pModifier->Color, in_speed);
+
+            ImGui::PopID();
+        };
+
+        createColorControls("Top Left", &in_pModifier->TL);
+        createColorControls("Bottom Left", &in_pModifier->BL);
+        createColorControls("Top Right", &in_pModifier->TR);
+        createColorControls("Bottom Right", &in_pModifier->BR);
+
+        ImGui::TreePop();
+    }
+}
+
+static void DrawModifiers(CsdVertexModifierGroup* in_pModifier)
+{
+    DrawPositionModifierNode("Position", in_pModifier);
+    DrawUVModifierNode("UV", in_pModifier);
+    DrawColorModifierNode("Color", in_pModifier);
+}
+
+static bool DrawVertexModifierGroupNode(std::string_view in_name, CsdVertexModifierGroup* in_pModifier, bool in_isSlice = false)
+{
+    bool isDeleting{};
+
+    if (ImGui::TreeNode(in_name.data()))
+    {
+        if (in_isSlice)
+        {
+            if (ImGui::TreeNode("Flags"))
+            {
+                if (CreateFlagsTable({ 0, 256.0f }))
+                {
+                    CreateFlagsRow("Flags", &in_pModifier->Flags);
+                    ImGui::EndTable();
+                }
+
+                ImGui::TreePop();
+            }
+        }
+
+        DrawModifiers(in_pModifier);
+
+        if (!in_isSlice)
+        {
+            if (ImGui::TreeNode("Slices"))
+            {
+                if (ImGui::Button("Add"))
+                    in_pModifier->Slices.push_back(CsdVertexModifierGroup());
+
+                if (!in_pModifier->Slices.empty())
+                {
+                    ImGui::Separator();
+
+                    std::optional<size_t> deleteIndex;
+
+                    for (size_t i = 0; i < in_pModifier->Slices.size(); i++)
+                    {
+                        ImGui::PushID(i);
+
+                        if (DrawVertexModifierGroupNode(std::format("{}", i).c_str(), &in_pModifier->Slices[i], true))
+                            deleteIndex = i;
+
+                        ImGui::PopID();
+                    }
+
+                    if (deleteIndex)
+                        in_pModifier->Slices.erase(in_pModifier->Slices.begin() + deleteIndex.value());
+                }
+
+                ImGui::TreePop();
+            }
+        }
+
+        ImGui::Separator();
+
+        if (in_isSlice)
+        {
+            if (ImGui::Button("Delete"))
+                isDeleting = true;
+        }
+
+        ImGui::TreePop();
+    }
+
+    return isDeleting;
+}
+
 void CsdModifierManager::DrawDebug()
 {
     if (!App::s_pApp)
@@ -406,6 +621,8 @@ void CsdModifierManager::DrawDebug()
 
         if (ImGui::CollapsingHeader("Modifiers", ImGuiTreeNodeFlags_DefaultOpen))
         {
+            static size_t totalModifierSize{};
+            static size_t activeModifierSize{};
             static size_t activeModifierCount{};
 
             if (ImGui::BeginTable("##Diagnostics", 2))
@@ -415,8 +632,8 @@ void CsdModifierManager::DrawDebug()
                 for (const auto& [rProject, rSize] : g_Projects)
                     projectsLength += rSize + sizeof(Chao::CSD::Project);
 
-                IMGUI_GENERIC_ROW("Total Modifiers", "%zu (%.2f KiB)", g_Modifiers.size(), static_cast<double>(g_Modifiers.size() * sizeof(CsdModifier) / 1024.0));
-                IMGUI_GENERIC_ROW("Active Modifiers", "%zu (%.2f KiB)", activeModifierCount, static_cast<double>(activeModifierCount * sizeof(CsdModifier) / 1024.0));
+                IMGUI_GENERIC_ROW("Total Modifiers", "%zu (%.2f KiB)", g_Modifiers.size(), static_cast<double>(totalModifierSize / 1024.0));
+                IMGUI_GENERIC_ROW("Active Modifiers", "%zu (%.2f KiB)", activeModifierCount, static_cast<double>(activeModifierSize / 1024.0));
                 IMGUI_GENERIC_ROW("Projects", "%zu (%.2f KiB)", g_Projects.size(), static_cast<double>(projectsLength / 1024.0));
                 IMGUI_GENERIC_ROW("Nodes", "%zu", g_Paths.size());
                 ImGui::EndTable();
@@ -435,6 +652,10 @@ void CsdModifierManager::DrawDebug()
 
             ImGui::Separator();
 
+            static char searchBuffer[256]{};
+            const auto hasSearchQuery = searchBuffer[0] != '\0';
+            ImGui::InputText("Search", reinterpret_cast<char*>(&searchBuffer), sizeof(searchBuffer));
+
             static std::array<const char*, 3> filters = { "All", "Active", "Inactive" };
             ImGui::Combo("Filter", &filter, filters.data(), filters.size());
 
@@ -447,9 +668,14 @@ void CsdModifierManager::DrawDebug()
 
             if (ImGui::BeginChild("##Modifiers", { 0, -footerHeight }))
             {
+                totalModifierSize = 0;
+                activeModifierSize = 0;
+
                 for (auto& [rModifierHash, rModifier] : g_Modifiers)
                 {
                     uintptr_t addr{};
+
+                    totalModifierSize += rModifier.GetSize();
 
                     // Find first reference to this modifier.
                     for (const auto& [rPath, rPathHash] : g_Paths)
@@ -457,12 +683,16 @@ void CsdModifierManager::DrawDebug()
                         if (rModifierHash == rPathHash)
                         {
                             addr = uintptr_t(rPath);
+                            activeModifierSize += rModifier.GetSize();
                             activeModifierCount++;
                             break;
                         }
                     }
 
                     if (filter != Filter_All && filter != (addr ? Filter_Active : Filter_Inactive))
+                        continue;
+
+                    if (hasSearchQuery && rModifier.Path.find(reinterpret_cast<const char*>(&searchBuffer)) == std::string::npos)
                         continue;
 
                     ImGui::PushID(addr);
@@ -486,47 +716,27 @@ void CsdModifierManager::DrawDebug()
 
                     if (isHeaderOpen)
                     {
-                        const auto tableFlags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_ScrollX | ImGuiTableFlags_ScrollY;
-
                         if (ImGui::TreeNodeEx("Flags", ImGuiTreeNodeFlags_DefaultOpen))
                         {
-                            if (ImGui::BeginTable("##Flags", g_CsdFlagNames.size() + 1, tableFlags, { 0, 398.0f }))
+                            if (CreateFlagsTable({ 0, 398.0f }))
                             {
-                                ImGui::TableSetupScrollFreeze(1, 0);
-                                ImGui::TableSetupColumn("");
-
-                                for (const auto& [rFlag, rName] : g_CsdFlagNames)
-                                    ImGui::TableSetupColumn(rName, ImGuiTableColumnFlags_AngledHeader);
-
-                                ImGui::TableAngledHeadersRow();
-                                ImGui::TableNextRow();
-
-                                const auto createFlagsControls = [](const char* in_pLabel, uint64_t* in_pFlags)
-                                {
-                                    ImGui::TableNextRow();
-                                    ImGui::TableNextColumn();
-                                    ImGui::AlignTextToFramePadding();
-                                    ImGui::Text("%s", in_pLabel);
-
-                                    for (const auto& [rFlag, rName] : g_CsdFlagNames)
-                                    {
-                                        ImGui::TableNextColumn();
-                                        ImGui::PushID(std::format("{}##{}", in_pLabel, rName).c_str());
-                                        ImGui::CheckboxFlags("", in_pFlags, rFlag);
-                                        ImGui::PopID();
-                                    }
-                                };
-
-                                createFlagsControls("Flags", &rModifier.Flags);
-                                createFlagsControls("Ultrawide Mask", &rModifier.Ultrawide.Mask);
-                                createFlagsControls("Ultrawide Edge Mask", &rModifier.Ultrawide.Edge.Mask);
-                                createFlagsControls("Ultrawide Center Mask", &rModifier.Ultrawide.Center.Mask);
-                                createFlagsControls("Narrow Mask", &rModifier.Narrow.Mask);
-                                createFlagsControls("Narrow Edge Mask", &rModifier.Narrow.Edge.Mask);
-                                createFlagsControls("Narrow Center Mask", &rModifier.Narrow.Center.Mask);
-
+                                CreateFlagsRow("Flags", &rModifier.Flags);
+                                CreateFlagsRow("Ultrawide Mask", &rModifier.Ultrawide.Mask);
+                                CreateFlagsRow("Ultrawide Edge Mask", &rModifier.Ultrawide.Edge.Mask);
+                                CreateFlagsRow("Ultrawide Center Mask", &rModifier.Ultrawide.Center.Mask);
+                                CreateFlagsRow("Narrow Mask", &rModifier.Narrow.Mask);
+                                CreateFlagsRow("Narrow Edge Mask", &rModifier.Narrow.Edge.Mask);
+                                CreateFlagsRow("Narrow Center Mask", &rModifier.Narrow.Center.Mask);
                                 ImGui::EndTable();
                             }
+
+                            if (ImGui::Button("Enable All", { ImGui::GetContentRegionAvail().x * 0.5f, 0 }))
+                                rModifier.Flags |= ~0ULL;
+
+                            ImGui::SameLine();
+
+                            if (ImGui::Button("Disable All", { ImGui::GetContentRegionAvail().x, 0 }))
+                                rModifier.Flags &= ~rModifier.Flags;
 
                             if (ImGui::TreeNode("Raw"))
                             {
@@ -571,101 +781,14 @@ void CsdModifierManager::DrawDebug()
                             ImGui::TreePop();
                         }
 
-                        if (ImGui::TreeNode("Alignment"))
+                        if (ImGui::TreeNode("Vertices"))
                         {
-                            const auto dragRgba8 = [](const char* in_pLabel, Sonicteam::SoX::RGBA8* in_pColor, const float in_speed = 1.0f)
-                            {
-                                ImGui::PushID(in_pLabel);
-                                ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(2.0f, 0.0f));
-
-                                if (ImGui::BeginTable("##RGBA", 5))
-                                {
-                                    const uint8_t min = 0;
-                                    const uint8_t max = 255;
-
-                                    ImGui::TableNextColumn();
-                                    ImGui::SetNextItemWidth(-FLT_MIN);
-                                    ImGui::DragScalar("##R", ImGuiDataType_U8, &in_pColor->Data[0].value, 1.0f, &min, &max);
-                                    ImGui::TableNextColumn();
-                                    ImGui::SetNextItemWidth(-FLT_MIN);
-                                    ImGui::DragScalar("##G", ImGuiDataType_U8, &in_pColor->Data[1].value, 1.0f, &min, &max);
-                                    ImGui::TableNextColumn();
-                                    ImGui::SetNextItemWidth(-FLT_MIN);
-                                    ImGui::DragScalar("##B", ImGuiDataType_U8, &in_pColor->Data[2].value, 1.0f, &min, &max);
-                                    ImGui::TableNextColumn();
-                                    ImGui::SetNextItemWidth(-FLT_MIN);
-                                    ImGui::DragScalar("##A", ImGuiDataType_U8, &in_pColor->Data[3].value, 1.0f, &min, &max);
-                                    ImGui::TableNextColumn();
-                                    ImGui::AlignTextToFramePadding();
-                                    ImGui::Text("%s", in_pLabel);
-                                    ImGui::TableNextColumn();
-                                    ImGui::EndTable();
-                                }
-
-                                ImGui::PopStyleVar();
-                                ImGui::PopID();
-                            };
-
-                            const auto drawPositionModifierNode = [](const char* in_pLabel, CsdVertexModifierGroup* in_pModifier, float in_speed = 1.0f)
-                            {
-                                if (ImGui::TreeNode(in_pLabel))
-                                {
-                                    ImGui::DragFloat2("Top Left", &in_pModifier->TL.X, in_speed);
-                                    ImGui::DragFloat2("Bottom Left", &in_pModifier->BL.X, in_speed);
-                                    ImGui::DragFloat2("Top Right", &in_pModifier->TR.X, in_speed);
-                                    ImGui::DragFloat2("Bottom Right", &in_pModifier->BR.X, in_speed);
-                                    ImGui::DragFloat2("All", &in_pModifier->Offset.X, in_speed);
-                                    ImGui::DragFloat2("Extend Bias", &in_pModifier->ExtendBias.X, 0.01f);
-                                    ImGui::TreePop();
-                                }
-                            };
-
-                            const auto drawUvModifierNode = [](const char* in_pLabel, CsdVertexModifierGroup* in_pModifier, float in_speed = 0.01f)
-                            {
-                                if (ImGui::TreeNode(in_pLabel))
-                                {
-                                    ImGui::DragFloat2("Top Left", &in_pModifier->TL.U, in_speed);
-                                    ImGui::DragFloat2("Bottom Left", &in_pModifier->BL.U, in_speed);
-                                    ImGui::DragFloat2("Top Right", &in_pModifier->TR.U, in_speed);
-                                    ImGui::DragFloat2("Bottom Right", &in_pModifier->BR.U, in_speed);
-                                    ImGui::TreePop();
-                                }
-                            };
-
-                            const auto drawColorModifierNode = [&](const char* in_pLabel, CsdVertexModifierGroup* in_pModifier, float in_speed = 1.0f)
-                            {
-                                if (ImGui::TreeNode(in_pLabel))
-                                {
-                                    dragRgba8("Top Left", &in_pModifier->TL.Color, in_speed);
-                                    dragRgba8("Bottom Left", &in_pModifier->BL.Color, in_speed);
-                                    dragRgba8("Top Right", &in_pModifier->TR.Color, in_speed);
-                                    dragRgba8("Bottom Right", &in_pModifier->BR.Color, in_speed);
-                                    ImGui::TreePop();
-                                }
-                            };
-
-                            const auto drawModifiers = [&](CsdVertexModifierGroup* in_pModifier)
-                            {
-                                drawPositionModifierNode("Position Modifier", in_pModifier);
-                                drawUvModifierNode("UV Modifier", in_pModifier);
-                                drawColorModifierNode("Color Modifier", in_pModifier);
-                            };
-
-                            const auto drawVertexModifierGroupNode = [&](std::string_view in_name, CsdVertexModifierGroup* in_pModifier)
-                            {
-                                if (ImGui::TreeNode(in_name.data()))
-                                {
-                                    drawModifiers(in_pModifier);
-                                    ImGui::TreePop();
-                                }
-                            };
-
                             const auto drawAlignmentModifierNode = [&](std::string_view in_name, CsdAlignmentModifier* in_pModifier)
                             {
                                 if (ImGui::TreeNode(in_name.data()))
                                 {
-                                    drawVertexModifierGroupNode("Base", &in_pModifier->Base);
-                                    drawVertexModifierGroupNode("Repeat", &in_pModifier->Repeat);
+                                    DrawVertexModifierGroupNode("Base", &in_pModifier->Base);
+                                    DrawVertexModifierGroupNode("Repeat", &in_pModifier->Repeat);
                                     ImGui::TreePop();
                                 }
                             };

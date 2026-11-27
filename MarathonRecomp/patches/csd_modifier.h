@@ -21,67 +21,69 @@ enum CsdFlags : uint64_t
     CSD_STRETCH_VERTICAL = MAKE_BITFLAG64(5),
     CSD_STRETCH = CSD_STRETCH_HORIZONTAL | CSD_STRETCH_VERTICAL,
 
-    CSD_UNSTRETCH_HORIZONTAL = MAKE_BITFLAG64(6),
-
-    CSD_EXTEND_LEFT = MAKE_BITFLAG64(7),
-    CSD_EXTEND_RIGHT = MAKE_BITFLAG64(8),
+    CSD_EXTEND_LEFT = MAKE_BITFLAG64(6),
+    CSD_EXTEND_RIGHT = MAKE_BITFLAG64(7),
     CSD_EXTEND = CSD_EXTEND_LEFT | CSD_EXTEND_RIGHT,
 
-    CSD_STORE_LEFT_CORNER = MAKE_BITFLAG64(9),
-    CSD_STORE_RIGHT_CORNER = MAKE_BITFLAG64(10),
+    CSD_STORE_LEFT_CORNER = MAKE_BITFLAG64(8),
+    CSD_STORE_RIGHT_CORNER = MAKE_BITFLAG64(9),
 
-    CSD_SKIP = MAKE_BITFLAG64(11),
+    CSD_SKIP = MAKE_BITFLAG64(10),
 
-    CSD_OFFSET_SCALE_LEFT = MAKE_BITFLAG64(12),
-    CSD_OFFSET_SCALE_RIGHT = MAKE_BITFLAG64(13),
+    CSD_OFFSET_SCALE_LEFT = MAKE_BITFLAG64(11),
+    CSD_OFFSET_SCALE_RIGHT = MAKE_BITFLAG64(12),
 
-    CSD_POSITION_MODIFIER = MAKE_BITFLAG64(14),
-    CSD_UV_MODIFIER = MAKE_BITFLAG64(15),
-    CSD_COLOR_MODIFIER = MAKE_BITFLAG64(16),
+    CSD_POSITION_MODIFIER = MAKE_BITFLAG64(13),
+    CSD_UV_MODIFIER = MAKE_BITFLAG64(14),
+    CSD_COLOR_MODIFIER = MAKE_BITFLAG64(15),
 
-    CSD_REPEAT_LEFT = MAKE_BITFLAG64(17),
-    CSD_REPEAT_RIGHT = MAKE_BITFLAG64(18),
-    CSD_REPEAT_UP = MAKE_BITFLAG64(19),
-    CSD_REPEAT_DOWN = MAKE_BITFLAG64(20),
-    CSD_REPEAT_FLIP_HORIZONTAL = MAKE_BITFLAG64(21),
-    CSD_REPEAT_FLIP_VERTICAL = MAKE_BITFLAG64(22),
-    CSD_REPEAT_EXTEND = MAKE_BITFLAG64(23),
-    CSD_REPEAT_POSITION_MODIFIER = MAKE_BITFLAG64(24),
-    CSD_REPEAT_UV_MODIFIER = MAKE_BITFLAG64(25),
-    CSD_REPEAT_COLOR_MODIFIER = MAKE_BITFLAG64(26),
+    // TODO: these should be bit flags inside CsdVertexModifierGroup.
+    CSD_REPEAT_LEFT = MAKE_BITFLAG64(16),
+    CSD_REPEAT_RIGHT = MAKE_BITFLAG64(17),
+    CSD_REPEAT_UP = MAKE_BITFLAG64(18),
+    CSD_REPEAT_DOWN = MAKE_BITFLAG64(19),
 
-    CSD_BLACK_BAR = MAKE_BITFLAG64(27),
-    CSD_PROHIBIT_BLACK_BAR = MAKE_BITFLAG64(28),
+    // TODO: these could be set up to work without repeat too.
+    CSD_REPEAT_FLIP_HORIZONTAL = MAKE_BITFLAG64(20),
+    CSD_REPEAT_FLIP_VERTICAL = MAKE_BITFLAG64(21),
 
-    CSD_CORNER_EXTRACT = MAKE_BITFLAG64(29),
+    // TODO: this could be a boolean inside CsdVertexModifierGroup.
+    CSD_REPEAT_EXTEND = MAKE_BITFLAG64(22),
 
-    CSD_RADARMAP = MAKE_BITFLAG64(30),
+    // TODO: these could be removed and each CsdVertexModifierGroup have a set of flags instead.
+    CSD_REPEAT_POSITION_MODIFIER = MAKE_BITFLAG64(23),
+    CSD_REPEAT_UV_MODIFIER = MAKE_BITFLAG64(24),
+    CSD_REPEAT_COLOR_MODIFIER = MAKE_BITFLAG64(25),
 
-    CSD_POD_BASE = MAKE_BITFLAG64(31),
-    CSD_POD_CLONE = MAKE_BITFLAG64(32),
+    CSD_CORNER_EXTRACT = MAKE_BITFLAG64(26),
 
-    CSD_MULTIPLAYER = MAKE_BITFLAG64(33),
+    CSD_RADARMAP = MAKE_BITFLAG64(27),
 
-    CSD_CHEVRON = MAKE_BITFLAG64(34),
+    CSD_POD_BASE = MAKE_BITFLAG64(28),
+    CSD_POD_CLONE = MAKE_BITFLAG64(29),
 
-    CSD_SCENE_DISABLE_MOTION = MAKE_BITFLAG64(35),
+    CSD_MULTIPLAYER = MAKE_BITFLAG64(30),
 
-    CSD_EVENT = MAKE_BITFLAG64(36),
+    CSD_CHEVRON = MAKE_BITFLAG64(31),
 
-    CSD_CRI_LOGO = MAKE_BITFLAG64(37),
+    CSD_SCENE_DISABLE_MOTION = MAKE_BITFLAG64(32),
 
-    CSD_BUTTON_WINDOW = MAKE_BITFLAG64(38),
+    CSD_EVENT = MAKE_BITFLAG64(33),
 
-    CSD_CROP_TO_FIT = MAKE_BITFLAG64(39),
-    CSD_CROP_TO_WIDESCREEN = MAKE_BITFLAG64(40),
+    CSD_CRI_LOGO = MAKE_BITFLAG64(34),
 
-    CSD_3D = MAKE_BITFLAG64(41),
+    CSD_BUTTON_WINDOW = MAKE_BITFLAG64(35),
 
-    CSD_ALIGN_IGNORE_PREFERENCE_H = MAKE_BITFLAG64(42),
-    CSD_ALIGN_IGNORE_PREFERENCE_V = MAKE_BITFLAG64(43),
+    CSD_CROP_TO_FIT = MAKE_BITFLAG64(36),
+    CSD_CROP_TO_WIDESCREEN = MAKE_BITFLAG64(37),
+
+    CSD_3D = MAKE_BITFLAG64(38),
+
+    CSD_ALIGN_IGNORE_PREFERENCE_H = MAKE_BITFLAG64(39),
+    CSD_ALIGN_IGNORE_PREFERENCE_V = MAKE_BITFLAG64(40),
     CSD_ALIGN_IGNORE_PREFERENCE = CSD_ALIGN_IGNORE_PREFERENCE_H | CSD_ALIGN_IGNORE_PREFERENCE_V,
 
-    CSD_LIFE_COUNTER = MAKE_BITFLAG64(43),
+    CSD_LIFE_COUNTER = MAKE_BITFLAG64(41),
 
     CSD_SPECIAL_FLAGS = CSD_RADARMAP | CSD_BUTTON_WINDOW | CSD_LIFE_COUNTER
 };
@@ -176,24 +178,56 @@ public:
     }
 };
 
-class CsdVertexModifierGroup : public IJsonSerializable
+class CsdExtendTransform : public IJsonSerializable
 {
 public:
-    CsdVertexModifier TL{};
-    CsdVertexModifier BL{};
-    CsdVertexModifier TR{};
-    CsdVertexModifier BR{};
-
-    CsdVector2 Offset{};
-    CsdVector2 ExtendBias{ 1.0f, 1.0f };
+    CsdVector2 TopLeft{ 1.0f, 1.0f };
+    CsdVector2 BottomRight{ 1.0f, 1.0f };
 
     virtual bool Read(const nlohmann::json& in_rReader) override;
     virtual bool Write(nlohmann::json& in_rWriter) override;
 
     bool IsDefault() const
     {
-        return TL.IsDefault() && BL.IsDefault() && TR.IsDefault() && BR.IsDefault() &&
-               Offset.IsZero() && ExtendBias == CsdVector2(1.0f, 1.0f);
+        return TopLeft == CsdVector2(1.0f, 1.0f) &&
+               BottomRight == CsdVector2(1.0f, 1.0f);
+    }
+
+    bool operator==(const CsdExtendTransform& in_rOther) const
+    {
+        return TopLeft == in_rOther.TopLeft &&
+               BottomRight == in_rOther.BottomRight;
+    }
+};
+
+class CsdVertexModifierGroup : public IJsonSerializable
+{
+public:
+    uint64_t Flags{};
+
+    CsdVertexModifier TL{};
+    CsdVertexModifier BL{};
+    CsdVertexModifier TR{};
+    CsdVertexModifier BR{};
+
+    CsdVector2 Offset{};
+    CsdExtendTransform Extend{};
+
+    std::vector<CsdVertexModifierGroup> Slices{};
+
+    virtual bool Read(const nlohmann::json& in_rReader) override;
+    virtual bool Write(nlohmann::json& in_rWriter) override;
+
+    bool IsDefault() const
+    {
+        return Flags == 0 &&
+               TL.IsDefault() &&
+               BL.IsDefault() &&
+               TR.IsDefault() &&
+               BR.IsDefault() &&
+               Offset.IsZero() &&
+               Extend.IsDefault() &&
+               Slices.empty();
     }
 
     CsdVertexModifier& GetVertexModifier(const CsdVertexID in_id)
@@ -209,14 +243,26 @@ public:
         return TL;
     }
 
+    size_t GetTotalSliceCount() const
+    {
+        size_t result = Slices.size();
+
+        for (const auto& rSlice : Slices)
+            result += rSlice.GetTotalSliceCount();
+
+        return result;
+    }
+
     bool operator==(const CsdVertexModifierGroup& in_rOther) const
     {
-        return TL == in_rOther.TL &&
+        return Flags == in_rOther.Flags &&
+               TL == in_rOther.TL &&
                BL == in_rOther.BL &&
                TR == in_rOther.TR &&
                BR == in_rOther.BR &&
                Offset == in_rOther.Offset &&
-               ExtendBias == in_rOther.ExtendBias;
+               Extend == in_rOther.Extend &&
+               Slices == in_rOther.Slices;
     }
 };
 
@@ -279,6 +325,24 @@ public:
 
     virtual bool Read(const nlohmann::json& in_rReader) override;
     virtual bool Write(nlohmann::json& in_rWriter) override;
+
+    size_t GetSize() const
+    {
+        size_t result = sizeof(CsdModifier);
+
+        const auto addAlignmentModifierGroupSize = [&](const CsdAlignmentModifierGroup& in_rModifier)
+        {
+            result += in_rModifier.Edge.Base.GetTotalSliceCount() * sizeof(CsdVertexModifierGroup);
+            result += in_rModifier.Edge.Repeat.GetTotalSliceCount() * sizeof(CsdVertexModifierGroup);
+            result += in_rModifier.Center.Base.GetTotalSliceCount() * sizeof(CsdVertexModifierGroup);
+            result += in_rModifier.Center.Repeat.GetTotalSliceCount() * sizeof(CsdVertexModifierGroup);
+        };
+
+        addAlignmentModifierGroupSize(Ultrawide);
+        addAlignmentModifierGroupSize(Narrow);
+
+        return result;
+    }
 
     uint64_t GetFlags() const;
 
