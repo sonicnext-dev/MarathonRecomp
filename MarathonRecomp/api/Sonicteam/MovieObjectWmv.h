@@ -33,11 +33,6 @@ namespace Sonicteam
         be<float> m_Frame;
         xpointer<void> m_pTechnique;
         stdx::string m_Language;
-
-        void SetVolume(float in_volume) const
-        {
-            m_pXmvPlayer->m_pChannel->m_pAudioRenderer->m_pSourceVoice->m_pVoice->SetVolume(in_volume);
-        }
     };
 
     MARATHON_ASSERT_OFFSETOF(MovieObjectWmv, m_UseCustomDimensions, 0x08);

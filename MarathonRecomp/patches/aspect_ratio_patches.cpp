@@ -4,6 +4,7 @@
 #include <patches/hook_event.h>
 #include <patches/loading_patches.h>
 #include <patches/MainMenuTask_patches.h>
+#include <patches/movie_patches.h>
 #include <ui/achievement_menu.h>
 #include <ui/black_bar.h>
 #include <ui/game_window.h>
@@ -1483,7 +1484,7 @@ PPC_FUNC(sub_8264CC90)
     if ((movieModifier.Flags & MOVIE_BGM) != 0)
     {
         if (const auto pAudioEngine = Sonicteam::AudioEngineXenon::GetInstance())
-            pMovieObjectWmv->SetVolume(pAudioEngine->m_MusicVolume);
+            SetMovieVolume(pMovieObjectWmv, pAudioEngine->m_MusicVolume);
     }
 
     if (s_movieUsesCustomDimensions)
