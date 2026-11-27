@@ -19,6 +19,37 @@
         return rData;                                                           \
     }
 
+#define MAKE_MATH_OPERATOR(OPERATOR)                                                                   \
+    template <ColorNumeric TOtherChannelType, ColorFormat OtherFormat, size_t OtherFields>             \
+    Color operator OPERATOR(const Color<TOtherChannelType, OtherFormat, OtherFields>& in_rOther) const \
+    {                                                                                                  \
+        Color result = *this;                                                                          \
+        result OPERATOR##= in_rOther;                                                                  \
+        return result;                                                                                 \
+    }                                                                                                  \
+                                                                                                       \
+    template <ColorNumeric TOtherChannelType, ColorFormat OtherFormat, size_t OtherFields>             \
+    Color& operator OPERATOR##=(const Color<TOtherChannelType, OtherFormat, OtherFields>& in_rOther)   \
+    {                                                                                                  \
+        constexpr ColorChannel channels[] =                                                            \
+        {                                                                                              \
+            ColorChannel_R, ColorChannel_G, ColorChannel_B, ColorChannel_A                             \
+        };                                                                                             \
+                                                                                                       \
+        for (const auto channel : channels)                                                            \
+        {                                                                                              \
+            if (!HasColorChannel<Format>(channel))                                                     \
+                continue;                                                                              \
+                                                                                                       \
+            const auto left = GetChannelNormalized(channel);                                           \
+            const auto right = in_rOther.GetChannelNormalized(channel);                                \
+                                                                                                       \
+            SetChannelNormalized(channel, left OPERATOR right);                                        \
+        }                                                                                              \
+                                                                                                       \
+        return *this;                                                                                  \
+    }
+
 namespace Sonicteam::SoX
 {
     template <typename T>
@@ -89,10 +120,14 @@ namespace Sonicteam::SoX
     {
         be<TChannelType> Data[Fields]{};
 
-        Color() = default;
+        Color()
+        {
+            for (size_t i = 0; i < Fields; i++)
+                Data[i] = GetChannelMax();
+        }
 
         Color(const TChannelType in_r, const TChannelType in_g, const TChannelType in_b,
-              const TChannelType in_a = std::numeric_limits<TChannelType>::max())
+              const TChannelType in_a = GetChannelMax())
         {
             R(in_r);
             G(in_g);
@@ -108,6 +143,64 @@ namespace Sonicteam::SoX
             memcpy(Data, in_rColor.Data, sizeof(Data));
         }
 
+        static constexpr TChannelType GetChannelMax()
+        {
+            if constexpr (std::is_floating_point_v<TChannelType>)
+            {
+                return TChannelType(1.0);
+            }
+            else
+            {
+                return std::numeric_limits<TChannelType>::max();
+            }
+        }
+
+        TChannelType GetChannel(const ColorChannel in_channel) const
+        {
+            if (!HasColorChannel<Format>(in_channel))
+                return GetChannelMax();
+
+            return Data[GetColorChannelIndex<Format>(in_channel)];
+        }
+
+        bool SetChannel(const ColorChannel in_channel, const TChannelType in_value)
+        {
+            if (!HasColorChannel<Format>(in_channel))
+                return false;
+
+            Data[GetColorChannelIndex<Format>(in_channel)] = in_value;
+
+            return true;
+        }
+
+        float GetChannelNormalized(const ColorChannel in_channel) const
+        {
+            const auto channel = GetChannel(in_channel);
+
+            if constexpr (std::is_floating_point_v<TChannelType>)
+            {
+                return static_cast<float>(channel);
+            }
+            else
+            {
+                return static_cast<float>(channel) / static_cast<float>(std::numeric_limits<TChannelType>::max());
+            }
+        }
+
+        void SetChannelNormalized(const ColorChannel in_channel, float in_value)
+        {
+            in_value = std::clamp(in_value, 0.0f, 1.0f);
+
+            if constexpr (std::is_floating_point_v<TChannelType>)
+            {
+                SetChannel(in_channel, static_cast<TChannelType>(in_value));
+            }
+            else
+            {
+                SetChannel(in_channel, static_cast<TChannelType>(std::round(in_value * static_cast<float>(std::numeric_limits<TChannelType>::max()))));
+            }
+        }
+
         MAKE_COLOR_CHANNEL(R);
         MAKE_COLOR_CHANNEL(G);
         MAKE_COLOR_CHANNEL(B);
@@ -121,12 +214,17 @@ namespace Sonicteam::SoX
             A((in_color & 0x000000FF));
         }
 
+        MAKE_MATH_OPERATOR(/);
+        MAKE_MATH_OPERATOR(*);
+        MAKE_MATH_OPERATOR(+);
+        MAKE_MATH_OPERATOR(-);
+
         bool operator==(const Color& in_rOther) const
         {
-            return this->Data[0] == in_rOther.Data[0] &&
-                   this->Data[1] == in_rOther.Data[1] &&
-                   this->Data[2] == in_rOther.Data[2] &&
-                   this->Data[3] == in_rOther.Data[3];
+            return Data[0] == in_rOther.Data[0] &&
+                   Data[1] == in_rOther.Data[1] &&
+                   Data[2] == in_rOther.Data[2] &&
+                   Data[3] == in_rOther.Data[3];
         }
     };
     
@@ -143,4 +241,5 @@ namespace Sonicteam::SoX
     struct ARGBF32 : Color<float, ColorFormat_ARGB> {};
 }
 
+#undef MAKE_MATH_OPERATOR
 #undef MAKE_COLOR_CHANNEL
