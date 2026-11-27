@@ -138,8 +138,8 @@ set(MARATHON_RECOMP_GPU_CXX_SOURCES
 
 set(MARATHON_RECOMP_APU_CXX_SOURCES
     "apu/audio.cpp"
-    "apu/xma_decoder.cpp"
     "apu/embedded_player.cpp"
+    "apu/host_pcm.cpp"
     "apu/driver/sdl3_driver.cpp"
 )
 
@@ -161,6 +161,7 @@ set(MARATHON_RECOMP_PATCHES_CXX_SOURCES
     "patches/lua_patches.cpp"
     "patches/MainMenuTask_patches.cpp"
     "patches/misc_patches.cpp"
+    "patches/movie_patches.cpp"
     "patches/pause_listener.cpp"
     "patches/pause_patches.cpp"
     "patches/player_patches.cpp"
@@ -169,6 +170,7 @@ set(MARATHON_RECOMP_PATCHES_CXX_SOURCES
     "patches/TitleTask_patches.cpp"
     "patches/ui_toggle_listener.cpp"
     "patches/video_patches.cpp"
+    "patches/xma_patches.cpp"
 )
 
 set(MARATHON_RECOMP_UI_CXX_SOURCES
@@ -388,6 +390,7 @@ if (MARATHON_RECOMP_FLATPAK)
 endif()
 
 find_package(CURL REQUIRED)
+find_package(FFMPEG REQUIRED)
 
 if (MARATHON_RECOMP_METAL)
     target_compile_definitions(MarathonRecomp PRIVATE MARATHON_RECOMP_METAL)
@@ -439,10 +442,9 @@ target_link_libraries(MarathonRecomp PRIVATE
     MarathonRecompLib
     xxHash::xxhash
     CURL::libcurl
+    ${FFMPEG_LIBRARIES}
     plume
 )
-
-target_link_libraries(MarathonRecomp PRIVATE ffmpeg)
 
 target_include_directories(MarathonRecomp PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
