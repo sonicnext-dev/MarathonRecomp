@@ -746,10 +746,10 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
 
     const auto applyColorModifier = [&](CsdVertexModifierGroup* in_pModifier)
     {
-        getVertex(tl)->Color = in_pModifier->GetVertexModifier(tl).Color;
-        getVertex(bl)->Color = in_pModifier->GetVertexModifier(bl).Color;
-        getVertex(tr)->Color = in_pModifier->GetVertexModifier(tr).Color;
-        getVertex(br)->Color = in_pModifier->GetVertexModifier(br).Color;
+        in_pModifier->GetVertexModifier(tl).ApplyColorModifier(getVertex(tl));
+        in_pModifier->GetVertexModifier(bl).ApplyColorModifier(getVertex(bl));
+        in_pModifier->GetVertexModifier(tr).ApplyColorModifier(getVertex(tr));
+        in_pModifier->GetVertexModifier(br).ApplyColorModifier(getVertex(br));
     };
 
     const auto applyRepeatModifiers = [&]()

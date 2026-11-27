@@ -122,20 +122,45 @@ public:
 class CsdVertexModifier : public IJsonSerializable
 {
 public:
+    enum class ColorMode
+    {
+        Multiply,
+        Set
+    };
+
     float X{};
     float Y{};
-    Sonicteam::SoX::RGBA8 Color{ { 0, 0, 0, 255 } };
+    Sonicteam::SoX::RGBAF32 Color{};
+    ColorMode ColorMode{};
     float U{};
     float V{};
 
     virtual bool Read(const nlohmann::json& in_rReader) override;
     virtual bool Write(nlohmann::json& in_rWriter) override;
 
+    void ApplyColorModifier(Chao::CSD::Vertex* in_pVertex) const
+    {
+        switch (ColorMode)
+        {
+            case ColorMode::Multiply:
+                in_pVertex->Color *= Color;
+                break;
+
+            case ColorMode::Set:
+                in_pVertex->Color.SetChannelNormalized(Sonicteam::SoX::ColorChannel_R, Color.Data[0]);
+                in_pVertex->Color.SetChannelNormalized(Sonicteam::SoX::ColorChannel_G, Color.Data[1]);
+                in_pVertex->Color.SetChannelNormalized(Sonicteam::SoX::ColorChannel_B, Color.Data[2]);
+                in_pVertex->Color.SetChannelNormalized(Sonicteam::SoX::ColorChannel_A, Color.Data[3]);
+                break;
+        }
+    }
+
     bool IsDefault() const
     {
         return X == 0 &&
                Y == 0 &&
-               Color == Sonicteam::SoX::RGBA8{ { 0, 0, 0, 255 } } &&
+               Color == Sonicteam::SoX::RGBAF32() &&
+               ColorMode == ColorMode::Multiply &&
                U == 0 &&
                V == 0;
     }
@@ -145,6 +170,7 @@ public:
         return X == in_rOther.X &&
                Y == in_rOther.Y &&
                Color == in_rOther.Color &&
+               ColorMode == in_rOther.ColorMode &&
                U == in_rOther.U &&
                V == in_rOther.V;
     }

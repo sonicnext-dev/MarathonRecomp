@@ -92,7 +92,7 @@ static bool WriteFlags(nlohmann::json& in_rWriter, const std::string_view in_key
     return true;
 }
 
-static bool ReadRGBA8(const nlohmann::json& in_rReader, const std::string_view in_key, Sonicteam::SoX::RGBA8& io_rColor)
+static bool ReadRGBAF32(const nlohmann::json& in_rReader, const std::string_view in_key, Sonicteam::SoX::RGBAF32& io_rColor)
 {
     if (!in_rReader.contains(in_key))
         return false;
@@ -112,7 +112,7 @@ static bool ReadRGBA8(const nlohmann::json& in_rReader, const std::string_view i
     return true;
 }
 
-static bool WriteRGBA8(nlohmann::json& in_rWriter, const std::string_view in_key, const Sonicteam::SoX::RGBA8& in_rColor)
+static bool WriteRGBAF32(nlohmann::json& in_rWriter, const std::string_view in_key, const Sonicteam::SoX::RGBAF32& in_rColor)
 {
     in_rWriter[in_key] =
     {
@@ -155,7 +155,10 @@ bool CsdVertexModifier::Read(const nlohmann::json& in_rReader)
     if (in_rReader.contains("Y"))
         Y = in_rReader["Y"];
 
-    ReadRGBA8(in_rReader, "Color", Color);
+    ReadRGBAF32(in_rReader, "Color", Color);
+
+    if (in_rReader.contains("ColorMode"))
+        ColorMode = in_rReader["ColorMode"];
 
     if (in_rReader.contains("U"))
         U = in_rReader["U"];
@@ -174,8 +177,11 @@ bool CsdVertexModifier::Write(nlohmann::json& in_rWriter)
     if (Y)
         in_rWriter["Y"] = Y;
 
-    if (Color != Sonicteam::SoX::RGBA8{ { 0, 0, 0, 255 } })
-        WriteRGBA8(in_rWriter, "Color", Color);
+    if (Color != Sonicteam::SoX::RGBAF32{ { 1.0f, 1.0f, 1.0f, 1.0f } })
+        WriteRGBAF32(in_rWriter, "Color", Color);
+
+    if (ColorMode != ColorMode::Multiply)
+        in_rWriter["ColorMode"] = ColorMode;
 
     if (U)
         in_rWriter["U"] = U;
