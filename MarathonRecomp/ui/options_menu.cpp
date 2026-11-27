@@ -1,4 +1,5 @@
 #include "options_menu.h"
+#include <apu/audio.h>
 #include <locale/locale.h>
 #include <patches/aspect_ratio_patches.h>
 #include <patches/audio_patches.h>
@@ -513,6 +514,7 @@ static void DrawOption
                     if (config->Value != s_oldValue)
                     {
                         VideoConfigValueChangedCallback(config);
+                        XAudioConfigValueChangedCallback(config);
 
                         if (config->ApplyCallback)
                             config->ApplyCallback(config);
@@ -536,6 +538,7 @@ static void DrawOption
                     if (static_cast<void*>(config) != &Config::WindowSize)
                     {
                         VideoConfigValueChangedCallback(config);
+                        XAudioConfigValueChangedCallback(config);
 
                         if (config->Callback)
                             config->Callback(config);
@@ -559,6 +562,7 @@ static void DrawOption
                     config->MakeDefault();
 
                     VideoConfigValueChangedCallback(config);
+                    XAudioConfigValueChangedCallback(config);
 
                     if (config->Callback)
                         config->Callback(config);
@@ -836,7 +840,7 @@ static void DrawOptions(ImVec2 min, ImVec2 max)
             DrawOption(rowCount++, &Config::MasterVolume, true);
             DrawOption(rowCount++, &Config::MusicVolume, true);
             DrawOption(rowCount++, &Config::EffectsVolume, true);
-            DrawOption(rowCount++, &Config::ChannelConfiguration, !OptionsMenu::s_isPause, cmnReason);
+            DrawOption(rowCount++, &Config::ChannelConfiguration, true);
             DrawOption(rowCount++, &Config::MuteOnFocusLost, true);
             DrawOption(rowCount++, &Config::MusicAttenuation, AudioPatches::CanAttenuate(), &Localise("Options_Desc_OSNotSupported"));
             break;

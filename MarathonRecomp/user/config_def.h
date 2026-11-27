@@ -72,7 +72,7 @@ CONFIG_DEFINE_ENUM("Bindings", EMouseInput, Mouse_RightStickRight, EMouseInput::
 CONFIG_DEFINE_LOCALISED("Audio", float, MasterVolume, 1.0f, false);
 CONFIG_DEFINE_LOCALISED("Audio", float, MusicVolume, 0.6f, false);
 CONFIG_DEFINE_LOCALISED("Audio", float, EffectsVolume, 0.6f, false);
-CONFIG_DEFINE_ENUM_LOCALISED("Audio", EChannelConfiguration, ChannelConfiguration, EChannelConfiguration::Stereo, true);
+CONFIG_DEFINE_ENUM_LOCALISED("Audio", EChannelConfiguration, ChannelConfiguration, EChannelConfiguration::Stereo, false);
 CONFIG_DEFINE_LOCALISED("Audio", bool, MuteOnFocusLost, true, false);
 CONFIG_DEFINE_LOCALISED("Audio", bool, MusicAttenuation, false, false);
 
