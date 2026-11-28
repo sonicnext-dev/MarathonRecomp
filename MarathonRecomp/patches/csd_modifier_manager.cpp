@@ -420,6 +420,7 @@ static void DrawUVModifierNode(const char* in_pLabel, CsdVertexModifierGroup* in
         ImGui::DragFloat2("Bottom Left", &in_pModifier->BL.U, in_speed);
         ImGui::DragFloat2("Top Right", &in_pModifier->TR.U, in_speed);
         ImGui::DragFloat2("Bottom Right", &in_pModifier->BR.U, in_speed);
+        ImGui::DragFloat2("All", &in_pModifier->Offset.U, in_speed);
         ImGui::TreePop();
     }
 }

@@ -144,18 +144,13 @@ bool CsdVector2::Write(nlohmann::json& in_rWriter)
     return true;
 }
 
-bool CsdVertexModifier::Read(const nlohmann::json& in_rReader)
+bool CsdOffsetTransform::Read(const nlohmann::json& in_rReader)
 {
     if (in_rReader.contains("X"))
         X = in_rReader["X"];
 
     if (in_rReader.contains("Y"))
         Y = in_rReader["Y"];
-
-    ReadRGBAF32(in_rReader, "Color", Color);
-
-    if (in_rReader.contains("ColorMode"))
-        ColorMode = in_rReader["ColorMode"];
 
     if (in_rReader.contains("U"))
         U = in_rReader["U"];
@@ -166,7 +161,7 @@ bool CsdVertexModifier::Read(const nlohmann::json& in_rReader)
     return true;
 }
 
-bool CsdVertexModifier::Write(nlohmann::json& in_rWriter)
+bool CsdOffsetTransform::Write(nlohmann::json& in_rWriter)
 {
     if (X)
         in_rWriter["X"] = X;
@@ -174,17 +169,36 @@ bool CsdVertexModifier::Write(nlohmann::json& in_rWriter)
     if (Y)
         in_rWriter["Y"] = Y;
 
-    if (Color != Sonicteam::SoX::RGBAF32{ { 1.0f, 1.0f, 1.0f, 1.0f } })
-        WriteRGBAF32(in_rWriter, "Color", Color);
-
-    if (ColorMode != ColorMode::Multiply)
-        in_rWriter["ColorMode"] = ColorMode;
-
     if (U)
         in_rWriter["U"] = U;
 
     if (V)
         in_rWriter["V"] = V;
+
+    return true;
+}
+
+bool CsdVertexModifier::Read(const nlohmann::json& in_rReader)
+{
+    CsdOffsetTransform::Read(in_rReader);
+
+    ReadRGBAF32(in_rReader, "Color", Color);
+
+    if (in_rReader.contains("ColorMode"))
+        ColorMode = in_rReader["ColorMode"];
+
+    return true;
+}
+
+bool CsdVertexModifier::Write(nlohmann::json& in_rWriter)
+{
+    CsdOffsetTransform::Write(in_rWriter);
+
+    if (Color != Sonicteam::SoX::RGBAF32{ { 1.0f, 1.0f, 1.0f, 1.0f } })
+        WriteRGBAF32(in_rWriter, "Color", Color);
+
+    if (ColorMode != ColorMode::Multiply)
+        in_rWriter["ColorMode"] = ColorMode;
 
     return true;
 }
@@ -266,7 +280,7 @@ bool CsdVertexModifierGroup::Write(nlohmann::json& in_rWriter)
     if (!BR.IsDefault())
         BR.Write(in_rWriter["BR"]);
 
-    if (!Offset.IsZero())
+    if (!Offset.IsDefault())
         Offset.Write(in_rWriter["Offset"]);
 
     if (!Extend.IsDefault())

@@ -133,7 +133,7 @@ public:
 }
 g_chevronAnimResetEvent{};
 
-float ComputeScale(float aspectRatio)
+static float ComputeScale(float aspectRatio)
 {
     return (aspectRatio * 720.0f) / 1280.0f;
 }
@@ -719,26 +719,29 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
 
     const auto applyPositionModifier = [&](CsdVertexModifierGroup* in_pModifier)
     {
-        getVertex(tl)->X = getVertex(tl)->X + in_pModifier->GetVertexModifier(tl).X + in_pModifier->Offset.X;
-        getVertex(tl)->Y = getVertex(tl)->Y + in_pModifier->GetVertexModifier(tl).Y + in_pModifier->Offset.Y;
-        getVertex(bl)->X = getVertex(bl)->X + in_pModifier->GetVertexModifier(bl).X + in_pModifier->Offset.X;
-        getVertex(bl)->Y = getVertex(bl)->Y + in_pModifier->GetVertexModifier(bl).Y + in_pModifier->Offset.Y;
-        getVertex(tr)->X = getVertex(tr)->X + in_pModifier->GetVertexModifier(tr).X + in_pModifier->Offset.X;
-        getVertex(tr)->Y = getVertex(tr)->Y + in_pModifier->GetVertexModifier(tr).Y + in_pModifier->Offset.Y;
-        getVertex(br)->X = getVertex(br)->X + in_pModifier->GetVertexModifier(br).X + in_pModifier->Offset.X;
-        getVertex(br)->Y = getVertex(br)->Y + in_pModifier->GetVertexModifier(br).Y + in_pModifier->Offset.Y;
+        const auto offsetX = in_pModifier->Offset.X * g_aspectRatioScale;
+        const auto offsetY = in_pModifier->Offset.Y * g_aspectRatioScale;
+
+        getVertex(tl)->X = getVertex(tl)->X + in_pModifier->GetVertexModifier(tl).X + offsetX;
+        getVertex(tl)->Y = getVertex(tl)->Y + in_pModifier->GetVertexModifier(tl).Y + offsetY;
+        getVertex(bl)->X = getVertex(bl)->X + in_pModifier->GetVertexModifier(bl).X + offsetX;
+        getVertex(bl)->Y = getVertex(bl)->Y + in_pModifier->GetVertexModifier(bl).Y + offsetY;
+        getVertex(tr)->X = getVertex(tr)->X + in_pModifier->GetVertexModifier(tr).X + offsetX;
+        getVertex(tr)->Y = getVertex(tr)->Y + in_pModifier->GetVertexModifier(tr).Y + offsetY;
+        getVertex(br)->X = getVertex(br)->X + in_pModifier->GetVertexModifier(br).X + offsetX;
+        getVertex(br)->Y = getVertex(br)->Y + in_pModifier->GetVertexModifier(br).Y + offsetY;
     };
 
     const auto applyUVModifier = [&](CsdVertexModifierGroup* in_pModifier)
     {
-        getVertex(tl)->U = getVertex(tl)->U + in_pModifier->GetVertexModifier(tl).U;
-        getVertex(tl)->V = getVertex(tl)->V + in_pModifier->GetVertexModifier(tl).V;
-        getVertex(bl)->U = getVertex(bl)->U + in_pModifier->GetVertexModifier(bl).U;
-        getVertex(bl)->V = getVertex(bl)->V + in_pModifier->GetVertexModifier(bl).V;
-        getVertex(tr)->U = getVertex(tr)->U + in_pModifier->GetVertexModifier(tr).U;
-        getVertex(tr)->V = getVertex(tr)->V + in_pModifier->GetVertexModifier(tr).V;
-        getVertex(br)->U = getVertex(br)->U + in_pModifier->GetVertexModifier(br).U;
-        getVertex(br)->V = getVertex(br)->V + in_pModifier->GetVertexModifier(br).V;
+        getVertex(tl)->U = getVertex(tl)->U + in_pModifier->GetVertexModifier(tl).U + in_pModifier->Offset.U;
+        getVertex(tl)->V = getVertex(tl)->V + in_pModifier->GetVertexModifier(tl).V + in_pModifier->Offset.V;
+        getVertex(bl)->U = getVertex(bl)->U + in_pModifier->GetVertexModifier(bl).U + in_pModifier->Offset.U;
+        getVertex(bl)->V = getVertex(bl)->V + in_pModifier->GetVertexModifier(bl).V + in_pModifier->Offset.V;
+        getVertex(tr)->U = getVertex(tr)->U + in_pModifier->GetVertexModifier(tr).U + in_pModifier->Offset.U;
+        getVertex(tr)->V = getVertex(tr)->V + in_pModifier->GetVertexModifier(tr).V + in_pModifier->Offset.V;
+        getVertex(br)->U = getVertex(br)->U + in_pModifier->GetVertexModifier(br).U + in_pModifier->Offset.U;
+        getVertex(br)->V = getVertex(br)->V + in_pModifier->GetVertexModifier(br).V + in_pModifier->Offset.V;
     };
 
     const auto applyColorModifier = [&](CsdVertexModifierGroup* in_pModifier)
@@ -964,7 +967,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
             {
                 // Move cloned cast to left edge of existing cast.
                 for (size_t i = 0; i < r5.u32; i++)
-                    getVertex(i)->X = getVertex(i)->X - (lastWidth + pRepeatVertexModifiers->Offset.X);
+                    getVertex(i)->X = getVertex(i)->X - lastWidth;
             }
 
             // Update loop condition.
@@ -1058,7 +1061,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
             {
                 // Move cloned cast to right edge of existing cast.
                 for (size_t i = 0; i < r5.u32; i++)
-                    getVertex(i)->X = getVertex(i)->X + (lastWidth + pRepeatVertexModifiers->Offset.X);
+                    getVertex(i)->X = getVertex(i)->X + lastWidth;
             }
 
             // Update loop condition.
@@ -1097,7 +1100,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
 
             // Move cloned cast to top edge of existing cast.
             for (size_t i = 0; i < r5.u32; i++)
-                getVertex(i)->Y = getVertex(i)->Y - (lastHeight + pRepeatVertexModifiers->Offset.Y);
+                getVertex(i)->Y = getVertex(i)->Y - lastHeight;
 
             // Update loop condition.
             y = getVertex(bl)->Y;
@@ -1135,7 +1138,7 @@ static void Draw(PPCContext& ctx, uint8_t* base, PPCFunc* original, uint32_t str
 
             // Move cloned cast to bottom edge of existing cast.
             for (size_t i = 0; i < r5.u32; i++)
-                getVertex(i)->Y = getVertex(i)->Y + (lastHeight + pRepeatVertexModifiers->Offset.Y);
+                getVertex(i)->Y = getVertex(i)->Y + lastHeight;
 
             // Update loop condition.
             y = getVertex(tl)->Y;

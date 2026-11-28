@@ -121,7 +121,32 @@ public:
     }
 };
 
-class CsdVertexModifier : public IJsonSerializable
+class CsdOffsetTransform : public IJsonSerializable
+{
+public:
+    float X{};
+    float Y{};
+    float U{};
+    float V{};
+
+    virtual bool Read(const nlohmann::json& in_rReader) override;
+    virtual bool Write(nlohmann::json& in_rWriter) override;
+
+    bool IsDefault() const
+    {
+        return X == 0 && Y == 0 && U == 0 && V == 0;
+    }
+
+    bool operator==(const CsdOffsetTransform& in_rOther) const
+    {
+        return X == in_rOther.X &&
+               Y == in_rOther.Y &&
+               U == in_rOther.U &&
+               V == in_rOther.V;
+    }
+};
+
+class CsdVertexModifier : public CsdOffsetTransform
 {
 public:
     enum class ColorMode
@@ -130,12 +155,8 @@ public:
         Set
     };
 
-    float X{};
-    float Y{};
     Sonicteam::SoX::RGBAF32 Color{};
     ColorMode ColorMode{};
-    float U{};
-    float V{};
 
     virtual bool Read(const nlohmann::json& in_rReader) override;
     virtual bool Write(nlohmann::json& in_rWriter) override;
@@ -159,22 +180,16 @@ public:
 
     bool IsDefault() const
     {
-        return X == 0 &&
-               Y == 0 &&
+        return CsdOffsetTransform::IsDefault() &&
                Color == Sonicteam::SoX::RGBAF32() &&
-               ColorMode == ColorMode::Multiply &&
-               U == 0 &&
-               V == 0;
+               ColorMode == ColorMode::Multiply;
     }
 
     bool operator==(const CsdVertexModifier& in_rOther) const
     {
-        return X == in_rOther.X &&
-               Y == in_rOther.Y &&
+        return CsdOffsetTransform::operator==(in_rOther) &&
                Color == in_rOther.Color &&
-               ColorMode == in_rOther.ColorMode &&
-               U == in_rOther.U &&
-               V == in_rOther.V;
+               ColorMode == in_rOther.ColorMode;
     }
 };
 
@@ -210,7 +225,7 @@ public:
     CsdVertexModifier TR{};
     CsdVertexModifier BR{};
 
-    CsdVector2 Offset{};
+    CsdOffsetTransform Offset{};
     CsdExtendTransform Extend{};
 
     std::vector<CsdVertexModifierGroup> Slices{};
@@ -225,7 +240,7 @@ public:
                BL.IsDefault() &&
                TR.IsDefault() &&
                BR.IsDefault() &&
-               Offset.IsZero() &&
+               Offset.IsDefault() &&
                Extend.IsDefault() &&
                Slices.empty();
     }

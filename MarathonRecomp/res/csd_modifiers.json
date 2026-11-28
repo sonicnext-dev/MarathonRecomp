@@ -432,24 +432,24 @@
             }
         },
         "sprite/main_menu/main_menu_parts/Null_0218/Cast_0221": {
-            "Flags": ["CSD_EXTEND_RIGHT", "CSD_REPEAT_UP", "CSD_REPEAT_FLIP_VERTICAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER"],
+            "Flags": ["CSD_EXTEND_RIGHT", "CSD_POSITION_MODIFIER", "CSD_UV_MODIFIER", "CSD_REPEAT_UP", "CSD_REPEAT_FLIP_VERTICAL"],
+            "Ultrawide": { "Mask": ["CSD_REPEAT_UP"] },
             "Narrow": {
-                "Mask":   ["CSD_REPEAT_UP", "CSD_REPEAT_FLIP_VERTICAL", "CSD_REPEAT_EXTEND", "CSD_UV_MODIFIER"],
-                "Edge":   { "Base": { "TL": { "V": 0.0045 }, "TR": { "V": 0.0045 } } },
-                "Center": { "Base": { "TL": { "V": 0.0045 }, "TR": { "V": 0.0045 } } }
+                "Edge":   { "Base": { "Offset": { "Y": 4.0, "V": 0.0045 } } },
+                "Center": { "Base": { "Offset": { "Y": 4.0, "V": 0.0045 } } }
             }
         },
         "sprite/main_menu/main_menu_parts/Null_0218/Cast_0222": {
-            "Flags": ["CSD_REPEAT_LEFT", "CSD_REPEAT_UP", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_FLIP_VERTICAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER", "CSD_UV_MODIFIER"],
+            "Flags": ["CSD_POSITION_MODIFIER", "CSD_UV_MODIFIER", "CSD_REPEAT_LEFT", "CSD_REPEAT_UP", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_FLIP_VERTICAL", "CSD_REPEAT_UV_MODIFIER"],
             "Ultrawide": {
                 "Mask":   ["CSD_REPEAT_UP", "CSD_REPEAT_FLIP_VERTICAL"],
-                "Edge":   { "Base": { "TL": { "U": 0.0015 }, "BL": { "U": 0.0015 } }, "Repeat": { "TL": { "U": -0.1 }, "BL": { "U": -0.1 } } },
-                "Center": { "Base": { "TL": { "U": 0.0015 }, "BL": { "U": 0.0015 } }, "Repeat": { "TL": { "U": -0.1 }, "BL": { "U": -0.1 } } }
+                "Edge":   { "Base": { "TL": { "X": 10.0 }, "BL": { "X": 10.0 }, "Offset": { "U": 0.0015 } }, "Repeat": { "TL": { "U": -0.1 }, "BL": { "U": -0.1 } } },
+                "Center": { "Base": { "TL": { "X": 10.0 }, "BL": { "X": 10.0 }, "Offset": { "U": 0.0015 } }, "Repeat": { "TL": { "U": -0.1 }, "BL": { "U": -0.1 } } }
             },
             "Narrow": {
                 "Mask":   ["CSD_REPEAT_LEFT", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_UV_MODIFIER"],
-                "Edge":   { "Base": { "TL": { "V": 0.0045 }, "TR": { "V": 0.0045 } } },
-                "Center": { "Base": { "TL": { "V": 0.0045 }, "TR": { "V": 0.0045 } } }
+                "Edge":   { "Base": { "Offset": { "Y": 4.0, "V": 0.0045 } } },
+                "Center": { "Base": { "Offset": { "Y": 4.0, "V": 0.0045 } } }
             }
         },
         "sprite/main_menu/main_menu_parts/Null_0960/Cast_0964": { "Flags": ["CSD_EXTEND_RIGHT"] },
@@ -461,7 +461,7 @@
             }
         },
         "sprite/main_menu/main_menu_parts/Null_0224/Cast_0226": {
-            "Flags": ["CSD_REPEAT_LEFT", "CSD_REPEAT_DOWN", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_FLIP_VERTICAL", "CSD_REPEAT_EXTEND", "CSD_POSITION_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
+            "Flags": ["CSD_UV_MODIFIER", "CSD_REPEAT_LEFT", "CSD_REPEAT_DOWN", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_FLIP_VERTICAL", "CSD_REPEAT_POSITION_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
             "Ultrawide": {
                 "Mask":   ["CSD_REPEAT_DOWN", "CSD_REPEAT_FLIP_VERTICAL"],
                 "Edge":   { "Repeat": { "TL": { "U": -0.6 }, "BL": { "U": -0.6 } } },
@@ -469,12 +469,12 @@
             },
             "Narrow": {
                 "Mask":   ["CSD_REPEAT_LEFT", "CSD_REPEAT_FLIP_HORIZONTAL"],
-                "Edge":   { "Repeat": { "TL": { "V": -0.02 }, "TR": { "V": -0.02 }, "Offset": { "Y": -16.0 } } },
-                "Center": { "Repeat": { "TL": { "V": -0.02 }, "TR": { "V": -0.02 }, "Offset": { "Y": -16.0 } } }
+                "Edge":   { "Base": { "Offset": { "Y": -19.0, "V": -0.02 } } },
+                "Center": { "Base": { "Offset": { "Y": -19.0, "V": -0.02 } } }
             }
         },
         "sprite/main_menu/main_menu_parts/Null_0224/Cast_0227": {
-            "Flags": ["CSD_REPEAT_RIGHT", "CSD_REPEAT_DOWN", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_FLIP_VERTICAL", "CSD_REPEAT_EXTEND", "CSD_REPEAT_UV_MODIFIER"],
+            "Flags": ["CSD_UV_MODIFIER", "CSD_REPEAT_RIGHT", "CSD_REPEAT_DOWN", "CSD_REPEAT_FLIP_HORIZONTAL", "CSD_REPEAT_FLIP_VERTICAL", "CSD_REPEAT_POSITION_MODIFIER", "CSD_REPEAT_UV_MODIFIER"],
             "Ultrawide": {
                 "Mask":   ["CSD_REPEAT_DOWN", "CSD_REPEAT_FLIP_VERTICAL"],
                 "Edge":   { "Repeat": { "TR": { "U": -0.6 }, "BR": { "U": -0.6 } } },
@@ -482,8 +482,8 @@
             },
             "Narrow": {
                 "Mask":   ["CSD_REPEAT_RIGHT", "CSD_REPEAT_FLIP_HORIZONTAL"],
-                "Edge":   { "Repeat": { "TL": { "V": -0.02 }, "TR": { "V": -0.02 }, "Offset": { "Y": -16.0 } } },
-                "Center": { "Repeat": { "TL": { "V": -0.02 }, "TR": { "V": -0.02 }, "Offset": { "Y": -16.0 } } }
+                "Edge":   { "Base": { "Offset": { "Y": -19.0, "V": -0.02 } } },
+                "Center": { "Base": { "Offset": { "Y": -19.0, "V": -0.02 } } }
             }
         },
         

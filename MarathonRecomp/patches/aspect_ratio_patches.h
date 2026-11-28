@@ -4,7 +4,7 @@
 #include <xxHashMap.h>
 
 static inline constexpr float NARROW_ASPECT_RATIO = 4.0f / 3.0f;
-static inline constexpr float NARROW_ASPECT_RATIO_MAIN_MENU = 1072.0f / 720.0f;
+static inline constexpr float NARROW_ASPECT_RATIO_MAIN_MENU = 1084.0f / 720.0f;
 static inline constexpr float WIDE_ASPECT_RATIO = 16.0f / 9.0f;
 
 extern float g_aspectRatio;
